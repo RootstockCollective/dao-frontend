@@ -1,8 +1,9 @@
 /* eslint-disable quotes */
 import { nftContracts } from '@/lib/contracts'
-import { FC, ReactNode } from 'react'
+import type { FC, ReactNode } from 'react'
 import { Header, Paragraph } from '@/components/Typography'
 import { ipfsGatewayUrl } from '@/lib/ipfs'
+import { ROOTLINGS_S1_NFT_ADDRESS } from '@/lib/constants'
 
 export interface CommunityItem {
   leftImageSrc: string
@@ -216,6 +217,28 @@ export const rootstockHacktivator: CommunityItem = {
   isExternal: true,
 }
 
+export const rootlingsS1: CommunityItem = {
+  leftImageSrc: ipfsGatewayUrl('QmbYNH2VAvqdxu79ebXEWzP1P1uMUjiSBuUJN9U4ssvmna'),
+  title: 'Rootlings Series 1',
+  subtitle: 'Rootlings',
+  description: `Rootlings are part of the on-chain movement to support Bitcoin's decentralization - not just by showing up, but by contributing during a verified campaign or event.`,
+  specialPower: 'Community badge + perks',
+  nftAddress: ROOTLINGS_S1_NFT_ADDRESS,
+  cover: ipfsGatewayUrl('QmbYNH2VAvqdxu79ebXEWzP1P1uMUjiSBuUJN9U4ssvmna'),
+  isMintable: true,
+  numberOfMembers: 400,
+  activation: 'October 2025',
+  requirement: 'Asia Roadshow participation, Self-Claim',
+  detailedDescription: (
+    <>
+      RootstockCollective&apos;s guardian of Bitcoin decentralization. <br />
+      Rootlings are part of the on-chain movement to support Bitcoin&apos;s decentralization - not just by
+      showing up, but by contributing during a verified campaign or event. Holders are often recognized as
+      active backers who combine governance with community spirit.
+    </>
+  ),
+}
+
 export const communitiesToRender = [
   earlyAdoptersCommunity,
   ogFounders,
@@ -223,6 +246,7 @@ export const communitiesToRender = [
   ogFoundersExternalContributors,
   vanguardCommunity,
   betaBuilders,
+  rootlingsS1,
 ]
 
 export const communitiesMapByContract = Object.fromEntries(

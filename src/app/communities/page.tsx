@@ -1,5 +1,4 @@
 import { SectionContainer } from './components/SectionContainer'
-import { CommunityItem } from '@/app/communities/CommunityItem'
 import { ResponsiveCommunityItemHOC } from './components/ResponsiveCommunityItemHOC'
 import {
   betaBuilders,
@@ -8,6 +7,7 @@ import {
   ogFoundersEcosystemPartners,
   ogFoundersExternalContributors,
   rootstockHacktivator,
+  rootlingsS1,
   vanguardCommunity,
 } from '@/app/communities/communityUtils'
 import { HeroCommunitiesComponent } from '@/app/communities/components'
@@ -28,21 +28,38 @@ export default function Communities() {
           title="BADGES"
           rightContent="These are earned for specific tasks - they are NFTs that come with functionality, some just medals of honour. Badges can unlock voting capabilities and help you earn BTC-based rewards through RootstockCollective."
         >
-          <div>
-            {/* Communities */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-2">
-              <CommunityItem {...earlyAdoptersCommunity} enableDebris />
-              <div className="md:col-span-2">
-                {/* First */}
-                <ResponsiveCommunityItemHOC {...ogFounders} variant="landscape" enableDebris />
-                {/* Other 2 next to each other */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-2">
-                  <CommunityItem {...ogFoundersExternalContributors} enableDebris />
-                  <CommunityItem {...ogFoundersEcosystemPartners} enableDebris />
-                </div>
-              </div>
-              <CommunityItem {...vanguardCommunity} enableDebris />
-            </div>
+          {/* Communities */}
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
+            <ResponsiveCommunityItemHOC className="lg:row-span-2" {...earlyAdoptersCommunity} enableDebris />
+            <ResponsiveCommunityItemHOC
+              className="lg:col-span-2"
+              {...ogFounders}
+              variant="landscape"
+              enableDebris
+            />
+            <ResponsiveCommunityItemHOC
+              className="lg:row-span-2"
+              {...ogFoundersEcosystemPartners}
+              enableDebris
+            />
+            <ResponsiveCommunityItemHOC
+              className="lg:col-span-2"
+              {...ogFoundersExternalContributors}
+              variant="landscape"
+              enableDebris
+            />
+            <ResponsiveCommunityItemHOC
+              className="lg:col-span-2"
+              variant="landscape"
+              {...rootlingsS1}
+              enableDebris
+            />
+            <ResponsiveCommunityItemHOC
+              className="lg:col-span-2"
+              variant="landscape"
+              {...vanguardCommunity}
+              enableDebris
+            />
           </div>
         </SectionContainer>
         <SectionContainer
