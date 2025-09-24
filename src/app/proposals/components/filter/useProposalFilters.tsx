@@ -9,16 +9,13 @@ export const useProposalFilters = (): FilterState & FilterActions => {
 
   const addFilter = useCallback((newFilter: FilterItem) => {
     setActiveFilters(prev => {
-      // If new filter is "all", remove ALL other filters of same type and add this one
-      if (newFilter.isAll) {
-        return prev.filter(f => f.type !== newFilter.type).concat(newFilter)
-      }
-      // If new filter is exclusive (like time filters), remove other filters of same type
-      if (newFilter.exclusive) {
+      // If new filter is "all" OR exclusive, remove ALL other filters of same type and add this one
+      if (newFilter.isAll || newFilter.exclusive) {
         return prev.filter(f => f.type !== newFilter.type).concat(newFilter)
       }
 
       // Special handling for milestone filters
+      // No 'Grant - all milestones' chosen together with other milestone filters
       if (newFilter.type === FilterType.CATEGORY) {
         if (newFilter.value === MILESTONE_SEPARATOR) {
           // "All milestones" selected - remove all other milestone filters
