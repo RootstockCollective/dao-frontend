@@ -46,8 +46,15 @@ const VARIANTS = {
   },
 } satisfies Record<ProposalState, { label: string; classes: string }>
 
+/**
+ *  This logic returns the variant based on the proposal state
+ *  Proposal State can be 0, be careful.
+ * @param proposalState
+ */
 const getVariants = (proposalState?: ProposalState): (typeof VARIANTS)[keyof typeof VARIANTS] => {
-  return proposalState ? VARIANTS[proposalState] : VARIANTS[ProposalState.None]
+  if (proposalState !== undefined && proposalState in VARIANTS) return VARIANTS[proposalState]
+
+  return VARIANTS[ProposalState.None]
 }
 
 export const Status: FC<Props> = ({ proposalState, className, ...rest }) => {
