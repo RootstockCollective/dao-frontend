@@ -6,7 +6,10 @@ import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNft
 import { produce } from 'immer'
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState, useMemo } from 'react'
 import { formatEther } from 'viem'
-import { useAccount } from 'wagmi'
+import { useAccount, useReadContract } from 'wagmi'
+import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
+import { tokenContracts } from '@/lib/contracts'
+import Big from '@/lib/big'
 
 // Context
 const DelegateContext = createContext<DelegateContextState>(initialContextState)
@@ -48,14 +51,51 @@ export const DelegateContextProvider = ({ children }: Props) => {
   // Fetch all delegates to get image data for current delegatee
   const allDelegates = useNftHoldersWithVotingPower()
 
-  // Find current delegatee's image data efficiently
-  const delegateeImageIpfs = useMemo(() => {
-    if (!delegateeAddress) return undefined
+  const { data: totalSupply } = useReadContract({
+    abi: StRIFTokenAbi,
+    address: tokenContracts.stRIF,
+    functionName: 'totalSupply',
+  })
+  // Find current delegatee's data efficiently in a single useMemo
+  const delegateeData = useMemo(() => {
+    if (!delegateeAddress)
+      return {
+        imageIpfs: undefined,
+        delegatedSince: undefined,
+        totalVotes: undefined,
+        delegators: undefined,
+        votingWeight: undefined,
+      }
+
     const delegatee = allDelegates.find(
       delegate => delegate.address.toLowerCase() === delegateeAddress.toLowerCase(),
     )
-    return delegatee?.imageIpfs || undefined
-  }, [delegateeAddress, allDelegates])
+
+    // Calculate voting weight as percentage of total supply
+    let votingWeight: string | undefined = undefined
+    if (delegateeVotingPower && totalSupply) {
+      const votingPowerNumber = Big(formatEther(delegateeVotingPower))
+      const totalSupplyNumber = Big(formatEther(totalSupply))
+      votingWeight = votingPowerNumber.div(totalSupplyNumber).times(100).toFixed(2) + '%'
+    }
+
+    return {
+      imageIpfs: delegatee?.imageIpfs || undefined,
+      delegatedSince: delegatee?.delegatedSince || undefined,
+      totalVotes: delegatee?.totalVotes || undefined,
+      delegators: delegatee?.delegators || undefined,
+      votingWeight,
+    }
+  }, [delegateeAddress, allDelegates, delegateeVotingPower, totalSupply])
+
+  // Destructure for easier access
+  const {
+    imageIpfs: delegateeImageIpfs,
+    delegatedSince: delegateeDelegatedSince,
+    totalVotes: delegateeTotalVotes,
+    delegators: delegateeDelegators,
+    votingWeight: delegateeVotingWeight,
+  } = delegateeData
 
   // Actions
   const setIsDelegationPending = useCallback((isPending: boolean) => {
@@ -87,6 +127,10 @@ export const DelegateContextProvider = ({ children }: Props) => {
         draft.delegateeRns = delegateeRns
         draft.delegateeVotingPower = delegateeVotingPower ? formatEther(delegateeVotingPower) : undefined
         draft.delegateeImageIpfs = delegateeImageIpfs
+        draft.delegateeDelegatedSince = delegateeDelegatedSince
+        draft.delegateeTotalVotes = delegateeTotalVotes
+        draft.delegateeDelegators = delegateeDelegators
+        draft.delegateeVotingWeight = delegateeVotingWeight
       }),
     )
   }, [
@@ -99,6 +143,10 @@ export const DelegateContextProvider = ({ children }: Props) => {
     delegateeVotingPower,
     delegateeRns,
     delegateeImageIpfs,
+    delegateeDelegatedSince,
+    delegateeTotalVotes,
+    delegateeDelegators,
+    delegateeVotingWeight,
   ])
 
   // Update loading state when UI state changes

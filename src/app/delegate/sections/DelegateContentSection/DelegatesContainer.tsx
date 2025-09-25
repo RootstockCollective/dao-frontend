@@ -1,5 +1,5 @@
 import { DelegateCard } from '@/app/delegate/components/DelegateCard'
-import { Address, isAddress } from 'viem'
+import { Address, formatEther, isAddress } from 'viem'
 import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
 import { Paragraph, Span } from '@/components/Typography'
 import { Button } from '@/components/Button'
@@ -10,6 +10,11 @@ import { produce } from 'immer'
 import { validateRnsDomain } from '@/app/delegate/lib/utils'
 import { debounce } from 'lodash'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { useReadContract } from 'wagmi'
+import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
+import { tokenContracts } from '@/lib/contracts'
+import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
+import Big from '@/lib/big'
 
 interface Props {
   didIDelegateToMyself: boolean
@@ -34,6 +39,28 @@ export const DelegatesContainer = ({
   })
 
   const delegates = useNftHoldersWithVotingPower()
+
+  const { data: totalSupply } = useReadContract({
+    abi: StRIFTokenAbi,
+    address: tokenContracts.stRIF,
+    functionName: 'totalSupply',
+  })
+
+  const delegatesWithWeight = useMemo(() => {
+    if (!delegates || !totalSupply) return []
+
+    const supplyNum = Big(formatEther(totalSupply))
+
+    return delegates.map(nftHolder => {
+      const votesNum = nftHolder.votingPower ? Big(nftHolder.votingPower.toString()) : Big(0)
+      const percent = votesNum.div(supplyNum).times(100).toFixed(2)
+
+      return {
+        ...nftHolder,
+        votingPowerPercent: percent,
+      }
+    })
+  }, [delegates, totalSupply])
 
   const onDelegateChangeAddress = (e: ChangeEvent<HTMLInputElement>) => {
     setAddressToDelegate(
@@ -154,21 +181,17 @@ export const DelegatesContainer = ({
         <Span className="mt-8 md:mt-10">or select one of the delegates vetted by the community</Span>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-2 mt-6">
-        {delegates.map(delegate => (
+        {delegatesWithWeight.map(delegate => (
           <DelegateCard
             key={delegate.address}
             address={delegate.address as Address}
             name={delegate.RNS || undefined}
             imageIpfs={delegate.imageIpfs}
-            // @TODO fetch since
-            since="May 2025"
+            since={formatTimestampToMonthYear(delegate.delegatedSince)}
             votingPower={delegate.votingPower?.toString() || 0}
-            // @TODO fetch voting weight
-            votingWeight=" - "
-            // @TODO fetch total votes
-            totalVotes={' - '}
-            // @TODO fetch delegators
-            delegators={' - '}
+            votingWeight={`${delegate.votingPowerPercent}%`}
+            totalVotes={delegate.totalVotes?.toString() || 0}
+            delegators={delegate.delegators?.toString() || 0}
             onDelegate={onDelegate}
             buttonDisabled={shouldDisableButtons}
           />

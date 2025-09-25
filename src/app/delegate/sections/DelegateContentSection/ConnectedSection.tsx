@@ -14,6 +14,7 @@ import { useAccount } from 'wagmi'
 import { cn, formatNumberWithCommas, shortAddress } from '@/lib/utils'
 import { EditIconKoto } from '@/components/Icons'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
 
 export const ConnectedSection = () => {
   const {
@@ -27,6 +28,10 @@ export const ConnectedSection = () => {
     delegateeVotingPower,
     delegateeRns,
     delegateeImageIpfs,
+    delegateeDelegatedSince,
+    delegateeTotalVotes,
+    delegateeDelegators,
+    delegateeVotingWeight,
     refetch,
   } = useDelegateContext()
 
@@ -115,15 +120,11 @@ export const ConnectedSection = () => {
             address={delegateeAddress}
             name={delegateeRns}
             imageIpfs={delegateeImageIpfs}
-            // @TODO fetch since
-            since=" - "
+            since={formatTimestampToMonthYear(delegateeDelegatedSince) || ' - '}
             votingPower={delegateeVotingPower ? Number(delegateeVotingPower).toFixed(0) : ' - '}
-            // @TODO fetch voting weight
-            votingWeight=" - "
-            // @TODO fetch total votes
-            totalVotes=" - "
-            // @TODO fetch delegators
-            delegators=" - "
+            votingWeight={delegateeVotingWeight || ' - '}
+            totalVotes={delegateeTotalVotes?.toString() || ' - '}
+            delegators={delegateeDelegators?.toString() || ' - '}
             onDelegate={onShowReclaim}
             buttonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
             buttonVariant="primary"
@@ -212,8 +213,7 @@ export const ConnectedSection = () => {
           title={`You are about to reclaim your own voting power of ${votingPower} from`}
           name={delegateeRns}
           address={delegateeAddress as Address}
-          // @TODO fetch since
-          since=""
+          since={formatTimestampToMonthYear(delegateeDelegatedSince) || ''}
           imageIpfs={delegateeImageIpfs}
           actionButtonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
           data-testid="reclaimModal"
