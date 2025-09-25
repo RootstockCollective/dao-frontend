@@ -114,7 +114,7 @@ export const ChartTooltipContent = ({ active, payload }: ChartTooltipProps) => {
           <Metric
             title={
               <Label variant="tag" className="text-bg-40">
-                Rewards distributed this cycle
+                Rewards distributed
               </Label>
             }
             className="w-auto text-bg-40 whitespace-nowrap"
