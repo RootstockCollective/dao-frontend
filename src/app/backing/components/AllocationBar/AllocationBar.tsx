@@ -41,6 +41,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   itemsData,
   height = '96px',
   isDraggable = true,
+  isResizable = true,
   valueDisplay = {
     showPercent: true,
     format: { percentDecimals: 0 },
@@ -197,8 +198,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
                   dragIndex={dragTargetIndex}
                   isDraggable={isDraggable}
                 />
-                {Boolean(console.log(`dragTarget: ${dragTargetIndex}`)) && undefined}
-                {i < currentItems.length - 1 && (
+                {i < currentItems.length - 1 && isResizable && (
                   <Tooltip
                     text={<AllocationBarTooltip {...getTooltipProps(dragTargetIndex, item, currentItems)} />}
                     side="top"
