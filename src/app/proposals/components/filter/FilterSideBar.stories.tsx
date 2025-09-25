@@ -13,48 +13,22 @@ export default meta
 
 type Story = StoryObj<typeof FilterSideBar>
 
-const createFilterItem = (label: string): FilterItem => ({
-  id: `filter-${label}`,
-  type: FilterType.CATEGORY,
-  label,
-  value: label,
-  validate: () => true,
-})
-
-const filterOptions: Record<string, FilterItem[]> = {
-  [FilterType.CATEGORY]: [
-    createFilterItem('Proposals I can vote'),
-    createFilterItem('Builder proposals'),
-    createFilterItem('Treasury proposals'),
-    createFilterItem('Grants'),
-    createFilterItem('My proposals'),
-  ],
-  [FilterType.STATUS]: [
-    createFilterItem('Pending'),
-    createFilterItem('Active'),
-    createFilterItem('Executed'),
-    createFilterItem('Defeated'),
-  ],
-  [FilterType.TIME]: [
-    createFilterItem('Last week'),
-    createFilterItem('Last month'),
-    createFilterItem('Last 90 days'),
-  ],
-}
-
 export const Default: Story = {
   render() {
+    const [isOpen, setIsOpen] = useState(true)
     const [activeFilters, setActiveFilters] = useState<FilterItem[]>([])
+
     return (
-      <div>
+      <div className="h-screen bg-bg-80">
         <FilterSideBar
-          filterOptions={filterOptions}
+          isOpen={isOpen}
+          onClose={() => setIsOpen(false)}
           activeFilters={activeFilters}
           onAddFilter={filter => {
             setActiveFilters(prev => [...prev, filter])
           }}
           onRemoveFilter={id => {
-            setActiveFilters(prev => prev.filter(v => v.id !== id))
+            setActiveFilters(prev => prev.filter(f => f.id !== id))
           }}
         />
       </div>

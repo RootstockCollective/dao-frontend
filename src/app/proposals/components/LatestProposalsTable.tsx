@@ -9,13 +9,104 @@ import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { SearchButton } from './SearchButton'
 import { Header } from '@/components/Typography'
 import { Proposal } from '@/app/proposals/shared/types'
-import { filterOptions } from './filter/filterOptions'
+import { useProposalFilters } from './filter/useProposalFilters'
+import { ActiveFiltersDisplay } from './filter/ActiveFiltersDisplay'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useStickyHeader } from '@/shared/hooks'
-import { ActiveFiltersDisplay } from './filter/ActiveFiltersDisplay'
-import { useProposalFilters } from './filter/useProposalFilters'
-import { FilterType } from './filter/types'
-import { ProposalsTable, type ProposalsTableRef } from './ProposalsTableWithPagination'
+import { FilterType, FilterItem } from './filter/types'
+import { MILESTONE_SEPARATOR } from '../shared/utils'
+import { ProposalState } from '@/shared/types/types'
+import moment from 'moment'
+import { ProposalsTable, ProposalsTableRef } from './ProposalsTableWithPagination'
+
+/**
+ * Filters proposals based on active filters
+ * Handles search, category, status, and time filters
+ */
+const filterProposals = (proposals: Proposal[], activeFilters: FilterItem[]) => {
+  return proposals.filter(proposal => {
+    // Apply search filter
+    const searchFilters = activeFilters.filter(f => f.type === FilterType.SEARCH)
+    if (searchFilters.length > 0) {
+      const searchMatch = searchFilters.some(searchFilter => {
+        const lowered = searchFilter.value.toLowerCase()
+        return [
+          proposal.name,
+          proposal.description,
+          proposal.category,
+          proposal.proposer,
+          proposal.proposalId,
+        ].some(param => param?.toLowerCase()?.includes(lowered))
+      })
+      if (!searchMatch) return false
+    }
+
+    // Apply category filters
+    const categoryFilters = activeFilters.filter(f => f.type === FilterType.CATEGORY && f.value)
+    if (categoryFilters.length > 0) {
+      const categoryMatch = categoryFilters.some(categoryFilter => {
+        const filterValue = categoryFilter.value
+
+        // Special case for milestone-related filters - check description
+        if (filterValue === MILESTONE_SEPARATOR || filterValue.startsWith(MILESTONE_SEPARATOR)) {
+          return proposal.description?.toLowerCase().includes(filterValue.toLowerCase())
+        }
+
+        // For all other category filters, only check the category field
+        return proposal.category?.toLowerCase()?.includes(filterValue.toLowerCase())
+      })
+      if (!categoryMatch) return false
+    }
+
+    // Apply status filters
+    const statusFilters = activeFilters.filter(f => f.type === FilterType.STATUS && f.value)
+    if (statusFilters.length > 0) {
+      const statusMatch = statusFilters.some(statusFilter => {
+        const status = statusFilter.value
+        return (
+          proposal.proposalState !== undefined &&
+          ProposalState[proposal.proposalState]?.toLowerCase() === status.toLowerCase()
+        )
+      })
+      if (!statusMatch) return false
+    }
+
+    // Apply time filters
+    const timeFilters = activeFilters.filter(f => f.type === FilterType.TIME && f.value)
+    if (timeFilters.length > 0) {
+      const timeMatch = timeFilters.some(timeFilter => {
+        const filterValue = timeFilter.value
+
+        // Use proposal.Starts (moment object) for date-based filtering
+        if (!proposal.Starts) return false
+
+        const now = moment()
+        const proposalDate = proposal.Starts
+
+        switch (filterValue) {
+          case 'last-week':
+            return now.diff(proposalDate, 'days') <= 7
+          case 'last-month':
+            return now.diff(proposalDate, 'days') <= 30
+          case 'last-90-days':
+            return now.diff(proposalDate, 'days') <= 90
+          case 'Wave 4':
+          case 'Wave 5':
+          case 'March-25':
+            // For wave filters, check if the proposal name or description contains the wave
+            return (
+              proposal.name?.toLowerCase().includes(filterValue.toLowerCase()) ||
+              proposal.description?.toLowerCase().includes(filterValue.toLowerCase())
+            )
+          default:
+            return true
+        }
+      })
+      if (!timeMatch) return false
+    }
+    return true
+  })
+}
 
 interface LatestProposalsTableProps {
   proposals: Proposal[]
@@ -58,28 +149,12 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   // filtering by category in sidebar
   const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false)
   const filterSidebarRef = useRef<HTMLDivElement>(null)
-  useClickOutside(filterSidebarRef, () => setIsFilterSidebarOpen(false))
-
-  // Filters are grouped by type
-  const filterGroups = useMemo(() => {
-    const filtersByType = activeFilters.reduce(
-      (acc, f) => {
-        if (!acc[f.type]) acc[f.type] = []
-        acc[f.type].push(f)
-        return acc
-      },
-      {} as Record<FilterType, typeof activeFilters>,
-    )
-
-    return Object.values(filtersByType).filter(filters => filters.length > 0)
-  }, [activeFilters])
+  // Only apply click outside on desktop - mobile uses Modal component
+  useClickOutside(filterSidebarRef, () => isDesktop && setIsFilterSidebarOpen(false))
 
   const filteredProposalList = useMemo(() => {
-    return proposals.filter(proposal => {
-      // Checks for at least one filter group to be true
-      return filterGroups.every(filters => filters.some(f => f.validate(proposal)))
-    })
-  }, [proposals, filterGroups])
+    return filterProposals(proposals, activeFilters)
+  }, [proposals, activeFilters])
 
   const hasSelectedFilters = useMemo(() => {
     return activeFilters.filter(f => !f.isAll && f.type !== FilterType.SEARCH).length > 0
@@ -151,7 +226,8 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
           {/* container for useClickOutside ref */}
           <div ref={filterSidebarRef} className="pl-2 h-full">
             <FilterSideBar
-              filterOptions={filterOptions}
+              isOpen={isFilterSidebarOpen}
+              onClose={() => setIsFilterSidebarOpen(false)}
               activeFilters={activeFilters}
               onAddFilter={addFilter}
               onRemoveFilter={removeFilter}
