@@ -42,7 +42,7 @@ const parseProposalActionDetails = (
   const { functionName, args } = action
   switch (functionName) {
     case 'withdraw': {
-      const amount = typeof args[1] === 'bigint' ? args[1] : undefined
+      const amount = transformToBigIntSafely(args[1])
       const toAddress = typeof args[0] === 'string' ? args[0] : undefined
       return {
         type: ProposalType.WITHDRAW,
@@ -54,7 +54,7 @@ const parseProposalActionDetails = (
     }
     case 'withdrawERC20': {
       const tokenAddress = typeof args[0] === 'string' ? args[0].toLowerCase() : ''
-      const amount = typeof args[2] === 'bigint' ? args[2] : undefined
+      const amount = transformToBigIntSafely(args[2])
       const toAddress = typeof args[1] === 'string' ? args[1] : undefined
       const symbol = tokenAddressToSymbol[tokenAddress] || 'unknown symbol'
       const price = prices?.[symbol]?.price || 0
@@ -147,4 +147,23 @@ const PageWithProposal = (proposal: Proposal) => {
       </div>
     </div>
   )
+}
+
+/**
+ *  Function created because previously we had a validation like typeof var === 'bigint'
+ *  But the amount can also be string because it's coming from an API (BigInt cannot be serialized)
+ *  @TODO re-visit and standardize
+ *  @param amount
+ */
+function transformToBigIntSafely(amount: unknown): bigint | undefined {
+  try {
+    if (typeof amount === 'string') {
+      return BigInt(amount)
+    }
+    if (typeof amount === 'bigint') return amount
+  } catch (err) {
+    console.log('Could not convert amount to bigint. Using undefined as default.', err)
+  }
+
+  return undefined
 }
