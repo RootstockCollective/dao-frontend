@@ -248,8 +248,6 @@ function handleProposalState(
   blockNumber?: bigint,
   rawState?: number,
 ): ProposalState {
-  if (proposal.proposalId === '93114685443285925243283394517435877751023305600815989070198792396783407351507')
-    console.log('proposal', { proposal, blockNumber, rawState })
   if (rawState) {
     return rawState as ProposalState
   }

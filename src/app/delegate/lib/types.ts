@@ -23,6 +23,10 @@ export interface DelegateDataState {
   delegateeRns?: string
   delegateeVotingPower?: string
   delegateeImageIpfs?: string | null
+  delegateeDelegatedSince?: string
+  delegateeTotalVotes?: number
+  delegateeDelegators?: number
+  delegateeVotingWeight?: string
 }
 
 // UI state interface
