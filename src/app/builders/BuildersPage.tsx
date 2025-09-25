@@ -10,7 +10,10 @@ import BuildersTableContainer from './components/Table/BuildersTableContainer'
 const NAME = 'Builders'
 export const BuildersPage = () => {
   return (
-    <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-6 rounded-sm">
+    <div
+      data-testid={NAME}
+      className="flex flex-col items-start w-full h-full pt-[0.13rem] md:gap-6 rounded-sm"
+    >
       <Header caps variant="h1" className="text-3xl leading-10 pb-[2.5rem]">
         {NAME}
       </Header>
