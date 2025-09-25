@@ -123,7 +123,7 @@ export interface ContributorGraphResponse {
 export interface ContributorApiResponse {
   id: string
   delegatedVotes: string
-  delegators: number // flattened ids
+  delegators: number
   votes: number
   createdAt: string
 }

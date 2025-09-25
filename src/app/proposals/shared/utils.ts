@@ -305,3 +305,9 @@ export function serializeBigInts(obj: any): any {
 
   return obj
 }
+
+export function formatTimestampToMonthYear(timestamp: string | undefined): string {
+  if (!timestamp) return ' - '
+  const date = new Date(Number(timestamp) * 1000) // seconds → ms
+  return date.toLocaleString('en-US', { month: 'long', year: 'numeric' })
+}
