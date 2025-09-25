@@ -2,6 +2,7 @@ import { Fragment } from 'react'
 import { Span } from '@/components/Typography'
 import { ProgressBar } from '@/components/ProgressBarNew'
 import { ProposalState } from '@/shared/types'
+import { cn } from '@/lib/utils'
 
 interface ProgressBarProps {
   proposalState?: ProposalState
@@ -24,15 +25,43 @@ const getStatusSteps = (proposalState: ProposalState) => {
   return ['ACTIVE', 'SUCCEEDED', 'QUEUED', 'EXECUTED']
 }
 
+const getCurrentStepIndex = (proposalState: ProposalState) => {
+  switch (proposalState) {
+    case ProposalState.Active:
+      return 0
+    case ProposalState.Succeeded:
+      return 1
+    case ProposalState.Queued:
+      return 2
+    case ProposalState.Executed:
+      return 3
+    case ProposalState.Defeated:
+    case ProposalState.Canceled:
+      return 1 // FAILED is at index 1
+    default:
+      return 0
+  }
+}
+
 const renderStatusPath = (proposalState: ProposalState) => {
   const steps = getStatusSteps(proposalState)
+  const currentStepIndex = getCurrentStepIndex(proposalState)
 
   return (
     <>
       {steps.map((step, index) => (
         <Fragment key={step}>
-          <Span variant="body-s">{step}</Span>
-          {index < steps.length - 1 && <Span variant="body-s">{'>'}</Span>}
+          <Span
+            variant="body-s"
+            className={cn('flex-shrink-0', index === currentStepIndex ? 'text-white' : 'text-bg-0')}
+          >
+            {step}
+          </Span>
+          {index < steps.length - 1 && (
+            <Span variant="body-s" className="flex-shrink-0 mx-3 text-bg-0">
+              {'>'}
+            </Span>
+          )}
         </Fragment>
       ))}
     </>
