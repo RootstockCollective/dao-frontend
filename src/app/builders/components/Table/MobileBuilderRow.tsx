@@ -33,7 +33,7 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
 
   const [isExpanded, setIsExpanded] = useState(false)
 
-  const { data, isRowSelected, isInProgress, canBack, hasSelections, handleToggleSelection } = logic
+  const { data, isRowSelected, isInProgress, canBack, handleToggleSelection } = logic
 
   const handleToggleExpand = () => {
     setIsExpanded(!isExpanded)
@@ -70,8 +70,8 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
       <BuilderRowConditionalTooltip
         className="p-0 ml-4"
         isConnected={isConnected}
-        canBack={canBack}
-        hasSelections={hasSelections}
+        canBack={false} // disabled for mobile
+        hasSelections={false} // disabled for mobile
         onConnectWalletButtonClick={onConnectWalletButtonClick}
       >
         <tr
