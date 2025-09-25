@@ -14,7 +14,7 @@ export const ResizeHandle = ({
   // FIXME: This is a temporary hack to allow resizing a 0value segment.
   // It couples it with the AllocationBarSegment implementation, though,
   // so it should be removed once we have a better solution.
-  const zIndexHack = 'z-999'
+  const zIndexHack = 'z-75'
 
   return (
     <div

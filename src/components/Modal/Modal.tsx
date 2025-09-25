@@ -30,7 +30,7 @@ export const Modal: FC<ModalProps> = ({
   return createPortal(
     <div
       className={cn(
-        'fixed inset-0 flex items-center justify-center z-50 max-w-screen max-h-screen overflow-hidden',
+        'fixed inset-0 flex items-center justify-center z-100 max-w-screen max-h-screen overflow-hidden',
         fullscreen ? '' : 'p-4',
       )}
       data-testid={dataTestId}
