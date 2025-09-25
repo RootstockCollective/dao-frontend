@@ -108,11 +108,11 @@ const PageWithProposal = (proposal: Proposal) => {
 
   return (
     <div className="min-h-screen flex flex-col gap-4 w-full max-w-full">
-      <div className="flex items-center gap-4">
+      <div className="md:flex items-center gap-4">
         <Header variant="h3" className="text-2xl lg:text-3xl !leading-[0.9]">
           {name}
         </Header>
-        <div className="flex gap-2 items-end">
+        <div className="flex gap-2 items-end md:mt-0 mt-3">
           <Category className="mb-0.5" category={category} hasGradient />
           <Paragraph variant="body-l" className="text-bg-0 !leading-none whitespace-nowrap">
             {category}
@@ -121,7 +121,7 @@ const PageWithProposal = (proposal: Proposal) => {
       </div>
       <div className="flex flex-row gap-2 w-full max-w-full mt-6">
         <div className="flex-1 flex flex-col min-w-0">
-          <div className="bg-bg-80 p-6 flex flex-col gap-y-6">
+          <div className="bg-bg-80 md:p-6 p-4 flex flex-col gap-y-6 overflow-hidden">
             <ProposalProggressBar proposalState={voteOnProposalData.proposalState} />
             <ProposalDetails
               name={name}
