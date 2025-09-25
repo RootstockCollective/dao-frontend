@@ -18,7 +18,6 @@ export const HolderCard = ({ address, rns, amount, price }: HolderCardProps) => 
     <BuilderHeader
       name={rns}
       address={address as Address}
-      className="mt-2"
       builderPageLink={`${EXPLORER_URL}/address/${address}`}
     />
     <div className="flex flex-col border-0.5 border-[1px] border-bg-40 p-3 text-left mt-5 w-full">
