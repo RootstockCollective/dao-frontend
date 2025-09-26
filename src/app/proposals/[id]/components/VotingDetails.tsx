@@ -1,4 +1,4 @@
-import { MouseEvent, useRef, useState } from 'react'
+import { MouseEvent, useEffect, useRef, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { zeroAddress } from 'viem'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
@@ -25,7 +25,7 @@ import { Eta } from '../../shared/types'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { MobileVotingButton } from './MobileVotingButton'
 import { Modal } from '@/components/Modal'
-import { Header } from '@/components/Typography'
+import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 
 const actionNameToActionTypeMap = new Map<string, ActionType>([
   ['withdraw', ActionType.Transfer],
@@ -55,6 +55,7 @@ export const VotingDetails = ({
   voteStart,
   voteOnProposalData,
 }: VotingDetailsProps) => {
+  const { openDrawer, closeDrawer } = useLayoutContext()
   const { address, isConnected } = useAccount()
   const [vote, setVote] = useGetVoteForSpecificProposal(address ?? zeroAddress, proposalId)
   const [isChoosingVote, setIsChoosingVote] = useState(false)
@@ -224,6 +225,16 @@ export const VotingDetails = ({
     }
   }
 
+  useEffect(() => {
+    if (!isDesktop) {
+      openDrawer(
+        <MobileVotingButton onClick={() => setIsModalOpen(true)} disabled={isQueueing || isExecuting} />,
+      )
+    }
+
+    return () => closeDrawer()
+  }, [])
+
   // Extract the voting details content into a reusable component
   const VotingDetailsContent = () => (
     <div className="flex flex-col md:max-w-[376px] md:mt-0 mt-20">
@@ -267,7 +278,7 @@ export const VotingDetails = ({
         actionDisabled={isQueueing || isExecuting}
         eta={getEta(proposalState)}
       />
-      <ActionDetails parsedAction={parsedAction} actionType={actionType} />
+      {isDesktop && <ActionDetails parsedAction={parsedAction} actionType={actionType} />}
     </div>
   )
 
@@ -275,7 +286,7 @@ export const VotingDetails = ({
   if (!isDesktop) {
     return (
       <>
-        <MobileVotingButton onClick={() => setIsModalOpen(true)} disabled={isQueueing || isExecuting} />
+        <ActionDetails parsedAction={parsedAction} actionType={actionType} />
         {isModalOpen && (
           <Modal onClose={() => setIsModalOpen(false)} fullscreen>
             <VotingDetailsContent />
