@@ -91,7 +91,7 @@ export const VotingDetails = ({
 }: VoteDetailsProps) => {
   const isDesktop = useIsDesktop()
   return (
-    <div className="md:p-6 p-4 rounded-[4px] w-full md:max-w-[376px] md:pt-0 pt-20">
+    <div className="bg-bg-80 md:p-6 p-4 rounded-[4px] w-full md:max-w-[376px] md:pt-6 pt-20">
       <Header variant={!isDesktop ? 'h1' : 'h3'} className="font-normal">
         {isChoosingVote ? 'CAST YOUR VOTE' : 'VOTE DETAILS'}
       </Header>
@@ -142,7 +142,7 @@ export const VotingDetails = ({
         )}
       </div>
       {/* Action button (Vote on proposal, custom, or Cancel) always rendered here */}
-      <div className="md:relative absolute bottom-4 inset-x-4">
+      <div className="md:relative absolute bottom-4 md:insets-0 inset-x-4">
         {!isDesktop && <Divider />}
         {isChoosingVote ? (
           <Button variant="secondary-outline" className="md:mt-6 mt-4" onClick={onCancelVote}>
