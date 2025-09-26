@@ -133,7 +133,7 @@ export const ActionDetails = ({ parsedAction, actionType }: ActionDetailsProps) 
   }
 
   return (
-    <div className="p-6 bg-bg-80 flex flex-col gap-4 max-w-[376px] mt-2">
+    <div className="p-6 bg-bg-80 flex flex-col gap-4 max-w-[376px] md:mt-2">
       <Header variant="h3">ACTIONS</Header>
       {content}
     </div>

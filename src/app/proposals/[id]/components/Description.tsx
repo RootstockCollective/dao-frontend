@@ -1,4 +1,6 @@
 import { Header, Paragraph } from '@/components/Typography'
+import { Expandable, ExpandableHeader, ExpandableContent } from '@/components/Expandable'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface DescriptionProps {
   description?: string
@@ -15,20 +17,31 @@ const linkfyUrls = (description: string | undefined | null): string => {
 }
 
 export const Description = ({ description }: DescriptionProps) => {
+  const isDesktop = useIsDesktop()
   const descriptionHtml = linkfyUrls(description)
 
   return (
     <div className="mt-14">
-      <Header variant="h2" className="text-xl mb-4 text-white">
-        DESCRIPTION
-      </Header>
-      <Paragraph
-        variant="body"
-        className="text-base text-white/90 whitespace-pre-line"
-        html
-        // eslint-disable-next-line react/no-children-prop
-        children={descriptionHtml}
-      />
+      <Expandable
+        previewText={!isDesktop ? descriptionHtml : undefined}
+        previewClassName="text-base text-white/90 whitespace-pre-line break-words mb-4"
+        previewCharLimit={200}
+      >
+        <ExpandableHeader triggerColor="white">
+          <Header variant="h2" className="text-xl text-white">
+            DESCRIPTION
+          </Header>
+        </ExpandableHeader>
+        <ExpandableContent>
+          <Paragraph
+            variant="body"
+            className="text-base text-white/90 whitespace-pre-line break-words"
+            html
+            // eslint-disable-next-line react/no-children-prop
+            children={descriptionHtml}
+          />
+        </ExpandableContent>
+      </Expandable>
     </div>
   )
 }
