@@ -25,7 +25,6 @@ import { Eta } from '../../shared/types'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { MobileVotingButton } from './MobileVotingButton'
 import { Modal } from '@/components/Modal'
-import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 
 const actionNameToActionTypeMap = new Map<string, ActionType>([
   ['withdraw', ActionType.Transfer],
@@ -55,7 +54,6 @@ export const VotingDetails = ({
   voteStart,
   voteOnProposalData,
 }: VotingDetailsProps) => {
-  const { openDrawer, closeDrawer } = useLayoutContext()
   const { address, isConnected } = useAccount()
   const [vote, setVote] = useGetVoteForSpecificProposal(address ?? zeroAddress, proposalId)
   const [isChoosingVote, setIsChoosingVote] = useState(false)
@@ -225,16 +223,6 @@ export const VotingDetails = ({
     }
   }
 
-  useEffect(() => {
-    if (!isDesktop) {
-      openDrawer(
-        <MobileVotingButton onClick={() => setIsModalOpen(true)} disabled={isQueueing || isExecuting} />,
-      )
-    }
-
-    return () => closeDrawer()
-  }, [])
-
   // Extract the voting details content into a reusable component
   const VotingDetailsContent = () => (
     <div className="flex flex-col md:max-w-[376px]">
@@ -292,6 +280,7 @@ export const VotingDetails = ({
             <VotingDetailsContent />
           </Modal>
         )}
+        <MobileVotingButton onClick={() => setIsModalOpen(true)} disabled={isQueueing || isExecuting} />
       </>
     )
   }

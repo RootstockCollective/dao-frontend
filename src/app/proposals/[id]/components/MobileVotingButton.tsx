@@ -14,7 +14,7 @@ export const MobileVotingButton = ({
   'data-testid': dataTestId,
 }: MobileVotingButtonProps) => {
   return (
-    <div className="w-full bg-bg-60 p-4 text-center">
+    <div className="w-full bg-bg-60 p-4 text-center bottom-0 fixed inset-x-0">
       <Button
         onClick={onClick}
         disabled={disabled}

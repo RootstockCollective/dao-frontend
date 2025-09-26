@@ -11,6 +11,7 @@ import { BalanceInfo } from '@/components/BalanceInfo'
 import { Eta } from '@/app/proposals/shared/types'
 import { Countdown } from '@/components/Countdown'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { Divider } from '@/components/Divider'
 
 interface VoteCounterProps {
   title: string
@@ -128,7 +129,7 @@ export const VotingDetails = ({
         </div>
       )}
 
-      {/* Voting power block (always rendered once) */}
+      {/* Voting power block */}
       <div className="mt-6">
         {!vote ? (
           <BalanceInfo
@@ -141,15 +142,16 @@ export const VotingDetails = ({
         )}
       </div>
       {/* Action button (Vote on proposal, custom, or Cancel) always rendered here */}
-      <div>
+      <div className="md:relative absolute bottom-4 inset-x-4">
+        {!isDesktop && <Divider />}
         {isChoosingVote ? (
-          <Button variant="secondary-outline" className="mt-6" onClick={onCancelVote}>
+          <Button variant="secondary-outline" className="md:mt-6 mt-4" onClick={onCancelVote}>
             Cancel
           </Button>
         ) : buttonAction ? (
           <Button
             onClick={buttonAction.onButtonClick}
-            className="mt-6"
+            className="md:mt-6 mt-4"
             textClassName="text-foreground"
             disabled={actionDisabled}
             ref={voteButtonRef}
@@ -158,7 +160,7 @@ export const VotingDetails = ({
           </Button>
         ) : (
           eta && (
-            <div className="flex mt-6 items-center">
+            <div className="flex md:mt-6 mt-4 items-center">
               <Paragraph variant="body-s">{capitalizeFirstLetter(eta.type)}</Paragraph>
               <Countdown
                 end={eta.end}
