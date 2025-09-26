@@ -1,5 +1,5 @@
 import { Button } from '@/components/Button'
-import { Header, Span } from '@/components/Typography'
+import { Span } from '@/components/Typography'
 
 interface MobileVotingButtonProps {
   onClick: () => void
