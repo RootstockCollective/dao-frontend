@@ -22,6 +22,10 @@ import { ActionDetails } from '../../components/action-details'
 import { ParsedActionDetails, ActionType } from '../types'
 import { Span } from '@/components/Typography'
 import { Eta } from '../../shared/types'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { MobileVotingButton } from './MobileVotingButton'
+import { Modal } from '@/components/Modal'
+import { Header } from '@/components/Typography'
 
 const actionNameToActionTypeMap = new Map<string, ActionType>([
   ['withdraw', ActionType.Transfer],
@@ -55,6 +59,10 @@ export const VotingDetails = ({
   const [vote, setVote] = useGetVoteForSpecificProposal(address ?? zeroAddress, proposalId)
   const [isChoosingVote, setIsChoosingVote] = useState(false)
   const [votingTxIsPending, setVotingTxIsPending] = useState(false)
+
+  // Mobile modal state
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const isDesktop = useIsDesktop()
 
   const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId, true)
   const { quorum } = useProposalQuorumAtSnapshot(snapshot)
@@ -216,8 +224,9 @@ export const VotingDetails = ({
     }
   }
 
-  return (
-    <div className="flex flex-col max-w-[376px]">
+  // Extract the voting details content into a reusable component
+  const VotingDetailsContent = () => (
+    <div className="flex flex-col md:max-w-[376px] md:mt-0 mt-20">
       <NewPopover
         open={popoverOpen}
         onOpenChange={setPopoverOpen}
@@ -261,4 +270,21 @@ export const VotingDetails = ({
       <ActionDetails parsedAction={parsedAction} actionType={actionType} />
     </div>
   )
+
+  // Mobile: Show button that opens modal
+  if (!isDesktop) {
+    return (
+      <>
+        <MobileVotingButton onClick={() => setIsModalOpen(true)} disabled={isQueueing || isExecuting} />
+        {isModalOpen && (
+          <Modal onClose={() => setIsModalOpen(false)} fullscreen>
+            <VotingDetailsContent />
+          </Modal>
+        )}
+      </>
+    )
+  }
+
+  // Desktop: Render exactly as before (unchanged behavior)
+  return <VotingDetailsContent />
 }

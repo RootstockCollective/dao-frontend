@@ -22,7 +22,7 @@ interface VoteCounterProps {
 const VoteCounter = ({ title, value, color, disabled, isVotingInProgress }: VoteCounterProps) => {
   return (
     <div
-      className={`bg-[#37322F] pl-4 pb-3 rounded-[4px] flex flex-col items-start justify-center w-40 border-t-4 border-${!disabled ? color : 'disabled-border'}`}
+      className={`bg-bg-60 pl-4 pb-3 rounded-[4px] flex flex-col items-start justify-center md:w-40 border-t-4 border-${!disabled ? color : 'disabled-border'}`}
     >
       <Paragraph variant="body" className={`text-white text-sm mt-6 text-${disabled && 'disabled-border'}`}>
         {title}
@@ -88,7 +88,7 @@ export const VotingDetails = ({
   eta,
 }: VoteDetailsProps) => {
   return (
-    <div className="bg-[#25211E] p-6 rounded-[4px] w-full max-w-[376px]">
+    <div className="bg-bg-80 md:p-6 p-4 rounded-[4px] w-full md:max-w-[376px]">
       <Header variant="h3" className="font-normal">
         {isChoosingVote ? 'CAST YOUR VOTE' : 'VOTE DETAILS'}
       </Header>
