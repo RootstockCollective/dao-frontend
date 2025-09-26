@@ -237,7 +237,7 @@ export const VotingDetails = ({
 
   // Extract the voting details content into a reusable component
   const VotingDetailsContent = () => (
-    <div className="flex flex-col md:max-w-[376px] md:mt-0 mt-20">
+    <div className="flex flex-col md:max-w-[376px]">
       <NewPopover
         open={popoverOpen}
         onOpenChange={setPopoverOpen}

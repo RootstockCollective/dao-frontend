@@ -10,6 +10,7 @@ import Big from '@/lib/big'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { Eta } from '@/app/proposals/shared/types'
 import { Countdown } from '@/components/Countdown'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface VoteCounterProps {
   title: string
@@ -87,15 +88,16 @@ export const VotingDetails = ({
   isChoosingVote,
   eta,
 }: VoteDetailsProps) => {
+  const isDesktop = useIsDesktop()
   return (
-    <div className="bg-bg-80 md:p-6 p-4 rounded-[4px] w-full md:max-w-[376px]">
-      <Header variant="h3" className="font-normal">
+    <div className="md:p-6 p-4 rounded-[4px] w-full md:max-w-[376px] md:pt-0 pt-20">
+      <Header variant={!isDesktop ? 'h1' : 'h3'} className="font-normal">
         {isChoosingVote ? 'CAST YOUR VOTE' : 'VOTE DETAILS'}
       </Header>
 
       {/* Vote counters or voting buttons */}
       {!isChoosingVote ? (
-        <div className="grid grid-cols-2 gap-2 mt-4">
+        <div className="grid grid-cols-2 gap-2 md:mt-4 mt-6">
           {Object.entries(voteData).map(([key, value]) => (
             <VoteCounter
               key={key}
@@ -138,7 +140,6 @@ export const VotingDetails = ({
           <Paragraph variant="body">{`You voted ${vote.toUpperCase()} this proposal. ${!buttonAction ? '' : ' Take the next step now.'}`}</Paragraph>
         )}
       </div>
-
       {/* Action button (Vote on proposal, custom, or Cancel) always rendered here */}
       <div>
         {isChoosingVote ? (
