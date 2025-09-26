@@ -149,7 +149,7 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
 
   const isEmpty = cumulativeAllocation === 0n && Object.keys(allocations).length === 0
 
-  if (balance === 0n && isEmpty) {
+  if (balance === 0n) {
     return (
       <AllocationBar
         itemsData={[
