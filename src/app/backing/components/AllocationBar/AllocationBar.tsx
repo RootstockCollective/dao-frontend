@@ -197,7 +197,6 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
                   dragIndex={dragTargetIndex}
                   isDraggable={isDraggable}
                 />
-                {Boolean(console.log(`dragTarget: ${dragTargetIndex}`)) && undefined}
                 {i < currentItems.length - 1 && (
                   <Tooltip
                     text={<AllocationBarTooltip {...getTooltipProps(dragTargetIndex, item, currentItems)} />}
@@ -230,7 +229,7 @@ const getTooltipProps = (
 
   return {
     targetItem: isDragging ? allItems[dragTargetIndex] : targetItem,
-    adjecentItem: isDragging ? allItems[dragTargetIndex + 1] : undefined,
+    adjacentItem: isDragging ? allItems[dragTargetIndex + 1] : undefined,
     isResizing: isDragging,
   }
 }

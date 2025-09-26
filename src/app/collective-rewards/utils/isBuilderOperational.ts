@@ -40,7 +40,7 @@ export const BUILDER_ACTIVE = 'active'
 export const BUILDER_DEACTIVATED = 'deactivated'
 export const BUILDER_KYC_REVOKED = 'kycRevoked'
 export const BUILDER_PAUSED = 'paused'
-const BUILDER_SELF_PAUSED = 'selfPaused'
+export const BUILDER_SELF_PAUSED = 'selfPaused'
 
 export const builderInactiveStates = [
   BUILDER_DEACTIVATED,
