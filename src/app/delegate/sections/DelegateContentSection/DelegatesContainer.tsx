@@ -20,15 +20,9 @@ interface Props {
   didIDelegateToMyself: boolean
   onDelegate: (address: Address, rns?: string, imageIpfs?: string | null) => void
   onCloseClick?: () => void
-  shouldDisableButtons?: boolean
 }
 
-export const DelegatesContainer = ({
-  didIDelegateToMyself,
-  onDelegate,
-  onCloseClick,
-  shouldDisableButtons = false,
-}: Props) => {
+export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseClick }: Props) => {
   const isDesktop = useIsDesktop()
   const [addressToDelegate, setAddressToDelegate] = useState({
     userInput: '',
@@ -163,7 +157,7 @@ export const DelegatesContainer = ({
             variant="primary"
             onClick={onUpdateDelegate}
             className="max-w-md"
-            disabled={!(addressToDelegate.status === 'valid') || shouldDisableButtons}
+            disabled={!(addressToDelegate.status === 'valid')}
             data-testid="delegateButton"
           >
             {didIDelegateToMyself ? 'Delegate' : 'Update delegate'}
@@ -194,7 +188,6 @@ export const DelegatesContainer = ({
             totalVotes={delegate.totalVotes?.toString() || 0}
             delegators={delegate.delegators?.toString() || 0}
             onDelegate={onDelegate}
-            buttonDisabled={shouldDisableButtons}
           />
         ))}
       </div>
