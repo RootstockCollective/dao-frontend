@@ -27,20 +27,6 @@ export const ActiveFiltersDisplay = ({
 
   return (
     <div className={cn('space-y-3 md:hidden', className)} data-testid="ActiveFiltersDisplay">
-      {/* Non-Search Filters (Category, Status, Time) */}
-      {displayFilters.length > 0 && (
-        <div className="flex items-center gap-2 overflow-x-auto">
-          <Header variant="h5" className="text-text-40 whitespace-nowrap flex-shrink-0">
-            FILTERED BY:
-          </Header>
-          <div className="flex items-center gap-2 min-w-0">
-            {displayFilters.map(filter => (
-              <FilterChip key={filter.id} filter={filter} onRemove={onRemoveFilter} />
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Search Filters */}
       {searchFilters.length > 0 && (
         <div className="flex items-center gap-2 overflow-x-auto">
@@ -49,6 +35,20 @@ export const ActiveFiltersDisplay = ({
           </Header>
           <div className="flex items-center gap-2 min-w-0">
             {searchFilters.map(filter => (
+              <FilterChip key={filter.id} filter={filter} onRemove={onRemoveFilter} />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Non-Search Filters (Category, Status, Time) */}
+      {displayFilters.length > 0 && (
+        <div className="flex items-center gap-2 overflow-x-auto">
+          <Header variant="h5" className="text-text-40 whitespace-nowrap flex-shrink-0">
+            FILTERED BY:
+          </Header>
+          <div className="flex items-center gap-2 min-w-0">
+            {displayFilters.map(filter => (
               <FilterChip key={filter.id} filter={filter} onRemove={onRemoveFilter} />
             ))}
           </div>
