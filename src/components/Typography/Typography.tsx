@@ -105,7 +105,7 @@ export function BaseTypography<T extends ElementType>({
   const cleanHtml = isHtml
     ? sanitizeHtml(children as string, {
         allowedAttributes: {
-          a: ['href', 'target', 'rel', 'style'],
+          a: ['href', 'target', 'rel'],
         },
       })
     : undefined
