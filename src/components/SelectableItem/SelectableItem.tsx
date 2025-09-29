@@ -27,11 +27,16 @@ export const SelectableItem = ({ option, selected, onClick, variant = 'square', 
     }
   }
 
+  const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+  }
+
   return (
     <button
       role={variant === 'round' ? 'radio' : 'checkbox'}
       aria-checked={selected}
       onClick={handleClick}
+      onMouseDown={handleMouseDown}
       className={cn('group focus:outline-none focus-visible:outline-none', 'flex gap-3 items-center')}
       {...props}
     >
