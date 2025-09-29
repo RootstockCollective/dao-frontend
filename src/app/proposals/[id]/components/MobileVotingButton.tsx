@@ -20,14 +20,14 @@ export const MobileVotingButton = ({
         disabled={disabled}
         variant="secondary-outline"
         data-testid={dataTestId}
-        className="py-3"
+        className="py-3 mb-2"
       >
         <Span variant="body" className="text-white">
           See vote details/Take action on proposal
         </Span>
       </Button>
 
-      <Span variant="body-s" className="text-white !mt-4">
+      <Span variant="body-s" className="text-white">
         Use your power to make a difference
       </Span>
     </div>
