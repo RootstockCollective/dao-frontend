@@ -13,7 +13,7 @@ export interface DailyAllocationItem {
 
 export interface CycleRewardsItem {
   id: string
-  rewardsERC20: string
+  rewardsRif: string
   rewardsRBTC: string
   currentCycleStart: string
   currentCycleDuration: string

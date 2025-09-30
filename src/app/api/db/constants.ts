@@ -1,5 +1,5 @@
 const COLUMN_ID = 'id'
-const REWARDS_ERC20 = 'rewardsERC20'
+const REWARDS_RIF = 'rewardsRif'
 const REWARDS_RBTC = 'rewardsRBTC'
 const CURRENT_CYCLE_START = 'currentCycleStart'
 const CURRENT_CYCLE_DURATION = 'currentCycleDuration'
@@ -10,7 +10,7 @@ const ON_DISTRIBUTION_PERIOD = 'onDistributionPeriod'
 
 export const CYCLE_COLUMNS = [
   COLUMN_ID,
-  REWARDS_ERC20,
+  REWARDS_RIF,
   REWARDS_RBTC,
   CURRENT_CYCLE_START,
   CURRENT_CYCLE_DURATION,

@@ -31,7 +31,7 @@ const query = apolloGQL`
     }
     cycles(first: 1, orderBy: currentCycleStart, orderDirection: desc) {
       id
-      rewardsERC20
+      rewardsRif
       rewardsRBTC
     }
   }
