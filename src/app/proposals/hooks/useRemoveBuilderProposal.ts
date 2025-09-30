@@ -43,7 +43,7 @@ export const useRemoveBuilderProposal = () => {
 const encodeRemoveBuilderCalldata = (builderAddress: Address) => {
   return encodeFunctionData({
     abi: BuilderRegistryAbi,
-    functionName: 'dewhitelistBuilder',
+    functionName: 'communityBanBuilder',
     args: [builderAddress.toLocaleLowerCase() as Address],
   })
 }

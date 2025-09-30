@@ -32,7 +32,7 @@ const actionNameToActionTypeMap = new Map<string, ActionType>([
   ['communityApproveBuilder', ActionType.BuilderApproval],
   ['whitelistBuilder', ActionType.BuilderApproval],
   ['removeWhitelistedBuilder', ActionType.RemoveBuilder],
-  ['dewhitelistBuilder', ActionType.RemoveBuilder],
+  ['communityBanBuilder', ActionType.RemoveBuilder],
 ])
 
 interface VotingDetailsProps {
