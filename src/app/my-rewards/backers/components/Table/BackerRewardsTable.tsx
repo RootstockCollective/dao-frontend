@@ -55,13 +55,8 @@ const usePagedFilteredBackerRewards = ({
     const { columnId, direction } = sort
 
     const comparators: Partial<Record<ColumnId, (a: BackerRewards, b: BackerRewards) => number>> = {
-      builder: (a, b) => {
-        const nameA = a.builderName.toLowerCase().trim()
-        const nameB = b.builderName.toLowerCase().trim()
-        if (nameA < nameB) return -1
-        if (nameA > nameB) return 1
-        return 0
-      },
+      builder: ({ builderName: a }, { builderName: b }) =>
+        a.trim().toLowerCase().localeCompare(b.trim().toLowerCase()),
 
       backer_rewards: (a, b) => Number(a.backerRewardPct.current - b.backerRewardPct.current),
 

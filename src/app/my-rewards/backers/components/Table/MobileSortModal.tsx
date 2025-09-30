@@ -2,75 +2,63 @@ import { Modal } from '@/components/Modal/Modal'
 import { Button } from '@/components/Button'
 import { Paragraph } from '@/components/Typography'
 import { SelectableItem } from '@/components/SelectableItem'
-import { ColumnId, SORT_OPTIONS } from './BackerRewardsTable.config'
+import { ColumnId, SORT_LABELS, BackerRewardsCellDataMap } from './BackerRewardsTable.config'
 import { FC, useState, useEffect } from 'react'
 import { TrashIcon } from '@/components/Icons'
 import { SORT_DIRECTION_ASC, SORT_DIRECTION_DESC } from '@/shared/context/TableContext/constants'
 import { SortDirection } from '@/shared/context/TableContext/types'
+import { useTableContext, useTableActionsContext } from '@/shared/context'
 
 interface MobileSortModalProps {
   isOpen: boolean
-  currentSort: ColumnId | null
-  currentSortDirection: SortDirection | null
   onClose: () => void
-  onApply: (sort: ColumnId | null, sortDirection: SortDirection | null) => void
-  onReset: () => void
 }
 
-export const MobileSortModal: FC<MobileSortModalProps> = ({
-  isOpen,
-  currentSort,
-  currentSortDirection,
-  onClose,
-  onApply,
-  onReset,
-}) => {
-  const [tempSort, setTempSort] = useState<ColumnId | null>(currentSort)
-  const [tempSortDirection, setTempSortDirection] = useState<SortDirection | null>(currentSortDirection)
+export const MobileSortModal: FC<MobileSortModalProps> = ({ isOpen, onClose }) => {
+  const { sort, defaultSort, columns } = useTableContext<ColumnId, BackerRewardsCellDataMap>()
+  const dispatch = useTableActionsContext<ColumnId, BackerRewardsCellDataMap>()
 
-  const resetTempState = () => {
-    setTempSort(currentSort)
-    setTempSortDirection(currentSortDirection)
-  }
+  const [tempSort, setTempSort] = useState<ColumnId | null>(sort.columnId)
+  const [tempSortDirection, setTempSortDirection] = useState<SortDirection | null>(sort.direction)
 
   useEffect(() => {
     if (isOpen) {
-      resetTempState()
+      setTempSort(sort.columnId)
+      setTempSortDirection(sort.direction)
     }
-  }, [isOpen, currentSort, currentSortDirection]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isOpen, sort.columnId, sort.direction])
 
   if (!isOpen) return null
 
-  const handleClose = () => {
-    resetTempState()
+  const handleApply = () => {
+    const column = tempSort ?? defaultSort.columnId
+    const direction = tempSortDirection ?? defaultSort.direction
+    dispatch({
+      type: 'SORT_BY_COLUMN',
+      payload: { columnId: column, direction },
+    })
     onClose()
   }
 
-  const handleApply = () => {
-    onApply(tempSort, tempSortDirection)
-  }
-
   const handleReset = () => {
-    setTempSort(null)
-    setTempSortDirection(null)
-    onReset()
+    dispatch({
+      type: 'SORT_BY_COLUMN',
+      payload: { columnId: defaultSort.columnId, direction: defaultSort.direction },
+    })
+    onClose()
   }
 
-  const sortRadioOptions = SORT_OPTIONS.map(option => ({
-    label: option.label,
-    value: option.id,
-  }))
-
-  const sortDirectionOptions = [
-    { label: 'Ascending', value: SORT_DIRECTION_ASC },
-    { label: 'Descending', value: SORT_DIRECTION_DESC },
-  ]
+  const sortRadioOptions = columns
+    .filter(column => column.sortable && !column.hidden)
+    .map(column => ({
+      label: SORT_LABELS[column.id],
+      value: column.id,
+    }))
 
   return (
-    <Modal onClose={handleClose} fullscreen data-testid="mobile-backer-rewards-sort-modal">
+    <Modal onClose={onClose} fullscreen data-testid="mobile-backer-rewards-sort-modal">
       <div className="flex flex-col h-full bg-v3-bg-accent-80 rounded-lg">
         <div className="flex-1 p-4 pt-16 overflow-y-auto">
-          {/* Sort By Section */}
           <div className="mb-8">
             <Paragraph className="text-v3-bg-accent-40 text-xs font-bold uppercase tracking-wider mb-4">
               SORT BY
@@ -93,20 +81,22 @@ export const MobileSortModal: FC<MobileSortModalProps> = ({
               SORT DIRECTION
             </Paragraph>
             <div className="space-y-3">
-              {sortDirectionOptions.map(option => (
-                <SelectableItem
-                  key={option.value}
-                  option={option}
-                  selected={tempSortDirection === option.value}
-                  onClick={value => setTempSortDirection(value as SortDirection)}
-                  variant="round"
-                />
-              ))}
+              <SelectableItem
+                option={{ label: 'Ascending', value: SORT_DIRECTION_ASC }}
+                selected={tempSortDirection === SORT_DIRECTION_ASC}
+                onClick={value => setTempSortDirection(value as SortDirection)}
+                variant="round"
+              />
+              <SelectableItem
+                option={{ label: 'Descending', value: SORT_DIRECTION_DESC }}
+                selected={tempSortDirection === SORT_DIRECTION_DESC}
+                onClick={value => setTempSortDirection(value as SortDirection)}
+                variant="round"
+              />
             </div>
           </div>
         </div>
 
-        {/* Actions */}
         <div className="p-4 border-t border-v3-text-100/20 flex gap-4">
           <Button variant="secondary-outline" onClick={handleReset} data-testid="reset-sort-button">
             <TrashIcon size={24} className="mr-1" />

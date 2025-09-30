@@ -1,6 +1,6 @@
 import { ActionsContainer } from '@/components/containers'
 import { Header } from '@/components/Typography'
-import { withTableContext, useTableContext, useTableActionsContext } from '@/shared/context'
+import { withTableContext, useTableContext } from '@/shared/context'
 import { ReactElement } from 'react'
 import { BackerRewardsTable } from './BackerRewardsTable'
 import { BackerRewardsCellDataMap, ColumnId } from './BackerRewardsTable.config'
@@ -8,7 +8,6 @@ import { MobileSortModal } from './MobileSortModal'
 import { useModal } from '@/shared/hooks/useModal'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { FilterIcon } from '@/components/Icons'
-import { SortDirection } from '@/shared/context/TableContext/types'
 
 const TableHeader = ({ onOpenModal }: { onOpenModal: () => void }) => {
   const isDesktop = useIsDesktop()
@@ -31,36 +30,11 @@ const TableHeader = ({ onOpenModal }: { onOpenModal: () => void }) => {
 const BackerRewardsTableContainer = (): ReactElement => {
   const { isModalOpened: isSortModalOpen, openModal: openSortModal, closeModal } = useModal()
 
-  const { sort, defaultSort } = useTableContext<ColumnId, BackerRewardsCellDataMap>()
-  const dispatch = useTableActionsContext<ColumnId, BackerRewardsCellDataMap>()
-
-  const handleApplySort = (sortColumn: ColumnId | null, sortDirection: SortDirection | null) => {
-    const column = sortColumn ?? defaultSort.columnId
-    const direction = sortDirection ?? defaultSort.direction
-    dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: column, direction } })
-    closeModal()
-  }
-
-  const handleResetSort = () => {
-    dispatch({
-      type: 'SORT_BY_COLUMN',
-      payload: { columnId: defaultSort.columnId, direction: defaultSort.direction },
-    })
-    closeModal()
-  }
-
   return (
     <ActionsContainer title={<TableHeader onOpenModal={openSortModal} />} className="bg-v3-bg-accent-80 p-0">
       <BackerRewardsTable />
 
-      <MobileSortModal
-        isOpen={isSortModalOpen}
-        currentSort={sort.columnId}
-        currentSortDirection={sort.direction}
-        onClose={closeModal}
-        onApply={handleApplySort}
-        onReset={handleResetSort}
-      />
+      <MobileSortModal isOpen={isSortModalOpen} onClose={closeModal} />
     </ActionsContainer>
   )
 }
