@@ -8,8 +8,8 @@ import { DelegateModal } from '@/app/delegate/components/DelegateModal'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 import { executeTxFlow } from '@/shared/notification/executeTxFlow'
 import { useAccount } from 'wagmi'
-import { formatNumberWithCommas } from '@/lib/utils'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
+import { cn, formatNumberWithCommas } from '@/lib/utils'
 
 export const ConnectedSection = () => {
   const {
@@ -99,7 +99,9 @@ export const ConnectedSection = () => {
 
   const isPendingTx = isDelegationPending || isReclaimPending
   const isDelegatedToOther = !didIDelegateToMyself && delegateeAddress
-  const delegateeAddressToShow = ((isDelegatedToOther && delegateeAddress) || addressToDelegate) as Address
+  const delegateeAddressToShow = (
+    isPendingTx ? addressToDelegate : isDelegatedToOther && delegateeAddress
+  ) as Address
 
   return (
     <>
@@ -118,9 +120,10 @@ export const ConnectedSection = () => {
       {!isPendingTx && (
         <div
           ref={delegatesContainerRef}
-          className={`transition-all duration-300 overflow-hidden ${
-            shouldShowDelegates || didIDelegateToMyself ? 'max-h-[100%] opacity-100' : 'max-h-0 opacity-0'
-          }`}
+          className={cn(
+            'transition-all duration-300 overflow-hidden',
+            shouldShowDelegates || didIDelegateToMyself ? 'max-h-[100%] opacity-100' : 'max-h-0 opacity-0',
+          )}
         >
           <DelegatesContainer
             didIDelegateToMyself={didIDelegateToMyself}
