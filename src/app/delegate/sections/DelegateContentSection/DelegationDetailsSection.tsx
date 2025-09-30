@@ -22,6 +22,11 @@ interface DelegationDetailsSectionProps {
   onShowDelegates: () => void
 }
 
+/**
+ * Component that displays delegation details including the delegate card and perks banner.
+ * Shows delegate information like address, RNS name, voting power, etc.
+ * Allows users to reclaim their delegation or update their delegate.
+ */
 export const DelegationDetailsSection = ({
   delegateeAddress,
   delegateeRns,
@@ -56,7 +61,7 @@ export const DelegationDetailsSection = ({
         buttonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
         buttonVariant="primary"
         data-testid={`delegateCard-${delegateeAddress}`}
-        buttonDisabled={isDelegationPending}
+        buttonDisabled={isDelegationPending || isReclaimPending}
       />
       <div className="flex w-full flex-col-reverse md:flex-col gap-6">
         {/* Banner here with delegation perks */}
