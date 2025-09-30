@@ -164,16 +164,18 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     <div className="py-4 px-6 rounded-sm bg-bg-80">
       <div ref={headerRef} className="mb-8 w-full">
         <div className="flex items-center gap-4">
-          <Header variant={'h3'} className={'uppercase'}>
-            Latest Proposals
-          </Header>
+          {(isDesktop || !searchVisible) && (
+            <Header variant="h3" className="uppercase">
+              Latest Proposals
+            </Header>
+          )}
           <div className="grow h-[50px] flex justify-end">
             <AnimatePresence>
               {searchVisible && (
                 <motion.div
-                  initial={{ opacity: 0 }}
+                  initial={{ opacity: 0, x: isDesktop ? 100 : 0 }}
                   animate={{ opacity: searchVisible ? 1 : 0, x: 0 }}
-                  exit={{ opacity: 0 }}
+                  exit={{ opacity: 0, x: isDesktop ? 100 : 0 }}
                   className="w-full max-w-[650px]"
                 >
                   <DebounceSearch
@@ -187,27 +189,29 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
               )}
             </AnimatePresence>
           </div>
-          <div className="flex items-center justify-end">
-            <motion.div
-              initial={{ width: 40, opacity: 1 }}
-              animate={searchVisible ? { width: 0, opacity: 0 } : { width: 40, opacity: 1 }}
-              className="flex items-center"
-              style={{ pointerEvents: searchVisible ? 'none' : 'auto' }}
-            >
-              <SearchButton
-                isOpen={searchVisible}
-                setIsOpen={setSearchVisible}
-                disabled={searchVisible}
-                isFiltering={activeFilters.some(f => f.type === FilterType.SEARCH)}
+          {(isDesktop || !searchVisible) && (
+            <div className="flex items-center justify-end">
+              <motion.div
+                initial={{ width: 40, opacity: 1 }}
+                animate={searchVisible ? { width: 0, opacity: 0 } : { width: 40, opacity: 1 }}
+                className="flex items-center"
+                style={{ pointerEvents: searchVisible ? 'none' : 'auto' }}
+              >
+                <SearchButton
+                  isOpen={searchVisible}
+                  setIsOpen={setSearchVisible}
+                  disabled={searchVisible}
+                  isFiltering={activeFilters.some(f => f.type === FilterType.SEARCH)}
+                />
+              </motion.div>
+              <FilterButton
+                isOpen={isFilterSidebarOpen}
+                setIsOpen={setIsFilterSidebarOpen}
+                disabled={proposals.length === 0}
+                isFiltering={hasSelectedFilters}
               />
-            </motion.div>
-            <FilterButton
-              isOpen={isFilterSidebarOpen}
-              setIsOpen={setIsFilterSidebarOpen}
-              disabled={proposals.length === 0}
-              isFiltering={hasSelectedFilters}
-            />
-          </div>
+            </div>
+          )}
         </div>
         {/* Active Filters Display */}
         <ActiveFiltersDisplay
