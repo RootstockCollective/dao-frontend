@@ -77,7 +77,7 @@ export const StepOne = ({ onGoNext }: StepProps) => {
         <Button
           variant="secondary"
           onClick={() => handleAmountChange(totalBalance)}
-          className="bg-transparent border border-bg-40 px-2 py-0"
+          className="bg-transparent border border-bg-40 px-2 py-0 w-fit"
           data-testid="maxButton"
         >
           <Span variant="body-s">Max</Span>
