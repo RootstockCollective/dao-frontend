@@ -29,6 +29,9 @@ export const useProposalFilters = (): FilterState & FilterActions => {
     (id: string) => {
       const filter = activeFilters.find(f => f.id === id)
       if (filter && !filter.isAll) {
+        if (filter.type === FilterType.SEARCH) {
+          setSearchValue('')
+        }
         setActiveFilters(prev => {
           // remove the current filter
           const result = prev.filter(f => f.id !== id)
