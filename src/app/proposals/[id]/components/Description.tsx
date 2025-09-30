@@ -36,13 +36,9 @@ export const Description = ({ description }: DescriptionProps) => {
           />
         )}
         <ExpandableContent>
-          <Paragraph
-            variant="body"
-            className="text-base text-white/90 whitespace-pre-line break-words"
-            html
-            // eslint-disable-next-line react/no-children-prop
-            children={descriptionHtml}
-          />
+          <Paragraph variant="body" className="text-base text-white/90 whitespace-pre-line break-words" html>
+            {descriptionHtml}
+          </Paragraph>
         </ExpandableContent>
       </Expandable>
     </div>
