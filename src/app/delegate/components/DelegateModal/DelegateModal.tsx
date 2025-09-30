@@ -4,6 +4,7 @@ import { Modal } from '@/components/Modal'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import { shortAddress } from '@/lib/utils'
 import { Address } from 'viem'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface Props {
   onClose: () => void
@@ -30,6 +31,7 @@ export const DelegateModal = ({
   actionButtonText,
   'data-testid': dataTestId = '',
 }: Props) => {
+  const isDesktop = useIsDesktop()
   return (
     <Modal
       onClose={onClose}
@@ -37,12 +39,13 @@ export const DelegateModal = ({
       className="bg-text-80"
       closeButtonColor="black"
       data-testid={dataTestId}
+      fullscreen={!isDesktop}
     >
       <div className="flex flex-col gap-2 items-center py-4 px-8">
-        <Paragraph className="pr-8 text-bg-100">{title}</Paragraph>
+        <Paragraph className="pr-8 text-bg-100 md:mt-4 mt-16">{title}</Paragraph>
         {name ? (
           <>
-            <div className="rounded-full bg-text-100">
+            <div className="rounded-full bg-text-100 md:mt-4 mt-10">
               <IpfsAvatar imageIpfs={imageIpfs} address={address} name={name} size={88} />
             </div>
             <div className="flex flex-col items-center">
@@ -62,17 +65,22 @@ export const DelegateModal = ({
             </Paragraph>
           </>
         )}
-        <div className="flex flex-row gap-2 justify-end w-full mt-6">
-          <Button variant="secondary-outline" onClick={onClose} data-testid="CancelButton">
-            <Span className="text-bg-100" bold>
-              Cancel
-            </Span>
+        <div
+          className={`flex flex-row gap-3 justify-end md:w-full mt-6 ${!isDesktop ? 'fixed bottom-4 inset-x-4' : ''}`}
+        >
+          <Button
+            variant="secondary-outline"
+            onClick={onClose}
+            data-testid="CancelButton"
+            className="w-auto text-bg-100 py-3 px-4"
+          >
+            Cancel
           </Button>
           <Button
             variant="primary"
             onClick={() => onDelegate(address)}
             disabled={isLoading}
-            className="disabled:bg-disabled-border"
+            className="disabled:bg-disabled-border md:flex-none flex-1"
             data-testid={`${actionButtonText}Button`}
           >
             {actionButtonText}
