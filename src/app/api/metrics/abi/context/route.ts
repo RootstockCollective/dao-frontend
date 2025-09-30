@@ -37,7 +37,7 @@ export async function GET() {
         .where('BuilderState.initialized', '=', true)
         .orderByRaw('"Builder"."totalAllocation"::numeric DESC'),
       db('Cycle')
-        .select('Cycle.id', 'Cycle.rewardsERC20', 'Cycle.rewardsRBTC')
+        .select('Cycle.id', 'Cycle.rewardsRif', 'Cycle.rewardsRBTC')
         .orderBy('currentCycleStart', 'desc')
         .limit(1),
     ])

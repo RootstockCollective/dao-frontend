@@ -57,7 +57,7 @@ export const useGetABIFromChain = () => {
     cycles: [
       {
         id: '0',
-        rewardsERC20: cycleRewards.rif.toString(),
+        rewardsRif: cycleRewards.rif.toString(),
         rewardsRBTC: cycleRewards.rbtc.toString(),
       },
     ],

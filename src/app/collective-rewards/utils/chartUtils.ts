@@ -138,7 +138,7 @@ const transformRewardsData = (
   let cumulativeRbtcRewards = 0n
 
   const accumulatedCycleRewards = rewardsData.map((item, _) => {
-    const currentRifRewards = BigInt(item.rewardsERC20)
+    const currentRifRewards = BigInt(item.rewardsRif)
     const currentRbtcRewards = BigInt(item.rewardsRBTC)
 
     cumulativeRifRewards += currentRifRewards
@@ -146,7 +146,7 @@ const transformRewardsData = (
 
     return {
       ...item,
-      rewardsERC20: cumulativeRifRewards.toString(),
+      rewardsRif: cumulativeRifRewards.toString(),
       rewardsRBTC: cumulativeRbtcRewards.toString(),
     }
   })
@@ -164,9 +164,9 @@ const transformRewardsData = (
   return interpolatedData.map(item => ({
     day: new Date(Number(item.currentCycleStart) * 1000),
     rewards: {
-      rif: BigInt(Big(item.rewardsERC20).div(WeiPerEtherString).toFixed(0)),
+      rif: BigInt(Big(item.rewardsRif).div(WeiPerEtherString).toFixed(0)),
       rbtc: BigInt(Big(item.rewardsRBTC).div(WeiPerEtherString).toFixed(0)),
-      usd: calculateRewardsUSD(item.rewardsERC20, item.rewardsRBTC, rifPrice, rbtcPrice),
+      usd: calculateRewardsUSD(item.rewardsRif, item.rewardsRBTC, rifPrice, rbtcPrice),
     },
   }))
 }
