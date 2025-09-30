@@ -22,7 +22,7 @@ export const Description = ({ description }: DescriptionProps) => {
 
   return (
     <div className="mt-14">
-      <Expandable>
+      <Expandable expanded={isDesktop}>
         <ExpandableHeader triggerColor="white">
           <Header variant="h2" className="text-xl text-white">
             DESCRIPTION
