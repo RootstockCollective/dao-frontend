@@ -31,12 +31,13 @@ export const DisconnectWorkflowPresentation = ({
   const openRamp = () => open({ view: 'OnRampProviders' })
   return (
     <>
-      <Button variant="secondary-outline" onClick={openRamp} className="mr-4">
+      <Button variant="secondary-outline" onClick={openRamp} className="md:mr-4">
         On Ramp
       </Button>
       <Popover
         contentContainerClassName="w-[233px] max-w-[calc(100vw-1rem)] right-0"
         contentSubContainerClassName="w-full p-[24px] text-center rounded border-[#2D2D2D] cursor-pointer select-none bg-bg-60 mt-2 flex justify-center"
+        className="flex items-center"
         content={
           <PopoverDisconnectContentContainer
             address={address ?? ''}
