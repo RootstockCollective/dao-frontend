@@ -6,6 +6,7 @@ import { HTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 import type { ProposalCategory } from '@/shared/types'
 import { Header } from '@/components/Typography'
+import { Expandable, ExpandableHeader, ExpandableContent } from '@/components/Expandable'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   card: NewProposalCardBaseData
@@ -29,17 +30,16 @@ export function NewProposalCard({ card, onSelectCard, className, ...props }: Pro
 
         {/* Content Section */}
         <div className="grow px-6 pb-10 flex flex-col gap-8">
-          {/* Title Section */}
-          <div className="flex flex-col gap-4">
-            <Header variant="e2" className="text-bg-100 text-3xl md:text-11" caps>
-              {cardTitle}
-            </Header>
-          </div>
-
-          {/* Description Section */}
-          <div className="grow flex flex-col gap-6 text-lg leading-snug text-bg-100 font-rootstock-sans">
-            {textBlock}
-          </div>
+          <Expandable>
+            <ExpandableHeader triggerColor="black">
+              <Header variant="e2" className="text-bg-100 text-3xl md:text-11" caps>
+                {cardTitle}
+              </Header>
+            </ExpandableHeader>
+            <ExpandableContent contentClassName="text-lg leading-snug text-bg-100 font-rootstock-sans">
+              {textBlock}
+            </ExpandableContent>
+          </Expandable>
 
           {/* Button Section */}
           <div className="flex justify-end">
