@@ -31,7 +31,11 @@ export const DisconnectWorkflowPresentation = ({
   const openRamp = () => open({ view: 'OnRampProviders' })
   return (
     <>
-      <Button variant="secondary-outline" onClick={openRamp} className="md:mr-4">
+      <Button
+        variant="secondary-outline"
+        onClick={openRamp}
+        className="md:mr-4 py-1.5 px-2 whitespace-nowrap"
+      >
         On Ramp
       </Button>
       <Popover
