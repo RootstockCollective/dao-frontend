@@ -1,4 +1,4 @@
-import { getAbi, type BuilderRegistryAbi } from '@/lib/abis/v2'
+import { getAbi, type BuilderRegistryAbi } from '@/lib/abis/tok'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BuilderRegistryAddress } from '@/lib/contracts'
 import { useMemo } from 'react'

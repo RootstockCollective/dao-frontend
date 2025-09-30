@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { Address, Log, parseEventLogs } from 'viem'
-import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
+import { BackersManagerAbi } from '@/lib/abis/tok/BackersManagerAbi'
 import { fetchNewAllocationEventByAccountAddress } from '@/app/user/Balances/actions'
 
 const NEW_ALLOCATION = 'NewAllocation'

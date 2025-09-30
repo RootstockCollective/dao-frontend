@@ -94,7 +94,20 @@ export const GaugeAbi = [
       {
         name: '',
         type: 'address',
-        internalType: 'contract IBackersManagerRootstockCollective',
+        internalType: 'contract BackersManagerRootstockCollective',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'builderRegistry',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'address',
+        internalType: 'contract BuilderRegistryRootstockCollective',
       },
     ],
     stateMutability: 'view',
@@ -219,14 +232,27 @@ export const GaugeAbi = [
   },
   {
     type: 'function',
-    name: 'incentivizeWithCoinbase',
+    name: 'incentivizeWithNative',
     inputs: [],
     outputs: [],
     stateMutability: 'payable',
   },
   {
     type: 'function',
-    name: 'incentivizeWithRewardToken',
+    name: 'incentivizeWithRifToken',
+    inputs: [
+      {
+        name: 'amount_',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'incentivizeWithUsdrifToken',
     inputs: [
       {
         name: 'amount_',
@@ -242,12 +268,30 @@ export const GaugeAbi = [
     name: 'initialize',
     inputs: [
       {
-        name: 'rewardToken_',
+        name: 'rifToken_',
         type: 'address',
         internalType: 'address',
       },
       {
-        name: 'backersManager_',
+        name: 'usdrifToken_',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'builderRegistry_',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'initializeV3',
+    inputs: [
+      {
+        name: 'usdrifToken_',
         type: 'address',
         internalType: 'address',
       },
@@ -324,7 +368,12 @@ export const GaugeAbi = [
     name: 'notifyRewardAmountAndUpdateShares',
     inputs: [
       {
-        name: 'amountERC20_',
+        name: 'amountRif_',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+      {
+        name: 'amountUsdrif_',
         type: 'uint256',
         internalType: 'uint256',
       },
@@ -363,7 +412,7 @@ export const GaugeAbi = [
     name: 'rewardData',
     inputs: [
       {
-        name: 'rewardToken',
+        name: 'rifToken',
         type: 'address',
         internalType: 'address',
       },
@@ -488,19 +537,6 @@ export const GaugeAbi = [
   },
   {
     type: 'function',
-    name: 'rewardToken',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
     name: 'rewards',
     inputs: [
       {
@@ -525,6 +561,19 @@ export const GaugeAbi = [
   },
   {
     type: 'function',
+    name: 'rifToken',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     name: 'totalAllocation',
     inputs: [],
     outputs: [
@@ -532,6 +581,19 @@ export const GaugeAbi = [
         name: '',
         type: 'uint256',
         internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'usdrifToken',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'address',
+        internalType: 'address',
       },
     ],
     stateMutability: 'view',
@@ -601,25 +663,6 @@ export const GaugeAbi = [
   },
   {
     type: 'event',
-    name: 'NewAllocation',
-    inputs: [
-      {
-        name: 'backer_',
-        type: 'address',
-        indexed: true,
-        internalType: 'address',
-      },
-      {
-        name: 'allocation_',
-        type: 'uint256',
-        indexed: false,
-        internalType: 'uint256',
-      },
-    ],
-    anonymous: false,
-  },
-  {
-    type: 'event',
     name: 'NotifyReward',
     inputs: [
       {
@@ -644,26 +687,17 @@ export const GaugeAbi = [
     anonymous: false,
   },
   {
-    type: 'error',
-    name: 'AddressEmptyCode',
+    type: 'event',
+    name: 'RewardSharesUpdated',
     inputs: [
       {
-        name: 'target',
-        type: 'address',
-        internalType: 'address',
+        name: 'rewardShares_',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
       },
     ],
-  },
-  {
-    type: 'error',
-    name: 'AddressInsufficientBalance',
-    inputs: [
-      {
-        name: 'account',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
+    anonymous: false,
   },
   {
     type: 'error',
@@ -672,12 +706,7 @@ export const GaugeAbi = [
   },
   {
     type: 'error',
-    name: 'BuilderRewardsLocked',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'FailedInnerCall',
+    name: 'FailedCall',
     inputs: [],
   },
   {
@@ -687,17 +716,28 @@ export const GaugeAbi = [
   },
   {
     type: 'error',
+    name: 'InsufficientBalance',
+    inputs: [
+      {
+        name: 'balance',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+      {
+        name: 'needed',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+  },
+  {
+    type: 'error',
     name: 'InvalidInitialization',
     inputs: [],
   },
   {
     type: 'error',
     name: 'NotAuthorized',
-    inputs: [],
-  },
-  {
-    type: 'error',
-    name: 'NotBackersManager',
     inputs: [],
   },
   {

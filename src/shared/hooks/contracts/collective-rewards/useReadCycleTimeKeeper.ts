@@ -1,4 +1,4 @@
-import { type CycleTimeKeeperAbi, getAbi } from '@/lib/abis/v2'
+import { type CycleTimeKeeperAbi, getAbi } from '@/lib/abis/tok'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BackersManagerAddress } from '@/lib/contracts'
 import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
