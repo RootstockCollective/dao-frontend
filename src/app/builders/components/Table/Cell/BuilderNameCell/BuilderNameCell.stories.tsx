@@ -56,11 +56,11 @@ const activeBuilder: Builder = {
     date: '2024-01-01',
   },
   stateFlags: {
-    activated: true,
+    initialized: true,
     communityApproved: true,
     kycApproved: true,
-    paused: false,
-    revoked: false,
+    kycPaused: false,
+    selfPaused: false,
   },
   gauge: '0xabcdef1234567890abcdef1234567890abcdef12',
 }
@@ -70,11 +70,11 @@ const pendingBuilder: Builder = {
   builderName: 'Pending Builder',
   gauge: undefined,
   stateFlags: {
-    activated: false,
+    initialized: false,
     communityApproved: false,
     kycApproved: false,
-    paused: false,
-    revoked: false,
+    kycPaused: false,
+    selfPaused: false,
   },
 }
 
@@ -82,11 +82,11 @@ const warningBuilder: Builder = {
   ...activeBuilder,
   builderName: 'Warning Builder',
   stateFlags: {
-    activated: true,
+    initialized: true,
     communityApproved: false,
     kycApproved: true,
-    paused: false,
-    revoked: false,
+    kycPaused: false,
+    selfPaused: false,
   },
 }
 
@@ -94,11 +94,11 @@ const pausedBuilder: Builder = {
   ...activeBuilder,
   builderName: 'Paused Builder',
   stateFlags: {
-    activated: true,
+    initialized: true,
     communityApproved: true,
     kycApproved: true,
-    paused: true,
-    revoked: false,
+    kycPaused: true,
+    selfPaused: false,
   },
 }
 
