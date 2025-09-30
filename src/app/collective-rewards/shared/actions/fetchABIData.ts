@@ -29,7 +29,7 @@ const query = apolloGQL`
         revoked: selfPaused
       }
     }
-    cycles(first: 1, orderBy: id, orderDirection: desc) {
+    cycles(first: 1, orderBy: currentCycleStart, orderDirection: desc) {
       id
       rewardsERC20
       rewardsRBTC

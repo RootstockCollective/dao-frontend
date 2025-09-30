@@ -6,10 +6,12 @@ export const revalidate = 60
 
 export async function GET() {
   const proposalsSources = [getProposalsFromDB, getProposalsFromTheGraph, getProposalsFromNode]
+  let index = -1
   for (const source of proposalsSources) {
+    index++
     try {
       const proposals = await source()
-      return Response.json(proposals)
+      return Response.json(proposals, { headers: { 'X-Source': `source-${index}` } })
     } catch (error) {
       console.error(error)
     }
