@@ -11,15 +11,15 @@ import { cn, shortAddress } from '@/lib/utils'
 import { useDelegateContext } from '../../contexts/DelegateContext'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
 
-interface DelegationDetailsSectionProps {
+interface Props {
   delegateeAddress: Address
-  delegateeRns?: string
-  delegateeImageIpfs?: string | null
-  delegateeVotingPower?: string
   isReclaimPending: boolean
   isDelegationPending: boolean
   onShowReclaim: () => void
   onShowDelegates: () => void
+  delegateeRns?: string
+  delegateeImageIpfs?: string | null
+  delegateeVotingPower?: string
 }
 
 /**
@@ -29,14 +29,14 @@ interface DelegationDetailsSectionProps {
  */
 export const DelegationDetailsSection = ({
   delegateeAddress,
-  delegateeRns,
-  delegateeImageIpfs,
-  delegateeVotingPower,
   isReclaimPending,
   isDelegationPending,
   onShowReclaim,
   onShowDelegates,
-}: DelegationDetailsSectionProps) => {
+  delegateeRns,
+  delegateeImageIpfs,
+  delegateeVotingPower,
+}: Props) => {
   const { delegateeDelegatedSince, delegateeVotingWeight, delegateeTotalVotes, delegateeDelegators } =
     useDelegateContext()
 
