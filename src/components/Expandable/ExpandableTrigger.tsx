@@ -14,7 +14,7 @@ interface Props {
  * Expandable trigger button.
  * This component MUST be used inside the Expandable component.
  */
-export const ExpandableTrigger: FC<Props> = ({ className, color }) => {
+export const ExpandableTrigger: FC<Props> = ({ className, color = 'var(--color-text-0)' }) => {
   const { isExpanded, toggleExpanded } = useExpandableContext()
 
   return (

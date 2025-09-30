@@ -135,6 +135,7 @@ export const DelegatesContainer = ({
           <Button
             variant="primary"
             onClick={onUpdateDelegate}
+            className="max-w-md"
             disabled={!(addressToDelegate.status === 'valid') || shouldDisableButtons}
             data-testid="delegateButton"
           >
