@@ -118,17 +118,17 @@ const StackingNotificationsContent = () => {
 
   const isOnlyKycApproved =
     builderState.kycApproved &&
-    builderState.activated &&
+    builderState.initialized &&
     !builderState.communityApproved &&
-    !builderState.paused &&
-    !builderState.revoked
+    !builderState.kycPaused &&
+    !builderState.selfPaused
 
   const isStartBuilding =
     builderState.kycApproved &&
-    builderState.activated &&
+    builderState.initialized &&
     builderState.communityApproved &&
-    !builderState.paused &&
-    !builderState.revoked
+    !builderState.kycPaused &&
+    !builderState.selfPaused
 
   const { data: cycle, isLoading: isCycleLoading, error: cycleError } = useCycleContext()
 
