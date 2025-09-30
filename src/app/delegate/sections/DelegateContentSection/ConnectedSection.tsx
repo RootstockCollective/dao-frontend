@@ -106,7 +106,7 @@ export const ConnectedSection = () => {
       {delegateeAddressToShow && (
         <DelegationDetailsSection
           delegateeAddress={delegateeAddressToShow}
-          delegateeRns={delegateeRns}
+          delegateeRns={delegateeRns || rnsToDelegate}
           delegateeImageIpfs={delegateeImageIpfs}
           delegateeVotingPower={delegateeVotingPower}
           isReclaimPending={isReclaimPending}
