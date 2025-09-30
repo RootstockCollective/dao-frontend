@@ -34,11 +34,11 @@ export async function GET(req: Request) {
         stateFlags: db.raw(`
           COALESCE(
             json_build_object(
-              'activated', "BuilderState"."initialized",
+              'initialized', "BuilderState"."initialized",
               'kycApproved', "BuilderState"."kycApproved",
               'communityApproved', "BuilderState"."communityApproved",
-              'paused', "BuilderState"."kycPaused",
-              'revoked', "BuilderState"."selfPaused"
+              'kycPaused', "BuilderState"."kycPaused",
+              'selfPaused', "BuilderState"."selfPaused"
             ),
             '{}'
           )

@@ -2,7 +2,10 @@ import { Builder, BuilderStateFlags } from '../types'
 
 export const isBuilderOperational = (stateFlags?: BuilderStateFlags) => {
   return Boolean(
-    stateFlags?.activated && stateFlags?.communityApproved && stateFlags?.kycApproved && !stateFlags?.paused,
+    stateFlags?.initialized &&
+      stateFlags?.communityApproved &&
+      stateFlags?.kycApproved &&
+      !stateFlags?.kycPaused,
   )
 }
 
@@ -10,15 +13,18 @@ export const isBuilderDeactivated = ({ gauge, stateFlags }: Builder) =>
   Boolean(gauge && !stateFlags?.communityApproved)
 
 export const isBuilderKycRevoked = (stateFlags?: BuilderStateFlags) =>
-  Boolean(stateFlags?.activated && !stateFlags.kycApproved)
+  Boolean(stateFlags?.initialized && !stateFlags.kycApproved)
 
-export const isBuilderPaused = (stateFlags?: BuilderStateFlags) => Boolean(stateFlags?.paused)
+export const isBuilderPaused = (stateFlags?: BuilderStateFlags) => Boolean(stateFlags?.kycPaused)
 
-export const isBuilderSelfPaused = (stateFlags?: BuilderStateFlags) => Boolean(stateFlags?.revoked)
+export const isBuilderSelfPaused = (stateFlags?: BuilderStateFlags) => Boolean(stateFlags?.selfPaused)
 
 export const isBuilderActive = (stateFlags?: BuilderStateFlags) => {
   return Boolean(
-    stateFlags?.communityApproved && stateFlags?.kycApproved && !stateFlags?.paused && !stateFlags?.revoked,
+    stateFlags?.communityApproved &&
+      stateFlags?.kycApproved &&
+      !stateFlags?.kycPaused &&
+      !stateFlags?.selfPaused,
   )
 }
 
@@ -26,12 +32,15 @@ export const isBuilderInProgress = (builder: Builder) => {
   const builderFlags = builder.stateFlags
   if (!builderFlags) return true
   if (isBuilderDeactivated(builder) || isBuilderKycRevoked(builderFlags)) return false
-  return !builderFlags.activated || !builderFlags.communityApproved
+  return !builderFlags.initialized || !builderFlags.communityApproved
 }
 
 export const isBuilderRewardable = (stateFlags?: BuilderStateFlags) => {
   return Boolean(
-    stateFlags?.activated && stateFlags?.communityApproved && stateFlags?.kycApproved && !stateFlags?.revoked,
+    stateFlags?.initialized &&
+      stateFlags?.communityApproved &&
+      stateFlags?.kycApproved &&
+      !stateFlags?.selfPaused,
   )
 }
 

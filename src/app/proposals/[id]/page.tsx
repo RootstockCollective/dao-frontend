@@ -75,7 +75,7 @@ const parseProposalActionDetails = (
       }
     }
     case 'removeWhitelistedBuilder':
-    case 'dewhitelistBuilder': {
+    case 'communityBanBuilder': {
       const builder = typeof args[0] === 'string' ? args[0] : undefined
       return {
         type: ProposalType.BUILDER_DEACTIVATION,

@@ -98,7 +98,7 @@ describe('getMostAdvancedProposal', () => {
           1: ProposalState.Active,
           2: ProposalState.Executed,
         },
-        { activated: true, communityApproved: true } as BuilderStateFlags,
+        { initialized: true, communityApproved: true } as BuilderStateFlags,
       )
       expect(proposal).not.toBeUndefined()
       expect(proposal?.args.proposalId).toBe(2n)
@@ -125,7 +125,7 @@ describe('getMostAdvancedProposal', () => {
           1: ProposalState.Active,
           2: ProposalState.Executed,
         },
-        { activated: false, communityApproved: false } as BuilderStateFlags,
+        { initialized: false, communityApproved: false } as BuilderStateFlags,
       )
       expect(proposal).not.toBeUndefined()
       expect(proposal?.args.proposalId).toBe(1n)
@@ -151,7 +151,7 @@ describe('getMostAdvancedProposal', () => {
           1: ProposalState.Canceled,
           2: ProposalState.Executed,
         },
-        { activated: false, communityApproved: false } as BuilderStateFlags,
+        { initialized: false, communityApproved: false } as BuilderStateFlags,
       )
 
       expect(proposal).toBeUndefined()

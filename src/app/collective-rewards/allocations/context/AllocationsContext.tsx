@@ -221,7 +221,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     (address: Address) => {
       const builder = getBuilderByAddress(address)
 
-      if (builder && builder.gauge && builder.stateFlags?.activated) {
+      if (builder && builder.gauge && builder.stateFlags?.initialized) {
         return builder
       }
 
