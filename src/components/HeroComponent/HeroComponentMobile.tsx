@@ -16,6 +16,11 @@ export interface HeroComponentMobileProps {
   dataTestId?: string
 }
 
+/**
+ * Hero component for mobile screens.
+ * Displays a hero image with a title and subtitle.
+ * This component uses the Expandable component to display the content.
+ */
 export const HeroComponentMobile: FC<HeroComponentMobileProps> = ({
   title,
   subtitle,
@@ -48,7 +53,7 @@ export const HeroComponentMobile: FC<HeroComponentMobileProps> = ({
       {hasExpandableContent && (
         <ExpandableContent>
           {items.length > 0 && (
-            <ul className="list-none mb-4">
+            <ul className="flex flex-col gap-1 list-none mb-4">
               {items.map((item: ReactNode, idx: number) => (
                 <li key={idx} className="flex items-start gap-2 text-sm text-bg-100">
                   <BulletPoint />

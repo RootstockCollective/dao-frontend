@@ -7,6 +7,10 @@ import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
 import { BulletPoint } from './BulletPoint'
 import { HeroComponentProps } from './types'
 
+/**
+ * Hero component for desktop screens.
+ * Displays a hero image with a title and subtitle.
+ */
 export const HeroComponentDesktop: FC<HeroComponentProps> = ({
   imageSrc,
   title,
