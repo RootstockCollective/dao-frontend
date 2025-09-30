@@ -11,9 +11,9 @@ interface BuilderStatusProps {
 const getBuilderState = (builder: Builder): ExtendedBuilderState => {
   if (!builder.stateFlags) return 'inProgress'
   if (isBuilderDeactivated(builder) || isBuilderKycRevoked(builder.stateFlags)) return 'deactivated'
-  const { paused, activated, communityApproved } = builder.stateFlags
-  if (!activated || !communityApproved) return 'inProgress'
-  return paused ? 'paused' : 'active'
+  const { kycPaused, initialized, communityApproved } = builder.stateFlags
+  if (!initialized || !communityApproved) return 'inProgress'
+  return kycPaused ? 'paused' : 'active'
 }
 
 export function BuilderStatus({ address }: BuilderStatusProps) {
