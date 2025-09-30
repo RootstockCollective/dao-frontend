@@ -2,7 +2,6 @@
 import { cn } from '@/lib/utils'
 import { FC, ReactNode, useState } from 'react'
 import { ExpandableContext } from './ExpandableContext'
-import { Paragraph } from '../Typography'
 
 // Main container component
 interface Props {
@@ -13,12 +12,6 @@ interface Props {
   expanded?: boolean
   // Callback function called when the expanded state changes
   onToggleExpanded?: (isExpanded: boolean) => void
-  // Optional preview text to show when collapsed
-  previewText?: string
-  // Optional preview text styling
-  previewClassName?: string
-  // Character limit for preview text truncation (defaults to 200)
-  previewCharLimit?: number
 }
 
 /**
@@ -46,21 +39,6 @@ interface Props {
  *   </ExpandableFooter>
  * </Expandable>
  * ```
- *
- * @example
- * ```tsx
- * <Expandable
- *   previewText="This is a preview of the content..."
- *   previewClassName="text-gray-600"
- * >
- *   <ExpandableHeader>
- *     <h3>Description</h3>
- *   </ExpandableHeader>
- *   <ExpandableContent>
- *     <p>Full content here...</p>
- *   </ExpandableContent>
- * </Expandable>
- * ```
  */
 export const Expandable: FC<Props> = ({
   children,
@@ -68,9 +46,6 @@ export const Expandable: FC<Props> = ({
   dataTestId,
   expanded = false,
   onToggleExpanded,
-  previewText,
-  previewClassName,
-  previewCharLimit = 200,
 }) => {
   const [isExpanded, setIsExpanded] = useState(expanded)
   const toggleExpanded = () => {
@@ -78,25 +53,10 @@ export const Expandable: FC<Props> = ({
     onToggleExpanded?.(!isExpanded)
   }
 
-  // Handle preview text truncation internally
-  const shouldTruncatePreview = previewText && previewText.length > previewCharLimit
-  const displayPreviewText = shouldTruncatePreview
-    ? previewText.substring(0, previewCharLimit) + '...'
-    : previewText
-
   return (
     <ExpandableContext.Provider value={{ isExpanded, toggleExpanded }}>
       <div className={cn('flex flex-col gap-2', className)} data-testid={dataTestId}>
         {children}
-        {previewText && !isExpanded && (
-          <Paragraph
-            variant="body"
-            className={cn('text-base whitespace-pre-line break-words', previewClassName)}
-            html
-            // eslint-disable-next-line react/no-children-prop
-            children={displayPreviewText}
-          />
-        )}
       </div>
     </ExpandableContext.Provider>
   )
