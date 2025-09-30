@@ -3,11 +3,12 @@ import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import { NewProposalCardExtendedData } from '../newProposalCards.data'
 import { CardParagraph } from './CardParagraph'
-import Link from 'next/link'
 import { DotsOverlayHoriz } from '../images/DotsOverlayHoriz'
 import { DotsOverlayVert } from '../images/DotsOverlayVert'
-import { CardButton } from './CardButton'
 import { Header } from '@/components/Typography'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { Button } from '@/components/Button'
+import { Divider } from '@/components/Divider'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   card: NewProposalCardExtendedData
@@ -15,6 +16,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 }
 
 export function NewProposalCardExtended({ card, className, cancelCardSelection, ...props }: Props) {
+  const isDesktop = useIsDesktop()
   const { bigImage, cardTitle, bottomTextBlock, bottomTitle, detailsUrl, textBlock } = card
 
   return (
@@ -70,13 +72,26 @@ export function NewProposalCardExtended({ card, className, cancelCardSelection, 
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-end gap-4">
-          <CardButton className="border border-bg-0" onClick={cancelCardSelection} data-testid="CancelButton">
-            Cancel
-          </CardButton>
-          <Link href={detailsUrl} data-testid="ContinueToDetailsButton">
-            <CardButton className="bg-primary">Continue to details</CardButton>
-          </Link>
+        <div className={`md:p-0 p-4 ${!isDesktop ? 'fixed bottom-0 inset-x-4 bg-bg-100' : ''}`}>
+          <Divider className="md:hidden" />
+          <div className="flex gap-4 md:justify-end md:mt-0 mt-4">
+            <Button
+              variant="secondary-outline"
+              onClick={cancelCardSelection}
+              textClassName="md:text-bg-100"
+              className="md:w-auto flex-1 md:flex-none"
+              data-testid="CancelButton"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="primary"
+              className="py-3 px-6 md:w-auto flex-1 md:flex-none"
+              textClassName="flex-shrink-0"
+            >
+              Continue to details
+            </Button>
+          </div>
         </div>
       </div>
     </div>
