@@ -26,13 +26,19 @@ import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { MobileVotingButton } from './MobileVotingButton'
 import { Modal } from '@/components/Modal'
 
-const actionNameToActionTypeMap = new Map<string, ActionType>([
-  ['withdraw', ActionType.Transfer],
-  ['withdrawERC20', ActionType.Transfer],
-  ['communityApproveBuilder', ActionType.BuilderApproval],
+// Keep old actions for backward compatibility
+const legacyActionNameToActionTypeMap = new Map<string, ActionType>([
+  ['dewhitelistBuilder', ActionType.BuilderDeactivation],
   ['whitelistBuilder', ActionType.BuilderApproval],
   ['removeWhitelistedBuilder', ActionType.BuilderDeactivation],
-  ['dewhitelistBuilder', ActionType.BuilderDeactivation],
+])
+// New actions names
+const actionNameToActionTypeMap = new Map<string, ActionType>([
+  ...legacyActionNameToActionTypeMap,
+  ['withdrawERC20', ActionType.Transfer],
+  ['withdraw', ActionType.Transfer],
+  ['communityApproveBuilder', ActionType.BuilderApproval],
+  ['communityBanBuilder', ActionType.BuilderDeactivation],
 ])
 
 interface VotingDetailsProps {
