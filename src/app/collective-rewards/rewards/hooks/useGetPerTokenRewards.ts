@@ -1,4 +1,4 @@
-import { type BackersManagerAbi } from '@/lib/abis/v2'
+import { type BackersManagerAbi } from '@/lib/abis/tok'
 import { useReadRewardDistributor } from '@/shared/hooks/contracts'
 import { UseReadContractReturnType } from 'wagmi'
 

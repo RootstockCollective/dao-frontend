@@ -1,5 +1,5 @@
 import { fetchGaugeNotifyRewardLogs } from '@/app/collective-rewards/actions'
-import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
+import { GaugeAbi } from '@/lib/abis/tok/GaugeAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'

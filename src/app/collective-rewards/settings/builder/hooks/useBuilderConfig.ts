@@ -1,5 +1,5 @@
 import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
-import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
+import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
 import { BuilderRegistryAddress } from '@/lib/contracts'
 import {
   useWaitForTransactionReceipt,
