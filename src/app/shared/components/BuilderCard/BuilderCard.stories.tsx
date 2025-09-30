@@ -40,11 +40,11 @@ const mockBuilder = {
     date: '2024-01-01',
   },
   stateFlags: {
-    activated: true,
+    initialized: true,
     kycApproved: true,
     communityApproved: true,
-    paused: false,
-    revoked: false,
+    kycPaused: false,
+    selfPaused: false,
   },
   backerRewardPct: {
     previous: percentageToWei('50'),
@@ -252,11 +252,11 @@ export const WithBuilderNotRewardable: Story = {
     builder: {
       ...mockBuilder,
       stateFlags: {
-        activated: false,
+        initialized: false,
         kycApproved: false,
         communityApproved: false,
-        paused: false,
-        revoked: false,
+        kycPaused: false,
+        selfPaused: false,
       },
     },
     allocationInputProps: {
