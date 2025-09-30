@@ -1,6 +1,6 @@
 import { Address } from 'viem'
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
-import { BackersManagerAbi } from '@/lib/abis/v2/BackersManagerAbi'
+import { BackersManagerAbi } from '@/lib/abis/tok/BackersManagerAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
 import { useAwaitedTxReporting } from '@/app/collective-rewards/shared'
 import { useBackerRewardsContext } from '@/app/collective-rewards/rewards'

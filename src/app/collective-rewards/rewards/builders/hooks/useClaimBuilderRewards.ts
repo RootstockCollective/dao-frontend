@@ -1,6 +1,6 @@
 import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
 import { useBuilderContext } from '@/app/collective-rewards/user'
-import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
+import { GaugeAbi } from '@/lib/abis/tok/GaugeAbi'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { Address } from 'viem'
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'

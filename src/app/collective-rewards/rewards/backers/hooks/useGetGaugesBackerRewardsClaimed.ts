@@ -1,7 +1,7 @@
 import { Address, isAddressEqual, parseEventLogs } from 'viem'
 import { useGetGaugesEvents } from '@/app/collective-rewards/rewards'
 import { useMemo } from 'react'
-import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
+import { GaugeAbi } from '@/lib/abis/tok/GaugeAbi'
 
 export type BackerRewardsClaimedEventLog = ReturnType<
   typeof parseEventLogs<typeof GaugeAbi, true, 'BackerRewardsClaimed'>
