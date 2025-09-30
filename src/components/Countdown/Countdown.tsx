@@ -38,16 +38,15 @@ const calculateRatio = (end: Big, currentTime: Big, referenceStart?: Big): numbe
 }
 
 /**
- * Converts seconds to human-readable format (e.g., "2d 5h 30m 15s")
+ * Converts seconds to human-readable format (e.g., "2d 5h 30m")
  */
 const formatTimeRemaining = (seconds: number): string => {
   const duration = moment.duration(seconds, 'seconds')
   const days = duration.days()
   const hours = duration.hours()
   const minutes = duration.minutes()
-  const remainingSeconds = duration.seconds()
 
-  return `${days}d ${hours}h ${minutes}m ${remainingSeconds}s`
+  return `${days}d ${hours}h ${minutes}m`
 }
 
 /**
