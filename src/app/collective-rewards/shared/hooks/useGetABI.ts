@@ -10,7 +10,7 @@ import { BuilderStateFlags } from '../../types'
 
 type CycleData = {
   id: string
-  rewardsERC20: string
+  rewardsRif: string
   rewardsRBTC: string
 }
 
@@ -49,13 +49,13 @@ export const useGetABI = (abiData: AbiData | undefined) => {
     }
 
     const { builders, cycles } = abiData
-    const [{ rewardsERC20, rewardsRBTC }] = cycles
+    const [{ rewardsRif, rewardsRBTC }] = cycles
 
     const rifPrice = prices[RIF]?.price ?? 0
     const rbtcPrice = prices[RBTC]?.price ?? 0
 
     const cyclePayout = Big(
-      getCyclePayout(rifPrice, rbtcPrice, BigInt(rewardsERC20), BigInt(rewardsRBTC)).toString(),
+      getCyclePayout(rifPrice, rbtcPrice, BigInt(rewardsRif), BigInt(rewardsRBTC)).toString(),
     )
 
     const sumTotalAllocation = builders.reduce<Big>(
