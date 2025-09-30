@@ -1,27 +1,86 @@
-'use client'
-
-import { useCallback, useState } from 'react'
-import { createSearchFilter, filterOptions } from './filterOptions'
-import { FilterActions, FilterItem, FilterState, FilterType } from './types'
-
-const initialFilters = Object.values(filterOptions)
-  .flat()
-  .filter(f => f.isAll)
+import { useState, useCallback } from 'react'
+import { FilterItem, FilterState, FilterActions, FilterType } from './types'
+import {
+  createAllFilters,
+  createSearchFilter,
+  categoryFilterOptions,
+  statusFilterOptions,
+  timeFilterOptions,
+} from './filterOptions'
+import { MILESTONE_SEPARATOR } from '@/app/proposals/shared/utils'
 
 export const useProposalFilters = (): FilterState & FilterActions => {
-  const [activeFilters, setActiveFilters] = useState<FilterItem[]>(initialFilters)
+  const [activeFilters, setActiveFilters] = useState<FilterItem[]>(createAllFilters())
   const [searchValue, setSearchValue] = useState('')
+
+  // Helper function to get all available filter options for a type
+  const getFilterOptionsForType = (type: FilterType) => {
+    switch (type) {
+      case FilterType.CATEGORY:
+        return categoryFilterOptions
+      case FilterType.STATUS:
+        return statusFilterOptions
+      case FilterType.TIME:
+        return timeFilterOptions
+      default:
+        return []
+    }
+  }
+
+  // Helper function to check if all filters of a type are selected
+  const areAllFiltersOfTypeSelected = (type: FilterType, currentFilters: FilterItem[]) => {
+    const availableOptions = getFilterOptionsForType(type)
+    const selectedFilters = currentFilters.filter(f => f.type === type && !f.isAll)
+
+    // Check if all available options are selected
+    return availableOptions.every(option => selectedFilters.some(filter => filter.value === option.value))
+  }
 
   const addFilter = useCallback((newFilter: FilterItem) => {
     setActiveFilters(prev => {
-      // if new filter is "all" or exclusive, remove other filters of same type and add this one
+      // If new filter is "all" OR exclusive, remove ALL other filters of same type and add this one
       if (newFilter.isAll || newFilter.exclusive) {
         return prev.filter(f => f.type !== newFilter.type).concat(newFilter)
       }
-      // else, add the new filter and remove any "all" filter of the same type
-      return prev
+
+      // Special handling for milestone filters
+      // No 'Grant - all milestones' chosen together with other milestone filters
+      if (newFilter.type === FilterType.CATEGORY) {
+        if (newFilter.value === MILESTONE_SEPARATOR) {
+          // "All milestones" selected - remove all other milestone filters
+          return prev
+            .filter(
+              f =>
+                f.type !== newFilter.type ||
+                f.value === MILESTONE_SEPARATOR ||
+                !f.value.startsWith(MILESTONE_SEPARATOR),
+            )
+            .concat(newFilter)
+        }
+        if (newFilter.value.startsWith(MILESTONE_SEPARATOR) && newFilter.value !== MILESTONE_SEPARATOR) {
+          // Specific milestone selected - remove "all milestones" filter
+          return prev
+            .filter(f => f.type !== newFilter.type || f.value !== MILESTONE_SEPARATOR)
+            .concat(newFilter)
+        }
+      }
+
+      // For regular filters, add the new filter and remove any "all" filter of the same type
+      let updatedFilters = prev
         .filter(f => f.type !== newFilter.type || (!f.isAll && f.id !== newFilter.id))
         .concat(newFilter)
+
+      // Check if all filters of this type are now selected
+      if (areAllFiltersOfTypeSelected(newFilter.type, updatedFilters)) {
+        // Remove all individual filters of this type and add the "all" filter
+        const allFilters = createAllFilters()
+        const allFilter = allFilters.find(f => f.type === newFilter.type)
+        if (allFilter) {
+          updatedFilters = updatedFilters.filter(f => f.type !== newFilter.type).concat(allFilter)
+        }
+      }
+
+      return updatedFilters
     })
   }, [])
 
@@ -30,18 +89,18 @@ export const useProposalFilters = (): FilterState & FilterActions => {
       const filter = activeFilters.find(f => f.id === id)
       if (filter && !filter.isAll) {
         setActiveFilters(prev => {
-          // remove the current filter
+          // Remove the current filter
           const result = prev.filter(f => f.id !== id)
 
-          // check if there are any remaining filters of the same type
+          // Check if there are any remaining filters of the same type
           const hasFiltersOfSameType = result.some(f => f.type === filter.type)
 
-          // if no remaining filters of this type exist, restore the "all" filter
+          // If no remaining filters of this type exist, restore the "all" filter
           if (!hasFiltersOfSameType) {
-            const isAllFilter = filterOptions[filter.type]?.find(f => f.isAll)
-            // check if "all" filter exists because "search" type has no "all" filter
+            const allFilters = createAllFilters()
+            const isAllFilter = allFilters.find(f => f.type === filter.type)
             if (isAllFilter) {
-              result.push(isAllFilter as FilterItem)
+              result.push(isAllFilter)
             }
           }
 
@@ -53,20 +112,27 @@ export const useProposalFilters = (): FilterState & FilterActions => {
   )
 
   const clearAllFilters = useCallback(() => {
-    setActiveFilters(initialFilters)
+    setActiveFilters(createAllFilters())
     setSearchValue('')
   }, [])
 
   const updateSearchValue = useCallback((value: string) => {
     value = value.trim()
-    setActiveFilters(prev => {
-      const filters = prev.filter(f => f.type !== FilterType.SEARCH)
-      if (value) {
-        filters.push(createSearchFilter(value))
-      }
-      return filters
-    })
     setSearchValue(value)
+
+    if (value) {
+      setActiveFilters(prev => {
+        // Remove any existing search filters first
+        const filters = prev.filter(f => f.type !== FilterType.SEARCH)
+
+        // Add new search filter using utility function
+        filters.push(createSearchFilter(value))
+        return filters
+      })
+    } else {
+      // Remove search filters when search is cleared
+      setActiveFilters(prev => prev.filter(f => f.type !== FilterType.SEARCH))
+    }
   }, [])
 
   return {

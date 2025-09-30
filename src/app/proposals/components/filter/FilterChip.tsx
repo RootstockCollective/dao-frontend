@@ -17,7 +17,7 @@ export const FilterChip = ({ filter, onRemove, className }: FilterChipProps) => 
 
   return (
     <div
-      className={cn('inline-flex items-center whitespace-nowrap flex-shrink-0 mr-4', className)}
+      className={cn('inline-flex items-center gap-2 whitespace-nowrap flex-shrink-0', className)}
       data-testid={`FilterChip-${filter.type}-${filter.value}`}
     >
       <Button
@@ -29,7 +29,7 @@ export const FilterChip = ({ filter, onRemove, className }: FilterChipProps) => 
       >
         <TrashIcon size={16} className="text-white" />
       </Button>
-      <Paragraph variant="body-s" className="text-white ml-1">
+      <Paragraph variant="body-s" className="text-white">
         {filter.label}
       </Paragraph>
     </div>
