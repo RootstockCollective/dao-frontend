@@ -297,7 +297,13 @@ export const BackersManagerAbi = [
         internalType: 'contract GaugeRootstockCollective',
       },
     ],
-    outputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
     stateMutability: 'nonpayable',
   },
   {
@@ -323,12 +329,12 @@ export const BackersManagerAbi = [
         internalType: 'contract IGovernanceManagerRootstockCollective',
       },
       {
-        name: 'builderRegistry_',
+        name: 'rifToken_',
         type: 'address',
         internalType: 'address',
       },
       {
-        name: 'rewardToken_',
+        name: 'usdrifToken_',
         type: 'address',
         internalType: 'address',
       },
@@ -352,16 +358,70 @@ export const BackersManagerAbi = [
         type: 'uint32',
         internalType: 'uint32',
       },
+      {
+        name: 'maxDistributionsPerBatch_',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
     ],
     outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
+    name: 'initializeBuilderRegistry',
+    inputs: [
+      {
+        name: 'builderRegistry_',
+        type: 'address',
+        internalType: 'contract BuilderRegistryRootstockCollective',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'initializeV3',
+    inputs: [
+      {
+        name: 'maxDistributionsPerBatch_',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+      {
+        name: 'usdrifToken_',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'maxDistributionsPerBatch',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     name: 'notifyRewardAmount',
     inputs: [
       {
-        name: 'amount_',
+        name: 'amountRif_',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+      {
+        name: 'amountUsdrif_',
         type: 'uint256',
         internalType: 'uint256',
       },
@@ -443,26 +503,18 @@ export const BackersManagerAbi = [
         type: 'address',
         internalType: 'contract GaugeRootstockCollective',
       },
+      {
+        name: 'haltedGaugeLastPeriodFinish_',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
     ],
     outputs: [],
     stateMutability: 'nonpayable',
   },
   {
     type: 'function',
-    name: 'rewardToken',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'rewardTokenApprove',
+    name: 'rewardTokensApprove',
     inputs: [
       {
         name: 'gauge_',
@@ -480,20 +532,7 @@ export const BackersManagerAbi = [
   },
   {
     type: 'function',
-    name: 'rewardsCoinbase',
-    inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-        internalType: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-  },
-  {
-    type: 'function',
-    name: 'rewardsERC20',
+    name: 'rewardsNative',
     inputs: [],
     outputs: [
       {
@@ -519,6 +558,45 @@ export const BackersManagerAbi = [
         name: 'hasOptedOut',
         type: 'bool',
         internalType: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'rewardsRif',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'rewardsUsdrif',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'rifToken',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'address',
+        internalType: 'address',
       },
     ],
     stateMutability: 'view',
@@ -646,6 +724,19 @@ export const BackersManagerAbi = [
   },
   {
     type: 'function',
+    name: 'updateMaxDistributionsPerBatch',
+    inputs: [
+      {
+        name: 'maxDistributionsPerBatch_',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     name: 'upgradeToAndCall',
     inputs: [
       {
@@ -661,6 +752,19 @@ export const BackersManagerAbi = [
     ],
     outputs: [],
     stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    name: 'usdrifToken',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    stateMutability: 'view',
   },
   {
     type: 'event',
@@ -697,6 +801,25 @@ export const BackersManagerAbi = [
         type: 'uint64',
         indexed: false,
         internalType: 'uint64',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'MaxDistributionsPerBatchUpdated',
+    inputs: [
+      {
+        name: 'oldValue_',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+      {
+        name: 'newValue_',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
       },
     ],
     anonymous: false,
@@ -854,17 +977,6 @@ export const BackersManagerAbi = [
   },
   {
     type: 'error',
-    name: 'AddressInsufficientBalance',
-    inputs: [
-      {
-        name: 'account',
-        type: 'address',
-        internalType: 'address',
-      },
-    ],
-  },
-  {
-    type: 'error',
     name: 'AlreadyOptedInRewards',
     inputs: [],
   },
@@ -926,7 +1038,7 @@ export const BackersManagerAbi = [
   },
   {
     type: 'error',
-    name: 'FailedInnerCall',
+    name: 'FailedCall',
     inputs: [],
   },
   {
@@ -981,6 +1093,11 @@ export const BackersManagerAbi = [
   },
   {
     type: 'error',
+    name: 'RewardTokenNotApproved',
+    inputs: [],
+  },
+  {
+    type: 'error',
     name: 'SafeERC20FailedOperation',
     inputs: [
       {
@@ -1009,6 +1126,11 @@ export const BackersManagerAbi = [
   {
     type: 'error',
     name: 'UnequalLengths',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'ZeroAddressNotAllowed',
     inputs: [],
   },
 ] as const
