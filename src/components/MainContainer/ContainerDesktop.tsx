@@ -19,7 +19,7 @@ export function ContainerDesktop({ children, className, ...props }: HTMLAttribut
     >
       <SidebarDesktop />
       {/* Central section */}
-      <div className="grow flex flex-col">
+      <div className="grow flex flex-col overflow-x-hidden">
         <HeaderDesktop />
         <div className="grow flex flex-col">
           <div className="flex flex-1 flex-col mt-10" id={MAIN_CONTAINER_ID}>

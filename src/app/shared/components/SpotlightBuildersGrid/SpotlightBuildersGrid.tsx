@@ -13,9 +13,9 @@ export const SpotlightBuildersGrid = ({
 }: SpotlightBuildersGridProps) => (
   <div
     className={cn(
-      `grid grid-cols-4 gap-2 w-full items-stretch 
-      max-sm:flex max-sm:overflow-x-auto max-sm:gap-4 
-      max-sm:snap-x max-sm:snap-proximity
+      `gap-2 w-full items-stretch 
+      flex overflow-x-auto
+      max-md:snap-x max-md:snap-proximity
       scrollbar-none px-4`,
       className,
     )}
