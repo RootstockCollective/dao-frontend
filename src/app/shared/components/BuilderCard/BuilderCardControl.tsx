@@ -115,7 +115,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
   }, [initialAllocations, allocations])
 
   return (
-    <div key={builder.address} className="max-sm:flex-shrink-0 max-sm:snap-center max-sm:w-64 flex w-full">
+    <div key={builder.address} className="max-sm:flex-shrink-0 max-sm:snap-center flex w-[268px]">
       <BuilderCard
         key={resetVersion}
         {...props}

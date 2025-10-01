@@ -22,7 +22,7 @@ export const SpotlightBuildersGrid = ({
   >
     {children}
     {showBackMoreBuildersCard && (
-      <div className="max-sm:flex-shrink-0 max-sm:snap-center max-sm:w-64 flex w-full">
+      <div className="max-sm:flex-shrink-0 max-sm:snap-center flex">
         <BackMoreBuildersCard />
       </div>
     )}
