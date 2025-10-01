@@ -1,8 +1,8 @@
 'use client'
-import { ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { createAppKit } from '@reown/appkit/react'
-import { State, WagmiProvider } from 'wagmi'
+import { type State, WagmiProvider } from 'wagmi'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { NavigationGuardProvider } from 'next-navigation-guard'
 
@@ -55,11 +55,10 @@ createAppKit({
   ],
   features: {
     analytics: true,
-    // email: true,
-    // socials: ['google', 'x', 'github', 'discord', 'apple', 'facebook'],
-    email: false,
-    socials: false,
+    email: true,
+    socials: ['google', 'x', 'github', 'discord', 'apple', 'facebook'],
     collapseWallets: true,
+    emailShowWallets: true,
     onramp: true,
   },
 })
