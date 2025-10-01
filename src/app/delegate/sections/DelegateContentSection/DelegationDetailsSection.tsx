@@ -62,6 +62,7 @@ export const DelegationDetailsSection = ({
         buttonVariant="primary"
         data-testid={`delegateCard-${delegateeAddress}`}
         buttonDisabled={isDelegationPending || isReclaimPending}
+        isDelegationPending={isDelegationPending}
       />
       <div className="flex w-full flex-col-reverse md:flex-col gap-6">
         {/* Banner here with delegation perks */}

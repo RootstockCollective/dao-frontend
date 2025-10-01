@@ -1,9 +1,10 @@
 import React, { ComponentProps } from 'react'
 import { BuilderHeader } from '@/app/backing/components/BuilderHeader/BuilderHeader'
 import { Button } from '@/components/Button'
-import { cn, truncate } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import { Address } from 'viem'
 import { Label, Paragraph } from '@/components/Typography'
+import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
 
 interface DelegateCardProps {
   address: Address
@@ -19,6 +20,7 @@ interface DelegateCardProps {
   buttonText?: string
   buttonVariant?: ComponentProps<typeof Button>['variant']
   buttonDisabled?: boolean
+  isDelegationPending?: boolean
 }
 
 export const DelegateCard: React.FC<DelegateCardProps> = ({
@@ -35,6 +37,7 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
   buttonText = 'Delegate',
   buttonVariant = 'secondary-outline',
   buttonDisabled = false,
+  isDelegationPending = false,
 }) => {
   return (
     <div
@@ -54,9 +57,15 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
         shouldNotRedirect
         headerProps={{ variant: 'h2', className: 'text-primary mt-2' }}
       />
-      <Paragraph className="text-text-80" variant="body-xs">
-        delegate since {since}
-      </Paragraph>
+      {isDelegationPending ? (
+        <Paragraph className="text-text-80 flex items-center gap-1" variant="body-xs">
+          delegation pending <HourglassAnimatedIcon />
+        </Paragraph>
+      ) : (
+        <Paragraph className="text-text-80" variant="body-xs">
+          delegate since {since}
+        </Paragraph>
+      )}
       <div className="w-full bg-background-60 rounded-lg p-3 mt-6 border border-bg-40">
         <div className="grid grid-cols-2 gap-y-2 gap-x-4">
           <div>
