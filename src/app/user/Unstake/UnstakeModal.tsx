@@ -4,7 +4,7 @@ import { Modal } from '@/components/Modal'
 import { Header } from '@/components/Typography'
 import Big from '@/lib/big'
 import { tokenContracts } from '@/lib/contracts'
-import { handleAmountInput } from '@/lib/utils'
+import { cn, handleAmountInput } from '@/lib/utils'
 import { useReadBackersManager } from '@/shared/hooks/contracts'
 import { executeTxFlow } from '@/shared/notification'
 import { useCallback, useMemo, useState } from 'react'
@@ -12,8 +12,12 @@ import { formatEther, parseEther } from 'viem'
 import { useAccount } from 'wagmi'
 import { useUnstakeStRIF } from '../Stake/hooks/useUnstakeStRIF'
 import { AllocationWarning } from './components/AllocationWarning'
-import { UnstakeActions } from './components/UnstakeActions'
 import { UnstakeInput } from './components/UnstakeInput'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { TransactionStatus } from '../Stake/components/TransactionStatus'
+import { Divider } from '@/components/Divider'
+import { TransactionInProgressButton } from '../Stake/components/TransactionInProgressButton'
+import { Button } from '@/components/Button'
 
 interface Props {
   onCloseModal: () => void
@@ -22,6 +26,8 @@ interface Props {
 export const UnstakeModal = ({ onCloseModal }: Props) => {
   const { balances, prices } = useBalancesContext()
   const { address } = useAccount()
+  const isDesktop = useIsDesktop()
+
   const [amount, setAmount] = useState('')
   const { onRequestUnstake, isRequesting, isTxPending, isTxFailed, unstakeTxHash } = useUnstakeStRIF(
     amount,
@@ -97,35 +103,65 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
   }, [onRequestUnstake, onCloseModal])
 
   return (
-    <Modal width={688} onClose={onCloseModal}>
-      <div className="p-6">
+    <Modal width={688} onClose={onCloseModal} fullscreen={!isDesktop}>
+      <div className={cn('h-full flex flex-col', !isDesktop ? 'p-4' : 'p-6')}>
         <Header className="mt-16 mb-4">UNSTAKE stRIF</Header>
 
-        <UnstakeInput
-          amount={amount}
-          onAmountChange={handleAmountChange}
-          onPercentageClick={handlePercentageClick}
-          stRifToken={stRifToken}
-          availableToUnstake={availableToUnstake}
-          errorMessage={errorMessage}
-        />
-
-        {isAmountOverAvailableToUnstake && (
-          <AllocationWarning
-            backerTotalAllocation={backerTotalAllocation}
-            stRifBalance={stRifToken.balance}
+        <div className="flex-1">
+          <UnstakeInput
+            amount={amount}
+            onAmountChange={handleAmountChange}
+            onPercentageClick={handlePercentageClick}
+            stRifToken={stRifToken}
+            availableToUnstake={availableToUnstake}
+            errorMessage={errorMessage}
           />
-        )}
+
+          {isAmountOverAvailableToUnstake && (
+            <AllocationWarning
+              backerTotalAllocation={backerTotalAllocation}
+              stRifBalance={stRifToken.balance}
+            />
+          )}
+
+          <TransactionStatus
+            txHash={unstakeTxHash}
+            isTxFailed={isTxFailed}
+            failureMessage="Unstake TX failed."
+            className="mt-8"
+          />
+        </div>
+
+        <Divider className="mb-4 mt-6" />
 
         <UnstakeActions
           isTxPending={isTxPending}
           isRequesting={isRequesting}
-          isTxFailed={isTxFailed}
-          unstakeTxHash={unstakeTxHash}
           cannotProceed={cannotProceedWithUnstake}
           onUnstake={handleConfirmUnstake}
         />
       </div>
     </Modal>
+  )
+}
+
+interface UnstakeActionsProps {
+  isTxPending: boolean
+  isRequesting: boolean
+  cannotProceed: boolean
+  onUnstake: () => void
+}
+
+const UnstakeActions = ({ isTxPending, isRequesting, cannotProceed, onUnstake }: UnstakeActionsProps) => {
+  if (isTxPending) {
+    return <TransactionInProgressButton />
+  }
+
+  return (
+    <div className="flex justify-end">
+      <Button variant="primary" onClick={onUnstake} disabled={cannotProceed} data-testid="UnstakeButton">
+        {isRequesting ? 'Requesting...' : 'Unstake'}
+      </Button>
+    </div>
   )
 }

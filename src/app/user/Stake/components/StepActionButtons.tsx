@@ -31,7 +31,6 @@ export const StepActionButtons = ({ leftContent }: Props) => {
         ) : (
           <Button
             variant="primary"
-            className="w-full md:w-auto"
             onClick={primary.onClick}
             data-testid={primary.label}
             disabled={primary.disabled || primary.loading}
