@@ -28,7 +28,7 @@ export const BackMoreBuildersCard: FC<BackMoreBuildersCardProps> = ({
   return (
     <div
       className={cn(
-        'rounded bg-v3-bg-accent-60 px-2 pb-6 flex flex-col items-center justify-center relative min-w-[200px] min-h-[554px]',
+        'rounded bg-v3-bg-accent-60 px-2 pb-6 flex flex-col items-center justify-center relative w-[268px] min-h-[554px]',
         className,
       )}
       data-testid={`builderCardContainer${dataTestId}`}
