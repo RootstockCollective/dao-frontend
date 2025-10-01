@@ -37,14 +37,14 @@ export const UnstakeInput = forwardRef<HTMLInputElement, Props>(
           errorText={errorMessage}
         />
 
-        <div className="flex items-center justify-between mx-3 mt-2">
+        <div className="flex flex-col justify-between mx-3 mt-2 gap-2">
           <div className="flex items-center gap-1">
             <TokenImage symbol="RIF" size={12} />
             <Label variant="body-s" className="text-text-60" data-testid="totalBalanceLabel">
               stRIF available to unstake: {availableToUnstake}
             </Label>
           </div>
-          <div className="flex gap-1">
+          <div className="flex gap-1 self-end">
             <PercentageButtons onPercentageClick={onPercentageClick} />
           </div>
         </div>
