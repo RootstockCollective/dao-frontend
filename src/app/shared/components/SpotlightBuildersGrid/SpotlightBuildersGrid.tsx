@@ -15,6 +15,7 @@ export const SpotlightBuildersGrid = ({
     className={cn(
       `gap-2 w-full items-stretch 
       flex overflow-x-auto
+      xl:grid xl:grid-cols-4
       max-md:snap-x max-md:snap-proximity
       scrollbar-none px-4`,
       className,
