@@ -111,7 +111,7 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
       name: 'Ledger',
       type: 'hardware',
 
-      async connect() {
+      async connect<withCapabilities extends boolean = false>() {
         if (state.isConnecting) {
           throw new Error('Connection already in progress')
         }
@@ -171,7 +171,9 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
 
           // Always return the correct object, never undefined, and ensure type matches wagmi's expectations
           return {
-            accounts: [address] as readonly `0x${string}`[],
+            accounts: [address] as unknown as withCapabilities extends true
+              ? readonly { address: `0x${string}`; capabilities: Record<string, unknown> }[]
+              : readonly `0x${string}`[],
             chainId,
           }
         } catch (error) {

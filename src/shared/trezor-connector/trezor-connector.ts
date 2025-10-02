@@ -43,7 +43,16 @@ export function trezorWalletConnector(options: TrezorConnectorOptions = {}) {
 
       // Map methods to the hardware wallet implementation
       setup: () => trezorWallet.setup(),
-      connect: (params: { chainId?: number } = {}) => trezorWallet.connect(params),
+      connect: async <withCapabilities extends boolean = false>() => {
+        const connection = await trezorWallet.connect()
+        const accounts = connection.accounts as unknown as withCapabilities extends true
+          ? readonly { address: `0x${string}`; capabilities: Record<string, unknown> }[]
+          : readonly `0x${string}`[]
+        return {
+          accounts,
+          chainId: connection.chainId,
+        }
+      },
       disconnect: () => trezorWallet.disconnect(),
       getAccounts: () => trezorWallet.getAccounts(),
       getChainId: () => trezorWallet.getChainId(),
