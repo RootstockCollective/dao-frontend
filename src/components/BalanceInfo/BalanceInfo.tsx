@@ -39,13 +39,17 @@ export const BalanceInfo: FC<Props> = ({
         )}
       </div>
 
-      <div className="flex items-end flex-row gap-2 mt-1.5 sm:mt-4">
-        <Header variant="h1" className="flex items-end flex-row gap-2" data-testid={`Amount-${symbol}`}>
+      <div className="flex items-center flex-row gap-2 md:mt-2 mt-4">
+        <Header
+          variant="h1"
+          className="flex items-end flex-row gap-2 !leading-none"
+          data-testid={`Amount-${symbol}`}
+        >
           {amount}
         </Header>
         {symbol ? (
           <div className="flex items-center flex-row gap-1">
-            <TokenImage symbol={symbol} size={24} />{' '}
+            <TokenImage symbol={symbol} size={24} />
             <Span variant="body-l" bold>
               {symbol}
             </Span>
