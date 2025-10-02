@@ -74,7 +74,10 @@ export const BuilderCard = ({
       index={index}
     >
       <div
-        className={cn('rounded px-2 pb-6 flex flex-col items-center relative w-[268px] h-full', className)}
+        className={cn(
+          'px-2 pb-6 flex flex-col items-center relative min-w-[268px] max-lg:w-[268px] h-full',
+          className,
+        )}
         data-testid={`builderCardContainer${dataTestId}`}
       >
         <div
