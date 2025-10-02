@@ -1,7 +1,7 @@
 import { createConnector } from 'wagmi'
 import type { TrezorConnectorOptions } from './types'
 import { TrezorHardwareWallet } from './trezor-hardware-wallet'
-import { getAddress } from 'viem'
+import { type Address, getAddress } from 'viem'
 
 /**
  * Creates a Wagmi connector for Trezor hardware wallet
@@ -46,8 +46,8 @@ export function trezorWalletConnector(options: TrezorConnectorOptions = {}) {
       connect: async <withCapabilities extends boolean = false>() => {
         const connection = await trezorWallet.connect()
         const accounts = connection.accounts as unknown as withCapabilities extends true
-          ? readonly { address: `0x${string}`; capabilities: Record<string, unknown> }[]
-          : readonly `0x${string}`[]
+          ? readonly { address: Address; capabilities: Record<string, unknown> }[]
+          : readonly Address[]
         return {
           accounts,
           chainId: connection.chainId,
