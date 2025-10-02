@@ -7,7 +7,7 @@ import { InputNumber } from '@/components/Input/InputNumber'
 import { Paragraph } from '@/components/Typography'
 import { RIF, STRIF } from '@/lib/constants'
 import { cn, formatCurrency } from '@/lib/utils'
-import { useRef, useState } from 'react'
+import { useRef, useState, useCallback, useEffect } from 'react'
 import { NumberFormatValues } from 'react-number-format'
 import { Address, formatEther, parseEther } from 'viem'
 import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
@@ -53,6 +53,7 @@ export const AllocationInput = ({
 }: AllocationInputProps): React.ReactElement => {
   const [editing, setEditing] = useState(false)
   const [parsingError, setParsingError] = useState<Error | null>(null)
+  const [scrollableParent, setScrollableParent] = useState<HTMLElement | null>(null)
 
   const onchainAvailableBalance = balance - onchainCumulativeBacking
 
@@ -67,6 +68,7 @@ export const AllocationInput = ({
 
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const sliderRef = useRef<HTMLDivElement>(null)
 
   useExitOnOutsideClick({
     containerRef,
@@ -128,6 +130,33 @@ export const AllocationInput = ({
     title: 'Error parsing value',
   })
 
+  // Prevent scroll when interacting with slider on mobile
+  const handleSliderTouchStart = useCallback((e: React.TouchEvent) => {
+    e.stopPropagation()
+
+    let parent = e.currentTarget.parentElement
+    while (parent) {
+      const overflowX = window.getComputedStyle(parent).overflowX
+      if (overflowX === 'auto' || overflowX === 'scroll') {
+        const originalOverflowX = parent.style.overflowX || overflowX
+        parent.dataset.originalOverflowX = originalOverflowX
+        parent.style.overflowX = 'hidden'
+        setScrollableParent(parent)
+        break
+      }
+      parent = parent.parentElement
+    }
+  }, [])
+
+  const handleSliderTouchEnd = useCallback(() => {
+    if (scrollableParent) {
+      const originalOverflowX = scrollableParent.dataset.originalOverflowX || 'auto'
+      scrollableParent.style.overflowX = originalOverflowX
+      delete scrollableParent.dataset.originalOverflowX
+      setScrollableParent(null)
+    }
+  }, [scrollableParent])
+
   return (
     <div
       ref={containerRef}
@@ -174,7 +203,13 @@ export const AllocationInput = ({
         </Paragraph>
       )}
       {editing && !isNegativeBacking && !allocationTxPending && (
-        <div data-testid="allocationInputSlider">
+        <div
+          ref={sliderRef}
+          data-testid="allocationInputSlider"
+          onTouchStart={handleSliderTouchStart}
+          onTouchEnd={handleSliderTouchEnd}
+          onTouchCancel={handleSliderTouchEnd}
+        >
           <StickySlider value={[sliderValue]} max={100} step={1} onValueChange={onSliderChange} />
           <Paragraph className="text-[12px] text-v3-text-60 mt-2" data-testid="allocationInputPercentage">
             {Number(sliderValue).toFixed(0)}% of available {STRIF} for backing
