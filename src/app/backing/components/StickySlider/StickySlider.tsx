@@ -73,10 +73,7 @@ export const StickySlider: React.FC<StickySliderProps> = ({
       data-testid="sliderRoot"
       style={{ touchAction: 'none' }} // Prevent scroll during touch drag
     >
-      <div
-        className="relative w-full h-10 flex items-center"
-        data-testid="sliderContainer"
-      >
+      <div className="relative w-full h-10 flex items-center" data-testid="sliderContainer">
         {/* Track with clipped range */}
         <SliderPrimitive.Track
           className="relative h-[1px] grow rounded-full bg-v3-text-60"
