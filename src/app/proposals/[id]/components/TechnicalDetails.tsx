@@ -12,7 +12,7 @@ export const TechnicalDetails = ({ snapshot, proposalId }: TechnicalDetailsProps
       <Header variant="h3" className="text-lg mb-2">
         TECHNICAL DETAILS
       </Header>
-      <div className="grid grid-cols-2 gap-x-4">
+      <div className="grid md:grid-cols-2 grid-cols-1 gap-4 md:mt-0 mt-8">
         <div>
           <Paragraph variant="body-s" className="text-white/70" bold>
             Snapshot - taken at block
