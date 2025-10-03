@@ -20,7 +20,6 @@ export const ConnectedSection = () => {
     isReclaimPending,
     setIsDelegationPending,
     setIsReclaimPending,
-    delegateeVotingPower,
     delegateeRns,
     delegateeImageIpfs,
     delegateeDelegatedSince,
@@ -110,7 +109,6 @@ export const ConnectedSection = () => {
           delegateeAddress={delegateeAddressToShow}
           delegateeRns={delegateeRns || rnsToDelegate}
           delegateeImageIpfs={delegateeImageIpfs}
-          delegateeVotingPower={delegateeVotingPower}
           isReclaimPending={isReclaimPending}
           isDelegationPending={isDelegationPending}
           onShowReclaim={onShowReclaim}
