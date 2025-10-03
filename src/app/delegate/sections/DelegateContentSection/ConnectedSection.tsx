@@ -32,6 +32,8 @@ export const ConnectedSection = () => {
   const [shouldShowDelegates, setShouldShowDelegates] = useState(false)
   const [isDelegateModalOpened, setIsDelegateModalOpened] = useState(false)
   const [isReclaimModalOpened, setIsReclaimModalOpened] = useState(false)
+  const [isRequestingDelegate, setIsRequestingDelegate] = useState(false)
+  const [isRequestingReclaim, setIsRequestingReclaim] = useState(false)
   const [addressToDelegate, setAddressToDelegate] = useState<Address | null>(null)
   const [rnsToDelegate, setRnsToDelegate] = useState<string | undefined>(undefined)
   const [imageIpfsToDelegate, setImageIpfsToDelegate] = useState<string | null | undefined>(undefined)
@@ -39,6 +41,7 @@ export const ConnectedSection = () => {
 
   const handleDelegate = useCallback(
     (address: Address) => {
+      setIsRequestingDelegate(true)
       executeTxFlow({
         onRequestTx: () => onDelegate(address),
         onPending: () => {
@@ -49,7 +52,10 @@ export const ConnectedSection = () => {
           refetch()
           onHideDelegates()
         },
-        onComplete: () => setIsDelegationPending(false),
+        onComplete: () => {
+          setIsDelegationPending(false)
+          setIsRequestingDelegate(false)
+        },
         action: 'delegation',
       })
     },
@@ -57,6 +63,7 @@ export const ConnectedSection = () => {
   )
 
   const handleReclaim = useCallback(() => {
+    setIsRequestingReclaim(true)
     executeTxFlow({
       onRequestTx: () => onDelegate(ownAddress as Address),
       onPending: () => {
@@ -64,7 +71,10 @@ export const ConnectedSection = () => {
         setIsReclaimModalOpened(false)
       },
       onSuccess: refetch,
-      onComplete: () => setIsReclaimPending(false),
+      onComplete: () => {
+        setIsReclaimPending(false)
+        setIsRequestingReclaim(false)
+      },
       action: 'reclaiming',
     })
   }, [onDelegate, ownAddress, setIsReclaimPending, setIsReclaimModalOpened, refetch])
@@ -106,6 +116,10 @@ export const ConnectedSection = () => {
   ) as Address
   const delegateeRnsToShow = rnsToDelegate || delegateeRns
 
+  // Prevent double clicking by disabling action button while opening metamask
+  const isPendingDelegate = isDelegationPending || isRequestingDelegate
+  const isPendingReclaim = isReclaimPending || isRequestingReclaim
+
   return (
     <>
       {delegateeAddressToShow && (
@@ -138,12 +152,12 @@ export const ConnectedSection = () => {
         <DelegateModal
           onDelegate={handleDelegate}
           onClose={onCloseDelegateModal}
-          isLoading={isDelegationPending}
+          isLoading={isPendingDelegate}
           title={`You are about to delegate your own voting power of ${votingPower} to`}
           address={addressToDelegate}
           name={rnsToDelegate}
           imageIpfs={imageIpfsToDelegate}
-          actionButtonText={isDelegationPending ? 'Delegating...' : 'Delegate'}
+          actionButtonText={isPendingDelegate ? 'Delegating...' : 'Delegate'}
           data-testid="delegateModal"
         />
       )}
@@ -151,13 +165,13 @@ export const ConnectedSection = () => {
         <DelegateModal
           onDelegate={handleReclaim}
           onClose={() => setIsReclaimModalOpened(false)}
-          isLoading={isReclaimPending}
+          isLoading={isPendingReclaim}
           title={`You are about to reclaim your own voting power of ${votingPower} from`}
           name={delegateeRns}
           address={delegateeAddress as Address}
           since={formatTimestampToMonthYear(delegateeDelegatedSince) || ''}
           imageIpfs={delegateeImageIpfs}
-          actionButtonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
+          actionButtonText={isPendingReclaim ? 'Reclaiming...' : 'Reclaim'}
           data-testid="reclaimModal"
         />
       )}
