@@ -37,8 +37,9 @@ export const convertDataToRowData = (
   if (!data.length) return []
 
   return data.map<BuilderTable['Row']>(builder => {
-    const backing = allocations[builder.address] ?? 0n
-    const actionType = getActionType(builder, backing > 0n)
+    const backerBacking = allocations[builder.address] ?? 0n
+    const actionType = getActionType(builder, backerBacking > 0n)
+    const builderBacking = builder.totalAllocation ?? 0n
 
     const rifPrice = prices[RIF]?.price ?? 0
 
@@ -72,10 +73,10 @@ export const convertDataToRowData = (
             : 0,
         },
         backing: {
-          amount: backing,
-          formattedAmount: formatSymbol(backing, STRIF),
+          amount: builderBacking,
+          formattedAmount: formatSymbol(builderBacking, STRIF),
           formattedUsdAmount: formatCurrency(
-            getFiatAmount({ value: backing, price: rifPrice, symbol: STRIF, currency: USD }),
+            getFiatAmount({ value: builderBacking, price: rifPrice, symbol: STRIF, currency: USD }),
           ),
         },
         backingShare: {
