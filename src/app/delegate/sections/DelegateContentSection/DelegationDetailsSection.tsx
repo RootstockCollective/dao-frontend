@@ -19,7 +19,6 @@ interface Props {
   onShowDelegates: () => void
   delegateeRns?: string
   delegateeImageIpfs?: string | null
-  delegateeVotingPower?: string
 }
 
 /**
@@ -35,10 +34,14 @@ export const DelegationDetailsSection = ({
   onShowDelegates,
   delegateeRns,
   delegateeImageIpfs,
-  delegateeVotingPower,
 }: Props) => {
-  const { delegateeDelegatedSince, delegateeVotingWeight, delegateeTotalVotes, delegateeDelegators } =
-    useDelegateContext()
+  const {
+    delegateeDelegatedSince,
+    delegateeVotingWeight,
+    delegateeTotalVotes,
+    delegateeDelegators,
+    delegateeVotingPower,
+  } = useDelegateContext()
 
   const isDesktop = useIsDesktop()
   const delegateCardRef = useRef<HTMLDivElement>(null)
