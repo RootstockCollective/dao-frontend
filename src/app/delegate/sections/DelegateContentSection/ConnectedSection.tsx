@@ -45,7 +45,10 @@ export const ConnectedSection = () => {
           setIsDelegationPending(true)
           setIsDelegateModalOpened(false)
         },
-        onSuccess: refetch,
+        onSuccess: () => {
+          refetch()
+          onHideDelegates()
+        },
         onComplete: () => setIsDelegationPending(false),
         action: 'delegation',
       })
