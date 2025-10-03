@@ -101,13 +101,14 @@ export const ConnectedSection = () => {
   const delegateeAddressToShow = (
     isPendingTx ? addressToDelegate : isDelegatedToOther && delegateeAddress
   ) as Address
+  const delegateeRnsToShow = rnsToDelegate || delegateeRns
 
   return (
     <>
       {delegateeAddressToShow && (
         <DelegationDetailsSection
           delegateeAddress={delegateeAddressToShow}
-          delegateeRns={delegateeRns || rnsToDelegate}
+          delegateeRns={delegateeRnsToShow}
           delegateeImageIpfs={delegateeImageIpfs}
           isReclaimPending={isReclaimPending}
           isDelegationPending={isDelegationPending}
