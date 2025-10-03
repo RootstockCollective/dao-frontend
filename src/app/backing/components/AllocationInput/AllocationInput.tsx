@@ -53,7 +53,6 @@ export const AllocationInput = ({
 }: AllocationInputProps): React.ReactElement => {
   const [editing, setEditing] = useState(false)
   const [parsingError, setParsingError] = useState<Error | null>(null)
-  const [scrollableParent, setScrollableParent] = useState<HTMLElement | null>(null)
 
   const onchainAvailableBalance = balance - onchainCumulativeBacking
 
@@ -132,30 +131,9 @@ export const AllocationInput = ({
 
   // Prevent scroll when interacting with slider on mobile
   const handleSliderTouchStart = useCallback((e: React.TouchEvent) => {
+    e.preventDefault()
     e.stopPropagation()
-
-    let parent = e.currentTarget.parentElement
-    while (parent) {
-      const overflowX = window.getComputedStyle(parent).overflowX
-      if (overflowX === 'auto' || overflowX === 'scroll') {
-        const originalOverflowX = parent.style.overflowX || overflowX
-        parent.dataset.originalOverflowX = originalOverflowX
-        parent.style.overflowX = 'hidden'
-        setScrollableParent(parent)
-        break
-      }
-      parent = parent.parentElement
-    }
   }, [])
-
-  const handleSliderTouchEnd = useCallback(() => {
-    if (scrollableParent) {
-      const originalOverflowX = scrollableParent.dataset.originalOverflowX || 'auto'
-      scrollableParent.style.overflowX = originalOverflowX
-      delete scrollableParent.dataset.originalOverflowX
-      setScrollableParent(null)
-    }
-  }, [scrollableParent])
 
   return (
     <div
@@ -203,13 +181,7 @@ export const AllocationInput = ({
         </Paragraph>
       )}
       {editing && !isNegativeBacking && !allocationTxPending && (
-        <div
-          ref={sliderRef}
-          data-testid="allocationInputSlider"
-          onTouchStart={handleSliderTouchStart}
-          onTouchEnd={handleSliderTouchEnd}
-          onTouchCancel={handleSliderTouchEnd}
-        >
+        <div ref={sliderRef} data-testid="allocationInputSlider" onTouchStart={handleSliderTouchStart}>
           <StickySlider value={[sliderValue]} max={100} step={1} onValueChange={onSliderChange} />
           <Paragraph className="text-[12px] text-v3-text-60 mt-2" data-testid="allocationInputPercentage">
             {Number(sliderValue).toFixed(0)}% of available {STRIF} for backing
