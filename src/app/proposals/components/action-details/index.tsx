@@ -26,7 +26,7 @@ interface ActionDetailsProps {
 
 function InfoGrid({ items }: { items: InfoGridItem[] }) {
   return (
-    <div className="grid grid-cols-2 text-sm max-w-[376px]">
+    <div className="grid grid-cols-2">
       {/* Labels row */}
       {items.map(({ label }) => (
         <div key={label}>
@@ -50,7 +50,7 @@ export const ActionDetails = ({ parsedAction, actionType }: ActionDetailsProps) 
     case ProposalType.WITHDRAW: {
       content = (
         <>
-          <div className="grid grid-cols-2 text-sm max-w-[376px] mt-4">
+          <div className="grid grid-cols-2 mt-4">
             <div>
               <Span variant="tag-s" className="text-white/70 mt-0.5">
                 Type
@@ -133,7 +133,7 @@ export const ActionDetails = ({ parsedAction, actionType }: ActionDetailsProps) 
   }
 
   return (
-    <div className="p-6 bg-bg-80 flex flex-col gap-4 max-w-[376px] md:mt-2">
+    <div className="p-6 bg-bg-80 flex flex-col gap-4 md:max-w-[376px] md:mt-2">
       <Header variant="h3">ACTIONS</Header>
       {content}
     </div>
