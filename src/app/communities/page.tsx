@@ -31,12 +31,7 @@ export default function Communities() {
           {/* Communities */}
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
             <ResponsiveCommunityItemHOC className="lg:row-span-2" {...earlyAdoptersCommunity} enableDebris />
-            <ResponsiveCommunityItemHOC
-              className="lg:col-span-2"
-              {...ogFounders}
-              variant="landscape"
-              enableDebris
-            />
+            <ResponsiveCommunityItemHOC className="lg:col-span-2" {...ogFounders} enableDebris />
             <ResponsiveCommunityItemHOC
               className="lg:row-span-2"
               {...ogFoundersEcosystemPartners}
@@ -45,21 +40,10 @@ export default function Communities() {
             <ResponsiveCommunityItemHOC
               className="lg:col-span-2"
               {...ogFoundersExternalContributors}
-              variant="landscape"
               enableDebris
             />
-            <ResponsiveCommunityItemHOC
-              className="lg:col-span-2"
-              variant="landscape"
-              {...rootlingsS1}
-              enableDebris
-            />
-            <ResponsiveCommunityItemHOC
-              className="lg:col-span-2"
-              variant="landscape"
-              {...vanguardCommunity}
-              enableDebris
-            />
+            <ResponsiveCommunityItemHOC className="lg:col-span-2" {...rootlingsS1} enableDebris />
+            <ResponsiveCommunityItemHOC className="lg:col-span-2" {...vanguardCommunity} enableDebris />
           </div>
         </SectionContainer>
         <SectionContainer

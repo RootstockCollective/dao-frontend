@@ -1,4 +1,4 @@
-import { ComponentProps, ReactNode } from 'react'
+import type { ComponentProps, ReactNode } from 'react'
 import { Header } from '@/components/Typography'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 
@@ -24,14 +24,16 @@ export const SectionContainer = ({
   children,
   headerVariant = 'h2',
 }: SectionContainerProps) => (
-  <div className="bg-bg-80 p-[24px] rounded">
-    <div className="flex flex-col gap-6 md:gap-0 md:flex-row justify-stretch mb-[40px]">
+  <div className="bg-bg-80 rounded py-8 px-4 md:p-6">
+    <div className="flex flex-col gap-8 md:gap-0 md:flex-row md:mb-10">
       <Header variant={headerVariant} className="flex-1">
         {title}
       </Header>
-      <p className="flex-1">{rightContent}</p>
+      {rightContent && <p className="flex-1">{rightContent}</p>}
     </div>
-    <div data-testid="SectionContainerContent">{children}</div>
+    <div className="mt-8" data-testid="SectionContainerContent">
+      {children}
+    </div>
   </div>
 )
 

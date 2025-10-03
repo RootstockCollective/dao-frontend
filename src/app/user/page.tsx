@@ -18,7 +18,7 @@ export default function User() {
   const { activeProposals, data: proposals } = useGetProposalsWithGraph()
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 overflow-x-hidden">
       {searchParams.get('action') !== 'stake' && <IntroModal />}
 
       {isConnected ? (

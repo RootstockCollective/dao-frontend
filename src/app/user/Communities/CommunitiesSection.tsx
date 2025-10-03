@@ -3,12 +3,11 @@ import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { useAccount } from 'wagmi'
 import { useEffect, useRef, useState } from 'react'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
-import { Address } from 'viem'
+import type { Address } from 'viem'
 import { CardPlaceholder } from '@/components/loading-components'
-import { CommunityItem } from '@/app/communities/CommunityItem'
-import { cn } from '@/lib/utils'
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
-import { HeroCommunitiesComponent, HeroCommuntiesSectionProps } from '@/app/communities/components'
+import { HeroCommunitiesComponent, type HeroCommuntiesSectionProps } from '@/app/communities/components'
+import { ResponsiveCommunityItemHOC } from '@/app/communities/components/ResponsiveCommunityItemHOC'
 
 const nftAddresses: string[] = Object.keys(communitiesMapByContract)
 
@@ -55,24 +54,19 @@ export const CommunitiesSection = ({ heroComponentConfig }: Props) => {
     return <HeroCommunitiesComponent shouldShowLearnMore {...heroComponentConfig} />
   }
 
-  const defaultCommunityVariant = nftsOwned <= 2 ? 'landscape' : 'portrait'
-  const communityGridClass = nftsOwned <= 2 ? 'xl:grid-cols-2' : 'xl:grid-cols-4'
-
   return (
-    <>
-      <SectionContainer title="YOUR COMMUNITIES" headerVariant="h3">
-        <div className={cn('grid sm:grid-cols-1 gap-[24px]', communityGridClass)}>
-          {nftsInfo.map((nftInfo, index) => (
-            <NftInfo
-              key={nftInfo.address}
-              nftAddress={nftInfo.address}
-              onFinishedLoading={onNftFinishedLoading(index)}
-              defaultCommunityVariant={defaultCommunityVariant}
-            />
-          ))}
-        </div>
-      </SectionContainer>
-    </>
+    <SectionContainer title="YOUR COMMUNITIES" headerVariant="h3">
+      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 md:gap-2">
+        {nftsInfo.map((nftInfo, index) => (
+          <NftInfo
+            key={nftInfo.address}
+            nftAddress={nftInfo.address}
+            onFinishedLoading={onNftFinishedLoading(index)}
+            defaultCommunityVariant="landscape"
+          />
+        ))}
+      </div>
+    </SectionContainer>
   )
 }
 
@@ -92,14 +86,14 @@ const NftInfo = ({ nftAddress, onFinishedLoading, defaultCommunityVariant = 'por
       onFinishedLoading(data.isMember, data.nftMeta?.image)
       alreadyFinishedLoading.current = true
     }
-  }, [data, onFinishedLoading, nftAddress])
+  }, [data, onFinishedLoading])
 
   if (data.isLoading) {
     return <CardPlaceholder />
   }
   if (data.nftName && data.isMember) {
     return (
-      <CommunityItem
+      <ResponsiveCommunityItemHOC
         leftImageSrc={data.nftMeta?.image || ''}
         title={data.nftName}
         subtitle={data.nftMeta?.description || ''}
