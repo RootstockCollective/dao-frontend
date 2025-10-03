@@ -36,7 +36,7 @@ export const RewardDistributorAbi = [
   },
   {
     type: 'function',
-    name: 'defaultRewardCoinbaseAmount',
+    name: 'defaultNativeAmount',
     inputs: [],
     outputs: [
       {
@@ -49,7 +49,20 @@ export const RewardDistributorAbi = [
   },
   {
     type: 'function',
-    name: 'defaultRewardTokenAmount',
+    name: 'defaultRifAmount',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'defaultUsdrifAmount',
     inputs: [],
     outputs: [
       {
@@ -101,6 +114,26 @@ export const RewardDistributorAbi = [
   },
   {
     type: 'function',
+    name: 'initializeV3',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'lastFundedCycleStart',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     name: 'proxiableUUID',
     inputs: [],
     outputs: [
@@ -114,7 +147,7 @@ export const RewardDistributorAbi = [
   },
   {
     type: 'function',
-    name: 'rewardToken',
+    name: 'rifToken',
     inputs: [],
     outputs: [
       {
@@ -130,12 +163,17 @@ export const RewardDistributorAbi = [
     name: 'sendRewards',
     inputs: [
       {
-        name: 'amountERC20_',
+        name: 'amountRif_',
         type: 'uint256',
         internalType: 'uint256',
       },
       {
-        name: 'amountCoinbase_',
+        name: 'amountUsdrif_',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+      {
+        name: 'amountNative_',
         type: 'uint256',
         internalType: 'uint256',
       },
@@ -148,12 +186,17 @@ export const RewardDistributorAbi = [
     name: 'sendRewardsAndStartDistribution',
     inputs: [
       {
-        name: 'amountERC20_',
+        name: 'amountRif_',
         type: 'uint256',
         internalType: 'uint256',
       },
       {
-        name: 'amountCoinbase_',
+        name: 'amountUsdrif_',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+      {
+        name: 'amountNative_',
         type: 'uint256',
         internalType: 'uint256',
       },
@@ -180,12 +223,17 @@ export const RewardDistributorAbi = [
     name: 'setDefaultRewardAmount',
     inputs: [
       {
-        name: 'tokenAmount_',
+        name: 'rifTokenAmount_',
         type: 'uint256',
         internalType: 'uint256',
       },
       {
-        name: 'coinbaseAmount_',
+        name: 'usdrifTokenAmount_',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+      {
+        name: 'nativeAmount_',
         type: 'uint256',
         internalType: 'uint256',
       },
@@ -210,6 +258,19 @@ export const RewardDistributorAbi = [
     ],
     outputs: [],
     stateMutability: 'payable',
+  },
+  {
+    type: 'function',
+    name: 'usdrifToken',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'address',
+        internalType: 'contract IERC20',
+      },
+    ],
+    stateMutability: 'view',
   },
   {
     type: 'event',
@@ -255,6 +316,16 @@ export const RewardDistributorAbi = [
   },
   {
     type: 'error',
+    name: 'CollectiveRewardsAddressesNotInitialized',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'CycleAlreadyFunded',
+    inputs: [],
+  },
+  {
+    type: 'error',
     name: 'ERC1967InvalidImplementation',
     inputs: [
       {
@@ -271,7 +342,7 @@ export const RewardDistributorAbi = [
   },
   {
     type: 'error',
-    name: 'FailedInnerCall',
+    name: 'FailedCall',
     inputs: [],
   },
   {
@@ -304,5 +375,10 @@ export const RewardDistributorAbi = [
         internalType: 'bytes32',
       },
     ],
+  },
+  {
+    type: 'error',
+    name: 'UsdrifTokenAlreadyInitialized',
+    inputs: [],
   },
 ] as const

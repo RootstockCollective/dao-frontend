@@ -288,7 +288,7 @@ export const mockProposalListData: Proposal[] = [
     calldatasParsed: [
       {
         type: 'decoded',
-        functionName: 'dewhitelistBuilder',
+        functionName: 'communityBanBuilder',
         args: ['0x8e7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000005'],
         inputs: [],
       },
