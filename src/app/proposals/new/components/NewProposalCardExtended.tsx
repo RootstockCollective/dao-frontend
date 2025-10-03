@@ -17,7 +17,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 
 export function NewProposalCardExtended({ card, className, cancelCardSelection, ...props }: Props) {
   const isDesktop = useIsDesktop()
-  const { bigImage, cardTitle, bottomTextBlock, bottomTitle, detailsUrl, textBlock } = card
+  const { bigImage, cardTitle, bottomTextBlock, bottomTitle, textBlock } = card
 
   return (
     <div

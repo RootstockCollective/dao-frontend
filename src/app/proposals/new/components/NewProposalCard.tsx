@@ -17,10 +17,13 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 export function NewProposalCard({ card, onSelectCard, className, ...props }: Props) {
   const { buttonText, cardTitle, image, textBlock } = card
   return (
-    <div className={cn('rounded-sm w-full max-w-[568px] bg-text-80 overflow-hidden', className)} {...props}>
+    <div
+      className={cn('rounded-sm w-full md:max-w-[568px] bg-text-80 overflow-hidden', className)}
+      {...props}
+    >
       <div className="h-full flex flex-col gap-6">
         {/* Image Section */}
-        <div className="relative w-full h-[272px] p-4">
+        <div className="relative w-full md:h-[272px] h-[133px] md:p-4 px-4 pb-4 md:mt-0 mt-8">
           <Image
             src={image}
             alt={cardTitle}
