@@ -33,7 +33,7 @@ export const CommunityItem = ({
   nftAddress,
   description,
   readMoreLink,
-  variant = 'portrait',
+  variant = 'landscape',
   enableDebris = false,
   specialPower,
   boostedPercentage,
@@ -46,7 +46,7 @@ export const CommunityItem = ({
   return (
     <BoostedBox nftAddress={nftAddress}>
       <div
-        className={cn('h-full bg-bg-60 flex p-[16px] gap-[8px]', variant === 'portrait' ? 'flex-col' : 'flex-row gap-4')}
+        className={cn('rounded h-full bg-bg-60 flex p-4 gap-2', variant === 'portrait' ? 'flex-col' : 'flex-row gap-4')}
         data-testid={`${title}Card`}
       >
         {/* image */}
@@ -58,7 +58,7 @@ export const CommunityItem = ({
               src={image}
               alt={title}
               fill
-              className={variant === 'portrait' ? 'object-contain' : 'object-cover'}
+              className='object-cover'
             />
             {enableDebris && <ImageDebris image={image} config={variant === 'landscape' ? 'topRightDiagonal' : 'bottomRightDiagonal'} />}
           </div>
