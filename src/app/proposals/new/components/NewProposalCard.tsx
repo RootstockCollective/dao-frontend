@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import type { ProposalCategory } from '@/shared/types'
 import { Header } from '@/components/Typography'
 import { Expandable, ExpandableHeader, ExpandableContent } from '@/components/Expandable'
+import { Button } from '@/components/Button'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   card: NewProposalCardBaseData
@@ -20,9 +21,12 @@ export function NewProposalCard({ card, onSelectCard, className, ...props }: Pro
       <div className="h-full flex flex-col gap-6">
         {/* Image Section */}
         <div className="relative w-full h-[272px] p-4">
-          <div className="w-full h-full overflow-hidden rounded-sm">
-            <Image src={image} alt={cardTitle} className="w-full h-full object-cover" />
-          </div>
+          <Image
+            src={image}
+            alt={cardTitle}
+            className="w-full h-full object-cover overflow-hidden rounded-sm"
+          />
+
           <div className="absolute -bottom-3 right-4">
             <DotsOverlayVert />
           </div>
@@ -42,11 +46,9 @@ export function NewProposalCard({ card, onSelectCard, className, ...props }: Pro
           </Expandable>
 
           {/* Button Section */}
-          <div className="flex justify-end">
-            <CardButton onClick={() => onSelectCard(card.type)} className="text-text-100 bg-bg-100">
-              {buttonText}
-            </CardButton>
-          </div>
+          <Button variant="secondary" className="py-3 px-4">
+            {buttonText}
+          </Button>
         </div>
       </div>
     </div>
