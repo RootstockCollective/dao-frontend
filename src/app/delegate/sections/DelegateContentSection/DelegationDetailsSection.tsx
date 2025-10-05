@@ -66,6 +66,7 @@ export const DelegationDetailsSection = ({
         data-testid={`delegateCard-${delegateeAddress}`}
         buttonDisabled={isDelegationPending || isReclaimPending}
         isDelegationPending={isDelegationPending}
+        isReclaimPending={isReclaimPending}
       />
       <div className="flex w-full flex-col-reverse md:flex-col gap-6">
         {/* Banner here with delegation perks */}
@@ -99,6 +100,12 @@ export const DelegationDetailsSection = ({
               <Paragraph>
                 Delegating your voting power to{' '}
                 <span className="text-primary">{delegateeRns || chosenAddress}</span> is pending.
+              </Paragraph>
+            ) : isReclaimPending ? (
+              <Paragraph>
+                Reclaiming your voting power from
+                <span className="text-primary">{delegateeRns || chosenAddress}</span>
+                is pending.
               </Paragraph>
             ) : (
               <>

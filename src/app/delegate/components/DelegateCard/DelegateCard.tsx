@@ -21,6 +21,7 @@ interface DelegateCardProps {
   buttonVariant?: ComponentProps<typeof Button>['variant']
   buttonDisabled?: boolean
   isDelegationPending?: boolean
+  isReclaimPending?: boolean
 }
 
 export const DelegateCard: React.FC<DelegateCardProps> = ({
@@ -38,6 +39,7 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
   buttonVariant = 'secondary-outline',
   buttonDisabled = false,
   isDelegationPending = false,
+  isReclaimPending = false,
 }) => {
   return (
     <div
@@ -61,11 +63,16 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
         <Paragraph className="text-text-80 flex items-center gap-1" variant="body-xs">
           delegation pending <HourglassAnimatedIcon />
         </Paragraph>
+      ) : isReclaimPending ? (
+        <Paragraph className="text-text-80 flex items-center gap-1" variant="body-xs">
+          reclaiming voting power pending <HourglassAnimatedIcon />
+        </Paragraph>
       ) : (
         <Paragraph className="text-text-80" variant="body-xs">
           delegate since {since}
         </Paragraph>
       )}
+
       <div className="w-full bg-background-60 rounded-lg p-3 mt-6 border border-bg-40">
         <div className="grid grid-cols-2 gap-y-2 gap-x-4">
           <div>
