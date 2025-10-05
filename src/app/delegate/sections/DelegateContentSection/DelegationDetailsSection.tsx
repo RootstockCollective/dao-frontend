@@ -103,9 +103,8 @@ export const DelegationDetailsSection = ({
               </Paragraph>
             ) : isReclaimPending ? (
               <Paragraph>
-                Reclaiming your voting power from
-                <span className="text-primary">{delegateeRns || chosenAddress}</span>
-                is pending.
+                Reclaiming your voting power from{' '}
+                <span className="text-primary">{delegateeRns || chosenAddress}</span> is pending.
               </Paragraph>
             ) : (
               <>

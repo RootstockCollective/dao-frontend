@@ -153,9 +153,11 @@ export const DelegateContextProvider = ({ children }: Props) => {
   useEffect(() => {
     setDataState(
       produce(draft => {
-        // loading states
-        draft.cards.delegated.isLoading = uiState.isDelegationPending || uiState.isReclaimPending
-        draft.cards.available.isLoading = uiState.isDelegationPending || uiState.isReclaimPending
+        if (uiState.isReclaimPending || didIDelegateToMyself) {
+          // loading states
+          draft.cards.delegated.isLoading = uiState.isDelegationPending || uiState.isReclaimPending
+          draft.cards.available.isLoading = uiState.isDelegationPending || uiState.isReclaimPending
+        }
 
         const ownValue = Number(formatEther(own))
         const delegatedValue = Number(formatEther(delegated))
@@ -163,8 +165,11 @@ export const DelegateContextProvider = ({ children }: Props) => {
 
         // content values
         if (uiState.isDelegationPending) {
-          draft.cards.delegated.contentValue = ownValue.toFixed(0)
-          draft.cards.available.contentValue = (availableValue - ownValue).toFixed(0)
+          // skip updating values if updating delegate
+          if (didIDelegateToMyself) {
+            draft.cards.delegated.contentValue = ownValue.toFixed(0)
+            draft.cards.available.contentValue = (availableValue - ownValue).toFixed(0)
+          }
         } else if (uiState.isReclaimPending) {
           draft.cards.delegated.contentValue = '0'
           draft.cards.available.contentValue = (availableValue + delegatedValue).toFixed(0)
@@ -174,7 +179,15 @@ export const DelegateContextProvider = ({ children }: Props) => {
         }
       }),
     )
-  }, [uiState.isDelegationPending, uiState.isReclaimPending, received, delegated, own, available])
+  }, [
+    uiState.isDelegationPending,
+    uiState.isReclaimPending,
+    received,
+    delegated,
+    own,
+    available,
+    didIDelegateToMyself,
+  ])
 
   // Update loading state when refetching
   useEffect(() => {
