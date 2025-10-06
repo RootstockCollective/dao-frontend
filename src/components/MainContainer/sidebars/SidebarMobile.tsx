@@ -59,7 +59,7 @@ export function SidebarMobile() {
   )
 }
 
-const MenuItem = ({ text, href, iconUrl }: MenuData) => {
+const MenuItem = ({ text, href, iconUrl, buttonProps }: MenuData) => {
   const isActive = usePathname()?.substring(1) === href
   const { closeSidebar } = useLayoutContext()
   const router = useRouter()
@@ -75,7 +75,7 @@ const MenuItem = ({ text, href, iconUrl }: MenuData) => {
 
   return (
     <li className={cn('relative pl-3 pr-16', { 'bg-v-charcoal': isActive })}>
-      <Link href={`/${href}`} onClick={handleClick}>
+      <Link href={`/${href}`} onClick={handleClick} data-testid={buttonProps.id}>
         <div className={cn('h-10 flex flex-nowrap gap-2 items-center', { [styles['nav-active']]: isActive })}>
           {iconUrl ? <Image src={iconUrl} width={20} height={20} alt="Icon" /> : <NavIcon />}
           <p className="text-sm font-light font-rootstock-sans">{text}</p>

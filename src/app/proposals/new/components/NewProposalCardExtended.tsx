@@ -57,15 +57,11 @@ export function NewProposalCardExtended({ card, className, cancelCardSelection, 
           </Header>
 
           <div className="flex flex-col gap-6">
-            {bottomTextBlock.map(({ header, text, url }, index) => {
-              // Generate test ID based on header text
-              const testId = header.toLowerCase().replace(/\s+/g, '-')
-              return (
-                <CardParagraph key={index} header={header} url={url} data-testid={`ProposalLink-${testId}`}>
-                  {text}
-                </CardParagraph>
-              )
-            })}
+            {bottomTextBlock.map(({ header, text, url, dataTestId }, index) => (
+              <CardParagraph key={index} header={header} url={url} data-testid={dataTestId}>
+                {text}
+              </CardParagraph>
+            ))}
           </div>
         </div>
 
