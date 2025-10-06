@@ -34,17 +34,17 @@ export const BalancesSection = () => {
 
   return (
     <>
-      <div className="flex flex-row justify-between mb-6">
-        <div className="flex flex-col gap-4">
-          <BalanceInfoForUser symbol={RIF} />
+      <div className="flex flex-row justify-between mb-6 flex-wrap">
+        <div className="flex flex-col gap-4 mt-6">
+          <BalanceInfoForUser symbol={RIF} className="min-w-[268px]" />
           <StakeButton onClick={stakeModal.openModal} />
         </div>
-        <div className="flex flex-col gap-4">
-          <BalanceInfoForUser symbol={STRIF} />
+        <div className="flex flex-col gap-4 mt-6">
+          <BalanceInfoForUser symbol={STRIF} className="min-w-[268px]" />
           <UnstakeButton onClick={unstakeModal.openModal} />
         </div>
-        <BalanceInfoForUser symbol={USDRIF} />
-        <BalanceInfoForUser symbol={RBTC} />
+        <BalanceInfoForUser symbol={USDRIF} className="mt-6 min-w-[268px]" />
+        <BalanceInfoForUser symbol={RBTC} className="mt-6 min-w-[268px]" />
       </div>
       <div>
         {stakeModal.isModalOpened && <StakingFlow onCloseModal={stakeModal.closeModal} />}
@@ -64,6 +64,7 @@ const StakeButton = ({ onClick }: { onClick: () => void }) => {
       disabled={!hasEnoughBalance}
       data-testid="StakeRIF"
       variant="secondary-outline"
+      className="max-w-[103px] text-nowrap"
     >
       Stake RIF{/* TODO dynamic symbol here */}
     </Button>
@@ -79,10 +80,10 @@ const UnstakeButton = ({ onClick }: { onClick: () => void }) => {
       onClick={hasEnoughBalance ? onClick : undefined}
       disabled={!hasEnoughBalance}
       data-testid="UnstakeRIF"
-      className="flex flex-row gap-2 pl-0"
+      className="flex flex-row gap-2 pl-0 max-w-[127px]"
       variant="transparent"
     >
-      <Span>Unstake stRIF</Span>
+      <Span className="flex-shrink-0">Unstake stRIF</Span>
       <MoneyIconKoto />
     </Button>
   )
