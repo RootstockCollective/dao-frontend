@@ -22,7 +22,7 @@ export const StickySlider: React.FC<StickySliderProps> = ({
   step = 1,
   className = '',
   ticks = [0, 25, 50, 75, 100],
-  thumbSize = '2rem', // Increased for mobile
+  thumbSize = '1rem',
   ticksEdgesSize = 8,
   stickyThreshold = 2,
   onMouseLeave,
