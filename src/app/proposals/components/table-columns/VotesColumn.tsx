@@ -31,7 +31,7 @@ export const QuorumColumn = ({
       : 'text-st-error' // Red for less than 50%
 
   return (
-    <Paragraph className={cn(colorClass, className)}>
+    <Paragraph className={cn(colorClass, className)} data-testid="ProposalQuorumPercentage">
       {quorumAtSnapshot.eq(0) ? (
         '-'
       ) : (
@@ -61,8 +61,10 @@ export const VotesColumn = ({
   chartClassName,
   showChart = true,
 }: VotesColumnProps) => (
-  <div className={cn('w-full flex flex-wrap items-center gap-x-3', className)}>
-    <Paragraph className={cn(textClassName)}>{forVotes + againstVotes + abstainVotes}</Paragraph>
+  <div className={cn('w-full flex flex-wrap items-center gap-x-3', className)} data-testid="ProposalVotes">
+    <Paragraph className={cn(textClassName)} data-testid="ProposalVotesCount">
+      {forVotes + againstVotes + abstainVotes}
+    </Paragraph>
     {showChart && (
       <PizzaChart
         className={cn(chartClassName)}
@@ -71,6 +73,7 @@ export const VotesColumn = ({
           { name: 'Abstain', value: abstainVotes },
           { name: 'Against', value: againstVotes },
         ]}
+        data-testid="ProposalVotesChart"
       />
     )}
   </div>

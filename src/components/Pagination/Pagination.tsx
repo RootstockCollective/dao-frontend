@@ -52,24 +52,28 @@ export function Pagination<T>({ pagination, setPagination, data, table, pageSize
   const goToPrevSet = () => goToPage(Math.max(currentSetStart - maxPageButtons, 0))
 
   return (
-    <div className="flex justify-center items-center space-x-2 mt-4">
+    <div className="flex justify-center items-center space-x-2 mt-4" data-testid="Pagination">
       <PaginationArrowButton
         direction="prev"
         disabled={!table.getCanPreviousPage()}
         onClick={() => table.previousPage()}
+        data-testid="PaginationPrev"
       />
-      {currentSetStart > 0 && <PaginationEllipsis onClick={goToPrevSet} />}
+      {currentSetStart > 0 && <PaginationEllipsis onClick={goToPrevSet} data-testid="PaginationPrevPages" />}
       <PaginationPageNumbers
         goToPage={goToPage}
         pagination={pagination}
         currentSetStart={currentSetStart}
         currentSetEnd={currentSetEnd}
       />
-      {currentSetEnd < totalPages && <PaginationEllipsis onClick={goToNextSet} />}
+      {currentSetEnd < totalPages && (
+        <PaginationEllipsis onClick={goToNextSet} data-testid="PaginationNextPages" />
+      )}
       <PaginationArrowButton
         direction="next"
         disabled={!table.getCanNextPage()}
         onClick={() => table.nextPage()}
+        data-testid="PaginationNext"
       />
       <PaginationPageSizeSelector table={table} pageSizes={pageSizes} />
     </div>
@@ -80,9 +84,9 @@ interface PaginationEllipsisProps {
   onClick: () => void
 }
 
-function PaginationEllipsis({ onClick }: PaginationEllipsisProps) {
+function PaginationEllipsis({ onClick, ...props }: PaginationEllipsisProps) {
   return (
-    <button className="w-7" aria-label="More pages" tabIndex={0} onClick={onClick}>
+    <button className="w-7" aria-label="More pages" tabIndex={0} onClick={onClick} {...props}>
       ...
     </button>
   )

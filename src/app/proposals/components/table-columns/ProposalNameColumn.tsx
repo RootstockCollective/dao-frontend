@@ -14,6 +14,7 @@ export const ProposalNameColumn = ({ name, proposalId }: ProposalNameColumnProps
   <Link
     className="text-primary group-hover:underline group-hover:text-bg-100 group-hover:decoration-bg-40"
     href={`/proposals/${proposalId}`}
+    data-testid="ProposalLink"
   >
     <Paragraph>{name}</Paragraph>
   </Link>

@@ -68,6 +68,7 @@ export const Status: FC<Props> = ({ proposalState, className, ...rest }) => {
         'rounded-full text-text-100 overflow-hidden',
         classes,
       )}
+      data-testid="ProposalStatus"
       {...rest}
     >
       <Paragraph className="whitespace-nowrap text-[clamp(10px,1.1vw,12px)]">{label}</Paragraph>
