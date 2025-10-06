@@ -94,11 +94,16 @@ export default function GrantsProposalReview() {
     <div>
       <div className="mb-10 pr-2 w-full lg:flex lg:justify-between gap-2">
         <div className="flex items-center gap-4">
-          <Header caps variant="h3" className="text-2xl lg:text-3xl !leading-[0.9]">
+          <Header
+            caps
+            variant="h3"
+            className="text-2xl lg:text-3xl !leading-[0.9]"
+            data-testid="ProposalTitle"
+          >
             {proposalName}
           </Header>
           {milestone !== Milestones.NO_MILESTONE && milestoneLabel && (
-            <div className="flex gap-2 items-end">
+            <div className="flex gap-2 items-end" data-testid="MilestoneInfo">
               <MilestoneIcon milestone={milestone} hasGradient className="mb-0.5" />
               <Paragraph variant="body-l" className="text-bg-0 !leading-none whitespace-nowrap">
                 {milestoneLabel}
@@ -113,16 +118,18 @@ export default function GrantsProposalReview() {
         <div className="grow-3 max-w-[760px] overflow-hidden">
           <div className="p-6 w-full bg-bg-80 rounded-sm flex flex-col">
             <div className="mb-14 grid grid-cols-2 gap-y-6 gap-x-2">
-              <Card title="Proposal type">
+              <Card title="Proposal type" data-testid="ReviewProposalType">
                 <span className="mr-2">Transfer of {tokenAmount}</span>
                 <span>
                   <TokenImage symbol={token} className="inline-block w-4 h-4 mb-[2px] mr-1" />
                   {token}
                 </span>
               </Card>
-              <Card title="Created on">{moment().format('DD MMMM YYYY')}</Card>
+              <Card title="Created on" data-testid="ReviewCreatedOn">
+                {moment().format('DD MMMM YYYY')}
+              </Card>
               {address && (
-                <Card title="Proposed by">
+                <Card title="Proposed by" data-testid="ReviewProposedBy">
                   <CopyButton
                     className="justify-start w-fit"
                     copyText={address}
@@ -132,7 +139,7 @@ export default function GrantsProposalReview() {
                   </CopyButton>
                 </Card>
               )}
-              <Card title="Community discussion">
+              <Card title="Community discussion" data-testid="ReviewDiscourseLink">
                 <a
                   className="hover:underline truncate block"
                   href={discourseLink}
@@ -146,7 +153,7 @@ export default function GrantsProposalReview() {
             <Header caps variant="h3" className="mb-10 leading-none tracking-tight">
               Description
             </Header>
-            <div className="font-rootstock-sans text-text-100 leading-normal">
+            <div className="font-rootstock-sans text-text-100 leading-normal" data-testid="ReviewDescription">
               {description.split('\n').map((paragraph, i) => (
                 <Paragraph className="mb-8" key={i}>
                   {paragraph}
@@ -160,8 +167,10 @@ export default function GrantsProposalReview() {
             Actions
           </Header>
           <div className="grid grid-cols-2 gap-y-4">
-            <Card title="Type">Transfer</Card>
-            <Card title="To address">
+            <Card title="Type" data-testid="ReviewActionType">
+              Transfer
+            </Card>
+            <Card title="To address" data-testid="ReviewToAddress">
               <CopyButton
                 className="justify-start w-fit"
                 copyText={targetAddress}
@@ -170,7 +179,7 @@ export default function GrantsProposalReview() {
                 {shortAddress(targetAddress)}
               </CopyButton>
             </Card>
-            <Card title="Amount">
+            <Card title="Amount" data-testid="ReviewAmount">
               <div className="inline-block">
                 <div className="flex items-center">
                   <span className="mr-2">{tokenAmount}</span>
@@ -181,7 +190,10 @@ export default function GrantsProposalReview() {
                 </div>
                 {transferAmount !== undefined && tokenPrice !== undefined && (
                   <div className="text-right">
-                    <Span className="text-xs text-white/50 font-normal leading-none">
+                    <Span
+                      className="text-xs text-white/50 font-normal leading-none"
+                      data-testid="ReviewUSDEquivalent"
+                    >
                       {formatCurrencyWithLabel(Big(transferAmount).times(tokenPrice).toNumber())}
                     </Span>
                   </div>

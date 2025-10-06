@@ -68,7 +68,12 @@ export default function ActivationProposalReview() {
   return (
     <div>
       <div className="mb-10 pr-2 w-full lg:flex lg:justify-between">
-        <Header caps variant="h3" className="text-2xl lg:text-3xl leading-relaxed tracking-wide">
+        <Header
+          caps
+          variant="h3"
+          className="text-2xl lg:text-3xl leading-relaxed tracking-wide"
+          data-testid="ProposalTitle"
+        >
           {proposalName}
         </Header>
         <PreviewLabel />
@@ -77,14 +82,20 @@ export default function ActivationProposalReview() {
         <div className="grow-3 max-w-[760px] overflow-hidden">
           <div className="p-6 w-full bg-bg-80 rounded-sm flex flex-col">
             <div className="mb-14 grid grid-cols-2 gap-y-6 gap-x-2">
-              <Card title="Proposal type">Builder activation</Card>
-              <Card title="Created on">{moment().format('DD MMMM YYYY')}</Card>
-              <Card title="Builder name">
+              <Card title="Proposal type" data-testid="ReviewProposalType">
+                Builder activation
+              </Card>
+              <Card title="Created on" data-testid="ReviewCreatedOn">
+                {moment().format('DD MMMM YYYY')}
+              </Card>
+              <Card title="Builder name" data-testid="ReviewBuilderName">
                 <p className="truncate">{builderName}</p>
               </Card>
-              <Card title="Builder address">{shortAddress(builderAddress)}</Card>
+              <Card title="Builder address" data-testid="ReviewBuilderAddress">
+                {shortAddress(builderAddress)}
+              </Card>
               {address && (
-                <Card title="Proposed by">
+                <Card title="Proposed by" data-testid="ReviewProposedBy">
                   <CopyButton
                     className="justify-start w-fit"
                     copyText={address}
@@ -94,7 +105,7 @@ export default function ActivationProposalReview() {
                   </CopyButton>
                 </Card>
               )}
-              <Card title="Community discussion">
+              <Card title="Community discussion" data-testid="ReviewDiscourseLink">
                 <a
                   className="hover:underline truncate block"
                   href={discourseLink}
@@ -108,7 +119,7 @@ export default function ActivationProposalReview() {
             <Header caps variant="h3" className="mb-10 leading-none tracking-tight">
               Description
             </Header>
-            <div className="font-rootstock-sans text-text-100 leading-normal">
+            <div className="font-rootstock-sans text-text-100 leading-normal" data-testid="ReviewDescription">
               {description.split('\n').map((paragraph, i) => (
                 <Paragraph className="mb-8" key={i}>
                   {paragraph}
@@ -122,8 +133,10 @@ export default function ActivationProposalReview() {
             Actions
           </Header>
           <div className="grid grid-cols-2 gap-y-4">
-            <Card title="Type">Builder approval</Card>
-            <Card title="Address to whitelist">
+            <Card title="Type" data-testid="ReviewActionType">
+              Builder approval
+            </Card>
+            <Card title="Address to whitelist" data-testid="ReviewToAddress">
               <CopyButton
                 className="justify-start w-fit"
                 copyText={builderAddress}
