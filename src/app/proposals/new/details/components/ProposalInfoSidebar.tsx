@@ -13,7 +13,13 @@ export const ProposalInfoSidebar = ({ kycLink }: ProposalInfoSidebarProps) => {
       <div className="flex flex-col gap-2">
         <Paragraph className="text-bg-0">
           Before you submit a proposal, make sure that you have{' '}
-          <ExternalLink href={kycLink} className="text-v3-primary" target="_blank" rel="noopener noreferrer">
+          <ExternalLink
+            href={kycLink}
+            className="text-v3-primary"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="CompleteKYCLink"
+          >
             <Span>completed your KYC</Span>
           </ExternalLink>{' '}
           and that you have submitted and discussed your proposal on{' '}
@@ -22,6 +28,7 @@ export const ProposalInfoSidebar = ({ kycLink }: ProposalInfoSidebarProps) => {
             className="text-v3-primary"
             target="_blank"
             rel="noopener noreferrer"
+            data-testid="DiscourseLink"
           >
             <Span>Discourse</Span>
           </ExternalLink>
