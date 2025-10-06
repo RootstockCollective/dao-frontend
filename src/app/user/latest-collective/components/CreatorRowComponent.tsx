@@ -7,7 +7,6 @@ import { ProposalCategory } from '@/shared/types'
 import { Moment } from 'moment'
 import { ClassNameValue } from 'tailwind-merge'
 import { Address } from 'viem'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface CreatorRowComponentProps {
   proposer: Address
