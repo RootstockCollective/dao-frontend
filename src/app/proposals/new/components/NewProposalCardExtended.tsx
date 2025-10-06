@@ -57,20 +57,24 @@ export function NewProposalCardExtended({ card, className, cancelCardSelection, 
           </Header>
 
           <div className="flex flex-col gap-6">
-            {bottomTextBlock.map(({ header, text, url }, index) => (
-              <CardParagraph key={index} header={header} url={url}>
-                {text}
-              </CardParagraph>
-            ))}
+            {bottomTextBlock.map(({ header, text, url }, index) => {
+              // Generate test ID based on header text
+              const testId = header.toLowerCase().replace(/\s+/g, '-')
+              return (
+                <CardParagraph key={index} header={header} url={url} data-testid={`ProposalLink-${testId}`}>
+                  {text}
+                </CardParagraph>
+              )
+            })}
           </div>
         </div>
 
         {/* Action Buttons */}
         <div className="flex justify-end gap-4">
-          <CardButton className="border border-bg-0" onClick={cancelCardSelection}>
+          <CardButton className="border border-bg-0" onClick={cancelCardSelection} data-testid="CancelButton">
             Cancel
           </CardButton>
-          <Link href={detailsUrl}>
+          <Link href={detailsUrl} data-testid="ContinueToDetailsButton">
             <CardButton className="bg-primary">Continue to details</CardButton>
           </Link>
         </div>
