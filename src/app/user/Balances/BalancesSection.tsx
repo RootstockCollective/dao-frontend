@@ -35,7 +35,7 @@ export const BalancesSection = () => {
   return (
     <>
       <div className="flex flex-row justify-between mb-6 flex-wrap">
-        <div className="flex flex-col gap-4 mt-6">
+        <div className="flex flex-col gap-4">
           <BalanceInfoForUser symbol={RIF} className="min-w-[268px]" />
           <StakeButton onClick={stakeModal.openModal} />
         </div>
