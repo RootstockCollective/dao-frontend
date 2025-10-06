@@ -14,7 +14,7 @@ export function HeaderDesktop({ className, ...props }: HTMLAttributes<HTMLDivEle
         {/* Left side */}
         <div className="flex flex-row items-center">
           <Tooltip text={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}>
-            <button onClick={toggleSidebar} className="cursor-pointer">
+            <button onClick={toggleSidebar} className="cursor-pointer" data-testid="SidebarToggle">
               {isSidebarOpen ? <SideBarOpenedIcon /> : <SideBarClosedIcon />}
             </button>
           </Tooltip>

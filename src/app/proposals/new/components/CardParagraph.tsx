@@ -11,7 +11,13 @@ interface Props extends React.PropsWithChildren {
 export function CardParagraph({ header, url, children, 'data-testid': dataTestId }: Props) {
   return (
     <div className="flex flex-col gap-2">
-      <Link href={url} target="_blank" rel="noopener noreferrer" referrerPolicy="no-referrer" data-testid={dataTestId}>
+      <Link
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        referrerPolicy="no-referrer"
+        data-testid={dataTestId}
+      >
         <div className="flex gap-1 items-center">
           <Label className="text-bg-100" bold>
             {header}
