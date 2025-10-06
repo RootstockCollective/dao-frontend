@@ -1,7 +1,8 @@
-import { Fragment } from 'react'
+import { Fragment, useRef, useLayoutEffect, useState } from 'react'
 import { Span } from '@/components/Typography'
 import { ProgressBar } from '@/components/ProgressBarNew'
 import { ProposalState } from '@/shared/types'
+import { cn } from '@/lib/utils'
 
 interface ProgressBarProps {
   proposalState?: ProposalState
@@ -24,15 +25,43 @@ const getStatusSteps = (proposalState: ProposalState) => {
   return ['ACTIVE', 'SUCCEEDED', 'QUEUED', 'EXECUTED']
 }
 
+const getCurrentStepIndex = (proposalState: ProposalState) => {
+  switch (proposalState) {
+    case ProposalState.Active:
+      return 0
+    case ProposalState.Succeeded:
+      return 1
+    case ProposalState.Queued:
+      return 2
+    case ProposalState.Executed:
+      return 3
+    case ProposalState.Defeated:
+    case ProposalState.Canceled:
+      return 1 // FAILED is at index 1
+    default:
+      return 0
+  }
+}
+
 const renderStatusPath = (proposalState: ProposalState) => {
   const steps = getStatusSteps(proposalState)
+  const currentStepIndex = getCurrentStepIndex(proposalState)
 
   return (
     <>
       {steps.map((step, index) => (
         <Fragment key={step}>
-          <Span variant="body-s">{step}</Span>
-          {index < steps.length - 1 && <Span variant="body-s">{'>'}</Span>}
+          <Span
+            variant="body-s"
+            className={cn('flex-shrink-0', index === currentStepIndex ? 'text-white' : 'text-bg-0')}
+          >
+            {step}
+          </Span>
+          {index < steps.length - 1 && (
+            <Span variant="body-s" className="flex-shrink-0 mx-2 text-bg-0">
+              {'>'}
+            </Span>
+          )}
         </Fragment>
       ))}
     </>
@@ -40,9 +69,66 @@ const renderStatusPath = (proposalState: ProposalState) => {
 }
 
 export const ProposalProggressBar = ({ proposalState }: ProgressBarProps) => {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const [offset, setOffset] = useState(0)
+
+  // Calculate offset to keep active label in view
+  const calculateOffset = () => {
+    if (!containerRef.current || !contentRef.current) {
+      return 0
+    }
+
+    const containerWidth = containerRef.current.offsetWidth
+    const contentWidth = contentRef.current.scrollWidth
+
+    // If content fits in container, no offset needed
+    if (contentWidth <= containerWidth) {
+      return 0
+    }
+
+    const currentStepIndex = getCurrentStepIndex(proposalState!)
+
+    // Calculate position of current active step
+    // Each step is roughly: label (60px) + arrow (16px) = 76px
+    const stepWidth = 76
+    const currentStepPosition = currentStepIndex * stepWidth
+
+    // Calculate how much we need to slide to keep current step visible
+    const containerCenter = containerWidth / 2
+    const desiredOffset = Math.max(0, currentStepPosition - containerCenter + 40)
+
+    // Don't slide more than needed to keep content in bounds (with padding)
+    const maxOffset = contentWidth - containerWidth
+    return Math.min(desiredOffset, maxOffset)
+  }
+
+  // Update offset when proposal state changes
+  useLayoutEffect(() => {
+    const newOffset = calculateOffset()
+    setOffset(newOffset)
+  }, [proposalState])
+
+  // Handle window resize
+  useLayoutEffect(() => {
+    const handleResize = () => {
+      const newOffset = calculateOffset()
+      setOffset(newOffset)
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [proposalState])
+
   return (
-    <div className="flex flex-col w-full">
-      <div className="flex flex-row justify-between w-full">{renderStatusPath(proposalState!)}</div>
+    <div className="flex flex-col w-full" ref={containerRef}>
+      <div
+        ref={contentRef}
+        className="flex flex-row justify-between w-full"
+        style={{ transform: offset > 0 ? `translateX(-${offset}px)` : undefined }}
+      >
+        {renderStatusPath(proposalState!)}
+      </div>
       <ProgressBar progress={proposalStateToProgressMap.get(proposalState) ?? 0} className="mt-3" />
     </div>
   )

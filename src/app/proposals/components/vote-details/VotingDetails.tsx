@@ -10,6 +10,8 @@ import Big from '@/lib/big'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { Eta } from '@/app/proposals/shared/types'
 import { Countdown } from '@/components/Countdown'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { Divider } from '@/components/Divider'
 
 interface VoteCounterProps {
   title: string
@@ -22,7 +24,7 @@ interface VoteCounterProps {
 const VoteCounter = ({ title, value, color, disabled, isVotingInProgress }: VoteCounterProps) => {
   return (
     <div
-      className={`bg-[#37322F] pl-4 pb-3 rounded-[4px] flex flex-col items-start justify-center w-40 border-t-4 border-${!disabled ? color : 'disabled-border'}`}
+      className={`bg-bg-60 pl-4 pb-3 rounded-[4px] flex flex-col items-start justify-center md:w-40 border-t-4 border-${!disabled ? color : 'disabled-border'}`}
     >
       <Paragraph variant="body" className={`text-white text-sm mt-6 text-${disabled && 'disabled-border'}`}>
         {title}
@@ -87,15 +89,16 @@ export const VotingDetails = ({
   isChoosingVote,
   eta,
 }: VoteDetailsProps) => {
+  const isDesktop = useIsDesktop()
   return (
-    <div className="bg-[#25211E] p-6 rounded-[4px] w-full max-w-[376px]">
-      <Header variant="h3" className="font-normal">
+    <div className="bg-bg-80 md:p-6 p-4 rounded-[4px] w-full md:max-w-[376px] md:pt-6 pt-20">
+      <Header variant={!isDesktop ? 'h1' : 'h3'} className="font-normal">
         {isChoosingVote ? 'CAST YOUR VOTE' : 'VOTE DETAILS'}
       </Header>
 
       {/* Vote counters or voting buttons */}
       {!isChoosingVote ? (
-        <div className="grid grid-cols-2 gap-2 mt-4">
+        <div className="grid grid-cols-2 gap-2 md:mt-4 mt-6">
           {Object.entries(voteData).map(([key, value]) => (
             <VoteCounter
               key={key}
@@ -126,7 +129,7 @@ export const VotingDetails = ({
         </div>
       )}
 
-      {/* Voting power block (always rendered once) */}
+      {/* Voting power block */}
       <div className="mt-6">
         {!vote ? (
           <BalanceInfo
@@ -138,17 +141,17 @@ export const VotingDetails = ({
           <Paragraph variant="body">{`You voted ${vote.toUpperCase()} this proposal. ${!buttonAction ? '' : ' Take the next step now.'}`}</Paragraph>
         )}
       </div>
-
       {/* Action button (Vote on proposal, custom, or Cancel) always rendered here */}
-      <div>
+      <div className="md:relative absolute bottom-4 md:insets-0 inset-x-4">
+        {!isDesktop && <Divider />}
         {isChoosingVote ? (
-          <Button variant="secondary-outline" className="mt-6" onClick={onCancelVote}>
+          <Button variant="secondary-outline" className="md:mt-6 mt-4" onClick={onCancelVote}>
             Cancel
           </Button>
         ) : buttonAction ? (
           <Button
             onClick={buttonAction.onButtonClick}
-            className="mt-6"
+            className="md:mt-6 mt-4"
             textClassName="text-foreground"
             disabled={actionDisabled}
             ref={voteButtonRef}
@@ -157,7 +160,7 @@ export const VotingDetails = ({
           </Button>
         ) : (
           eta && (
-            <div className="flex mt-6 items-center">
+            <div className="flex md:mt-6 mt-4 items-center">
               <Paragraph variant="body-s">{capitalizeFirstLetter(eta.type)}</Paragraph>
               <Countdown
                 end={eta.end}

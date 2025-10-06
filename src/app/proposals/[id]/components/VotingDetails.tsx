@@ -1,4 +1,4 @@
-import { MouseEvent, useRef, useState } from 'react'
+import { MouseEvent, useEffect, useRef, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { zeroAddress } from 'viem'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
@@ -22,6 +22,9 @@ import { ActionDetails } from '../../components/action-details'
 import { ParsedActionDetails, ActionType } from '../types'
 import { Span } from '@/components/Typography'
 import { Eta } from '../../shared/types'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { MobileVotingButton } from './MobileVotingButton'
+import { Modal } from '@/components/Modal'
 
 const actionNameToActionTypeMap = new Map<string, ActionType>([
   ['withdraw', ActionType.Transfer],
@@ -55,6 +58,10 @@ export const VotingDetails = ({
   const [vote, setVote] = useGetVoteForSpecificProposal(address ?? zeroAddress, proposalId)
   const [isChoosingVote, setIsChoosingVote] = useState(false)
   const [votingTxIsPending, setVotingTxIsPending] = useState(false)
+
+  // Mobile modal state
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const isDesktop = useIsDesktop()
 
   const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId, true)
   const { quorum } = useProposalQuorumAtSnapshot(snapshot)
@@ -216,8 +223,9 @@ export const VotingDetails = ({
     }
   }
 
-  return (
-    <div className="flex flex-col max-w-[376px]">
+  // Extract the voting details content into a reusable component
+  const VotingDetailsContent = () => (
+    <div className="flex flex-col md:max-w-[376px]">
       <NewPopover
         open={popoverOpen}
         onOpenChange={setPopoverOpen}
@@ -258,7 +266,25 @@ export const VotingDetails = ({
         actionDisabled={isQueueing || isExecuting}
         eta={getEta(proposalState)}
       />
-      <ActionDetails parsedAction={parsedAction} actionType={actionType} />
+      {isDesktop && <ActionDetails parsedAction={parsedAction} actionType={actionType} />}
     </div>
   )
+
+  // Mobile: Show button that opens modal
+  if (!isDesktop) {
+    return (
+      <>
+        <ActionDetails parsedAction={parsedAction} actionType={actionType} />
+        {isModalOpen && (
+          <Modal onClose={() => setIsModalOpen(false)} fullscreen>
+            <VotingDetailsContent />
+          </Modal>
+        )}
+        <MobileVotingButton onClick={() => setIsModalOpen(true)} disabled={isQueueing || isExecuting} />
+      </>
+    )
+  }
+
+  // Desktop: Render exactly as before (unchanged behavior)
+  return <VotingDetailsContent />
 }
