@@ -3,7 +3,7 @@ import { DelegatesContainer } from '@/app/delegate/sections/DelegateContentSecti
 import { useDelegateContext } from '@/app/delegate/contexts/DelegateContext'
 import { DelegationDetailsSection } from '@/app/delegate/sections/DelegateContentSection/DelegationDetailsSection'
 import { Address } from 'viem'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import { DelegateModal } from '@/app/delegate/components/DelegateModal'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 import { executeTxFlow } from '@/shared/notification/executeTxFlow'
@@ -32,8 +32,10 @@ export const ConnectedSection = () => {
   const [shouldShowDelegates, setShouldShowDelegates] = useState(false)
   const [isDelegateModalOpened, setIsDelegateModalOpened] = useState(false)
   const [isReclaimModalOpened, setIsReclaimModalOpened] = useState(false)
-  const [isRequestingDelegate, setIsRequestingDelegate] = useState(false)
-  const [isRequestingReclaim, setIsRequestingReclaim] = useState(false)
+
+  // TODO: move these states to the context
+  const [isRequestingDelegate, setIsRequestingDelegate] = useState(false) // opening metamask
+  const [isRequestingReclaim, setIsRequestingReclaim] = useState(false) // opening metamask
   const [addressToDelegate, setAddressToDelegate] = useState<Address | null>(null)
   const [rnsToDelegate, setRnsToDelegate] = useState<string | undefined>(undefined)
   const [imageIpfsToDelegate, setImageIpfsToDelegate] = useState<string | null | undefined>(undefined)
@@ -111,10 +113,36 @@ export const ConnectedSection = () => {
 
   const isPendingTx = isDelegationPending || isReclaimPending
   const isDelegatedToOther = !didIDelegateToMyself && delegateeAddress
-  const delegateeAddressToShow = (
-    isPendingTx ? addressToDelegate : isDelegatedToOther && delegateeAddress
-  ) as Address
-  const delegateeRnsToShow = rnsToDelegate || delegateeRns
+
+  const delegateeAddressToShow = useMemo(() => {
+    if (isReclaimPending) {
+      return delegateeAddress
+    }
+    if (isDelegationPending) {
+      return addressToDelegate
+    }
+    return addressToDelegate || (isDelegatedToOther && delegateeAddress)
+  }, [isDelegationPending, isReclaimPending, addressToDelegate, delegateeAddress, isDelegatedToOther])
+
+  const delegateeRnsToShow = useMemo(() => {
+    if (isReclaimPending) {
+      return delegateeRns
+    }
+    if (isDelegationPending) {
+      return rnsToDelegate
+    }
+    return rnsToDelegate || delegateeRns
+  }, [isDelegationPending, isReclaimPending, rnsToDelegate, delegateeRns])
+
+  const delegateeImageIpfsToShow = useMemo(() => {
+    if (isReclaimPending) {
+      return delegateeImageIpfs
+    }
+    if (isDelegationPending) {
+      return imageIpfsToDelegate
+    }
+    return imageIpfsToDelegate || delegateeImageIpfs
+  }, [isDelegationPending, isReclaimPending, imageIpfsToDelegate, delegateeImageIpfs])
 
   // Prevent double clicking by disabling action button while opening metamask
   const isPendingDelegate = isDelegationPending || isRequestingDelegate
@@ -126,7 +154,7 @@ export const ConnectedSection = () => {
         <DelegationDetailsSection
           delegateeAddress={delegateeAddressToShow}
           delegateeRns={delegateeRnsToShow}
-          delegateeImageIpfs={delegateeImageIpfs}
+          delegateeImageIpfs={delegateeImageIpfsToShow}
           isReclaimPending={isReclaimPending}
           isDelegationPending={isDelegationPending}
           onShowReclaim={onShowReclaim}
