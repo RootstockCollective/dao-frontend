@@ -80,6 +80,7 @@ export default function GrantsProposalForm() {
             options={labeledMilestones}
             placeholder="Proposal milestone"
             className="max-w-[336px]"
+            data-testid="MilestoneSelect"
           />
         </div>
         <div className="flex flex-col gap-4">

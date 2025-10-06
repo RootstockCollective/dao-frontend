@@ -21,7 +21,7 @@ export function Hamburger({
 }: HamburgerProps) {
   return (
     <span className={cn('flex w-fit', className)} {...props}>
-      <button onClick={onClick}>
+      <button onClick={onClick} data-testid="SidebarToggle">
         <motion.svg
           width="24"
           height="24"

@@ -38,13 +38,18 @@ const ExpandedContent = () => {
           grants, earn rewards, and grow with the Collective.
         </Paragraph>
         <div className="gap-4 mt-2 lg:flex hidden">
-          <Button variant="primary" onClick={() => router.push('/proposals/new?type=Builder')}>
+          <Button
+            variant="primary"
+            onClick={() => router.push('/proposals/new?type=Builder')}
+            data-testid="JoinBuilderRewardsButton"
+          >
             Join Builder Rewards
           </Button>
           <Button
             variant="secondary-outline"
             onClick={() => router.push('/proposals/new?type=Grants')}
             textClassName="text-bg-100"
+            data-testid="ApplyForGrantButton"
           >
             Apply for a Grant
           </Button>

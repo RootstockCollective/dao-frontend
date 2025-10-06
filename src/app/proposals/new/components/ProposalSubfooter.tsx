@@ -79,10 +79,15 @@ export const ProposalSubfooter = ({
     <>
       <ActionsContainer className="bg-bg-60" containerClassName="items-center">
         <div className="flex items-center justify-center gap-2">
-          <Button disabled={backDisabled || disabled} onClick={handleBack} variant="secondary-outline">
+          <Button
+            disabled={backDisabled || disabled}
+            onClick={handleBack}
+            variant="secondary-outline"
+            data-testid="BackButton"
+          >
             Back
           </Button>
-          <Button disabled={nextDisabled || disabled} onClick={handleNext}>
+          <Button disabled={nextDisabled || disabled} onClick={handleNext} data-testid="ReviewProposalButton">
             {buttonText}
           </Button>
         </div>

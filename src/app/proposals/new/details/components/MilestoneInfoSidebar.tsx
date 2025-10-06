@@ -21,6 +21,7 @@ export const MilestoneInfoSidebar = () => {
         <Paragraph
           className="flex flex-row gap-2 items-center cursor-pointer"
           onClick={() => setShowModal(true)}
+          data-testid="LearnMoreLink"
         >
           Learn more <ArrowRightIcon className="w-5 h-5" />
         </Paragraph>
@@ -68,6 +69,7 @@ const MilestoneModal = ({ onClose }: { onClose: () => void }) => {
             href="https://gov.rootstockcollective.xyz/t/general-guidelines-for-grant-applications/94"
             target="_blank"
             rel="noopener noreferrer"
+            data-testid="GrantsFrameworkGuidelinesLink"
           >
             <Span>Grants Framework guidelines</Span>
           </ExternalLink>{' '}

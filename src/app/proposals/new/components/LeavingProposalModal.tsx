@@ -23,10 +23,11 @@ export const LeavingProposalModal = ({ className, onStay, onProceedWithExit }: P
             onClick={onProceedWithExit}
             variant="transparent"
             className="border-text-100 border-solid border-[1px]"
+            data-testid="CancelProposalButton"
           >
             Cancel proposal
           </Button>
-          <Button className="ml-4" onClick={onStay}>
+          <Button className="ml-4" onClick={onStay} data-testid="TakeMeBackButton">
             Take me back
           </Button>
         </div>

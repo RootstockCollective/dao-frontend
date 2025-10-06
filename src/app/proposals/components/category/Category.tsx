@@ -16,17 +16,33 @@ interface Props extends ComponentProps<'div'> {
 
 export function Category({ category, hasGradient = false, className, showText = false, ...props }: Props) {
   const icons = {
-    [ProposalCategory.Grants]: <GrantsIcon hasGradient={hasGradient} />,
-    [ProposalCategory.Activation]: <HammerIcon hasGradient={hasGradient} />,
-    [ProposalCategory.Deactivation]: <HammerIcon hasGradient={hasGradient} />,
+    [ProposalCategory.Grants]: <GrantsIcon hasGradient={hasGradient} data-testid="ProposalType_Grants" />,
+    [ProposalCategory.Activation]: (
+      <HammerIcon hasGradient={hasGradient} data-testid="ProposalType_Activation" />
+    ),
+    [ProposalCategory.Deactivation]: (
+      <HammerIcon hasGradient={hasGradient} data-testid="ProposalType_Deactivation" />
+    ),
     [ProposalCategory.Milestone1]: (
-      <MilestoneIcon milestone={Milestones.MILESTONE_1} hasGradient={hasGradient} />
+      <MilestoneIcon
+        milestone={Milestones.MILESTONE_1}
+        hasGradient={hasGradient}
+        data-testid="ProposalType_Milestone1"
+      />
     ),
     [ProposalCategory.Milestone2]: (
-      <MilestoneIcon milestone={Milestones.MILESTONE_2} hasGradient={hasGradient} />
+      <MilestoneIcon
+        milestone={Milestones.MILESTONE_2}
+        hasGradient={hasGradient}
+        data-testid="ProposalType_Milestone2"
+      />
     ),
     [ProposalCategory.Milestone3]: (
-      <MilestoneIcon milestone={Milestones.MILESTONE_3} hasGradient={hasGradient} />
+      <MilestoneIcon
+        milestone={Milestones.MILESTONE_3}
+        hasGradient={hasGradient}
+        data-testid="ProposalType_Milestone3"
+      />
     ),
   } as const satisfies Record<ProposalCategory, React.JSX.Element>
 

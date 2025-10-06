@@ -35,6 +35,7 @@ export const DisconnectWorkflowPresentation = ({
         variant="secondary-outline"
         onClick={openRamp}
         className="md:mr-4 py-1.5 px-2 whitespace-nowrap"
+        data-testid="OnRampButton"
       >
         On Ramp
       </Button>
@@ -51,7 +52,12 @@ export const DisconnectWorkflowPresentation = ({
         }
         trigger="click"
       >
-        <AccountAddress address={address} shortAddress={shortAddress} withCopy={false} />
+        <AccountAddress
+          address={address}
+          shortAddress={shortAddress}
+          withCopy={false}
+          data-testid="AccountAddress"
+        />
       </Popover>
       {isModalOpened && (
         <DisconnectWalletModal onClose={onCloseModal} onConfirm={onDisconnect} onCancel={onCloseModal} />

@@ -33,6 +33,7 @@ export default function TokenRadioGroup<T extends TokenFormData>({ name, control
                     'group focus:outline-none focus-visible:outline-none',
                     'flex gap-2 items-center',
                   )}
+                  data-testid={`TokenRadio-${symbol}`}
                 >
                   <div
                     className={cn(
