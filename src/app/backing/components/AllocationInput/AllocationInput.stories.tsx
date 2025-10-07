@@ -1,4 +1,4 @@
-import { RIF } from '@/lib/constants'
+import { RIF } from '@/lib/tokens'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { useState } from 'react'
 import { AllocationInput, AllocationInputProps, UpdatedBackingState } from './AllocationInput'

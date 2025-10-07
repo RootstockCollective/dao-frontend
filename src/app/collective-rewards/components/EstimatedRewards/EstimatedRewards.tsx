@@ -5,7 +5,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric } from '@/components/Metric'
 import { TokenAmount } from '@/components/TokenAmount'
 import { TokenSymbol } from '@/components/TokenImage'
-import { RBTC, RIF, USD } from '@/lib/constants'
+import { RBTC, RIF, USD } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
 export const EstimatedRewards = () => {

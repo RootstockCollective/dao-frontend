@@ -2,7 +2,7 @@ import { formatSymbol } from '@/app/collective-rewards/rewards'
 import { Circle } from '@/components/Circle'
 import { CommonComponentProps } from '@/components/commonProps'
 import { HourglassIcon } from '@/components/Icons/HourglassIcon'
-import { STRIF } from '@/lib/constants'
+import { STRIF } from '@/lib/tokens'
 import { truncate } from '@/lib/utils'
 import { ReactElement } from 'react'
 import {

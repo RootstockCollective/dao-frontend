@@ -7,7 +7,7 @@ import { tokenContracts } from '@/lib/contracts'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useTreasuryContext } from '@/app/treasury/contexts/TreasuryContext'
 import { StRifHoldings } from '../types'
-import { RBTC, RIF, USDRIF } from '@/lib/constants'
+import { RBTC, RIF, USDRIF } from '@/lib/tokens'
 
 /**
  * Fetches and calculates the stRIF token balance, its USD value,

@@ -69,7 +69,7 @@ export const BackerRewardsMetrics = ({ backer }: { backer: Address }) => {
             <Container className={`${isDetailedView ? 'visible' : 'invisible'} hidden md:block`}>
               <InnerContainer>
                 <TotalEarned />
-                <RBI backer={backer} tokens={TOKENS} />
+                <RBI backer={backer} />
               </InnerContainer>
             </Container>
           </div>
@@ -77,7 +77,7 @@ export const BackerRewardsMetrics = ({ backer }: { backer: Address }) => {
             <Container className="block md:hidden mt-6">
               <InnerContainer>
                 <TotalEarned />
-                <RBI backer={backer} tokens={TOKENS} />
+                <RBI backer={backer} />
               </InnerContainer>
             </Container>
           </Collapsible.Content>

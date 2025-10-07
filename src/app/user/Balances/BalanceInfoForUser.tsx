@@ -7,7 +7,7 @@ import { Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { useState } from 'react'
 import { requestProviderToAddToken } from '@/shared/utils'
-import { RBTC } from '@/lib/constants'
+import { RBTC } from '@/lib/tokens'
 
 interface TooltipComponentProps {
   text: string

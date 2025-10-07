@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { useTreasuryContext } from '@/app/treasury/contexts/TreasuryContext'
 import { treasuryContracts } from '@/lib/contracts'
 import { Bucket, TreasurySection, TreasuryTabKey } from '../types'
-import { RIF, USDRIF, RBTC } from '@/lib/constants'
+import { RIF, USDRIF, RBTC } from '@/lib/tokens'
 
 /**
  * useTreasuryTabs is a hook that organizes treasury bucket data into categorized tab structures.

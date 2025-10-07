@@ -37,13 +37,6 @@ export const NFT_BOOSTER_DATA_URL = (process.env.NEXT_PUBLIC_NFT_BOOSTER_DATA_UR
 export const AVERAGE_BLOCKTIME = 60_000
 export const CACHE_REVALIDATE_SECONDS = 20
 
-export const RIF = 'RIF'
-export const USD = 'USD'
-export const RBTC = ENV === 'mainnet' ? 'rBTC' : 'tRBTC'
-export const STRIF = 'stRIF'
-export const USDRIF = 'USDRIF'
-export const TRIF = 'tRIF'
-
 export const GRANT_TOKEN_LIMITS = {
   minAmount: 0.000001,
   maxAmount: 999_999_999,
