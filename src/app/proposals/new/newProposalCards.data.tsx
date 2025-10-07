@@ -24,6 +24,7 @@ export interface NewProposalCardExtendedData extends NewProposalCardCoreProps {
     header: string
     text: React.ReactNode
     url: string
+    dataTestId: string
   }[]
 }
 
@@ -57,16 +58,19 @@ export const newProposalCards: NewProposalCardData[] = [
           <Paragraph>Make sure that your project supports the goals of the Rootstock Ecosystem</Paragraph>
         ),
         url: 'https://rootstockcollective.xyz/submitting-a-grant-proposal/',
+        dataTestId: 'GrantProposalLink',
       },
       {
         header: 'Complete KYC',
         text: <Paragraph>Start your KYC early to avoid delays if your proposal passes the vote</Paragraph>,
         url: 'https://docs.google.com/forms/d/e/1FAIpQLSd4HklyTFPFAo2I0l_N5fy_di01WZ27e4uFDG1KVy8ZIOSiow/viewform',
+        dataTestId: 'KYCProposalLink',
       },
       {
         header: 'Post on Discourse',
         text: <Paragraph>Share your proposal idea with the community for feedback</Paragraph>,
         url: 'https://gov.rootstockcollective.xyz/c/grants/5',
+        dataTestId: 'DiscourseProposalLink',
       },
     ],
     detailsUrl: '/proposals/new/details/grants',
@@ -95,11 +99,13 @@ export const newProposalCards: NewProposalCardData[] = [
         header: 'Post on Discourse',
         text: <Paragraph>Create a Join Builders Rewards post off-chain</Paragraph>,
         url: 'https://gov.rootstockcollective.xyz/c/collective-rewards/7',
+        dataTestId: 'DiscourseProposalLink',
       },
       {
         header: 'Complete KYC',
         text: <Paragraph>Start your KYC early to avoid delays if your proposal passes the vote</Paragraph>,
         url: 'https://docs.google.com/forms/d/e/1FAIpQLSd4HklyTFPFAo2I0l_N5fy_di01WZ27e4uFDG1KVy8ZIOSiow/viewform',
+        dataTestId: 'KYCProposalLink',
       },
     ],
     detailsUrl: '/proposals/new/details/activation',
