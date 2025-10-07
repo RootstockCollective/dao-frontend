@@ -22,6 +22,7 @@ export const ExpandableTrigger: FC<Props> = ({ className, color = 'var(--color-t
       className={cn('flex items-center', className)}
       onClick={toggleExpanded}
       aria-expanded={isExpanded}
+      data-testid="ExpandableTrigger"
     >
       <span className={cn('transition-transform', isExpanded ? 'rotate-180' : '')}>
         <KotoChevronDownIcon color={color} />
