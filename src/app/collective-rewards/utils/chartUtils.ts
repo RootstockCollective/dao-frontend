@@ -1,9 +1,10 @@
 import { BackingPoint, RewardsPoint, CycleWindow, DailyAllocationItem, CycleRewardsItem } from '../types'
 import { ONE_DAY_IN_SECONDS, FIVE_MONTHS_IN_MS, FIRST_CYCLE_START_SECONDS } from '../constants/chartConstants'
 import Big from '@/lib/big'
-import { USD, WeiPerEther } from '@/lib/constants'
+import { WeiPerEther } from '@/lib/constants'
 import { getCombinedFiatAmount } from './getCombinedFiatAmount'
 import { TokenSymbol } from '@/components/TokenImage'
+import { USD } from '@/lib/tokens'
 
 export const convertToTimestamp = (d: Date | number | string): number => new Date(d).getTime()
 

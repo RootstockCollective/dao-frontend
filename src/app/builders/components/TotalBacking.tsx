@@ -12,7 +12,7 @@ import { Address } from 'viem'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { formatCurrencyWithLabel } from '@/lib/utils'
-import { RIF } from '@/lib/constants'
+import { RIF } from '@/lib/tokens'
 
 export const TotalBacking = () => {
   const { builders, isLoading: isLoadingBuilders, error: errorBuilders } = useBuilderContext()

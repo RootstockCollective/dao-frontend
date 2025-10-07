@@ -8,7 +8,7 @@ import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/ut
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { ConditionalTooltip } from '@/app/components/Tooltip/ConditionalTooltip'
 import { GetPricesResult } from '@/app/user/types'
-import { RIF, STRIF } from '@/lib/constants'
+import { RIF, STRIF } from '@/lib/tokens'
 import { cn, formatCurrency } from '@/lib/utils'
 import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { redirect, RedirectType } from 'next/navigation'

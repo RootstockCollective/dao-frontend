@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { BaseTypography } from '@/components/Typography/Typography'
 import { TokenImage } from '@/components/TokenImage'
-import { RBTC, RIF } from '@/lib/constants'
+import { RBTC, RIF } from '@/lib/tokens'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
 import { Tooltip } from '@/components/Tooltip/Tooltip'
 import { cn } from '@/lib/utils'

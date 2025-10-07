@@ -7,7 +7,7 @@ import { IMAGE_CONFIG } from './config'
 import { useRequiredTokens } from './hooks/useRequiredTokens'
 import { useRouter } from 'next/navigation'
 import { IntroModalContent } from './IntroModalContent'
-import { RBTC, RIF } from '@/lib/constants'
+import { RBTC, RIF } from '@/lib/tokens'
 
 export const IntroModal = () => {
   const introModal = useModal()

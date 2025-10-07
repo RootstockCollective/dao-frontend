@@ -55,17 +55,13 @@ const RBIContent: FC<RBIContentProps> = ({ rbiPct, isLoading }) => {
   )
 }
 
-const RBIWStateSync: FC<RBIProps> = ({ backer, tokens }) => {
+const RBIWStateSync: FC<RBIProps> = ({ backer }) => {
   const {
     data: backerStakingHistory,
     isLoading: backerStakingHistoryLoading,
     error: backerStakingHistoryError,
   } = useGetBackerStakingHistoryWithStateSync(backer)
-  const {
-    data: rbiPct,
-    isLoading: rbiPctLoading,
-    error: rbiPctError,
-  } = useGetBackerRBI(backerStakingHistory, tokens)
+  const { data: rbiPct, isLoading: rbiPctLoading, error: rbiPctError } = useGetBackerRBI(backerStakingHistory)
 
   const isLoading = backerStakingHistoryLoading || rbiPctLoading
   const error = backerStakingHistoryError ?? rbiPctError
@@ -75,17 +71,13 @@ const RBIWStateSync: FC<RBIProps> = ({ backer, tokens }) => {
   return <RBIContent rbiPct={rbiPct} isLoading={isLoading} />
 }
 
-const RBIWTheGraph: FC<RBIProps> = ({ backer, tokens }) => {
+const RBIWTheGraph: FC<RBIProps> = ({ backer }) => {
   const {
     data: backerStakingHistory,
     isLoading: backerStakingHistoryLoading,
     error: backerStakingHistoryError,
   } = useGetBackerStakingHistoryWithGraph(backer)
-  const {
-    data: rbiPct,
-    isLoading: rbiPctLoading,
-    error: rbiPctError,
-  } = useGetBackerRBI(backerStakingHistory, tokens)
+  const { data: rbiPct, isLoading: rbiPctLoading, error: rbiPctError } = useGetBackerRBI(backerStakingHistory)
 
   const isLoading = backerStakingHistoryLoading || rbiPctLoading
   const error = backerStakingHistoryError ?? rbiPctError
@@ -96,7 +88,6 @@ const RBIWTheGraph: FC<RBIProps> = ({ backer, tokens }) => {
 
 interface RBIProps {
   backer: Address
-  tokens: Record<string, Token>
 }
 export const RBI: FC<RBIProps> = props => {
   const {

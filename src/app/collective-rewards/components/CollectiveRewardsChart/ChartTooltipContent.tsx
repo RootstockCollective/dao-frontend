@@ -8,7 +8,7 @@ import { TooltipPayload } from '@/app/collective-rewards/types'
 import { formatCurrency } from '@/lib/utils'
 import { ONE_DAY_IN_MS } from '../../constants/chartConstants'
 import { Header } from '@/components/Typography'
-import { USD } from '@/lib/constants'
+import { USD } from '@/lib/tokens'
 
 interface ChartTooltipProps {
   active?: boolean

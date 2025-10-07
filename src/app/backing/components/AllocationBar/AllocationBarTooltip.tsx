@@ -8,10 +8,9 @@ import {
 import { Circle } from '@/components/Circle'
 import { CommonComponentProps } from '@/components/commonProps'
 import { HourglassIcon } from '@/components/Icons/HourglassIcon'
-import { Span } from '@/components/Typography'
-import { STRIF } from '@/lib/constants'
-import { cn, truncate } from '@/lib/utils'
-import { ReactElement, useContext } from 'react'
+import { STRIF } from '@/lib/tokens'
+import { truncate } from '@/lib/utils'
+import { ReactElement } from 'react'
 import {
   BarTooltipContent,
   BarTooltipLabelItem,

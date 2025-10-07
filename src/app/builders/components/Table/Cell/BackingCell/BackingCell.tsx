@@ -2,7 +2,7 @@ import { CommonComponentProps } from '@/components/commonProps'
 import { TokenImage } from '@/components/TokenImage'
 import { Span } from '@/components/Typography/Span'
 import { BaseTypography } from '@/components/Typography/Typography'
-import { RIF } from '@/lib/constants'
+import { RIF } from '@/lib/tokens'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
 

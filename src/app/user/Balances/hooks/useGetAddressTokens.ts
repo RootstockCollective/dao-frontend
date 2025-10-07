@@ -6,7 +6,8 @@ import { AddressToken } from '@/app/user/types'
 import { useQuery } from '@tanstack/react-query'
 import { axiosInstance } from '@/lib/utils'
 import { TokenInfoReturnType } from '@/app/user/api/tokens/route'
-import { AVERAGE_BLOCKTIME, RBTC } from '@/lib/constants'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { RBTC, RIF, STRIF, USDRIF } from '@/lib/tokens'
 
 const getTokenFunction = (
   tokenAddress: Address,
@@ -36,9 +37,9 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
     error: contractsError,
   } = useReadContracts({
     contracts: [
-      getTokenFunction(tokenContracts.RIF, address, 'balanceOf'),
-      getTokenFunction(tokenContracts.stRIF, address, 'balanceOf'),
-      getTokenFunction(tokenContracts.USDRIF, address, 'balanceOf'),
+      getTokenFunction(tokenContracts[RIF], address, 'balanceOf'),
+      getTokenFunction(tokenContracts[STRIF], address, 'balanceOf'),
+      getTokenFunction(tokenContracts[USDRIF], address, 'balanceOf'),
     ],
     multicallAddress: MulticallAddress,
     query: {
@@ -56,28 +57,30 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
       axiosInstance.get<TokenInfoReturnType>('/user/api/tokens', { baseURL: '/' }).then(({ data }) => data),
   })
 
-  const RIF =
-    contracts && tokenData && ([contracts[0], { result: tokenData[tokenContracts.RIF].symbol }] as TokenData)
-  const stRIF =
+  const rifToken =
     contracts &&
     tokenData &&
-    ([contracts[1], { result: tokenData[tokenContracts.stRIF].symbol }] as TokenData)
+    ([contracts[0], { result: tokenData[tokenContracts[RIF]]?.symbol }] as TokenData)
+  const stRifToken =
+    contracts &&
+    tokenData &&
+    ([contracts[1], { result: tokenData[tokenContracts[STRIF]]?.symbol }] as TokenData)
 
-  const USDRIF =
+  const usdRifToken =
     contracts &&
     tokenData &&
-    ([contracts[2], { result: tokenData[tokenContracts.USDRIF].symbol }] as TokenData)
+    ([contracts[2], { result: tokenData[tokenContracts[USDRIF]]?.symbol }] as TokenData)
 
   return {
     data: [
-      buildTokenBalanceObject('stRIF', stRIF),
-      buildTokenBalanceObject('RIF', RIF),
+      buildTokenBalanceObject(STRIF, stRifToken),
+      buildTokenBalanceObject(RIF, rifToken),
       {
         symbol: RBTC,
         balance: rbtc?.value.toString() || '0',
         contractAddress: tokenContracts[RBTC],
       },
-      buildTokenBalanceObject('USDRIF', USDRIF),
+      buildTokenBalanceObject(USDRIF, usdRifToken),
     ] as AddressToken[],
     isLoading: rbtcLoading || contractsLoading || IsTokenDataLoading,
     error: rbtcError ?? contractsError ?? tokenDataError,

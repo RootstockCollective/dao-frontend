@@ -1,6 +1,6 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import Big from '@/lib/big'
-import { RBTC, RIF, STRIF } from '@/lib/constants'
+import { RBTC, RIF, STRIF } from '@/lib/tokens'
 import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
 import { IntroModalStatus } from '../config'

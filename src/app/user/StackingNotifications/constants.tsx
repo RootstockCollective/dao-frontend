@@ -1,6 +1,6 @@
 import { NEED_RBTC, NEED_RIF, NEED_STRIF, NEED_RBTC_RIF } from '@/app/user/IntroModal/hooks/useRequiredTokens'
 import { TokenImage } from '@/components/TokenImage'
-import { RBTC, RIF } from '@/lib/constants'
+import { RBTC, RIF } from '@/lib/tokens'
 import { currentLinks } from '@/lib/links'
 import { BannerConfigMap } from './types'
 
