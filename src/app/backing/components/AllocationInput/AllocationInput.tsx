@@ -69,6 +69,23 @@ export const AllocationInput = ({
   const containerRef = useRef<HTMLDivElement>(null)
   const sliderRef = useRef<HTMLDivElement>(null)
 
+  // Prevent scroll when interacting with slider on mobile
+  useEffect(() => {
+    const slider = sliderRef.current
+    if (!slider) return
+
+    const handleTouchStart = (e: TouchEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+
+    slider.addEventListener('touchstart', handleTouchStart, { passive: false })
+
+    return () => {
+      slider.removeEventListener('touchstart', handleTouchStart)
+    }
+  }, [])
+
   useExitOnOutsideClick({
     containerRef,
     condition: !!editing && builderAddress && updatedBacking <= onchainBacking,
@@ -129,12 +146,6 @@ export const AllocationInput = ({
     title: 'Error parsing value',
   })
 
-  // Prevent scroll when interacting with slider on mobile
-  const handleSliderTouchStart = useCallback((e: React.TouchEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-  }, [])
-
   return (
     <div
       ref={containerRef}
@@ -181,7 +192,7 @@ export const AllocationInput = ({
         </Paragraph>
       )}
       {editing && !isNegativeBacking && !allocationTxPending && (
-        <div ref={sliderRef} data-testid="allocationInputSlider" onTouchStart={handleSliderTouchStart}>
+        <div ref={sliderRef} data-testid="allocationInputSlider">
           <StickySlider value={[sliderValue]} max={100} step={1} onValueChange={onSliderChange} />
           <Paragraph className="text-[12px] text-v3-text-60 mt-2" data-testid="allocationInputPercentage">
             {Number(sliderValue).toFixed(0)}% of available {STRIF} for backing
