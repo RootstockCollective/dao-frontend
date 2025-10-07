@@ -1,8 +1,8 @@
 'use client'
 import { useCurrentUserNFTInWallet } from '../utilsClient'
 import { Button } from '@/components/Button'
-import { Address } from 'viem'
-import { useState } from 'react'
+import type { Address } from 'viem'
+import { type ComponentProps, useState } from 'react'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
 import { nftAlertMessages } from '@/app/communities/nft/[address]/constants'
 import { useCommunityNFT } from '@/app/communities/nft/[address]/CommunityNFTContext'
@@ -14,7 +14,7 @@ import { requestProviderToAddToken } from '@/shared/utils'
  * User MUST be connected
  * @constructor
  */
-export const AddToWalletButton = () => {
+export const AddToWalletButton = (props: ComponentProps<'button'>) => {
   const { tokenId = 0, nftAddress, nftSymbol, image } = useCommunityNFT()
   const { nftsInWallet, isNFTInWalletLoading, onUpdateNftInWalletData } = useCurrentUserNFTInWallet()
   const [isAdding, setIsAdding] = useState(false)
@@ -75,7 +75,7 @@ export const AddToWalletButton = () => {
   const isLoading = isNFTInWalletLoading || isAdding
 
   return (
-    <Button onClick={() => onAddToWallet()} className="mb-4" disabled={isLoading}>
+    <Button onClick={() => onAddToWallet()} disabled={isLoading} {...props}>
       Add to wallet
     </Button>
   )

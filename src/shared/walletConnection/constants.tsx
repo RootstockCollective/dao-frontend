@@ -11,6 +11,7 @@ export const disclaimerModalText = {
       <a
         href="https://wiki.rootstockcollective.xyz/Terms-of-Use-1041ca6b0b028041a0b1de60e2c16f3c"
         target="_blank"
+        rel="noopener noreferrer"
         className="underline cursor-pointer"
         data-testid="TermsOfUseLink"
       >
@@ -23,6 +24,7 @@ export const disclaimerModalText = {
 
 // Define route patterns and their components
 export const routePatterns = [
+  { pattern: /^\/communities\/nft\//, component: null }, // No header for NFT community pages
   { pattern: /^\/communities/, component: <HeaderTitle variant="h1">COMMUNITIES</HeaderTitle> },
   { pattern: /^\/proposals$/, component: <HeaderTitle variant="h1">PROPOSALS</HeaderTitle> },
   { pattern: /^\/delegate$/, component: <HeaderTitle variant="h1">DELEGATION</HeaderTitle> },
