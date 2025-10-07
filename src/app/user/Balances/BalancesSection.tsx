@@ -32,6 +32,8 @@ export const BalancesSection = () => {
     }
   }, [action, hasOpenedStakeModal, shouldReopen, stakeModal])
 
+  const balanceStyle = 'mt-6 min-w-[268px]'
+
   return (
     <>
       <div className="flex flex-row justify-between mb-6 flex-wrap">
@@ -43,8 +45,8 @@ export const BalancesSection = () => {
           <BalanceInfoForUser symbol={STRIF} className="min-w-[268px]" />
           <UnstakeButton onClick={unstakeModal.openModal} />
         </div>
-        <BalanceInfoForUser symbol={USDRIF} className="mt-6 min-w-[268px]" />
-        <BalanceInfoForUser symbol={RBTC} className="mt-6 min-w-[268px]" />
+        <BalanceInfoForUser symbol={USDRIF} className={balanceStyle} />
+        <BalanceInfoForUser symbol={RBTC} className={balanceStyle} />
       </div>
       <div>
         {stakeModal.isModalOpened && <StakingFlow onCloseModal={stakeModal.closeModal} />}
