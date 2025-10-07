@@ -27,13 +27,8 @@ export const StickySlider: React.FC<StickySliderProps> = ({
   stickyThreshold = 2,
   onMouseLeave,
 }) => {
-  // Regular value change (no snap during drag)
+  // Snap during drag
   const handleValueChange = (val: number[]) => {
-    onValueChange(val)
-  }
-
-  // Snap on release only
-  const handleValueCommit = (val: number[]) => {
     const nearest = ticks.reduce((prev, curr) =>
       Math.abs(curr - val[0]) < Math.abs(prev - val[0]) ? curr : prev,
     )
@@ -42,6 +37,11 @@ export const StickySlider: React.FC<StickySliderProps> = ({
     } else {
       onValueChange(val)
     }
+  }
+
+  // No snap on release
+  const handleValueCommit = (val: number[]) => {
+    onValueChange(val)
   }
 
   // Handle clicks/taps on the track to jump the thumb
