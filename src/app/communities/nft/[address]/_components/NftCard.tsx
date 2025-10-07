@@ -3,26 +3,21 @@ import { cn, truncateMiddle } from '@/lib/utils'
 import { applyPinataImageOptions } from '@/lib/ipfs'
 import { EXPLORER_URL } from '@/lib/constants'
 import { Paragraph, Header } from '@/components/Typography'
+import type { ComponentProps } from 'react'
 
-interface NftCardProps {
+interface NftCardProps extends ComponentProps<'div'> {
   image: string
   id: string
   holderAddress: string
   ensDomain?: string
-  format?: 'big' | 'small'
 }
 
-export function NftCard({ image, id, holderAddress, ensDomain, format }: NftCardProps) {
+export function NftCard({ image, id, holderAddress, ensDomain, className, ...props }: NftCardProps) {
   const optimizedImageUrl = applyPinataImageOptions(image, { width: 600, height: 600 })
 
   return (
-    <div
-      className={cn(
-        'w-full aspect-4/5 bg-bg-60 rounded flex flex-col gap-[min(1rem,1vw)] p-[min(1rem,1.5vw)]',
-        format === 'big' ? 'col-span-2 row-span-2' : 'col-span-1 row-span-1',
-      )}
-    >
-      <div className="grow relative w-full">
+    <div className={cn('w-full bg-bg-60 rounded flex flex-col gap-4 p-4', className)} {...props}>
+      <div className="grow relative w-full aspect-square">
         <Image
           unoptimized
           src={optimizedImageUrl}
@@ -32,21 +27,21 @@ export function NftCard({ image, id, holderAddress, ensDomain, format }: NftCard
           className="object-cover"
         />
       </div>
-      <div className="w-full">
+      <div className="w-full flex flex-row items-start justify-between md:items-start md:flex-col">
         <a
           href={`${EXPLORER_URL}/address/${holderAddress}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="hover:underline decoration-primary"
+          className="hover:underline decoration-primary w-full"
         >
           <Header
             variant="h3"
-            className="text-primary text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed tracking-tight truncate first-letter:uppercase"
+            className="text-primary text-xl md:text-lg lg:text-xl tracking-tight truncate first-letter:uppercase"
           >
             {ensDomain ?? truncateMiddle(holderAddress, 5, 5)}
           </Header>
         </a>
-        <Paragraph className="text-xs md:text-sm lg:text-base">ID #{id}</Paragraph>
+        <Paragraph className="whitespace-nowrap">ID #{id}</Paragraph>
       </div>
     </div>
   )

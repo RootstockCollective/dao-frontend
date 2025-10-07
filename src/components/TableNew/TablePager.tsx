@@ -29,7 +29,11 @@ const PagerCount: React.FC<{
   total: number
   itemName: string
 }> = ({ start, end, total, itemName }) => (
-  <Paragraph variant="body-xs" className="text-v3-bg-accent-0 select-none" data-testid="table-pager-count">
+  <Paragraph
+    variant="body-xs"
+    className="text-v3-bg-accent-0 select-none first-letter:uppercase"
+    data-testid="table-pager-count"
+  >
     {itemName} {start} – {end} out of {total}
   </Paragraph>
 )
@@ -122,9 +126,10 @@ export const TablePager: React.FC<TablePagerProps> = ({
           disabled={isExpandable(mode) && end >= totalItems}
           className="border border-v3-bg-accent-40 px-2 py-1 w-auto"
         >
-          <Span className="text-sm">
+          <Span className="text-sm hidden md:inline">
             Show next {pageSize} {pagedItemName}
           </Span>
+          <Span className="text-sm inline md:hidden">Show next {pageSize}</Span>
         </Button>
       )}
       {isNextCyclicButtonVisible && (
