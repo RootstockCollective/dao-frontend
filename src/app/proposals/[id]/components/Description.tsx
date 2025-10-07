@@ -1,5 +1,5 @@
-import { Header, Paragraph } from '@/components/Typography'
-import { Expandable, ExpandableHeader, ExpandableContent, ExpandablePreview } from '@/components/Expandable'
+import { Header } from '@/components/Typography'
+import { Expandable, ExpandableHeader, ExpandableContent } from '@/components/Expandable'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface DescriptionProps {
