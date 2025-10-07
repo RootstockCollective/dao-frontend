@@ -28,18 +28,7 @@ export const Description = ({ description }: DescriptionProps) => {
             DESCRIPTION
           </Header>
         </ExpandableHeader>
-        {!isDesktop && descriptionHtml && (
-          <ExpandablePreview
-            previewText={descriptionHtml}
-            previewClassName="text-base text-white/90 whitespace-pre-line break-words mb-4"
-            previewCharLimit={200}
-          />
-        )}
-        <ExpandableContent>
-          <Paragraph variant="body" className="text-base text-white/90 whitespace-pre-line break-words" html>
-            {descriptionHtml}
-          </Paragraph>
-        </ExpandableContent>
+        <ExpandableContent showPreview={!isDesktop && !!descriptionHtml}>{descriptionHtml}</ExpandableContent>
       </Expandable>
     </div>
   )

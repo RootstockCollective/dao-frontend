@@ -18,6 +18,8 @@ export function NewProposalCard({ card, onSelectCard, className, ...props }: Pro
   const isDesktop = useIsDesktop()
   const { buttonText, cardTitle, image, smallImage, textBlock } = card
 
+  const descriptionStyle = 'text-lg leading-snug text-bg-100 font-rootstock-sans'
+
   return (
     <div className={cn('rounded-sm w-full md:max-w-[568px] bg-text-80', className)} {...props}>
       <div className="h-full flex flex-col gap-6">
@@ -48,7 +50,12 @@ export function NewProposalCard({ card, onSelectCard, className, ...props }: Pro
                   {cardTitle}
                 </Header>
               </ExpandableHeader>
-              <ExpandableContent contentClassName="text-lg leading-snug text-bg-100 font-rootstock-sans">
+              <ExpandableContent
+                contentClassName={descriptionStyle}
+                previewCharLimit={200}
+                previewClassName={descriptionStyle}
+                showPreview
+              >
                 {textBlock}
               </ExpandableContent>
             </Expandable>
