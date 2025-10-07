@@ -43,11 +43,7 @@ export function NewProposalCard({ card, onSelectCard, className, ...props }: Pro
 
           {/* Button Section */}
           <div className="flex justify-end">
-            <CardButton
-              onClick={() => onSelectCard(card.type)}
-              className="text-text-100 bg-bg-100"
-              data-testid={`${card.type}Button`}
-            >
+            <CardButton onClick={() => onSelectCard(card.type)} className="text-text-100 bg-bg-100">
               {buttonText}
             </CardButton>
           </div>
