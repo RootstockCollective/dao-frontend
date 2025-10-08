@@ -82,7 +82,7 @@ const UnstakeButton = ({ onClick }: { onClick: () => void }) => {
       onClick={hasEnoughBalance ? onClick : undefined}
       disabled={!hasEnoughBalance}
       data-testid="UnstakeRIF"
-      className="flex flex-row gap-2 pl-0 max-w-[127px]"
+      className="flex flex-row gap-2 pl-0 max-w-[154px]"
       variant="transparent"
     >
       <Span className="flex-shrink-0">Unstake stRIF</Span>
