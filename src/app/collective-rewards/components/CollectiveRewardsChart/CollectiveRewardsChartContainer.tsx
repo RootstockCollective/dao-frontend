@@ -19,6 +19,7 @@ export const CollectiveRewardsChartContainer = () => {
   const { prices } = usePricesContext()
 
   const { rif, rbtc } = TOKENS
+
   const rifPrice = prices[rif.symbol]?.price ?? 0
   const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
 

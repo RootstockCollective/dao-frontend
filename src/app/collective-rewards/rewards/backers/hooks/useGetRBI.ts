@@ -2,6 +2,7 @@ import { useIntervalTimestamp } from '@/app/collective-rewards/metrics/hooks/use
 import { BackerStakingHistory, Token, useBackerRewardsContext } from '@/app/collective-rewards/rewards'
 import Big from '@/lib/big'
 import { WeiPerEther } from '@/lib/constants'
+import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useMemo } from 'react'
 
@@ -26,10 +27,9 @@ const useGetTokenRewards = ({ address, symbol }: Token) => {
   }
 }
 
-export const useGetBackerRBI = (
-  backerStakingHistory: BackerStakingHistory | undefined,
-  { rbtc, rif }: Record<string, Token>,
-) => {
+export const useGetBackerRBI = (backerStakingHistory: BackerStakingHistory | undefined) => {
+  const { rif, rbtc } = TOKENS
+
   const {
     data: rbtcRewards,
     isLoading: rbtcRewardsLoading,
