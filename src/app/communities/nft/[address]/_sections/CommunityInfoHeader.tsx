@@ -8,7 +8,7 @@ import { useAccount } from 'wagmi'
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { cn, truncateMiddle } from '@/lib/utils'
 import { ImageDebris } from '@/app/communities/components/ImageDebris'
-import { AddToWalletButton } from '../_components/AddToWalletButton'
+import { useAddToWallet } from '../_components/useAddToWallet'
 import { Button } from '@/components/Button'
 import { Header, Paragraph } from '@/components/Typography'
 import { CopyButton } from '@/components/CopyButton'
@@ -18,10 +18,19 @@ import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWor
 import { ClaimItButton } from '../_components/ClaimItButton'
 import { ArrowUpRightLightIcon } from '@/components/Icons'
 import { BoostedLabelKoto } from '@/app/communities/components'
+import { Divider } from '@/components/Divider'
+import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
+
+// Responsive button styles - mobile: sticky bottom with background, desktop: normal positioning
+const mobileButtonSx = 'fixed bottom-0 left-0 right-0 z-20 bg-bg-100 p-4'
+const desktopButtonSx =
+  'md:relative md:bottom-auto md:left-auto md:right-auto md:z-auto md:bg-transparent md:p-0 md:mt-10'
+const dividerSx = 'mb-4 md:hidden'
 
 export function CommunityInfoHeader({ address: nftAddress }: { address: Address }) {
   const { isConnected } = useAccount()
   const { image, tokenId = 0, isMember, isMintable, tokensAvailable } = useCommunityNFT()
+  const { isSidebarOpen } = useLayoutContext()
 
   const { title, specialPower, activation, requirement, detailedDescription, discussionLink } = useMemo(
     () => communitiesMapByContract[nftAddress.toLowerCase()],
@@ -29,6 +38,11 @@ export function CommunityInfoHeader({ address: nftAddress }: { address: Address 
   )
   const { isCampaignActive, boostData } = useNFTBoosterContext()
   const showNFTBoost = isCampaignActive(nftAddress)
+  const {
+    isHidden: isAddToWalletButtonHidden,
+    onAddToWallet,
+    isLoading: isAddToWalletLoading,
+  } = useAddToWallet()
 
   return (
     <div className={cn('p-4 pb-8 rounded-sm bg-bg-80', 'flex flex-col sm:flex-row sm:gap-8')}>
@@ -109,18 +123,30 @@ export function CommunityInfoHeader({ address: nftAddress }: { address: Address 
             </div>
           )}
 
-          {/* Buttons are hidden on mobile */}
-          <div className="hidden md:block">
-            {!isMember && isMintable && isConnected && tokensAvailable > 0 && (
-              <ClaimItButton className="mt-10" />
-            )}
-            {!isConnected && (
-              <div className="mt-10">
-                <ConnectWorkflow ConnectComponent={ConnectButton} />
-              </div>
-            )}
-            {isConnected && isMember && <AddToWalletButton className="mt-10" />}
-          </div>
+          {/* Responsive buttons - desktop: normal position, mobile: sticky bottom */}
+          {!isMember && isMintable && isConnected && tokensAvailable > 0 && !isSidebarOpen && (
+            <div className={cn(mobileButtonSx, desktopButtonSx)}>
+              {/* Divider only on mobile */}
+              <Divider className={dividerSx} />
+              <ClaimItButton />
+            </div>
+          )}
+
+          {!isConnected && !isSidebarOpen && (
+            <div className={cn(mobileButtonSx, desktopButtonSx)}>
+              <Divider className={dividerSx} />
+              <ConnectWorkflow ConnectComponent={ConnectButton} />
+            </div>
+          )}
+
+          {isConnected && isMember && !isAddToWalletButtonHidden && !isSidebarOpen && (
+            <div className={cn(mobileButtonSx, desktopButtonSx)}>
+              <Divider className={dividerSx} />
+              <Button onClick={() => onAddToWallet()} disabled={isAddToWalletLoading}>
+                Add to wallet
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
