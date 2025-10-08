@@ -20,15 +20,15 @@ import {
   BB_NFT_ADDRESS,
   ROOTLINGS_S1_NFT_ADDRESS,
 } from './constants'
-import { TOKENS } from './tokens'
+import { RBTC, RIF, STRIF, TOKENS, USDRIF } from './tokens'
 import { GovernorAbi } from './abis/Governor'
 import { RootlingsS1ABI } from './abis/RootlingsS1'
 
 const tokenContracts = {
-  rif: TOKENS.rif.address,
-  strif: TOKENS.strif.address,
-  rbtc: TOKENS.rbtc.address,
-  usdrif: TOKENS.usdrif.address,
+  [RIF]: TOKENS.rif.address,
+  [STRIF]: TOKENS.strif.address,
+  [RBTC]: TOKENS.rbtc.address,
+  [USDRIF]: TOKENS.usdrif.address,
 }
 // Needed when creating proposal - uppercase [avoid case sensitive search]
 export const uppercasedTokenContracts = Object.fromEntries(
