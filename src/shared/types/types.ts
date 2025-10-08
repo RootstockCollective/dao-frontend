@@ -91,9 +91,6 @@ export enum ProposalState {
   None,
 }
 
-type TxMessage =
-  (typeof TX_MESSAGES)[keyof typeof TX_MESSAGES][keyof (typeof TX_MESSAGES)[keyof typeof TX_MESSAGES]]
-
 export type TxStatus = 'info' | 'success' | 'error'
 
 export enum ProposalCategory {

@@ -3,6 +3,7 @@ import Big from '@/lib/big'
 import { PizzaChart } from '@/components/PizzaChart'
 import { Paragraph } from '@/components/Typography'
 import { ClassNameValue } from 'tailwind-merge'
+import { SmallLineSeparator } from '@/components/Separators/SmallLineSeparator'
 
 interface QuorumColumnProps {
   quorumVotes: Big
@@ -35,10 +36,11 @@ export const QuorumColumn = ({
       {quorumAtSnapshot.eq(0) ? (
         '-'
       ) : (
-        <>
-          {!hideQuorumTarget && formatNumberWithCommas(quorumAtSnapshot) + ' | '}
+        <div className="flex flex-row items-center">
+          {!hideQuorumTarget && formatNumberWithCommas(quorumAtSnapshot)}
+          <SmallLineSeparator />
           {formatNumberWithCommas(percentage)}%
-        </>
+        </div>
       )}
     </Paragraph>
   )

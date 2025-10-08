@@ -1,14 +1,11 @@
 import { ButtonAction } from '@/app/proposals/components/vote-details'
-import { Proposal } from '@/app/proposals/shared/types'
-import { Paragraph, Span } from '@/components/Typography'
-import Link from 'next/link'
-import { ClassNameValue } from 'tailwind-merge'
-import { CreatorRowComponent } from './CreatorRowComponent'
-import { Countdown } from '@/components/Countdown'
-import { cn } from '@/lib/utils'
-import { QuorumColumn, VotesColumn } from '@/app/proposals/components/table-columns/VotesColumn'
 import { VotingPowerWithActionComponent } from '@/app/proposals/components/voting-power-with-action'
-import Big from '@/lib/big'
+import { Proposal } from '@/app/proposals/shared/types'
+import { cn } from '@/lib/utils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { ClassNameValue } from 'tailwind-merge'
+import { ProposalCardDesktop } from './ProposalCardDesktop'
+import { ProposalCardMobile } from './ProposalCardMobile'
 
 interface LatestActiveProposalCardProps {
   votingPower: bigint
@@ -17,77 +14,17 @@ interface LatestActiveProposalCardProps {
   className?: ClassNameValue
 }
 
-const columnStyle: ClassNameValue = 'flex flex-col justify-start items-start'
-
 export const LatestActiveProposalCard = ({
   proposal,
   votingPower,
   buttonAction,
   className,
 }: LatestActiveProposalCardProps) => {
-  const {
-    proposalId,
-    name,
-    proposer,
-    Starts,
-    proposalDeadline,
-    blockNumber,
-    votes: { forVotes, abstainVotes, againstVotes },
-    category,
-    quorumAtSnapshot,
-  } = proposal
+  const isDesktop = useIsDesktop()
+
   return (
-    <div className={cn('flex flex-row bg-bg-60 p-6 pr-16', className)}>
-      <div className="flex flex-col flex-1 min-w-0 pr-8">
-        <Link
-          className="text-primary group-hover:underline group-hover:text-bg-100 group-hover:decoration-bg-40"
-          href={`/proposals/${proposalId}`}
-        >
-          <Paragraph className="w-full truncate">{name}</Paragraph>
-        </Link>
-        <CreatorRowComponent proposer={proposer} Starts={Starts} category={category} />
-        {/** vote ending, quorum and votes columns*/}
-        <div className="flex flex-row mt-6 justify-start">
-          {/** vote ending column */}
-          <div className={columnStyle}>
-            <Span variant="tag" className="text-bg-0">
-              Vote ending in
-            </Span>
-            <Countdown
-              className="w-auto mt-2"
-              end={proposalDeadline}
-              timeSource="blocks"
-              referenceStart={Big(blockNumber)}
-              colorDirection="normal"
-            />
-          </div>
-          {/** quorum column */}
-          <div className={cn(columnStyle, 'ml-10')}>
-            <Span variant="tag" className="text-bg-0">
-              Quorum needed | reached
-            </Span>
-            <QuorumColumn
-              className="w-auto mt-2 text-left"
-              quorumVotes={forVotes.add(abstainVotes)}
-              quorumAtSnapshot={quorumAtSnapshot}
-            />
-          </div>
-          {/** votes column */}
-          <div className={cn(columnStyle, 'ml-10')}>
-            <Span variant="tag" className="text-bg-0">
-              Votes
-            </Span>
-            <VotesColumn
-              className="w-auto items-start"
-              textClassName="mt-2"
-              chartClassName="mt-1"
-              forVotes={forVotes.toNumber()}
-              againstVotes={againstVotes.toNumber()}
-              abstainVotes={abstainVotes.toNumber()}
-            />
-          </div>
-        </div>
-      </div>
+    <div className={cn('flex flex-col lg:flex-row md:bg-bg-60 md:p-6 gap-6 md:gap-2', className)}>
+      {isDesktop ? <ProposalCardDesktop proposal={proposal} /> : <ProposalCardMobile proposal={proposal} />}
       <VotingPowerWithActionComponent
         className="flex-shrink-0 self-start"
         votingPower={votingPower}
