@@ -1,6 +1,6 @@
 import { BaseTypography } from '@/components/Typography/Typography'
 import { TokenImage } from '@/components/TokenImage'
-import { RBTC, RIF } from '@/lib/constants'
+import { RBTC, RIF } from '@/lib/tokens'
 import { ArrowRight } from 'lucide-react'
 
 const rbtcImage = <TokenImage symbol={RBTC} size={26} className="inline-block mt-[-0.2rem]" />

@@ -71,7 +71,10 @@ const ClaimBackerRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps,
         isClaimable={isClaimable}
         isLoading={isLoading}
         isTxPending={isPendingTx || isLoadingReceipt}
-        tokens={TOKENS}
+        tokens={{
+          rif: TOKENS.rif,
+          rbtc: TOKENS.rbtc,
+        }}
       />
     )
   )
@@ -165,7 +168,10 @@ const ClaimBuilderRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps
         isClaimable={isClaimable}
         isLoading={isLoadingRif || isLoadingRbtc || isLoadingGauge}
         isTxPending={isPendingTx || isLoadingReceipt}
-        tokens={TOKENS}
+        tokens={{
+          rif: TOKENS.rif,
+          rbtc: TOKENS.rbtc,
+        }}
       />
     )
   )
