@@ -7,7 +7,8 @@ import { cn, truncateMiddle } from '@/lib/utils'
 import { useState } from 'react'
 import { applyPinataImageOptions } from '@/lib/ipfs'
 import { Paragraph, Header, Span } from '@/components/Typography'
-import { ViewIconHandler, type ViewState } from './ViewIconHandler'
+import { ViewIconHandler } from './ViewIconHandler'
+import { useBadgeView } from './useBadgeView'
 import {
   createColumnHelper,
   getSortedRowModel,
@@ -28,7 +29,7 @@ export const NftHoldersSection = ({ address }: { address: Address }) => {
     pageIndex: 0,
     pageSize: STEP,
   }))
-  const [view, setView] = useState<ViewState>('images')
+  const { view } = useBadgeView()
   const { isLoading, isError, allItems } = useFetchNftHolders(address)
   // Define NFT holders table
   const { accessor } = createColumnHelper<NftHolderItem>()
@@ -45,7 +46,12 @@ export const NftHoldersSection = ({ address }: { address: Address }) => {
     }),
     accessor('id', {
       header: 'ID Number',
-      cell: ({ cell }) => <Paragraph>{cell.getValue()}</Paragraph>,
+      cell: ({ cell }) => (
+        <Paragraph className="text-right md:text-left">
+          <span className="md:hidden">ID#&nbsp;</span>
+          <span>{cell.getValue()}</span>
+        </Paragraph>
+      ),
     }),
   ]
   const table = useReactTable({
@@ -76,7 +82,7 @@ export const NftHoldersSection = ({ address }: { address: Address }) => {
             </Span>
           )}
         </div>
-        {allItems.length > 0 && <ViewIconHandler view={view} onChangeView={setView} />}
+        {allItems.length > 0 && <ViewIconHandler />}
       </div>
       {isLoading && <LoadingSpinner />}
       {!isLoading && allItems.length > 0 && (
