@@ -47,7 +47,7 @@ export const BalancesSection = () => {
         </div>
         <div className="flex flex-col gap-4 mt-6">
           <BalanceInfoForUser symbol={STRIF} className="min-w-[268px]" />
-          <UnstakeButton onClick={unstakeModal.openModal} />
+          {Big(balances[STRIF].balance).gt(0) && <UnstakeButton onClick={unstakeModal.openModal} />}
         </div>
         <BalanceInfoForUser symbol={USDRIF} className={balanceStyle} />
         <BalanceInfoForUser symbol={RBTC} className={balanceStyle} />
