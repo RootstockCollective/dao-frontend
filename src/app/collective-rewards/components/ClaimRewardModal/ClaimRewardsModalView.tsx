@@ -41,6 +41,7 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
   className,
   tokens,
 }) => {
+  console.log('tokens', tokens)
   const radioOptions: Array<{
     value: ClaimRewardType
     label: ReactNode
