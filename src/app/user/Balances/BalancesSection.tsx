@@ -10,6 +10,8 @@ import { MoneyIconKoto } from '@/components/Icons'
 import { useRef } from 'react'
 import { Span } from '@/components/Typography'
 import { RBTC, RIF, STRIF, USDRIF } from '@/lib/tokens'
+import Big from '@/lib/big'
+import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 
 export const BalancesSection = () => {
   const stakeModal = useModal()

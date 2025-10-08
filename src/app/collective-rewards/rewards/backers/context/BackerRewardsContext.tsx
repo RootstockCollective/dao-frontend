@@ -102,20 +102,20 @@ export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({ c
     data: rifRewards,
     isLoading: rifLoading,
     error: rifError,
-  } = useGetTokenRewards(backer, rifToken!, gauges)
+  } = useGetTokenRewards(backer, rifToken, gauges)
   const {
     data: rbtcRewards,
     isLoading: rbtcLoading,
     error: rbtcError,
-  } = useGetTokenRewards(backer, rbtcToken!, gauges)
+  } = useGetTokenRewards(backer, rbtcToken, gauges)
   const [isDetailedView, setIsDetailedView] = useState(false)
 
   const isLoading = buildersLoading || rifLoading || rbtcLoading
   const error = buildersError ?? rifError ?? rbtcError
 
   const data: { [token: string]: TokenBackerRewards } = {
-    [rifToken!.address]: rifRewards,
-    [rbtcToken!.address]: rbtcRewards,
+    [rifToken.address]: rifRewards,
+    [rbtcToken.address]: rbtcRewards,
   }
 
   const gaugesWithEarns = (rewardToken?: Address) => {

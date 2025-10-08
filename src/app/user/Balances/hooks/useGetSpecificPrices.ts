@@ -20,7 +20,6 @@ export const useGetSpecificPrices = (): GetPricesResult => {
 
   return useMemo(
     () => ({
-      [TRIF]: getDefaultPriceObject(RIF, query.data),
       [RIF]: getDefaultPriceObject(RIF, query.data),
       [RBTC]: getDefaultPriceObject(RBTC, query.data),
       [STRIF]: getDefaultPriceObject(RIF, query.data), // stRIF price is the same as RIF

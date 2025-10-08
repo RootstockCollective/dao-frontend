@@ -32,7 +32,7 @@ export const TOKENS = {
 
 export type TokenSymbol = keyof typeof TOKENS
 
-// THis helper functions are not used anywhere but could be useful.
+// This helper functions are not used anywhere but could be useful.
 // They could be removed if not needed though.
 export const getTokenBySymbol = (symbol: string) => TOKENS[symbol as TokenSymbol]
 export const getTokenAddress = (symbol: string) => TOKENS[symbol as TokenSymbol]?.address
