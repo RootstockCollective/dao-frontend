@@ -10,6 +10,7 @@ import { MoneyIconKoto } from '@/components/Icons'
 import { useRef } from 'react'
 import { Span } from '@/components/Typography'
 import { RBTC, RIF, STRIF, USDRIF } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 
 export const BalancesSection = () => {
   const stakeModal = useModal()
@@ -82,7 +83,7 @@ const UnstakeButton = ({ onClick }: { onClick: () => void }) => {
       onClick={hasEnoughBalance ? onClick : undefined}
       disabled={!hasEnoughBalance}
       data-testid="UnstakeRIF"
-      className="flex flex-row gap-2 pl-0 max-w-[154px]"
+      className="flex flex-row gap-2 pl-0 max-w-[154px] justify-start"
       variant="transparent"
     >
       <Span className="flex-shrink-0">Unstake stRIF</Span>
