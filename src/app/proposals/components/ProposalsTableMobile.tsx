@@ -13,8 +13,8 @@ export const ProposalsTableMobile = ({ table }: { table: ReactTable<Proposal> })
 const ExpandableRow = ({ row }: { row: Row<Proposal> }) => {
   const [isExpanded, setIsExpanded] = useState(false)
   return (
-    <Expandable onToggleExpanded={setIsExpanded} className="pb-5 mb-5 border-b border-[#37322F]">
-      <ExpandableHeader triggerColor="#ACA39D">{renderCell(row, 'name')}</ExpandableHeader>
+    <Expandable onToggleExpanded={setIsExpanded} className="pb-5 mb-5 border-b border-bg-60">
+      <ExpandableHeader triggerColor="var(--color-bg-0)">{renderCell(row, 'name')}</ExpandableHeader>
       <div className="flex flex-row items-center justify-between">
         <div className="flex flex-row gap-2 items-center">
           {renderCell(row, 'proposer')}
