@@ -127,10 +127,10 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
     useProposalFilters()
 
   // input field filtering
-  const [searchVisible, setSearchVisible] = useState(false)
+  const [searchVisible, setSearchVisible] = useState(isDesktop)
   const searchBoxRef = useRef<HTMLInputElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  useClickOutside(searchBoxRef, () => setSearchVisible(false))
+  useClickOutside(searchBoxRef, () => !isDesktop && setSearchVisible(false))
 
   const handleSearch = useCallback(
     (value: string) => {
