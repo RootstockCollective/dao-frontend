@@ -11,7 +11,8 @@ const useBackerRewardsPerToken = ({ symbol }: Token, estimatedRewards: bigint) =
 }
 
 export const useBackersEstimatedRewards = () => {
-  const tokens = TOKENS
+  const { rif, rbtc } = TOKENS
+
   const { data: estimatedRewards, isLoading, error } = useGetBuilderEstimatedRewards()
   const { totalEstimatedRif, totalEstimatedRbtc } = estimatedRewards.reduce(
     (acc: { totalEstimatedRif: bigint; totalEstimatedRbtc: bigint }, builder) => {
@@ -24,22 +25,11 @@ export const useBackersEstimatedRewards = () => {
   )
 
   const rifData = {
-    ...useBackerRewardsPerToken(tokens.rif, totalEstimatedRif),
+    ...useBackerRewardsPerToken(rif, totalEstimatedRif),
     isLoading,
     error,
   }
-  const rbtcData = {
-    ...useBackerRewardsPerToken(tokens.rbtc, totalEstimatedRbtc),
-    isLoading,
-    error,
-  }
+  const rbtcData = { ...useBackerRewardsPerToken(rbtc, totalEstimatedRbtc), isLoading, error }
 
-  return {
-    rif: {
-      ...rifData,
-    },
-    rbtc: {
-      ...rbtcData,
-    },
-  }
+  return { rif: { ...rifData }, rbtc: { ...rbtcData } }
 }

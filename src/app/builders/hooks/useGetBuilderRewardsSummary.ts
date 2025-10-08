@@ -7,10 +7,11 @@ import { usePricesContext } from '@/shared/context'
 import { useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
 import { TOKENS } from '@/lib/tokens'
-import { USD } from '@/lib/constants'
+import { USD } from '@/lib/tokens'
 
 export const useGetBuilderRewardsSummary = (currency = USD) => {
   const { rif, rbtc } = TOKENS
+
   const {
     data: estimatedRewards,
     isLoading: estimatedRewardsLoading,
