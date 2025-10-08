@@ -10,6 +10,7 @@ import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
 import { Address } from 'viem'
+import { TOKENS } from '@/lib/tokens'
 
 export type BackerRewards = CompleteBuilder & {
   totalAllocation: TokenRewards
@@ -31,11 +32,7 @@ const tokenRewardsMetrics = (tokenRewards: TokenBackerRewards, gauge: Address) =
   }
 }
 
-export const useGetBackerRewards = (
-  backer: Address,
-  { rif, rbtc }: { [token: string]: Token },
-  currency = 'USD',
-) => {
+export const useGetBackerRewards = (backer: Address, currency = 'USD') => {
   const { builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
   const { activeBuilders, gauges } = useMemo(() => {
     const filteredBuilders = filterBuildersByState<CompleteBuilder>(builders)
@@ -52,11 +49,15 @@ export const useGetBackerRewards = (
   const isLoading = buildersLoading || allocationOfLoading || rewardsLoading
   const error = buildersError ?? allocationOfError ?? rewardsError
 
+  const { rif, rbtc } = TOKENS
+
   const { prices } = usePricesContext()
-  const rifPrice = prices[rif.symbol]?.price ?? 0
-  const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
+  const rifPrice = prices[rif?.symbol ?? '']?.price ?? 0
+  const rbtcPrice = prices[rbtc?.symbol ?? '']?.price ?? 0
 
   const data = useMemo(() => {
+    if (!rif || !rbtc) return []
+
     return activeBuilders.reduce<BackerRewards[]>((acc, builder, i) => {
       const { gauge, backerRewardPct } = builder
       const backerAllocationOf = allocationOf[i] ?? 0n

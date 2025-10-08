@@ -8,6 +8,7 @@ import {
 import { CompleteBuilder, StateWithUpdate } from '@/app/collective-rewards/types'
 import { filterBuildersByState, useBuilderContext } from '@/app/collective-rewards/user'
 import { useReadGauges } from '@/shared/hooks/contracts'
+import { TOKENS } from '@/lib/tokens'
 import { createContext, FC, ReactNode, useContext, useMemo, useState } from 'react'
 import { Address } from 'viem'
 
@@ -41,9 +42,6 @@ const BackerRewardsContext = createContext<BackerRewardsContextValue>({
 type BackerRewardsProviderProps = {
   children: ReactNode
   backer: Address
-  tokens: {
-    [token: string]: Token
-  }
 }
 
 function mapToRecord(rewardsAmount: (bigint | undefined)[], gauges: `0x${string}`[]) {
@@ -91,31 +89,33 @@ const useGetTokenRewards = (backer: Address, token: Token, gauges: Address[]) =>
 const getEarnedAddresses = (rewards: Record<Address, bigint>) =>
   Object.keys(rewards).filter(key => rewards[key as Address] > 0n) as Address[]
 
-export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({
-  children,
-  backer,
-  tokens: { rif, rbtc },
-}) => {
+export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({ children, backer }) => {
   const { builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
   const gauges = useMemo(() => {
     const filteredBuilders = filterBuildersByState<CompleteBuilder>(builders)
     return filteredBuilders.map(({ gauge }) => gauge)
   }, [builders])
 
-  const { data: rifRewards, isLoading: rifLoading, error: rifError } = useGetTokenRewards(backer, rif, gauges)
+  const { rif: rifToken, rbtc: rbtcToken } = TOKENS
+
+  const {
+    data: rifRewards,
+    isLoading: rifLoading,
+    error: rifError,
+  } = useGetTokenRewards(backer, rifToken!, gauges)
   const {
     data: rbtcRewards,
     isLoading: rbtcLoading,
     error: rbtcError,
-  } = useGetTokenRewards(backer, rbtc, gauges)
+  } = useGetTokenRewards(backer, rbtcToken!, gauges)
   const [isDetailedView, setIsDetailedView] = useState(false)
 
   const isLoading = buildersLoading || rifLoading || rbtcLoading
   const error = buildersError ?? rifError ?? rbtcError
 
   const data: { [token: string]: TokenBackerRewards } = {
-    [rif.address]: rifRewards,
-    [rbtc.address]: rbtcRewards,
+    [rifToken!.address]: rifRewards,
+    [rbtcToken!.address]: rbtcRewards,
   }
 
   const gaugesWithEarns = (rewardToken?: Address) => {

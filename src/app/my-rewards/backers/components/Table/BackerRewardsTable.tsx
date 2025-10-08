@@ -35,13 +35,11 @@ const RewardsDetails = ({
 
 type PagedFilter = {
   backer: Address
-  tokens: { [token: string]: Token }
   pageOptions: { start: number; end: number }
   sort: Sort<ColumnId>
 }
 const usePagedFilteredBackerRewards = ({
   backer,
-  tokens,
   pageOptions,
   sort,
 }: PagedFilter): {
@@ -49,7 +47,7 @@ const usePagedFilteredBackerRewards = ({
   isLoading: boolean
   error: Error | null
 } => {
-  const { data: backerRewards, isLoading, error } = useGetBackerRewards(backer, tokens)
+  const { data: backerRewards, isLoading, error } = useGetBackerRewards(backer)
   const data = useMemo(() => {
     const { columnId, direction } = sort
 
@@ -112,7 +110,6 @@ export const BackerRewardsTable = () => {
     error,
   } = usePagedFilteredBackerRewards({
     backer: userAddress!,
-    tokens: TOKENS,
     pageOptions,
     sort,
   })
