@@ -9,7 +9,7 @@ import { BackingContextProvider } from '@/app/shared/context/BackingContext'
 export const BackerRewards: FC<{ backer: Address }> = ({ backer }) => {
   return (
     <div className="flex flex-col w-full gap-10">
-      <BackerRewardsContextProvider backer={backer} tokens={TOKENS}>
+      <BackerRewardsContextProvider backer={backer}>
         <BackingContextProvider>
           <BackerRewardsMetrics backer={backer} />
         </BackingContextProvider>

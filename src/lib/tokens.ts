@@ -31,31 +31,10 @@ export const TOKENS = {
 } as const
 
 export type TokenSymbol = keyof typeof TOKENS
-export type TokenInfo = (typeof TOKENS)[TokenSymbol]
 
+// THis helper functions are not used anywhere but could be useful.
+// They could be removed if not needed though.
 export const getTokenBySymbol = (symbol: string) => TOKENS[symbol as TokenSymbol]
 export const getTokenAddress = (symbol: string) => TOKENS[symbol as TokenSymbol]?.address
 export const getAllTokenSymbols = () => Object.keys(TOKENS) as TokenSymbol[]
 export const getAllTokens = () => Object.values(TOKENS)
-
-/**
- * Find a token from a tokens object by matching its symbol
- * Handles both mainnet and testnet variants (e.g., 'RIF' or 'tRIF')
- */
-export const findTokenBySymbol = <T extends { symbol: string }>(
-  tokens: { [key: string]: T },
-  ...symbolVariants: string[]
-): T | undefined => {
-  const tokenEntries = Object.entries(tokens)
-  return tokenEntries.find(([_, token]) => symbolVariants.includes(token.symbol))?.[1]
-}
-
-/**
- * Extract RIF and RBTC tokens from a tokens object
- * Returns both tokens or undefined if not found
- */
-export const extractRifRbtcTokens = <T extends { symbol: string }>(tokens: { [key: string]: T }) => {
-  const rif = findTokenBySymbol(tokens, 'RIF', 'tRIF')
-  const rbtc = findTokenBySymbol(tokens, 'rBTC', 'tRBTC')
-  return { rif, rbtc }
-}

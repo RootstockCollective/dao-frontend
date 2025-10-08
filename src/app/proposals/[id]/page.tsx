@@ -6,7 +6,8 @@ import { useParams } from 'next/navigation'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { ParsedActionDetails, ProposalType } from './types'
 import type { GetPricesResult } from '@/app/user/types'
-import { RBTC, RIF, RIF_ADDRESS, USDRIF, USDRIF_ADDRESS, TRIF, ENV } from '@/lib/constants'
+import { RIF_ADDRESS, USDRIF_ADDRESS } from '@/lib/constants'
+import { RIF, USDRIF, RBTC } from '@/lib/tokens'
 import {
   TechnicalDetails,
   ProposalProggressBar,
@@ -28,7 +29,7 @@ export default function ProposalView() {
 
 // Utility to get token symbol from address (expandable)
 const tokenAddressToSymbol = {
-  [RIF_ADDRESS.toLowerCase()]: ENV === 'testnet' ? TRIF : RIF,
+  [RIF_ADDRESS.toLowerCase()]: RIF,
   [USDRIF_ADDRESS.toLowerCase()]: USDRIF,
   // Add more tokens here
 }
