@@ -36,7 +36,7 @@ export const QuorumColumn = ({
       {quorumAtSnapshot.eq(0) ? (
         '-'
       ) : (
-        <div className="flex flex-row gap-2 items-center">
+        <div className="flex flex-row items-center">
           {!hideQuorumTarget && formatNumberWithCommas(quorumAtSnapshot)}
           <SmallLineSeparator />
           {formatNumberWithCommas(percentage)}%

@@ -16,7 +16,7 @@ interface CreatorRowComponentProps {
 }
 
 export const CreatorRowComponent = ({ proposer, Starts, category, className }: CreatorRowComponentProps) => (
-  <div className={cn('flex flex-row gap-2 items-center whitespace-nowrap flex-shrink-0', className)}>
+  <div className={cn('flex flex-row items-center whitespace-nowrap flex-shrink-0', className)}>
     <ProposerColumn by={proposer} />
     <SmallLineSeparator />
     <Paragraph>{Starts.format('MMM DD, YYYY')}</Paragraph>

@@ -24,7 +24,6 @@ export const ProposalCardMobile = ({ proposal }: Props) => {
     votes: { forVotes, abstainVotes, againstVotes },
     category,
     quorumAtSnapshot,
-    blocksUntilClosure: timeRemaining,
     proposalState,
   } = proposal
   const [isExpanded, setIsExpanded] = useState(false)
@@ -34,7 +33,7 @@ export const ProposalCardMobile = ({ proposal }: Props) => {
         <Paragraph className="text-primary">{name}</Paragraph>
       </ExpandableHeader>
       <div className="flex flex-row items-center justify-between">
-        <div className="flex flex-row gap-2 items-center">
+        <div className="flex flex-row items-center">
           <ProposerColumn by={proposer} />
           <SmallLineSeparator />
           <div>

@@ -6,5 +6,5 @@ interface Props {
 }
 
 export const SmallLineSeparator = ({ className }: Props) => (
-  <div className={cn('w-0.5 h-1.5 rounded-full bg-v3-text-40', className)} />
+  <div className={cn('w-0.5 h-1.5 mx-2 rounded-full bg-v3-text-40', className)} />
 )
