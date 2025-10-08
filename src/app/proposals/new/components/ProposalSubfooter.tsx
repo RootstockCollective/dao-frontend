@@ -78,7 +78,7 @@ export const ProposalSubfooter = ({
   return (
     <>
       <ActionsContainer className="bg-bg-60" containerClassName="items-center">
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2 w-full md:w-auto px-4 md:px-0">
           <Button
             disabled={backDisabled || disabled}
             onClick={handleBack}

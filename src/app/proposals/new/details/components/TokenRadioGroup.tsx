@@ -4,6 +4,7 @@ import { Controller, Control, FieldPath } from 'react-hook-form'
 import { SYMBOLS, type TokenFormData } from '../schemas/TokenSchema'
 import { cn } from '@/lib/utils'
 import { TokenImage } from '@/components/TokenImage'
+import { Span } from '@/components/Typography'
 
 interface TokenRadioGroupProps<T extends TokenFormData> {
   name: FieldPath<T>
@@ -18,7 +19,7 @@ export default function TokenRadioGroup<T extends TokenFormData>({ name, control
       render={({ field: { onChange, value }, fieldState: { error } }) => (
         <>
           <ul
-            className="flex gap-2 flex-col @md:flex-row @md:gap-6"
+            className="flex flex-row justify-around gap-2 @md:gap-6"
             role="radiogroup"
             aria-label="Select token"
           >
@@ -50,7 +51,11 @@ export default function TokenRadioGroup<T extends TokenFormData>({ name, control
               </li>
             ))}
           </ul>
-          {error && <span className="text-xs text-error font-rootstock-sans">{error.message}</span>}
+          {error && (
+            <Span variant="body-xs" className="text-error">
+              {error.message}
+            </Span>
+          )}
         </>
       )}
     />

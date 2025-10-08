@@ -17,8 +17,10 @@ import { GrantProposal, GrantProposalSchema } from '../schemas/GrantProposalSche
 import { TOKEN_FIELD_LIMITS } from '../schemas/TokenSchema'
 import { labeledMilestones } from '@/app/proposals/shared/utils'
 import { MilestoneInfoSidebar } from '../components/MilestoneInfoSidebar'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 export default function GrantsProposalForm() {
+  const isDesktop = useIsDesktop()
   const { record, setRecord } = useReviewProposal()
   const router = useRouter()
 
@@ -67,13 +69,14 @@ export default function GrantsProposalForm() {
   useEffect(() => setFocus('proposalName'), [])
 
   return (
-    <div className="flex flex-col-reverse lg:flex-row gap-6">
-      <form className="px-6 pt-6 pb-8 flex flex-col gap-10 basis-3/4 bg-bg-80 rounded-sm">
+    <div className="flex flex-col lg:flex-row gap-6">
+      <form className="p-6 pb-8 flex flex-col gap-6 md:gap-10 basis-3/4 bg-bg-80 rounded-sm">
         <BaseProposalFields control={control} />
         <div className="flex flex-col gap-4">
           <Header caps variant="h2" className="leading-loose tracking-wide">
             Milestone Selection
           </Header>
+          {!isDesktop && <MilestoneInfoSidebar />}
           <SelectField
             name="milestone"
             control={control}
@@ -94,8 +97,8 @@ export default function GrantsProposalForm() {
             data-testid="InputAddress"
             maxLength={BASE_PROPOSAL_LIMITS.address.max}
           />
-          <div className="flex items-center justify-start gap-6 @container">
-            <div className="basis-1/2">
+          <div className="flex flex-col md:flex-row items-center justify-start gap-6 @container">
+            <div className="w-full md:basis-1/2">
               <NumberInput
                 name="transferAmount"
                 control={control}
@@ -104,15 +107,19 @@ export default function GrantsProposalForm() {
                 maxLength={TOKEN_FIELD_LIMITS.transferAmount.maxLength}
               />
             </div>
-            <TokenRadioGroup name="token" control={control} />
+            <div className="w-full md:basis-1/2">
+              <TokenRadioGroup name="token" control={control} />
+            </div>
           </div>
         </div>
       </form>
       <div className="flex flex-col gap-10 basis-1/4 justify-between">
         <ProposalInfoSidebar kycLink="https://gov.rootstockcollective.xyz/t/general-guidelines-for-grant-applications/94/7" />
-        <div className="mb-40">
-          <MilestoneInfoSidebar />
-        </div>
+        {isDesktop && (
+          <div className="mb-40">
+            <MilestoneInfoSidebar />
+          </div>
+        )}
       </div>
     </div>
   )
