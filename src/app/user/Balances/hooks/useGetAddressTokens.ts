@@ -1,5 +1,5 @@
 import { useBalance, useReadContracts } from 'wagmi'
-import { Address, zeroAddress } from 'viem'
+import { Address } from 'viem'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { tokenContracts, MulticallAddress } from '@/lib/contracts'
 import { AddressToken } from '@/app/user/types'
