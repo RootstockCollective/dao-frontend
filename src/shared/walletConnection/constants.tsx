@@ -24,7 +24,8 @@ export const disclaimerModalText = {
 
 // Define route patterns and their components
 export const routePatterns = [
-  { pattern: /^\/communities\/nft\//, component: null }, // No header for NFT community pages
+  //  NFT community pages don't have headers according to the design
+  { pattern: /^\/communities\/nft\//, component: null },
   { pattern: /^\/communities/, component: <HeaderTitle variant="h1">COMMUNITIES</HeaderTitle> },
   { pattern: /^\/proposals$/, component: <HeaderTitle variant="h1">PROPOSALS</HeaderTitle> },
   { pattern: /^\/delegate$/, component: <HeaderTitle variant="h1">DELEGATION</HeaderTitle> },
