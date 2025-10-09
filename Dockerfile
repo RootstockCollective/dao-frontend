@@ -20,7 +20,7 @@ COPY package*.json ./
 ENV CYPRESS_INSTALL_BINARY 0
 
 # Install dependencies
-RUN npm install --verbose
+RUN npm ci --verbose
 
 # Copy the rest of the application code
 COPY . .
