@@ -18,8 +18,6 @@ export function NewProposalCardExtended({ card, className, cancelCardSelection, 
   const isDesktop = useIsDesktop()
   const { bigImage, cardTitle, bottomTextBlock, bottomTitle, textBlock, smallImage, detailsUrl } = card
 
-  console.log('smallImage', smallImage)
-
   return (
     <div
       className={cn(
