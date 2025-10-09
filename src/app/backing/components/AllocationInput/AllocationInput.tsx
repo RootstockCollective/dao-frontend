@@ -7,7 +7,7 @@ import { InputNumber } from '@/components/Input/InputNumber'
 import { Paragraph } from '@/components/Typography'
 import { RIF, STRIF } from '@/lib/constants'
 import { cn, formatCurrency } from '@/lib/utils'
-import { useRef, useState } from 'react'
+import { useRef, useState, useCallback, useEffect } from 'react'
 import { NumberFormatValues } from 'react-number-format'
 import { Address, formatEther, parseEther } from 'viem'
 import { PendingAllocation } from '../PendingAllocation/PendingAllocation'
@@ -67,6 +67,24 @@ export const AllocationInput = ({
 
   const inputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  const sliderRef = useRef<HTMLDivElement>(null)
+
+  // Prevent scroll when interacting with slider on mobile
+  useEffect(() => {
+    const slider = sliderRef.current
+    if (!slider) return
+
+    const handleTouchStart = (e: TouchEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+
+    slider.addEventListener('touchstart', handleTouchStart, { passive: false })
+
+    return () => {
+      slider.removeEventListener('touchstart', handleTouchStart)
+    }
+  }, [])
 
   useExitOnOutsideClick({
     containerRef,
@@ -174,7 +192,7 @@ export const AllocationInput = ({
         </Paragraph>
       )}
       {editing && !isNegativeBacking && !allocationTxPending && (
-        <div data-testid="allocationInputSlider">
+        <div ref={sliderRef} data-testid="allocationInputSlider">
           <StickySlider value={[sliderValue]} max={100} step={1} onValueChange={onSliderChange} />
           <Paragraph className="text-[12px] text-v3-text-60 mt-2" data-testid="allocationInputPercentage">
             {Number(sliderValue).toFixed(0)}% of available {STRIF} for backing
