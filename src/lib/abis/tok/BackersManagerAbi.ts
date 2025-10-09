@@ -940,6 +940,31 @@ export const BackersManagerAbi = [
   },
   {
     type: 'event',
+    name: 'RewardDistributionRewards',
+    inputs: [
+      {
+        name: 'rifAmount_',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+      {
+        name: 'usdrifAmount_',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+      {
+        name: 'nativeAmount_',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
     name: 'RewardDistributionStarted',
     inputs: [
       {
@@ -1089,6 +1114,11 @@ export const BackersManagerAbi = [
   {
     type: 'error',
     name: 'PositiveAllocationOnHaltedGauge',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'ReentrancyGuardReentrantCall',
     inputs: [],
   },
   {

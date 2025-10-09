@@ -274,6 +274,31 @@ export const RewardDistributorAbi = [
   },
   {
     type: 'event',
+    name: 'DefaultRewardAmountsUpdated',
+    inputs: [
+      {
+        name: 'rifAmount_',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+      {
+        name: 'usdrifAmount_',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+      {
+        name: 'nativeAmount_',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
     name: 'Initialized',
     inputs: [
       {
