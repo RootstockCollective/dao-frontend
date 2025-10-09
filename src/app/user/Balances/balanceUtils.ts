@@ -3,7 +3,7 @@ import { tokenContracts } from '@/lib/contracts'
 import { formatEther } from 'viem'
 import { formatNumberWithCommas } from '@/lib/utils'
 import Big from '@/lib/big'
-import { RIF, RBTC, STRIF, USDRIF } from '@/lib/constants'
+import { RIF, RBTC, STRIF, USDRIF } from '@/lib/tokens'
 
 const symbolsToGetFromArray = {
   [RIF]: { equivalentSymbols: ['tRIF', 'RIF'], currentContract: tokenContracts[RIF] },

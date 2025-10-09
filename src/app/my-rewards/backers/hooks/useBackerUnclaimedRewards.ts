@@ -25,11 +25,7 @@ export const useBackerUnclaimedRewards = () => {
   const rbtcData = useBackerRewardsPerToken(rbtc)
 
   return {
-    rif: {
-      ...rifData,
-    },
-    rbtc: {
-      ...rbtcData,
-    },
+    rif: { ...rifData },
+    rbtc: { ...rbtcData },
   }
 }

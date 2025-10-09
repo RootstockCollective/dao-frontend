@@ -3,10 +3,11 @@ import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUn
 import { Header, Label } from '@/components/Typography'
 import { Metric } from '@/components/Metric'
 import { FC } from 'react'
-import { RBTC, RIF, WeiPerEther } from '@/lib/constants'
+import { WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import Big from 'big.js'
 import { formatCurrency } from '@/lib/utils'
+import { RBTC, RIF } from '@/lib/tokens'
 
 interface RewardsMetricsProps {
   title: string

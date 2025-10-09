@@ -5,7 +5,7 @@ import { treasuryContracts } from '@/lib/contracts'
 import { GetPricesResult } from '@/app/user/types'
 import Big from '@/lib/big'
 import { Bucket } from '../types'
-import { RIF, USDRIF, RBTC } from '@/lib/constants'
+import { RIF, USDRIF, RBTC } from '@/lib/tokens'
 
 interface TreasuryContextProps {
   buckets: Partial<Record<keyof typeof treasuryContracts, ReturnType<typeof getBucketBalance>>>

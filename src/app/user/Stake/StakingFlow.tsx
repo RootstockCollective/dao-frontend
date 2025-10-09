@@ -3,6 +3,7 @@ import { StakingProvider } from '@/app/user/Stake/StakingContext'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { StakingToken } from '@/app/user/Stake/types'
 import { tokenContracts } from '@/lib/contracts'
+import { RIF, STRIF } from '@/lib/tokens'
 import { StepWrapper } from './components/StepWrapper'
 
 interface Props {
@@ -14,22 +15,22 @@ export const StakingFlow = ({ onCloseModal }: Props) => {
 
   const tokenToSend: StakingToken = useMemo(
     () => ({
-      balance: balances.RIF.balance,
-      symbol: balances.RIF.symbol,
-      contract: tokenContracts.RIF,
-      price: prices.RIF?.price.toString(),
+      balance: balances[RIF].balance,
+      symbol: balances[RIF].symbol,
+      contract: tokenContracts[RIF],
+      price: prices[RIF]?.price.toString(),
     }),
-    [balances.RIF.balance, balances.RIF.symbol, prices.RIF?.price],
+    [balances, prices],
   )
 
   const tokenToReceive: StakingToken = useMemo(
     () => ({
-      balance: balances.stRIF.balance,
-      symbol: balances.stRIF.symbol,
-      contract: tokenContracts.stRIF,
-      price: prices.stRIF?.price.toString(),
+      balance: balances[STRIF].balance,
+      symbol: balances[STRIF].symbol,
+      contract: tokenContracts[STRIF],
+      price: prices[STRIF]?.price.toString(),
     }),
-    [balances.stRIF.balance, balances.stRIF.symbol, prices.stRIF?.price],
+    [balances, prices],
   )
 
   return (

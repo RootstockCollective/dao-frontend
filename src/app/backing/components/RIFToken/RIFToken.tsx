@@ -1,5 +1,5 @@
 import { TokenImage } from '@/components/TokenImage'
-import { RIF } from '@/lib/constants'
+import { RIF } from '@/lib/tokens'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
 import { BaseTypography } from '@/components/Typography/Typography'

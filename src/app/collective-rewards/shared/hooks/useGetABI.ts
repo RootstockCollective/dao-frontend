@@ -1,5 +1,6 @@
 import Big from '@/lib/big'
-import { RBTC, RIF, WeiPerEther } from '@/lib/constants'
+import { WeiPerEther } from '@/lib/constants'
+import { RBTC, RIF } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useMemo } from 'react'
 import { Address } from 'viem'

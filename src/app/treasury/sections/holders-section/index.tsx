@@ -1,6 +1,6 @@
 import { GridTable } from '@/components/Table'
 import { Header } from '@/components/Typography'
-import { RIF, STRIF_ADDRESS } from '@/lib/constants'
+import { STRIF_ADDRESS } from '@/lib/constants'
 import { useFetchTokenHolders } from '@/app/treasury/hooks/useFetchTokenHolders'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
@@ -22,6 +22,7 @@ import Big from '@/lib/big'
 import { HolderCard, HolderColumn, ListSwitch, MobileHolderContainer } from './components'
 import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { RIF } from '@/lib/tokens'
 
 interface HolderData {
   holder: {

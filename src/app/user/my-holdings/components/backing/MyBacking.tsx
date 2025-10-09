@@ -13,7 +13,7 @@ export const MyBacking = (): ReactElement => {
 
   return (
     <div className="flex w-full">
-      <BackerRewardsContextProvider backer={userAddress ?? zeroAddress} tokens={TOKENS}>
+      <BackerRewardsContextProvider backer={userAddress ?? zeroAddress}>
         <UnclaimedRewardsMetric />
       </BackerRewardsContextProvider>
       <BackersAllocations />

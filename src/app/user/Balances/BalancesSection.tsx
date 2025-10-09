@@ -9,7 +9,7 @@ import { Button } from '@/components/Button'
 import { MoneyIconKoto } from '@/components/Icons'
 import { useRef } from 'react'
 import { Span } from '@/components/Typography'
-import { RBTC, RIF, STRIF, USDRIF } from '@/lib/constants'
+import { RBTC, RIF, STRIF, USDRIF } from '@/lib/tokens'
 
 export const BalancesSection = () => {
   const stakeModal = useModal()

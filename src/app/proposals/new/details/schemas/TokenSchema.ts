@@ -1,4 +1,4 @@
-import { RBTC, RIF, USDRIF } from '@/lib/constants'
+import { RBTC, RIF, USDRIF } from '@/lib/tokens'
 import { z } from 'zod'
 
 // list of available tokens

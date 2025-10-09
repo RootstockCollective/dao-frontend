@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { ClaimRewardType } from './types'
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import { TokenImage } from '@/components/TokenImage'
-import { RBTC, RIF } from '@/lib/constants'
+import { RBTC, RIF } from '@/lib/tokens'
 
 // Create a wrapper component that provides the RadioGroup context
 const ClaimRewardRadioOptionWrapper = (props: any) => {

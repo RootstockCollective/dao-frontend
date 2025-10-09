@@ -1,5 +1,5 @@
 import { percentageToWei } from '@/app/collective-rewards/settings/utils/weiUtils'
-import { RIF } from '@/lib/constants'
+import { RIF } from '@/lib/tokens'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { getAddress, parseEther } from 'viem'
 import { BuilderCard } from './BuilderCard'

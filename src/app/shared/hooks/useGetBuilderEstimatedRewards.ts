@@ -3,14 +3,13 @@ import { BuilderEstimatedRewards, CompleteBuilder } from '@/app/collective-rewar
 import { filterBuildersByState } from '@/app/collective-rewards/user'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
-import { RBTC, RIF, USD, WeiPerEther } from '@/lib/constants'
-import { TOKENS } from '@/lib/tokens'
+import { WeiPerEther } from '@/lib/constants'
+import { RBTC, RIF, USD } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
 
 export const useGetBuilderEstimatedRewards = (currency = USD) => {
-  const { rif, rbtc } = TOKENS
   const { builders } = useBuilderContext()
   const { activeBuilders, gauges } = useMemo(() => {
     const filteredBuilders = filterBuildersByState<CompleteBuilder>(builders)
@@ -75,7 +74,7 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
             amount: {
               value: backerRifEstimatedRewards,
               price: rifPrice,
-              symbol: rif.symbol,
+              symbol: RIF,
               currency,
             },
           },
@@ -83,7 +82,7 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
             amount: {
               value: backerRbtcEstimatedRewards,
               price: rbtcPrice,
-              symbol: rbtc.symbol,
+              symbol: RBTC,
               currency,
             },
           },
@@ -93,7 +92,7 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
             amount: {
               value: builderRifEstimatedRewards,
               price: rifPrice,
-              symbol: rif.symbol,
+              symbol: RIF,
               currency,
             },
           },
@@ -101,14 +100,14 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
             amount: {
               value: builderRbtcEstimatedRewards,
               price: rbtcPrice,
-              symbol: rbtc.symbol,
+              symbol: RBTC,
               currency,
             },
           },
         },
       }
     })
-  }, [activeBuilders, rewardShares, totalPotentialRewards, cycleRewards, prices, currency, rif, rbtc])
+  }, [activeBuilders, rewardShares, totalPotentialRewards, cycleRewards, prices, currency])
 
   const isLoading = totalPotentialRewardsLoading || rewardSharesLoading || cycleRewardsLoading
   const error = totalPotentialRewardsError || rewardSharesError || cycleRewardsError
