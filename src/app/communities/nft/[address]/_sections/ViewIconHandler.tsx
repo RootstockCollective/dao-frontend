@@ -1,14 +1,9 @@
 import { cn } from '@/lib/utils'
 import { GridIcon, ListIcon } from '@/components/Icons'
+import { useBadgeView } from './useBadgeView'
 
-export type ViewState = 'images' | 'table'
-
-interface ViewIconHandlerProps {
-  view: ViewState
-  onChangeView: (view: ViewState) => void
-}
-
-export const ViewIconHandler = ({ view, onChangeView }: ViewIconHandlerProps) => {
+export const ViewIconHandler = () => {
+  const { view, onChangeView } = useBadgeView()
   const color = (isActive: boolean) => (isActive ? 'var(--color-text-100)' : 'var(--color-text-40)')
 
   return (

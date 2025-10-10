@@ -1,6 +1,5 @@
-import { HeroComponent, HeroComponentProps } from '@/components/HeroComponent'
+import { HeroComponent, type HeroComponentProps } from '@/components/HeroComponent'
 import { CommunityItemButtonHandler } from '@/app/communities/components/CommunityItemButtonHandler'
-import { cn } from '@/lib/utils'
 
 export interface HeroCommuntiesSectionProps extends Partial<HeroComponentProps> {
   shouldShowLearnMore?: boolean
@@ -14,7 +13,7 @@ export const HeroCommunitiesComponent = ({
   shouldShowLearnMore = false,
 }: HeroCommuntiesSectionProps) => (
   <HeroComponent
-    className={cn('mt-6', className)}
+    className={className}
     imageSrc={imageSrc}
     title={title}
     subtitle={subtitle}

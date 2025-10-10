@@ -1,8 +1,8 @@
 'use client'
 import { ConfigResult, usePixelExtractor, PIXEL_CONFIGS } from '@/app/communities/hooks/usePixelExtractor'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, type ComponentProps } from 'react'
 
-interface Props {
+interface Props extends ComponentProps<'div'> {
   image: string
   config?: keyof typeof PIXEL_CONFIGS
 }
@@ -13,7 +13,7 @@ interface Props {
  * @param config - The pixel extraction configuration to use (defaults to 'topRightDiagonal')
  * @constructor
  */
-export const ImageDebris = ({ image, config = 'topRightDiagonal' }: Props) => {
+export const ImageDebris = ({ image, config = 'topRightDiagonal', ...props }: Props) => {
   const [debris, setDebris] = useState<ConfigResult[]>([])
   const { extractPixelsByConfig } = usePixelExtractor()
   const isAlreadyExtracted = useRef(false)
@@ -26,7 +26,7 @@ export const ImageDebris = ({ image, config = 'topRightDiagonal' }: Props) => {
   }, [image, config, extractPixelsByConfig])
 
   return (
-    <>
+    <div {...props}>
       {debris.map(debri => (
         // We're using a plain <img> tag instead of next/image because the image debris have unknown dimensions,
         // making it impossible to leverage next/image's optimization features like resizing or lazy loading.
@@ -38,6 +38,6 @@ export const ImageDebris = ({ image, config = 'topRightDiagonal' }: Props) => {
           alt="Image Debris"
         />
       ))}
-    </>
+    </div>
   )
 }
