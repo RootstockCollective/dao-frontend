@@ -55,6 +55,7 @@ const TooltipComponent = ({ text, token, isRBTC }: TooltipComponentProps) => {
 
 interface Props {
   symbol: SupportedTokens
+  className?: string
 }
 
 /**
@@ -63,7 +64,7 @@ interface Props {
  * @param symbol
  * @constructor
  */
-export const BalanceInfoForUser = ({ symbol }: Props) => {
+export const BalanceInfoForUser = ({ symbol, className }: Props) => {
   const { balances, prices } = useBalancesContext()
 
   const symbolToUse = balances[symbol]?.symbol
@@ -84,6 +85,7 @@ export const BalanceInfoForUser = ({ symbol }: Props) => {
         />
       }
       fiatAmount={fiatAmount}
+      className={className}
     />
   )
 }

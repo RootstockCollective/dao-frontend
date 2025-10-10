@@ -6,7 +6,7 @@ import { BalancesSection } from '../Balances/BalancesSection'
 import { useIsBuilder } from './hooks/useIsBuilder'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 
-const Separator = () => <hr className="w-full bg-bg-60 border-none h-px my-10" />
+const Separator = () => <hr className="w-full bg-bg-60 border-none h-px md:my-10 my-6" />
 
 export const MyActivityAndBalances = () => {
   const { isUserBuilder, isLoading, error } = useIsBuilder()
