@@ -1,4 +1,4 @@
-import { getAbi } from '@/lib/abis/v2'
+import { getAbi } from '@/lib/abis/tok'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BuilderRegistryAddress } from '@/lib/contracts'
 import { renderHook } from '@testing-library/react'

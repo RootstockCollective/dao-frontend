@@ -1,4 +1,4 @@
-import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
+import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
 import { ProposalState } from '@/shared/types'
 import { Dispatch, SetStateAction } from 'react'
 import { AbiFunction, Address } from 'viem'
@@ -13,7 +13,7 @@ export interface DailyAllocationItem {
 
 export interface CycleRewardsItem {
   id: string
-  rewardsERC20: string
+  rewardsRif: string
   rewardsRBTC: string
   currentCycleStart: string
   currentCycleDuration: string
