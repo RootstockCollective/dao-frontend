@@ -148,10 +148,6 @@ export const labeledMilestones = [
     value: Milestones.MILESTONE_3,
     label: MilestoneLabels.THIRD,
   },
-  {
-    value: Milestones.NO_MILESTONE,
-    label: MilestoneLabels.NO_MILESTONE,
-  },
 ]
 
 export const splitCombinedName = (name: string) => {

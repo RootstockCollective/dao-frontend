@@ -7,31 +7,27 @@ import { useReviewProposal } from '@/app/providers'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { ProposalSubfooter } from '../../components/ProposalSubfooter'
 import { ProposalCategory } from '@/shared/types'
-import { Card } from '../components/Card'
-import { formatCurrencyWithLabel, formatNumberWithCommas, shortAddress } from '@/lib/utils'
 import { PreviewLabel } from '../components/PreviewLabel'
 import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCreateTreasuryTransferProposal'
 import { tokenContracts, uppercasedTokenContracts } from '@/lib/contracts'
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
 import { Header, Paragraph, Span } from '@/components/Typography'
-import { CopyButton } from '@/components/CopyButton'
 import { DISCOURSE_LINK_SEPARATOR } from '@/app/proposals/shared/utils'
-import { TokenImage } from '@/components/TokenImage'
-import { usePricesContext } from '@/shared/context'
-import Big from '@/lib/big'
-import { MilestoneIcon } from '@/app/proposals/components/MilestoneIcon'
 import { MILESTONE_SEPARATOR, labeledMilestones } from '@/app/proposals/shared/utils'
 import { Milestones } from '@/app/proposals/shared/types'
+import { ActionDetails } from '@/app/proposals/components/action-details'
+import { ActionType, ProposalType } from '@/app/proposals/[id]/types'
+import { Description, ProposalDetails } from '@/app/proposals/[id]/components'
+import { Category } from '@/app/proposals/components/category'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 export default function GrantsProposalReview() {
-  const { prices } = usePricesContext()
-
   const { address, isConnected } = useAccount()
   const { record, waitForTxInBg } = useReviewProposal()
   const { onCreateTreasuryTransferProposal } = useCreateTreasuryTransferProposal()
   const [loading, setLoading] = useState(false)
-
+  const isDesktop = useIsDesktop()
   const onSubmit = useCallback(async () => {
     setLoading(true)
     try {
@@ -86,122 +82,52 @@ export default function GrantsProposalReview() {
   }
   const { description, discourseLink, proposalName, targetAddress, token, transferAmount, milestone } =
     record.form
-  const tokenAmount = formatNumberWithCommas(transferAmount)
 
-  const tokenPrice = prices?.[token]?.price ?? 0
   const milestoneLabel = labeledMilestones.find(({ value }) => value === milestone)?.label
+
+  const category = milestoneLabel ?? ProposalCategory.Grants
+
+  const action = {
+    type: ProposalType.WITHDRAW,
+    amount: transferAmount,
+    tokenSymbol: token,
+    toAddress: targetAddress,
+  }
   return (
     <div>
-      <div className="mb-10 pr-2 w-full lg:flex lg:justify-between gap-2">
-        <div className="flex items-center gap-4">
-          <Header
-            caps
-            variant="h3"
-            className="text-2xl lg:text-3xl !leading-[0.9]"
-            data-testid="ProposalTitle"
-          >
-            {proposalName}
-          </Header>
-          {milestone !== Milestones.NO_MILESTONE && milestoneLabel && (
-            <div className="flex gap-2 items-end" data-testid="MilestoneInfo">
-              <MilestoneIcon milestone={milestone} hasGradient className="mb-0.5" />
-              <Paragraph variant="body-l" className="text-bg-0 !leading-none whitespace-nowrap">
-                {milestoneLabel}
-              </Paragraph>
-            </div>
-          )}
+      <div className="md:flex items-center gap-4 md:mt-12 mt-6">
+        {!isDesktop ? <PreviewLabel /> : null}
+        <Header variant="h1" className="md:mt-0 mt-6">
+          {proposalName}
+        </Header>
+        <div className="flex gap-2 items-end md:mt-0 mt-3">
+          <Category className="mb-0.5" category={category} hasGradient />
+          <Paragraph variant="body-l" className="text-bg-0 !leading-none whitespace-nowrap">
+            {category}
+          </Paragraph>
         </div>
-        <PreviewLabel />
+        {isDesktop ? <PreviewLabel /> : null}
       </div>
 
-      <div className="w-full flex flex-col lg:flex-row gap-2">
-        <div className="grow-3 max-w-[760px] overflow-hidden">
-          <div className="p-6 w-full bg-bg-80 rounded-sm flex flex-col">
-            <div className="mb-14 grid grid-cols-2 gap-y-6 gap-x-2">
-              <Card title="Proposal type" data-testid="ReviewProposalType">
-                <span className="mr-2">Transfer of {tokenAmount}</span>
-                <span>
-                  <TokenImage symbol={token} className="inline-block w-4 h-4 mb-[2px] mr-1" />
-                  {token}
-                </span>
-              </Card>
-              <Card title="Created on" data-testid="ReviewCreatedOn">
-                {moment().format('DD MMMM YYYY')}
-              </Card>
-              {address && (
-                <Card title="Proposed by" data-testid="ReviewProposedBy">
-                  <CopyButton
-                    className="justify-start w-fit"
-                    copyText={address}
-                    successLabel="Address copied"
-                  >
-                    {shortAddress(address)}
-                  </CopyButton>
-                </Card>
-              )}
-              <Card title="Community discussion" data-testid="ReviewDiscourseLink">
-                <a
-                  className="hover:underline truncate block"
-                  href={discourseLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {discourseLink}
-                </a>
-              </Card>
-            </div>
-            <Header caps variant="h3" className="mb-10 leading-none tracking-tight">
-              Description
-            </Header>
-            <div className="font-rootstock-sans text-text-100 leading-normal" data-testid="ReviewDescription">
-              {description.split('\n').map((paragraph, i) => (
-                <Paragraph className="mb-8" key={i}>
-                  {paragraph}
-                </Paragraph>
-              ))}
-            </div>
-          </div>
+      <div className="w-full flex flex-col lg:flex-row gap-2 md:mt-10 mt-8">
+        <div className="flex-1 bg-bg-80 md:p-6 p-4 pt-0 flex flex-col gap-y-6 overflow-hidden">
+          <ProposalDetails
+            name={proposalName}
+            description={description}
+            proposer={address ?? ''}
+            startsAt={moment()}
+            parsedAction={action}
+            actionName={'withdraw'}
+            link={discourseLink}
+            readOnly
+          />
+          <Description description={description} />
         </div>
-        <div className="grow min-w-[250px] max-w-[760px] p-6 bg-bg-80 rounded-sm overflow-hidden lg:self-start">
-          <Header caps variant="h3" className="mb-4 leading-relaxed tracking-tight">
-            Actions
-          </Header>
-          <div className="grid grid-cols-2 gap-y-4">
-            <Card title="Type" data-testid="ReviewActionType">
-              Transfer
-            </Card>
-            <Card title="To address" data-testid="ReviewToAddress">
-              <CopyButton
-                className="justify-start w-fit"
-                copyText={targetAddress}
-                successLabel="Address copied"
-              >
-                {shortAddress(targetAddress)}
-              </CopyButton>
-            </Card>
-            <Card title="Amount" data-testid="ReviewAmount">
-              <div className="inline-block">
-                <div className="flex items-center">
-                  <span className="mr-2">{tokenAmount}</span>
-                  <span className="whitespace-nowrap">
-                    <TokenImage symbol={token} className="inline-block w-4 h-4 mr-1 mb-[2px]" />
-                    {token}
-                  </span>
-                </div>
-                {transferAmount !== undefined && tokenPrice !== undefined && (
-                  <div className="text-right">
-                    <Span
-                      className="text-xs text-white/50 font-normal leading-none"
-                      data-testid="ReviewUSDEquivalent"
-                    >
-                      {formatCurrencyWithLabel(Big(transferAmount).times(tokenPrice).toNumber())}
-                    </Span>
-                  </div>
-                )}
-              </div>
-            </Card>
-          </div>
-        </div>
+        <ActionDetails
+          parsedAction={action}
+          actionType={ActionType.Transfer}
+          className="md:mt-0 md:max-h-[214px]"
+        />
       </div>
     </div>
   )

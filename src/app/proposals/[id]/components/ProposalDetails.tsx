@@ -19,6 +19,8 @@ interface ProposalDetailsProps {
   fullProposalName?: string
   parsedAction: ParsedActionDetails
   actionName: DecodedFunctionName | undefined
+  link?: string
+  readOnly?: boolean
 }
 
 interface DetailItemProps {
@@ -31,12 +33,34 @@ const DetailItem = ({ label, children, show = true }: DetailItemProps) => {
   if (!show) return null
 
   return (
-    <div>
+    <div className="!min-w-1/2 max-w-full flex-shrink-0">
       <Span variant="tag-s" className="text-white/70" bold>
         {label}
       </Span>
       {children}
     </div>
+  )
+}
+
+interface DiscourseLinkProps {
+  link: string
+  readOnly?: boolean
+}
+
+const DiscourseLink = ({ link, readOnly }: DiscourseLinkProps) => {
+  return (
+    <Paragraph
+      variant="body"
+      className={!readOnly ? 'text-primary' : 'text-wrap break-words whitespace-normal'}
+    >
+      {!readOnly ? (
+        <a href={link} target="_blank" rel="noopener noreferrer" className="hover:underline">
+          See on Discourse
+        </a>
+      ) : (
+        link.split('https://')[1]
+      )}
+    </Paragraph>
   )
 }
 
@@ -47,9 +71,12 @@ export const ProposalDetails = ({
   startsAt,
   parsedAction,
   actionName,
+  link,
+  readOnly,
 }: ProposalDetailsProps) => {
   const { builderName } = splitCombinedName(name)
-  const discourseLink = description ? getDiscourseLinkFromProposalDescription(description) : undefined
+  const discourseLink =
+    link ?? (description ? getDiscourseLinkFromProposalDescription(description) : undefined)
   const addressToWhitelist = parsedAction.builder
 
   const isCommunityApproveBuilderAction = actionName === 'communityApproveBuilder'
@@ -79,9 +106,9 @@ export const ProposalDetails = ({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm mt-10">
+    <div className="flex flex-wrap gap-y-2 mt-8">
       <DetailItem label="Proposal type">
-        <Paragraph variant="body" className="flex items-center">
+        <Paragraph variant="body" className="flex items-center flex-shrink-0">
           {getProposalTypeLabel()}
         </Paragraph>
       </DetailItem>
@@ -112,11 +139,7 @@ export const ProposalDetails = ({
 
       <DetailItem label="Community discussion">
         {discourseLink ? (
-          <Paragraph variant="body" className="text-sm font-medium text-primary">
-            <a href={discourseLink} target="_blank" rel="noopener noreferrer" className="hover:underline">
-              See on Discourse
-            </a>
-          </Paragraph>
+          <DiscourseLink link={discourseLink} readOnly={readOnly} />
         ) : (
           <Span variant="body">—</Span>
         )}

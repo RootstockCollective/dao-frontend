@@ -3,9 +3,36 @@ import { Header, Paragraph, Span } from '@/components/Typography'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
 import { TokenImage } from '@/components/TokenImage'
 import Big from '@/lib/big'
-import { formatNumberWithCommas, formatCurrency } from '@/lib/utils'
+import { formatNumberWithCommas, formatCurrency, cn } from '@/lib/utils'
 import { formatEther } from 'viem'
-import { ProposalType } from '../../[id]/types'
+import { ActionType, ProposalType } from '../../[id]/types'
+import { ClassNameValue } from 'tailwind-merge'
+
+// Utility function to safely convert amount to bigint
+function convertAmountToBigint(amount: bigint | string | undefined): bigint {
+  if (!amount) return 0n
+
+  if (typeof amount === 'bigint') {
+    return amount
+  }
+
+  if (typeof amount === 'string') {
+    // Handle string input - convert to bigint
+    // Remove any non-numeric characters except decimal point
+    const cleanAmount = amount.replace(/[^\d.]/g, '')
+    if (!cleanAmount || cleanAmount === '.') return 0n
+
+    // Convert to wei (assuming 18 decimals) and then to bigint
+    const numericAmount = parseFloat(cleanAmount)
+    if (isNaN(numericAmount)) return 0n
+
+    // Convert to wei (multiply by 10^18) and then to bigint
+    const weiAmount = Big(numericAmount).times(Big(10).pow(18))
+    return BigInt(weiAmount.toString())
+  }
+
+  return 0n
+}
 
 interface InfoGridItem {
   label: string
@@ -15,13 +42,14 @@ interface InfoGridItem {
 interface ActionDetailsProps {
   parsedAction: {
     type: string
-    amount?: bigint
+    amount?: bigint | string
     tokenSymbol?: string
     price?: number
     toAddress?: string
     builder?: string
   }
-  actionType: string
+  actionType: ActionType
+  className?: ClassNameValue
 }
 
 function InfoGrid({ items }: { items: InfoGridItem[] }) {
@@ -43,22 +71,22 @@ function InfoGrid({ items }: { items: InfoGridItem[] }) {
   )
 }
 
-export const ActionDetails = ({ parsedAction, actionType }: ActionDetailsProps) => {
+export const ActionDetails = ({ parsedAction, actionType, className }: ActionDetailsProps) => {
   let content: ReactNode = null
 
   switch (parsedAction.type) {
     case ProposalType.WITHDRAW: {
       content = (
         <>
-          <div className="grid grid-cols-2 mt-4">
+          <div className="grid grid-cols-2">
             <div>
-              <Span variant="tag-s" className="text-white/70 mt-0.5">
+              <Span variant="tag-s" className="text-white/70">
                 Type
               </Span>
               <Paragraph variant="body">{actionType}</Paragraph>
             </div>
             <div>
-              <Span variant="tag-s" className="text-white/70 mt-0.5">
+              <Span variant="tag-s" className="text-white/70">
                 To address
               </Span>
               {parsedAction.toAddress ? (
@@ -72,19 +100,19 @@ export const ActionDetails = ({ parsedAction, actionType }: ActionDetailsProps) 
           </div>
           {/* Amount block full width */}
           <div>
-            <Span variant="tag-s" className="text-white/70 mt-0.5">
+            <Span variant="tag-s" className="text-white/70">
               Amount
             </Span>
             <div className="grid grid-cols-2 gap-x-2 w-max">
               {/* Left column: values, right-aligned */}
               <div className="flex flex-col items-end text-right">
                 <Span className="text-[18px] font-bold">
-                  {formatNumberWithCommas(formatEther(parsedAction.amount || 0n))}
+                  {formatNumberWithCommas(formatEther(convertAmountToBigint(parsedAction.amount)))}
                 </Span>
                 {parsedAction.price !== undefined && (
                   <Span className="text-xs text-white/50 font-normal leading-none">
                     {formatCurrency(
-                      Big(formatEther(parsedAction.amount || 0n))
+                      Big(formatEther(convertAmountToBigint(parsedAction.amount)))
                         .times(parsedAction.price)
                         .toNumber(),
                     )}
@@ -133,7 +161,7 @@ export const ActionDetails = ({ parsedAction, actionType }: ActionDetailsProps) 
   }
 
   return (
-    <div className="p-6 bg-bg-80 flex flex-col gap-4 md:max-w-[376px] md:mt-2">
+    <div className={cn('p-6 bg-bg-80 flex flex-col gap-4 md:max-w-[376px] md:mt-2', className)}>
       <Header variant="h3">ACTIONS</Header>
       {content}
     </div>
