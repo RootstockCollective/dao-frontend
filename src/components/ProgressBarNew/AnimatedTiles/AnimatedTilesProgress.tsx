@@ -2,14 +2,16 @@ import { useId, useEffect, useMemo, useRef, HTMLAttributes } from 'react'
 import { motion, useMotionValue, useTransform, animate } from 'motion/react'
 import { GradientDef } from './GradientDef'
 import type { Color } from '../colors'
+
+type GradientColors = Color | [Color] | [Color, Color] | [Color, Color, Color]
 import { useResizeObserver } from '@/shared/hooks/useResizeObserver'
 import { cn } from '@/lib/utils'
 
 interface AnimatedTilesProps extends HTMLAttributes<SVGSVGElement> {
   /** Size of each tile (square side, in px) */
   tileSize: number
-  /** Array of two gradient colors (current and next layer) */
-  colors: (Color | [Color, Color])[]
+  /** Gradient colors for current and next layer (1-3 colors each) */
+  colors: [GradientColors, GradientColors]
   /** Progress value (0–100) */
   progress: number
   /** Animation speed (progress units per second) */
@@ -49,7 +51,7 @@ export function AnimatedTilesProgress({
   // getting size from CSS
   const { width, height } = useResizeObserver(ref)
   const maskId = `mask-${uniqueId}`
-  const [currentColor, nextColor] = colors
+  const [currentGradient, nextGradient] = colors
   const cols = Math.ceil(width / tileSize)
   const rows = Math.ceil(height / tileSize)
   const maxDelay = (cols - 1) / waveSlope + dispersion
@@ -121,8 +123,8 @@ export function AnimatedTilesProgress({
             <Rect {...params} key={i} />
           ))}
         </mask>
-        <GradientDef id={`grad-next-${uniqueId}`} color={nextColor} />
-        <GradientDef id={`grad-current-${uniqueId}`} color={currentColor} />
+        <GradientDef id={`grad-next-${uniqueId}`} color={nextGradient} />
+        <GradientDef id={`grad-current-${uniqueId}`} color={currentGradient} />
       </defs>
       <rect width={width} height={height} fill={`url(#grad-current-${uniqueId})`} />
       <rect mask={`url(#${maskId})`} width={width} height={height} fill={`url(#grad-next-${uniqueId})`} />

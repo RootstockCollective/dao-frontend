@@ -35,7 +35,7 @@ export function ProposalStepper() {
             </Fragment>
           ))}
       </div>
-      <ProgressBar progress={progressMap[currentStep]} color={['transparent', ['#4B5CF0', '#F47A2A']]} />
+      <ProgressBar progress={progressMap[currentStep]} color={['#4B5CF0', '#F47A2A', '#1BC47D']} />
     </div>
   )
 }
