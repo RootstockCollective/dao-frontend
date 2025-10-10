@@ -4,6 +4,7 @@ import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
 import { formatNumberWithCommas } from '@/lib/utils'
 import { formatEther } from 'viem'
 import {
+  convertAmountToBigint,
   DecodedFunctionName,
   getDiscourseLinkFromProposalDescription,
   splitCombinedName,
@@ -85,7 +86,7 @@ export const ProposalDetails = ({
     if (parsedAction.type === ProposalType.WITHDRAW && parsedAction.amount && parsedAction.tokenSymbol) {
       return (
         <>
-          Transfer of {formatNumberWithCommas(formatEther(parsedAction.amount))}
+          Transfer of {formatNumberWithCommas(formatEther(convertAmountToBigint(parsedAction.amount)))}
           <Span className="inline-flex ml-2">
             <TokenImage symbol={parsedAction.tokenSymbol} size={16} />
             <Span className="font-bold ml-1">{parsedAction.tokenSymbol}</Span>

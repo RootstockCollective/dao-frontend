@@ -7,32 +7,7 @@ import { formatNumberWithCommas, formatCurrency, cn } from '@/lib/utils'
 import { formatEther } from 'viem'
 import { ActionType, ProposalType } from '../../[id]/types'
 import { ClassNameValue } from 'tailwind-merge'
-
-// Utility function to safely convert amount to bigint
-function convertAmountToBigint(amount: bigint | string | undefined): bigint {
-  if (!amount) return 0n
-
-  if (typeof amount === 'bigint') {
-    return amount
-  }
-
-  if (typeof amount === 'string') {
-    // Handle string input - convert to bigint
-    // Remove any non-numeric characters except decimal point
-    const cleanAmount = amount.replace(/[^\d.]/g, '')
-    if (!cleanAmount || cleanAmount === '.') return 0n
-
-    // Convert to wei (assuming 18 decimals) and then to bigint
-    const numericAmount = parseFloat(cleanAmount)
-    if (isNaN(numericAmount)) return 0n
-
-    // Convert to wei (multiply by 10^18) and then to bigint
-    const weiAmount = Big(numericAmount).times(Big(10).pow(18))
-    return BigInt(weiAmount.toString())
-  }
-
-  return 0n
-}
+import { convertAmountToBigint } from '../../shared/utils'
 
 interface InfoGridItem {
   label: string
@@ -161,7 +136,12 @@ export const ActionDetails = ({ parsedAction, actionType, className }: ActionDet
   }
 
   return (
-    <div className={cn('p-6 bg-bg-80 flex flex-col gap-4 md:max-w-[376px] md:mt-2', className)}>
+    <div
+      className={cn(
+        'p-6 bg-bg-80 flex flex-col gap-4 md:max-w-[376px] md:max-h-[214px] md:mt-2 rounded-sm',
+        className,
+      )}
+    >
       <Header variant="h3">ACTIONS</Header>
       {content}
     </div>

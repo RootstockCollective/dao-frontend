@@ -110,7 +110,7 @@ export default function GrantsProposalReview() {
       </div>
 
       <div className="w-full flex flex-col lg:flex-row gap-2 md:mt-10 mt-8">
-        <div className="flex-1 bg-bg-80 md:p-6 p-4 pt-0 flex flex-col gap-y-6 overflow-hidden">
+        <div className="flex-1 bg-bg-80 md:p-6 p-4 pt-0 flex flex-col gap-y-6 overflow-hidden rounded-sm">
           <ProposalDetails
             name={proposalName}
             description={description}
@@ -123,11 +123,7 @@ export default function GrantsProposalReview() {
           />
           <Description description={description} />
         </div>
-        <ActionDetails
-          parsedAction={action}
-          actionType={ActionType.Transfer}
-          className="md:mt-0 md:max-h-[214px]"
-        />
+        <ActionDetails parsedAction={action} actionType={ActionType.Transfer} className="md:mt-0" />
       </div>
     </div>
   )
