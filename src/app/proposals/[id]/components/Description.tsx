@@ -1,5 +1,5 @@
 import { Header, Paragraph } from '@/components/Typography'
-import { Expandable, ExpandableHeader, ExpandableContent, ExpandablePreview } from '@/components/Expandable'
+import { Expandable, ExpandableHeader, ExpandableContent } from '@/components/Expandable'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface DescriptionProps {
@@ -16,31 +16,41 @@ const linkfyUrls = (description: string | undefined | null): string => {
   })
 }
 
+const DescriptionHeader = () => (
+  <Header variant="h2" className="text-xl text-white">
+    DESCRIPTION
+  </Header>
+)
+const DescriptionContent = ({ descriptionHtml }: { descriptionHtml: string }) => {
+  const isDesktop = useIsDesktop()
+  return isDesktop ? (
+    <Paragraph variant="body" className="text-base text-white" html>
+      {descriptionHtml}
+    </Paragraph>
+  ) : (
+    <ExpandableContent showPreview={!isDesktop && !!descriptionHtml}>{descriptionHtml}</ExpandableContent>
+  )
+}
+
 export const Description = ({ description }: DescriptionProps) => {
   const isDesktop = useIsDesktop()
   const descriptionHtml = linkfyUrls(description)
 
   return (
     <div className="mt-14">
-      <Expandable expanded={isDesktop}>
-        <ExpandableHeader triggerColor="white">
-          <Header variant="h2" className="text-xl text-white">
-            DESCRIPTION
-          </Header>
-        </ExpandableHeader>
-        {!isDesktop && descriptionHtml && (
-          <ExpandablePreview
-            previewText={descriptionHtml}
-            previewClassName="text-base text-white/90 whitespace-pre-line break-words mb-4"
-            previewCharLimit={200}
-          />
-        )}
-        <ExpandableContent>
-          <Paragraph variant="body" className="text-base text-white/90 whitespace-pre-line break-words" html>
-            {descriptionHtml}
-          </Paragraph>
-        </ExpandableContent>
-      </Expandable>
+      {!isDesktop ? (
+        <Expandable expanded={isDesktop}>
+          <ExpandableHeader triggerColor="white">
+            <DescriptionHeader />
+          </ExpandableHeader>
+          <DescriptionContent descriptionHtml={descriptionHtml} />
+        </Expandable>
+      ) : (
+        <>
+          <DescriptionHeader />
+          <DescriptionContent descriptionHtml={descriptionHtml} />
+        </>
+      )}
     </div>
   )
 }

@@ -2,7 +2,9 @@ import { type StaticImageData } from 'next/image'
 import grantImage from './images/grant.png'
 import rewardsImage from './images/rewards.png'
 import grantBigImage from './images/grant-big.png'
+import grantSmallImage from './images/grant-small.png'
 import rewardsBigImage from './images/rewards-big.png'
+import rewardsSmallImage from './images/rewards-small.png'
 import { ProposalCategory } from '@/shared/types'
 import { Paragraph } from '@/components/Typography'
 
@@ -14,6 +16,7 @@ interface NewProposalCardCoreProps {
 
 export interface NewProposalCardBaseData extends NewProposalCardCoreProps {
   image: StaticImageData
+  smallImage: StaticImageData
   buttonText: string
 }
 export interface NewProposalCardExtendedData extends NewProposalCardCoreProps {
@@ -28,13 +31,14 @@ export interface NewProposalCardExtendedData extends NewProposalCardCoreProps {
   }[]
 }
 
-type NewProposalCardData = NewProposalCardBaseData & NewProposalCardExtendedData
+export type NewProposalCardData = NewProposalCardBaseData & NewProposalCardExtendedData
 
 export const newProposalCards: NewProposalCardData[] = [
   {
     type: ProposalCategory.Grants,
     image: grantImage,
     bigImage: grantBigImage,
+    smallImage: grantSmallImage,
     cardTitle: 'Grant',
     textBlock: (
       <>
@@ -79,6 +83,7 @@ export const newProposalCards: NewProposalCardData[] = [
     type: ProposalCategory.Activation,
     image: rewardsImage,
     bigImage: rewardsBigImage,
+    smallImage: rewardsSmallImage,
     cardTitle: 'Builders Rewards',
     textBlock: (
       <>
