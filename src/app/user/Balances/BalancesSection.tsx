@@ -11,6 +11,8 @@ import { useRef } from 'react'
 import { Span } from '@/components/Typography'
 import { RBTC, RIF, STRIF, USDRIF } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+import Big from '@/lib/big'
+import { useGetAddressBalances } from './hooks/useGetAddressBalances'
 
 export const BalancesSection = () => {
   const stakeModal = useModal()
@@ -20,6 +22,7 @@ export const BalancesSection = () => {
   const shouldReopen = searchParams.get('reopen') // ID number
   const [hasOpenedStakeModal, setHasOpenedStakeModal] = useState(false)
   const reopenId = useRef('0')
+  const { balances } = useGetAddressBalances()
 
   useEffect(() => {
     if (action === 'stake' && !hasOpenedStakeModal && !shouldReopen) {
@@ -40,11 +43,11 @@ export const BalancesSection = () => {
       <div className="flex flex-row justify-between mb-6 flex-wrap">
         <div className="flex flex-col gap-4 md:mt-6">
           <BalanceInfoForUser symbol={RIF} className="min-w-[268px]" />
-          <StakeButton onClick={stakeModal.openModal} />
+          {Big(balances[RIF].balance).gt(0) && <StakeButton onClick={stakeModal.openModal} />}
         </div>
         <div className="flex flex-col gap-4 mt-6">
           <BalanceInfoForUser symbol={STRIF} className="min-w-[268px]" />
-          <UnstakeButton onClick={unstakeModal.openModal} />
+          {Big(balances[STRIF].balance).gt(0) && <UnstakeButton onClick={unstakeModal.openModal} />}
         </div>
         <BalanceInfoForUser symbol={USDRIF} className={balanceStyle} />
         <BalanceInfoForUser symbol={RBTC} className={balanceStyle} />
