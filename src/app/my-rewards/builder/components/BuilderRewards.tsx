@@ -1,4 +1,10 @@
+import { useBuilderContext } from '@/app/collective-rewards/user'
+import { isBuilderRewardable } from '@/app/collective-rewards/utils'
+import { UpdateBackerRewardModal } from '@/app/my-rewards/builder/components/UpdateBackerRewardModal'
+import { Collapsible } from '@/components/Collapsible'
+import { ActionsContainer } from '@/components/containers/ActionsContainer'
 import { Header } from '@/components/Typography'
+import { cn } from '@/lib/utils'
 import React, { useState } from 'react'
 import { Address } from 'viem'
 import { AdjustBackersRewardsButton } from './AdjustBackersRewardButton'
@@ -7,10 +13,6 @@ import { EstimatedCycleRewards } from './EstimatedCycleRewards'
 import { LastCycleRewards } from './LastCycleRewards'
 import { TotalEarned } from './TotalEarned'
 import { UnclaimedRewards } from './UnclaimedRewards'
-import { UpdateBackerRewardModal } from '@/app/my-rewards/builder/components/UpdateBackerRewardModal'
-import { ActionsContainer } from '@/components/containers/ActionsContainer'
-import { cn } from '@/lib/utils'
-import { Collapsible } from '@/components/Collapsible'
 
 const BuilderRewardsContainer = ({
   children,
@@ -33,6 +35,8 @@ const BuilderRewardsContainer = ({
 
 export const BuilderRewards = ({ address, gauge }: { address: Address; gauge: Address }) => {
   const [isUpdateBackersRewardsModalOpen, setIsUpdateBackersRewardsModalOpen] = useState(false)
+
+  const { getBuilderByAddress } = useBuilderContext()
 
   return (
     <ActionsContainer
@@ -87,17 +91,20 @@ export const BuilderRewards = ({ address, gauge }: { address: Address; gauge: Ad
           iconClassName="size-6 text-background-0 hover:text-background-20"
         />
       </Collapsible.Root>
+      {isBuilderRewardable(getBuilderByAddress(address)?.stateFlags) && (
+        <>
+          <AdjustBackersRewardsButton
+            onClick={() => setIsUpdateBackersRewardsModalOpen(true)}
+            data-testid="adjust-backers-rewards-button"
+          />
 
-      <AdjustBackersRewardsButton
-        onClick={() => setIsUpdateBackersRewardsModalOpen(true)}
-        data-testid="adjust-backers-rewards-button"
-      />
-
-      <UpdateBackerRewardModal
-        isOpen={isUpdateBackersRewardsModalOpen}
-        onClose={() => setIsUpdateBackersRewardsModalOpen(false)}
-        data-testid="update-backer-reward-modal"
-      />
+          <UpdateBackerRewardModal
+            isOpen={isUpdateBackersRewardsModalOpen}
+            onClose={() => setIsUpdateBackersRewardsModalOpen(false)}
+            data-testid="update-backer-reward-modal"
+          />
+        </>
+      )}
     </ActionsContainer>
   )
 }
