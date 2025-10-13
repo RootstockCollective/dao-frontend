@@ -147,7 +147,7 @@ export const ActionDetails = ({ parsedAction, actionType, className, readOnly }:
   return (
     <div
       className={cn(
-        'p-6 bg-bg-80 flex flex-col gap-4 md:max-w-[376px] md:max-h-[214px] md:mt-2 rounded-sm',
+        'p-6 bg-bg-80 flex flex-col gap-4 md:w-[376px] md:max-h-[214px] md:mt-2 rounded-sm',
         className,
       )}
     >

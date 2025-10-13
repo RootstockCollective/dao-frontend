@@ -98,7 +98,7 @@ export default function GrantsProposalReview() {
       <div className="md:mt-12 mt-6">
         {!isDesktop ? <PreviewLabel /> : null}
         <div className="lg:flex lg:items-end">
-          <div className="flex flex-col gap-2 items-start md:items-end md:flex-row md:mt-0 mt-6 flex-1 md:mr-4">
+          <div className="flex flex-col gap-2 items-start md:items-end md:flex-row md:mt-0 mt-6 flex-1 md:mr-6">
             <Header variant="h1" className="md:mt-0">
               {proposalName}
             </Header>
@@ -109,11 +109,7 @@ export default function GrantsProposalReview() {
               </Paragraph>
             </div>
           </div>
-          {isDesktop && (
-            <div className="lg:w-80 lg:flex lg:justify-end lg:items-start lg:pt-2">
-              <PreviewLabel />
-            </div>
-          )}
+          {isDesktop && <PreviewLabel />}
         </div>
       </div>
 
