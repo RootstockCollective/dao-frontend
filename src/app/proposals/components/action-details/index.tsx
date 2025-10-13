@@ -3,8 +3,8 @@ import { Header, Paragraph, Span } from '@/components/Typography'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
 import { TokenImage } from '@/components/TokenImage'
 import Big from '@/lib/big'
-import { formatNumberWithCommas, formatCurrency, cn } from '@/lib/utils'
-import { formatEther } from 'viem'
+import { formatNumberWithCommas, formatCurrency, cn, shortAddress } from '@/lib/utils'
+import { Address, formatEther } from 'viem'
 import { ActionType, ProposalType } from '../../[id]/types'
 import { ClassNameValue } from 'tailwind-merge'
 import { convertAmountToBigint } from '../../shared/utils'
@@ -25,6 +25,7 @@ interface ActionDetailsProps {
   }
   actionType: ActionType
   className?: ClassNameValue
+  readOnly?: boolean
 }
 
 function InfoGrid({ items }: { items: InfoGridItem[] }) {
@@ -46,7 +47,7 @@ function InfoGrid({ items }: { items: InfoGridItem[] }) {
   )
 }
 
-export const ActionDetails = ({ parsedAction, actionType, className }: ActionDetailsProps) => {
+export const ActionDetails = ({ parsedAction, actionType, className, readOnly }: ActionDetailsProps) => {
   let content: ReactNode = null
 
   switch (parsedAction.type) {
@@ -60,14 +61,18 @@ export const ActionDetails = ({ parsedAction, actionType, className }: ActionDet
               </Span>
               <Paragraph variant="body">{actionType}</Paragraph>
             </div>
-            <div>
+            <div className="flex flex-col">
               <Span variant="tag-s" className="text-white/70">
                 To address
               </Span>
               {parsedAction.toAddress ? (
-                <Span className="text-primary">
-                  <ShortenAndCopy value={parsedAction.toAddress} />
-                </Span>
+                !readOnly ? (
+                  <Span className="text-primary">
+                    <ShortenAndCopy value={parsedAction.toAddress} />
+                  </Span>
+                ) : (
+                  <Span variant="body">{shortAddress(parsedAction.toAddress as Address)}</Span>
+                )
               ) : (
                 <Span variant="body">—</Span>
               )}
@@ -120,9 +125,13 @@ export const ActionDetails = ({ parsedAction, actionType, className }: ActionDet
         {
           label: rightLabel,
           value: parsedAction.builder ? (
-            <Span className="text-primary">
-              <ShortenAndCopy value={parsedAction.builder} />
-            </Span>
+            !readOnly ? (
+              <Span className="text-primary">
+                <ShortenAndCopy value={parsedAction.builder} />
+              </Span>
+            ) : (
+              <Span variant="body">{shortAddress(parsedAction.builder as Address) || '—'}</Span>
+            )
           ) : (
             <Span variant="body">—</Span>
           ),

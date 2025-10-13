@@ -131,7 +131,7 @@ export default function GrantsProposalReview() {
           />
           <Description description={description} />
         </div>
-        <ActionDetails parsedAction={action} actionType={ActionType.Transfer} className="md:mt-0" />
+        <ActionDetails parsedAction={action} actionType={ActionType.Transfer} className="md:mt-0" readOnly />
       </div>
     </div>
   )

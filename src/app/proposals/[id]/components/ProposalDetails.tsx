@@ -1,8 +1,8 @@
 import { Paragraph, Span } from '@/components/Typography'
 import { TokenImage } from '@/components/TokenImage'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
-import { formatNumberWithCommas } from '@/lib/utils'
-import { formatEther } from 'viem'
+import { formatNumberWithCommas, shortAddress } from '@/lib/utils'
+import { Address, formatEther } from 'viem'
 import {
   convertAmountToBigint,
   DecodedFunctionName,
@@ -34,7 +34,7 @@ const DetailItem = ({ label, children, show = true }: DetailItemProps) => {
   if (!show) return null
 
   return (
-    <div className="!min-w-1/2 max-w-full flex-shrink-0">
+    <div className="!min-w-1/2 max-w-full flex-shrink-0 flex flex-col">
       <Span variant="tag-s" className="text-white/70" bold>
         {label}
       </Span>
@@ -135,7 +135,15 @@ export const ProposalDetails = ({
       </DetailItem>
 
       <DetailItem label="Proposed by">
-        {proposer ? <ShortenAndCopy value={proposer} /> : <Span variant="body">—</Span>}
+        {proposer ? (
+          !readOnly ? (
+            <ShortenAndCopy value={proposer} />
+          ) : (
+            <Span variant="body">{shortAddress(proposer as Address)}</Span>
+          )
+        ) : (
+          <Span variant="body">—</Span>
+        )}
       </DetailItem>
 
       <DetailItem label="Community discussion">
