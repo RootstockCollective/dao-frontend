@@ -20,6 +20,16 @@ export type ColumnId = (typeof COLUMN_IDS)[number]
 
 export const PAGE_SIZE = 3
 
+export const SORT_LABELS: Record<ColumnId, string> = {
+  builder: 'Builder name',
+  backer_rewards: 'Backer Rewards %',
+  unclaimed: 'Unclaimed',
+  estimated: 'Estimated Rewards',
+  total: 'Total Rewards',
+  backing: 'Backing',
+  actions: 'Actions',
+}
+
 export const LABELS: TableColumnDropdownLabels<Exclude<ColumnId, 'builder' | 'actions'>> = {
   backer_rewards: {
     label: 'Backer Rewards %',
