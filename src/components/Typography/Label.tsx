@@ -38,3 +38,5 @@ export const Label: FC<Props> = ({ children, variant = 'body', 'data-testid': da
     {children}
   </BaseTypography>
 )
+
+export type LabelProps = Props
