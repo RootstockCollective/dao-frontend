@@ -17,7 +17,7 @@ const progressMap = {
 export function ProposalStepper() {
   const { currentStep } = useProposalStepper()
   return (
-    <div className="mb-12 w-full">
+    <div className="w-full">
       <div className="mb-3 flex justify-between items-center">
         {Object.keys(ProposalStep)
           .filter(step => step !== ProposalStep.None)

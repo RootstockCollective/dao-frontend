@@ -67,7 +67,7 @@ export default function NewProposal() {
       <AnimatePresence mode="popLayout">
         {selectedCard === null ? (
           <motion.div key="selector" variants={variants} initial="initial" animate="animate" exit="exit">
-            <Paragraph className="mb-6 leading-snug">
+            <Paragraph className="mb-6 leading-snug md:mt-10 mt-6">
               Select the type of proposal that you want to create:
             </Paragraph>
 
@@ -81,7 +81,14 @@ export default function NewProposal() {
             <Deactivation />
           </motion.div>
         ) : (
-          <motion.div key="extended" variants={variants} initial="initial" animate="animate" exit="exit">
+          <motion.div
+            key="extended"
+            variants={variants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="md:mt-10 mt-6"
+          >
             {/* One extended card */}
             <NewProposalCardExtended card={selectedCard} cancelCardSelection={cancelCardSelection} />
           </motion.div>

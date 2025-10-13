@@ -95,18 +95,26 @@ export default function GrantsProposalReview() {
   }
   return (
     <div>
-      <div className="md:flex items-center gap-4 md:mt-12 mt-6">
+      <div className="md:mt-12 mt-6">
         {!isDesktop ? <PreviewLabel /> : null}
-        <Header variant="h1" className="md:mt-0 mt-6">
-          {proposalName}
-        </Header>
-        <div className="flex gap-2 items-end md:mt-0 mt-3">
-          <Category className="mb-0.5" category={category} hasGradient />
-          <Paragraph variant="body-l" className="text-bg-0 !leading-none whitespace-nowrap">
-            {category}
-          </Paragraph>
+        <div className="lg:flex lg:items-end">
+          <div className="flex flex-col gap-2 items-start md:items-end md:flex-row md:mt-0 mt-6 flex-1 md:mr-4">
+            <Header variant="h1" className="md:mt-0">
+              {proposalName}
+            </Header>
+            <div className="flex gap-2 items-center">
+              <Category className="mb-0.5" category={category} hasGradient />
+              <Paragraph variant="body-l" className="text-bg-0 !leading-none whitespace-nowrap">
+                {category}
+              </Paragraph>
+            </div>
+          </div>
+          {isDesktop && (
+            <div className="lg:w-80 lg:flex lg:justify-end lg:items-start lg:pt-2">
+              <PreviewLabel />
+            </div>
+          )}
         </div>
-        {isDesktop ? <PreviewLabel /> : null}
       </div>
 
       <div className="w-full flex flex-col lg:flex-row gap-2 md:mt-10 mt-8">
