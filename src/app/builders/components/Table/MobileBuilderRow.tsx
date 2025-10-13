@@ -11,7 +11,8 @@ import { SelectorCell } from './Cell/SelectorCell'
 import { BuilderRowLogic, BuilderTable } from './BuilderTable.config'
 import { MOBILE_ROW_STYLES } from './utils/builderRowUtils'
 import { ExpandChevron } from './ExpandChevron'
-import { BuilderRowConditionalTooltip } from './BuilderRowConditionalTooltip'
+import { ConnectTooltip } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltip'
+import { ConnectTooltipContent } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltipContent'
 import {
   MobileBackerRewardsSection,
   MobileRewardsSection,
@@ -33,7 +34,7 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
 
   const [isExpanded, setIsExpanded] = useState(false)
 
-  const { data, isRowSelected, isInProgress, canBack, handleToggleSelection } = logic
+  const { data, isRowSelected, isInProgress, canBack, hasSelections, handleToggleSelection } = logic
 
   const handleToggleExpand = () => {
     setIsExpanded(!isExpanded)
@@ -67,12 +68,13 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
 
   return (
     <>
-      <BuilderRowConditionalTooltip
+      <ConnectTooltip
         className="p-0 ml-4"
-        isConnected={isConnected}
-        canBack={false} // disabled for mobile
-        hasSelections={false} // disabled for mobile
-        onConnectWalletButtonClick={onConnectWalletButtonClick}
+        tooltipContent={
+          <ConnectTooltipContent onClick={onConnectWalletButtonClick}>
+            Connect your wallet to select Builders, back and adjust their backing.
+          </ConnectTooltipContent>
+        }
       >
         <tr
           {...props}
@@ -201,7 +203,7 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
             )}
           </td>
         </tr>
-      </BuilderRowConditionalTooltip>
+      </ConnectTooltip>
 
       {!!intermediateStep && (
         <DisclaimerFlow onAgree={handleConnectWallet} onClose={handleCloseIntermediateStep} />
