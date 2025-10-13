@@ -10,7 +10,7 @@ import {
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { MAX_NAME_LENGTH_FOR_PROPOSAL, TALLY_DESCRIPTION_SEPARATOR } from '@/lib/constants'
 import { ProposalCategory } from '@/shared/types'
-import { MilestoneLabels, Milestones } from './types'
+import { Milestones } from './types'
 import Big from '@/lib/big'
 
 export interface EventArgumentsParameter {
@@ -139,15 +139,15 @@ export const MILESTONE_SEPARATOR = 'M1lestone:'
 export const labeledMilestones = [
   {
     value: Milestones.MILESTONE_1,
-    label: MilestoneLabels.FIRST,
+    label: ProposalCategory.Milestone1,
   },
   {
     value: Milestones.MILESTONE_2,
-    label: MilestoneLabels.SECOND,
+    label: ProposalCategory.Milestone2,
   },
   {
     value: Milestones.MILESTONE_3,
-    label: MilestoneLabels.THIRD,
+    label: ProposalCategory.Milestone3,
   },
 ]
 

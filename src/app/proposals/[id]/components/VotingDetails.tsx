@@ -80,7 +80,7 @@ export const VotingDetails = ({
   const [popoverOpen, setPopoverOpen] = useState(false)
   const voteButtonRef = useRef<HTMLButtonElement>(null)
 
-  const actionType: string =
+  const actionType: ActionType =
     actionName && actionNameToActionTypeMap.has(actionName)
       ? actionNameToActionTypeMap.get(actionName)!
       : ActionType.Unknown
