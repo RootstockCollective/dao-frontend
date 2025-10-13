@@ -136,7 +136,7 @@ export const AllocationInput = ({
     if (!editing) return
 
     try {
-      updateBacking(normaliseBackingValue(onchainBacking, value))
+      updateBacking(preventLeftoverDecimals(onchainBacking, value))
     } catch (error) {
       setParsingError(error as Error)
     }
@@ -203,9 +203,21 @@ export const AllocationInput = ({
   )
 }
 
-// A little bit of a hacky way to check that the input is equal to the on-chain backing in the integer part and if so it should be set to that to prevent accidental fractions.
-function normaliseBackingValue(onchainBacking: bigint, value: string) {
-  return Number(formatEther(onchainBacking)).toFixed(0) === value ? onchainBacking : parseEther(value)
+// A little bit of a hacky way to check that the input is equal to the on-chain backing **in the integer part**
+// If it does, it should be set to the onchain value.
+// The purpose of this is to prevent leftover fractions in the available balance, which cannot be used up.
+//
+// IMPORTANT: Should the sysmtem ever support fractional STRIF, this function should be removed,
+// as it will not be needed since the UI will have to adapt to that change, too.
+function preventLeftoverDecimals(onchainBacking: bigint, value: string): bigint {
+  const onchainBackingStr = formatEther(onchainBacking)
+  const [onchainBackingIntegerValue] = onchainBackingStr.split('.')
+
+  if (onchainBackingIntegerValue === value) {
+    return onchainBacking
+  }
+
+  return parseEther(value)
 }
 
 function isValidBalanceFraction(
