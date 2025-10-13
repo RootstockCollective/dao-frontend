@@ -107,7 +107,7 @@ export const ProposalDetails = ({
   }
 
   return (
-    <div className="flex flex-wrap gap-y-2 mt-8">
+    <div className="flex flex-wrap gap-y-6 md:mt-0 mt-8">
       <DetailItem label="Proposal type">
         <Paragraph variant="body" className="flex items-center flex-shrink-0">
           {getProposalTypeLabel()}
