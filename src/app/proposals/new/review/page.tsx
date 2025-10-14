@@ -26,11 +26,14 @@ import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { GrantProposal } from '../details/schemas/GrantProposalSchema'
 import { ActivationProposal } from '../details/schemas/ActivationProposalSchema'
 import { DeactivationProposal } from '../details/schemas/DeactivationProposalSchema'
+import { usePricesContext } from '@/shared/context'
+import { GetPricesResult } from '@/app/user/types'
 
 // Transform form data to ParsedActionDetails for all proposal types
 const transformFormToActionDetails = (
   form: GrantProposal | ActivationProposal | DeactivationProposal,
   category: ProposalCategory,
+  prices: GetPricesResult,
 ) => {
   switch (category) {
     case ProposalCategory.Grants: {
@@ -40,6 +43,7 @@ const transformFormToActionDetails = (
         amount: transferAmount,
         tokenSymbol: token,
         toAddress: targetAddress,
+        price: prices[token]?.price ?? 0,
       }
     }
     case ProposalCategory.Activation: {
@@ -97,6 +101,7 @@ export default function ProposalReview() {
   const { onRemoveBuilderProposal } = useRemoveBuilderProposal()
   const [loading, setLoading] = useState(false)
   const isDesktop = useIsDesktop()
+  const { prices } = usePricesContext()
 
   const onSubmit = useCallback(async () => {
     setLoading(true)
@@ -177,7 +182,7 @@ export default function ProposalReview() {
   }
 
   const { description, discourseLink, proposalName } = record.form
-  const parsedAction = transformFormToActionDetails(record.form, record.category)
+  const parsedAction = transformFormToActionDetails(record.form, record.category, prices)
 
   // For activation proposals, construct the name with builder name for ProposalDetails component
   // This matches how ProposalView works - the name contains the combined format
