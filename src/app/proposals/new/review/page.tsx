@@ -23,12 +23,18 @@ import { ActionType, ProposalType } from '@/app/proposals/[id]/types'
 import { Description, ProposalDetails } from '@/app/proposals/[id]/components'
 import { Category } from '@/app/proposals/components/category'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { GrantProposal } from '../details/schemas/GrantProposalSchema'
+import { ActivationProposal } from '../details/schemas/ActivationProposalSchema'
+import { DeactivationProposal } from '../details/schemas/DeactivationProposalSchema'
 
 // Transform form data to ParsedActionDetails for all proposal types
-const transformFormToActionDetails = (form: any, category: ProposalCategory) => {
+const transformFormToActionDetails = (
+  form: GrantProposal | ActivationProposal | DeactivationProposal,
+  category: ProposalCategory,
+) => {
   switch (category) {
     case ProposalCategory.Grants: {
-      const { transferAmount, token, targetAddress } = form
+      const { transferAmount, token, targetAddress } = form as GrantProposal
       return {
         type: ProposalType.WITHDRAW,
         amount: transferAmount,
@@ -37,14 +43,14 @@ const transformFormToActionDetails = (form: any, category: ProposalCategory) => 
       }
     }
     case ProposalCategory.Activation: {
-      const { builderAddress } = form
+      const { builderAddress } = form as ActivationProposal
       return {
         type: ProposalType.BUILDER_ACTIVATION,
         builder: builderAddress,
       }
     }
     case ProposalCategory.Deactivation: {
-      const { builderAddress } = form
+      const { builderAddress } = form as DeactivationProposal
       return {
         type: ProposalType.BUILDER_DEACTIVATION,
         builder: builderAddress,
@@ -209,7 +215,7 @@ export default function ProposalReview() {
       </div>
 
       <div className="w-full flex flex-col lg:flex-row gap-2 md:mt-10 mt-8">
-        <div className="flex-1 bg-bg-80 flex flex-col gap-y-6 overflow-hidden rounded-sm md:pt-6 pt-4">
+        <div className="flex-1 bg-bg-80 flex flex-col gap-y-6 overflow-hidden rounded-sm md:pt-6">
           <ProposalDetails
             name={proposalNameForDetails}
             description={description}

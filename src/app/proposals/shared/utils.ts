@@ -228,7 +228,7 @@ const parseProposalDescription = (description: string): ParsedDescription => {
 }
 
 // Helper function to determine proposal category
-export function getProposalCategory(calldatasParsed: any[]): string {
+export function getProposalCategory(calldatasParsed: DecodedData[]): string {
   const hasWithdrawAction = calldatasParsed
     .filter(data => data.type === 'decoded')
     .find(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
@@ -287,7 +287,7 @@ export function getProposalCategoryFromParsedData(
   return ProposalCategory.Grants
 }
 
-export function serializeBigInts(obj: any): any {
+export function serializeBigInts(obj: unknown): unknown {
   if (typeof obj === 'bigint') {
     return obj.toString()
   }
