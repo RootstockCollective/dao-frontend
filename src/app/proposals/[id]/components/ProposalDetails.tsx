@@ -1,7 +1,7 @@
 import { Paragraph, Span } from '@/components/Typography'
 import { TokenImage } from '@/components/TokenImage'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
-import { formatNumberWithCommas, shortAddress } from '@/lib/utils'
+import { cn, formatNumberWithCommas, shortAddress } from '@/lib/utils'
 import { Address, formatEther } from 'viem'
 import {
   convertAmountToBigint,
@@ -119,10 +119,7 @@ export const ProposalDetails = ({
       </DetailItem>
 
       <DetailItem label="Builder name" show={isCommunityApproveBuilderAction}>
-        <Span variant="tag-s" className="text-white/70" bold>
-          Builder name
-        </Span>
-        <Paragraph variant="body" className="text-sm font-medium text-primary">
+        <Paragraph variant="body" className={cn('text-sm font-medium', !readOnly && 'text-primary')}>
           {/** TODO: enable later when builder profile feature is implemented */}
           {/* <a href={`/builders/${addressToWhitelist}`} className="hover:underline"> */}
           {builderName}
@@ -131,7 +128,15 @@ export const ProposalDetails = ({
       </DetailItem>
 
       <DetailItem label="Builder address" show={isCommunityApproveBuilderAction && !!addressToWhitelist}>
-        <ShortenAndCopy value={addressToWhitelist!} />
+        {addressToWhitelist ? (
+          !readOnly ? (
+            <ShortenAndCopy value={addressToWhitelist} />
+          ) : (
+            <Span variant="body">{shortAddress(addressToWhitelist as Address)}</Span>
+          )
+        ) : (
+          <Span variant="body">—</Span>
+        )}
       </DetailItem>
 
       <DetailItem label="Proposed by">
