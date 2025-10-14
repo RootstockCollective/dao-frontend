@@ -1,31 +1,31 @@
 'use client'
 
 import { useReviewProposal } from '@/app/providers'
-import { NumberInput, SelectField, TextInput } from '@/components/FormFields'
+import { NumberInput, SelectField } from '@/components/FormFields'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { Header } from '@/components/Typography'
 import { ProposalCategory } from '@/shared/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import { Address } from 'viem'
+import { FormProvider, useForm } from 'react-hook-form'
+import type { Address } from 'viem'
 import { ProposalSubfooter } from '../../components/ProposalSubfooter'
 import { BaseProposalFields, ProposalInfoSidebar, TokenRadioGroup } from '../components'
-import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
-import { GrantProposal, GrantProposalSchema } from '../schemas/GrantProposalSchema'
+import { type GrantProposal, GrantProposalSchema } from '../schemas/GrantProposalSchema'
 import { TOKEN_FIELD_LIMITS } from '../schemas/TokenSchema'
 import { labeledMilestones } from '@/app/proposals/shared/utils'
 import { MilestoneInfoSidebar } from '../components/MilestoneInfoSidebar'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { RnsAddressInput } from './RnsAddressInput'
 
 export default function GrantsProposalForm() {
   const isDesktop = useIsDesktop()
   const { record, setRecord } = useReviewProposal()
   const router = useRouter()
 
-  const { handleSubmit, control, setFocus, formState } = useForm<GrantProposal>({
-    mode: 'onTouched',
+  const form = useForm<GrantProposal>({
+    mode: 'onChange',
     reValidateMode: 'onChange',
     resolver: zodResolver(GrantProposalSchema),
     defaultValues:
@@ -41,14 +41,15 @@ export default function GrantsProposalForm() {
             milestone: undefined,
           },
   })
+  const { handleSubmit, control, setFocus, formState } = form
+
   const onSubmit = useCallback(
     () =>
       handleSubmit(data => {
         setRecord({ form: data, category: ProposalCategory.Grants })
         router.push('/proposals/new/review/grants')
       })(),
-    // eslint-disable-next-line
-    [handleSubmit, router],
+    [handleSubmit, router, setRecord],
   )
 
   // inject sticky drawer with submit button to the footer layout
@@ -70,49 +71,47 @@ export default function GrantsProposalForm() {
 
   return (
     <div className="flex flex-col lg:flex-row gap-6">
-      <form className="p-6 pb-8 flex flex-col gap-6 md:gap-10 basis-3/4 bg-bg-80 rounded-sm">
-        <BaseProposalFields control={control} />
-        <div className="flex flex-col gap-4">
-          <Header caps variant="h2" className="leading-loose tracking-wide">
-            Milestone Selection
-          </Header>
-          {!isDesktop && <MilestoneInfoSidebar />}
-          <SelectField
-            name="milestone"
-            control={control}
-            options={labeledMilestones}
-            placeholder="Proposal milestone"
-            className="max-w-[336px]"
-            data-testid="MilestoneSelect"
-          />
-        </div>
-        <div className="flex flex-col gap-4">
-          <Header caps variant="h2" className="leading-loose tracking-wide">
-            Proposal Action
-          </Header>
-          <TextInput
-            name="targetAddress"
-            control={control}
-            label="Address to transfer funds to"
-            data-testid="InputAddress"
-            maxLength={BASE_PROPOSAL_LIMITS.address.max}
-          />
-          <div className="flex flex-col md:flex-row items-center justify-start gap-6 @container">
-            <div className="w-full md:basis-1/2">
-              <NumberInput
-                name="transferAmount"
-                control={control}
-                label="Amount to be transferred"
-                data-testid="InputAmount"
-                maxLength={TOKEN_FIELD_LIMITS.transferAmount.maxLength}
-              />
-            </div>
-            <div className="w-full md:basis-1/2">
-              <TokenRadioGroup name="token" control={control} />
+      <FormProvider {...form}>
+        <form className="p-6 pb-8 flex flex-col gap-6 md:gap-10 basis-3/4 bg-bg-80 rounded-sm">
+          <BaseProposalFields control={control} />
+          <div className="flex flex-col gap-4">
+            <Header caps variant="h2" className="leading-loose tracking-wide">
+              Milestone Selection
+            </Header>
+            {!isDesktop && <MilestoneInfoSidebar />}
+            <SelectField
+              name="milestone"
+              control={control}
+              options={labeledMilestones}
+              placeholder="Proposal milestone"
+              className="max-w-[336px]"
+              data-testid="MilestoneSelect"
+            />
+          </div>
+          <div className="flex flex-col gap-4">
+            <Header caps variant="h2" className="leading-loose tracking-wide">
+              Proposal Action
+            </Header>
+
+            <RnsAddressInput />
+
+            <div className="flex flex-col md:flex-row items-center justify-start gap-6 @container">
+              <div className="w-full md:basis-1/2">
+                <NumberInput
+                  name="transferAmount"
+                  control={control}
+                  label="Amount to be transferred"
+                  data-testid="InputAmount"
+                  maxLength={TOKEN_FIELD_LIMITS.transferAmount.maxLength}
+                />
+              </div>
+              <div className="w-full md:basis-1/2">
+                <TokenRadioGroup name="token" control={control} />
+              </div>
             </div>
           </div>
-        </div>
-      </form>
+        </form>
+      </FormProvider>
       <div className="flex flex-col gap-10 basis-1/4 justify-between">
         <ProposalInfoSidebar kycLink="https://gov.rootstockcollective.xyz/t/general-guidelines-for-grant-applications/94/7" />
         {isDesktop && (
