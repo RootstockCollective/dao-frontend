@@ -193,8 +193,8 @@ export default function ProposalReview() {
       <div className="md:mt-12 mt-6">
         {!isDesktop ? <PreviewLabel /> : null}
         <div className="lg:flex lg:items-end">
-          <div className="flex flex-col gap-2 items-start md:items-end md:flex-row md:mt-0 mt-6 flex-1 md:mr-6">
-            <Header variant="h1" className="md:mt-0">
+          <div className="flex flex-col md:gap-4 gap-2 items-start md:items-end md:flex-row md:mt-0 mt-6 flex-1 md:mr-6">
+            <Header variant="h1" className="md:mt-0 !leading-none">
               {proposalName}
             </Header>
             <div className="flex gap-2 items-center">
@@ -209,7 +209,7 @@ export default function ProposalReview() {
       </div>
 
       <div className="w-full flex flex-col lg:flex-row gap-2 md:mt-10 mt-8">
-        <div className="flex-1 bg-bg-80 md:p-6 p-4 pt-0 flex flex-col gap-y-6 overflow-hidden rounded-sm">
+        <div className="flex-1 bg-bg-80 flex flex-col gap-y-6 overflow-hidden rounded-sm md:pt-6 pt-4">
           <ProposalDetails
             name={proposalNameForDetails}
             description={description}

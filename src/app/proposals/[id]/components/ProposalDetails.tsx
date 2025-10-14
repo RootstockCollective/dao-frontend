@@ -34,7 +34,7 @@ const DetailItem = ({ label, children, show = true }: DetailItemProps) => {
   if (!show) return null
 
   return (
-    <div className="!min-w-1/2 max-w-full flex-shrink-0 flex flex-col">
+    <div className="!min-w-1/2 max-w-full flex-shrink-0 flex flex-col md:pl-6 pl-4">
       <Span variant="tag-s" className="text-white/70" bold>
         {label}
       </Span>
@@ -107,7 +107,7 @@ export const ProposalDetails = ({
   }
 
   return (
-    <div className="flex flex-wrap gap-y-6 md:mt-0 mt-8">
+    <div className="flex flex-wrap gap-y-6 md:mt-0 mt-8 md:pr-6 pr-4">
       <DetailItem label="Proposal type">
         <Paragraph variant="body" className="flex items-center flex-shrink-0">
           {getProposalTypeLabel()}
