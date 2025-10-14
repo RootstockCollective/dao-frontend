@@ -30,7 +30,7 @@ interface ActionDetailsProps {
 
 function InfoGrid({ items }: { items: InfoGridItem[] }) {
   return (
-    <div className="grid grid-cols-2">
+    <div className="grid grid-cols-2 gap-x-4">
       {/* Labels row */}
       {items.map(({ label }) => (
         <div key={label}>
@@ -41,7 +41,9 @@ function InfoGrid({ items }: { items: InfoGridItem[] }) {
       ))}
       {/* Values row */}
       {items.map(({ label, value }) => (
-        <div key={label + '-value'}>{value}</div>
+        <Paragraph variant="body" key={label + '-value'}>
+          {value}
+        </Paragraph>
       ))}
     </div>
   )
@@ -147,7 +149,7 @@ export const ActionDetails = ({ parsedAction, actionType, className, readOnly }:
   return (
     <div
       className={cn(
-        'p-6 bg-bg-80 flex flex-col gap-4 md:w-[376px] md:max-h-[214px] md:mt-2 rounded-sm',
+        'md:p-6 px-4 py-8 bg-bg-80 flex flex-col gap-4 md:w-[376px] md:max-h-[214px] md:mt-2 rounded-sm',
         className,
       )}
     >

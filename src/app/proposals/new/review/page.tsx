@@ -75,9 +75,9 @@ const getActionType = (category: ProposalCategory) => {
     case ProposalCategory.Grants:
       return ActionType.Transfer
     case ProposalCategory.Activation:
-      return ActionType.WhitelistBuilder
+      return ActionType.BuilderApproval
     case ProposalCategory.Deactivation:
-      return ActionType.DewhitelistBuilder
+      return ActionType.BuilderDeactivation
     default:
       return ActionType.Unknown
   }
