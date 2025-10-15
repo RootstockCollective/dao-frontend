@@ -1,6 +1,6 @@
+import { Label } from '@/components/Typography'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { BalanceInfo } from './BalanceInfo'
-import { Label } from '@/components/Typography'
 
 const meta: Meta<typeof BalanceInfo> = {
   title: 'Koto/DAO/BalanceInfo',
@@ -45,10 +45,10 @@ export const USDRIF: Story = {
 
 export const RBTC: Story = {
   args: {
-    title: 'rBTC',
-    tooltipContent: <Label variant="body-s">rBTC token info</Label>,
+    title: 'RBTC',
+    tooltipContent: <Label variant="body-s">RBTC token info</Label>,
     amount: '9.999999',
-    symbol: 'rBTC',
+    symbol: 'RBTC',
     fiatAmount: '999,999.99 USD',
   },
 }
@@ -66,7 +66,7 @@ export const Treasury: Story = {
   args: {
     title: 'Treasury',
     amount: '999,999,999.99',
-    symbol: 'USD',
+    symbol: 'stRIF',
     fiatAmount: undefined,
   },
 }
@@ -81,7 +81,7 @@ export const TVL: Story = {
       </>
     ),
     amount: '999,999,999.99',
-    symbol: 'USD',
+    symbol: 'stRIF',
     fiatAmount: '999,999,999.99 USD',
   },
 }

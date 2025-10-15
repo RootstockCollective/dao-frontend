@@ -1,9 +1,9 @@
-import { useGetAddressTokens } from '@/app/user/Balances/hooks/useGetAddressTokens'
-import { useMemo } from 'react'
 import { getTokenBalance } from '@/app/user/Balances/balanceUtils'
-import { useAccount } from 'wagmi'
-import { Address } from 'viem'
+import { useGetAddressTokens } from '@/app/user/Balances/hooks/useGetAddressTokens'
 import { RBTC, RIF, STRIF, USDRIF } from '@/lib/tokens'
+import { useMemo } from 'react'
+import { Address } from 'viem'
+import { useAccount } from 'wagmi'
 
 export const useGetAddressBalances = () => {
   const { address, chainId } = useAccount()

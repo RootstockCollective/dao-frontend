@@ -1,5 +1,6 @@
-import { StakingToken } from '@/app/user/Stake/types'
+import { StakingToken, TokenWithBalance } from '@/app/user/Stake/types'
 import Big from '@/lib/big'
+import { RIF, STRIF, TokenSymbol } from '@/lib/tokens'
 import { formatCurrencyWithLabel } from '@/lib/utils'
 import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
 
@@ -7,7 +8,7 @@ interface StakePreviewToken {
   amount: string
   amountConvertedToCurrency: string
   balance: string
-  tokenSymbol: string
+  tokenSymbol: TokenSymbol
 }
 
 interface ButtonAction {
@@ -26,7 +27,7 @@ interface ButtonActions {
 export interface StakingContextProps {
   amount: string
   onAmountChange: (amount: string) => void
-  tokenToSend: StakingToken
+  tokenToSend: TokenWithBalance
   tokenToReceive: StakingToken
   stakePreviewFrom: StakePreviewToken
   stakePreviewTo: StakePreviewToken
@@ -39,7 +40,7 @@ export interface StakingContextProps {
 const DEFAULT_STAKE_PREVIEW_TOKEN = {
   amount: '0',
   balance: '0',
-  tokenSymbol: '0',
+  tokenSymbol: RIF,
   amountConvertedToCurrency: formatCurrencyWithLabel(0),
 }
 
@@ -56,8 +57,8 @@ const DEFAULT_BUTTON_ACTIONS: ButtonActions = {
 const StakingContext = createContext<StakingContextProps>({
   amount: '0',
   onAmountChange: () => {},
-  tokenToSend: { balance: '', symbol: '', price: '', contract: '0x0' },
-  tokenToReceive: { balance: '', symbol: '', price: '', contract: '0x0' },
+  tokenToSend: { balance: '', symbol: RIF, price: '', contract: '0x0' },
+  tokenToReceive: { balance: '', symbol: STRIF, price: '', contract: '0x0' },
   stakePreviewFrom: { ...DEFAULT_STAKE_PREVIEW_TOKEN },
   stakePreviewTo: { ...DEFAULT_STAKE_PREVIEW_TOKEN },
   buttonActions: DEFAULT_BUTTON_ACTIONS,
@@ -66,7 +67,7 @@ const StakingContext = createContext<StakingContextProps>({
 
 interface Props {
   children: ReactNode
-  tokenToSend: StakingToken
+  tokenToSend: TokenWithBalance
   tokenToReceive: StakingToken
 }
 

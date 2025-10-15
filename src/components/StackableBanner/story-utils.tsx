@@ -1,5 +1,5 @@
-import { BaseTypography } from '@/components/Typography/Typography'
 import { TokenImage } from '@/components/TokenImage'
+import { BaseTypography } from '@/components/Typography/Typography'
 import { RBTC, RIF } from '@/lib/tokens'
 import { ArrowRight } from 'lucide-react'
 
@@ -8,10 +8,10 @@ const rifImage = <TokenImage symbol={RIF} size={24} className="inline-block mt-[
 
 // Export args directly for reuse
 export const getRbtcArgs = {
-  title: <span>GET {rbtcImage} rBTC</span>,
+  title: <span>GET {rbtcImage} RBTC</span>,
   description: "You need it to pay the DAO's gas fees",
-  buttonText: 'Get rBTC',
-  buttonOnClick: () => console.log('Get rBTC clicked!'),
+  buttonText: 'Get RBTC',
+  buttonOnClick: () => console.log('Get RBTC clicked!'),
 }
 
 export const getRifArgs = {

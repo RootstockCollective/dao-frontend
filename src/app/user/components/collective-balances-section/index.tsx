@@ -1,15 +1,15 @@
 import { useTreasuryContext } from '@/app/treasury/contexts/TreasuryContext'
 import { useStRifHoldings } from '@/app/treasury/hooks/useStRifHoldings'
+import { formatTokenBalance, getTokenBalance } from '@/app/user/Balances/balanceUtils'
+import { useGetAddressTokens } from '@/app/user/Balances/hooks/useGetAddressTokens'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { Header } from '@/components/Typography'
-import { formatCurrencyWithLabel } from '@/lib/utils'
 import Big from '@/lib/big'
-import { formatTokenBalance, getTokenBalance } from '@/app/user/Balances/balanceUtils'
-import { RBTC, RIF, STRIF, USDRIF } from '@/lib/tokens'
-import { useGetAddressTokens } from '@/app/user/Balances/hooks/useGetAddressTokens'
-import { useAccount } from 'wagmi'
-import { useMemo } from 'react'
 import { treasuryContracts } from '@/lib/contracts'
+import { RBTC, RIF, STRIF, USDRIF } from '@/lib/tokens'
+import { formatCurrencyWithLabel } from '@/lib/utils'
+import { useMemo } from 'react'
+import { useAccount } from 'wagmi'
 
 type BucketTokenSymbol = typeof RBTC | typeof RIF | typeof USDRIF
 type BucketTokenType = 'amount' | 'fiatAmount'
@@ -77,7 +77,7 @@ export const CollectiveBalancesSection = () => {
           symbol={RBTC}
           amount={formatTokenBalance(rbtcTotal.toString(), RBTC)}
           fiatAmount={formatCurrencyWithLabel(rbtcFiatTotal)}
-          tooltipContent={'This is the grand total of rBTC in all parts of the Collective.'}
+          tooltipContent={'This is the grand total of RBTC in all parts of the Collective.'}
         />
       </div>
     </div>

@@ -1,21 +1,11 @@
-import { GetAddressTokenResult, TokenBalance } from '@/app/user/types'
-import { tokenContracts } from '@/lib/contracts'
-import { formatEther } from 'viem'
-import { formatNumberWithCommas } from '@/lib/utils'
+import { AddressToken, TokenBalance } from '@/app/user/types'
 import Big from '@/lib/big'
-import { RIF, RBTC, STRIF, USDRIF } from '@/lib/tokens'
-
-const symbolsToGetFromArray = {
-  [RIF]: { equivalentSymbols: ['tRIF', 'RIF'], currentContract: tokenContracts[RIF] },
-  [RBTC]: { equivalentSymbols: ['rBTC', 'RBTC', 'tRBTC'], currentContract: tokenContracts[RBTC] },
-  [STRIF]: { equivalentSymbols: ['stRIF', 'FIRts'], currentContract: tokenContracts[STRIF] },
-  [USDRIF]: { equivalentSymbols: ['USDRIF'], currentContract: tokenContracts[USDRIF] },
-}
-
-type SymbolsEquivalentKeys = keyof typeof symbolsToGetFromArray
+import { isValidTokenAddress, RBTC, RIF, STRIF, TokenSymbol, USDRIF } from '@/lib/tokens'
+import { formatNumberWithCommas } from '@/lib/utils'
+import { formatEther } from 'viem'
 
 // Token-specific formatting functions
-export const formatTokenBalance = (balance: string, symbol: SymbolsEquivalentKeys): string => {
+export const formatTokenBalance = (balance: string, symbol: TokenSymbol): string => {
   const balanceBig = Big(balance)
 
   switch (symbol) {
@@ -31,12 +21,12 @@ export const formatTokenBalance = (balance: string, symbol: SymbolsEquivalentKey
 }
 
 export const getTokenBalance = (
-  symbol: SymbolsEquivalentKeys,
-  arrayToSearch?: GetAddressTokenResult,
+  symbol: TokenSymbol,
+  arrayToSearch?: AddressToken[],
 ): TokenBalance => {
-  const defaultBalance = {
+  const defaultBalance: TokenBalance = {
+    symbol,
     balance: '0',
-    symbol: symbol as string,
     formattedBalance: '0',
   }
 
@@ -44,16 +34,8 @@ export const getTokenBalance = (
     return defaultBalance
   }
 
-  const { equivalentSymbols, currentContract } = symbolsToGetFromArray[symbol]
-  const normalizedContract = currentContract.toLowerCase()
 
-  const matchingToken = arrayToSearch.find(token => {
-    const tokenSymbolMatches = equivalentSymbols.some(
-      equivalentSymbol => token.symbol?.toLowerCase() === equivalentSymbol.toLowerCase(),
-    )
-    const contractMatches = token.contractAddress.toLowerCase() === normalizedContract
-    return tokenSymbolMatches && contractMatches
-  })
+  const matchingToken = arrayToSearch.find(({ symbol, contractAddress }) => isValidTokenAddress(symbol, contractAddress))
 
   if (!matchingToken) {
     return defaultBalance

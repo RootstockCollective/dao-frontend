@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
-import { ClaimRewardsModalView } from './ClaimRewardsModalView'
-import { useState } from 'react'
 import { RBTC, RIF } from '@/lib/tokens'
+import type { Meta, StoryObj } from '@storybook/nextjs'
+import { useState } from 'react'
+import { ClaimRewardsModalView } from './ClaimRewardsModalView'
 
 // Mock tokens data to avoid reading from environment variables
 const mockTokens = {

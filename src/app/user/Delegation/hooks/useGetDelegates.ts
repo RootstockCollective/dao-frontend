@@ -1,12 +1,12 @@
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { tokenContracts } from '@/lib/contracts'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { STRIF, TOKENS } from '@/lib/tokens'
 import { Address } from 'viem'
 import { useReadContract } from 'wagmi'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 const stRifContract = {
   abi: StRIFTokenAbi,
-  address: tokenContracts.stRIF,
+  address: TOKENS[STRIF].address,
 }
 
 export const useGetDelegates = (address: Address | undefined) => {

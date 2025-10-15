@@ -1,9 +1,8 @@
-import { useMemo } from 'react'
-import { StakingProvider } from '@/app/user/Stake/StakingContext'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { StakingToken } from '@/app/user/Stake/types'
-import { tokenContracts } from '@/lib/contracts'
-import { RIF, STRIF } from '@/lib/tokens'
+import { StakingProvider } from '@/app/user/Stake/StakingContext'
+import { StakingToken, TokenWithBalance } from '@/app/user/Stake/types'
+import { RIF, STRIF, TOKENS } from '@/lib/tokens'
+import { useMemo } from 'react'
 import { StepWrapper } from './components/StepWrapper'
 
 interface Props {
@@ -13,11 +12,11 @@ interface Props {
 export const StakingFlow = ({ onCloseModal }: Props) => {
   const { balances, prices } = useBalancesContext()
 
-  const tokenToSend: StakingToken = useMemo(
+  const tokenToSend: TokenWithBalance = useMemo(
     () => ({
-      balance: balances[RIF].balance,
-      symbol: balances[RIF].symbol,
-      contract: tokenContracts[RIF],
+      balance: balances[RIF]?.balance ?? '0',
+      symbol: RIF,
+      contract: TOKENS[RIF].address,
       price: prices[RIF]?.price.toString(),
     }),
     [balances, prices],
@@ -25,9 +24,9 @@ export const StakingFlow = ({ onCloseModal }: Props) => {
 
   const tokenToReceive: StakingToken = useMemo(
     () => ({
-      balance: balances[STRIF].balance,
-      symbol: balances[STRIF].symbol,
-      contract: tokenContracts[STRIF],
+      balance: balances[STRIF]?.balance ?? '0',
+      symbol: STRIF,
+      contract: TOKENS[STRIF].address,
       price: prices[STRIF]?.price.toString(),
     }),
     [balances, prices],

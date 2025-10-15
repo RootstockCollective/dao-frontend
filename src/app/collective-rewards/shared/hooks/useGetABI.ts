@@ -1,13 +1,13 @@
+import { getBackerRewardPercentage } from '@/app/collective-rewards/rewards'
 import Big from '@/lib/big'
 import { WeiPerEther } from '@/lib/constants'
 import { RBTC, RIF } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useMemo } from 'react'
 import { Address } from 'viem'
-import { getBackerRewardPercentage } from '@/app/collective-rewards/rewards'
-import { getCyclePayout } from './getCyclePayout'
-import { isBuilderRewardable } from '../../utils'
 import { BuilderStateFlags } from '../../types'
+import { isBuilderRewardable } from '../../utils'
+import { getCyclePayout } from './getCyclePayout'
 
 type CycleData = {
   id: string
@@ -79,10 +79,10 @@ export const useGetABI = (abiData: AbiData | undefined) => {
       (acc, { backerRewardPct, totalAllocation }) => {
         const currentBackerRewardPercentage = backerRewardPct
           ? getBackerRewardPercentage(
-              BigInt(backerRewardPct.previous ?? 0n),
-              BigInt(backerRewardPct.next ?? 0n),
-              BigInt(backerRewardPct.cooldownEndTime ?? 0n),
-            ).current.toString()
+            BigInt(backerRewardPct.previous ?? 0n),
+            BigInt(backerRewardPct.next ?? 0n),
+            BigInt(backerRewardPct.cooldownEndTime ?? 0n),
+          ).current.toString()
           : 0
         return acc.plus(
           Big(totalAllocation).mul(Big(currentBackerRewardPercentage)).div(top5BuildersTotalAllocation),

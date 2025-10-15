@@ -1,5 +1,5 @@
-import { formatMetrics, Token } from '@/app/collective-rewards/rewards'
-import { TOKENS } from '@/lib/tokens'
+import { formatMetrics } from '@/app/collective-rewards/rewards'
+import { NativeCurrency, RBTC, RIF, TOKENS, type Token } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { Address } from 'viem'
@@ -23,7 +23,7 @@ interface UnclaimedRewardsData {
   error: Error | null
 }
 
-const useGetBuilderRewardsPerToken = (gauge: Address, token: Token) => {
+const useGetBuilderRewardsPerToken = (gauge: Address, token: Token | NativeCurrency) => {
   const { prices } = usePricesContext()
   const {
     data: rewards,
@@ -44,9 +44,8 @@ const useGetBuilderRewardsPerToken = (gauge: Address, token: Token) => {
 export const useGetBuilderUnclaimedRewards = ({
   gauge,
 }: UseBuilderUnclaimedRewardsProps): UnclaimedRewardsData => {
-  const { rif, rbtc } = TOKENS
-  const rifData = useGetBuilderRewardsPerToken(gauge, rif)
-  const rbtcData = useGetBuilderRewardsPerToken(gauge, rbtc)
+  const rifData = useGetBuilderRewardsPerToken(gauge, TOKENS[RIF])
+  const rbtcData = useGetBuilderRewardsPerToken(gauge, TOKENS[RBTC])
 
   return {
     rif: {

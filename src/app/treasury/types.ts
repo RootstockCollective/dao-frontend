@@ -1,5 +1,5 @@
+import { RBTC, RIF, USDRIF } from '@/lib/tokens'
 import { Address } from 'viem'
-import { RIF, USDRIF, RBTC } from '@/lib/tokens'
 
 type BucketItem = {
   amount: string

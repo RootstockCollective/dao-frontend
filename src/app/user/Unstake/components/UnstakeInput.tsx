@@ -1,9 +1,9 @@
 import { StakeInput } from '@/app/user/Stake/StakeInput'
+import { StakingToken } from '@/app/user/Stake/types'
 import { TokenImage } from '@/components/TokenImage'
 import { Label } from '@/components/Typography'
-import { StakingToken } from '@/app/user/Stake/types'
-import { formatCurrency } from '@/lib/utils'
 import Big from '@/lib/big'
+import { formatCurrency } from '@/lib/utils'
 import { forwardRef, useEffect, useRef } from 'react'
 import { PercentageButtons } from './PercentageButtons'
 

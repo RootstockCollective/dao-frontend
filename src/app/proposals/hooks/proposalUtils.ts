@@ -1,4 +1,9 @@
+import { config } from '@/config'
 import { GovernorAbi } from '@/lib/abis/Governor'
+import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
+import { GovernorAddress } from '@/lib/contracts'
+import { STRIF, TOKENS } from '@/lib/tokens'
+import { readContracts } from '@wagmi/core'
 import {
   Abi,
   Address,
@@ -8,10 +13,6 @@ import {
   Hash,
   keccak256,
 } from 'viem'
-import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { readContracts } from '@wagmi/core'
-import { config } from '@/config'
-import { GovernorAddress, tokenContracts } from '@/lib/contracts'
 
 const DEFAULT_DAO_CONFIG = {
   abi: GovernorAbi,
@@ -51,7 +52,7 @@ export async function checkCanCreateProposal(userAddress: Address): Promise<bool
     contracts: [
       {
         abi: StRIFTokenAbi,
-        address: tokenContracts.stRIF,
+        address: TOKENS[STRIF].address,
         functionName: 'getVotes',
         args: [userAddress],
       },

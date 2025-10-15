@@ -1,28 +1,31 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
-import moment from 'moment'
-import { useAccount } from 'wagmi'
-import { useReviewProposal } from '@/app/providers'
-import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
-import { ProposalSubfooter } from '../../components/ProposalSubfooter'
-import { ProposalCategory } from '@/shared/types'
-import { Card } from '../components/Card'
-import { formatCurrencyWithLabel, formatNumberWithCommas, shortAddress } from '@/lib/utils'
-import { PreviewLabel } from '../components/PreviewLabel'
-import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCreateTreasuryTransferProposal'
-import { tokenContracts, uppercasedTokenContracts } from '@/lib/contracts'
-import { showToast } from '@/shared/notification'
-import { isUserRejectedTxError } from '@/components/ErrorPage'
-import { Header, Paragraph, Span } from '@/components/Typography'
-import { CopyButton } from '@/components/CopyButton'
-import { DISCOURSE_LINK_SEPARATOR } from '@/app/proposals/shared/utils'
-import { TokenImage } from '@/components/TokenImage'
-import { usePricesContext } from '@/shared/context'
-import Big from '@/lib/big'
 import { MilestoneIcon } from '@/app/proposals/components/MilestoneIcon'
-import { MILESTONE_SEPARATOR, labeledMilestones } from '@/app/proposals/shared/utils'
+import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCreateTreasuryTransferProposal'
 import { Milestones } from '@/app/proposals/shared/types'
+import {
+  DISCOURSE_LINK_SEPARATOR,
+  labeledMilestones,
+  MILESTONE_SEPARATOR,
+} from '@/app/proposals/shared/utils'
+import { useReviewProposal } from '@/app/providers'
+import { CopyButton } from '@/components/CopyButton'
+import { isUserRejectedTxError } from '@/components/ErrorPage'
+import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
+import { TokenImage } from '@/components/TokenImage'
+import { Header, Paragraph, Span } from '@/components/Typography'
+import Big from '@/lib/big'
+import { getTokenByNormalizedSymbol } from '@/lib/tokens'
+import { formatCurrencyWithLabel, formatNumberWithCommas, shortAddress } from '@/lib/utils'
+import { usePricesContext } from '@/shared/context'
+import { showToast } from '@/shared/notification'
+import { ProposalCategory } from '@/shared/types'
+import moment from 'moment'
+import { useCallback, useEffect, useState } from 'react'
+import { useAccount } from 'wagmi'
+import { ProposalSubfooter } from '../../components/ProposalSubfooter'
+import { Card } from '../components/Card'
+import { PreviewLabel } from '../components/PreviewLabel'
 
 export default function GrantsProposalReview() {
   const { prices } = usePricesContext()
@@ -41,7 +44,8 @@ export default function GrantsProposalReview() {
       const milestoneString =
         milestone !== Milestones.NO_MILESTONE ? `${MILESTONE_SEPARATOR + milestone} ` : ''
       const proposalDescription = `${proposalName};${description} ${DISCOURSE_LINK_SEPARATOR}${discourseLink} ${milestoneString}`
-      const tokenAddress = uppercasedTokenContracts[token.toUpperCase() as keyof typeof tokenContracts]
+      const { address: tokenAddress } = getTokenByNormalizedSymbol(token)
+
       if (!tokenAddress) throw new Error('GrantsProposalReview: Unknown contract address')
 
       // Here the user will see Metamask window and confirm his tx

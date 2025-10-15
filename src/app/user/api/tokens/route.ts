@@ -1,11 +1,10 @@
-import { publicClient, transformMulticallResults } from '@/lib/viemPublicClient'
-import { tokenContracts } from '@/lib/contracts'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
+import { RIF, STRIF, TOKENS, TokenSymbol, USDRIF } from '@/lib/tokens'
+import { publicClient, transformMulticallResults } from '@/lib/viemPublicClient'
 import { Address } from 'viem'
-import { RIF, STRIF, USDRIF } from '@/lib/tokens'
 
 export interface TokenInfo {
-  symbol?: string
+  symbol?: TokenSymbol
   name?: string
   decimals?: string
 }
@@ -13,7 +12,7 @@ export interface TokenInfo {
 /**
  * These tokens are the ones that are queried - in case more are needed add here
  */
-const tokenAddresses = [tokenContracts[RIF], tokenContracts[STRIF], tokenContracts[USDRIF]] as Address[]
+const tokenAddresses: Address[] = [TOKENS[RIF].address, TOKENS[STRIF].address, TOKENS[USDRIF].address]
 
 async function getTokenData() {
   const contractCallsPromises = tokenAddresses.map(tokenAddress => {

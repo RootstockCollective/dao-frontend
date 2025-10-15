@@ -1,8 +1,8 @@
 import { Cycle } from '@/app/collective-rewards/metrics'
-import { BANNER_CONFIGS, CYCLE_ENDED, CYCLE_ENDING, KYC_ONLY, NOT_BACKING, START_BUILDING } from './constants'
-import { BannerConfig } from './types'
 import { BaseTypography } from '@/components/Typography/Typography'
 import { DateTime } from 'luxon'
+import { BANNER_CONFIGS, CYCLE_ENDED, CYCLE_ENDING, KYC_ONLY, NOT_BACKING, START_BUILDING } from './constants'
+import { BannerConfig } from './types'
 
 /**
  * Randomly shuffles banner configs and returns at most 2 banners.
@@ -32,7 +32,7 @@ export const selectRandomBannerConfigs = (bannerConfigs: BannerConfig[]): Banner
  * @returns BannerConfig if a banner should be shown for the missing token, null otherwise
  *
  * @example
- * getBannerConfigForTokenStatus(NEED_RBTC) // Returns rBTC banner config
+ * getBannerConfigForTokenStatus(NEED_RBTC) // Returns RBTC banner config
  * getBannerConfigForTokenStatus(null) // Returns null
  */
 export const getBannerConfigForTokenStatus = (missingTokenType: string | null): BannerConfig | null => {

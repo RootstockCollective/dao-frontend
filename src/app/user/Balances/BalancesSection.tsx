@@ -1,17 +1,16 @@
 import { BalanceInfoForUser } from '@/app/user/Balances/BalanceInfoForUser'
+import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { StakingFlow } from '@/app/user/Stake'
 import { UnstakeModal } from '@/app/user/Unstake'
-import { useModal } from '@/shared/hooks/useModal'
-import { useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
-import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { Button } from '@/components/Button'
 import { MoneyIconKoto } from '@/components/Icons'
-import { useRef } from 'react'
 import { Span } from '@/components/Typography'
-import { RBTC, RIF, STRIF, USDRIF } from '@/lib/tokens'
 import Big from '@/lib/big'
-import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
+import { RBTC, RIF, STRIF, USDRIF } from '@/lib/tokens'
+import { useModal } from '@/shared/hooks/useModal'
+import { useSearchParams } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 
 export const BalancesSection = () => {
   const stakeModal = useModal()
@@ -42,11 +41,11 @@ export const BalancesSection = () => {
       <div className="flex flex-row justify-between mb-6 flex-wrap">
         <div className="flex flex-col gap-4 md:mt-6">
           <BalanceInfoForUser symbol={RIF} className="min-w-[268px]" />
-          {Big(balances[RIF].balance).gt(0) && <StakeButton onClick={stakeModal.openModal} />}
+          {Big(balances[RIF]?.balance ?? '0').gt(0) && <StakeButton onClick={stakeModal.openModal} />}
         </div>
         <div className="flex flex-col gap-4 mt-6">
           <BalanceInfoForUser symbol={STRIF} className="min-w-[268px]" />
-          {Big(balances[STRIF].balance).gt(0) && <UnstakeButton onClick={unstakeModal.openModal} />}
+          {Big(balances[STRIF]?.balance ?? '0').gt(0) && <UnstakeButton onClick={unstakeModal.openModal} />}
         </div>
         <BalanceInfoForUser symbol={USDRIF} className={balanceStyle} />
         <BalanceInfoForUser symbol={RBTC} className={balanceStyle} />
@@ -61,7 +60,7 @@ export const BalancesSection = () => {
 
 const StakeButton = ({ onClick }: { onClick: () => void }) => {
   const { balances } = useBalancesContext()
-  const { balance } = balances[RIF]
+  const { balance } = balances[RIF] ?? { balance: '0' }
   const hasEnoughBalance = Number(balance) > 0
   return (
     <Button
@@ -78,7 +77,7 @@ const StakeButton = ({ onClick }: { onClick: () => void }) => {
 
 const UnstakeButton = ({ onClick }: { onClick: () => void }) => {
   const { balances } = useBalancesContext()
-  const { balance } = balances[STRIF]
+  const { balance } = balances[STRIF] ?? { balance: '0' }
   const hasEnoughBalance = Number(balance) > 0
   return (
     <Button

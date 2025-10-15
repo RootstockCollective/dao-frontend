@@ -2,11 +2,12 @@
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { SolidTabs } from '@/components/Tabs'
 import { Label, Paragraph } from '@/components/Typography'
+import { TokenSymbol } from '@/lib/tokens'
 import { cn, formatCurrencyWithLabel } from '@/lib/utils'
+import { useCallback, useState } from 'react'
 import { AddressLink } from '../components/AddressLink'
 import { useTreasuryTabs } from '../hooks/useTreasuryTabs'
 import { TreasuryTabKey } from '../types'
-import { useCallback, useState } from 'react'
 
 /**
  * Displays a tabbed section with metrics for different treasury categories: Grant, Growth, General.
@@ -52,7 +53,7 @@ export function TabsSection() {
                       <div className="flex-1" key={symbol}>
                         <BalanceInfo
                           amount={bucket?.formattedAmount}
-                          symbol={symbol}
+                          symbol={symbol as TokenSymbol}
                           fiatAmount={formatCurrencyWithLabel(bucket?.fiatAmount ?? 0)}
                         />
                       </div>

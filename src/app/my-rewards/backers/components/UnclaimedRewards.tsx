@@ -5,31 +5,34 @@ import ClaimRewardsModal from '@/app/collective-rewards/components/ClaimRewardMo
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { useBackerUnclaimedRewards } from '@/app/my-rewards/backers/hooks/useBackerUnclaimedRewards'
 import { ClaimRewardsButton } from '@/app/my-rewards/components/ClaimRewardsButton'
-import { TokenSymbol } from '@/components/TokenImage'
+import { RBTC, RIF } from '@/lib/tokens'
 import { useModal } from '@/shared/hooks/useModal'
 
 export const UnclaimedRewards = () => {
   const { isModalOpened, openModal, closeModal } = useModal()
-  const { rif: rifData, rbtc: rbtcData } = useBackerUnclaimedRewards()
-  useHandleErrors({ error: rifData.error ?? rbtcData.error, title: 'Error loading backer unclaimed rewards' })
+  const { [RIF]: rifData, [RBTC]: rbtcData } = useBackerUnclaimedRewards()
+  useHandleErrors({
+    error: rifData?.error ?? rbtcData?.error,
+    title: 'Error loading backer unclaimed rewards',
+  })
 
   return (
     <RewardCard
-      isLoading={rifData.isLoading || rbtcData.isLoading}
+      isLoading={rifData?.isLoading || rbtcData?.isLoading || false}
       title="Unclaimed"
       info="Your rewards available to claim"
       className="w-full sm:w-auto"
     >
       <div className="flex sm:flex-col justify-between w-full">
         <TokenAmount
-          amount={rifData.amount}
-          tokenSymbol={TokenSymbol.RIF}
-          amountInFiat={rifData.fiatAmount}
+          amount={rifData?.amount ?? '0'}
+          tokenSymbol={RIF}
+          amountInFiat={rifData?.fiatAmount ?? '0'}
         />
         <TokenAmount
-          amount={rbtcData.amount}
-          tokenSymbol={TokenSymbol.RBTC}
-          amountInFiat={rbtcData.fiatAmount}
+          amount={rbtcData?.amount ?? '0'}
+          tokenSymbol={RBTC}
+          amountInFiat={rbtcData?.fiatAmount ?? '0'}
         />
       </div>
       <div className="flex justify-start">

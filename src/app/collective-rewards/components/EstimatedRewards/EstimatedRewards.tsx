@@ -4,7 +4,6 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric } from '@/components/Metric'
 import { TokenAmount } from '@/components/TokenAmount'
-import { TokenSymbol } from '@/components/TokenImage'
 import { RBTC, RIF, USD } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
@@ -21,8 +20,8 @@ export const EstimatedRewards = () => {
   const rifPrice = prices[RIF]?.price ?? 0
   const rbtcPrice = prices[RBTC]?.price ?? 0
 
-  const rifData = formatMetrics(cycleRewards?.rif ?? 0n, rifPrice, TokenSymbol.RIF, USD)
-  const rbtcData = formatMetrics(cycleRewards?.rbtc ?? 0n, rbtcPrice, TokenSymbol.RBTC, USD)
+  const rifData = formatMetrics(cycleRewards?.rif ?? 0n, rifPrice, RIF, USD)
+  const rbtcData = formatMetrics(cycleRewards?.rbtc ?? 0n, rbtcPrice, RBTC, USD)
 
   return (
     // FIXME: reuse this component
@@ -31,16 +30,8 @@ export const EstimatedRewards = () => {
         <LoadingSpinner />
       ) : (
         <div className="flex flex-row md:flex-col justify-between w-full gap-4">
-          <TokenAmount
-            amount={rifData.amount}
-            tokenSymbol={TokenSymbol.RIF}
-            amountInFiat={rifData.fiatAmount}
-          />
-          <TokenAmount
-            amount={rbtcData.amount}
-            tokenSymbol={TokenSymbol.RBTC}
-            amountInFiat={rbtcData.fiatAmount}
-          />
+          <TokenAmount amount={rifData.amount} tokenSymbol={RIF} amountInFiat={rifData.fiatAmount} />
+          <TokenAmount amount={rbtcData.amount} tokenSymbol={RBTC} amountInFiat={rbtcData.fiatAmount} />
         </div>
       )}
     </Metric>

@@ -2,6 +2,7 @@ import { Input } from '@/components/Input'
 import { TokenImage } from '@/components/TokenImage'
 import { Paragraph } from '@/components/Typography'
 import { variantClasses } from '@/components/Typography/Typography'
+import { TokenSymbol } from '@/lib/tokens'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import { forwardRef } from 'react'
@@ -9,7 +10,7 @@ import { forwardRef } from 'react'
 interface Props {
   onChange: (value: string) => void
   value: string
-  symbol: string
+  symbol: TokenSymbol
   labelText?: string
   currencyValue?: string
   errorText?: string

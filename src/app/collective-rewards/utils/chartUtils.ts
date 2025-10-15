@@ -1,10 +1,9 @@
-import { BackingPoint, RewardsPoint, CycleWindow, DailyAllocationItem, CycleRewardsItem } from '../types'
-import { ONE_DAY_IN_SECONDS, FIVE_MONTHS_IN_MS, FIRST_CYCLE_START_SECONDS } from '../constants/chartConstants'
 import Big from '@/lib/big'
 import { WeiPerEther } from '@/lib/constants'
+import { RBTC, RIF, USD } from '@/lib/tokens'
+import { FIRST_CYCLE_START_SECONDS, FIVE_MONTHS_IN_MS, ONE_DAY_IN_SECONDS } from '../constants/chartConstants'
+import { BackingPoint, CycleRewardsItem, CycleWindow, DailyAllocationItem, RewardsPoint } from '../types'
 import { getCombinedFiatAmount } from './getCombinedFiatAmount'
-import { TokenSymbol } from '@/components/TokenImage'
-import { USD } from '@/lib/tokens'
 
 export const convertToTimestamp = (d: Date | number | string): number => new Date(d).getTime()
 
@@ -91,13 +90,13 @@ const calculateRewardsUSD = (
     {
       value: BigInt(rifAmountWei),
       price: rifPrice,
-      symbol: TokenSymbol.RIF,
+      symbol: RIF,
       currency: USD,
     },
     {
       value: BigInt(rbtcAmountWei),
       price: rbtcPrice,
-      symbol: TokenSymbol.RBTC,
+      symbol: RBTC,
       currency: USD,
     },
   ]

@@ -7,39 +7,27 @@ import {
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
 import { WeiPerEther } from '@/lib/constants'
-import { TOKENS } from '@/lib/tokens'
+import { RBTC, RIF, TokenSymbol } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadBackersManager, useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { useMemo } from 'react'
 import { Address } from 'viem'
+import { FormattedTokenRewardData } from '../../backers/hooks/useBackerTotalEarned'
 
 interface UseBuilderEstimatedRewardsProps {
   builder: Address
   gauge: Address
 }
 
-interface TokenRewardData {
-  amount: string
-  fiatAmount: string
-  isLoading: boolean
-  error: Error | null
-}
-
-interface EstimatedRewardsData {
-  rif: TokenRewardData
-  rbtc: TokenRewardData
-}
-
 export const useGetBuilderEstimatedRewards = ({
   builder,
   gauge,
-}: UseBuilderEstimatedRewardsProps): EstimatedRewardsData => {
+}: UseBuilderEstimatedRewardsProps): Partial<Record<TokenSymbol, FormattedTokenRewardData>> => {
   const { prices } = usePricesContext()
   const { getBuilderByAddress } = useBuilderContext()
-  const { rif, rbtc } = TOKENS
 
-  const { rif: rifTokenReward, rbtc: rbtcTokenReward } = useGetPerTokenRewards()
+  const { [RIF]: rifTokenRewardData, [RBTC]: rbtcTokenRewardData } = useGetPerTokenRewards()
 
   const {
     data: totalPotentialRewards,
@@ -91,69 +79,69 @@ export const useGetBuilderEstimatedRewards = ({
   const rifFormatted = useMemo(() => {
     const rifRewardsAmountCalc =
       isRewarded && rewardShares && totalPotentialRewards
-        ? (rifTokenReward.data ?? 0n * rewardShares) / totalPotentialRewards
+        ? (rifTokenRewardData?.data ?? 0n * rewardShares) / totalPotentialRewards
         : 0n
     const rifEstimatedRewards = (rifRewardsAmountCalc * (WeiPerEther - rewardPercentageToApply)) / WeiPerEther
-    const rifPrice = prices[rif.symbol]?.price ?? 0
-    return formatMetrics(rifEstimatedRewards, rifPrice, rif.symbol)
+    const rifPrice = prices[RIF]?.price ?? 0
+    return formatMetrics(rifEstimatedRewards, rifPrice, RIF)
   }, [
-    rifTokenReward.data,
+    rifTokenRewardData?.data,
     rewardShares,
     totalPotentialRewards,
     isRewarded,
     rewardPercentageToApply,
     prices,
-    rif.symbol,
+    RIF,
   ])
 
-  // Calculate estimated rewards for rBTC
+  // Calculate estimated rewards for RBTC
   const rbtcFormatted = useMemo(() => {
     const rbtcRewardsAmountCalc =
       isRewarded && rewardShares && totalPotentialRewards
-        ? (rbtcTokenReward.data ?? 0n * rewardShares) / totalPotentialRewards
+        ? (rbtcTokenRewardData?.data ?? 0n * rewardShares) / totalPotentialRewards
         : 0n
     const rbtcEstimatedRewards =
       (rbtcRewardsAmountCalc * (WeiPerEther - rewardPercentageToApply)) / WeiPerEther
-    const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
-    return formatMetrics(rbtcEstimatedRewards, rbtcPrice, rbtc.symbol)
+    const rbtcPrice = prices[RBTC]?.price ?? 0
+    return formatMetrics(rbtcEstimatedRewards, rbtcPrice, RBTC)
   }, [
-    rbtcTokenReward.data,
+    rbtcTokenRewardData?.data,
     rewardShares,
     totalPotentialRewards,
     isRewarded,
     rewardPercentageToApply,
     prices,
-    rbtc.symbol,
+    RBTC,
   ])
 
   return {
-    rif: {
+    [RIF]: {
       amount: rifFormatted.amount,
       fiatAmount: rifFormatted.fiatAmount,
       isLoading:
-        rifTokenReward.isLoading ||
+        rifTokenRewardData?.isLoading ||
         totalPotentialRewardsLoading ||
         rewardSharesLoading ||
         backerRewardsPctLoading ||
         cycleLoading,
       error:
-        rifTokenReward.error ??
+        rifTokenRewardData?.error ??
         totalPotentialRewardsError ??
         rewardSharesError ??
         backerRewardsPctError ??
         cycleError,
     },
-    rbtc: {
+    [RBTC]: {
       amount: rbtcFormatted.amount,
       fiatAmount: rbtcFormatted.fiatAmount,
       isLoading:
-        rbtcTokenReward.isLoading ||
+        rbtcTokenRewardData?.isLoading ||
         totalPotentialRewardsLoading ||
         rewardSharesLoading ||
         backerRewardsPctLoading ||
         cycleLoading,
       error:
-        rbtcTokenReward.error ??
+        rbtcTokenRewardData?.error ??
         totalPotentialRewardsError ??
         rewardSharesError ??
         backerRewardsPctError ??

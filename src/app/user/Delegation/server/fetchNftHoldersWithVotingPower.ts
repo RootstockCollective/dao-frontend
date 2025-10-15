@@ -1,13 +1,13 @@
 'use server'
 
 import { fetchNftHoldersOfAddress } from '@/app/user/Balances/actions'
-import { OG_CONTRIBUTORS_NFT_ADDRESS } from '@/lib/constants'
-import { stRif } from '@/lib/contracts'
-import { publicClient } from '@/lib/viemPublicClient'
-import { formatEther } from 'viem'
 import Big from '@/lib/big'
-import { unstable_cache } from 'next/cache'
+import { OG_CONTRIBUTORS_NFT_ADDRESS } from '@/lib/constants'
 import { resolveRnsDomain } from '@/lib/rns'
+import { STRIF, TOKENS } from '@/lib/tokens'
+import { publicClient } from '@/lib/viemPublicClient'
+import { unstable_cache } from 'next/cache'
+import { formatEther } from 'viem'
 
 async function fetchNftHoldersShepherds() {
   const holders = await fetchNftHoldersOfAddress(OG_CONTRIBUTORS_NFT_ADDRESS, null)
@@ -40,7 +40,7 @@ async function getNftHoldersShepherds() {
 
   // Prepare contract calls to fetch voting power
   const stRifContractCalls = holders.map(({ address }) => ({
-    ...stRif,
+    ...TOKENS[STRIF],
     functionName: 'getVotes',
     args: [address.toLowerCase()],
   }))

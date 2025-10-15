@@ -13,7 +13,7 @@ export const MilestoneInfoSidebar = () => {
       <InfoIcon className="w-5 h-5 text-bg-0" />
       <div className="flex flex-col gap-2">
         <Paragraph className="text-bg-0">
-          Incremental value unlocks based on Milestone completion paid in $RIF, $rBTC, $USDRIF. After
+          Incremental value unlocks based on Milestone completion paid in $RIF, $RBTC, $USDRIF. After
           discussion with the community off chain and assessment from Delegates you should set your proposed
           Milestone here…
         </Paragraph>

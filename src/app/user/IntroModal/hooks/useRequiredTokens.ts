@@ -30,9 +30,9 @@ export const useRequiredTokens = (): IntroModalStatus | null => {
       return null
     }
 
-    const hasRbtc = Big(balances[RBTC].balance).gt(0)
-    const hasRif = Big(balances[RIF].balance).gt(0)
-    const hasStRif = Big(balances[STRIF].balance).gt(0)
+    const hasRbtc = Big(balances[RBTC]?.balance ?? '0').gt(0)
+    const hasRif = Big(balances[RIF]?.balance ?? '0').gt(0)
+    const hasStRif = Big(balances[STRIF]?.balance ?? '0').gt(0)
 
     const needRbtc = !hasRbtc
     const needRif = !hasRif && !hasStRif

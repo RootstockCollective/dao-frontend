@@ -1,8 +1,8 @@
-import { useGetAddressTokens } from '@/app/user/Balances/hooks/useGetAddressTokens'
-import { useAccount } from 'wagmi'
 import { getTokenBalance } from '@/app/user/Balances/balanceUtils'
+import { useGetAddressTokens } from '@/app/user/Balances/hooks/useGetAddressTokens'
+import { RBTC, RIF, USDRIF } from '@/lib/tokens'
 import { Address } from 'viem'
-import { RIF, RBTC, USDRIF } from '@/lib/tokens'
+import { useAccount } from 'wagmi'
 
 export const useGetTreasuryBucketBalance = (address: Address) => {
   const { chainId } = useAccount()

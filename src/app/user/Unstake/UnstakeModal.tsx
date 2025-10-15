@@ -1,23 +1,23 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { StakingToken } from '@/app/user/Stake/types'
+import { Button } from '@/components/Button'
+import { Divider } from '@/components/Divider'
 import { Modal } from '@/components/Modal'
 import { Header } from '@/components/Typography'
 import Big from '@/lib/big'
-import { tokenContracts } from '@/lib/contracts'
+import { STRIF, TOKENS } from '@/lib/tokens'
 import { cn, handleAmountInput } from '@/lib/utils'
 import { useReadBackersManager } from '@/shared/hooks/contracts'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { executeTxFlow } from '@/shared/notification'
 import { useCallback, useMemo, useState } from 'react'
 import { formatEther, parseEther } from 'viem'
 import { useAccount } from 'wagmi'
+import { TransactionInProgressButton } from '../Stake/components/TransactionInProgressButton'
+import { TransactionStatus } from '../Stake/components/TransactionStatus'
 import { useUnstakeStRIF } from '../Stake/hooks/useUnstakeStRIF'
 import { AllocationWarning } from './components/AllocationWarning'
 import { UnstakeInput } from './components/UnstakeInput'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { TransactionStatus } from '../Stake/components/TransactionStatus'
-import { Divider } from '@/components/Divider'
-import { TransactionInProgressButton } from '../Stake/components/TransactionInProgressButton'
-import { Button } from '@/components/Button'
 
 interface Props {
   onCloseModal: () => void
@@ -31,7 +31,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
   const [amount, setAmount] = useState('')
   const { onRequestUnstake, isRequesting, isTxPending, isTxFailed, unstakeTxHash } = useUnstakeStRIF(
     amount,
-    tokenContracts.stRIF,
+    TOKENS.stRIF.address,
   )
 
   const { data: backerTotalAllocation = 0n } = useReadBackersManager(
@@ -41,12 +41,12 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
 
   const stRifToken: StakingToken = useMemo(
     () => ({
-      balance: balances.stRIF.balance,
-      symbol: balances.stRIF.symbol,
-      contract: tokenContracts.stRIF,
-      price: prices.stRIF?.price.toString() || '0',
+      balance: balances[STRIF]?.balance ?? '0',
+      symbol: STRIF,
+      contract: TOKENS[STRIF].address,
+      price: prices[STRIF]?.price.toString() || '0',
     }),
-    [balances.stRIF.balance, balances.stRIF.symbol, prices.stRIF?.price],
+    [balances[STRIF]?.balance, balances[STRIF]?.symbol, prices[STRIF]?.price],
   )
 
   const availableToUnstake = useMemo(() => {

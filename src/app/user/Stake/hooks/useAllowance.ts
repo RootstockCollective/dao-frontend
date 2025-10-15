@@ -1,8 +1,8 @@
+import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
+import { RIF, TOKENS } from '@/lib/tokens'
 import { useMemo } from 'react'
 import { Address, parseEther } from 'viem'
 import { useAccount, useReadContract } from 'wagmi'
-import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
-import { tokenContracts } from '@/lib/contracts'
 import { useContractWrite } from './useContractWrite'
 
 export const useAllowance = (
@@ -14,7 +14,7 @@ export const useAllowance = (
 
   const { data: allowanceBalance, isLoading: isAllowanceReadLoading } = useReadContract({
     abi: RIFTokenAbi,
-    address: tokenContracts.RIF,
+    address: TOKENS[RIF].address,
     functionName: 'allowance',
     args: [address!, tokenToReceiveContract],
     query: {

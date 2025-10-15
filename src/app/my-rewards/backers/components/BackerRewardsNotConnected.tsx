@@ -1,16 +1,16 @@
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { AnnualBackersIncentives } from '@/app/shared/components/AnnualBackersIncentives'
 import { TokenAmount } from '@/components/TokenAmount'
-import { TokenSymbol } from '@/components/TokenImage'
 import { Header } from '@/components/Typography'
+import { RBTC, RIF } from '@/lib/tokens'
 import { RewardCard } from '../../components/RewardCard'
 import { useBackersEstimatedRewards } from '../hooks/useBackersEstimatedRewards'
 
 export const BackerRewardsNotConnected = () => {
-  const { rif: rifData, rbtc: rbtcData } = useBackersEstimatedRewards()
+  const { [RIF]: rifData, [RBTC]: rbtcData } = useBackersEstimatedRewards()
 
   useHandleErrors({
-    error: rifData.error ?? rbtcData.error,
+    error: rifData?.error ?? rbtcData?.error,
     title: 'Error loading backers estimated rewards',
   })
 
@@ -33,7 +33,7 @@ export const BackerRewardsNotConnected = () => {
         <AnnualBackersIncentives className="basis-3/4" />
         <div className="sm:basis-1/4 w-full">
           <RewardCard
-            isLoading={rifData.isLoading || rbtcData.isLoading}
+            isLoading={rifData?.isLoading || rbtcData?.isLoading || false}
             title="Estimated this cycle"
             info={
               <span className="text-[14px] font-normal text-left">
@@ -47,14 +47,14 @@ export const BackerRewardsNotConnected = () => {
             className="flex-row sm:flex-col justify-between w-full sm:w-auto"
           >
             <TokenAmount
-              amount={rifData.amount}
-              tokenSymbol={TokenSymbol.RIF}
-              amountInFiat={rifData.fiatAmount}
+              amount={rifData?.amount ?? '0'}
+              tokenSymbol={RIF}
+              amountInFiat={rifData?.fiatAmount ?? '0'}
             />
             <TokenAmount
-              amount={rbtcData.amount}
-              tokenSymbol={TokenSymbol.RBTC}
-              amountInFiat={rbtcData.fiatAmount}
+              amount={rbtcData?.amount ?? '0'}
+              tokenSymbol={RBTC}
+              amountInFiat={rbtcData?.fiatAmount ?? '0'}
             />
           </RewardCard>
         </div>

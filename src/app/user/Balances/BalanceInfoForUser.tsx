@@ -1,21 +1,16 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { SupportedTokens, tokenContracts } from '@/lib/contracts'
 import { BalanceInfo } from '@/components/BalanceInfo'
-import Big from '@/lib/big'
-import { formatCurrency, formatCurrencyWithLabel } from '@/lib/utils'
-import { Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
-import { useState } from 'react'
+import { Paragraph } from '@/components/Typography'
+import Big from '@/lib/big'
+import { NativeCurrency, RBTC, Token, TOKENS, type TokenSymbol } from '@/lib/tokens'
+import { formatCurrency, formatCurrencyWithLabel } from '@/lib/utils'
 import { requestProviderToAddToken } from '@/shared/utils'
-import { RBTC } from '@/lib/tokens'
+import { HTMLAttributes, useState } from 'react'
 
 interface TooltipComponentProps {
   text: string
-  token: {
-    address: string
-    symbol: string
-    decimals: number
-  }
+  token: Omit<Token, 'abi'> | NativeCurrency
   isRBTC: boolean
   error?: string
 }
@@ -54,8 +49,8 @@ const TooltipComponent = ({ text, token, isRBTC }: TooltipComponentProps) => {
 }
 
 interface Props {
-  symbol: SupportedTokens
-  className?: string
+  symbol: TokenSymbol
+  className?: HTMLAttributes<HTMLDivElement>['className']
 }
 
 /**
@@ -67,7 +62,7 @@ interface Props {
 export const BalanceInfoForUser = ({ symbol, className }: Props) => {
   const { balances, prices } = useBalancesContext()
 
-  const symbolToUse = balances[symbol]?.symbol
+  const symbolToUse = balances[symbol]?.symbol as TokenSymbol
   const price = prices[symbol]?.price || 0
   const userBalance = Big(balances[symbol]?.balance || 0)
   const fiatAmount = formatCurrencyWithLabel(userBalance.mul(price))
@@ -80,7 +75,7 @@ export const BalanceInfoForUser = ({ symbol, className }: Props) => {
       tooltipContent={
         <TooltipComponent
           text={`Token Price: ${formatCurrency(price)}`}
-          token={{ symbol: symbolToUse, decimals: 18, address: tokenContracts[symbol] }}
+          token={{ symbol: symbolToUse, decimals: 18, address: TOKENS[symbol].address }}
           isRBTC={symbol === RBTC}
         />
       }

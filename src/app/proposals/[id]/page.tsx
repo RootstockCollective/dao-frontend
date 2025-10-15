@@ -1,24 +1,24 @@
 'use client'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import { DecodedData } from '@/app/proposals/shared/utils'
-import { Header, Paragraph } from '@/components/Typography'
-import { useParams } from 'next/navigation'
-import { usePricesContext } from '@/shared/context/PricesContext'
-import { ParsedActionDetails, ProposalType } from './types'
 import type { GetPricesResult } from '@/app/user/types'
+import { Header, Paragraph } from '@/components/Typography'
 import { RIF_ADDRESS, USDRIF_ADDRESS } from '@/lib/constants'
-import { RIF, USDRIF, RBTC } from '@/lib/tokens'
-import {
-  TechnicalDetails,
-  ProposalProggressBar,
-  Description,
-  VotingDetails,
-  ProposalDetails,
-} from './components'
+import { RBTC, RIF, USDRIF } from '@/lib/tokens'
+import { usePricesContext } from '@/shared/context/PricesContext'
 import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
-import { useProposalById } from '../context'
+import { useParams } from 'next/navigation'
 import { Category } from '../components/category'
+import { useProposalById } from '../context'
 import { Proposal } from '../shared/types'
+import {
+  Description,
+  ProposalDetails,
+  ProposalProggressBar,
+  TechnicalDetails,
+  VotingDetails,
+} from './components'
+import { ParsedActionDetails, ProposalType } from './types'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}

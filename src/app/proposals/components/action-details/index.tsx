@@ -1,10 +1,11 @@
-import type { ReactNode } from 'react'
-import { Header, Paragraph, Span } from '@/components/Typography'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
 import { TokenImage } from '@/components/TokenImage'
+import { Header, Paragraph, Span } from '@/components/Typography'
 import Big from '@/lib/big'
-import { formatNumberWithCommas, formatCurrency } from '@/lib/utils'
-import { formatEther } from 'viem'
+import { TokenSymbol } from '@/lib/tokens'
+import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
+import type { ReactNode } from 'react'
+import { Address, formatEther } from 'viem'
 import { ProposalType } from '../../[id]/types'
 
 interface InfoGridItem {
@@ -16,10 +17,10 @@ interface ActionDetailsProps {
   parsedAction: {
     type: string
     amount?: bigint
-    tokenSymbol?: string
+    tokenSymbol?: TokenSymbol
     price?: number
-    toAddress?: string
-    builder?: string
+    toAddress?: Address
+    builder?: Address
   }
   actionType: string
 }

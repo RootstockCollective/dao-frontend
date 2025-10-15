@@ -1,12 +1,13 @@
 'use server'
 
-import { publicClient } from '@/lib/viemPublicClient'
-import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { GovernorAddress, tokenContracts } from '@/lib/contracts'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { unstable_cache } from 'next/cache'
-import { gql as apolloGQL } from '@apollo/client'
+import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
+import { GovernorAddress } from '@/lib/contracts'
+import { STRIF, TOKENS } from '@/lib/tokens'
+import { publicClient } from '@/lib/viemPublicClient'
 import { daoClient } from '@/shared/components/ApolloClient'
+import { gql as apolloGQL } from '@apollo/client'
+import { unstable_cache } from 'next/cache'
 
 const fetchProposalSharedDetails = async () => {
   // Proposal Threshold (from governor)
@@ -16,7 +17,7 @@ const fetchProposalSharedDetails = async () => {
     contracts: [
       {
         abi: StRIFTokenAbi,
-        address: tokenContracts.stRIF,
+        address: TOKENS[STRIF].address,
         functionName: 'decimals',
       },
       { abi: GovernorAbi, address: GovernorAddress, functionName: 'proposalThreshold' },

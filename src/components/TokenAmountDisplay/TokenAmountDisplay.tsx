@@ -1,12 +1,13 @@
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Paragraph, Span } from '@/components/Typography'
+import { TokenSymbol } from '@/lib/tokens'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
 
 interface Props {
   label?: string
   amount: string
-  tokenSymbol: string
+  tokenSymbol: TokenSymbol
   amountInCurrency?: string
   className?: string
   isFlexEnd?: boolean

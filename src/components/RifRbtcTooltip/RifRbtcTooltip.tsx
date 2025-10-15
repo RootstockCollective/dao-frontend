@@ -1,11 +1,11 @@
-import { ReactNode } from 'react'
-import { BaseTypography } from '@/components/Typography/Typography'
-import { TokenImage } from '@/components/TokenImage'
-import { RBTC, RIF } from '@/lib/tokens'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
-import { Tooltip } from '@/components/Tooltip/Tooltip'
-import { cn } from '@/lib/utils'
 import { CommonComponentProps } from '@/components/commonProps'
+import { TokenImage } from '@/components/TokenImage'
+import { Tooltip } from '@/components/Tooltip/Tooltip'
+import { BaseTypography } from '@/components/Typography/Typography'
+import { RBTC, RIF, TokenSymbol } from '@/lib/tokens'
+import { cn } from '@/lib/utils'
+import { ReactNode } from 'react'
 
 interface RifRbtcTooltipProps extends CommonComponentProps {
   rbtcValue: bigint
@@ -22,7 +22,7 @@ const TokenDisplay = ({
   displayText,
   className,
 }: {
-  symbol: string
+  symbol: TokenSymbol
   size: number
   displayText: string
   className?: string
@@ -48,7 +48,7 @@ export const RifRbtcTooltip = ({ children, rbtcValue, rifValue, className }: Rif
       <div className="flex flex-col items-center rounded p-4 bg-v3-text-80 text-v3-text-0">
         <RowContainer>
           <FormattedValue value={rbtcValue} symbol={RBTC} />
-          <TokenDisplay symbol={RBTC} size={21} displayText="rBTC" />
+          <TokenDisplay symbol={RBTC} size={21} displayText="RBTC" />
         </RowContainer>
         <RowContainer>
           <FormattedValue value={rifValue} symbol={RIF} />

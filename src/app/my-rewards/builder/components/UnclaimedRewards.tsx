@@ -4,7 +4,7 @@ import { useGetBuilderUnclaimedRewards } from '@/app/my-rewards/builder/hooks/us
 import { ClaimRewardsButton } from '@/app/my-rewards/components/ClaimRewardsButton'
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 import { TokenAmount } from '@/components/TokenAmount'
-import { TokenSymbol } from '@/components/TokenImage'
+import { RBTC, RIF } from '@/lib/tokens'
 import { useModal } from '@/shared/hooks/useModal'
 import { Address } from 'viem'
 
@@ -25,16 +25,8 @@ export const UnclaimedRewards = ({ builder, gauge }: { builder: Address; gauge: 
       className="w-full sm:w-auto"
     >
       <div className="flex sm:flex-col justify-between w-full">
-        <TokenAmount
-          amount={rifData.amount}
-          tokenSymbol={TokenSymbol.RIF}
-          amountInFiat={rifData.fiatAmount}
-        />
-        <TokenAmount
-          amount={rbtcData.amount}
-          tokenSymbol={TokenSymbol.RBTC}
-          amountInFiat={rbtcData.fiatAmount}
-        />
+        <TokenAmount amount={rifData.amount} tokenSymbol={RIF} amountInFiat={rifData.fiatAmount} />
+        <TokenAmount amount={rbtcData.amount} tokenSymbol={RBTC} amountInFiat={rbtcData.fiatAmount} />
       </div>
       <div className="flex justify-start">
         <ClaimRewardsButton onClick={() => openModal()} />

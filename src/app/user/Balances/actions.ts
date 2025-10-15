@@ -1,53 +1,43 @@
-import { GetAddressTokenResult, GetPricesResult } from '@/app/user/types'
-import { axiosInstance } from '@/lib/utils'
-import {
-  fetchAddressTokensEndpoint,
-  fetchNewAllocationEventEndpoint,
-  fetchNFTsOwnedByAddressAndNftAddress,
-  fetchPricesEndpoint,
-  fetchProposalsCreatedByGovernorAddress,
-  fetchVoteCastEventEndpoint,
-  getNftHolders,
-  getNftInfo,
-  getTokenHoldersOfAddress,
-} from '@/lib/endpoints'
-import { tokenContracts, GovernorAddress, BackersManagerAddress } from '@/lib/contracts'
 import {
   NextPageParams,
   NftHolderItem,
   ServerResponseV2,
   TokenHoldersResponse,
 } from '@/app/user/Balances/types'
+import { GetPricesResult, Price } from '@/app/user/types'
+import { BackersManagerAddress, GovernorAddress } from '@/lib/contracts'
+import {
+  fetchNewAllocationEventEndpoint,
+  fetchPricesEndpoint,
+  fetchProposalsCreatedByGovernorAddress,
+  fetchVoteCastEventEndpoint,
+  getNftHolders,
+  getNftInfo,
+  getTokenHoldersOfAddress
+} from '@/lib/endpoints'
+import { TOKENS } from '@/lib/tokens'
+import { axiosInstance } from '@/lib/utils'
 import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 import { Address, padHex } from 'viem'
-
-const fetchAddressTokens = (address: string, chainId = 31) =>
-  axiosInstance
-    .get<GetAddressTokenResult>(
-      fetchAddressTokensEndpoint.replace('{{chainId}}', chainId.toString()).replace('{{address}}', address),
-    )
-    .then(({ data }) => data)
 
 // Prices
 
 export const fetchPrices = () =>
   axiosInstance
-    .get<GetPricesResult>(
+    .get<Record<Address, Price | null>>(
       fetchPricesEndpoint
-        .replace('{{addresses}}', Object.values(tokenContracts).join(','))
+        .replace('{{addresses}}', Object.values(TOKENS).map(({ address }) => address).join(','))
         .replace('{{convert}}', 'USD'),
     )
     .then(({ data: prices }) => {
-      const pricesReturn: GetPricesResult = {}
-      for (const contract in prices) {
-        const contractFromEnv = (Object.keys(tokenContracts) as Array<keyof typeof tokenContracts>).find(
-          contractName => tokenContracts[contractName] === contract,
-        )
-        if (contractFromEnv) {
-          pricesReturn[contractFromEnv] = prices[contract]
+      return (Object.entries(prices) as [Address, Price][]).reduce((acc, [contractAddress, price]) => {
+        const supportedToken = Object.values(TOKENS).find(({ address }) => address === contractAddress)
+        if (!!supportedToken) {
+          acc[supportedToken.symbol] = price
         }
-      }
-      return pricesReturn
+
+        return acc
+      }, {} as GetPricesResult)
     })
 
 export const fetchProposalCreated = (fromBlock = 0) =>

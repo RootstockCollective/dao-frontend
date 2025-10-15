@@ -1,13 +1,13 @@
-import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
 import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
-import { Header, Label } from '@/components/Typography'
 import { Metric } from '@/components/Metric'
-import { FC } from 'react'
+import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
+import { Header, Label } from '@/components/Typography'
 import { WeiPerEther } from '@/lib/constants'
+import { RBTC, RIF } from '@/lib/tokens'
+import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import Big from 'big.js'
-import { formatCurrency } from '@/lib/utils'
-import { RBTC, RIF } from '@/lib/tokens'
+import { FC } from 'react'
 
 interface RewardsMetricsProps {
   title: string

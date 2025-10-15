@@ -1,13 +1,13 @@
-import { useBalance, useReadContracts } from 'wagmi'
-import { Address } from 'viem'
-import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
-import { tokenContracts, MulticallAddress } from '@/lib/contracts'
-import { AddressToken } from '@/app/user/types'
-import { useQuery } from '@tanstack/react-query'
-import { axiosInstance } from '@/lib/utils'
 import { TokenInfoReturnType } from '@/app/user/api/tokens/route'
+import { AddressToken } from '@/app/user/types'
+import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { RBTC, RIF, STRIF, USDRIF } from '@/lib/tokens'
+import { MulticallAddress } from '@/lib/contracts'
+import { RBTC, RIF, STRIF, TOKENS, TokenSymbol, USDRIF } from '@/lib/tokens'
+import { axiosInstance } from '@/lib/utils'
+import { useQuery } from '@tanstack/react-query'
+import { Address } from 'viem'
+import { useBalance, useReadContracts } from 'wagmi'
 
 const getTokenFunction = (
   tokenAddress: Address,
@@ -23,9 +23,9 @@ const getTokenFunction = (
 
 type TokenData = { result: string | bigint; error?: object }[]
 
-const buildTokenBalanceObject = (symbol: keyof typeof tokenContracts, tokenData?: TokenData) => ({
+const buildTokenBalanceObject = (symbol: TokenSymbol, tokenData?: TokenData) => ({
   symbol: tokenData ? tokenData?.[1]?.result : symbol,
-  contractAddress: tokenContracts[symbol],
+  contractAddress: TOKENS[symbol].address,
   balance: tokenData?.[0]?.result ? tokenData[0].result.toString() : '0',
 })
 
@@ -37,9 +37,9 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
     error: contractsError,
   } = useReadContracts({
     contracts: [
-      getTokenFunction(tokenContracts[RIF], address, 'balanceOf'),
-      getTokenFunction(tokenContracts[STRIF], address, 'balanceOf'),
-      getTokenFunction(tokenContracts[USDRIF], address, 'balanceOf'),
+      getTokenFunction(TOKENS[RIF].address, address, 'balanceOf'),
+      getTokenFunction(TOKENS[STRIF].address, address, 'balanceOf'),
+      getTokenFunction(TOKENS[USDRIF].address, address, 'balanceOf'),
     ],
     multicallAddress: MulticallAddress,
     query: {
@@ -60,16 +60,16 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
   const rifToken =
     contracts &&
     tokenData &&
-    ([contracts[0], { result: tokenData[tokenContracts[RIF]]?.symbol }] as TokenData)
+    ([contracts[0], { result: tokenData[TOKENS[RIF].address]?.symbol }] as TokenData)
   const stRifToken =
     contracts &&
     tokenData &&
-    ([contracts[1], { result: tokenData[tokenContracts[STRIF]]?.symbol }] as TokenData)
+    ([contracts[1], { result: tokenData[TOKENS[STRIF].address]?.symbol }] as TokenData)
 
   const usdRifToken =
     contracts &&
     tokenData &&
-    ([contracts[2], { result: tokenData[tokenContracts[USDRIF]]?.symbol }] as TokenData)
+    ([contracts[2], { result: tokenData[TOKENS[USDRIF].address]?.symbol }] as TokenData)
 
   return {
     data: [
@@ -78,7 +78,7 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
       {
         symbol: RBTC,
         balance: rbtc?.value.toString() || '0',
-        contractAddress: tokenContracts[RBTC],
+        contractAddress: TOKENS[RBTC].address,
       },
       buildTokenBalanceObject(USDRIF, usdRifToken),
     ] as AddressToken[],

@@ -1,14 +1,13 @@
-import { Metric } from '@/components/Metric'
-import { TokenSymbol } from '@/components/TokenImage'
-import { TokenImage } from '@/components/TokenImage'
-import { Span } from '@/components/Typography/Span'
-import { Label } from '@/components/Typography/Label'
 import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
 import { TooltipPayload } from '@/app/collective-rewards/types'
+import { Metric } from '@/components/Metric'
+import { TokenImage } from '@/components/TokenImage'
+import { Header } from '@/components/Typography'
+import { Label } from '@/components/Typography/Label'
+import { Span } from '@/components/Typography/Span'
+import { STRIF, USD } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
 import { ONE_DAY_IN_MS } from '../../constants/chartConstants'
-import { Header } from '@/components/Typography'
-import { USD } from '@/lib/tokens'
 
 interface ChartTooltipProps {
   active?: boolean
@@ -101,9 +100,9 @@ export const ChartTooltipContent = ({ active, payload }: ChartTooltipProps) => {
               containerClassName="gap-1"
             >
               <div className="flex items-center gap-2 text-bg-100">
-                <Header variant="h3">{formatSymbol(backingVal, TokenSymbol.STRIF)}</Header>
-                <TokenImage symbol={TokenSymbol.STRIF} size={16} />
-                <Span variant="tag-s">{TokenSymbol.STRIF}</Span>
+                <Header variant="h3">{formatSymbol(backingVal, STRIF)}</Header>
+                <TokenImage symbol={STRIF} size={16} />
+                <Span variant="tag-s">{STRIF}</Span>
               </div>
             </Metric>
           </div>

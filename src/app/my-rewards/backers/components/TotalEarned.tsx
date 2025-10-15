@@ -1,26 +1,30 @@
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 import { TokenAmount } from '@/components/TokenAmount'
 
-import { TokenSymbol } from '@/components/TokenImage'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { RBTC, RIF } from '@/lib/tokens'
 import { useBackerTotalEarned } from '../hooks/useBackerTotalEarned'
 
 export const TotalEarned = () => {
-  const { rif: rifData, rbtc: rbtcData } = useBackerTotalEarned()
-  useHandleErrors({ error: rifData.error ?? rbtcData.error, title: 'Error loading backer total earned' })
+  const { [RIF]: rifData, [RBTC]: rbtcData } = useBackerTotalEarned()
+  useHandleErrors({ error: rifData?.error ?? rbtcData?.error, title: 'Error loading backer total earned' })
 
   return (
     <RewardCard
-      isLoading={rifData.isLoading || rbtcData.isLoading}
+      isLoading={rifData?.isLoading || rbtcData?.isLoading || false}
       title="Total earned"
       info="Total of your received and claimable rewards"
       className="flex-row sm:flex-col justify-between w-full sm:w-auto"
     >
-      <TokenAmount amount={rifData.amount} tokenSymbol={TokenSymbol.RIF} amountInFiat={rifData.fiatAmount} />
       <TokenAmount
-        amount={rbtcData.amount}
-        tokenSymbol={TokenSymbol.RBTC}
-        amountInFiat={rbtcData.fiatAmount}
+        amount={rifData?.amount ?? '0'}
+        tokenSymbol={RIF}
+        amountInFiat={rifData?.fiatAmount ?? '0'}
+      />
+      <TokenAmount
+        amount={rbtcData?.amount ?? '0'}
+        tokenSymbol={RBTC}
+        amountInFiat={rbtcData?.fiatAmount ?? '0'}
       />
     </RewardCard>
   )

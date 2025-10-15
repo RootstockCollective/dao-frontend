@@ -1,7 +1,7 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
-import { ClaimRewardRadioGroup } from './ClaimRewardRadioGroup'
-import { useState } from 'react'
 import { RBTC, RIF } from '@/lib/tokens'
+import type { Meta, StoryObj } from '@storybook/nextjs'
+import { useState } from 'react'
+import { ClaimRewardRadioGroup } from './ClaimRewardRadioGroup'
 import { ClaimRewardType } from './types'
 
 // Mock tokens data to avoid reading from environment variables

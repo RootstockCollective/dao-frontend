@@ -6,24 +6,15 @@ import {
   useGetLastCycleDistribution,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { TOKENS } from '@/lib/tokens'
+import { RBTC, RIF, TOKENS, TokenSymbol } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { Address } from 'viem'
+import { FormattedTokenRewardData } from '../../backers/hooks/useBackerTotalEarned'
 
 interface UseBuilderLastCycleRewardsProps {
   gauge: Address
 }
 
-interface TokenRewardData {
-  amount: string
-  fiatAmount: string
-  isLoading: boolean
-}
-
-interface LastCycleRewardsData {
-  rif: TokenRewardData
-  rbtc: TokenRewardData
-}
 
 const useGetNotifyRewardAmountFromLogs = (
   token: Address,
@@ -46,8 +37,7 @@ const useGetNotifyRewardAmountFromLogs = (
 
 export const useGetBuilderLastCycleRewards = ({
   gauge,
-}: UseBuilderLastCycleRewardsProps): LastCycleRewardsData => {
-  const { rif, rbtc } = TOKENS
+}: UseBuilderLastCycleRewardsProps): Partial<Record<TokenSymbol, FormattedTokenRewardData>> => {
   const { prices } = usePricesContext()
   const { data: cycle, isLoading: cycleLoading, error: cycleError } = useCycleContext()
   const {
@@ -56,30 +46,32 @@ export const useGetBuilderLastCycleRewards = ({
     error: lastCycleRewardsError,
   } = useGetLastCycleDistribution(cycle)
 
-  const rifAmount = useGetNotifyRewardAmountFromLogs(rif.address, gauge, fromTimestamp, toTimestamp)
-  const rbtcAmount = useGetNotifyRewardAmountFromLogs(rbtc.address, gauge, fromTimestamp, toTimestamp)
+  const rifAmount = useGetNotifyRewardAmountFromLogs(TOKENS[RIF].address, gauge, fromTimestamp, toTimestamp)
+  const rbtcAmount = useGetNotifyRewardAmountFromLogs(TOKENS[RBTC].address, gauge, fromTimestamp, toTimestamp)
 
   useHandleErrors({
     error: cycleError ?? lastCycleRewardsError ?? rifAmount.error ?? rbtcAmount.error,
     title: 'Error loading last cycle rewards',
   })
 
-  const rifPrice = prices[rif.symbol]?.price ?? 0
-  const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
+  const rifPrice = prices[RIF]?.price ?? 0
+  const rbtcPrice = prices[RBTC]?.price ?? 0
 
-  const rifFormatted = formatMetrics(rifAmount.amount, rifPrice, rif.symbol)
-  const rbtcFormatted = formatMetrics(rbtcAmount.amount, rbtcPrice, rbtc.symbol)
+  const rifFormatted = formatMetrics(rifAmount.amount, rifPrice, RIF)
+  const rbtcFormatted = formatMetrics(rbtcAmount.amount, rbtcPrice, RBTC)
 
   return {
-    rif: {
+    [RIF]: {
       amount: rifFormatted.amount,
       fiatAmount: rifFormatted.fiatAmount,
       isLoading: cycleLoading || lastCycleRewardsLoading || rifAmount.isLoading,
+      error: cycleError ?? lastCycleRewardsError ?? rifAmount.error,
     },
-    rbtc: {
+    [RBTC]: {
       amount: rbtcFormatted.amount,
       fiatAmount: rbtcFormatted.fiatAmount,
       isLoading: cycleLoading || lastCycleRewardsLoading || rbtcAmount.isLoading,
+      error: cycleError ?? lastCycleRewardsError ?? rbtcAmount.error,
     },
   }
 }

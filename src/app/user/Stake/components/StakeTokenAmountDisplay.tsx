@@ -1,13 +1,12 @@
 import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
-import { TokenImage } from '@/components/TokenImage'
-import { Header, Label, Paragraph, Span } from '@/components/Typography'
 import Big from '@/lib/big'
-import { cn, formatNumberWithCommas } from '@/lib/utils'
+import { TokenSymbol } from '@/lib/tokens'
+import { formatNumberWithCommas } from '@/lib/utils'
 
 interface Props {
   label: string
   amount: string
-  tokenSymbol: string
+  tokenSymbol: TokenSymbol
   amountInCurrency?: string
   balance?: string
   className?: string

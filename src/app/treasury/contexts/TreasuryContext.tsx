@@ -1,11 +1,11 @@
-import { createContext, ReactNode, useContext, useMemo } from 'react'
-import { usePricesContext, withPricesContextProvider } from '@/shared/context/PricesContext'
 import { useGetTreasuryBucketBalance } from '@/app/treasury/hooks/useGetTreasuryBucketBalance'
-import { treasuryContracts } from '@/lib/contracts'
 import { GetPricesResult } from '@/app/user/types'
 import Big from '@/lib/big'
+import { treasuryContracts } from '@/lib/contracts'
+import { RBTC, RIF, USDRIF } from '@/lib/tokens'
+import { usePricesContext, withPricesContextProvider } from '@/shared/context/PricesContext'
+import { createContext, ReactNode, useContext, useMemo } from 'react'
 import { Bucket } from '../types'
-import { RIF, USDRIF, RBTC } from '@/lib/tokens'
 
 interface TreasuryContextProps {
   buckets: Partial<Record<keyof typeof treasuryContracts, ReturnType<typeof getBucketBalance>>>

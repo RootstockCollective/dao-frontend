@@ -1,5 +1,6 @@
 import { TokenImage } from '@/components/TokenImage'
 import { Span } from '@/components/Typography'
+import { TokenSymbol } from '@/lib/tokens'
 
 export const TokenAmount = ({
   amount,
@@ -7,7 +8,7 @@ export const TokenAmount = ({
   amountInFiat,
 }: {
   amount: string
-  tokenSymbol: string
+  tokenSymbol: TokenSymbol
   amountInFiat: string
 }) => {
   return (

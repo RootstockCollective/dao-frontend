@@ -3,8 +3,9 @@ import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { Metric } from '@/components/Metric'
-import { TokenImage, TokenSymbol } from '@/components/TokenImage'
+import { TokenImage } from '@/components/TokenImage'
 import { Paragraph, Span } from '@/components/Typography'
+import { STRIF } from '@/lib/tokens'
 import { Address } from 'viem'
 import { useBuilderContext } from '../../user/context/BuilderContext'
 
@@ -33,8 +34,8 @@ export const TotalBackingContent = ({ totalAllocations }: { totalAllocations: bi
       <div className="flex items-center gap-2 font-kk-topo text-xl font-normal tracking-tight">
         <Paragraph className="text-xl">{formatSymbol(totalAllocations, 'StRIF')}</Paragraph>
         <div className="flex items-center gap-[0.1875rem]">
-          <TokenImage symbol={TokenSymbol.STRIF} size={16} />
-          <Span className="text-sm">{TokenSymbol.STRIF}</Span>
+          <TokenImage symbol={STRIF} size={16} />
+          <Span className="text-sm">{STRIF}</Span>
         </div>
       </div>
     </Metric>

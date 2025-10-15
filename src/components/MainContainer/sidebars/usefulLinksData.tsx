@@ -1,6 +1,6 @@
-import { ReactNode } from 'react'
 import { TokenImage } from '@/components/TokenImage'
 import { currentLinks } from '@/lib/links'
+import { ReactNode } from 'react'
 
 interface UsefulLink {
   href: string
@@ -33,7 +33,7 @@ export const usefulLinksData: UsefulLink[] = [
     testId: 'GetRBTCLink',
     content: (
       <div className="inline-flex">
-        Get rBTC
+        Get RBTC
         <TokenImage className="ml-2" symbol="RBTC" size={16} />
       </div>
     ),

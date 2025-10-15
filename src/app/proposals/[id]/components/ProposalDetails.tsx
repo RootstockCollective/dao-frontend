@@ -1,20 +1,20 @@
-import { Paragraph, Span } from '@/components/Typography'
-import { TokenImage } from '@/components/TokenImage'
-import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
-import { formatNumberWithCommas } from '@/lib/utils'
-import { formatEther } from 'viem'
 import {
   DecodedFunctionName,
   getDiscourseLinkFromProposalDescription,
   splitCombinedName,
 } from '@/app/proposals/shared/utils'
-import { ParsedActionDetails, ProposalType } from '../types'
+import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
+import { TokenImage } from '@/components/TokenImage'
+import { Paragraph, Span } from '@/components/Typography'
+import { formatNumberWithCommas } from '@/lib/utils'
 import { Moment } from 'moment'
+import { Address, formatEther } from 'viem'
+import { ParsedActionDetails, ProposalType } from '../types'
 
 interface ProposalDetailsProps {
   name: string
   description: string | null
-  proposer: string
+  proposer: Address
   startsAt: Moment
   fullProposalName?: string
   parsedAction: ParsedActionDetails

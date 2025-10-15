@@ -1,12 +1,13 @@
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Span } from '@/components/Typography'
+import { FiatSymbol, TokenSymbol } from '@/lib/tokens'
 import { FC, ReactNode } from 'react'
-import { Tooltip } from '../Tooltip'
 import { KotoQuestionMarkIcon } from '../Icons'
+import { Tooltip } from '../Tooltip'
 
 interface Props {
   amount: ReactNode
-  symbol?: string
+  symbol?: TokenSymbol | FiatSymbol
   title?: string
   tooltipContent?: ReactNode
   fiatAmount?: ReactNode
@@ -49,7 +50,7 @@ export const BalanceInfo: FC<Props> = ({
         </Header>
         {symbol ? (
           <div className="flex items-center flex-row gap-1">
-            <TokenImage symbol={symbol} size={24} />
+            <TokenImage symbol={symbol as TokenSymbol} size={24} />
             <Span variant="body-l" bold>
               {symbol}
             </Span>

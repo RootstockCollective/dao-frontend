@@ -1,10 +1,9 @@
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 import { TokenAmount } from '@/components/TokenAmount'
 
-import { TokenSymbol } from '@/components/TokenImage'
-import { useBackerEstimatedRewards } from '../hooks/useBackerEstimatedRewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { Paragraph } from '@/components/Typography'
+import { RBTC, RIF } from '@/lib/tokens'
+import { useBackerEstimatedRewards } from '../hooks/useBackerEstimatedRewards'
 
 export const BackerEstimatedRewards = () => {
   const { rif: rifData, rbtc: rbtcData } = useBackerEstimatedRewards()
@@ -32,12 +31,8 @@ export const BackerEstimatedRewards = () => {
       }
       className="flex-row sm:flex-col justify-between w-full sm:w-auto"
     >
-      <TokenAmount amount={rifData.amount} tokenSymbol={TokenSymbol.RIF} amountInFiat={rifData.fiatAmount} />
-      <TokenAmount
-        amount={rbtcData.amount}
-        tokenSymbol={TokenSymbol.RBTC}
-        amountInFiat={rbtcData.fiatAmount}
-      />
+      <TokenAmount amount={rifData.amount} tokenSymbol={RIF} amountInFiat={rifData.fiatAmount} />
+      <TokenAmount amount={rbtcData.amount} tokenSymbol={RBTC} amountInFiat={rbtcData.fiatAmount} />
     </RewardCard>
   )
 }

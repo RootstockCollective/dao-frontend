@@ -34,7 +34,7 @@ export const DifferentToken: Story = {
   args: {
     onChange: (val: string) => console.log(val),
     value: '50',
-    symbol: 'ETH',
+    symbol: 'RBTC',
     labelText: 'Stake amount',
     currencyValue: '125,000 USD',
   },
@@ -44,7 +44,7 @@ export const NoLabel: Story = {
   args: {
     onChange: (val: string) => console.log(val),
     value: '50',
-    symbol: 'ETH',
+    symbol: 'RBTC',
     currencyValue: '125,000 USD',
   },
 }
@@ -53,7 +53,7 @@ export const NoCurrency: Story = {
   args: {
     onChange: (val: string) => console.log(val),
     value: '50',
-    symbol: 'ETH',
+    symbol: 'RBTC',
   },
 }
 
@@ -61,7 +61,7 @@ export const NoLabelNoCurrency: Story = {
   args: {
     onChange: (val: string) => console.log(val),
     value: '50',
-    symbol: 'ETH',
+    symbol: 'RBTC',
   },
 }
 

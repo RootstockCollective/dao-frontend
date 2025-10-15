@@ -2,7 +2,7 @@ import { CopyButton } from '@/components/CopyButton'
 import { shortAddress, shortProposalId } from '@/lib/utils'
 import { Address } from 'viem'
 
-export const ShortenAndCopy = ({ value }: { value: string | number }) => {
+export const ShortenAndCopy = ({ value }: { value?: Address | string | number }) => {
   if (!value) return null
   const str = value.toString()
   // Use shortAddress logic for addresses, otherwise shorten long IDs

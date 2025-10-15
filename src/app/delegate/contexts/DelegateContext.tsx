@@ -1,15 +1,15 @@
 'use client'
 import { initialContextState, initialDataState, initialUIState } from '@/app/delegate/lib/constants'
 import { DelegateContextState, DelegateDataState, DelegateUIState } from '@/app/delegate/lib/types'
-import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDelegatedAmount'
 import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
+import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
+import Big from '@/lib/big'
+import { STRIF, TOKENS } from '@/lib/tokens'
+import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDelegatedAmount'
 import { produce } from 'immer'
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState, useMemo } from 'react'
+import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { formatEther } from 'viem'
 import { useAccount, useReadContract } from 'wagmi'
-import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { tokenContracts } from '@/lib/contracts'
-import Big from '@/lib/big'
 
 // Context
 const DelegateContext = createContext<DelegateContextState>(initialContextState)
@@ -53,7 +53,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
 
   const { data: totalSupply } = useReadContract({
     abi: StRIFTokenAbi,
-    address: tokenContracts.stRIF,
+    address: TOKENS[STRIF].address,
     functionName: 'totalSupply',
   })
   // Find current delegatee's data efficiently in a single useMemo

@@ -1,8 +1,13 @@
-import { formatMetrics, Token, useBackerRewardsContext } from '@/app/collective-rewards/rewards'
+import { formatMetrics, FormattedMetrics, useBackerRewardsContext } from '@/app/collective-rewards/rewards'
+import { NativeCurrency, RBTC, RIF, Token, TOKENS, TokenSymbol } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context'
-import { TOKENS } from '@/lib/tokens'
 
-const useBackerRewardsPerToken = ({ symbol, address }: Token) => {
+export type FormattedTokenRewardData = FormattedMetrics & {
+  isLoading: boolean
+  error: Error | null
+}
+
+const useBackerRewardsPerToken = ({ symbol, address }: Token | NativeCurrency): FormattedTokenRewardData => {
   const { data: backerRewards, isLoading, error } = useBackerRewardsContext()
   const { prices } = usePricesContext()
 
@@ -24,17 +29,16 @@ const useBackerRewardsPerToken = ({ symbol, address }: Token) => {
   }
 }
 
-export const useBackerTotalEarned = () => {
-  const { rif, rbtc } = TOKENS
+export const useBackerTotalEarned = (): Partial<Record<TokenSymbol, FormattedTokenRewardData>> => {
 
-  const rifData = useBackerRewardsPerToken(rif)
-  const rbtcData = useBackerRewardsPerToken(rbtc)
+  const rifData = useBackerRewardsPerToken(TOKENS[RIF])
+  const rbtcData = useBackerRewardsPerToken(TOKENS[RBTC])
 
   return {
-    rif: {
+    [RIF]: {
       ...rifData,
     },
-    rbtc: {
+    [RBTC]: {
       ...rbtcData,
     },
   }

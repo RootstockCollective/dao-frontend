@@ -1,7 +1,7 @@
-import { expect, describe, it } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { describe, expect, it } from 'vitest'
 import { StakingProvider, useStakingContext } from './StakingContext'
-import { StakingToken } from './types'
+import { StakingToken, TokenWithBalance } from './types'
 
 const TestComponent = ({ stakeAmount, id }: { stakeAmount: string; id: number }) => {
   const { onAmountChange } = useStakingContext()
@@ -15,7 +15,7 @@ const TestComponent = ({ stakeAmount, id }: { stakeAmount: string; id: number })
   )
 }
 
-const rif: Omit<StakingToken, 'price'> = {
+const rif: Omit<TokenWithBalance, 'price'> = {
   balance: '294.0',
   symbol: 'tRIF',
   contract: '0x19f64674d8a5b4e652319f5e239efd3bc969a1fe',

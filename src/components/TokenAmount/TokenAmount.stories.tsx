@@ -1,3 +1,4 @@
+import { TokenSymbol } from '@/lib/tokens'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { TokenAmount } from './TokenAmount'
 
@@ -62,7 +63,7 @@ export const RBTC: Story = {
 export const TRIF: Story = {
   args: {
     amount: '5,000.00',
-    tokenSymbol: 'TRIF',
+    tokenSymbol: 'tRIF',
     amountInFiat: '$5,000.00',
   },
 }
@@ -70,7 +71,7 @@ export const TRIF: Story = {
 export const STRIF: Story = {
   args: {
     amount: '10,000.00',
-    tokenSymbol: 'STRIF',
+    tokenSymbol: 'stRIF',
     amountInFiat: '$10,000.00',
   },
 }
@@ -78,7 +79,7 @@ export const STRIF: Story = {
 export const TRBTC: Story = {
   args: {
     amount: '0.1',
-    tokenSymbol: 'TRBTC',
+    tokenSymbol: 'tRBTC',
     amountInFiat: '$3,000.00',
   },
 }
@@ -86,7 +87,7 @@ export const TRBTC: Story = {
 export const UnknownToken: Story = {
   args: {
     amount: '100.00',
-    tokenSymbol: 'UNKNOWN',
+    tokenSymbol: 'tRIF' as TokenSymbol,
     amountInFiat: '$100.00',
   },
 }

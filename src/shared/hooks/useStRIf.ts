@@ -1,12 +1,7 @@
-import { useReadContracts, useAccount } from 'wagmi'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { tokenContracts } from '@/lib/contracts'
+import { STRIF_ADDRESS } from '@/lib/constants'
 import { useMemo } from 'react'
-
-const stRifContract = {
-  abi: StRIFTokenAbi,
-  address: tokenContracts.stRIF,
-}
+import { useAccount, useReadContracts } from 'wagmi'
 
 export function useStRif() {
   const { address } = useAccount()
@@ -14,7 +9,8 @@ export function useStRif() {
     address && {
       contracts: [
         {
-          ...stRifContract,
+          abi: StRIFTokenAbi,
+          address: STRIF_ADDRESS,
           functionName: 'balanceOf',
           args: [address],
         },

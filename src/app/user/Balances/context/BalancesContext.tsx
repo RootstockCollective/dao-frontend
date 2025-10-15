@@ -1,8 +1,8 @@
-import { createContext, FC, ReactNode, useContext } from 'react'
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { GetPricesResult, TokenBalanceRecord } from '@/app/user/types'
 import { RBTC, RIF, STRIF, USDRIF } from '@/lib/tokens'
+import { createContext, FC, ReactNode, useContext } from 'react'
 import { getTokenBalance } from '../balanceUtils'
 
 interface BalancesContextValue {

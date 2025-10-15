@@ -1,7 +1,7 @@
-import { NEED_RBTC, NEED_RIF, NEED_STRIF, NEED_RBTC_RIF } from '@/app/user/IntroModal/hooks/useRequiredTokens'
+import { NEED_RBTC, NEED_RBTC_RIF, NEED_RIF, NEED_STRIF } from '@/app/user/IntroModal/hooks/useRequiredTokens'
 import { TokenImage } from '@/components/TokenImage'
-import { RBTC, RIF } from '@/lib/tokens'
 import { currentLinks } from '@/lib/links'
+import { RBTC, RIF } from '@/lib/tokens'
 import { BannerConfigMap } from './types'
 
 // Static token images - created once outside component to avoid re-renders
@@ -15,8 +15,8 @@ export const CYCLE_ENDING = 'CYCLE_ENDING'
 export const CYCLE_ENDED = 'CYCLE_ENDED'
 
 const NEED_RBTC_AND_RIF = {
-  title: <span>GET {rbtcImage} rBTC</span>,
-  buttonText: 'Get rBTC',
+  title: <span>GET {rbtcImage} RBTC</span>,
+  buttonText: 'Get RBTC',
   description:
     "RBTC is used to cover transaction fees. You'll need both RBTC and RIF to participate in the DAO.",
   action: {

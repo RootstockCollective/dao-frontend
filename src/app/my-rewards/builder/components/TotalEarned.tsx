@@ -1,9 +1,9 @@
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { TokenAmount } from '@/components/TokenAmount'
-import { TokenSymbol } from '@/components/TokenImage'
-import { Address } from 'viem'
 import { useGetBuilderAllTimeRewards } from '@/app/my-rewards/builder/hooks/useGetBuilderAllTimeRewards'
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'
+import { TokenAmount } from '@/components/TokenAmount'
+import { RBTC, RIF } from '@/lib/tokens'
+import { Address } from 'viem'
 
 export const TotalEarned = ({ gauge }: { gauge: Address }) => {
   const { rif: rifData, rbtc: rbtcData } = useGetBuilderAllTimeRewards({
@@ -20,12 +20,8 @@ export const TotalEarned = ({ gauge }: { gauge: Address }) => {
       info="Your total rewards earned across all cycles"
       className="flex-row sm:flex-col justify-between w-full sm:w-auto"
     >
-      <TokenAmount amount={rifData.amount} tokenSymbol={TokenSymbol.RIF} amountInFiat={rifData.fiatAmount} />
-      <TokenAmount
-        amount={rbtcData.amount}
-        tokenSymbol={TokenSymbol.RBTC}
-        amountInFiat={rbtcData.fiatAmount}
-      />
+      <TokenAmount amount={rifData.amount} tokenSymbol={RIF} amountInFiat={rifData.fiatAmount} />
+      <TokenAmount amount={rbtcData.amount} tokenSymbol={RBTC} amountInFiat={rbtcData.fiatAmount} />
     </RewardCard>
   )
 }

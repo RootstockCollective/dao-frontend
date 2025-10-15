@@ -1,20 +1,20 @@
 import { DelegateCard } from '@/app/delegate/components/DelegateCard'
-import { Address, formatEther, isAddress } from 'viem'
-import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
-import { Paragraph, Span } from '@/components/Typography'
-import { Button } from '@/components/Button'
-import { useState, ChangeEvent, useEffect, useCallback, useMemo } from 'react'
-import { cn } from '@/lib/utils'
-import { CloseIconKoto } from '@/components/Icons'
-import { produce } from 'immer'
 import { validateRnsDomain } from '@/app/delegate/lib/utils'
-import { debounce } from 'lodash'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { useReadContract } from 'wagmi'
-import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { tokenContracts } from '@/lib/contracts'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
+import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
+import { Button } from '@/components/Button'
+import { CloseIconKoto } from '@/components/Icons'
+import { Paragraph, Span } from '@/components/Typography'
+import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import Big from '@/lib/big'
+import { STRIF, TOKENS } from '@/lib/tokens'
+import { cn } from '@/lib/utils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { produce } from 'immer'
+import { debounce } from 'lodash'
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import { Address, formatEther, isAddress } from 'viem'
+import { useReadContract } from 'wagmi'
 
 interface Props {
   didIDelegateToMyself: boolean
@@ -36,7 +36,7 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
 
   const { data: totalSupply } = useReadContract({
     abi: StRIFTokenAbi,
-    address: tokenContracts.stRIF,
+    address: TOKENS[STRIF].address,
     functionName: 'totalSupply',
   })
 

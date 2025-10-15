@@ -1,3 +1,6 @@
+import { TokenSymbol } from "@/lib/tokens"
+import { Address } from "viem"
+
 // Types for proposal action parsing and details
 export enum ProposalType {
   BUILDER_ACTIVATION = 'Builder Activation',
@@ -8,10 +11,10 @@ export enum ProposalType {
 export interface ParsedActionDetails {
   type: ProposalType | string
   amount?: bigint // The amount being transferred or acted upon
-  tokenSymbol?: string // The symbol of the token involved (e.g., RIF, RBTC)
+  tokenSymbol?: TokenSymbol // The symbol of the token involved (e.g., RIF, RBTC)
   price?: number // The price of the token (if relevant)
-  toAddress?: string // The recipient address (if relevant)
-  builder?: string // The builder address (if relevant)
+  toAddress?: Address // The recipient address (if relevant)
+  builder?: Address // The builder address (if relevant)
   // Add more fields as needed for other action types
 }
 

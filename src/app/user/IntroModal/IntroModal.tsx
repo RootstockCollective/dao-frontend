@@ -1,13 +1,13 @@
+import { RBTC, RIF } from '@/lib/tokens'
 import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useModal } from '@/shared/hooks/useModal'
+import { useRouter } from 'next/navigation'
 import { useEffect, useMemo } from 'react'
 import { useBalancesContext } from '../Balances/context/BalancesContext'
 import { IMAGE_CONFIG } from './config'
 import { useRequiredTokens } from './hooks/useRequiredTokens'
-import { useRouter } from 'next/navigation'
 import { IntroModalContent } from './IntroModalContent'
-import { RBTC, RIF } from '@/lib/tokens'
 
 export const IntroModal = () => {
   const introModal = useModal()
@@ -59,8 +59,8 @@ export const IntroModal = () => {
     <IntroModalContent
       tokenStatus={tokenStatus}
       isDesktop={isDesktop}
-      rbtcBalance={balances[RBTC].balance}
-      rifBalance={balances[RIF].balance}
+      rbtcBalance={balances[RBTC]?.balance ?? '0'}
+      rifBalance={balances[RIF]?.balance ?? '0'}
       onClose={introModal.closeModal}
       onContinue={handleContinue}
     />

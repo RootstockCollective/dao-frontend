@@ -1,31 +1,24 @@
+import { RBTC, RIF, STRIF, TokenSymbol, USDRIF } from '@/lib/tokens'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 
 export interface TokenImageProps {
-  symbol: string
+  symbol: TokenSymbol
   size?: number
   className?: string
 }
 
-export enum TokenSymbol {
-  RIF = 'RIF',
-  STRIF = 'stRIF',
-  RBTC = 'RBTC',
-}
-
-const getIconSource = (symbol: string | undefined): string | null => {
+const getIconSource = (symbol: TokenSymbol | undefined): string | null => {
   if (!symbol) {
     return null
   }
   switch (symbol.toUpperCase()) {
-    case 'RIF':
-    case 'TRIF':
-    case 'STRIF':
+    case RIF:
+    case STRIF:
       return '/images/rif-logo.png'
-    case 'USDRIF':
+    case USDRIF:
       return '/images/usdrif-logo.png'
-    case 'RBTC':
-    case 'TRBTC':
+    case RBTC:
       return '/images/rbtc-icon.svg'
     default:
       return null
