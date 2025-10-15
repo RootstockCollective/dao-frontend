@@ -10,6 +10,7 @@ export interface TokenImageProps {
 export enum TokenSymbol {
   RIF = 'RIF',
   STRIF = 'stRIF',
+  USDRIF = 'USDRIF',
   RBTC = 'RBTC',
 }
 

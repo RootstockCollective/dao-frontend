@@ -1,8 +1,13 @@
 import { zeroAddress } from 'viem'
 import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'
-import { VotingVanguardsNftAbi } from './abis/VotingVanguardsNFTAbi'
+import { GovernorAbi } from './abis/Governor'
+import { RootlingsS1ABI } from './abis/RootlingsS1'
 import { StRIFTokenAbi } from './abis/StRIFTokenAbi'
+import { VotingVanguardsNftAbi } from './abis/VotingVanguardsNFTAbi'
 import {
+  BACKERS_MANAGER_ADDRESS,
+  BB_NFT_ADDRESS,
+  BUILDER_REGISTRY_ADDRESS,
   EA_NFT_ADDRESS,
   GENERAL_BUCKET_ADDRESS,
   GOVERNOR_ADDRESS,
@@ -10,25 +15,20 @@ import {
   GRANTS_BUCKET_ADDRESS,
   GROWTH_BUCKET_ADDRESS,
   MULTICALL_ADDRESS,
-  RIF_ADDRESS,
-  STRIF_ADDRESS,
+  OG_CONTRIBUTORS_NFT_ADDRESS,
   OG_FOUNDERS_NFT_ADDRESS,
   OG_PARTNERS_NFT_ADDRESS,
-  OG_CONTRIBUTORS_NFT_ADDRESS,
-  BACKERS_MANAGER_ADDRESS,
-  BUILDER_REGISTRY_ADDRESS,
-  REWARD_DISTRIBUTOR_ADDRESS,
-  VANGUARD_NFT_ADDRESS,
-  BB_NFT_ADDRESS,
-  USDRIF_ADDRESS,
-  RIF,
-  STRIF,
   RBTC,
-  USDRIF,
+  REWARD_DISTRIBUTOR_ADDRESS,
+  RIF,
+  RIF_ADDRESS,
   ROOTLINGS_S1_NFT_ADDRESS,
+  STRIF,
+  STRIF_ADDRESS,
+  USDRIF,
+  USDRIF_ADDRESS,
+  VANGUARD_NFT_ADDRESS,
 } from './constants'
-import { GovernorAbi } from './abis/Governor'
-import { RootlingsS1ABI } from './abis/RootlingsS1'
 
 const tokenContracts = {
   [RIF]: RIF_ADDRESS,
@@ -83,15 +83,15 @@ const RewardDistributorAddress = REWARD_DISTRIBUTOR_ADDRESS || zeroAddress
 
 export {
   abiContractsMap,
+  BackersManagerAddress,
+  BuilderRegistryAddress,
   GovernorAddress,
   MulticallAddress,
   nftContracts,
+  RewardDistributorAddress,
   tokenContracts,
   TreasuryAddress,
   treasuryContracts,
-  BackersManagerAddress,
-  BuilderRegistryAddress,
-  RewardDistributorAddress,
 }
 
 export const governor = {
