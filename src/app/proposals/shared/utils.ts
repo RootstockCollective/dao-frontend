@@ -10,7 +10,8 @@ import {
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { MAX_NAME_LENGTH_FOR_PROPOSAL, TALLY_DESCRIPTION_SEPARATOR } from '@/lib/constants'
 import { ProposalCategory } from '@/shared/types'
-import { MilestoneLabels, Milestones } from './types'
+import { Milestones } from './types'
+import Big from '@/lib/big'
 
 export interface EventArgumentsParameter {
   args: {
@@ -138,19 +139,15 @@ export const MILESTONE_SEPARATOR = 'M1lestone:'
 export const labeledMilestones = [
   {
     value: Milestones.MILESTONE_1,
-    label: MilestoneLabels.FIRST,
+    label: ProposalCategory.Milestone1,
   },
   {
     value: Milestones.MILESTONE_2,
-    label: MilestoneLabels.SECOND,
+    label: ProposalCategory.Milestone2,
   },
   {
     value: Milestones.MILESTONE_3,
-    label: MilestoneLabels.THIRD,
-  },
-  {
-    value: Milestones.NO_MILESTONE,
-    label: MilestoneLabels.NO_MILESTONE,
+    label: ProposalCategory.Milestone3,
   },
 ]
 
@@ -310,4 +307,30 @@ export function formatTimestampToMonthYear(timestamp: string | undefined): strin
   if (!timestamp) return ' - '
   const date = new Date(Number(timestamp) * 1000) // seconds → ms
   return date.toLocaleString('en-US', { month: 'long', year: 'numeric' })
+}
+
+// Utility function to safely convert amount to bigint
+export function convertAmountToBigint(amount: bigint | string | undefined): bigint {
+  if (!amount) return 0n
+
+  if (typeof amount === 'bigint') {
+    return amount
+  }
+
+  if (typeof amount === 'string') {
+    // Handle string input - convert to bigint
+    // Remove any non-numeric characters except decimal point
+    const cleanAmount = amount.replace(/[^\d.]/g, '')
+    if (!cleanAmount || cleanAmount === '.') return 0n
+
+    // Convert to wei (assuming 18 decimals) and then to bigint
+    const numericAmount = parseFloat(cleanAmount)
+    if (isNaN(numericAmount)) return 0n
+
+    // Convert to wei (multiply by 10^18) and then to bigint
+    const weiAmount = Big(numericAmount).times(Big(10).pow(18))
+    return BigInt(weiAmount.toString())
+  }
+
+  return 0n
 }

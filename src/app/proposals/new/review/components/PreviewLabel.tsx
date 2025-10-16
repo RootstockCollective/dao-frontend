@@ -1,14 +1,14 @@
 import React from 'react'
 import InfoIcon from './InfoIcon'
-import { BaseTypography } from '@/components/Typography/Typography'
+import { Paragraph } from '@/components/Typography'
 
 export function PreviewLabel() {
   return (
-    <div className="flex gap-1 items-center justify-end flex-nowrap">
+    <div className="flex items-center md:justify-end flex-nowrap md:mt-0 mt-10">
       <InfoIcon />
-      <BaseTypography className="text-sm md:text-base leading-tight text-text-40 whitespace-nowrap">
+      <Paragraph variant="body" className="text-text-40">
         This is a preview of how the proposal will look
-      </BaseTypography>
+      </Paragraph>
     </div>
   )
 }

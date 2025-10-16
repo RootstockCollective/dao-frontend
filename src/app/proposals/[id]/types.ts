@@ -7,7 +7,7 @@ export enum ProposalType {
 
 export interface ParsedActionDetails {
   type: ProposalType | string
-  amount?: bigint // The amount being transferred or acted upon
+  amount?: bigint | string // The amount being transferred or acted upon (can be from blockchain or user input)
   tokenSymbol?: string // The symbol of the token involved (e.g., RIF, RBTC)
   price?: number // The price of the token (if relevant)
   toAddress?: string // The recipient address (if relevant)

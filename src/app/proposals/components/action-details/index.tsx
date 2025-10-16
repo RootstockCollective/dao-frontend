@@ -3,9 +3,11 @@ import { Header, Paragraph, Span } from '@/components/Typography'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
 import { TokenImage } from '@/components/TokenImage'
 import Big from '@/lib/big'
-import { formatNumberWithCommas, formatCurrency } from '@/lib/utils'
-import { formatEther } from 'viem'
-import { ProposalType } from '../../[id]/types'
+import { formatNumberWithCommas, formatCurrency, cn, shortAddress } from '@/lib/utils'
+import { Address, formatEther } from 'viem'
+import { ActionType, ProposalType } from '../../[id]/types'
+import { ClassNameValue } from 'tailwind-merge'
+import { convertAmountToBigint } from '../../shared/utils'
 
 interface InfoGridItem {
   label: string
@@ -15,13 +17,15 @@ interface InfoGridItem {
 interface ActionDetailsProps {
   parsedAction: {
     type: string
-    amount?: bigint
+    amount?: bigint | string
     tokenSymbol?: string
     price?: number
     toAddress?: string
     builder?: string
   }
-  actionType: string
+  actionType: ActionType
+  className?: ClassNameValue
+  readOnly?: boolean
 }
 
 function InfoGrid({ items }: { items: InfoGridItem[] }) {
@@ -43,28 +47,32 @@ function InfoGrid({ items }: { items: InfoGridItem[] }) {
   )
 }
 
-export const ActionDetails = ({ parsedAction, actionType }: ActionDetailsProps) => {
+export const ActionDetails = ({ parsedAction, actionType, className, readOnly }: ActionDetailsProps) => {
   let content: ReactNode = null
 
   switch (parsedAction.type) {
     case ProposalType.WITHDRAW: {
       content = (
         <>
-          <div className="grid grid-cols-2 mt-4">
+          <div className="grid grid-cols-2">
             <div>
-              <Span variant="tag-s" className="text-white/70 mt-0.5">
+              <Span variant="tag-s" className="text-white/70">
                 Type
               </Span>
               <Paragraph variant="body">{actionType}</Paragraph>
             </div>
-            <div>
-              <Span variant="tag-s" className="text-white/70 mt-0.5">
+            <div className="flex flex-col">
+              <Span variant="tag-s" className="text-white/70">
                 To address
               </Span>
               {parsedAction.toAddress ? (
-                <Span className="text-primary">
-                  <ShortenAndCopy value={parsedAction.toAddress} />
-                </Span>
+                !readOnly ? (
+                  <Span className="text-primary">
+                    <ShortenAndCopy value={parsedAction.toAddress} />
+                  </Span>
+                ) : (
+                  <Span variant="body">{shortAddress(parsedAction.toAddress as Address)}</Span>
+                )
               ) : (
                 <Span variant="body">—</Span>
               )}
@@ -72,19 +80,19 @@ export const ActionDetails = ({ parsedAction, actionType }: ActionDetailsProps) 
           </div>
           {/* Amount block full width */}
           <div>
-            <Span variant="tag-s" className="text-white/70 mt-0.5">
+            <Span variant="tag-s" className="text-white/70">
               Amount
             </Span>
             <div className="grid grid-cols-2 gap-x-2 w-max">
               {/* Left column: values, right-aligned */}
               <div className="flex flex-col items-end text-right">
                 <Span className="text-[18px] font-bold">
-                  {formatNumberWithCommas(formatEther(parsedAction.amount || 0n))}
+                  {formatNumberWithCommas(formatEther(convertAmountToBigint(parsedAction.amount)))}
                 </Span>
                 {parsedAction.price !== undefined && (
                   <Span className="text-xs text-white/50 font-normal leading-none">
                     {formatCurrency(
-                      Big(formatEther(parsedAction.amount || 0n))
+                      Big(formatEther(convertAmountToBigint(parsedAction.amount)))
                         .times(parsedAction.price)
                         .toNumber(),
                     )}
@@ -117,9 +125,13 @@ export const ActionDetails = ({ parsedAction, actionType }: ActionDetailsProps) 
         {
           label: rightLabel,
           value: parsedAction.builder ? (
-            <Span className="text-primary">
-              <ShortenAndCopy value={parsedAction.builder} />
-            </Span>
+            !readOnly ? (
+              <Span className="text-primary">
+                <ShortenAndCopy value={parsedAction.builder} />
+              </Span>
+            ) : (
+              <Span variant="body">{shortAddress(parsedAction.builder as Address) || '—'}</Span>
+            )
           ) : (
             <Span variant="body">—</Span>
           ),
@@ -133,7 +145,12 @@ export const ActionDetails = ({ parsedAction, actionType }: ActionDetailsProps) 
   }
 
   return (
-    <div className="p-6 bg-bg-80 flex flex-col gap-4 md:max-w-[376px] md:mt-2">
+    <div
+      className={cn(
+        'p-6 bg-bg-80 flex flex-col gap-4 md:w-[376px] md:max-h-[214px] md:mt-2 rounded-sm',
+        className,
+      )}
+    >
       <Header variant="h3">ACTIONS</Header>
       {content}
     </div>

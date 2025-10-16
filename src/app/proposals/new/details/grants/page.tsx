@@ -69,7 +69,7 @@ export default function GrantsProposalForm() {
   useEffect(() => setFocus('proposalName'), [])
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6">
+    <div className="flex flex-col lg:flex-row gap-6 mt-10">
       <form className="p-6 pb-8 flex flex-col gap-6 md:gap-10 basis-3/4 bg-bg-80 rounded-sm">
         <BaseProposalFields control={control} />
         <div className="flex flex-col gap-4">

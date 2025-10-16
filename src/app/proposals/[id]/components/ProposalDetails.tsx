@@ -1,9 +1,10 @@
 import { Paragraph, Span } from '@/components/Typography'
 import { TokenImage } from '@/components/TokenImage'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
-import { formatNumberWithCommas } from '@/lib/utils'
-import { formatEther } from 'viem'
+import { formatNumberWithCommas, shortAddress } from '@/lib/utils'
+import { Address, formatEther } from 'viem'
 import {
+  convertAmountToBigint,
   DecodedFunctionName,
   getDiscourseLinkFromProposalDescription,
   splitCombinedName,
@@ -19,6 +20,8 @@ interface ProposalDetailsProps {
   fullProposalName?: string
   parsedAction: ParsedActionDetails
   actionName: DecodedFunctionName | undefined
+  link?: string
+  readOnly?: boolean
 }
 
 interface DetailItemProps {
@@ -31,12 +34,34 @@ const DetailItem = ({ label, children, show = true }: DetailItemProps) => {
   if (!show) return null
 
   return (
-    <div>
+    <div className="!min-w-1/2 max-w-full flex-shrink-0 flex flex-col">
       <Span variant="tag-s" className="text-white/70" bold>
         {label}
       </Span>
       {children}
     </div>
+  )
+}
+
+interface DiscourseLinkProps {
+  link: string
+  readOnly?: boolean
+}
+
+const DiscourseLink = ({ link, readOnly }: DiscourseLinkProps) => {
+  return (
+    <Paragraph
+      variant="body"
+      className={!readOnly ? 'text-primary' : 'text-wrap break-words whitespace-normal'}
+    >
+      {!readOnly ? (
+        <a href={link} target="_blank" rel="noopener noreferrer" className="hover:underline">
+          See on Discourse
+        </a>
+      ) : (
+        link.split('https://')[1]
+      )}
+    </Paragraph>
   )
 }
 
@@ -47,9 +72,12 @@ export const ProposalDetails = ({
   startsAt,
   parsedAction,
   actionName,
+  link,
+  readOnly,
 }: ProposalDetailsProps) => {
   const { builderName } = splitCombinedName(name)
-  const discourseLink = description ? getDiscourseLinkFromProposalDescription(description) : undefined
+  const discourseLink =
+    link ?? (description ? getDiscourseLinkFromProposalDescription(description) : undefined)
   const addressToWhitelist = parsedAction.builder
 
   const isCommunityApproveBuilderAction = actionName === 'communityApproveBuilder'
@@ -58,7 +86,7 @@ export const ProposalDetails = ({
     if (parsedAction.type === ProposalType.WITHDRAW && parsedAction.amount && parsedAction.tokenSymbol) {
       return (
         <>
-          Transfer of {formatNumberWithCommas(formatEther(parsedAction.amount))}
+          Transfer of {formatNumberWithCommas(formatEther(convertAmountToBigint(parsedAction.amount)))}
           <Span className="inline-flex ml-2">
             <TokenImage symbol={parsedAction.tokenSymbol} size={16} />
             <Span className="font-bold ml-1">{parsedAction.tokenSymbol}</Span>
@@ -79,9 +107,9 @@ export const ProposalDetails = ({
   }
 
   return (
-    <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm mt-10">
+    <div className="flex flex-wrap gap-y-6 md:mt-0 mt-8">
       <DetailItem label="Proposal type">
-        <Paragraph variant="body" className="flex items-center">
+        <Paragraph variant="body" className="flex items-center flex-shrink-0">
           {getProposalTypeLabel()}
         </Paragraph>
       </DetailItem>
@@ -107,16 +135,20 @@ export const ProposalDetails = ({
       </DetailItem>
 
       <DetailItem label="Proposed by">
-        {proposer ? <ShortenAndCopy value={proposer} /> : <Span variant="body">—</Span>}
+        {proposer ? (
+          !readOnly ? (
+            <ShortenAndCopy value={proposer} />
+          ) : (
+            <Span variant="body">{shortAddress(proposer as Address)}</Span>
+          )
+        ) : (
+          <Span variant="body">—</Span>
+        )}
       </DetailItem>
 
       <DetailItem label="Community discussion">
         {discourseLink ? (
-          <Paragraph variant="body" className="text-sm font-medium text-primary">
-            <a href={discourseLink} target="_blank" rel="noopener noreferrer" className="hover:underline">
-              See on Discourse
-            </a>
-          </Paragraph>
+          <DiscourseLink link={discourseLink} readOnly={readOnly} />
         ) : (
           <Span variant="body">—</Span>
         )}
