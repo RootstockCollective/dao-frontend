@@ -12,7 +12,7 @@ import { ConditionalTooltip } from '@/app/components'
 import { Button } from '@/components/Button'
 import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
 import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
-import { USD } from '@/lib/constants'
+import { RBTC, RIF, USD } from '@/lib/constants'
 import { TOKENS } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
@@ -38,8 +38,8 @@ export const UnclaimedRewardsMetric = (): ReactElement => {
       }),
     [data, prices],
   )
-  const rifEarnings = unclaimedRewardsPerToken.find(reward => reward.token.symbol === 'RIF')?.amount ?? 0n
-  const rbtcEarnings = unclaimedRewardsPerToken.find(reward => reward.token.symbol === 'RBTC')?.amount ?? 0n
+  const rifEarnings = unclaimedRewardsPerToken.find(reward => reward.token.symbol === RIF)?.amount ?? 0n
+  const rbtcEarnings = unclaimedRewardsPerToken.find(reward => reward.token.symbol === RBTC)?.amount ?? 0n
 
   const usdValue = unclaimedRewardsPerToken.reduce((acc, reward) => acc + reward.fiatAmount, 0)
   useHandleErrors({ error, title: 'Error loading rewards' })
