@@ -97,6 +97,8 @@ function transformProposalsData(
       Starts: moment(proposal.Starts),
       calldatasParsed: proposal.calldatasParsed as any,
       blockNumber,
+      voteStart: proposal.voteStart,
+      voteEnd: proposal.voteEnd,
     }
 
     if (proposalData.proposalState === ProposalState.Active) {
