@@ -11,7 +11,9 @@ export const GrantProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)
     milestone: z.union([z.nativeEnum(Milestones), z.undefined()]).refine(value => value !== undefined, {
       message: 'Please select a milestone option',
     }),
-
+    // user input for RNS or address
+    targetAddressInput: z.string().trim().min(5, 'Target address or RNS is required'),
+    // final target address - hidden field
     targetAddress: z
       .string()
       .trim()
