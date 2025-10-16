@@ -49,7 +49,7 @@ export interface Eta extends Omit<CountdownProps, 'className'> {
 
 export type ProposalApiResponse = {
   blockNumber: string
-  calldatasParsed: any
+  calldatasParsed: any[]
   category: string
   description: string
   name: string
