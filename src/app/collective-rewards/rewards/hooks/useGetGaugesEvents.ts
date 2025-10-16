@@ -6,7 +6,7 @@ import {
 } from '@/app/collective-rewards/actions'
 import { useQuery } from '@tanstack/react-query'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
+import { GaugeAbi } from '@/lib/abis/tok/GaugeAbi'
 
 type EventEntry = Extract<(typeof GaugeAbi)[number], AbiEvent>
 type EventName = Extract<

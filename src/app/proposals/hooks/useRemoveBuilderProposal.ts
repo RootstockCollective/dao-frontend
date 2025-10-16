@@ -6,7 +6,7 @@ import {
 } from '@/app/proposals/hooks/proposalUtils'
 import { NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
+import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
 import { BuilderRegistryAddress, GovernorAddress } from '@/lib/contracts'
 import { Address, encodeFunctionData } from 'viem'
 import { useAccount, useWriteContract } from 'wagmi'
@@ -43,7 +43,7 @@ export const useRemoveBuilderProposal = () => {
 const encodeRemoveBuilderCalldata = (builderAddress: Address) => {
   return encodeFunctionData({
     abi: BuilderRegistryAbi,
-    functionName: 'dewhitelistBuilder',
+    functionName: 'communityBanBuilder',
     args: [builderAddress.toLocaleLowerCase() as Address],
   })
 }

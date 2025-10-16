@@ -1,6 +1,6 @@
 import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
 import { useBuilderContext } from '@/app/collective-rewards/user'
-import { GaugeAbi } from '@/lib/abis/v2/GaugeAbi'
+import { GaugeAbi } from '@/lib/abis/tok/GaugeAbi'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { Address } from 'viem'
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
@@ -10,7 +10,7 @@ const useClaimBuilderReward = (builder: Address, gauge: Address, rewardToken?: A
   const { getBuilderByAddress } = useBuilderContext()
 
   const claimingBuilder = getBuilderByAddress(builder)
-  const isPaused = claimingBuilder?.stateFlags?.paused ?? false
+  const isPaused = claimingBuilder?.stateFlags?.kycPaused ?? false
 
   const { isLoading, isSuccess, data, error: receiptError } = useWaitForTransactionReceipt({ hash })
 
