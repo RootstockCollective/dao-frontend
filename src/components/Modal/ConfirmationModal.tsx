@@ -75,7 +75,7 @@ export function ConfirmationModal({
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50" data-testid={dataTestId}>
+        <div className="fixed inset-0 flex items-center justify-center z-[100]" data-testid={dataTestId}>
           {/* Full screen overlay */}
           <motion.div
             key="modal-overlay"
