@@ -1,4 +1,4 @@
-import { Fragment, useRef, useLayoutEffect, useState } from 'react'
+import { Fragment, useRef, useLayoutEffect, useState, useCallback } from 'react'
 import { Span } from '@/components/Typography'
 import { ProgressBar } from '@/components/ProgressBarNew'
 import { ProposalState } from '@/shared/types'
@@ -74,7 +74,7 @@ export const ProposalProggressBar = ({ proposalState }: ProgressBarProps) => {
   const [offset, setOffset] = useState(0)
 
   // Calculate offset to keep active label in view
-  const calculateOffset = () => {
+  const calculateOffset = useCallback(() => {
     if (!containerRef.current || !contentRef.current) {
       return 0
     }
@@ -101,13 +101,13 @@ export const ProposalProggressBar = ({ proposalState }: ProgressBarProps) => {
     // Don't slide more than needed to keep content in bounds (with padding)
     const maxOffset = contentWidth - containerWidth
     return Math.min(desiredOffset, maxOffset)
-  }
+  }, [proposalState])
 
   // Update offset when proposal state changes
   useLayoutEffect(() => {
     const newOffset = calculateOffset()
     setOffset(newOffset)
-  }, [proposalState])
+  }, [proposalState, calculateOffset])
 
   // Handle window resize
   useLayoutEffect(() => {
@@ -118,10 +118,10 @@ export const ProposalProggressBar = ({ proposalState }: ProgressBarProps) => {
 
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [proposalState])
+  }, [proposalState, calculateOffset])
 
   return (
-    <div className="flex flex-col w-full" ref={containerRef}>
+    <div className="flex flex-col w-full md:p-6 p-4" ref={containerRef}>
       <div
         ref={contentRef}
         className="flex flex-row justify-between w-full"
@@ -129,7 +129,11 @@ export const ProposalProggressBar = ({ proposalState }: ProgressBarProps) => {
       >
         {renderStatusPath(proposalState!)}
       </div>
-      <ProgressBar progress={proposalStateToProgressMap.get(proposalState) ?? 0} className="mt-3" />
+      <ProgressBar
+        progress={proposalStateToProgressMap.get(proposalState) ?? 0}
+        className="mt-3"
+        color={['#4B5CF0', '#F4722A', '#1BC47D']}
+      />
     </div>
   )
 }
