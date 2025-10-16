@@ -1,6 +1,6 @@
 'use client'
 
-import { HTMLAttributes } from 'react'
+import type { HTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 import { HeaderMobile } from './headers/HeaderMobile'
 import { FooterMobile } from './footers/FooterMobile'
@@ -20,7 +20,7 @@ export default function ContainerMobile({ className, children, ...props }: HTMLA
       )}
     >
       <HeaderMobile />
-      <div className="relative p-4 grow flex flex-col">
+      <div className="relative px-4 grow flex flex-col">
         <SidebarMobile />
         <main className="grow mb-8 md:mb-25">
           <TopPageHeader />

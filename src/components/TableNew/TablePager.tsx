@@ -1,8 +1,8 @@
 import { Button } from '@/components/Button'
 import { Paragraph, Span } from '@/components/Typography'
-import { CommonComponentProps } from '@/components/commonProps'
+import type { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 
 const modes = ['cyclic', 'expandable'] as const
 type Mode = (typeof modes)[number]
@@ -29,7 +29,11 @@ const PagerCount: React.FC<{
   total: number
   itemName: string
 }> = ({ start, end, total, itemName }) => (
-  <Paragraph variant="body-xs" className="text-v3-bg-accent-0 select-none" data-testid="table-pager-count">
+  <Paragraph
+    variant="body-xs"
+    className="text-v3-bg-accent-0 select-none first-letter:uppercase"
+    data-testid="table-pager-count"
+  >
     {itemName} {start} – {end} out of {total}
   </Paragraph>
 )
@@ -102,8 +106,22 @@ export const TablePager: React.FC<TablePagerProps> = ({
     }
   }
 
-  const isNextExpandableButtonVisible = isExpandable(mode) && totalItems > pageSize
-  const isNextCyclicButtonVisible = isCyclic(mode)
+  // Calculate remaining items for next page
+  const remainingItems = useMemo(() => {
+    if (isExpandable(mode)) {
+      const remainingTotal = Math.max(0, totalItems - end)
+      return Math.min(pageSize, remainingTotal)
+    }
+    if (isCyclic(mode)) {
+      if (end + 1 > totalItems) {
+        return Math.min(pageSize, totalItems)
+      }
+      return Math.min(pageSize, totalItems - end)
+    }
+    return 0
+  }, [end, mode, pageSize, totalItems])
+  const isNextExpandableButtonVisible = isExpandable(mode) && remainingItems > 0
+  const isNextCyclicButtonVisible = isCyclic(mode) && remainingItems > 0
 
   return (
     <div
@@ -117,14 +135,15 @@ export const TablePager: React.FC<TablePagerProps> = ({
         <Button
           variant="secondary"
           onClick={handleNext}
-          aria-label={`Show next ${pageSize} ${pagedItemName}`}
+          aria-label={`Show next ${remainingItems} ${pagedItemName}`}
           data-testid="table-pager-next"
           disabled={isExpandable(mode) && end >= totalItems}
           className="border border-v3-bg-accent-40 px-2 py-1 w-auto"
         >
-          <Span className="text-sm">
-            Show next {pageSize} {pagedItemName}
+          <Span className="text-sm hidden md:inline">
+            Show next {remainingItems} {pagedItemName}
           </Span>
+          <Span className="text-sm inline md:hidden">Show next {remainingItems}</Span>
         </Button>
       )}
       {isNextCyclicButtonVisible && (
