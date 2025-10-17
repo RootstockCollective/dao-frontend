@@ -1,6 +1,7 @@
 import Big from '@/lib/big'
 import { DecodedData } from '@/app/proposals/shared/utils'
 import { ProposalCategory, ProposalState } from '@/shared/types'
+
 import { type GrantProposal } from '../../new/details/schemas/GrantProposalSchema'
 import { type ActivationProposal } from '../../new/details/schemas/ActivationProposalSchema'
 import { type DeactivationProposal } from '../../new/details/schemas/DeactivationProposalSchema'

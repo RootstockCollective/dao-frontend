@@ -53,7 +53,7 @@ export default function DeactivationProposalForm() {
     () =>
       handleSubmit(data => {
         setRecord({ form: data, category: ProposalCategory.Deactivation })
-        router.push('/proposals/new/review/deactivation')
+        router.push('/proposals/new/review')
       })(),
     // eslint-disable-next-line
     [handleSubmit, router],

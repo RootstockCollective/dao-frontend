@@ -45,7 +45,7 @@ export default function ActivationProposalForm() {
     () =>
       handleSubmit(data => {
         setRecord({ form: data, category: ProposalCategory.Activation })
-        router.push('/proposals/new/review/activation')
+        router.push('/proposals/new/review')
       })(),
     // eslint-disable-next-line
     [handleSubmit, router],

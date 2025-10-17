@@ -37,7 +37,7 @@ export const Description = ({ description }: DescriptionProps) => {
   const descriptionHtml = linkfyUrls(description)
 
   return (
-    <div className="mt-14">
+    <div className="md:px-6 px-4 py-10 sm:pb-8">
       {!isDesktop ? (
         <Expandable expanded={isDesktop}>
           <ExpandableHeader triggerColor="white">
