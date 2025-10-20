@@ -12,18 +12,12 @@ interface UseStickyHeaderOptions {
 }
 
 export const useStickyHeader = (options: UseStickyHeaderOptions = {}) => {
-  const {
-    isEnabled = true,
-    style = undefined,
-    threshold = 10,
-    initialVisible = true,
-    mode = 'position-based',
-  } = options
+  const { isEnabled = true, style = undefined, threshold = 10, mode = 'position-based' } = options
 
   const headerRef = useRef<HTMLDivElement>(null)
   const originalHeaderTop = useRef<number>(0)
-  const [isVisible, setIsVisible] = useState(initialVisible)
   const [isSticky, setIsSticky] = useState(false)
+  const [isVisible, setIsVisible] = useState(true)
   const lastScrollY = useRef(0)
   const ticking = useRef(false)
 
@@ -86,18 +80,18 @@ export const useStickyHeader = (options: UseStickyHeaderOptions = {}) => {
         }
 
         if (scrollY <= originalHeaderTop.current + threshold) {
-          // At or near the original position - show header in normal layout
-          setIsVisible(true)
+          // At or near the original position - header in normal layout (not sticky)
           setIsSticky(false)
+          setIsVisible(true)
           clearStickyStyles()
         } else if (scrollY > lastScrollY.current && scrollY > threshold) {
-          // Scrolling down - hide header
-          setIsVisible(false)
-          setIsSticky(false)
-        } else if (scrollY < lastScrollY.current) {
-          // Scrolling up - show header and make it sticky
-          setIsVisible(true)
+          // Scrolling down - make header sticky but hidden
           setIsSticky(true)
+          setIsVisible(false)
+        } else if (scrollY < lastScrollY.current) {
+          // Scrolling up - make header sticky and visible
+          setIsSticky(true)
+          setIsVisible(true)
         }
       } else {
         // Position-based behavior (LatestProposalsTable style)
