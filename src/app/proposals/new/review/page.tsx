@@ -213,7 +213,7 @@ export default function ProposalReview() {
         {!isDesktop ? <PreviewLabel /> : null}
         <div className="lg:flex lg:items-end">
           <div className="flex flex-col md:gap-4 gap-2 items-start md:items-end md:flex-row md:mt-0 mt-6 flex-1 md:mr-6">
-            <Header variant="h1" className="md:mt-0 !leading-none">
+            <Header variant="h1" className="md:mt-0 !leading-none break-all">
               {proposalName}
             </Header>
             {category !== NO_MILESTONE ? (
