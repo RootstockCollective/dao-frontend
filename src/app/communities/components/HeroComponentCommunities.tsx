@@ -20,7 +20,7 @@ export const HeroCommunitiesComponent = ({
     subtitle={subtitle}
     items={
       items ?? [
-        'Sollective Badges are dynamic NFTs that represent your role and impact within the DAO.',
+        'Collective Badges are dynamic NFTs that represent your role and impact within the DAO.',
         'Whether you’re a Builder, Backer, or Community Contributor, your badge shows that you belong.',
         'Be part of something bigger, helping shape the future of Bitcoin.',
         'These aren’t just collectibles. They are your passport to participation.',
