@@ -8,6 +8,7 @@ import { Address, formatEther } from 'viem'
 import { ActionType, ProposalType } from '../../[id]/types'
 import { ClassNameValue } from 'tailwind-merge'
 import { convertAmountToBigint } from '../../shared/utils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface InfoGridItem {
   label: string
@@ -49,7 +50,18 @@ function InfoGrid({ items }: { items: InfoGridItem[] }) {
   )
 }
 
+const makeRightLabel = (proposalType: ProposalType, isDesktop: boolean) => {
+  if (proposalType === ProposalType.BUILDER_ACTIVATION) {
+    return isDesktop ? 'Address to whitelist' : 'Of address'
+  }
+  if (proposalType === ProposalType.BUILDER_DEACTIVATION) {
+    return isDesktop ? 'Address to de-whitelist' : 'To de-whitelist'
+  }
+  return ''
+}
+
 export const ActionDetails = ({ parsedAction, actionType, className, readOnly }: ActionDetailsProps) => {
+  const isDesktop = useIsDesktop()
   let content: ReactNode = null
 
   switch (parsedAction.type) {
@@ -120,8 +132,7 @@ export const ActionDetails = ({ parsedAction, actionType, className, readOnly }:
     }
     case ProposalType.BUILDER_ACTIVATION:
     case ProposalType.BUILDER_DEACTIVATION: {
-      const rightLabel =
-        parsedAction.type === ProposalType.BUILDER_ACTIVATION ? 'Address to whitelist' : 'Builder address'
+      const rightLabel = makeRightLabel(parsedAction.type, isDesktop)
       const items: InfoGridItem[] = [
         { label: 'Type', value: actionType },
         {
