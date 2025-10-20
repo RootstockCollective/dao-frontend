@@ -119,7 +119,14 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   // Sticky header hook - only enabled on mobile/tablet
   const { headerRef } = useStickyHeader({
     isEnabled: !isDesktop,
-    backgroundColor: 'var(--color-bg-80)',
+    style: {
+      backgroundColor: 'var(--color-bg-80)',
+      paddingLeft: '1.5rem',
+      paddingRight: '1.5rem',
+      paddingTop: '1rem',
+      paddingBottom: '1rem',
+    },
+    mode: 'position-based',
   })
 
   // Enhanced filtering system

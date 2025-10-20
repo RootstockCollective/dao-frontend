@@ -1,89 +1,142 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState, useCallback } from 'react'
 
 interface UseStickyHeaderOptions {
   isEnabled?: boolean
-  zIndex?: string
-  backgroundColor?: string
-  padding?: {
-    left?: string
-    right?: string
-    top?: string
-    bottom?: string
-  }
+  style?: React.CSSProperties
+  /** Threshold in pixels to determine scroll direction change */
+  threshold?: number
+  /** Initial visibility state */
+  initialVisible?: boolean
+  /** Behavior mode: 'direction-based' or 'position-based' */
+  mode?: 'direction-based' | 'position-based'
 }
 
 export const useStickyHeader = (options: UseStickyHeaderOptions = {}) => {
   const {
     isEnabled = true,
-    zIndex = '50',
-    backgroundColor = 'var(--color-bg-80)',
-    padding = {
-      left: '1.5rem',
-      right: '1.5rem',
-      top: '1rem',
-      bottom: '1rem',
-    },
+    style = undefined,
+    threshold = 10,
+    initialVisible = true,
+    mode = 'position-based',
   } = options
 
   const headerRef = useRef<HTMLDivElement>(null)
   const originalHeaderTop = useRef<number>(0)
+  const [isVisible, setIsVisible] = useState(initialVisible)
+  const [isSticky, setIsSticky] = useState(false)
+  const lastScrollY = useRef(0)
+  const ticking = useRef(false)
 
-  // Sticky header styles
-  const stickyStyles = {
-    position: 'fixed',
-    top: '0',
-    zIndex,
-    backgroundColor,
-    width: '100vw',
-    left: '0',
-    right: '0',
-    paddingLeft: padding.left,
-    paddingRight: padding.right,
-    paddingTop: padding.top,
-    paddingBottom: padding.bottom,
-  }
+  const applyStickyStyles = useCallback(() => {
+    if (!headerRef.current) return
+    // Apply positioning styles first
+    headerRef.current.style.position = 'fixed'
+    headerRef.current.style.top = '0'
+    headerRef.current.style.zIndex = '50'
+    headerRef.current.style.width = '100vw'
+    headerRef.current.style.left = '0'
+    headerRef.current.style.right = '0'
+    // Then apply custom styles if provided
+    if (style) {
+      Object.assign(headerRef.current.style, style)
+    }
+  }, [style])
 
-  const clearStickyStyles = () => {
+  const clearStickyStyles = useCallback(() => {
     if (!headerRef.current) return
     headerRef.current.style.position = ''
     headerRef.current.style.top = ''
     headerRef.current.style.zIndex = ''
-    headerRef.current.style.backgroundColor = ''
     headerRef.current.style.width = ''
     headerRef.current.style.left = ''
     headerRef.current.style.right = ''
-    headerRef.current.style.paddingLeft = ''
-    headerRef.current.style.paddingRight = ''
-    headerRef.current.style.paddingTop = ''
-    headerRef.current.style.paddingBottom = ''
-  }
+    // Clear custom styles if they were applied
+    if (style) {
+      Object.keys(style).forEach(key => {
+        headerRef.current!.style[key as any] = ''
+      })
+    }
+  }, [style])
+
+  // Automatically apply/clear styles when isSticky changes
+  useEffect(() => {
+    if (isSticky) {
+      applyStickyStyles()
+    } else {
+      clearStickyStyles()
+    }
+  }, [isSticky, applyStickyStyles, clearStickyStyles])
 
   useEffect(() => {
     if (!isEnabled) return
 
-    const handleScroll = () => {
-      if (!headerRef.current) return
-
+    const updateScrollDirection = () => {
       const scrollY = window.scrollY
 
-      // If we haven't stored the original position yet, get it from the element's offsetTop
-      if (originalHeaderTop.current === 0) {
-        originalHeaderTop.current = headerRef.current.offsetTop
+      if (mode === 'direction-based') {
+        // Direction-based behavior (HeaderMobile style)
+        if (Math.abs(scrollY - lastScrollY.current) < threshold) {
+          ticking.current = false
+          return
+        }
+
+        // Store original position on first render for direction-based mode too
+        if (headerRef.current && originalHeaderTop.current === 0) {
+          originalHeaderTop.current = headerRef.current.offsetTop
+        }
+
+        if (scrollY <= originalHeaderTop.current + threshold) {
+          // At or near the original position - show header in normal layout
+          setIsVisible(true)
+          setIsSticky(false)
+          clearStickyStyles()
+        } else if (scrollY > lastScrollY.current && scrollY > threshold) {
+          // Scrolling down - hide header
+          setIsVisible(false)
+          setIsSticky(false)
+        } else if (scrollY < lastScrollY.current) {
+          // Scrolling up - show header and make it sticky
+          setIsVisible(true)
+          setIsSticky(true)
+        }
+      } else {
+        // Position-based behavior (LatestProposalsTable style)
+        if (!headerRef.current) return
+
+        // Store original position on first render
+        if (originalHeaderTop.current === 0) {
+          originalHeaderTop.current = headerRef.current.offsetTop
+        }
+
+        // When scrolling past the header's original position, make it sticky
+        if (scrollY >= originalHeaderTop.current) {
+          setIsSticky(true)
+          setIsVisible(true)
+        } else {
+          // When scrolling back up to before the header's original position, return to normal
+          setIsSticky(false)
+          setIsVisible(true)
+        }
       }
 
-      // When scrolling past the header's original position, make it fixed
-      if (scrollY >= originalHeaderTop.current) {
-        Object.assign(headerRef.current.style, stickyStyles)
-      }
-      // When scrolling back up to before the header's original position, return to normal layout
-      else if (scrollY < originalHeaderTop.current) {
-        clearStickyStyles()
+      lastScrollY.current = scrollY
+      ticking.current = false
+    }
+
+    const handleScroll = () => {
+      if (!ticking.current) {
+        requestAnimationFrame(updateScrollDirection)
+        ticking.current = true
       }
     }
 
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [isEnabled, zIndex, backgroundColor, padding.left, padding.right, padding.top, padding.bottom])
+  }, [isEnabled, threshold, mode, clearStickyStyles])
 
-  return { headerRef }
+  return {
+    headerRef,
+    isVisible,
+    isSticky,
+  }
 }
