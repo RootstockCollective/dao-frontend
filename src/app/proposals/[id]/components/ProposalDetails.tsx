@@ -81,6 +81,7 @@ export const ProposalDetails = ({
   const addressToWhitelist = parsedAction.builder
 
   const isCommunityApproveBuilderAction = actionName === 'communityApproveBuilder'
+  const isBuilderDeactivationAction = actionName === 'dewhitelistBuilder'
 
   const getProposalTypeLabel = () => {
     if (parsedAction.type === ProposalType.WITHDRAW && parsedAction.amount && parsedAction.tokenSymbol) {
@@ -118,7 +119,7 @@ export const ProposalDetails = ({
         <Paragraph variant="body">{startsAt ? startsAt.format('DD MMM YYYY') : '—'}</Paragraph>
       </DetailItem>
 
-      <DetailItem label="Builder name" show={isCommunityApproveBuilderAction}>
+      <DetailItem label="Builder name" show={isCommunityApproveBuilderAction || isBuilderDeactivationAction}>
         <Paragraph variant="body" className={cn('text-sm font-medium', !readOnly && 'text-primary')}>
           {/** TODO: enable later when builder profile feature is implemented */}
           {/* <a href={`/builders/${addressToWhitelist}`} className="hover:underline"> */}
@@ -127,7 +128,10 @@ export const ProposalDetails = ({
         </Paragraph>
       </DetailItem>
 
-      <DetailItem label="Builder address" show={isCommunityApproveBuilderAction && !!addressToWhitelist}>
+      <DetailItem
+        label="Builder address"
+        show={(isCommunityApproveBuilderAction || isBuilderDeactivationAction) && !!addressToWhitelist}
+      >
         {addressToWhitelist ? (
           !readOnly ? (
             <ShortenAndCopy value={addressToWhitelist} />

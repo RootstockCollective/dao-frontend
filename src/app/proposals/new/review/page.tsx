@@ -28,6 +28,7 @@ import { ActivationProposal } from '../details/schemas/ActivationProposalSchema'
 import { DeactivationProposal } from '../details/schemas/DeactivationProposalSchema'
 import { usePricesContext } from '@/shared/context'
 import { GetPricesResult } from '@/app/user/types'
+import { useBuilderContext } from '@/app/collective-rewards/user'
 
 // Transform form data to ParsedActionDetails for all proposal types
 const transformFormToActionDetails = (
@@ -102,6 +103,7 @@ export default function ProposalReview() {
   const [loading, setLoading] = useState(false)
   const isDesktop = useIsDesktop()
   const { prices } = usePricesContext()
+  const { getBuilderByAddress } = useBuilderContext()
 
   const onSubmit = useCallback(async () => {
     setLoading(true)
@@ -184,12 +186,18 @@ export default function ProposalReview() {
   const { description, discourseLink, proposalName } = record.form
   const parsedAction = transformFormToActionDetails(record.form, record.category, prices)
 
-  // For activation proposals, construct the name with builder name for ProposalDetails component
+  // For activation and deactivation proposals, construct the name with builder name for ProposalDetails component
   // This matches how ProposalView works - the name contains the combined format
-  const proposalNameForDetails =
-    record.category === ProposalCategory.Activation && 'builderName' in record.form
-      ? `${proposalName}${DISPLAY_NAME_SEPARATOR}${record.form.builderName}`
-      : proposalName
+  const proposalNameForDetails = (() => {
+    if (record.category === ProposalCategory.Activation && 'builderName' in record.form) {
+      return `${proposalName}${DISPLAY_NAME_SEPARATOR}${record.form.builderName}`
+    }
+    if (record.category === ProposalCategory.Deactivation && 'builderAddress' in record.form) {
+      const builder = getBuilderByAddress(record.form.builderAddress)
+      return builder ? `${proposalName}${DISPLAY_NAME_SEPARATOR}${builder.builderName}` : proposalName
+    }
+    return proposalName
+  })()
 
   // Handle milestone label for grants proposals
   const milestoneLabel =
