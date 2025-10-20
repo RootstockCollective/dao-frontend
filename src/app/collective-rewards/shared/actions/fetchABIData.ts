@@ -2,15 +2,14 @@
 
 import { client } from '@/shared/components/ApolloClient'
 import { gql as apolloGQL } from '@apollo/client'
-import { AbiData } from '../hooks/useGetABI'
 import { unstable_cache } from 'next/cache'
 import { CACHE_REVALIDATE_SECONDS } from '@/lib/constants'
+import { BuilderData } from '../hooks/useGetABI'
 
-// TODO: Update flags after migration
 const query = apolloGQL`
   query AbiMetricsData {
     builders(
-      where: { state_: { initialized: true } }
+      where: {state_: {initialized: true}}
       orderBy: totalAllocation
       orderDirection: desc
     ) {
@@ -23,24 +22,46 @@ const query = apolloGQL`
       }
       stateFlags: state {
         communityApproved
-        activated: initialized
+        initialized
         kycApproved
-        paused: kycPaused
-        revoked: selfPaused
+        kycPaused
+        selfPaused
       }
     }
     cycles(first: 1, orderBy: currentCycleStart, orderDirection: desc) {
       id
-      rewardsRif
-      rewardsRBTC
+      rewards: rewardsAmount {
+        amount
+        token
+      }
     }
   }
 `
 
-async function fetchABIData() {
-  const { data } = await client.query<AbiData>({ query })
+type RewardsAmount = {
+  amount: string
+  token: string
+}
 
-  return data
+type CycleData = {
+  id: string
+  rewards: RewardsAmount[]
+}
+
+export type ResponseABIData = {
+  builders: BuilderData[]
+  cycles: CycleData[]
+}
+async function fetchABIData() {
+  const { data } = await client.query<ResponseABIData>({ query })
+
+  return {
+    builders: data.builders,
+    cycles: data.cycles.map(cycle => ({
+      ...cycle,
+      rewards: Object.fromEntries(cycle.rewards.map(r => [r.token, r.amount])),
+    })),
+  }
 }
 
 export const getCachedABIData = unstable_cache(fetchABIData, ['cached_abi_data'], {

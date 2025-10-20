@@ -3,7 +3,6 @@ import { db } from '@/lib/db'
 import { paginateQuery } from '@/app/api/utils/paginateQuery'
 import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
 
-// TODO: Update flags after migration
 export async function GET(req: Request) {
   try {
     const paginationResult = parsePaginationParams(req.url || '')

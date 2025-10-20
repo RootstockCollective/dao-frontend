@@ -1,6 +1,5 @@
 const COLUMN_ID = 'id'
-const REWARDS_RIF = 'rewardsRif'
-const REWARDS_RBTC = 'rewardsRBTC'
+
 const CURRENT_CYCLE_START = 'currentCycleStart'
 const CURRENT_CYCLE_DURATION = 'currentCycleDuration'
 const PREVIOUS_CYCLE_START = 'previousCycleStart'
@@ -9,9 +8,7 @@ const DISTRIBUTION_DURATION = 'distributionDuration'
 const ON_DISTRIBUTION_PERIOD = 'onDistributionPeriod'
 
 export const CYCLE_COLUMNS = [
-  COLUMN_ID,
-  REWARDS_RIF,
-  REWARDS_RBTC,
+  `Cycle.${COLUMN_ID}`,
   CURRENT_CYCLE_START,
   CURRENT_CYCLE_DURATION,
   PREVIOUS_CYCLE_START,

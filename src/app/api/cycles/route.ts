@@ -17,7 +17,18 @@ export async function GET(req: Request) {
 
     const { page, pageSize, sortDirection, sortBy } = paginationResult.data
 
-    const baseQuery = db('Cycle').select(CYCLE_COLUMNS)
+    const baseQuery = db('Cycle')
+      .select(CYCLE_COLUMNS)
+      .leftJoin('CycleRewardsAmount', 'Cycle.id', '=', 'CycleRewardsAmount.cycle')
+      .select({
+        rewards: db.raw(`
+        COALESCE(
+          json_object_agg(convert_from("CycleRewardsAmount"."token", 'utf8'), "CycleRewardsAmount"."amount"::text),
+          '{}'
+        )
+      `),
+      })
+      .groupBy('Cycle.id')
 
     const { data, count } = await paginateQuery(baseQuery, {
       page,

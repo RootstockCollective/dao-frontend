@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import { CompleteBuilder } from '../../types'
 import { BuilderData, useGetABI } from './useGetABI'
 import { useGetCycleRewards } from './useGetCycleRewards'
+import { TOKENS } from '@/lib/tokens'
 
 export const useGetABIFromChain = () => {
   const { builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
@@ -57,8 +58,10 @@ export const useGetABIFromChain = () => {
     cycles: [
       {
         id: '0',
-        rewardsRif: cycleRewards.rif.toString(),
-        rewardsRBTC: cycleRewards.rbtc.toString(),
+        rewards: {
+          [TOKENS.rif.address.toLowerCase()]: cycleRewards.rif.toString(),
+          [TOKENS.rbtc.address.toLowerCase()]: cycleRewards.rbtc.toString(),
+        },
       },
     ],
   })

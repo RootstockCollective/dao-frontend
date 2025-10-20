@@ -4,15 +4,14 @@ import { db } from '@/lib/db'
 const DB_COMMAND_COALESCE = `
   COALESCE(
     json_build_object(
-      'next', "BackerRewardPercentage"."next",
-      'previous', "BackerRewardPercentage"."previous", 
-      'cooldownEndTime', "BackerRewardPercentage"."cooldownEndTime"
+      'next', "BackerRewardPercentage"."next"::text,
+      'previous', "BackerRewardPercentage"."previous"::text, 
+      'cooldownEndTime', "BackerRewardPercentage"."cooldownEndTime"::text
     ),
     '{}'
   )
 `
 
-// TODO: Update flags after migration
 export async function GET() {
   try {
     const [builders, cycles] = await Promise.all([
@@ -24,11 +23,11 @@ export async function GET() {
           stateFlags: db.raw(`
             COALESCE(
               json_build_object(
-                'activated', "BuilderState"."initialized",
+                'initialized', "BuilderState"."initialized",
                 'kycApproved', "BuilderState"."kycApproved",
                 'communityApproved', "BuilderState"."communityApproved",
-                'paused', "BuilderState"."kycPaused",
-                'revoked', "BuilderState"."selfPaused"
+                'kycPaused', "BuilderState"."kycPaused",
+                'selfPaused', "BuilderState"."selfPaused"
               ),
               '{}'
             )
@@ -37,8 +36,18 @@ export async function GET() {
         .where('BuilderState.initialized', '=', true)
         .orderByRaw('"Builder"."totalAllocation"::numeric DESC'),
       db('Cycle')
-        .select('Cycle.id', 'Cycle.rewardsRif', 'Cycle.rewardsRBTC')
+        .select('Cycle.id')
+        .select({
+          rewards: db.raw(`
+            COALESCE(
+              json_object_agg(convert_from("CycleRewardsAmount"."token", 'utf8'), "CycleRewardsAmount"."amount"::text),
+              '{}'
+            )
+          `),
+        })
+        .leftJoin('CycleRewardsAmount', 'Cycle.id', '=', 'CycleRewardsAmount.cycle')
         .orderBy('currentCycleStart', 'desc')
+        .groupBy('Cycle.id')
         .limit(1),
     ])
 

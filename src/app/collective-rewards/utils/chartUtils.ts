@@ -4,6 +4,7 @@ import Big from '@/lib/big'
 import { USD, WeiPerEther } from '@/lib/constants'
 import { getCombinedFiatAmount } from './getCombinedFiatAmount'
 import { TokenSymbol } from '@/components/TokenImage'
+import { TOKENS } from '@/lib/tokens'
 
 export const convertToTimestamp = (d: Date | number | string): number => new Date(d).getTime()
 
@@ -136,10 +137,12 @@ const transformRewardsData = (
 ): RewardsPoint[] => {
   let cumulativeRifRewards = 0n
   let cumulativeRbtcRewards = 0n
+  const rifAddress = TOKENS.rif.address.toLowerCase()
+  const rbtcAddress = TOKENS.rbtc.address.toLowerCase()
 
   const accumulatedCycleRewards = rewardsData.map((item, _) => {
-    const currentRifRewards = BigInt(item.rewardsRif)
-    const currentRbtcRewards = BigInt(item.rewardsRBTC)
+    const currentRifRewards = BigInt(item.rewards[rifAddress])
+    const currentRbtcRewards = BigInt(item.rewards[rbtcAddress])
 
     cumulativeRifRewards += currentRifRewards
     cumulativeRbtcRewards += currentRbtcRewards

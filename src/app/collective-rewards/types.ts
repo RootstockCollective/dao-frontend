@@ -13,14 +13,13 @@ export interface DailyAllocationItem {
 
 export interface CycleRewardsItem {
   id: string
-  rewardsRif: string
-  rewardsRBTC: string
   currentCycleStart: string
   currentCycleDuration: string
   previousCycleStart: string
   previousCycleDuration: string
   distributionDuration: string
   onDistributionPeriod: boolean
+  rewards: Record<string, string>
 }
 
 export type Builder = {
