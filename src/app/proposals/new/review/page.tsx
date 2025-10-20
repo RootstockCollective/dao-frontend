@@ -15,7 +15,7 @@ import { tokenContracts, uppercasedTokenContracts } from '@/lib/contracts'
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
 import { Header, Paragraph } from '@/components/Typography'
-import { DISCOURSE_LINK_SEPARATOR, DISPLAY_NAME_SEPARATOR } from '@/app/proposals/shared/utils'
+import { DISCOURSE_LINK_SEPARATOR, DISPLAY_NAME_SEPARATOR, NO_MILESTONE } from '@/app/proposals/shared/utils'
 import { MILESTONE_SEPARATOR, labeledMilestones } from '@/app/proposals/shared/utils'
 import { Milestones } from '@/app/proposals/shared/types'
 import { ActionDetails } from '@/app/proposals/components/action-details'
@@ -208,12 +208,14 @@ export default function ProposalReview() {
             <Header variant="h1" className="md:mt-0 !leading-none">
               {proposalName}
             </Header>
-            <div className="flex gap-2 items-center">
-              <Category className="mb-0.5" category={category} hasGradient />
-              <Paragraph variant="body-l" className="text-bg-0 !leading-none whitespace-nowrap">
-                {category}
-              </Paragraph>
-            </div>
+            {category !== NO_MILESTONE ? (
+              <div className="flex gap-2 items-center">
+                <Category className="mb-0.5" category={category as ProposalCategory} hasGradient />
+                <Paragraph variant="body-l" className="text-bg-0 !leading-none whitespace-nowrap">
+                  {category}
+                </Paragraph>
+              </div>
+            ) : null}
           </div>
           {isDesktop && <PreviewLabel />}
         </div>

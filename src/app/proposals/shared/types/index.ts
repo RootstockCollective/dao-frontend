@@ -89,13 +89,6 @@ export enum Milestones {
   NO_MILESTONE = '0',
 }
 
-export enum MilestoneLabels {
-  FIRST = 'Milestone 1',
-  SECOND = 'Milestone 2',
-  THIRD = 'Milestone 3',
-  NO_MILESTONE = 'No milestone',
-}
-
 export interface Delegator {
   id: string
 }
