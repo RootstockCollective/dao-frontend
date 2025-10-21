@@ -228,7 +228,7 @@ export const rootlingsS1: CommunityItem = {
   isMintable: true,
   numberOfMembers: 400,
   activation: 'October 2025',
-  requirement: 'Asia Roadshow participation, Self-Claim',
+  requirement: 'Rootling Challenge participation, Self-Claim',
   detailedDescription: (
     <>
       RootstockCollective&apos;s guardian of Bitcoin decentralization. <br />
