@@ -85,13 +85,14 @@ export const ProposalSubfooter = ({
           isDesktop ? 'bg-bg-60' : 'bg-l-black',
         )}
       >
-        <Divider className="md:hidden" />
+        <Divider className="md:hidden mx-4" />
         <div className="flex flex-col items-center gap-4">
-          <div className="flex items-center justify-center gap-2 w-full md:w-auto px-4 md:px-0">
+          <div className="flex items-center justify-center gap-4 w-full md:w-auto px-4 md:px-0">
             <Button
               disabled={backDisabled || disabled}
               onClick={handleBack}
               variant="secondary-outline"
+              className="w-auto px-12 md:px-3"
               data-testid="BackButton"
             >
               Back
@@ -99,6 +100,7 @@ export const ProposalSubfooter = ({
             <Button
               disabled={nextDisabled || disabled}
               onClick={handleNext}
+              className="flex-1"
               data-testid="ReviewProposalButton"
             >
               {buttonText}
