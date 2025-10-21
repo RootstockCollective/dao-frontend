@@ -2,7 +2,7 @@ import { RBTC, RIF, USDRIF } from '@/lib/constants'
 import { z } from 'zod'
 
 // list of available tokens
-export const SYMBOLS = [RIF, USDRIF, RBTC] as const
+export const SYMBOLS = [USDRIF, RIF, RBTC] as const
 export type TokenType = (typeof SYMBOLS)[number]
 
 // Constants for token field limits
