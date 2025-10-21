@@ -1,13 +1,15 @@
 import { cn } from '@/lib/utils'
-import { useId, useState, type InputHTMLAttributes } from 'react'
+import { type ReactNode, useId, useState, type InputHTMLAttributes } from 'react'
 import { FloatingLabel } from './FloatingLabel'
 import { ErrorMessage } from './ErrorMessage'
-import { Controller, Control, FieldPath, FieldValues } from 'react-hook-form'
+import type { Control, FieldPath, FieldValues } from 'react-hook-form'
+import { Controller } from 'react-hook-form'
 
 interface Props<T extends FieldValues> extends InputHTMLAttributes<HTMLInputElement> {
   label: string
   name: FieldPath<T>
   control: Control<T>
+  infoMessage?: ReactNode
 }
 
 export function TextInput<T extends FieldValues>({
@@ -16,6 +18,7 @@ export function TextInput<T extends FieldValues>({
   className,
   name,
   control,
+  infoMessage,
   onFocus,
   ...props
 }: Props<T>) {
@@ -52,7 +55,7 @@ export function TextInput<T extends FieldValues>({
                   setIsFocused(true)
                   onFocus?.(e)
                 }}
-                onBlur={e => {
+                onBlur={() => {
                   setIsFocused(false)
                   onBlur()
                 }}
@@ -61,6 +64,9 @@ export function TextInput<T extends FieldValues>({
                 {...props}
               />
             </FloatingLabel>
+            {!error && infoMessage && (
+              <p className="font-rootstock-sans text-xs text-success/60">{infoMessage}</p>
+            )}
           </ErrorMessage>
         )
       }}
