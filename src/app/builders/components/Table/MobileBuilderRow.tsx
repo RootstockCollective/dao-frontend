@@ -25,9 +25,16 @@ interface MobileBuilderRowProps extends HtmlHTMLAttributes<HTMLTableRowElement> 
   row: BuilderTable['Row']
   userBacking: bigint
   logic: BuilderRowLogic
+  actionCount: number
 }
 
-export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, logic, ...props }) => {
+export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({
+  row,
+  userBacking,
+  logic,
+  actionCount,
+  ...props
+}) => {
   const { isConnected } = useAccount()
   const { intermediateStep, handleConnectWallet, handleCloseIntermediateStep, onConnectWalletButtonClick } =
     useAppKitFlow()
@@ -189,7 +196,7 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
                   />
 
                   {/* Row 5 (expanded): ActionCell */}
-                  {isConnected && (
+                  {isConnected && actionCount < 2 && (
                     <div className="w-full min-w-full flex justify-center">
                       <ActionCell
                         {...actions}
