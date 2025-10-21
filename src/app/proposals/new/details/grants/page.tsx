@@ -2,7 +2,6 @@
 
 import { useReviewProposal } from '@/app/providers'
 import { NumberInput, SelectField } from '@/components/FormFields'
-import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { Header } from '@/components/Typography'
 import { ProposalCategory } from '@/shared/types'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -51,20 +50,6 @@ export default function ProposalReview() {
       })(),
     [handleSubmit, router, setRecord],
   )
-
-  // inject sticky drawer with submit button to the footer layout
-  const { openDrawer, closeDrawer } = useLayoutContext()
-  useEffect(() => {
-    openDrawer(
-      <ProposalSubfooter
-        submitForm={onSubmit}
-        buttonText="Review proposal"
-        nextDisabled={!formState.isValid}
-      />,
-    )
-    return () => closeDrawer()
-  }, [formState.isValid, onSubmit, openDrawer, closeDrawer])
-
   // set focus on proposal name field
   // eslint-disable-next-line
   useEffect(() => setFocus('proposalName'), [])
@@ -120,6 +105,7 @@ export default function ProposalReview() {
           </div>
         )}
       </div>
+      <ProposalSubfooter submitForm={onSubmit} buttonText="Review proposal" disabled={!formState.isValid} />
     </div>
   )
 }

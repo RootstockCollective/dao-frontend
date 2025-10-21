@@ -1,10 +1,9 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import moment from 'moment'
 import { useAccount } from 'wagmi'
 import { useReviewProposal } from '@/app/providers'
-import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { ProposalSubfooter } from '../components/ProposalSubfooter'
 import { ProposalCategory } from '@/shared/types'
 import { PreviewLabel } from './components/PreviewLabel'
@@ -165,19 +164,6 @@ export default function ProposalReview() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [record, onCreateTreasuryTransferProposal, onCreateBuilderWhitelistProposal, onRemoveBuilderProposal])
 
-  // inject sticky drawer with submit button to the footer layout
-  const { openDrawer, closeDrawer } = useLayoutContext()
-  useEffect(() => {
-    openDrawer(
-      <ProposalSubfooter
-        submitForm={onSubmit}
-        buttonText="Publish proposal"
-        disabled={loading || !isConnected}
-      />,
-    )
-    return () => closeDrawer()
-  }, [loading, onSubmit, openDrawer, closeDrawer, isConnected])
-
   // Verify that the context has passed correct proposal type
   if (!record?.form || !record?.category) {
     return null
@@ -250,6 +236,11 @@ export default function ProposalReview() {
           readOnly
         />
       </div>
+      <ProposalSubfooter
+        submitForm={onSubmit}
+        buttonText="Publish proposal"
+        disabled={loading || !isConnected}
+      />
     </div>
   )
 }
