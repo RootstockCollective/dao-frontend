@@ -5,9 +5,10 @@ import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useState, useCallback, useEffect } from 'react'
 import { LeavingProposalModal } from './LeavingProposalModal'
-import { ActionsContainer } from '@/components/containers/ActionsContainer'
 import { Button } from '@/components/Button'
+import { Divider } from '@/components/Divider'
 import { useNavigationGuard } from 'next-navigation-guard'
+import { cn } from '@/lib/utils'
 
 interface Props {
   submitForm: () => void
@@ -77,24 +78,34 @@ export const ProposalSubfooter = ({
 
   return (
     <>
-      <ActionsContainer
-        className={'bg-bg-60 fixed bottom-0 left-0 right-0'}
-        containerClassName="items-center"
+      <div
+        data-testid="ActionsContainer"
+        className={cn(
+          'flex flex-col w-full gap-4 md:gap-10 py-4 md:p-6 rounded-sm fixed bottom-0 left-0 right-0',
+          isDesktop ? 'bg-bg-60' : 'bg-l-black',
+        )}
       >
-        <div className="flex items-center justify-center gap-2 w-full md:w-auto px-4 md:px-0">
-          <Button
-            disabled={backDisabled || disabled}
-            onClick={handleBack}
-            variant="secondary-outline"
-            data-testid="BackButton"
-          >
-            Back
-          </Button>
-          <Button disabled={nextDisabled || disabled} onClick={handleNext} data-testid="ReviewProposalButton">
-            {buttonText}
-          </Button>
+        <Divider className="md:hidden" />
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex items-center justify-center gap-2 w-full md:w-auto px-4 md:px-0">
+            <Button
+              disabled={backDisabled || disabled}
+              onClick={handleBack}
+              variant="secondary-outline"
+              data-testid="BackButton"
+            >
+              Back
+            </Button>
+            <Button
+              disabled={nextDisabled || disabled}
+              onClick={handleNext}
+              data-testid="ReviewProposalButton"
+            >
+              {buttonText}
+            </Button>
+          </div>
         </div>
-      </ActionsContainer>
+      </div>
 
       {showModal && (
         <LeavingProposalModal onStay={handleStayOnPage} onProceedWithExit={handleProceedWithExit} />
