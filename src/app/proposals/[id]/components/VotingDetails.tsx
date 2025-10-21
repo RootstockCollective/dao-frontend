@@ -31,8 +31,8 @@ const actionNameToActionTypeMap = new Map<string, ActionType>([
   ['withdrawERC20', ActionType.Transfer],
   ['communityApproveBuilder', ActionType.BuilderApproval],
   ['whitelistBuilder', ActionType.BuilderApproval],
-  ['removeWhitelistedBuilder', ActionType.RemoveBuilder],
-  ['dewhitelistBuilder', ActionType.RemoveBuilder],
+  ['removeWhitelistedBuilder', ActionType.BuilderDeactivation],
+  ['dewhitelistBuilder', ActionType.BuilderDeactivation],
 ])
 
 interface VotingDetailsProps {

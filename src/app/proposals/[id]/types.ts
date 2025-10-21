@@ -20,7 +20,7 @@ export enum ActionType {
   TreasuryWithdrawal = 'Treasury withdrawal',
   Transfer = 'Transfer',
   WhitelistBuilder = 'Whitelist builder',
-  RemoveBuilder = 'Remove builder',
-  DewhitelistBuilder = 'De-whitelist builder',
+  BuilderDeactivation = 'Builder deactivation',
+  BuilderActivation = 'Whitelist builder',
   Unknown = '—',
 }

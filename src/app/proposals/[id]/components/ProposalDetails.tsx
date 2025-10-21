@@ -1,7 +1,7 @@
 import { Paragraph, Span } from '@/components/Typography'
 import { TokenImage } from '@/components/TokenImage'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
-import { formatNumberWithCommas, shortAddress } from '@/lib/utils'
+import { cn, formatNumberWithCommas, shortAddress } from '@/lib/utils'
 import { Address, formatEther } from 'viem'
 import {
   convertAmountToBigint,
@@ -34,7 +34,7 @@ const DetailItem = ({ label, children, show = true }: DetailItemProps) => {
   if (!show) return null
 
   return (
-    <div className="!min-w-1/2 max-w-full flex-shrink-0 flex flex-col">
+    <div className="!min-w-1/2 max-w-full flex-shrink-0 flex flex-col md:pl-6 pl-4">
       <Span variant="tag-s" className="text-white/70" bold>
         {label}
       </Span>
@@ -81,6 +81,7 @@ export const ProposalDetails = ({
   const addressToWhitelist = parsedAction.builder
 
   const isCommunityApproveBuilderAction = actionName === 'communityApproveBuilder'
+  const isBuilderDeactivationAction = actionName === 'dewhitelistBuilder'
 
   const getProposalTypeLabel = () => {
     if (parsedAction.type === ProposalType.WITHDRAW && parsedAction.amount && parsedAction.tokenSymbol) {
@@ -107,7 +108,7 @@ export const ProposalDetails = ({
   }
 
   return (
-    <div className="flex flex-wrap gap-y-6 md:mt-0 mt-8">
+    <div className="flex flex-wrap gap-y-6 md:mt-0 mt-8 md:pr-6 pr-4">
       <DetailItem label="Proposal type">
         <Paragraph variant="body" className="flex items-center flex-shrink-0">
           {getProposalTypeLabel()}
@@ -118,11 +119,8 @@ export const ProposalDetails = ({
         <Paragraph variant="body">{startsAt ? startsAt.format('DD MMM YYYY') : '—'}</Paragraph>
       </DetailItem>
 
-      <DetailItem label="Builder name" show={isCommunityApproveBuilderAction}>
-        <Span variant="tag-s" className="text-white/70" bold>
-          Builder name
-        </Span>
-        <Paragraph variant="body" className="text-sm font-medium text-primary">
+      <DetailItem label="Builder name" show={isCommunityApproveBuilderAction || isBuilderDeactivationAction}>
+        <Paragraph variant="body" className={cn('text-sm font-medium', !readOnly && 'text-primary')}>
           {/** TODO: enable later when builder profile feature is implemented */}
           {/* <a href={`/builders/${addressToWhitelist}`} className="hover:underline"> */}
           {builderName}
@@ -130,8 +128,19 @@ export const ProposalDetails = ({
         </Paragraph>
       </DetailItem>
 
-      <DetailItem label="Builder address" show={isCommunityApproveBuilderAction && !!addressToWhitelist}>
-        <ShortenAndCopy value={addressToWhitelist!} />
+      <DetailItem
+        label="Builder address"
+        show={(isCommunityApproveBuilderAction || isBuilderDeactivationAction) && !!addressToWhitelist}
+      >
+        {addressToWhitelist ? (
+          !readOnly ? (
+            <ShortenAndCopy value={addressToWhitelist} />
+          ) : (
+            <Span variant="body">{shortAddress(addressToWhitelist as Address)}</Span>
+          )
+        ) : (
+          <Span variant="body">—</Span>
+        )}
       </DetailItem>
 
       <DetailItem label="Proposed by">

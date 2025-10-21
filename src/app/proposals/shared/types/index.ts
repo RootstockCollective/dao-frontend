@@ -1,6 +1,7 @@
 import Big from '@/lib/big'
 import { DecodedData } from '@/app/proposals/shared/utils'
 import { ProposalCategory, ProposalState } from '@/shared/types'
+
 import { type GrantProposal } from '../../new/details/schemas/GrantProposalSchema'
 import { type ActivationProposal } from '../../new/details/schemas/ActivationProposalSchema'
 import { type DeactivationProposal } from '../../new/details/schemas/DeactivationProposalSchema'
@@ -86,13 +87,6 @@ export enum Milestones {
   MILESTONE_2 = '2',
   MILESTONE_3 = '3',
   NO_MILESTONE = '0',
-}
-
-export enum MilestoneLabels {
-  FIRST = 'Milestone 1',
-  SECOND = 'Milestone 2',
-  THIRD = 'Milestone 3',
-  NO_MILESTONE = 'No milestone',
 }
 
 export interface Delegator {

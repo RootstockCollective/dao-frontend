@@ -121,7 +121,7 @@ const PageWithProposal = (proposal: Proposal) => {
       </div>
       <div className="flex md:flex-row flex-col gap-2 w-full max-w-full mt-6">
         <div className="flex-1 flex flex-col min-w-0">
-          <div className="bg-bg-80 md:p-6 p-4 flex flex-col gap-y-6 overflow-hidden">
+          <div className="bg-bg-80 flex flex-col overflow-hidden">
             <ProposalProggressBar proposalState={voteOnProposalData.proposalState} />
             <ProposalDetails
               name={name}

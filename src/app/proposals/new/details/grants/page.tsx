@@ -19,7 +19,7 @@ import { MilestoneInfoSidebar } from '../components/MilestoneInfoSidebar'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { RnsAddressInput } from './RnsAddressInput'
 
-export default function GrantsProposalForm() {
+export default function ProposalReview() {
   const isDesktop = useIsDesktop()
   const { record, setRecord } = useReviewProposal()
   const router = useRouter()
@@ -47,7 +47,7 @@ export default function GrantsProposalForm() {
     () =>
       handleSubmit(data => {
         setRecord({ form: data, category: ProposalCategory.Grants })
-        router.push('/proposals/new/review/grants')
+        router.push('/proposals/new/review')
       })(),
     [handleSubmit, router, setRecord],
   )
