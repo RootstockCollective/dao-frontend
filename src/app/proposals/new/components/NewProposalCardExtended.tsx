@@ -64,7 +64,7 @@ export function NewProposalCardExtended({ card, className, cancelCardSelection, 
         </div>
 
         {/* Action Buttons */}
-        <div className={`md:p-0 p-4 ${!isDesktop ? 'fixed bottom-0 inset-x-4 bg-bg-100' : ''}`}>
+        <div className={`md:p-0 p-4 ${!isDesktop ? 'fixed bottom-0 left-0 right-0 bg-bg-100' : ''}`}>
           <Divider className="md:hidden" />
           <div className="flex gap-4 md:justify-end md:mt-0 mt-4">
             <Button
