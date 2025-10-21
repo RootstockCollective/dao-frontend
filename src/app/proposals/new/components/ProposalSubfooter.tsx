@@ -77,7 +77,10 @@ export const ProposalSubfooter = ({
 
   return (
     <>
-      <ActionsContainer className="bg-bg-60" containerClassName="items-center">
+      <ActionsContainer
+        className={'bg-bg-60 fixed bottom-0 left-0 right-0'}
+        containerClassName="items-center"
+      >
         <div className="flex items-center justify-center gap-2 w-full md:w-auto px-4 md:px-0">
           <Button
             disabled={backDisabled || disabled}

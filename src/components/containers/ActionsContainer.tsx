@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { CommonComponentProps } from '../commonProps'
 
-type ActionsContainerProps = CommonComponentProps & {
+interface ActionsContainerProps extends CommonComponentProps {
   title?: ReactNode
   containerClassName?: string
 }
