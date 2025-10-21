@@ -12,7 +12,7 @@ export const MyBacking = (): ReactElement => {
   const { address: userAddress } = useAccount()
 
   return (
-    <div className="flex w-full">
+    <div className="flex w-full flex-col gap-4 md:gap-0 md:flex-row">
       <BackerRewardsContextProvider backer={userAddress ?? zeroAddress} tokens={TOKENS}>
         <UnclaimedRewardsMetric />
       </BackerRewardsContextProvider>
