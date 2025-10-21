@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils'
 import type { ComponentPropsWithoutRef, ElementType } from 'react'
-import sanitizeHtml from 'sanitize-html'
+import DOMPurify from 'dompurify'
+import parse from 'html-react-parser'
 import type { BodyVariants, EmphaseVariants, HeaderVariants, TagVariants } from './types'
 
 /**
@@ -103,11 +104,25 @@ export function BaseTypography<T extends ElementType>({
   const Component: ElementType = as
   const isHtml = html && typeof children === 'string'
   const cleanHtml = isHtml
-    ? sanitizeHtml(children as string, {
-        allowedAttributes: {
-          a: ['href', 'target', 'rel'],
-        },
-      })
+    ? (() => {
+        // Add hook to automatically set target="_blank" and rel="noopener noreferrer" on all links
+        DOMPurify.addHook('afterSanitizeAttributes', node => {
+          if (node.tagName === 'A') {
+            node.setAttribute('target', '_blank')
+            node.setAttribute('rel', 'noopener noreferrer')
+          }
+        })
+
+        const sanitized = DOMPurify.sanitize(children as string, {
+          ALLOWED_TAGS: ['a'],
+          ALLOWED_ATTR: ['href', 'target', 'rel'],
+        })
+
+        // Remove the hook after sanitization to avoid affecting other uses
+        DOMPurify.removeAllHooks()
+
+        return sanitized
+      })()
     : undefined
 
   // Use font-medium for bold in body-s and body-xs variants, font-bold for others
@@ -119,19 +134,19 @@ export function BaseTypography<T extends ElementType>({
   }
 
   /**
-   * React best practice: never set both children and dangerouslySetInnerHTML on the same element.
-   * See: https://react.dev/reference/react-dom/components/common#dangerouslysetinnerhtml
-   * This ensures no runtime error and allows both plain text/JSX and HTML content.
+   * Renders HTML content using DOMPurify for sanitization and html-react-parser for parsing.
+   * This approach avoids dangerouslySetInnerHTML and converts HTML strings to React elements.
    */
   if (isHtml) {
     return (
       <Component
         className={cn(variantClasses[variant], modifierClasses, className)}
         onClick={onClick}
-        dangerouslySetInnerHTML={{ __html: cleanHtml! }}
         data-testid={dataTestId}
         {...props}
-      />
+      >
+        {parse(cleanHtml!)}
+      </Component>
     )
   }
 
