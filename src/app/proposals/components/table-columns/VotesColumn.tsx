@@ -2,7 +2,7 @@ import { cn, formatNumberWithCommas } from '@/lib/utils'
 import Big from '@/lib/big'
 import { PizzaChart } from '@/components/PizzaChart'
 import { Paragraph } from '@/components/Typography'
-import { ClassNameValue } from 'tailwind-merge'
+import type { ClassNameValue } from 'tailwind-merge'
 import { SmallLineSeparator } from '@/components/Separators/SmallLineSeparator'
 
 interface QuorumColumnProps {
@@ -32,17 +32,17 @@ export const QuorumColumn = ({
       : 'text-st-error' // Red for less than 50%
 
   return (
-    <Paragraph className={cn(colorClass, className)} data-testid="ProposalQuorumPercentage">
+    <div className={cn(colorClass, className)} data-testid="ProposalQuorumPercentage">
       {quorumAtSnapshot.eq(0) ? (
-        '-'
+        <Paragraph>-</Paragraph>
       ) : (
         <div className="flex flex-row items-center">
-          {!hideQuorumTarget && formatNumberWithCommas(quorumAtSnapshot)}
+          <Paragraph>{!hideQuorumTarget && formatNumberWithCommas(quorumAtSnapshot)}</Paragraph>
           <SmallLineSeparator />
-          {formatNumberWithCommas(percentage)}%
+          <Paragraph>{formatNumberWithCommas(percentage)}%</Paragraph>
         </div>
       )}
-    </Paragraph>
+    </div>
   )
 }
 interface VotesColumnProps {
