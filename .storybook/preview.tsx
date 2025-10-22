@@ -1,12 +1,11 @@
-import type { Preview } from "@storybook/nextjs";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import "./../src/app/globals.css";
-import React from 'react';
-import { WagmiConfig, createConfig } from 'wagmi';
-import { mainnet } from 'wagmi/chains';
-import { http } from 'viem';
 import { TooltipProvider } from '@radix-ui/react-tooltip'
+import type { Preview } from '@storybook/nextjs'
+import { ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { http } from 'viem'
+import { WagmiProvider, createConfig } from 'wagmi'
+import { mainnet } from 'wagmi/chains'
+import './../src/app/globals.css'
 
 const config = createConfig({
   chains: [mainnet],
@@ -16,16 +15,16 @@ const config = createConfig({
 })
 
 // Add BigInt serialization
-const originalJSONStringify = JSON.stringify;
+const originalJSONStringify = JSON.stringify
 JSON.stringify = function (value, replacer, space) {
   const customReplacer = (key: string, value: any) => {
     if (typeof value === 'bigint') {
-      return value.toString();
+      return value.toString()
     }
-    return value;
-  };
-  return originalJSONStringify(value, customReplacer, space);
-};
+    return value
+  }
+  return originalJSONStringify(value, customReplacer, space)
+}
 
 const preview: Preview = {
   parameters: {
@@ -47,15 +46,15 @@ const preview: Preview = {
   },
   decorators: [
     Story => (
-      <WagmiConfig config={config}>
+      <WagmiProvider config={config}>
         <TooltipProvider>
           <Story />
           <ToastContainer />
         </TooltipProvider>
-      </WagmiConfig>
+      </WagmiProvider>
     ),
   ],
   tags: ['autodocs'],
 }
 
-export default preview;
+export default preview
