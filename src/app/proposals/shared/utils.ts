@@ -324,8 +324,8 @@ export function convertAmountToBigint(amount: bigint | string | undefined): bigi
 
   if (typeof amount === 'string') {
     // Handle string input - convert to bigint
-    // Remove any non-numeric characters except decimal point
-    const cleanAmount = amount.replace(/[^\d.]/g, '')
+    // Remove commas and any other non-numeric characters except decimal point
+    const cleanAmount = amount.replace(/,/g, '').replace(/[^\d.]/g, '')
     if (!cleanAmount || cleanAmount === '.') return 0n
 
     // Convert to wei (assuming 18 decimals) and then to bigint
@@ -334,7 +334,8 @@ export function convertAmountToBigint(amount: bigint | string | undefined): bigi
 
     // Convert to wei (multiply by 10^18) and then to bigint
     const weiAmount = Big(numericAmount).times(Big(10).pow(18))
-    return BigInt(weiAmount.toString())
+    // Use toFixed to avoid scientific notation, then convert to BigInt
+    return BigInt(weiAmount.toFixed(0))
   }
 
   return 0n
