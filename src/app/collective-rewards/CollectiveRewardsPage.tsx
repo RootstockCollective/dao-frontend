@@ -1,10 +1,14 @@
 'use client'
 
-import { Header } from '@/components/Typography'
-import { ActionMetricsContainer } from '@/components/containers'
+import { CycleMetrics } from '@/app/collective-rewards/components/CycleMetrics'
+import { EstimatedRewards } from '@/app/collective-rewards/components/EstimatedRewards'
+import { TotalBackingLoader } from '@/app/collective-rewards/components/TotalBacking'
+import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { AnnualBackersIncentives } from '@/app/shared/components/AnnualBackersIncentives'
+import { ActionMetricsContainer, ActionsContainer } from '@/components/containers'
+import { Header } from '@/components/Typography'
 import { CallToActionSection } from './components/CallToActionSection'
-import { CurrentCycle } from './components/CurrentCycle'
+import { CollectiveRewardsChartContainer } from './components/CollectiveRewardsChart'
 import { TotalRewardsDistributed } from './components/TotalRewardsDistributed'
 
 const NAME = 'Collective Rewards'
@@ -20,7 +24,28 @@ export const CollectiveRewardsPage = () => {
           <AnnualBackersIncentives className="basis-3/4" />
           <TotalRewardsDistributed className="basis-1/4" />
         </ActionMetricsContainer>
-        <CurrentCycle />
+
+        {/* Current Cycle Section */}
+        <ActionsContainer
+          className="flex flex-col gap-10 px-4 py-8 md:px-6 md:pt-6 md:pb-10 bg-v3-bg-accent-80"
+          title={
+            <Header variant="h3" caps>
+              THE REWARDS AT WORK - CURRENT CYCLE
+            </Header>
+          }
+        >
+          <div className="w-full flex flex-col gap-10">
+            <div className="flex items-start w-full justify-between md:w-[90%] mx-auto">
+              <CycleContextProvider>
+                <CycleMetrics />
+              </CycleContextProvider>
+              <TotalBackingLoader />
+              <EstimatedRewards />
+            </div>
+            <CollectiveRewardsChartContainer />
+          </div>
+        </ActionsContainer>
+
         <CallToActionSection />
       </div>
     </div>

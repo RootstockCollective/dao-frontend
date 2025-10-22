@@ -17,4 +17,4 @@ interface Reward {
   amount: RewardAmount
   logo?: JSX.Element
 }
-export type TokenRewards = Record<string, Reward>
+export type TokenRewards = Record<Token['symbol'], Reward>

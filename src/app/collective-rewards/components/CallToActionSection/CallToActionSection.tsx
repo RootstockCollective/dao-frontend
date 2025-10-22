@@ -1,40 +1,48 @@
 import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
 import { InfoContainer } from '@/components/containers'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { useHandleErrors } from '../../utils'
 import { BackersCallToAction } from '../BackersCallToAction'
 import { BuildersCallToAction } from '../BuildersCallToAction'
+import { TokenWithValue } from '../RewardsMetrics'
 
 export const CallToActionSection = () => {
   const {
-    data: builderEstimatedRewards,
-    isLoading: builderEstimatedRewardsLoading,
-    error: builderEstimatedRewardsError,
+    data: estimatedRewards,
+    isLoading: estimatedRewardsLoading,
+    error: estimatedRewardsError,
   } = useGetBuilderEstimatedRewards()
 
-  useHandleErrors({ error: builderEstimatedRewardsError, title: 'Error loading CTA section' })
+  useHandleErrors({ error: estimatedRewardsError, title: 'Error loading CTA section' })
 
-  const { rifBackerRewards, rbtcBackerRewards, rifBuilderRewards, rbtcBuilderRewards } =
-    builderEstimatedRewards.reduce(
-      (acc, builder) => {
-        return {
-          rifBackerRewards: acc.rifBackerRewards + builder.backerEstimatedRewards.rif.amount.value,
-          rbtcBackerRewards: acc.rbtcBackerRewards + builder.backerEstimatedRewards.rbtc.amount.value,
-          rifBuilderRewards: acc.rifBuilderRewards + builder.builderEstimatedRewards.rif.amount.value,
-          rbtcBuilderRewards: acc.rbtcBuilderRewards + builder.builderEstimatedRewards.rbtc.amount.value,
-        }
-      },
-      { rifBackerRewards: 0n, rbtcBackerRewards: 0n, rifBuilderRewards: 0n, rbtcBuilderRewards: 0n },
-    )
+  const { backer: backerRewardsTokens, builder: builderRewardsTokens } = estimatedRewards.reduce<{
+    backer: TokenWithValue[]
+    builder: TokenWithValue[]
+  }>(
+    ({ backer, builder }, { backerEstimatedRewards, builderEstimatedRewards }) => {
+      return {
+        backer: REWARD_TOKEN_KEYS.map((tokenKey, index) => ({
+          ...TOKENS[tokenKey],
+          value: (backer[index]?.value ?? 0n) + (backerEstimatedRewards[tokenKey]?.amount?.value ?? 0n),
+        })),
+        builder: REWARD_TOKEN_KEYS.map((tokenKey, index) => ({
+          ...TOKENS[tokenKey],
+          value: (builder[index]?.value ?? 0n) + (builderEstimatedRewards[tokenKey]?.amount?.value ?? 0n),
+        })),
+      }
+    },
+    { backer: [], builder: [] },
+  )
 
-  if (builderEstimatedRewardsLoading) {
+  if (estimatedRewardsLoading) {
     return <LoadingSpinner />
   }
 
   return (
     <InfoContainer className="flex-col md:flex-row p-0 pt-1 w-full">
-      <BackersCallToAction rifRewards={rifBackerRewards} rbtcRewards={rbtcBackerRewards} />
-      <BuildersCallToAction rifRewards={rifBuilderRewards} rbtcRewards={rbtcBuilderRewards} />
+      <BackersCallToAction rewardTokens={backerRewardsTokens} />
+      <BuildersCallToAction rewardTokens={builderRewardsTokens} />
     </InfoContainer>
   )
 }
