@@ -84,6 +84,7 @@ export const DesktopBuilderRow: FC<DesktopBuilderRowProps> = ({
             backingPercentage={backingPercentage}
             className={actionCount < 2 && isHovered && isConnected ? 'hidden' : 'visible'}
           />
+          {/* TODO: update behavior so that when 1 row is selected only that row's actions is visible */}
           <ActionsCell {...actions} forceShow={actionCount < 2 && isHovered && isConnected} />
           <td className="w-[24px]"></td>
         </tr>

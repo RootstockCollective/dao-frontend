@@ -41,7 +41,7 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({
 
   const [isExpanded, setIsExpanded] = useState(false)
 
-  const { data, isRowSelected, isInProgress, canBack, hasSelections, handleToggleSelection } = logic
+  const { data, isRowSelected, isInProgress, canBack, handleToggleSelection } = logic
 
   const handleToggleExpand = () => {
     setIsExpanded(!isExpanded)
@@ -196,6 +196,7 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({
                   />
 
                   {/* Row 5 (expanded): ActionCell */}
+                  {/* TODO: update behavior so that when 1 row is selected only that row's actions is visible */}
                   {isConnected && actionCount < 2 && (
                     <div className="w-full min-w-full flex justify-center">
                       <ActionCell
