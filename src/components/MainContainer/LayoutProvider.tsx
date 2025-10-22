@@ -3,17 +3,8 @@
 import { NoContextProviderError } from '@/lib/errors/ContextError'
 import { MAIN_CONTAINER_ID } from '@/lib/constants'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import {
-  createContext,
-  PropsWithChildren,
-  ReactNode,
-  useContext,
-  useMemo,
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-} from 'react'
+import { createContext, useContext, useMemo, useState, useEffect, useRef, useCallback } from 'react'
+import type { PropsWithChildren, ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import useLocalStorageState from 'use-local-storage-state'
 
@@ -61,7 +52,6 @@ export function LayoutProvider({ children }: PropsWithChildren) {
 
   // Refs for layout elements
   const drawerRef = useRef<HTMLDivElement | null>(null)
-  const mainContainerRef = useRef<HTMLDivElement | null>(null)
   const [drawerHeight, setDrawerHeight] = useState(0)
   const [showPadding, setShowPadding] = useState(false)
 
@@ -82,11 +72,6 @@ export function LayoutProvider({ children }: PropsWithChildren) {
     drawerRef.current = ref
   }
 
-  // Get and store main container reference once
-  useEffect(() => {
-    mainContainerRef.current = document.getElementById(MAIN_CONTAINER_ID) as HTMLDivElement | null
-  }, [])
-
   // Update drawer height when drawer content changes
   useEffect(() => {
     if (drawerRef.current) {
@@ -103,9 +88,9 @@ export function LayoutProvider({ children }: PropsWithChildren) {
     }
   }, [isDrawerOpen, drawerHeight])
 
-  // Manage main container padding using stored ref
+  // Manage main container padding
   useEffect(() => {
-    const container = mainContainerRef.current
+    const container = document.getElementById(MAIN_CONTAINER_ID) as HTMLDivElement | null
     if (!container) return
 
     container.style.transition = 'padding-bottom 0.3s ease-in-out'

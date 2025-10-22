@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { type Address } from 'viem'
+import type { Address } from 'viem'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
@@ -11,7 +11,7 @@ import { BaseProposalFields } from '../components/BaseProposalFields'
 import { useReviewProposal } from '@/app/providers'
 import { ProposalCategory } from '@/shared/types'
 import { TextInput } from '@/components/FormFields'
-import { DeactivationProposal, DeactivationProposalSchema } from '../schemas/DeactivationProposalSchema'
+import { type DeactivationProposal, DeactivationProposalSchema } from '../schemas/DeactivationProposalSchema'
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { Header } from '@/components/Typography'
 import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
@@ -74,11 +74,11 @@ export default function DeactivationProposalForm() {
   useEffect(() => setFocus('proposalName'), [])
 
   return (
-    <div>
+    <div className="mt-10 md:mt-12">
       <form>
-        <div className="w-full max-w-[760px] px-6 pt-6 pb-8 flex flex-col gap-10 bg-bg-80 rounded-sm">
+        <div className="w-full max-w-[760px] p-4 md:px-6 md:pt-6 md:pb-8 flex flex-col gap-8 md:gap-10 bg-bg-80 rounded-sm">
           <BaseProposalFields control={control} />
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-6 md:gap-4">
             <Header caps variant="h2" className="leading-loose tracking-wide">
               Proposal Action
             </Header>
