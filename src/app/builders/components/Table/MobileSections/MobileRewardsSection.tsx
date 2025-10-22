@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { RewardsCell, RewardsCellProps } from '../Cell/RewardsCell'
+import { RewardsCellLegacy, RewardsCellPropsLegacy } from '../Cell/RewardsCell'
 import {
   MobileDataSection,
   MobileTwoColumnWrapper,
@@ -8,12 +8,12 @@ import {
 } from './MobileDataSection'
 import { EmptyPlaceholder } from '@/components/Table/components'
 
-const hasValidValue = (rewards: RewardsCellProps) =>
+const hasValidValue = (rewards: RewardsCellPropsLegacy) =>
   rewards.usdValue != null || rewards.rbtcValue != null || rewards.rifValue != null
 
 export const MobileRewardsSection: FC<{
-  rewards_past_cycle: RewardsCellProps
-  rewards_upcoming: RewardsCellProps
+  rewards_past_cycle: RewardsCellPropsLegacy
+  rewards_upcoming: RewardsCellPropsLegacy
   showBothColumns?: boolean
   isRowSelected?: boolean
 }> = ({ rewards_past_cycle, rewards_upcoming, showBothColumns = true, isRowSelected = false }) => {
@@ -30,7 +30,7 @@ export const MobileRewardsSection: FC<{
             hasValue={hasPastValue}
             isRowSelected={isRowSelected}
           >
-            <RewardsCell {...rewards_past_cycle} emptyPlaceholder={<EmptyPlaceholder />} />
+            <RewardsCellLegacy {...rewards_past_cycle} emptyPlaceholder={<EmptyPlaceholder />} />
           </MobileSectionWrapper>
         </MobileColumnItem>
         <MobileColumnItem>
@@ -40,7 +40,7 @@ export const MobileRewardsSection: FC<{
             hasValue={hasUpcomingValue}
             isRowSelected={isRowSelected}
           >
-            <RewardsCell {...rewards_upcoming} emptyPlaceholder={<EmptyPlaceholder />} />
+            <RewardsCellLegacy {...rewards_upcoming} emptyPlaceholder={<EmptyPlaceholder />} />
           </MobileSectionWrapper>
         </MobileColumnItem>
       </MobileTwoColumnWrapper>
@@ -49,7 +49,7 @@ export const MobileRewardsSection: FC<{
 
   return (
     <MobileDataSection title="Rewards - upcoming" hasValue={hasUpcomingValue} isRowSelected={isRowSelected}>
-      <RewardsCell {...rewards_upcoming} emptyPlaceholder={<EmptyPlaceholder />} />
+      <RewardsCellLegacy {...rewards_upcoming} emptyPlaceholder={<EmptyPlaceholder />} />
     </MobileDataSection>
   )
 }

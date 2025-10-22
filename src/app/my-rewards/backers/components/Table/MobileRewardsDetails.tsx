@@ -1,7 +1,7 @@
 import { BackersPercentage } from '@/app/builders/components/Table/Cell/BackersPercentageCell/BackersPercentageCell'
 import { BackingCell } from '@/app/builders/components/Table/Cell/BackingCell/BackingCell'
 import { BuilderName } from '@/app/builders/components/Table/Cell/BuilderNameCell/BuilderName'
-import { RewardsCell } from '@/app/builders/components/Table/Cell/RewardsCell/RewardsCell'
+import { RewardsCellLegacy } from '@/app/builders/components/Table/Cell/RewardsCell/RewardsCell'
 import { EmptyPlaceholder } from '@/components/Table/components'
 import { Button } from '@/components/Button'
 import { Collapsible } from '@/components/Collapsible'
@@ -47,7 +47,7 @@ const RewardDetailsItem = ({
               <Span variant="h5" className="text-v3-text-40">
                 Unclaimed
               </Span>
-              <RewardsCell
+              <RewardsCellLegacy
                 className="justify-start"
                 usdValue={unclaimed.usdValue}
                 rbtcValue={unclaimed.rbtcValue}
@@ -59,7 +59,7 @@ const RewardDetailsItem = ({
               <Span variant="h5" className="text-v3-text-40">
                 Estimated this cycle
               </Span>
-              <RewardsCell
+              <RewardsCellLegacy
                 className="justify-start"
                 usdValue={estimated.usdValue}
                 rbtcValue={estimated.rbtcValue}
@@ -74,7 +74,7 @@ const RewardDetailsItem = ({
                 <Span variant="h5" className="text-v3-text-40">
                   Total - lifetime
                 </Span>
-                <RewardsCell
+                <RewardsCellLegacy
                   className="justify-start"
                   usdValue={total.usdValue}
                   rbtcValue={total.rbtcValue}
