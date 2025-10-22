@@ -1,16 +1,15 @@
-import { Metric } from '@/components/Metric/Metric'
-import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
-import { CommonComponentProps } from '@/components/commonProps'
-import { usePricesContext } from '@/shared/context/PricesContext'
-import { TOKENS } from '@/lib/tokens'
-import { useGetGaugesArray } from '@/app/collective-rewards/user'
-import { Address } from 'viem'
 import { formatMetrics, Token, useGetGaugesNotifyReward } from '@/app/collective-rewards/rewards'
+import { useGetGaugesArray } from '@/app/collective-rewards/user'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { MetricTitle } from '@/components/Metric'
+import { Metric } from '@/components/Metric/Metric'
+import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
 import { Paragraph } from '@/components/Typography'
-import { cn } from '@/lib/utils'
+import { CommonComponentProps } from '@/components/commonProps'
+import { TOKENS } from '@/lib/tokens'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { Address } from 'viem'
 
 interface TokenRewardsProps {
   gauges: Address[]
@@ -19,7 +18,11 @@ interface TokenRewardsProps {
 
 const TokenRewards = ({ gauges, token: { address, symbol } }: TokenRewardsProps) => {
   const { prices } = usePricesContext()
-  const { data: rewardsData, isLoading, error } = useGetGaugesNotifyReward(gauges, address)
+  const {
+    data: rewardsData,
+    isLoading,
+    error,
+  } = useGetGaugesNotifyReward({ gauges, rewardTokens: [address] })
 
   useHandleErrors({ error, title: `Error loading rewards for ${symbol}` })
 

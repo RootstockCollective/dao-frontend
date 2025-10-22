@@ -24,7 +24,7 @@ export const useGetBuilderAllTimeShare = ({
     data: notifyReward,
     isLoading: notifyRewardLoading,
     error: notifyRewardError,
-  } = useGetGaugesNotifyReward(gauges, rifAddress)
+  } = useGetGaugesNotifyReward({ gauges, rewardTokens: [rifAddress] })
 
   const {
     data: builderRewardsPerToken,

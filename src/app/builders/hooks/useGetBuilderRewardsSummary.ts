@@ -1,13 +1,13 @@
 import { useCycleContext } from '@/app/collective-rewards/metrics'
-import { getNotifyRewardAmount, Token, useGetLastCycleDistribution } from '@/app/collective-rewards/rewards'
+import { getNotifyRewardAmount, useGetLastCycleDistribution } from '@/app/collective-rewards/rewards'
 import { useGetGaugesNotifyReward } from '@/app/collective-rewards/rewards/hooks/useGetGaugesNotifyReward'
 import { BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
+import { USD } from '@/lib/constants'
+import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context'
 import { useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
-import { TOKENS } from '@/lib/tokens'
-import { USD } from '@/lib/constants'
 
 export const useGetBuilderRewardsSummary = (currency = USD) => {
   const { rif, rbtc } = TOKENS
@@ -38,7 +38,7 @@ export const useGetBuilderRewardsSummary = (currency = USD) => {
     data: notifyRewardEventLastCycle,
     isLoading: logsLoading,
     error: logsError,
-  } = useGetGaugesNotifyReward(gauges, undefined, fromTimestamp, toTimestamp)
+  } = useGetGaugesNotifyReward({ gauges, fromTimestamp, toTimestamp })
 
   const { prices } = usePricesContext()
 
