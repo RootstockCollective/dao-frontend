@@ -8,7 +8,7 @@ import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/ut
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { ConditionalTooltip } from '@/app/components/Tooltip/ConditionalTooltip'
 import { GetPricesResult } from '@/app/user/types'
-import { RIF, STRIF } from '@/lib/constants'
+import { RBTC, RIF, STRIF, USD, USDRIF } from '@/lib/constants'
 import { cn, formatCurrency } from '@/lib/utils'
 import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { redirect, RedirectType } from 'next/navigation'
@@ -64,6 +64,20 @@ export const convertDataToRowData = (
     const actionType = getActionType(builder, hasAllocations)
 
     const rifPrice = prices[RIF]?.price ?? 0
+    const rbtcPrice = prices[RBTC]?.price ?? 0
+    const usdrifPrice = prices[USDRIF]?.price ?? 1
+
+    const unclaimedRif = builder.claimableRewards.rif.amount.value
+    const unclaimedRbtc = builder.claimableRewards.rbtc.amount.value
+    const estimatedRif = builder.estimatedRewards.rif.amount.value
+    const estimatedRbtc = builder.estimatedRewards.rbtc.amount.value
+    const totalRif = builder.allTimeRewards.rif.amount.value
+    const totalRbtc = builder.allTimeRewards.rbtc.amount.value
+
+    // FIXME: Mock USDRIF values with RIF values - replace with real API data when available
+    const unclaimedUsdrif = unclaimedRif
+    const estimatedUsdrif = estimatedRif
+    const totalUsdrif = totalRif
 
     return {
       id: builder.address,
@@ -75,19 +89,29 @@ export const convertDataToRowData = (
           percentage: builder.rewardPercentage ?? { current: 50n, next: 30n, cooldownEndTime: 100n },
         },
         unclaimed: {
-          rbtcValue: builder.claimableRewards.rbtc.amount.value,
-          rifValue: builder.claimableRewards.rif.amount.value,
+          rbtcValue: unclaimedRbtc,
+          rifValue: unclaimedRif,
+          usdrifValue: unclaimedUsdrif,
+          rifPrice,
+          rbtcPrice,
+          usdrifPrice,
           usdValue: getCombinedFiatAmount([
             builder.claimableRewards.rif.amount,
             builder.claimableRewards.rbtc.amount,
+            { value: unclaimedUsdrif, symbol: USDRIF, price: usdrifPrice, currency: USD },
           ]).toNumber(),
         },
         estimated: {
-          rbtcValue: builder.estimatedRewards.rbtc.amount.value,
-          rifValue: builder.estimatedRewards.rif.amount.value,
+          rbtcValue: estimatedRbtc,
+          rifValue: estimatedRif,
+          usdrifValue: estimatedUsdrif,
+          rifPrice,
+          rbtcPrice,
+          usdrifPrice,
           usdValue: getCombinedFiatAmount([
             builder.estimatedRewards.rif.amount,
             builder.estimatedRewards.rbtc.amount,
+            { value: estimatedUsdrif, symbol: USDRIF, price: usdrifPrice, currency: USD },
           ]).toNumber(),
         },
         backing: {
@@ -98,11 +122,16 @@ export const convertDataToRowData = (
           ),
         },
         total: {
-          rbtcValue: builder.allTimeRewards.rbtc.amount.value,
-          rifValue: builder.allTimeRewards.rif.amount.value,
+          rbtcValue: totalRbtc,
+          rifValue: totalRif,
+          usdrifValue: totalUsdrif,
+          rifPrice,
+          rbtcPrice,
+          usdrifPrice,
           usdValue: getCombinedFiatAmount([
             builder.allTimeRewards.rif.amount,
             builder.allTimeRewards.rbtc.amount,
+            { value: totalUsdrif, symbol: USDRIF, price: usdrifPrice, currency: USD },
           ]).toNumber(),
         },
         actions: {
