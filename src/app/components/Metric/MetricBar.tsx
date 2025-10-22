@@ -8,7 +8,7 @@ import { MetricTooltipContent } from './MetricTooltipContent'
 import { MetricToken } from './types'
 
 export type MetricBarProps = BarProps & {
-  segments: Array<MetricToken & { proportion?: number }>
+  segments: Array<MetricToken>
 }
 
 export const MetricBar = ({ segments, className, ...barProps }: MetricBarProps): ReactElement => {
