@@ -17,7 +17,7 @@ export const MetricTooltipContent = ({ tokens }: MetricTooltipContentProps): Rea
   }
 
   return (
-    <div className="flex flex-col p-4 items-start gap-2 rounded-sm bg-v3-text-80">
+    <div className={`grid grid-rows-${tokenCount} p-4 items-start gap-2 rounded-sm bg-v3-text-80`}>
       {tokens.map(({ symbol, value, fiatValue, fade }) => (
         <div key={symbol} className={cn('grid grid-cols-2 gap-x-2 content-center', fade && 'opacity-40')}>
           {/* Crypto Value Row */}

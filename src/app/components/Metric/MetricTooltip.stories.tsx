@@ -5,7 +5,7 @@ import { MetricTooltipContent } from './MetricTooltipContent'
 import { TokenSymbol } from './types'
 
 const meta = {
-  title: 'Components/MetricBar/MetricTooltip',
+  title: 'Components/MetricBar/MetricTooltipContent',
   component: MetricTooltipContent,
   parameters: {
     layout: 'centered',
@@ -61,5 +61,29 @@ export const OneToken: Story = {
 export const NoTokens: Story = {
   args: {
     tokens: [],
+  },
+}
+
+export const VeryDifferentValues: Story = {
+  args: {
+    tokens: [
+      {
+        symbol: RIF as TokenSymbol,
+        value: '10000.00000000',
+        fiatValue: '10000.0000',
+      },
+      {
+        symbol: RBTC as TokenSymbol,
+        value: '0.1',
+        fiatValue: '0.1',
+        fade: true,
+      },
+      {
+        symbol: USDRIF as TokenSymbol,
+        value: '0.50000000000006',
+        fiatValue: '0.50',
+        fade: true,
+      },
+    ],
   },
 }
