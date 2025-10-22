@@ -3,16 +3,19 @@
 import { Span } from '@/components/Typography'
 
 import {
+  formatSymbol,
   getFiatAmount,
   useBackerRewardsContext,
   useClaimBackerRewards,
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { ConditionalTooltip } from '@/app/components'
+import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
+import { MetricToken } from '@/app/components/Metric/types'
 import { Button } from '@/components/Button'
 import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
-import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
-import { RBTC, RIF, USD } from '@/lib/constants'
+import { Tooltip } from '@/components/Tooltip'
+import { RBTC, RIF, USD, USDRIF } from '@/lib/constants'
 import { TOKENS } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
@@ -40,11 +43,35 @@ export const UnclaimedRewardsMetric = (): ReactElement => {
   )
   const rifEarnings = unclaimedRewardsPerToken.find(reward => reward.token.symbol === RIF)?.amount ?? 0n
   const rbtcEarnings = unclaimedRewardsPerToken.find(reward => reward.token.symbol === RBTC)?.amount ?? 0n
+  // FIXME: Mock USDRIF values with RIF values - replace with real API data when available
+  const usdrifEarnings = rifEarnings
+
+  const rifPrice = prices[RIF]?.price ?? 0
+  const rbtcPrice = prices[RBTC]?.price ?? 0
+  const usdrifPrice = prices[USDRIF]?.price ?? 1
 
   const usdValue = unclaimedRewardsPerToken.reduce((acc, reward) => acc + reward.fiatAmount, 0)
   useHandleErrors({ error, title: 'Error loading rewards' })
 
   const { claimRewards, isClaimable } = useClaimBackerRewards()
+
+  const tokens: Array<MetricToken> = [
+    {
+      symbol: RIF,
+      value: formatSymbol(rifEarnings, RIF),
+      fiatValue: formatCurrency(getFiatAmount(rifEarnings, rifPrice)),
+    },
+    {
+      symbol: RBTC,
+      value: formatSymbol(rbtcEarnings, RBTC),
+      fiatValue: formatCurrency(getFiatAmount(rbtcEarnings, rbtcPrice)),
+    },
+    {
+      symbol: USDRIF,
+      value: formatSymbol(usdrifEarnings, USDRIF),
+      fiatValue: formatCurrency(getFiatAmount(usdrifEarnings, usdrifPrice)),
+    },
+  ]
 
   return (
     <div className="flex flex-col w-64 gap-4 items-start ">
@@ -56,17 +83,19 @@ export const UnclaimedRewardsMetric = (): ReactElement => {
           <span className="overflow-hidden text-v3-text-100 text-ellipsis font-kk-topo text-[2rem] not-italic font-normal leading-[2.5rem] uppercase">
             {formatCurrency(usdValue)}
           </span>
-          <RifRbtcTooltip rbtcValue={rbtcEarnings} rifValue={rifEarnings}>
-            <DottedUnderlineLabel
-              className="text-v3-text-100 text-right font-rootstock-sans text-lg not-italic font-bold leading-6 decoration-[8%] pt-3"
-              style={{
-                textDecorationSkipInk: 'auto',
-                textUnderlinePosition: 'from-font',
-              }}
-            >
-              {USD}
-            </DottedUnderlineLabel>
-          </RifRbtcTooltip>
+          <Tooltip side="top" text={<MetricTooltipContent tokens={tokens} />}>
+            <span className="cursor-pointer">
+              <DottedUnderlineLabel
+                className="text-v3-text-100 text-right font-rootstock-sans text-lg not-italic font-bold leading-6 decoration-[8%] pt-3"
+                style={{
+                  textDecorationSkipInk: 'auto',
+                  textUnderlinePosition: 'from-font',
+                }}
+              >
+                {USD}
+              </DottedUnderlineLabel>
+            </span>
+          </Tooltip>
         </div>
       </div>
       <ConditionalTooltip
