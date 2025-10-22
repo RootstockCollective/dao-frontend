@@ -30,7 +30,7 @@ const query = apolloGQL`
     }
     cycles(first: 1, orderBy: currentCycleStart, orderDirection: desc) {
       id
-      rewards: rewardsAmount {
+      rewardPerToken {
         amount
         token
       }
@@ -38,14 +38,14 @@ const query = apolloGQL`
   }
 `
 
-type RewardsAmount = {
+type RewardPerToken = {
   amount: string
   token: string
 }
 
 type CycleData = {
   id: string
-  rewards: RewardsAmount[]
+  rewardPerToken: RewardPerToken[]
 }
 
 export type ResponseABIData = {
@@ -59,7 +59,7 @@ async function fetchABIData() {
     builders: data.builders,
     cycles: data.cycles.map(cycle => ({
       ...cycle,
-      rewards: Object.fromEntries(cycle.rewards.map(r => [r.token, r.amount])),
+      rewardPerToken: Object.fromEntries(cycle.rewardPerToken.map(r => [r.token, r.amount])),
     })),
   }
 }

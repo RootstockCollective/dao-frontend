@@ -11,7 +11,7 @@ import { TOKENS } from '@/lib/tokens'
 
 type CycleData = {
   id: string
-  rewards: Record<string, string>
+  rewardPerToken: Record<string, string>
 }
 
 type BackerRewardPercentageData = {
@@ -50,7 +50,7 @@ export const useGetABI = (abiData: AbiData | undefined) => {
     }
 
     const { builders, cycles } = abiData
-    const [{ rewards }] = cycles
+    const [{ rewardPerToken }] = cycles
 
     const rifPrice = prices[RIF]?.price ?? 0
     const rbtcPrice = prices[RBTC]?.price ?? 0
@@ -59,8 +59,8 @@ export const useGetABI = (abiData: AbiData | undefined) => {
       getCyclePayout(
         rifPrice,
         rbtcPrice,
-        BigInt(rewards[rif.address.toLowerCase()]),
-        BigInt(rewards[rbtc.address.toLowerCase()]),
+        BigInt(rewardPerToken[rif.address.toLowerCase()]),
+        BigInt(rewardPerToken[rbtc.address.toLowerCase()]),
       ).toString(),
     )
 

@@ -19,7 +19,7 @@ export interface CycleRewardsItem {
   previousCycleDuration: string
   distributionDuration: string
   onDistributionPeriod: boolean
-  rewards: Record<string, string>
+  rewardPerToken: Record<string, string>
 }
 
 export type Builder = {

@@ -25,7 +25,7 @@ export const AnnualBackerIncentivesLoader: FC<AnnualBackerIncentivesLoaderProps>
   } = useFeatureFlags()
 
   // TODO: remove conditional hooks
-  const usePrimary = useGetMetricsAbiWithGraph
+  const usePrimary = use_state_sync ? useGetMetricsAbiWithStateSync : useGetMetricsAbiWithGraph
 
   const Loader = withDataFallback<Big>(usePrimary, useFallbackWithErrors)
 

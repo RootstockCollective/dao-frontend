@@ -19,11 +19,11 @@ export async function GET(req: Request) {
 
     const baseQuery = db('Cycle')
       .select(CYCLE_COLUMNS)
-      .leftJoin('CycleRewardsAmount', 'Cycle.id', '=', 'CycleRewardsAmount.cycle')
+      .leftJoin('CycleRewardPerToken', 'Cycle.id', '=', 'CycleRewardPerToken.cycle')
       .select({
-        rewards: db.raw(`
+        rewardPerToken: db.raw(`
         COALESCE(
-          json_object_agg(convert_from("CycleRewardsAmount"."token", 'utf8'), "CycleRewardsAmount"."amount"::text),
+          json_object_agg(convert_from("CycleRewardPerToken"."token", 'utf8'), "CycleRewardPerToken"."amount"::text),
           '{}'
         )
       `),
