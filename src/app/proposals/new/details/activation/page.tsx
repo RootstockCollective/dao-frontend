@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Address } from 'viem'
+import type { Address } from 'viem'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
@@ -13,7 +13,7 @@ import { ProposalCategory } from '@/shared/types'
 import { TextInput } from '@/components/FormFields'
 import {
   ACTIVATION_PROPOSAL_LIMITS,
-  ActivationProposal,
+  type ActivationProposal,
   ActivationProposalSchema,
 } from '../schemas/ActivationProposalSchema'
 import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
@@ -66,8 +66,8 @@ export default function ActivationProposalForm() {
   useEffect(() => setFocus('builderName'), [])
 
   return (
-    <div className="flex gap-6">
-      <form className="w-2/3 px-6 pt-6 pb-8 flex flex-col gap-10 bg-bg-80 rounded-sm">
+    <div className="mt-10 md:mt-12 flex flex-col md:flex-row gap-8 md:gap-6">
+      <form className="basis-2/3 p-4 md:px-6 md:pt-6 md:pb-8 flex flex-col gap-8 md:gap-10 bg-bg-80 rounded-sm">
         <div className="flex flex-col gap-4">
           <TextInput
             name="builderName"
@@ -76,10 +76,11 @@ export default function ActivationProposalForm() {
             data-testid="BuilderName"
             autoComplete="off"
             maxLength={ACTIVATION_PROPOSAL_LIMITS.builderName.max}
+            spellCheck={false}
           />
           <BaseProposalFields control={control} />
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6 md:gap-4">
           <Header caps variant="h2" className="leading-loose tracking-wide">
             Proposal Action
           </Header>
@@ -91,7 +92,7 @@ export default function ActivationProposalForm() {
           />
         </div>
       </form>
-      <div className="w-1/3 flex flex-row gap-2 items-start">
+      <div className="basis-1/3 flex flex-row gap-2 items-start">
         <ProposalInfoSidebar kycLink="https://gov.rootstockcollective.xyz/t/general-guidelines-for-rewards-applications/495/2" />
       </div>
     </div>

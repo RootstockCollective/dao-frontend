@@ -1,8 +1,9 @@
 'use client'
 
 import { TextInput, TextArea } from '@/components/FormFields'
-import { FieldValues, Control, Path } from 'react-hook-form'
-import { BaseProposalFormData, BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
+import type { FieldValues, Control, Path } from 'react-hook-form'
+import { type BaseProposalFormData, BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface BaseProposalFieldsProps<T extends BaseProposalFormData & FieldValues> {
   control: Control<T>
@@ -11,6 +12,7 @@ interface BaseProposalFieldsProps<T extends BaseProposalFormData & FieldValues> 
 export function BaseProposalFields<T extends BaseProposalFormData & FieldValues>({
   control,
 }: BaseProposalFieldsProps<T>) {
+  const isDesktop = useIsDesktop()
   return (
     <div className="flex flex-col gap-4">
       <TextInput
@@ -20,6 +22,7 @@ export function BaseProposalFields<T extends BaseProposalFormData & FieldValues>
         data-testid="InputName"
         autoComplete="off"
         maxLength={BASE_PROPOSAL_LIMITS.proposalName.max}
+        spellCheck={false}
       />
       <TextInput
         name={'discourseLink' as Path<T>}
@@ -27,6 +30,7 @@ export function BaseProposalFields<T extends BaseProposalFormData & FieldValues>
         label="Discourse link"
         data-testid="InputLink"
         maxLength={BASE_PROPOSAL_LIMITS.discourseLink.max}
+        spellCheck={false}
       />
       <TextArea
         name={'description' as Path<T>}
@@ -34,6 +38,8 @@ export function BaseProposalFields<T extends BaseProposalFormData & FieldValues>
         label="Short description"
         data-testid="InputDescription"
         maxLength={BASE_PROPOSAL_LIMITS.description.max}
+        minRows={isDesktop ? 5 : 1}
+        spellCheck={false}
       />
     </div>
   )

@@ -22,7 +22,7 @@ export default function ContainerMobile({ className, children, ...props }: HTMLA
       <HeaderMobile />
       <div className="relative px-4 grow flex flex-col">
         <SidebarMobile />
-        <main className="grow mb-8 md:mb-25">
+        <main className="grow mb-8">
           <TopPageHeader />
           {children}
         </main>
