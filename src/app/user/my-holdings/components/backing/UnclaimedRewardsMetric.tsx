@@ -12,10 +12,9 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { ConditionalTooltip } from '@/app/components'
 import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
 import { MetricToken } from '@/app/components/Metric/types'
+import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/FiatTooltipLabel'
 import { Button } from '@/components/Button'
-import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
-import { Tooltip } from '@/components/Tooltip'
-import { RBTC, RIF, USD, USDRIF } from '@/lib/constants'
+import { RBTC, RIF, USDRIF } from '@/lib/constants'
 import { TOKENS } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
@@ -83,19 +82,14 @@ export const UnclaimedRewardsMetric = (): ReactElement => {
           <span className="overflow-hidden text-v3-text-100 text-ellipsis font-kk-topo text-[2rem] not-italic font-normal leading-[2.5rem] uppercase">
             {formatCurrency(usdValue)}
           </span>
-          <Tooltip side="top" text={<MetricTooltipContent tokens={tokens} />}>
-            <span className="cursor-pointer">
-              <DottedUnderlineLabel
-                className="text-v3-text-100 text-right font-rootstock-sans text-lg not-italic font-bold leading-6 decoration-[8%] pt-3"
-                style={{
-                  textDecorationSkipInk: 'auto',
-                  textUnderlinePosition: 'from-font',
-                }}
-              >
-                {USD}
-              </DottedUnderlineLabel>
-            </span>
-          </Tooltip>
+          <FiatTooltipLabel
+            tooltip={{ text: <MetricTooltipContent tokens={tokens} />, side: 'top' }}
+            className="text-v3-text-100 text-right font-rootstock-sans text-lg not-italic font-bold leading-6 decoration-[8%] pt-3"
+            style={{
+              textDecorationSkipInk: 'auto',
+              textUnderlinePosition: 'from-font',
+            }}
+          />
         </div>
       </div>
       <ConditionalTooltip

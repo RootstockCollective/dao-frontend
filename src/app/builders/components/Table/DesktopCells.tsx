@@ -10,7 +10,7 @@ import { BackersPercentageCell, BackersPercentageProps } from './Cell/BackersPer
 import { BackingCell, BackingCellProps } from './Cell/BackingCell'
 import { BackingShareCell, BackingShareCellProps } from './Cell/BackingShareCell'
 import { BuilderNameCell, BuilderNameCellProps } from './Cell/BuilderNameCell'
-import { RewardsCellLegacy, RewardsCellPropsLegacy } from './Cell/RewardsCell'
+import { RewardsCell, RewardsCellProps } from './Cell/RewardsCell'
 import { SelectorCell } from './Cell/SelectorCell'
 import { ExpandChevron } from './ExpandChevron'
 
@@ -98,18 +98,18 @@ export const BackerRewardsCell = (props: BackersPercentageProps): ReactElement =
   )
 }
 
-export const RewardsPastCycleCell = (props: RewardsCellPropsLegacy): ReactElement => {
+export const RewardsPastCycleCell = (props: RewardsCellProps): ReactElement => {
   return (
     <TableCell columnId="rewards_past_cycle" className="justify-center">
-      <RewardsCellLegacy {...props} />
+      <RewardsCell {...props} />
     </TableCell>
   )
 }
 
-export const RewardsUpcomingCell = (props: RewardsCellPropsLegacy): ReactElement => {
+export const RewardsUpcomingCell = (props: RewardsCellProps): ReactElement => {
   return (
     <TableCell columnId="rewards_upcoming" className="justify-center">
-      <RewardsCellLegacy {...props} />
+      <RewardsCell {...props} />
     </TableCell>
   )
 }

@@ -10,7 +10,7 @@ import { BackersPercentageProps } from './Cell/BackersPercentageCell'
 import { BackingCellProps } from './Cell/BackingCell'
 import { BackingShareCellProps } from './Cell/BackingShareCell'
 import { BuilderNameCellProps } from './Cell/BuilderNameCell'
-import { RewardsCellPropsLegacy } from './Cell/RewardsCell'
+import { RewardsCellProps } from './Cell/RewardsCell'
 import { TableColumnDropdownLabels } from './TableColumnDropdown/TableColumnDropdown'
 
 const COLUMN_IDS = [
@@ -116,8 +116,8 @@ export type BuilderCellDataMap = {
   builder: BuilderNameCellProps
   backing: BackingCellProps
   backer_rewards: BackersPercentageProps
-  rewards_past_cycle: RewardsCellPropsLegacy
-  rewards_upcoming: RewardsCellPropsLegacy
+  rewards_past_cycle: RewardsCellProps
+  rewards_upcoming: RewardsCellProps
   backingShare: BackingShareCellProps
   actions: ActionCellProps
 }
