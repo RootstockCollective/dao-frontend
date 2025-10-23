@@ -5,6 +5,10 @@ import { DisconnectWalletModal } from '@/components/Modal/DisconnectWalletModal'
 import { CopyButton } from '@/components/CopyButton'
 import { useAppKit } from '@reown/appkit/react'
 import { Button } from '@/components/Button'
+import { Tooltip } from '@/components/Tooltip'
+import { KotoQuestionMarkIcon } from '@/components/Icons'
+import { onRampDisclaimerText } from '@/shared/walletConnection/constants'
+import { Span } from '@/components/Typography'
 
 interface DisconnectWorkflowPresentationProps {
   shortAddress: string
@@ -31,14 +35,31 @@ export const DisconnectWorkflowPresentation = ({
   const openRamp = () => open({ view: 'OnRampProviders' })
   return (
     <>
-      <Button
-        variant="secondary-outline"
-        onClick={openRamp}
-        className="md:mr-4 py-1.5 px-2 whitespace-nowrap"
-        data-testid="OnRampButton"
-      >
-        On Ramp
-      </Button>
+      <div className="flex items-center gap-1 md:mr-4">
+        <Tooltip text={onRampDisclaimerText} sideOffset={15} className="px-4 py-3 max-w-[15rem]">
+          {/* this div adds more space to click the question icon */}
+          <div className="md:hidden shrink-0 w-5 h-5 flex items-center justify-end">
+            <KotoQuestionMarkIcon />
+          </div>
+        </Tooltip>
+        <Tooltip
+          text={onRampDisclaimerText}
+          sideOffset={8}
+          className="px-4 py-3 max-w-[15rem] hidden md:block"
+        >
+          <Button
+            variant="secondary-outline"
+            onClick={openRamp}
+            className="md:mr-4 py-1.5 px-2 whitespace-nowrap"
+            data-testid="OnRampButton"
+          >
+            <Span variant="body-xs" className="md:hidden leading-none tracking-tight">
+              Buy $RIF w/Fiat
+            </Span>
+            <Span className="hidden md:inline">Buy $RIF with Fiat</Span>
+          </Button>
+        </Tooltip>
+      </div>
       <Popover
         contentContainerClassName="w-[233px] max-w-[calc(100vw-1rem)] right-0"
         contentSubContainerClassName="w-full p-[24px] text-center rounded border-[#2D2D2D] cursor-pointer select-none bg-bg-60 mt-2 flex justify-center"
