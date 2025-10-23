@@ -57,12 +57,12 @@ export const LatestCollectiveSection = ({
         </div>
       </div>
       {randomBuilders.length > 0 && (
-        <div>
+        <div className="pb-8">
           <Header variant="h4" caps className="px-6">
             Builders in the spotlight
           </Header>
           <div className="mt-4 md:px-6 pl-6 pr-0">
-            <SpotlightBuildersGrid>
+            <SpotlightBuildersGrid className="pl-0 md:pl-6">
               {randomBuilders.map((builder, index) => (
                 <BuilderCardControl key={builder.address} builder={builder} index={index} />
               ))}
