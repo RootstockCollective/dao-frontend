@@ -25,6 +25,10 @@ export const MetricBar = ({ segments, className, ...barProps }: MetricBarProps):
 
   const totalFiatValue = segments.reduce((sum, { fiatValue }) => sum.add(fiatValue), Big(0))
 
+  if (totalFiatValue.eq(0)) {
+    console.warn('MetricBar: totalFiatValue is zero, cannot render segments proportionally.')
+  }
+
   return (
     <Bar className={cn('h-1', className)} {...barProps}>
       {segments.map(({ symbol, fiatValue }, index) => (
@@ -44,7 +48,11 @@ export const MetricBar = ({ segments, className, ...barProps }: MetricBarProps):
               position={positions[index]}
               symbol={symbol}
               style={{
-                flexBasis: `${Big(fiatValue).div(totalFiatValue).toNumber() * 100}%`,
+                flexBasis: `${
+                  Big(fiatValue)
+                    .div(totalFiatValue.eq(0) ? 1 : totalFiatValue)
+                    .toNumber() * 100
+                }%`,
               }}
             />
           </Tooltip>
