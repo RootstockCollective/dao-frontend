@@ -14,17 +14,17 @@ interface RewardCardAllTimeShareProps {
 
 export const AllTimeShare = ({ gauge }: { gauge: Address }) => {
   const { builders, isLoading: isBuildersLoading, error: buildersError } = useBuilderContext()
-  const activatedBuilders = filterBuildersByState<CompleteBuilder>(builders, {
-    activated: true,
+  const initializedBuilders = filterBuildersByState<CompleteBuilder>(builders, {
+    initialized: true,
   })
 
-  const activatedGauges = activatedBuilders?.map(({ gauge }) => gauge) ?? []
+  const initializedGauges = initializedBuilders?.map(({ gauge }) => gauge) ?? []
 
   const rifAddress = TOKENS.rif.address
 
   const { amount, isLoading, error } = useGetBuilderAllTimeShare({
     gauge: gauge!,
-    gauges: activatedGauges,
+    gauges: initializedGauges,
     rifAddress,
   })
 

@@ -1,7 +1,7 @@
 import { AddressAlreadyWhitelistedError, NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { config } from '@/config'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
+import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
 import { BuilderRegistryAddress, GovernorAddress } from '@/lib/contracts'
 import { useCallback } from 'react'
 import { Address, encodeFunctionData, getAddress, zeroAddress } from 'viem'

@@ -260,7 +260,7 @@ export function getProposalCategoryFromParsedData(
   const functionCategoryMap = new Map<string, ProposalCategory>([
     ['communityApproveBuilder', ProposalCategory.Activation],
     ['whitelistBuilder', ProposalCategory.Activation],
-    ['dewhitelistBuilder', ProposalCategory.Deactivation],
+    ['communityBanBuilder', ProposalCategory.Deactivation],
     ['removeWhitelistedBuilder', ProposalCategory.Deactivation],
   ])
 

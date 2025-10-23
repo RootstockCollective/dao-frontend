@@ -4,6 +4,7 @@ import Big from '@/lib/big'
 import { USD, WeiPerEther } from '@/lib/constants'
 import { getCombinedFiatAmount } from './getCombinedFiatAmount'
 import { TokenSymbol } from '@/components/TokenImage'
+import { TOKENS } from '@/lib/tokens'
 
 export const convertToTimestamp = (d: Date | number | string): number => new Date(d).getTime()
 
@@ -136,17 +137,19 @@ const transformRewardsData = (
 ): RewardsPoint[] => {
   let cumulativeRifRewards = 0n
   let cumulativeRbtcRewards = 0n
+  const rifAddress = TOKENS.rif.address.toLowerCase()
+  const rbtcAddress = TOKENS.rbtc.address.toLowerCase()
 
   const accumulatedCycleRewards = rewardsData.map((item, _) => {
-    const currentRifRewards = BigInt(item.rewardsERC20)
-    const currentRbtcRewards = BigInt(item.rewardsRBTC)
+    const currentRifRewards = BigInt(item.rewardPerToken[rifAddress] ?? 0)
+    const currentRbtcRewards = BigInt(item.rewardPerToken[rbtcAddress] ?? 0)
 
     cumulativeRifRewards += currentRifRewards
     cumulativeRbtcRewards += currentRbtcRewards
 
     return {
       ...item,
-      rewardsERC20: cumulativeRifRewards.toString(),
+      rewardsRif: cumulativeRifRewards.toString(),
       rewardsRBTC: cumulativeRbtcRewards.toString(),
     }
   })
@@ -164,9 +167,9 @@ const transformRewardsData = (
   return interpolatedData.map(item => ({
     day: new Date(Number(item.currentCycleStart) * 1000),
     rewards: {
-      rif: BigInt(Big(item.rewardsERC20).div(WeiPerEtherString).toFixed(0)),
+      rif: BigInt(Big(item.rewardsRif).div(WeiPerEtherString).toFixed(0)),
       rbtc: BigInt(Big(item.rewardsRBTC).div(WeiPerEtherString).toFixed(0)),
-      usd: calculateRewardsUSD(item.rewardsERC20, item.rewardsRBTC, rifPrice, rbtcPrice),
+      usd: calculateRewardsUSD(item.rewardsRif, item.rewardsRBTC, rifPrice, rbtcPrice),
     },
   }))
 }

@@ -1,4 +1,4 @@
-import { getAbi, type GaugeAbi } from '@/lib/abis/v2'
+import { getAbi, type GaugeAbi } from '@/lib/abis/tok'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useMemo } from 'react'
 import { Abi } from 'viem'

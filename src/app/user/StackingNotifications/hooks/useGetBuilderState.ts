@@ -13,7 +13,7 @@ export const useGetBuilderState = () => {
     args: [address ?? zeroAddress],
   })
 
-  const [activated, kycApproved, communityApproved, paused, revoked] = builderState ?? [
+  const [initialized, kycApproved, communityApproved, kycPaused, selfPaused] = builderState ?? [
     false,
     false,
     false,
@@ -22,7 +22,7 @@ export const useGetBuilderState = () => {
   ]
 
   return {
-    builderState: { activated, kycApproved, communityApproved, paused, revoked },
+    builderState: { initialized, kycApproved, communityApproved, kycPaused, selfPaused },
     isLoading: builderStateLoading,
     error: builderStateError,
   }

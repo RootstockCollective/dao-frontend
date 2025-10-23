@@ -1,4 +1,4 @@
-import { getAbi, type RewardDistributorAbi } from '@/lib/abis/v2'
+import { getAbi, type RewardDistributorAbi } from '@/lib/abis/tok'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { RewardDistributorAddress } from '@/lib/contracts'
 import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'

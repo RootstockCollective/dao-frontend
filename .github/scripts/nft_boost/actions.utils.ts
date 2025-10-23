@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { Address, Block, getAddress } from 'viem'
-import { getAbi } from '../../../src/lib/abis/v2'
+import { getAbi } from '../../../src/lib/abis/tok'
 import { COINBASE_ADDRESS } from '../../../src/lib/constants'
 
 interface NFTEvent {
@@ -79,7 +79,7 @@ export async function getActions() {
     rewardTokenAddress = await publicClient.readContract({
       address: backersManagerAddress,
       abi,
-      functionName: 'rewardToken',
+      functionName: 'rifToken',
       args: [],
     })
     return getAddress(rewardTokenAddress)

@@ -6,12 +6,12 @@ export const useGetCycleRewards = () => {
     data: rifRewards,
     isLoading: rifRewardsLoading,
     error: rifRewardsError,
-  } = useReadRewardDistributor({ functionName: 'defaultRewardTokenAmount' })
+  } = useReadRewardDistributor({ functionName: 'defaultRifAmount' })
   const {
     data: rbtcRewards,
     isLoading: rbtcRewardsLoading,
     error: rbtcRewardsError,
-  } = useReadRewardDistributor({ functionName: 'defaultRewardCoinbaseAmount' })
+  } = useReadRewardDistributor({ functionName: 'defaultNativeAmount' })
 
   // TODO: Switch to these when we switch to v3 cr contracts
   // const {
