@@ -17,7 +17,7 @@ import { Metric } from '@/components/Metric/Metric'
 import { Header, Paragraph } from '@/components/Typography'
 import { CommonComponentProps } from '@/components/commonProps'
 import { REWARD_TOKEN_KEYS, REWARD_TOKENS, TOKENS } from '@/lib/tokens'
-import { cn, formatCurrency, formatCurrencyWithLabel } from '@/lib/utils'
+import { cn, formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import Big from 'big.js'
 import { isAddressEqual } from 'viem'
@@ -111,11 +111,8 @@ function useConvertRewardLogData(
       0n,
     )
 
-    const fiatValue = formatCurrencyWithLabel(getFiatAmount(totalTokenRewards, prices[symbol]?.price ?? 0), {
-      showCurrencyLabel: false,
-      showCurrencySymbol: false,
-    })
-    const value = `${formatSymbol(totalTokenRewards, symbol)}`
+    const fiatValue = getFiatAmount(totalTokenRewards, prices[symbol]?.price ?? 0).toFixed(2)
+    const value = formatSymbol(totalTokenRewards, symbol).toString()
 
     return {
       symbol,

@@ -39,7 +39,7 @@ export const CollectiveRewardsChartContainer = () => {
       rewardsData={rewardsData || []}
       rifPrice={rifPrice}
       rbtcPrice={rbtcPrice}
-      usdrifPrice={prices[TOKENS.usdrif.symbol]?.price ?? 0}
+      usdrifPrice={usdrifPrice}
     />
   )
 }

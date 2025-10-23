@@ -46,7 +46,7 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
   const { prices } = usePricesContext()
 
   const estimatedRewards: BuilderEstimatedRewards[] = useMemo(() => {
-    // TODO: this is so unreadable, refactor using REWARDA_TOKEN_KEYS
+    // TODO: this is so unreadable, refactor using REWARD_TOKEN_KEYS
     const rifAmount = cycleRewards?.rif ?? 0n
     const usdrifAmount = cycleRewards?.usdrif ?? 0n
     const rbtcAmount = cycleRewards?.rbtc ?? 0n
