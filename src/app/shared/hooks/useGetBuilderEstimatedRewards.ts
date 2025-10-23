@@ -30,9 +30,12 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
     data: rewardShares,
     isLoading: rewardSharesLoading,
     error: rewardSharesError,
-  } = useReadGauges({ addresses: gauges, functionName: 'rewardShares' }, {
-    enabled: !!gauges.length,
-  })
+  } = useReadGauges(
+    { addresses: gauges, functionName: 'rewardShares' },
+    {
+      enabled: !!gauges.length,
+    },
+  )
 
   const {
     data: cycleRewards,

@@ -1,8 +1,8 @@
-import { Meta, StoryObj } from '@storybook/nextjs'
-import { BackingPoint, CycleWindow, RewardsPoint } from '@/app/collective-rewards/types'
-import { CollectiveRewardsDualAxisChart } from './CollectiveRewardsChart'
-import { WeiPerEther } from '@/lib/constants'
 import { ONE_DAY_IN_MS } from '@/app/collective-rewards/constants/chartConstants'
+import { BackingPoint, CycleWindow, RewardsPoint } from '@/app/collective-rewards/types'
+import { WeiPerEther } from '@/lib/constants'
+import { Meta, StoryObj } from '@storybook/nextjs'
+import { CollectiveRewardsDualAxisChart } from './CollectiveRewardsChart'
 
 // Mock data constants
 const MOCK_DATA_CONSTANTS = {
@@ -120,7 +120,7 @@ function generateMockData() {
     const cap = Math.floor(backingNum * 0.00055)
     usd = Math.min(usd, cap)
 
-    return { day, rewards: { rif: 0, rbtc: 0, usd } }
+    return { day, rewards: { rif: 0, rbtc: 0, usdrif: 0, usd } }
   })
 
   return { backingSeries, rewardsSeries, cycles }
@@ -284,6 +284,7 @@ export const SingleCycle: Story = {
       rewards: {
         rif: 0,
         rbtc: 0,
+        usdrif: 0,
         usd:
           MOCK_DATA_CONSTANTS.REWARDS_SIMPLE_BASE +
           i * MOCK_DATA_CONSTANTS.REWARDS_SIMPLE_DAILY_GROWTH +
@@ -417,6 +418,7 @@ export const ManyCycles: Story = {
       rewards: {
         rif: 0,
         rbtc: 0,
+        usdrif: 0,
         usd:
           Math.floor(Number(backing) * MOCK_DATA_CONSTANTS.REWARDS_BACKING_MULTIPLIER) +
           Math.sin(i / MOCK_DATA_CONSTANTS.WOBBLE_FREQUENCY_GROWING_REWARDS) *

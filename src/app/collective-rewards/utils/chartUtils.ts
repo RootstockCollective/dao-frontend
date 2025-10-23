@@ -1,10 +1,9 @@
-import { BackingPoint, RewardsPoint, CycleWindow, DailyAllocationItem, CycleRewardsItem } from '../types'
-import { ONE_DAY_IN_SECONDS, FIVE_MONTHS_IN_MS, FIRST_CYCLE_START_SECONDS } from '../constants/chartConstants'
 import Big from '@/lib/big'
 import { USD, WeiPerEther } from '@/lib/constants'
-import { getCombinedFiatAmount } from './getCombinedFiatAmount'
-import { TokenSymbol } from '@/components/TokenImage'
 import { TOKENS } from '@/lib/tokens'
+import { FIRST_CYCLE_START_SECONDS, FIVE_MONTHS_IN_MS, ONE_DAY_IN_SECONDS } from '../constants/chartConstants'
+import { BackingPoint, CycleRewardsItem, CycleWindow, DailyAllocationItem, RewardsPoint } from '../types'
+import { getCombinedFiatAmount } from './getCombinedFiatAmount'
 
 export const convertToTimestamp = (d: Date | number | string): number => new Date(d).getTime()
 
@@ -84,20 +83,28 @@ const interpolateDataByDay = <T extends { day?: number; currentCycleStart?: stri
 const calculateRewardsUSD = (
   rifAmountWei: string,
   rbtcAmountWei: string,
+  usdrifAmountWei: string,
   rifPrice: number,
   rbtcPrice: number,
+  usdrifPrice: number,
 ): number => {
   const rewardAmounts = [
     {
       value: BigInt(rifAmountWei),
       price: rifPrice,
-      symbol: TokenSymbol.RIF,
+      symbol: TOKENS.rif.symbol,
       currency: USD,
     },
     {
       value: BigInt(rbtcAmountWei),
       price: rbtcPrice,
-      symbol: TokenSymbol.RBTC,
+      symbol: TOKENS.rbtc.symbol,
+      currency: USD,
+    },
+    {
+      value: BigInt(usdrifAmountWei),
+      price: usdrifPrice,
+      symbol: TOKENS.usdrif.symbol,
       currency: USD,
     },
   ]
@@ -134,16 +141,20 @@ const transformRewardsData = (
   rewardsData: CycleRewardsItem[],
   rifPrice: number,
   rbtcPrice: number,
+  usdrifPrice: number,
 ): RewardsPoint[] => {
   let cumulativeRifRewards = 0n
   let cumulativeRbtcRewards = 0n
+  let cumulativeUsdrifRewards = 0n
   const rifAddress = TOKENS.rif.address.toLowerCase()
   const rbtcAddress = TOKENS.rbtc.address.toLowerCase()
+  const usdrifAddress = TOKENS.usdrif.address.toLowerCase()
 
   const accumulatedCycleRewards = rewardsData.map((item, _) => {
     const currentRifRewards = BigInt(item.rewardPerToken[rifAddress] ?? 0)
     const currentRbtcRewards = BigInt(item.rewardPerToken[rbtcAddress] ?? 0)
-
+    const currentUsdrifRewards = BigInt(item.rewardPerToken[usdrifAddress] ?? 0)
+    cumulativeUsdrifRewards += currentUsdrifRewards
     cumulativeRifRewards += currentRifRewards
     cumulativeRbtcRewards += currentRbtcRewards
 
@@ -151,6 +162,7 @@ const transformRewardsData = (
       ...item,
       rewardsRif: cumulativeRifRewards.toString(),
       rewardsRBTC: cumulativeRbtcRewards.toString(),
+      rewardsUsdrif: cumulativeUsdrifRewards.toString(),
     }
   })
 
@@ -169,7 +181,15 @@ const transformRewardsData = (
     rewards: {
       rif: BigInt(Big(item.rewardsRif).div(WeiPerEtherString).toFixed(0)),
       rbtc: BigInt(Big(item.rewardsRBTC).div(WeiPerEtherString).toFixed(0)),
-      usd: calculateRewardsUSD(item.rewardsRif, item.rewardsRBTC, rifPrice, rbtcPrice),
+      usdrif: BigInt(Big(item.rewardsUsdrif).div(WeiPerEtherString).toFixed(0)),
+      usd: calculateRewardsUSD(
+        item.rewardsRif,
+        item.rewardsRBTC,
+        item.rewardsUsdrif,
+        rifPrice,
+        rbtcPrice,
+        usdrifPrice,
+      ),
     },
   }))
 }
@@ -202,6 +222,7 @@ export const transformApiDataToChartData = (
   rewardsData: CycleRewardsItem[],
   rifPrice: number,
   rbtcPrice: number,
+  usdrifPrice: number,
 ) => {
   if (backingData.length === 0 || rewardsData.length === 0)
     return {
@@ -215,7 +236,12 @@ export const transformApiDataToChartData = (
     (a, b) => Number(a.currentCycleStart) - Number(b.currentCycleStart),
   )
 
-  const rewardsSeries: RewardsPoint[] = transformRewardsData(sortedRewardsData, rifPrice, rbtcPrice)
+  const rewardsSeries: RewardsPoint[] = transformRewardsData(
+    sortedRewardsData,
+    rifPrice,
+    rbtcPrice,
+    usdrifPrice,
+  )
   const lastRewardsDate = Math.floor(new Date(rewardsSeries[rewardsSeries.length - 1].day).getTime() / 1000)
 
   const backingSeries: BackingPoint[] = transformBackingData(sortedBackingData, lastRewardsDate)
