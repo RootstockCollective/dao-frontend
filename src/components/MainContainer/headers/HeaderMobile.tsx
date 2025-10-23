@@ -31,7 +31,7 @@ export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElem
           <Hamburger isOpen={isSidebarOpen} onClick={toggleSidebar} />
         </Tooltip>
       </div>
-      <div className="absolute inset-0 flex items-center justify-center z-50 pointer-events-none">
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="p-1 rounded-full">
           <RootstockLogoIcon />
         </div>

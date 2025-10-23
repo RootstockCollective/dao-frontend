@@ -37,10 +37,10 @@ export const DisconnectWorkflowPresentation = ({
     <>
       <div className="flex items-center gap-1 md:mr-4">
         <Tooltip text={onRampDisclaimerText} sideOffset={15} className="px-4 py-3 max-w-[15rem]">
-          {/* this div adds more space to click the question icon */}
-          <div className="md:hidden shrink-0 w-5 h-5 flex items-center justify-end">
+          {/* this button adds more space to click the question icon */}
+          <button type="button" className="md:hidden shrink-0 w-5 h-5 flex items-center justify-end">
             <KotoQuestionMarkIcon />
-          </div>
+          </button>
         </Tooltip>
         <Tooltip
           text={onRampDisclaimerText}
