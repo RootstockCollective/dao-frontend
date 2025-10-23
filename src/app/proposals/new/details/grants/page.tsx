@@ -36,7 +36,7 @@ export default function ProposalReview() {
             description: '',
             discourseLink: '',
             targetAddress: '' as Address,
-            token: 'RIF',
+            token: 'USDRIF',
             transferAmount: '',
             milestone: undefined,
           },
