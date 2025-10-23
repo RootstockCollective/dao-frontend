@@ -45,7 +45,7 @@ export async function GET() {
             )
           `),
         })
-        .leftJoin('CycleRewardPerToken', 'Cycle.id', '=', 'CycleRewardPerToken.cycle')
+        .innerJoin('CycleRewardPerToken', 'Cycle.id', '=', 'CycleRewardPerToken.cycle')
         .orderBy('currentCycleStart', 'desc')
         .groupBy('Cycle.id')
         .limit(1),

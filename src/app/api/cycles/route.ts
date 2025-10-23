@@ -19,7 +19,7 @@ export async function GET(req: Request) {
 
     const baseQuery = db('Cycle')
       .select(CYCLE_COLUMNS)
-      .leftJoin('CycleRewardPerToken', 'Cycle.id', '=', 'CycleRewardPerToken.cycle')
+      .innerJoin('CycleRewardPerToken', 'Cycle.id', '=', 'CycleRewardPerToken.cycle')
       .select({
         rewardPerToken: db.raw(`
         COALESCE(

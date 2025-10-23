@@ -18,6 +18,7 @@ const supportedProposalActions = [
   'withdrawERC20',
   'communityApproveBuilder',
   'communityBanBuilder',
+  'dewhitelistBuilder',
   // CR MVP: To keep compatibility with the MVP logs
   'removeWhitelistedBuilder',
   'whitelistBuilder',

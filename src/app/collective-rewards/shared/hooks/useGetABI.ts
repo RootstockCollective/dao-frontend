@@ -59,8 +59,8 @@ export const useGetABI = (abiData: AbiData | undefined) => {
       getCyclePayout(
         rifPrice,
         rbtcPrice,
-        BigInt(rewardPerToken[rif.address.toLowerCase()]),
-        BigInt(rewardPerToken[rbtc.address.toLowerCase()]),
+        BigInt(rewardPerToken[rif.address.toLowerCase()] ?? 0n),
+        BigInt(rewardPerToken[rbtc.address.toLowerCase()] ?? 0n),
       ).toString(),
     )
 

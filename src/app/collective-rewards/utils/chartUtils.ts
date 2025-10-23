@@ -141,8 +141,8 @@ const transformRewardsData = (
   const rbtcAddress = TOKENS.rbtc.address.toLowerCase()
 
   const accumulatedCycleRewards = rewardsData.map((item, _) => {
-    const currentRifRewards = BigInt(item.rewardPerToken[rifAddress])
-    const currentRbtcRewards = BigInt(item.rewardPerToken[rbtcAddress])
+    const currentRifRewards = BigInt(item.rewardPerToken[rifAddress] ?? 0)
+    const currentRbtcRewards = BigInt(item.rewardPerToken[rbtcAddress] ?? 0)
 
     cumulativeRifRewards += currentRifRewards
     cumulativeRbtcRewards += currentRbtcRewards
