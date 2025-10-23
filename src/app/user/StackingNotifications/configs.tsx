@@ -62,7 +62,7 @@ export const getBannerConfigForCycleEnding = (cycle: Cycle): BannerConfig | null
   return {
     ...staticConfig,
     rightContent: (
-      <BaseTypography variant="h1" className="text-white">
+      <BaseTypography variant="h1" className="text-black md:text-white">
         {/* eslint-disable-next-line quotes */}
         {`${diff.toFormat("d'd' hh'h' mm'm'")}`}
       </BaseTypography>

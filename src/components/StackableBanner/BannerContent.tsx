@@ -21,8 +21,14 @@ export const BannerContent: FC<BannerContentProps> = ({
   className = '',
 }) => {
   return (
-    <div className={cn('text-v3-text-0 w-full flex flex-row gap-2 items-center justify-between', className)}>
-      <div className="flex flex-col gap-2 w-1/2">
+    <div
+      className={cn(
+        'text-v3-text-0 w-full flex flex-col md:flex-row gap-2 md:items-center md:justify-between',
+        className,
+      )}
+      data-testid="BannerContent"
+    >
+      <div className="flex flex-col gap-2 md:w-1/2">
         <BaseTypography variant="h3">{title}</BaseTypography>
         <BaseTypography>{description}</BaseTypography>
         {buttonText && (
