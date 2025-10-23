@@ -107,7 +107,7 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
             key={builder.address}
             builder={builder}
             index={index}
-            isInteractive
+            isInteractive={isInteractive}
             estimatedRewards={builder.backerEstimatedRewards}
             showAnimation={isBuilderSelected(builder.address)}
           />

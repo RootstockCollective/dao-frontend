@@ -1,14 +1,17 @@
 import { TokenRewards } from '@/app/collective-rewards/rewards/types'
 import { weiToPercentage } from '@/app/collective-rewards/settings/utils'
-import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
+import { getCombinedFiatAmount, getFiatAmount } from '@/app/collective-rewards/utils'
 import { Paragraph } from '@/components/Typography'
 import { formatCurrency } from '@/lib/utils'
 import { FC } from 'react'
 import { BackerRewardsPercentage } from '../BackerPercentage/BackerRewardsPercentage'
 import { LabeledContent } from '../LabeledContent/LabeledContent'
-import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
 import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
 import { BackerRewardPercentage } from '@/app/collective-rewards/types'
+import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
+import { RBTC, RIF, USDRIF } from '@/lib/constants'
+import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
+import { Tooltip } from '@/components/Tooltip'
 
 export interface RewardsInfoProps {
   backerRewardPercentage?: BackerRewardPercentage
@@ -33,15 +36,42 @@ export const RewardsInfo: FC<RewardsInfoProps> = ({ backerRewardPercentage, esti
           <div className="flex flex-row items-center gap-2">
             <Paragraph>
               {formatCurrency(
-                getCombinedFiatAmount([estimatedRewards.rbtc.amount, estimatedRewards.rif.amount]),
+                getCombinedFiatAmount([
+                  estimatedRewards.rbtc.amount,
+                  estimatedRewards.rif.amount,
+                  estimatedRewards.usdrif.amount,
+                ]),
               )}
             </Paragraph>
-            <RifRbtcTooltip
-              rbtcValue={estimatedRewards.rbtc.amount.value}
-              rifValue={estimatedRewards.rif.amount.value}
+            <Tooltip
+              side="top"
+              className="z-10"
+              text={
+                <MetricTooltipContent
+                  tokens={[
+                    {
+                      symbol: RBTC,
+                      value: formatSymbol(estimatedRewards.rbtc.amount.value, RBTC),
+                      fiatValue: formatCurrency(getFiatAmount(estimatedRewards.rbtc.amount)),
+                    },
+                    {
+                      symbol: RIF,
+                      value: formatSymbol(estimatedRewards.rif.amount.value, RIF),
+                      fiatValue: formatCurrency(getFiatAmount(estimatedRewards.rif.amount)),
+                    },
+                    {
+                      symbol: USDRIF,
+                      value: formatSymbol(estimatedRewards.usdrif.amount.value, USDRIF),
+                      fiatValue: formatCurrency(getFiatAmount(estimatedRewards.usdrif.amount)),
+                    },
+                  ]}
+                />
+              }
             >
-              <DottedUnderlineLabel className="font-normal">USD</DottedUnderlineLabel>
-            </RifRbtcTooltip>
+              <div className="flex flex-row items-center gap-2">
+                <DottedUnderlineLabel className="font-normal">USD</DottedUnderlineLabel>
+              </div>
+            </Tooltip>
           </div>
         </LabeledContent>
       )}
