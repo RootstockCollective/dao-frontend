@@ -40,6 +40,9 @@ export const disclaimerModalText = {
   ),
 }
 
+export const onRampDisclaimerText =
+  'By clicking the link, you agree to be redirected to a third-party website to access third-party services.'
+
 // Define route patterns and their components
 export const routePatterns = [
   //  NFT community pages don't have headers according to the design
