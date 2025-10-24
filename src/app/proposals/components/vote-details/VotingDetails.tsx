@@ -1,3 +1,5 @@
+'use client'
+
 import type { MouseEvent, Ref } from 'react'
 import { formatEther } from 'viem'
 import { Button } from '@/components/Button'
