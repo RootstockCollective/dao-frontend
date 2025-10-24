@@ -25,16 +25,23 @@ interface MobileBuilderRowProps extends HtmlHTMLAttributes<HTMLTableRowElement> 
   row: BuilderTable['Row']
   userBacking: bigint
   logic: BuilderRowLogic
+  actionCount: number
 }
 
-export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, logic, ...props }) => {
+export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({
+  row,
+  userBacking,
+  logic,
+  actionCount,
+  ...props
+}) => {
   const { isConnected } = useAccount()
   const { intermediateStep, handleConnectWallet, handleCloseIntermediateStep, onConnectWalletButtonClick } =
     useAppKitFlow()
 
   const [isExpanded, setIsExpanded] = useState(false)
 
-  const { data, isRowSelected, isInProgress, canBack, hasSelections, handleToggleSelection } = logic
+  const { data, isRowSelected, isInProgress, canBack, handleToggleSelection } = logic
 
   const handleToggleExpand = () => {
     setIsExpanded(!isExpanded)
@@ -189,7 +196,8 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ row, userBacking, 
                   />
 
                   {/* Row 5 (expanded): ActionCell */}
-                  {isConnected && (
+                  {/* TODO: update behavior so that when 1 row is selected only that row's actions is visible */}
+                  {isConnected && actionCount < 2 && (
                     <div className="w-full min-w-full flex justify-center">
                       <ActionCell
                         {...actions}

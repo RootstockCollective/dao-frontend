@@ -20,9 +20,16 @@ interface DesktopBuilderRowProps extends HtmlHTMLAttributes<HTMLTableRowElement>
   row: BuilderTable['Row']
   userBacking: bigint
   logic: BuilderRowLogic
+  actionCount: number
 }
 
-export const DesktopBuilderRow: FC<DesktopBuilderRowProps> = ({ row, userBacking, logic, ...props }) => {
+export const DesktopBuilderRow: FC<DesktopBuilderRowProps> = ({
+  row,
+  userBacking,
+  logic,
+  actionCount,
+  ...props
+}) => {
   const { isConnected } = useAccount()
   const { intermediateStep, handleConnectWallet, handleCloseIntermediateStep, onConnectWalletButtonClick } =
     useAppKitFlow()
@@ -75,9 +82,10 @@ export const DesktopBuilderRow: FC<DesktopBuilderRowProps> = ({ row, userBacking
           <BuilderBackingCell {...backing} />
           <BuilderBackingShareCell
             backingPercentage={backingPercentage}
-            className={isHovered && isConnected ? 'hidden' : 'visible'}
+            className={actionCount < 2 && isHovered && isConnected ? 'hidden' : 'visible'}
           />
-          <ActionsCell {...actions} forceShow={isHovered && isConnected} />
+          {/* TODO: update behavior so that when 1 row is selected only that row's actions is visible */}
+          <ActionsCell {...actions} forceShow={actionCount < 2 && isHovered && isConnected} />
           <td className="w-[24px]"></td>
         </tr>
       </BuilderRowConditionalTooltip>

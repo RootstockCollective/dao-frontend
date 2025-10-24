@@ -133,6 +133,7 @@ interface BuilderDataRowProps extends CommonComponentProps<HTMLTableRowElement> 
   row: BuilderTable['Row']
   userBacking: bigint
   logic: BuilderRowLogic
+  actionCount: number
 }
 
 const BuilderDataRow: FC<BuilderDataRowProps> = ({ ...props }) => {
@@ -338,7 +339,15 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
               {rows.map(row => {
                 const userBacking = allocations[row.id as Address] ?? 0n
                 const logic = createBuilderRowLogic(row, userBacking)
-                return <BuilderDataRow key={row.id} row={row} userBacking={userBacking} logic={logic} />
+                return (
+                  <BuilderDataRow
+                    key={row.id}
+                    row={row}
+                    userBacking={userBacking}
+                    logic={logic}
+                    actionCount={actions.length}
+                  />
+                )
               })}
             </tbody>
           </Suspense>
