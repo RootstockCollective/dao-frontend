@@ -62,13 +62,13 @@ const ExpandedContent = () => {
         </BaseTypography>
         <ul className="list-[circle] pl-5 text-v3-text-0">
           <li>
-            <Paragraph>join a mission-aligned network</Paragraph>
+            <Paragraph>Join a mission-aligned network</Paragraph>
           </li>
           <li>
-            <Paragraph>earn performance-based rewards</Paragraph>
+            <Paragraph>Earn performance-based rewards</Paragraph>
           </li>
           <li>
-            <Paragraph>access grants to kickstart your project</Paragraph>
+            <Paragraph>Access grants to kickstart your project</Paragraph>
           </li>
         </ul>
       </div>
