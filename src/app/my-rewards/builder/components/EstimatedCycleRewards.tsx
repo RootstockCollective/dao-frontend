@@ -1,17 +1,62 @@
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { TokenAmount } from '@/components/TokenAmount'
-import { TokenSymbol } from '@/components/TokenImage'
+import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
 import { Address } from 'viem'
 import { useGetBuilderEstimatedRewards } from '@/app/my-rewards/builder/hooks/useGetBuilderEstimatedRewards'
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'
+import { MetricBar } from '@/app/components/Metric/MetricBar'
+import { MetricToken } from '@/app/components/Metric/types'
+import { Header, Span } from '@/components/Typography'
+import { RBTC, RIF, USD, USDRIF } from '@/lib/constants'
+import { formatCurrency } from '@/lib/utils'
+import { usePricesContext } from '@/shared/context'
+import { useMemo } from 'react'
 
 export const EstimatedCycleRewards = ({ builder, gauge }: { builder: Address; gauge: Address }) => {
   const { rif: rifData, rbtc: rbtcData } = useGetBuilderEstimatedRewards({
     builder: builder,
     gauge,
   })
-
+  const { prices } = usePricesContext()
   useHandleErrors({ error: rifData.error ?? rbtcData.error, title: 'Error loading estimated rewards' })
+
+  const { segments, totalUsdValue } = useMemo(() => {
+    const rifPrice = prices[RIF]?.price ?? 0
+    const rbtcPrice = prices[RBTC]?.price ?? 0
+    const usdrifPrice = prices[USDRIF]?.price ?? 1
+
+    // Extract numeric part and convert
+    const rifAmount = BigInt(Math.floor(parseFloat(rifData.amount.split(' ')[0]) * 1e18))
+    const rbtcAmount = BigInt(Math.floor(parseFloat(rbtcData.amount.split(' ')[0]) * 1e18))
+
+    // FIXME: Mock USDRIF values with RIF values - replace with real API data when available
+    const usdrifAmount = rifAmount
+
+    const rifFiatValue = getFiatAmount(rifAmount, rifPrice)
+    const rbtcFiatValue = getFiatAmount(rbtcAmount, rbtcPrice)
+    const usdrifFiatValue = getFiatAmount(usdrifAmount, usdrifPrice)
+
+    const totalUsdValue = rifFiatValue.add(rbtcFiatValue).add(usdrifFiatValue)
+
+    const segments: MetricToken[] = [
+      {
+        symbol: RIF,
+        value: rifData.amount,
+        fiatValue: rifFiatValue.toString(),
+      },
+      {
+        symbol: RBTC,
+        value: rbtcData.amount,
+        fiatValue: rbtcFiatValue.toString(),
+      },
+      {
+        symbol: USDRIF,
+        value: rifData.amount,
+        fiatValue: usdrifFiatValue.toString(),
+      },
+    ]
+
+    return { segments, totalUsdValue }
+  }, [rifData, rbtcData, prices])
 
   return (
     <RewardCard
@@ -19,14 +64,15 @@ export const EstimatedCycleRewards = ({ builder, gauge }: { builder: Address; ga
       isLoading={rifData.isLoading || rbtcData.isLoading}
       title="Estimated this cycle"
       info="Your estimated rewards which will become claimable at the start of the next Cycle."
-      className="flex-row sm:flex-col justify-between w-full sm:w-auto"
+      className="flex-row sm:flex-col justify-between w-full"
     >
-      <TokenAmount amount={rifData.amount} tokenSymbol={TokenSymbol.RIF} amountInFiat={rifData.fiatAmount} />
-      <TokenAmount
-        amount={rbtcData.amount}
-        tokenSymbol={TokenSymbol.RBTC}
-        amountInFiat={rbtcData.fiatAmount}
-      />
+      <div className="flex items-center gap-2">
+        <Header variant="h3">{formatCurrency(totalUsdValue)}</Header>
+        <Span variant="body-s" bold>
+          {USD}
+        </Span>
+      </div>
+      <MetricBar segments={segments} className="w-full max-w-[180px]" />
     </RewardCard>
   )
 }
