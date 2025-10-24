@@ -268,7 +268,6 @@ export const VotingDetails = ({
         isVotingInProgress={isVoting || isWaitingVotingReceipt || votingTxIsPending}
         onCastVote={address && handleVoting}
         onCancelVote={() => setIsChoosingVote(false)}
-        isConnected={isConnected}
         actionDisabled={isQueueing || isExecuting}
         eta={getEta(proposalState)}
       />
