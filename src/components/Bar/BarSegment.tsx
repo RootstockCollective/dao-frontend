@@ -2,9 +2,10 @@ import { cn } from '@/lib/utils'
 import { HTMLAttributes, ReactElement } from 'react'
 import { CommonComponentProps } from '../commonProps'
 
-export type BarSegmentProps = CommonComponentProps & {
-  position: 'left' | 'center' | 'right'
-}
+export type BarSegmentProps = CommonComponentProps &
+  HTMLAttributes<HTMLDivElement> & {
+    position: 'left' | 'center' | 'right'
+  }
 
 const POSITIONAL_CLASSES: Record<BarSegmentProps['position'], HTMLAttributes<HTMLDivElement>['className']> = {
   left: 'bg-v3-rif-blue rounded-l-xl',
