@@ -60,7 +60,7 @@ const ExpandedContent = () => {
         <BaseTypography variant="h3" className="text-v3-text-0 mb-4">
           WHY BECOME A BUILDER?
         </BaseTypography>
-        <ul className="list-[circle] pl-4 text-v3-text-0">
+        <ul className="list-[circle] pl-5 text-v3-text-0">
           <li>
             <Paragraph>join a mission-aligned network</Paragraph>
           </li>
