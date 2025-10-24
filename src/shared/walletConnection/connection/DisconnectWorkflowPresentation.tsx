@@ -36,6 +36,9 @@ export const DisconnectWorkflowPresentation = ({
   return (
     <>
       <div className="flex items-center gap-1 md:mr-4">
+        <div className="hidden md:inline">
+          <WalletDetailsButton />
+        </div>
         <Tooltip text={onRampDisclaimerText} sideOffset={10} className="px-4 py-3 max-w-[15rem]">
           {/* this button adds more space to click the question icon */}
           <button type="button" className="md:hidden shrink-0 w-5 h-5 flex items-center justify-end">
@@ -109,6 +112,25 @@ const PopoverDisconnectContentContainer = ({
     <CopyButton copyText={address} className="md:hidden">
       {shortAddress}
     </CopyButton>
+    <div className="md:hidden">
+      <WalletDetailsButton />
+    </div>
     <DisconnectButton onClick={onDisconnectClick} />
   </div>
 )
+
+const WalletDetailsButton = () => {
+  const { open } = useAppKit()
+  const openWalletDetails = () => open({ view: 'Account' })
+
+  return (
+    <Button
+      variant="secondary-outline"
+      onClick={openWalletDetails}
+      className="inline md:mr-4 py-1.5 px-2 whitespace-nowrap"
+      data-testid="WalletDetailsButton"
+    >
+      <Span>Wallet Details</Span>
+    </Button>
+  )
+}
