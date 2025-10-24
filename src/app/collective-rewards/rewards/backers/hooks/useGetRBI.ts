@@ -28,7 +28,7 @@ const useGetTokenRewards = ({ address, symbol }: Token) => {
 
 export const useGetBackerRBI = (
   backerStakingHistory: BackerStakingHistory | undefined,
-  { rbtc, rif }: Record<string, Token>,
+  { rbtc, rif, usdrif }: Record<string, Token>,
 ) => {
   const {
     data: rbtcRewards,
@@ -36,6 +36,11 @@ export const useGetBackerRBI = (
     error: rbtcRewardsError,
   } = useGetTokenRewards(rbtc)
   const { data: rifRewards, isLoading: rifRewardsLoading, error: rifRewardsError } = useGetTokenRewards(rif)
+  const {
+    data: usdrifRewards,
+    isLoading: usdrifRewardsLoading,
+    error: usdrifRewardsError,
+  } = useGetTokenRewards(usdrif)
   const timestamp = useIntervalTimestamp()
 
   const { prices } = usePricesContext()
@@ -68,11 +73,13 @@ export const useGetBackerRBI = (
       bigAccumulatedTime = Big(accumulatedTime).add(lastStakedSeconds)
     }
 
-    return bigAccumulatedTime.mul(rbtcRewards.add(rifRewards).div(priceAdjustedAllocTime)).mul(100)
-  }, [backerStakingHistory, prices, rif.symbol, rbtcRewards, rifRewards, timestamp])
+    return bigAccumulatedTime
+      .mul(rbtcRewards.add(rifRewards).add(usdrifRewards).div(priceAdjustedAllocTime))
+      .mul(100)
+  }, [backerStakingHistory, prices, rif.symbol, rbtcRewards, rifRewards, usdrifRewards, timestamp])
 
-  const isLoading = rbtcRewardsLoading || rifRewardsLoading
-  const error = rbtcRewardsError ?? rifRewardsError
+  const isLoading = rbtcRewardsLoading || rifRewardsLoading || usdrifRewardsLoading
+  const error = rbtcRewardsError ?? rifRewardsError ?? usdrifRewardsError
 
   return {
     data: rbi,

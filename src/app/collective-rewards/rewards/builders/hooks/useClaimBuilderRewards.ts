@@ -50,7 +50,7 @@ const useClaimBuilderReward = (builder: Address, gauge: Address, rewardToken?: A
 export const useClaimBuilderRewards = (
   builder: Address,
   gauge: Address,
-  { rif, rbtc }: { rif: Address; rbtc: Address },
+  { rif, rbtc, usdrif }: { rif: Address; rbtc: Address; usdrif: Address },
 ) => {
   const { error: claimBuilderRewardError, ...rest } = useClaimBuilderReward(builder, gauge)
   const { isClaimable: rifClaimable, error: claimRifError } = useClaimBuilderRewardsPerToken(
@@ -64,8 +64,14 @@ export const useClaimBuilderRewards = (
     rbtc,
   )
 
-  const isClaimable = rifClaimable || rbtcClaimable
-  const error = claimBuilderRewardError ?? claimRifError ?? claimRbtcError
+  const { isClaimable: usdrifClaimable, error: claimUsdrifError } = useClaimBuilderRewardsPerToken(
+    builder,
+    gauge,
+    usdrif,
+  )
+
+  const isClaimable = rifClaimable || rbtcClaimable || usdrifClaimable
+  const error = claimBuilderRewardError ?? claimRifError ?? claimRbtcError ?? claimUsdrifError
 
   return {
     ...rest,

@@ -1,5 +1,5 @@
 import Big from '@/lib/big'
-import { RBTC, RIF, WeiPerEther } from '@/lib/constants'
+import { RBTC, RIF, USDRIF, WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useMemo } from 'react'
 import { Address } from 'viem'
@@ -42,7 +42,7 @@ export const calculateAbi = (rewardsPerStRif: Big, rifPrice: number): Big => {
 
 export const useGetABI = (abiData: AbiData | undefined) => {
   const { prices } = usePricesContext()
-  const { rif, rbtc } = TOKENS
+  const { rif, rbtc, usdrif } = TOKENS
 
   return useMemo(() => {
     if (!abiData?.builders || !abiData.cycles?.length) {
@@ -54,13 +54,16 @@ export const useGetABI = (abiData: AbiData | undefined) => {
 
     const rifPrice = prices[RIF]?.price ?? 0
     const rbtcPrice = prices[RBTC]?.price ?? 0
+    const usdrifPrice = prices[USDRIF]?.price ?? 0
 
     const cyclePayout = Big(
       getCyclePayout(
         rifPrice,
         rbtcPrice,
+        usdrifPrice,
         BigInt(rewardPerToken[rif.address.toLowerCase()] ?? 0n),
         BigInt(rewardPerToken[rbtc.address.toLowerCase()] ?? 0n),
+        BigInt(rewardPerToken[usdrif.address.toLowerCase()] ?? 0n),
       ).toString(),
     )
 

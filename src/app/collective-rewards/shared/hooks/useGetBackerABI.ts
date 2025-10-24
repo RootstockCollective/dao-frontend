@@ -1,4 +1,4 @@
-import { RBTC, RIF, WeiPerEther } from '@/lib/constants'
+import { RBTC, RIF, USDRIF, WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadBackersManager } from '@/shared/hooks/contracts'
 import Big from 'big.js'
@@ -26,13 +26,21 @@ export const useGetBackerABI = (backer: Address) => {
   const abi = useMemo(() => {
     const rifPrice = prices[RIF]?.price ?? 0
     const rbtcPrice = prices[RBTC]?.price ?? 0
+    const usdrifPrice = prices[USDRIF]?.price ?? 0
     const rifPriceInWei = parseEther(rifPrice.toString())
     const rbtcPriceInWei = parseEther(rbtcPrice.toString())
+    const usdrifPriceInWei = parseEther(usdrifPrice.toString())
 
     const backerRewards = backingData.reduce((acc, { backerEstimatedRewards }) => {
-      const { rif, rbtc } = backerEstimatedRewards
+      const { rif, rbtc, usdrif } = backerEstimatedRewards
 
-      return acc + (rif.amount.value * rifPriceInWei + rbtc.amount.value * rbtcPriceInWei) / WeiPerEther
+      return (
+        acc +
+        (rif.amount.value * rifPriceInWei +
+          rbtc.amount.value * rbtcPriceInWei +
+          usdrif.amount.value * usdrifPriceInWei) /
+          WeiPerEther
+      )
     }, 0n)
 
     if (!backerTotalAllocation) {
