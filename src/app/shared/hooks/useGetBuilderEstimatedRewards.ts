@@ -3,20 +3,13 @@ import { BuilderEstimatedRewards, CompleteBuilder } from '@/app/collective-rewar
 import { filterBuildersByState } from '@/app/collective-rewards/user'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
-import { RBTC, RIF, USD, WeiPerEther } from '@/lib/constants'
-import { TOKENS } from '@/lib/tokens'
+import { RBTC, RIF, USD, USDRIF, WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
 
 export const useGetBuilderEstimatedRewards = (currency = USD) => {
-  const { rif, rbtc } = TOKENS
   const { builders } = useBuilderContext()
-  const { activeBuilders, gauges } = useMemo(() => {
-    const filteredBuilders = filterBuildersByState<CompleteBuilder>(builders)
-    const builderGauges = filteredBuilders.map(({ gauge }) => gauge)
-    return { activeBuilders: filteredBuilders, gauges: builderGauges }
-  }, [builders])
 
   const {
     data: totalPotentialRewards,
@@ -26,11 +19,23 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
     functionName: 'totalPotentialReward',
   })
 
+  const { activeBuilders, gauges } = useMemo(() => {
+    const filteredBuilders = filterBuildersByState<CompleteBuilder>(builders)
+    const builderGauges = filteredBuilders.map(({ gauge }) => gauge)
+
+    return { activeBuilders: filteredBuilders, gauges: builderGauges }
+  }, [builders])
+
   const {
     data: rewardShares,
     isLoading: rewardSharesLoading,
     error: rewardSharesError,
-  } = useReadGauges({ addresses: gauges, functionName: 'rewardShares' })
+  } = useReadGauges(
+    { addresses: gauges, functionName: 'rewardShares' },
+    {
+      enabled: !!gauges.length,
+    },
+  )
 
   const {
     data: cycleRewards,
@@ -39,10 +44,14 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
   } = useGetCycleRewards()
 
   const { prices } = usePricesContext()
+
   const estimatedRewards: BuilderEstimatedRewards[] = useMemo(() => {
+    // TODO: this is so unreadable, refactor using REWARD_TOKEN_KEYS
     const rifAmount = cycleRewards?.rif ?? 0n
+    const usdrifAmount = cycleRewards?.usdrif ?? 0n
     const rbtcAmount = cycleRewards?.rbtc ?? 0n
     const rifPrice = prices[RIF]?.price ?? 0
+    const usdrifPrice = prices[USDRIF]?.price ?? 0
     const rbtcPrice = prices[RBTC]?.price ?? 0
 
     return activeBuilders.map((builder, index) => {
@@ -61,8 +70,10 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
           : 0n
 
       const builderRifEstimatedRewards = (builderEstimatedRewardsPct * rifAmount) / WeiPerEther
+      const builderUsdrifEstimatedRewards = (builderEstimatedRewardsPct * usdrifAmount) / WeiPerEther
       const builderRbtcEstimatedRewards = (builderEstimatedRewardsPct * rbtcAmount) / WeiPerEther
       const backerRifEstimatedRewards = (backerEstimatedRewardsPct * rifAmount) / WeiPerEther
+      const backerUsdrifEstimatedRewards = (backerEstimatedRewardsPct * usdrifAmount) / WeiPerEther
       const backerRbtcEstimatedRewards = (backerEstimatedRewardsPct * rbtcAmount) / WeiPerEther
 
       return {
@@ -75,7 +86,15 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
             amount: {
               value: backerRifEstimatedRewards,
               price: rifPrice,
-              symbol: rif.symbol,
+              symbol: RIF,
+              currency,
+            },
+          },
+          usdrif: {
+            amount: {
+              value: backerUsdrifEstimatedRewards,
+              price: usdrifPrice,
+              symbol: USDRIF,
               currency,
             },
           },
@@ -83,7 +102,7 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
             amount: {
               value: backerRbtcEstimatedRewards,
               price: rbtcPrice,
-              symbol: rbtc.symbol,
+              symbol: RBTC,
               currency,
             },
           },
@@ -93,7 +112,15 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
             amount: {
               value: builderRifEstimatedRewards,
               price: rifPrice,
-              symbol: rif.symbol,
+              symbol: RIF,
+              currency,
+            },
+          },
+          usdrif: {
+            amount: {
+              value: builderUsdrifEstimatedRewards,
+              price: usdrifPrice,
+              symbol: USDRIF,
               currency,
             },
           },
@@ -101,14 +128,14 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
             amount: {
               value: builderRbtcEstimatedRewards,
               price: rbtcPrice,
-              symbol: rbtc.symbol,
+              symbol: RBTC,
               currency,
             },
           },
         },
       }
     })
-  }, [activeBuilders, rewardShares, totalPotentialRewards, cycleRewards, prices, currency, rif, rbtc])
+  }, [activeBuilders, rewardShares, totalPotentialRewards, cycleRewards, prices, currency])
 
   const isLoading = totalPotentialRewardsLoading || rewardSharesLoading || cycleRewardsLoading
   const error = totalPotentialRewardsError || rewardSharesError || cycleRewardsError

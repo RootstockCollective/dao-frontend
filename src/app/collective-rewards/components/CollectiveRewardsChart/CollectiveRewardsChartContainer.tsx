@@ -1,13 +1,13 @@
-import { CollectiveRewardsDualAxisChart } from './CollectiveRewardsChart'
 import { useGetChartBackingData } from '@/app/collective-rewards/rewards/hooks/useGetChartBackingData'
+import { CycleRewardsItem, DailyAllocationItem } from '@/app/collective-rewards/types'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { transformApiDataToChartData } from '@/app/collective-rewards/utils/chartUtils'
-import { DailyAllocationItem, CycleRewardsItem } from '@/app/collective-rewards/types'
-import { useGetChartRewardsData } from '../../rewards/hooks/useGetChartRewardsData'
-import { usePricesContext } from '@/shared/context/PricesContext'
+import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { TOKENS } from '@/lib/tokens'
+import { usePricesContext } from '@/shared/context/PricesContext'
 import { useMemo } from 'react'
+import { useGetChartRewardsData } from '../../rewards/hooks/useGetChartRewardsData'
+import { CollectiveRewardsDualAxisChart } from './CollectiveRewardsChart'
 
 /**
  * Container component for the collective rewards chart
@@ -18,9 +18,10 @@ export const CollectiveRewardsChartContainer = () => {
   const { data: rewardsData, isLoading: isRewardsLoading, error: rewardsError } = useGetChartRewardsData()
   const { prices } = usePricesContext()
 
-  const { rif, rbtc } = TOKENS
+  const { rif, rbtc, usdrif } = TOKENS
   const rifPrice = prices[rif.symbol]?.price ?? 0
   const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
+  const usdrifPrice = prices[usdrif.symbol]?.price ?? 0
 
   useHandleErrors({
     error: backingError || rewardsError,
@@ -38,6 +39,7 @@ export const CollectiveRewardsChartContainer = () => {
       rewardsData={rewardsData || []}
       rifPrice={rifPrice}
       rbtcPrice={rbtcPrice}
+      usdrifPrice={usdrifPrice}
     />
   )
 }
@@ -47,6 +49,7 @@ interface CollectiveRewardsChartContentProps {
   rewardsData: CycleRewardsItem[]
   rifPrice: number
   rbtcPrice: number
+  usdrifPrice: number
 }
 
 const CollectiveRewardsChartContent = ({
@@ -54,10 +57,11 @@ const CollectiveRewardsChartContent = ({
   rewardsData,
   rifPrice,
   rbtcPrice,
+  usdrifPrice,
 }: CollectiveRewardsChartContentProps) => {
   const { backingSeries, rewardsSeries, cycles } = useMemo(
-    () => transformApiDataToChartData(backingData, rewardsData, rifPrice, rbtcPrice),
-    [backingData, rewardsData, rifPrice, rbtcPrice],
+    () => transformApiDataToChartData(backingData, rewardsData, rifPrice, rbtcPrice, usdrifPrice),
+    [backingData, rewardsData, rifPrice, rbtcPrice, usdrifPrice],
   )
 
   return (

@@ -47,7 +47,7 @@ export const useGetGaugesNotifyReward = ({
         }),
       }
     }, {})
-  }, [eventsPerGauge, rewardTokens, fromTimestamp, toTimestamp])
+  }, [eventsPerGauge, rewardTokens, fromTimestamp, toTimestamp, gauges])
 
   return {
     data,

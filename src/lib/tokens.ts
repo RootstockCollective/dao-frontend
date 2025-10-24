@@ -20,3 +20,8 @@ export const TOKENS = {
     symbol: RBTC,
   },
 } as const
+
+export const REWARD_TOKEN_KEYS = Object.keys(TOKENS).filter(key => key !== 'strif') as Array<
+  keyof Omit<typeof TOKENS, 'strif'>
+>
+export const REWARD_TOKENS = REWARD_TOKEN_KEYS.map(tokenKey => TOKENS[tokenKey])

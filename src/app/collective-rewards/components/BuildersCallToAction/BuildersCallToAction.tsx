@@ -4,14 +4,14 @@ import { StylableComponentProps } from '@/components/commonProps'
 import { Header, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
-import { FC } from 'react'
+import { ReactElement } from 'react'
 import { zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 import { useBuilderContext } from '../../user'
 import { ActiveBuilders } from '../ActiveBuilders'
 import { Banner } from '../Banner'
 import { BuildersDecorativeSquares } from '../DecorativeSquares'
-import { RewardsMetrics } from '../RewardsMetrics'
+import { RewardsMetrics, RewardsMetricsProps } from '../RewardsMetrics'
 
 const BuildersBanner = () => (
   <Banner
@@ -64,9 +64,7 @@ const BuilderCTAButton = ({ className }: StylableComponentProps<HTMLButtonElemen
   )
 }
 
-interface BuildersCallToActionProps {
-  rifRewards: bigint
-  rbtcRewards: bigint
+export interface BuildersCallToActionProps extends Pick<RewardsMetricsProps, 'rewardTokens'> {
   className?: string
 }
 
@@ -77,7 +75,7 @@ const collapsibleContent = (
   </Paragraph>
 )
 
-export const BuildersCallToAction: FC<BuildersCallToActionProps> = ({ rifRewards, rbtcRewards }) => {
+export const BuildersCallToAction = ({ rewardTokens }: BuildersCallToActionProps): ReactElement => {
   return (
     <Collapsible.Root className="bg-v3-text-80 rounded-sm p-4" defaultOpen={false}>
       <div className="hidden md:block">
@@ -94,11 +92,7 @@ export const BuildersCallToAction: FC<BuildersCallToActionProps> = ({ rifRewards
         <Collapsible.Content className="order-1 md:order-2">{collapsibleContent}</Collapsible.Content>
         <div className="order-2 md:order-3">
           <div className="flex flex-col md:flex-row gap-6 md:gap-10 w-full">
-            <RewardsMetrics
-              title="Upcoming Rewards for Builders"
-              rbtcRewards={rbtcRewards}
-              rifRewards={rifRewards}
-            />
+            <RewardsMetrics title="Upcoming Rewards for Builders" rewardTokens={rewardTokens} />
             <ActiveBuilders />
           </div>
         </div>

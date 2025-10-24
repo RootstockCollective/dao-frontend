@@ -4,13 +4,13 @@ import { StylableComponentProps } from '@/components/commonProps'
 import { Header, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
-import { FC, useContext } from 'react'
+import { ReactElement, useContext } from 'react'
 import { useAccount } from 'wagmi'
 import { AllocationsContext } from '../../allocations/context'
 import { ActiveBackers } from '../ActiveBackers'
 import { Banner } from '../Banner'
 import { BackersDecorativeSquares } from '../DecorativeSquares'
-import { RewardsMetrics } from '../RewardsMetrics'
+import { RewardsMetrics, RewardsMetricsProps } from '../RewardsMetrics'
 
 const BackersBanner = () => (
   <Banner
@@ -67,9 +67,7 @@ const BackerCTAButton = ({ className }: StylableComponentProps<HTMLButtonElement
   )
 }
 
-interface BackersCallToActionProps {
-  rifRewards: bigint
-  rbtcRewards: bigint
+export interface BackersCallToActionProps extends Pick<RewardsMetricsProps, 'rewardTokens'> {
   className?: string
 }
 
@@ -80,7 +78,7 @@ const collapsibleContent = (
   </Paragraph>
 )
 
-export const BackersCallToAction: FC<BackersCallToActionProps> = ({ rifRewards, rbtcRewards }) => {
+export const BackersCallToAction = ({ rewardTokens }: BackersCallToActionProps): ReactElement => {
   return (
     <Collapsible.Root className="bg-v3-text-80 rounded-sm p-4" defaultOpen={false}>
       <div className="hidden md:block">
@@ -97,11 +95,7 @@ export const BackersCallToAction: FC<BackersCallToActionProps> = ({ rifRewards, 
         <Collapsible.Content className="order-1 md:order-2">{collapsibleContent}</Collapsible.Content>
         <div className="order-2 md:order-3">
           <div className="flex flex-col md:flex-row gap-6 md:gap-10 w-full">
-            <RewardsMetrics
-              title="Upcoming Rewards for Backers"
-              rbtcRewards={rbtcRewards}
-              rifRewards={rifRewards}
-            />
+            <RewardsMetrics title="Upcoming Rewards for Backers" rewardTokens={rewardTokens} />
             <ActiveBackers />
           </div>
         </div>

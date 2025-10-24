@@ -1,7 +1,7 @@
 import Big from '@/lib/big'
-import { BigSource } from 'big.js'
-import { formatCurrencyWithLabel } from '@/lib/utils'
 import { USD, WeiPerEther } from '@/lib/constants'
+import { formatCurrencyWithLabel } from '@/lib/utils'
+import { BigSource } from 'big.js'
 
 export const formatMetrics = (amount: bigint, price: BigSource, symbol: string, currency: string = USD) => {
   const fiatAmount = getFiatAmount(amount, price)
@@ -12,7 +12,7 @@ export const formatMetrics = (amount: bigint, price: BigSource, symbol: string, 
   }
 }
 
-export const getFiatAmount = (amount: bigint, price: BigSource): Big => {
+export const getFiatAmount = (amount: bigint | string, price: BigSource): Big => {
   const bigAmount = Big(amount.toString())
   return bigAmount.mul(price).div(WeiPerEther.toString())
 }
@@ -43,8 +43,8 @@ const symbols: { [key: string]: SymbolFormatOptions } = {
   strif,
 }
 
-export const formatSymbol = (value: bigint, symbol: string) => {
-  if (!value) {
+export const formatSymbol = (value: bigint | string, symbol: string) => {
+  if (!value || value === '0') {
     return '0'
   }
   const { decimals, displayDecimals } = symbols[symbol.toLocaleLowerCase()] ?? {
