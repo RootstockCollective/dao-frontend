@@ -14,7 +14,7 @@ export interface RewardsCellProps {
   usdrifValue: bigint
   rifPrice: number
   rbtcPrice: number
-  usdrifPrice?: number
+  usdrifPrice: number
   emptyPlaceholder?: ReactNode
   className?: string
 }
@@ -26,7 +26,7 @@ export const RewardsCell = ({
   usdrifValue,
   rifPrice,
   rbtcPrice,
-  usdrifPrice = 1,
+  usdrifPrice,
   className = '',
   emptyPlaceholder = null,
 }: RewardsCellProps): ReactNode => {
@@ -38,17 +38,17 @@ export const RewardsCell = ({
     {
       symbol: RIF,
       value: formatSymbol(rifValue, RIF),
-      fiatValue: formatCurrency(getFiatAmount(rifValue, rifPrice)),
+      fiatValue: getFiatAmount(rifValue, rifPrice).toFixed(2),
     },
     {
       symbol: RBTC,
       value: formatSymbol(rbtcValue, RBTC),
-      fiatValue: formatCurrency(getFiatAmount(rbtcValue, rbtcPrice)),
+      fiatValue: getFiatAmount(rbtcValue, rbtcPrice).toFixed(2),
     },
     {
       symbol: USDRIF,
       value: formatSymbol(usdrifValue, USDRIF),
-      fiatValue: formatCurrency(getFiatAmount(usdrifValue, usdrifPrice)),
+      fiatValue: getFiatAmount(usdrifValue, usdrifPrice).toFixed(2),
     },
   ]
 

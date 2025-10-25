@@ -1,14 +1,9 @@
 import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
-import {
-  formatMetrics,
-  getBackerRewardPercentage,
-  useGetPerTokenRewards,
-} from '@/app/collective-rewards/rewards'
+import { getBackerRewardPercentage, useGetPerTokenRewards } from '@/app/collective-rewards/rewards'
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
 import { WeiPerEther } from '@/lib/constants'
 import { TOKENS } from '@/lib/tokens'
-import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadBackersManager, useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { useMemo } from 'react'
@@ -19,27 +14,22 @@ interface UseBuilderEstimatedRewardsProps {
   gauge: Address
 }
 
-interface TokenRewardData {
-  amount: string
-  fiatAmount: string
+interface EstimatedRewardsData {
+  rif: bigint
+  rbtc: bigint
+  usdrif: bigint
   isLoading: boolean
   error: Error | null
-}
-
-interface EstimatedRewardsData {
-  rif: TokenRewardData
-  rbtc: TokenRewardData
 }
 
 export const useGetBuilderEstimatedRewards = ({
   builder,
   gauge,
 }: UseBuilderEstimatedRewardsProps): EstimatedRewardsData => {
-  const { prices } = usePricesContext()
   const { getBuilderByAddress } = useBuilderContext()
-  const { rif, rbtc } = TOKENS
+  const { rif, rbtc, usdrif } = TOKENS
 
-  const { rif: rifTokenReward, rbtc: rbtcTokenReward } = useGetPerTokenRewards()
+  const { rif: rifTokenReward, rbtc: rbtcTokenReward, usdrif: usdrifTokenReward } = useGetPerTokenRewards()
 
   const {
     data: totalPotentialRewards,
@@ -88,76 +78,56 @@ export const useGetBuilderEstimatedRewards = ({
   }, [builder, getBuilderByAddress])
 
   // Calculate estimated rewards for RIF
-  const rifFormatted = useMemo(() => {
+  const rifAmount = useMemo(() => {
     const rifRewardsAmountCalc =
       isRewarded && rewardShares && totalPotentialRewards
         ? (rifTokenReward.data ?? 0n * rewardShares) / totalPotentialRewards
         : 0n
     const rifEstimatedRewards = (rifRewardsAmountCalc * (WeiPerEther - rewardPercentageToApply)) / WeiPerEther
-    const rifPrice = prices[rif.symbol]?.price ?? 0
-    return formatMetrics(rifEstimatedRewards, rifPrice, rif.symbol)
-  }, [
-    rifTokenReward.data,
-    rewardShares,
-    totalPotentialRewards,
-    isRewarded,
-    rewardPercentageToApply,
-    prices,
-    rif.symbol,
-  ])
+    return rifEstimatedRewards
+  }, [rifTokenReward.data, rewardShares, totalPotentialRewards, isRewarded, rewardPercentageToApply])
 
   // Calculate estimated rewards for rBTC
-  const rbtcFormatted = useMemo(() => {
+  const rbtcAmount = useMemo(() => {
     const rbtcRewardsAmountCalc =
       isRewarded && rewardShares && totalPotentialRewards
         ? (rbtcTokenReward.data ?? 0n * rewardShares) / totalPotentialRewards
         : 0n
     const rbtcEstimatedRewards =
       (rbtcRewardsAmountCalc * (WeiPerEther - rewardPercentageToApply)) / WeiPerEther
-    const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
-    return formatMetrics(rbtcEstimatedRewards, rbtcPrice, rbtc.symbol)
-  }, [
-    rbtcTokenReward.data,
-    rewardShares,
-    totalPotentialRewards,
-    isRewarded,
-    rewardPercentageToApply,
-    prices,
-    rbtc.symbol,
-  ])
+    return rbtcEstimatedRewards
+  }, [rbtcTokenReward.data, rewardShares, totalPotentialRewards, isRewarded, rewardPercentageToApply])
+
+  // Calculate estimated rewards for USDRIF
+  const usdrifAmount = useMemo(() => {
+    const usdrifRewardsAmountCalc =
+      isRewarded && rewardShares && totalPotentialRewards
+        ? (usdrifTokenReward.data ?? 0n * rewardShares) / totalPotentialRewards
+        : 0n
+    const usdrifEstimatedRewards =
+      (usdrifRewardsAmountCalc * (WeiPerEther - rewardPercentageToApply)) / WeiPerEther
+    return usdrifEstimatedRewards
+  }, [usdrifTokenReward.data, rewardShares, totalPotentialRewards, isRewarded, rewardPercentageToApply])
 
   return {
-    rif: {
-      amount: rifFormatted.amount,
-      fiatAmount: rifFormatted.fiatAmount,
-      isLoading:
-        rifTokenReward.isLoading ||
-        totalPotentialRewardsLoading ||
-        rewardSharesLoading ||
-        backerRewardsPctLoading ||
-        cycleLoading,
-      error:
-        rifTokenReward.error ??
-        totalPotentialRewardsError ??
-        rewardSharesError ??
-        backerRewardsPctError ??
-        cycleError,
-    },
-    rbtc: {
-      amount: rbtcFormatted.amount,
-      fiatAmount: rbtcFormatted.fiatAmount,
-      isLoading:
-        rbtcTokenReward.isLoading ||
-        totalPotentialRewardsLoading ||
-        rewardSharesLoading ||
-        backerRewardsPctLoading ||
-        cycleLoading,
-      error:
-        rbtcTokenReward.error ??
-        totalPotentialRewardsError ??
-        rewardSharesError ??
-        backerRewardsPctError ??
-        cycleError,
-    },
+    rif: rifAmount,
+    rbtc: rbtcAmount,
+    usdrif: usdrifAmount,
+    isLoading:
+      rifTokenReward.isLoading ||
+      rbtcTokenReward.isLoading ||
+      usdrifTokenReward.isLoading ||
+      totalPotentialRewardsLoading ||
+      rewardSharesLoading ||
+      backerRewardsPctLoading ||
+      cycleLoading,
+    error:
+      rifTokenReward.error ??
+      rbtcTokenReward.error ??
+      usdrifTokenReward.error ??
+      totalPotentialRewardsError ??
+      rewardSharesError ??
+      backerRewardsPctError ??
+      cycleError,
   }
 }

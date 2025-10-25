@@ -66,18 +66,42 @@ const usePagedFilteredBackerRewards = ({
         return Big(aValue).sub(bValue).toNumber()
       },
       estimated: (a, b) => {
-        const aValue = getCombinedFiatAmount([a.estimatedRewards.rif.amount, a.estimatedRewards.rbtc.amount])
-        const bValue = getCombinedFiatAmount([b.estimatedRewards.rif.amount, b.estimatedRewards.rbtc.amount])
+        const aValue = getCombinedFiatAmount([
+          a.estimatedRewards.rif.amount,
+          a.estimatedRewards.rbtc.amount,
+          a.estimatedRewards.usdrif.amount,
+        ])
+        const bValue = getCombinedFiatAmount([
+          b.estimatedRewards.rif.amount,
+          b.estimatedRewards.rbtc.amount,
+          b.estimatedRewards.usdrif.amount,
+        ])
         return Big(aValue).sub(bValue).toNumber()
       },
       unclaimed: (a, b) => {
-        const aValue = getCombinedFiatAmount([a.claimableRewards.rif.amount, a.claimableRewards.rbtc.amount])
-        const bValue = getCombinedFiatAmount([b.claimableRewards.rif.amount, b.claimableRewards.rbtc.amount])
+        const aValue = getCombinedFiatAmount([
+          a.claimableRewards.rif.amount,
+          a.claimableRewards.rbtc.amount,
+          a.claimableRewards.usdrif.amount,
+        ])
+        const bValue = getCombinedFiatAmount([
+          b.claimableRewards.rif.amount,
+          b.claimableRewards.rbtc.amount,
+          b.claimableRewards.usdrif.amount,
+        ])
         return Big(aValue).sub(bValue).toNumber()
       },
       total: (a, b) => {
-        const aValue = getCombinedFiatAmount([a.allTimeRewards.rif.amount, a.allTimeRewards.rbtc.amount])
-        const bValue = getCombinedFiatAmount([b.allTimeRewards.rif.amount, b.allTimeRewards.rbtc.amount])
+        const aValue = getCombinedFiatAmount([
+          a.allTimeRewards.rif.amount,
+          a.allTimeRewards.rbtc.amount,
+          a.allTimeRewards.usdrif.amount,
+        ])
+        const bValue = getCombinedFiatAmount([
+          b.allTimeRewards.rif.amount,
+          b.allTimeRewards.rbtc.amount,
+          b.allTimeRewards.usdrif.amount,
+        ])
         return Big(aValue).sub(bValue).toNumber()
       },
     }

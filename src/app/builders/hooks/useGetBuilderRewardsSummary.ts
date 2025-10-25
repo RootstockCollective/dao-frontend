@@ -10,7 +10,7 @@ import { useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
 
 export const useGetBuilderRewardsSummary = (currency = USD) => {
-  const { rif, rbtc } = TOKENS
+  const { rif, rbtc, usdrif } = TOKENS
   const {
     data: estimatedRewards,
     isLoading: estimatedRewardsLoading,
@@ -45,6 +45,7 @@ export const useGetBuilderRewardsSummary = (currency = USD) => {
   const data: BuilderRewardsSummary[] = useMemo(() => {
     const rifPrice = prices[rif.symbol]?.price ?? 0
     const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
+    const usdrifPrice = prices[usdrif.symbol]?.price ?? 0
     const sumTotalAllocation = Object.values(totalAllocation).reduce<bigint>(
       (acc, value) => acc + (value ?? 0n),
       0n,
@@ -59,6 +60,11 @@ export const useGetBuilderRewardsSummary = (currency = USD) => {
       rbtc.address,
       'backersAmount_',
     )
+    const usdrifBuildersRewardsAmount = getNotifyRewardAmount(
+      notifyRewardEventLastCycle,
+      usdrif.address,
+      'backersAmount_',
+    )
 
     return estimatedRewards.map((builder, index) => {
       const { gauge } = builder
@@ -70,6 +76,7 @@ export const useGetBuilderRewardsSummary = (currency = USD) => {
 
       const rifLastCycleRewardsAmount = rifBuildersRewardsAmount[gauge] ?? 0n
       const rbtcLastCycleRewardsAmount = rbtcBuildersRewardsAmount[gauge] ?? 0n
+      const usdrifLastCycleRewardsAmount = usdrifBuildersRewardsAmount[gauge] ?? 0n
 
       return {
         ...builder,
@@ -89,6 +96,14 @@ export const useGetBuilderRewardsSummary = (currency = USD) => {
               value: rbtcLastCycleRewardsAmount,
               price: rbtcPrice,
               symbol: rbtc.symbol,
+              currency,
+            },
+          },
+          usdrif: {
+            amount: {
+              value: usdrifLastCycleRewardsAmount,
+              price: usdrifPrice,
+              symbol: usdrif.symbol,
               currency,
             },
           },

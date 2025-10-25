@@ -43,34 +43,7 @@ export const convertDataToRowData = (
 
     const rifPrice = prices[RIF]?.price ?? 0
     const rbtcPrice = prices[RBTC]?.price ?? 0
-    const usdrifPrice = prices[USDRIF]?.price ?? 1
-
-    // Get actual values from API
-    const pastCycleRif = builder.lastCycleRewards?.rif.amount.value ?? 0n
-    const pastCycleRbtc = builder.lastCycleRewards?.rbtc.amount.value ?? 0n
-    const upcomingRif = builder.backerEstimatedRewards?.rif.amount.value ?? 0n
-    const upcomingRbtc = builder.backerEstimatedRewards?.rbtc.amount.value ?? 0n
-
-    // FIXME: Mock USDRIF values for testing - replace with real API data when available
-    // If values are 0, generate mock data for testing purposes
-    const shouldMockPastCycle = pastCycleRif === 0n && pastCycleRbtc === 0n
-    const shouldMockUpcoming = upcomingRif === 0n && upcomingRbtc === 0n
-
-    const mockPastCycleRif = shouldMockPastCycle ? 150000000000000000000n : pastCycleRif // ~150 RIF
-    const mockPastCycleRbtc = shouldMockPastCycle ? 50000000000000000n : pastCycleRbtc // ~0.05 RBTC
-    const mockPastCycleUsdrif = shouldMockPastCycle ? 75000000000000000000n : pastCycleRif // ~75 USDRIF
-
-    const mockUpcomingRif = shouldMockUpcoming ? 200000000000000000000n : upcomingRif // ~200 RIF
-    const mockUpcomingRbtc = shouldMockUpcoming ? 75000000000000000n : upcomingRbtc // ~0.075 RBTC
-    const mockUpcomingUsdrif = shouldMockUpcoming ? 100000000000000000000n : upcomingRif // ~100 USDRIF
-
-    const finalPastCycleRif = shouldMockPastCycle ? mockPastCycleRif : pastCycleRif
-    const finalPastCycleRbtc = shouldMockPastCycle ? mockPastCycleRbtc : pastCycleRbtc
-    const finalPastCycleUsdrif = shouldMockPastCycle ? mockPastCycleUsdrif : pastCycleRif
-
-    const finalUpcomingRif = shouldMockUpcoming ? mockUpcomingRif : upcomingRif
-    const finalUpcomingRbtc = shouldMockUpcoming ? mockUpcomingRbtc : upcomingRbtc
-    const finalUpcomingUsdrif = shouldMockUpcoming ? mockUpcomingUsdrif : upcomingRif
+    const usdrifPrice = prices[USDRIF]?.price ?? 0
 
     return {
       id: builder.address,
@@ -82,36 +55,34 @@ export const convertDataToRowData = (
           percentage: builder.backerRewardPct,
         },
         rewards_past_cycle: {
-          rbtcValue: finalPastCycleRbtc,
-          rifValue: finalPastCycleRif,
-          usdrifValue: finalPastCycleUsdrif,
+          rbtcValue: builder.lastCycleRewards?.rbtc.amount.value ?? 0n,
+          rifValue: builder.lastCycleRewards?.rif.amount.value ?? 0n,
+          usdrifValue: builder.lastCycleRewards?.usdrif.amount.value ?? 0n,
           rifPrice,
           rbtcPrice,
           usdrifPrice,
-          usdValue:
-            builder.lastCycleRewards || shouldMockPastCycle
-              ? getCombinedFiatAmount([
-                  { value: finalPastCycleRif, symbol: RIF, price: rifPrice, currency: USD },
-                  { value: finalPastCycleRbtc, symbol: RBTC, price: rbtcPrice, currency: USD },
-                  { value: finalPastCycleUsdrif, symbol: USDRIF, price: usdrifPrice, currency: USD },
-                ]).toNumber()
-              : 0,
+          usdValue: builder.lastCycleRewards
+            ? getCombinedFiatAmount([
+                builder.lastCycleRewards.rif.amount,
+                builder.lastCycleRewards.rbtc.amount,
+                builder.lastCycleRewards.usdrif.amount,
+              ]).toNumber()
+            : 0,
         },
         rewards_upcoming: {
-          rbtcValue: finalUpcomingRbtc,
-          rifValue: finalUpcomingRif,
-          usdrifValue: finalUpcomingUsdrif,
+          rbtcValue: builder.backerEstimatedRewards?.rbtc.amount.value ?? 0n,
+          rifValue: builder.backerEstimatedRewards?.rif.amount.value ?? 0n,
+          usdrifValue: builder.backerEstimatedRewards?.usdrif.amount.value ?? 0n,
           rifPrice,
           rbtcPrice,
           usdrifPrice,
-          usdValue:
-            builder.backerEstimatedRewards || shouldMockUpcoming
-              ? getCombinedFiatAmount([
-                  { value: finalUpcomingRif, symbol: RIF, price: rifPrice, currency: USD },
-                  { value: finalUpcomingRbtc, symbol: RBTC, price: rbtcPrice, currency: USD },
-                  { value: finalUpcomingUsdrif, symbol: USDRIF, price: usdrifPrice, currency: USD },
-                ]).toNumber()
-              : 0,
+          usdValue: builder.backerEstimatedRewards
+            ? getCombinedFiatAmount([
+                builder.backerEstimatedRewards.rif.amount,
+                builder.backerEstimatedRewards.rbtc.amount,
+                builder.backerEstimatedRewards.usdrif.amount,
+              ]).toNumber()
+            : 0,
         },
         backing: {
           amount: builderBacking,

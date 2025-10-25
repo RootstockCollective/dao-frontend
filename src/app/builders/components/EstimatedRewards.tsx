@@ -1,8 +1,5 @@
-import { useHandleErrors } from '@/app/collective-rewards/utils'
-import {
-  formatSymbol,
-  getFiatAmount as getFiatAmountFromRewards,
-} from '@/app/collective-rewards/rewards/utils'
+import { getCombinedFiatAmount, useHandleErrors } from '@/app/collective-rewards/utils'
+import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils'
 import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
 import { MetricToken } from '@/app/components/Metric/types'
 import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/FiatTooltipLabel'
@@ -38,17 +35,17 @@ const USDWithTokensRewards = ({
     {
       symbol: RIF,
       value: formatSymbol(rif, RIF),
-      fiatValue: formatCurrency(getFiatAmountFromRewards(rif, rifPrice)),
+      fiatValue: getFiatAmount(rif, rifPrice).toFixed(2),
     },
     {
       symbol: RBTC,
       value: formatSymbol(rbtc, RBTC),
-      fiatValue: formatCurrency(getFiatAmountFromRewards(rbtc, rbtcPrice)),
+      fiatValue: getFiatAmount(rbtc, rbtcPrice).toFixed(2),
     },
     {
       symbol: USDRIF,
       value: formatSymbol(usdrif, USDRIF),
-      fiatValue: formatCurrency(getFiatAmountFromRewards(usdrif, usdrifPrice)),
+      fiatValue: getFiatAmount(usdrif, usdrifPrice).toFixed(2),
     },
   ]
 
@@ -75,63 +72,62 @@ export const EstimatedRewards = () => {
 
   const rifPrice = prices[RIF]?.price ?? 0
   const rbtcPrice = prices[RBTC]?.price ?? 0
-  const usdrifPrice = prices[USDRIF]?.price ?? 1
+  const usdrifPrice = prices[USDRIF]?.price ?? 0
 
   const {
     rifBackerRewards,
     rbtcBackerRewards,
+    usdrifBackerRewards,
     usdBackerRewards,
     rifBuilderRewards,
     rbtcBuilderRewards,
+    usdrifBuilderRewards,
     usdBuilderRewards,
   } = builderEstimatedRewards.reduce(
     (acc, builder) => {
       return {
         rifBackerRewards: acc.rifBackerRewards + builder.backerEstimatedRewards.rif.amount.value,
         rbtcBackerRewards: acc.rbtcBackerRewards + builder.backerEstimatedRewards.rbtc.amount.value,
+        usdrifBackerRewards: acc.usdrifBackerRewards + builder.backerEstimatedRewards.usdrif.amount.value,
         usdBackerRewards: acc.usdBackerRewards
           .add(
-            getFiatAmountFromRewards(
-              builder.backerEstimatedRewards.rif.amount.value,
-              builder.backerEstimatedRewards.rif.amount.price,
-            ),
+            getCombinedFiatAmount([
+              builder.backerEstimatedRewards.rif.amount,
+              builder.backerEstimatedRewards.usdrif.amount,
+              builder.backerEstimatedRewards.rbtc.amount,
+            ]),
           )
           .add(
-            getFiatAmountFromRewards(
-              builder.backerEstimatedRewards.rbtc.amount.value,
-              builder.backerEstimatedRewards.rbtc.amount.price,
-            ),
+            getCombinedFiatAmount([
+              builder.backerEstimatedRewards.rif.amount,
+              builder.backerEstimatedRewards.usdrif.amount,
+              builder.backerEstimatedRewards.rbtc.amount,
+            ]),
           ),
         rifBuilderRewards: acc.rifBuilderRewards + builder.builderEstimatedRewards.rif.amount.value,
         rbtcBuilderRewards: acc.rbtcBuilderRewards + builder.builderEstimatedRewards.rbtc.amount.value,
-        usdBuilderRewards: acc.usdBuilderRewards
-          .add(
-            getFiatAmountFromRewards(
-              builder.builderEstimatedRewards.rif.amount.value,
-              builder.builderEstimatedRewards.rif.amount.price,
-            ),
-          )
-          .add(
-            getFiatAmountFromRewards(
-              builder.builderEstimatedRewards.rbtc.amount.value,
-              builder.builderEstimatedRewards.rbtc.amount.price,
-            ),
-          ),
+        usdrifBuilderRewards: acc.usdrifBuilderRewards + builder.builderEstimatedRewards.usdrif.amount.value,
+        usdBuilderRewards: acc.usdBuilderRewards.add(
+          getCombinedFiatAmount([
+            builder.builderEstimatedRewards.rif.amount,
+            builder.builderEstimatedRewards.usdrif.amount,
+            builder.builderEstimatedRewards.rbtc.amount,
+          ]),
+        ),
       }
     },
     {
       rifBackerRewards: 0n,
       rbtcBackerRewards: 0n,
+      usdrifBackerRewards: 0n,
       usdBackerRewards: Big(0),
       rifBuilderRewards: 0n,
       rbtcBuilderRewards: 0n,
+      usdrifBuilderRewards: 0n,
       usdBuilderRewards: Big(0),
     },
   )
 
-  // FIXME: Mock USDRIF values with RIF values - replace with real API data when available
-  const usdrifBackerRewards = rifBackerRewards
-  const usdrifBuilderRewards = rifBuilderRewards
   return (
     <div className="flex flex-col gap-4 md:gap-0 md:flex-row basis-3/5">
       {builderEstimatedRewardsLoading ? (

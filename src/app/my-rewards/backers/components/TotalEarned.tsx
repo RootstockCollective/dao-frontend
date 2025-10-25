@@ -5,66 +5,49 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { useBackerTotalEarned } from '../hooks/useBackerTotalEarned'
 import { MetricBar } from '@/app/components/Metric/MetricBar'
 import { MetricToken } from '@/app/components/Metric/types'
-import { Header, Span } from '@/components/Typography'
-import { RBTC, RIF, USD, USDRIF } from '@/lib/constants'
-import { TOKENS } from '@/lib/tokens'
+import { Header } from '@/components/Typography'
+import { RBTC, RIF, USDRIF } from '@/lib/constants'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 import { useMemo } from 'react'
+import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/FiatTooltipLabel'
+import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
 
 export const TotalEarned = () => {
-  const { rif: rifData, rbtc: rbtcData } = useBackerTotalEarned()
+  const { rif: rifData, rbtc: rbtcData, usdrif: usdrifData } = useBackerTotalEarned()
   const { data: backerRewards } = useBackerRewardsContext()
   const { prices } = usePricesContext()
-  useHandleErrors({ error: rifData.error ?? rbtcData.error, title: 'Error loading backer total earned' })
+  useHandleErrors({
+    error: rifData.error ?? rbtcData.error ?? usdrifData.error,
+    title: 'Error loading backer total earned',
+  })
 
   const { segments, totalUsdValue } = useMemo(() => {
     const rifPrice = prices[RIF]?.price ?? 0
     const rbtcPrice = prices[RBTC]?.price ?? 0
-    const usdrifPrice = prices[USDRIF]?.price ?? 1
+    const usdrifPrice = prices[USDRIF]?.price ?? 0
 
-    // Get raw bigint values from the context (same logic as the hook)
-    const rifData = backerRewards[TOKENS.rif.address]
-    const rbtcData = backerRewards[TOKENS.rbtc.address]
-
-    const rifEarned = Object.values(rifData?.earned ?? {}).reduce((acc, earned) => acc + earned, 0n)
-    const rifClaimed = Object.values(rifData?.claimed ?? {}).reduce(
-      (acc, value) => acc + value.reduce((acc, value) => acc + value.args.amount_, 0n),
-      0n,
-    )
-    const rifAmount = rifEarned + rifClaimed
-
-    const rbtcEarned = Object.values(rbtcData?.earned ?? {}).reduce((acc, earned) => acc + earned, 0n)
-    const rbtcClaimed = Object.values(rbtcData?.claimed ?? {}).reduce(
-      (acc, value) => acc + value.reduce((acc, value) => acc + value.args.amount_, 0n),
-      0n,
-    )
-    const rbtcAmount = rbtcEarned + rbtcClaimed
-
-    // FIXME: Mock USDRIF values with RIF values - replace with real API data when available
-    const usdrifAmount = rifAmount
-
-    const rifFiatValue = getFiatAmount(rifAmount, rifPrice)
-    const rbtcFiatValue = getFiatAmount(rbtcAmount, rbtcPrice)
-    const usdrifFiatValue = getFiatAmount(usdrifAmount, usdrifPrice)
+    const rifFiatValue = getFiatAmount(rifData.amount, rifPrice)
+    const rbtcFiatValue = getFiatAmount(rbtcData.amount, rbtcPrice)
+    const usdrifFiatValue = getFiatAmount(usdrifData.amount, usdrifPrice)
 
     const totalUsdValue = rifFiatValue.add(rbtcFiatValue).add(usdrifFiatValue)
 
     const segments: MetricToken[] = [
       {
         symbol: RIF,
-        value: formatSymbol(rifAmount, RIF),
-        fiatValue: rifFiatValue.toString(),
+        value: formatSymbol(rifData.amount, RIF),
+        fiatValue: rifFiatValue.toFixed(2),
       },
       {
         symbol: RBTC,
-        value: formatSymbol(rbtcAmount, RBTC),
-        fiatValue: rbtcFiatValue.toString(),
+        value: formatSymbol(rbtcData.amount, RBTC),
+        fiatValue: rbtcFiatValue.toFixed(2),
       },
       {
         symbol: USDRIF,
-        value: formatSymbol(usdrifAmount, USDRIF),
-        fiatValue: usdrifFiatValue.toString(),
+        value: formatSymbol(usdrifData.amount, USDRIF),
+        fiatValue: usdrifFiatValue.toFixed(2),
       },
     ]
 
@@ -79,10 +62,10 @@ export const TotalEarned = () => {
       className="flex-row sm:flex-col justify-between w-full"
     >
       <div className="flex items-center gap-2">
-        <Header variant="h3">{formatCurrency(totalUsdValue)}</Header>
-        <Span variant="body-s" bold>
-          {USD}
-        </Span>
+        <Header variant="h3">
+          {formatCurrency(totalUsdValue, { showCurrencySymbol: false })}{' '}
+          <FiatTooltipLabel tooltip={{ side: 'top', text: <MetricTooltipContent tokens={segments} /> }} />
+        </Header>
       </div>
       <MetricBar segments={segments} className="w-full max-w-[180px]" />
     </RewardCard>

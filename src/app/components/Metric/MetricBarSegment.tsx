@@ -31,7 +31,7 @@ export const MetricBarSegment = ({
     <BarSegment
       className={cn(
         TOKEN_CLASSES[symbol],
-        gray && 'bg-v3-bg-accent-20 border-v3-bg-accent-20',
+        gray && 'bg-v3-text-20 border-v3-text-20',
         fade && 'opacity-40 transition-opacity duration-200',
         className,
       )}

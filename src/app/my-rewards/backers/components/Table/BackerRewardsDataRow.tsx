@@ -65,19 +65,17 @@ export const convertDataToRowData = (
 
     const rifPrice = prices[RIF]?.price ?? 0
     const rbtcPrice = prices[RBTC]?.price ?? 0
-    const usdrifPrice = prices[USDRIF]?.price ?? 1
+    const usdrifPrice = prices[USDRIF]?.price ?? 0
 
     const unclaimedRif = builder.claimableRewards.rif.amount.value
     const unclaimedRbtc = builder.claimableRewards.rbtc.amount.value
+    const unclaimedUsdrif = builder.claimableRewards.usdrif.amount.value
     const estimatedRif = builder.estimatedRewards.rif.amount.value
     const estimatedRbtc = builder.estimatedRewards.rbtc.amount.value
+    const estimatedUsdrif = builder.estimatedRewards.usdrif.amount.value
     const totalRif = builder.allTimeRewards.rif.amount.value
     const totalRbtc = builder.allTimeRewards.rbtc.amount.value
-
-    // FIXME: Mock USDRIF values with RIF values - replace with real API data when available
-    const unclaimedUsdrif = unclaimedRif
-    const estimatedUsdrif = estimatedRif
-    const totalUsdrif = totalRif
+    const totalUsdrif = builder.allTimeRewards.usdrif.amount.value
 
     return {
       id: builder.address,

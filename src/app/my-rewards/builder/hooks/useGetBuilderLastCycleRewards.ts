@@ -7,22 +7,18 @@ import {
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { TOKENS } from '@/lib/tokens'
-import { usePricesContext } from '@/shared/context/PricesContext'
 import { Address } from 'viem'
 
 interface UseBuilderLastCycleRewardsProps {
   gauge: Address
 }
 
-interface TokenRewardData {
-  amount: string
-  fiatAmount: string
-  isLoading: boolean
-}
-
 interface LastCycleRewardsData {
-  rif: TokenRewardData
-  rbtc: TokenRewardData
+  rif: bigint
+  rbtc: bigint
+  usdrif: bigint
+  isLoading: boolean
+  error: Error | null
 }
 
 const useGetNotifyRewardAmountFromLogs = (
@@ -47,8 +43,7 @@ const useGetNotifyRewardAmountFromLogs = (
 export const useGetBuilderLastCycleRewards = ({
   gauge,
 }: UseBuilderLastCycleRewardsProps): LastCycleRewardsData => {
-  const { rif, rbtc } = TOKENS
-  const { prices } = usePricesContext()
+  const { rif, rbtc, usdrif } = TOKENS
   const { data: cycle, isLoading: cycleLoading, error: cycleError } = useCycleContext()
   const {
     data: { fromTimestamp, toTimestamp } = {},
@@ -58,28 +53,23 @@ export const useGetBuilderLastCycleRewards = ({
 
   const rifAmount = useGetNotifyRewardAmountFromLogs(rif.address, gauge, fromTimestamp, toTimestamp)
   const rbtcAmount = useGetNotifyRewardAmountFromLogs(rbtc.address, gauge, fromTimestamp, toTimestamp)
+  const usdrifAmount = useGetNotifyRewardAmountFromLogs(usdrif.address, gauge, fromTimestamp, toTimestamp)
 
   useHandleErrors({
     error: cycleError ?? lastCycleRewardsError ?? rifAmount.error ?? rbtcAmount.error,
     title: 'Error loading last cycle rewards',
   })
 
-  const rifPrice = prices[rif.symbol]?.price ?? 0
-  const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
-
-  const rifFormatted = formatMetrics(rifAmount.amount, rifPrice, rif.symbol)
-  const rbtcFormatted = formatMetrics(rbtcAmount.amount, rbtcPrice, rbtc.symbol)
-
   return {
-    rif: {
-      amount: rifFormatted.amount,
-      fiatAmount: rifFormatted.fiatAmount,
-      isLoading: cycleLoading || lastCycleRewardsLoading || rifAmount.isLoading,
-    },
-    rbtc: {
-      amount: rbtcFormatted.amount,
-      fiatAmount: rbtcFormatted.fiatAmount,
-      isLoading: cycleLoading || lastCycleRewardsLoading || rbtcAmount.isLoading,
-    },
+    rif: rifAmount.amount,
+    rbtc: rbtcAmount.amount,
+    usdrif: usdrifAmount.amount,
+    isLoading:
+      cycleLoading ||
+      lastCycleRewardsLoading ||
+      rifAmount.isLoading ||
+      rbtcAmount.isLoading ||
+      usdrifAmount.isLoading,
+    error: cycleError ?? lastCycleRewardsError ?? rifAmount.error ?? rbtcAmount.error ?? usdrifAmount.error,
   }
 }

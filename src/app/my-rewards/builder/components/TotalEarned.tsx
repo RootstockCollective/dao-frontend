@@ -5,71 +5,72 @@ import { useGetBuilderAllTimeRewards } from '@/app/my-rewards/builder/hooks/useG
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 import { MetricBar } from '@/app/components/Metric/MetricBar'
 import { MetricToken } from '@/app/components/Metric/types'
-import { Header, Span } from '@/components/Typography'
-import { RBTC, RIF, USD, USDRIF } from '@/lib/constants'
+import { Header } from '@/components/Typography'
+import { RBTC, RIF, USDRIF } from '@/lib/constants'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 import { useMemo } from 'react'
+import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
+import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/FiatTooltipLabel'
 
 export const TotalEarned = ({ gauge }: { gauge: Address }) => {
-  const { rif: rifData, rbtc: rbtcData } = useGetBuilderAllTimeRewards({
+  const {
+    rif: rifAllTimeRewards,
+    rbtc: rbtcAllTimeRewards,
+    usdrif: usdrifAllTimeRewards,
+    isLoading,
+    error,
+  } = useGetBuilderAllTimeRewards({
     gauge,
   })
   const { prices } = usePricesContext()
-  useHandleErrors({ error: rifData.error ?? rbtcData.error, title: 'Error loading total earned' })
+  useHandleErrors({ error, title: 'Error loading total earned' })
 
   const { segments, totalUsdValue } = useMemo(() => {
     const rifPrice = prices[RIF]?.price ?? 0
     const rbtcPrice = prices[RBTC]?.price ?? 0
-    const usdrifPrice = prices[USDRIF]?.price ?? 1
+    const usdrifPrice = prices[USDRIF]?.price ?? 0
 
-    // Extract numeric part and convert
-    const rifAmount = BigInt(Math.floor(parseFloat(rifData.amount.split(' ')[0]) * 1e18))
-    const rbtcAmount = BigInt(Math.floor(parseFloat(rbtcData.amount.split(' ')[0]) * 1e18))
-
-    // FIXME: Mock USDRIF values with RIF values - replace with real API data when available
-    const usdrifAmount = rifAmount
-
-    const rifFiatValue = getFiatAmount(rifAmount, rifPrice)
-    const rbtcFiatValue = getFiatAmount(rbtcAmount, rbtcPrice)
-    const usdrifFiatValue = getFiatAmount(usdrifAmount, usdrifPrice)
+    const rifFiatValue = getFiatAmount(rifAllTimeRewards, rifPrice)
+    const rbtcFiatValue = getFiatAmount(rbtcAllTimeRewards, rbtcPrice)
+    const usdrifFiatValue = getFiatAmount(usdrifAllTimeRewards, usdrifPrice)
 
     const totalUsdValue = rifFiatValue.add(rbtcFiatValue).add(usdrifFiatValue)
 
     const segments: MetricToken[] = [
       {
         symbol: RIF,
-        value: rifData.amount,
-        fiatValue: rifFiatValue.toString(),
+        value: formatSymbol(rifAllTimeRewards, RIF),
+        fiatValue: rifFiatValue.toFixed(2),
       },
       {
         symbol: RBTC,
-        value: rbtcData.amount,
-        fiatValue: rbtcFiatValue.toString(),
+        value: formatSymbol(rbtcAllTimeRewards, RBTC),
+        fiatValue: rbtcFiatValue.toFixed(2),
       },
       {
         symbol: USDRIF,
-        value: rifData.amount,
-        fiatValue: usdrifFiatValue.toString(),
+        value: formatSymbol(usdrifAllTimeRewards, USDRIF),
+        fiatValue: usdrifFiatValue.toFixed(2),
       },
     ]
 
     return { segments, totalUsdValue }
-  }, [rifData, rbtcData, prices])
+  }, [rifAllTimeRewards, rbtcAllTimeRewards, usdrifAllTimeRewards, prices])
 
   return (
     <RewardCard
       data-testid="total-earned"
-      isLoading={rifData.isLoading || rbtcData.isLoading}
+      isLoading={isLoading}
       title="Total earned"
       info="Your total rewards earned across all cycles"
       className="flex-row sm:flex-col justify-between w-full"
     >
       <div className="flex items-center gap-2">
-        <Header variant="h3">{formatCurrency(totalUsdValue)}</Header>
-        <Span variant="body-s" bold>
-          {USD}
-        </Span>
+        <Header variant="h3">
+          {formatCurrency(totalUsdValue, { showCurrencySymbol: false })}{' '}
+          <FiatTooltipLabel tooltip={{ side: 'top', text: <MetricTooltipContent tokens={segments} /> }} />
+        </Header>
       </div>
       <MetricBar segments={segments} className="w-full max-w-[180px]" />
     </RewardCard>

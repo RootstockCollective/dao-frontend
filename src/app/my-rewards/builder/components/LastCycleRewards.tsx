@@ -4,14 +4,22 @@ import { useGetBuilderLastCycleRewards } from '@/app/my-rewards/builder/hooks/us
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 import { MetricBar } from '@/app/components/Metric/MetricBar'
 import { MetricToken } from '@/app/components/Metric/types'
-import { Header, Span } from '@/components/Typography'
-import { RBTC, RIF, USD, USDRIF } from '@/lib/constants'
+import { Header } from '@/components/Typography'
+import { RBTC, RIF, USDRIF } from '@/lib/constants'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 import { useMemo } from 'react'
+import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
+import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/FiatTooltipLabel'
 
 export const LastCycleRewards = ({ gauge }: { gauge: Address }) => {
-  const { rif: rifData, rbtc: rbtcData } = useGetBuilderLastCycleRewards({
+  const {
+    rif: rifAmount,
+    rbtc: rbtcAmount,
+    usdrif: usdrifAmount,
+    isLoading,
+    error,
+  } = useGetBuilderLastCycleRewards({
     gauge,
   })
   const { prices } = usePricesContext()
@@ -19,13 +27,7 @@ export const LastCycleRewards = ({ gauge }: { gauge: Address }) => {
   const { segments, totalUsdValue } = useMemo(() => {
     const rifPrice = prices[RIF]?.price ?? 0
     const rbtcPrice = prices[RBTC]?.price ?? 0
-    const usdrifPrice = prices[USDRIF]?.price ?? 1
-
-    const rifAmount = BigInt(Math.floor(parseFloat(rifData.amount.split(' ')[0]) * 1e18))
-    const rbtcAmount = BigInt(Math.floor(parseFloat(rbtcData.amount.split(' ')[0]) * 1e18))
-
-    // FIXME: Mock USDRIF values with RIF values - replace with real API data when available
-    const usdrifAmount = rifAmount
+    const usdrifPrice = prices[USDRIF]?.price ?? 0
 
     const rifFiatValue = getFiatAmount(rifAmount, rifPrice)
     const rbtcFiatValue = getFiatAmount(rbtcAmount, rbtcPrice)
@@ -36,37 +38,37 @@ export const LastCycleRewards = ({ gauge }: { gauge: Address }) => {
     const segments: MetricToken[] = [
       {
         symbol: RIF,
-        value: rifData.amount,
-        fiatValue: rifFiatValue.toString(),
+        value: formatSymbol(rifAmount, RIF),
+        fiatValue: rifFiatValue.toFixed(2),
       },
       {
         symbol: RBTC,
-        value: rbtcData.amount,
-        fiatValue: rbtcFiatValue.toString(),
+        value: formatSymbol(rbtcAmount, RBTC),
+        fiatValue: rbtcFiatValue.toFixed(2),
       },
       {
         symbol: USDRIF,
-        value: rifData.amount,
-        fiatValue: usdrifFiatValue.toString(),
+        value: formatSymbol(usdrifAmount, USDRIF),
+        fiatValue: usdrifFiatValue.toFixed(2),
       },
     ]
 
     return { segments, totalUsdValue }
-  }, [rifData, rbtcData, prices])
+  }, [rifAmount, rbtcAmount, usdrifAmount, prices])
 
   return (
     <RewardCard
       data-testid="last-cycle-rewards"
-      isLoading={rifData.isLoading || rbtcData.isLoading}
+      isLoading={isLoading}
       title="Last cycle"
       info="Your rewards from the previous cycle"
       className="flex-row sm:flex-col justify-between w-full"
     >
       <div className="flex items-center gap-2">
-        <Header variant="h3">{formatCurrency(totalUsdValue)}</Header>
-        <Span variant="body-s" bold>
-          {USD}
-        </Span>
+        <Header variant="h3">
+          {formatCurrency(totalUsdValue, { showCurrencySymbol: false })}{' '}
+          <FiatTooltipLabel tooltip={{ side: 'top', text: <MetricTooltipContent tokens={segments} /> }} />
+        </Header>
       </div>
       <MetricBar segments={segments} className="w-full max-w-[180px]" />
     </RewardCard>

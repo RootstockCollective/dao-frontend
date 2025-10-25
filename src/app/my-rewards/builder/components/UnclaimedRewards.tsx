@@ -13,27 +13,29 @@ import { usePricesContext } from '@/shared/context'
 import { useModal } from '@/shared/hooks/useModal'
 import { Address } from 'viem'
 import { useMemo } from 'react'
+import Big from 'big.js'
+import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/FiatTooltipLabel'
+import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
 
 export const UnclaimedRewards = ({ builder, gauge }: { builder: Address; gauge: Address }) => {
   const { isModalOpened, openModal, closeModal } = useModal()
-  const { rif: rifData, rbtc: rbtcData } = useGetBuilderUnclaimedRewards({
+  const {
+    rif: rifAmount,
+    rbtc: rbtcAmount,
+    usdrif: usdrifAmount,
+    isLoading,
+    error,
+  } = useGetBuilderUnclaimedRewards({
     builder: builder!,
     gauge,
   })
   const { prices } = usePricesContext()
-  useHandleErrors({ error: rifData.error ?? rbtcData.error, title: 'Error loading unclaimed rewards' })
+  useHandleErrors({ error, title: 'Error loading unclaimed rewards' })
 
   const { segments, totalUsdValue } = useMemo(() => {
     const rifPrice = prices[RIF]?.price ?? 0
     const rbtcPrice = prices[RBTC]?.price ?? 0
-    const usdrifPrice = prices[USDRIF]?.price ?? 1
-
-    // Extract numeric part and convert
-    const rifAmount = BigInt(Math.floor(parseFloat(rifData.amount.split(' ')[0]) * 1e18))
-    const rbtcAmount = BigInt(Math.floor(parseFloat(rbtcData.amount.split(' ')[0]) * 1e18))
-
-    // FIXME: Mock USDRIF values with RIF values - replace with real API data when available
-    const usdrifAmount = rifAmount
+    const usdrifPrice = prices[USDRIF]?.price ?? 0
 
     const rifFiatValue = getFiatAmount(rifAmount, rifPrice)
     const rbtcFiatValue = getFiatAmount(rbtcAmount, rbtcPrice)
@@ -44,37 +46,37 @@ export const UnclaimedRewards = ({ builder, gauge }: { builder: Address; gauge: 
     const segments: MetricToken[] = [
       {
         symbol: RIF,
-        value: rifData.amount,
-        fiatValue: rifFiatValue.toString(),
+        value: formatSymbol(rifAmount, RIF),
+        fiatValue: rifFiatValue.toFixed(2),
       },
       {
         symbol: RBTC,
-        value: rbtcData.amount,
-        fiatValue: rbtcFiatValue.toString(),
+        value: formatSymbol(rbtcAmount, RBTC),
+        fiatValue: rbtcFiatValue.toFixed(2),
       },
       {
         symbol: USDRIF,
-        value: rifData.amount,
-        fiatValue: usdrifFiatValue.toString(),
+        value: formatSymbol(usdrifAmount, USDRIF),
+        fiatValue: usdrifFiatValue.toFixed(2),
       },
     ]
 
     return { segments, totalUsdValue }
-  }, [rifData, rbtcData, prices])
+  }, [rifAmount, rbtcAmount, usdrifAmount, prices])
 
   return (
     <RewardCard
       data-testid="unclaimed-rewards"
-      isLoading={rifData.isLoading || rbtcData.isLoading}
+      isLoading={isLoading}
       title="Unclaimed"
       info="Your rewards available to claim"
       className="w-full"
     >
       <div className="flex items-center gap-2">
-        <Header variant="h3">{formatCurrency(totalUsdValue)}</Header>
-        <Span variant="body-s" bold>
-          {USD}
-        </Span>
+        <Header variant="h3">
+          {formatCurrency(totalUsdValue, { showCurrencySymbol: false })}{' '}
+          <FiatTooltipLabel tooltip={{ side: 'top', text: <MetricTooltipContent tokens={segments} /> }} />
+        </Header>
       </div>
       <MetricBar segments={segments} className="w-full max-w-[180px]" />
       <div className="flex justify-start">

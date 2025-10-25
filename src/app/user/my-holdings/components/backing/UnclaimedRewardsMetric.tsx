@@ -42,12 +42,11 @@ export const UnclaimedRewardsMetric = (): ReactElement => {
   )
   const rifEarnings = unclaimedRewardsPerToken.find(reward => reward.token.symbol === RIF)?.amount ?? 0n
   const rbtcEarnings = unclaimedRewardsPerToken.find(reward => reward.token.symbol === RBTC)?.amount ?? 0n
-  // FIXME: Mock USDRIF values with RIF values - replace with real API data when available
-  const usdrifEarnings = rifEarnings
+  const usdrifEarnings = unclaimedRewardsPerToken.find(reward => reward.token.symbol === USDRIF)?.amount ?? 0n
 
   const rifPrice = prices[RIF]?.price ?? 0
   const rbtcPrice = prices[RBTC]?.price ?? 0
-  const usdrifPrice = prices[USDRIF]?.price ?? 1
+  const usdrifPrice = prices[USDRIF]?.price ?? 0
 
   const usdValue = unclaimedRewardsPerToken.reduce((acc, reward) => acc + reward.fiatAmount, 0)
   useHandleErrors({ error, title: 'Error loading rewards' })
@@ -58,17 +57,17 @@ export const UnclaimedRewardsMetric = (): ReactElement => {
     {
       symbol: RIF,
       value: formatSymbol(rifEarnings, RIF),
-      fiatValue: formatCurrency(getFiatAmount(rifEarnings, rifPrice)),
+      fiatValue: getFiatAmount(rifEarnings, rifPrice).toFixed(2),
     },
     {
       symbol: RBTC,
       value: formatSymbol(rbtcEarnings, RBTC),
-      fiatValue: formatCurrency(getFiatAmount(rbtcEarnings, rbtcPrice)),
+      fiatValue: getFiatAmount(rbtcEarnings, rbtcPrice).toFixed(2),
     },
     {
       symbol: USDRIF,
       value: formatSymbol(usdrifEarnings, USDRIF),
-      fiatValue: formatCurrency(getFiatAmount(usdrifEarnings, usdrifPrice)),
+      fiatValue: getFiatAmount(usdrifEarnings, usdrifPrice).toFixed(2),
     },
   ]
 

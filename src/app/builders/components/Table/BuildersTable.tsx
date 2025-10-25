@@ -84,10 +84,18 @@ const usePagedFilteredBuildersRewards = ({
 
       rewards_past_cycle: (a, b) => {
         const aValue = a.lastCycleRewards
-          ? getCombinedFiatAmount([a.lastCycleRewards.rif.amount, a.lastCycleRewards.rbtc.amount]).toNumber()
+          ? getCombinedFiatAmount([
+              a.lastCycleRewards.rif.amount,
+              a.lastCycleRewards.rbtc.amount,
+              a.lastCycleRewards.usdrif.amount,
+            ]).toNumber()
           : 0
         const bValue = b.lastCycleRewards
-          ? getCombinedFiatAmount([b.lastCycleRewards.rif.amount, b.lastCycleRewards.rbtc.amount]).toNumber()
+          ? getCombinedFiatAmount([
+              b.lastCycleRewards.rif.amount,
+              b.lastCycleRewards.rbtc.amount,
+              b.lastCycleRewards.usdrif.amount,
+            ]).toNumber()
           : 0
         return Big(aValue).sub(bValue).toNumber()
       },
@@ -97,12 +105,14 @@ const usePagedFilteredBuildersRewards = ({
           ? getCombinedFiatAmount([
               a.backerEstimatedRewards.rif.amount,
               a.backerEstimatedRewards.rbtc.amount,
+              a.backerEstimatedRewards.usdrif.amount,
             ]).toNumber()
           : 0
         const bValue = b.backerEstimatedRewards
           ? getCombinedFiatAmount([
               b.backerEstimatedRewards.rif.amount,
               b.backerEstimatedRewards.rbtc.amount,
+              b.backerEstimatedRewards.usdrif.amount,
             ]).toNumber()
           : 0
         return Big(aValue).sub(bValue).toNumber()
