@@ -154,9 +154,9 @@ const transformRewardsData = (
     const currentRifRewards = BigInt(item.rewardPerToken[rifAddress] ?? 0)
     const currentRbtcRewards = BigInt(item.rewardPerToken[rbtcAddress] ?? 0)
     const currentUsdrifRewards = BigInt(item.rewardPerToken[usdrifAddress] ?? 0)
-    cumulativeUsdrifRewards += currentUsdrifRewards
     cumulativeRifRewards += currentRifRewards
     cumulativeRbtcRewards += currentRbtcRewards
+    cumulativeUsdrifRewards += currentUsdrifRewards
 
     return {
       ...item,
