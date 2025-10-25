@@ -22,6 +22,14 @@ const getRewardTokenAddress = (value: ClaimRewardType) => {
   }
 }
 
+const REWARD_TOKENS = REWARD_TOKEN_KEYS.reduce(
+  (acc, tokenKey) => ({
+    ...acc,
+    [tokenKey]: TOKENS[tokenKey],
+  }),
+  {} as Record<string, { symbol: string; address: string }>,
+)
+
 const ClaimBackerRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps, 'isBacker'>): ReactNode => {
   const [selectedRewardType, setSelectedRewardType] = useState<ClaimRewardType>('all')
 
@@ -30,6 +38,8 @@ const ClaimBackerRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps,
   )
 
   const { data: backerRewards, isLoading, error } = useBackerRewardsContext()
+  useHandleErrors({ error, title: 'Error loading rewards' })
+
   const { prices } = usePricesContext()
 
   const { tokenAmounts, tokenFiatAmounts, totalFiatAmount } = useMemo(() => {
@@ -57,16 +67,6 @@ const ClaimBackerRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps,
     }
   }, [backerRewards, prices])
 
-  useHandleErrors({ error, title: 'Error loading rewards' })
-
-  const tokens = REWARD_TOKEN_KEYS.reduce(
-    (acc, tokenKey) => ({
-      ...acc,
-      [tokenKey]: TOKENS[tokenKey],
-    }),
-    {} as Record<string, { symbol: string; address: string }>,
-  )
-
   return (
     open && (
       <ClaimRewardsModalView
@@ -80,7 +80,7 @@ const ClaimBackerRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps,
         isClaimable={isClaimable}
         isLoading={isLoading}
         isTxPending={isPendingTx || isLoadingReceipt}
-        tokens={tokens}
+        tokens={REWARD_TOKENS}
       />
     )
   )
@@ -177,14 +177,6 @@ const ClaimBuilderRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps
   useHandleErrors({ error: errorUsdrif, title: 'Error fetching builder rewards' })
   useHandleErrors({ error: errorClaim, title: 'Error claiming rewards' })
 
-  const tokens = REWARD_TOKEN_KEYS.reduce(
-    (acc, tokenKey) => ({
-      ...acc,
-      [tokenKey]: TOKENS[tokenKey],
-    }),
-    {} as Record<string, { symbol: string; address: string }>,
-  )
-
   return (
     open && (
       <ClaimRewardsModalView
@@ -198,7 +190,7 @@ const ClaimBuilderRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps
         isClaimable={isClaimable}
         isLoading={isLoadingRif || isLoadingRbtc || isLoadingUsdrif || isLoadingGauge}
         isTxPending={isPendingTx || isLoadingReceipt}
-        tokens={tokens}
+        tokens={REWARD_TOKENS}
       />
     )
   )

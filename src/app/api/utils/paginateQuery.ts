@@ -44,7 +44,7 @@ export async function paginateQuery<T extends Record<string, unknown>>(
  * Type-safe helper to detect if a Knex query includes GROUP BY.
  * It inspects the internal Knex query context safely without using `any`.
  */
-function queryHasGroupBy<T extends {}>(query: Knex.QueryBuilder<T, T[]>): boolean {
+function queryHasGroupBy<T extends Record<string, unknown>>(query: Knex.QueryBuilder<T, T[]>): boolean {
   const internalQuery = query.toSQL()
 
   // Check if GROUP BY is present in the generated SQL string
