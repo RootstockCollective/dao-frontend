@@ -58,6 +58,7 @@ export const BackingContextProvider: FC<BackingProviderProps> = ({
 
       const rifBackerEstimatedRewards = backersEstimatedRewards.rif
       const rbtcBackerEstimatedRewards = backersEstimatedRewards.rbtc
+      const usdrifBackerEstimatedRewards = backersEstimatedRewards.usdrif
 
       const backerRifEstimatedRewards = builderAllocation
         ? (rifBackerEstimatedRewards.amount.value * allocation) / builderAllocation
@@ -65,7 +66,9 @@ export const BackingContextProvider: FC<BackingProviderProps> = ({
       const backerRbtcEstimatedRewards = builderAllocation
         ? (rbtcBackerEstimatedRewards.amount.value * allocation) / builderAllocation
         : 0n
-
+      const backerUsdrifEstimatedRewards = builderAllocation
+        ? (usdrifBackerEstimatedRewards.amount.value * allocation) / builderAllocation
+        : 0n
       return {
         ...builder,
         backerEstimatedRewards: {
@@ -81,6 +84,13 @@ export const BackingContextProvider: FC<BackingProviderProps> = ({
             amount: {
               ...rbtcBackerEstimatedRewards.amount,
               value: backerRbtcEstimatedRewards,
+            },
+          },
+          usdrif: {
+            ...usdrifBackerEstimatedRewards,
+            amount: {
+              ...usdrifBackerEstimatedRewards.amount,
+              value: backerUsdrifEstimatedRewards,
             },
           },
         },
