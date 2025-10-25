@@ -2,7 +2,7 @@ import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
 import { BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import { getCombinedFiatAmount, getFiatAmount } from '@/app/collective-rewards/utils'
 import { GetPricesResult } from '@/app/user/types'
-import { RIF, STRIF, USD } from '@/lib/constants'
+import { RBTC, RIF, STRIF, USD, USDRIF } from '@/lib/constants'
 import { formatCurrency } from '@/lib/utils'
 import { redirect, RedirectType } from 'next/navigation'
 import { BuilderTable } from '../BuilderTable.config'
@@ -42,6 +42,8 @@ export const convertDataToRowData = (
     const builderBacking = builder.totalAllocation ?? 0n
 
     const rifPrice = prices[RIF]?.price ?? 0
+    const rbtcPrice = prices[RBTC]?.price ?? 0
+    const usdrifPrice = prices[USDRIF]?.price ?? 0
 
     return {
       id: builder.address,
@@ -55,20 +57,30 @@ export const convertDataToRowData = (
         rewards_past_cycle: {
           rbtcValue: builder.lastCycleRewards?.rbtc.amount.value ?? 0n,
           rifValue: builder.lastCycleRewards?.rif.amount.value ?? 0n,
+          usdrifValue: builder.lastCycleRewards?.usdrif.amount.value ?? 0n,
+          rifPrice,
+          rbtcPrice,
+          usdrifPrice,
           usdValue: builder.lastCycleRewards
             ? getCombinedFiatAmount([
                 builder.lastCycleRewards.rif.amount,
                 builder.lastCycleRewards.rbtc.amount,
+                builder.lastCycleRewards.usdrif.amount,
               ]).toNumber()
             : 0,
         },
         rewards_upcoming: {
           rbtcValue: builder.backerEstimatedRewards?.rbtc.amount.value ?? 0n,
           rifValue: builder.backerEstimatedRewards?.rif.amount.value ?? 0n,
+          usdrifValue: builder.backerEstimatedRewards?.usdrif.amount.value ?? 0n,
+          rifPrice,
+          rbtcPrice,
+          usdrifPrice,
           usdValue: builder.backerEstimatedRewards
             ? getCombinedFiatAmount([
                 builder.backerEstimatedRewards.rif.amount,
                 builder.backerEstimatedRewards.rbtc.amount,
+                builder.backerEstimatedRewards.usdrif.amount,
               ]).toNumber()
             : 0,
         },

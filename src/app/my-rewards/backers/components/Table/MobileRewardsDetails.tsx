@@ -47,25 +47,13 @@ const RewardDetailsItem = ({
               <Span variant="h5" className="text-v3-text-40">
                 Unclaimed
               </Span>
-              <RewardsCell
-                className="justify-start"
-                usdValue={unclaimed.usdValue}
-                rbtcValue={unclaimed.rbtcValue}
-                rifValue={unclaimed.rifValue}
-                emptyPlaceholder={<EmptyPlaceholder />}
-              />
+              <RewardsCell className="justify-start" {...unclaimed} emptyPlaceholder={<EmptyPlaceholder />} />
             </RewardDetailsMetric>
             <RewardDetailsMetric>
               <Span variant="h5" className="text-v3-text-40">
                 Estimated this cycle
               </Span>
-              <RewardsCell
-                className="justify-start"
-                usdValue={estimated.usdValue}
-                rbtcValue={estimated.rbtcValue}
-                rifValue={estimated.rifValue}
-                emptyPlaceholder={<EmptyPlaceholder />}
-              />
+              <RewardsCell className="justify-start" {...estimated} emptyPlaceholder={<EmptyPlaceholder />} />
             </RewardDetailsMetric>
           </div>
           <Collapsible.Content className="flex flex-col gap-4">
@@ -74,13 +62,7 @@ const RewardDetailsItem = ({
                 <Span variant="h5" className="text-v3-text-40">
                   Total - lifetime
                 </Span>
-                <RewardsCell
-                  className="justify-start"
-                  usdValue={total.usdValue}
-                  rbtcValue={total.rbtcValue}
-                  rifValue={total.rifValue}
-                  emptyPlaceholder={<EmptyPlaceholder />}
-                />
+                <RewardsCell className="justify-start" {...total} emptyPlaceholder={<EmptyPlaceholder />} />
               </RewardDetailsMetric>
               <RewardDetailsMetric>
                 <Span variant="h5" className="text-v3-text-40">

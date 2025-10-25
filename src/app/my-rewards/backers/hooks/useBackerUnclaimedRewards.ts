@@ -1,35 +1,29 @@
-import { formatMetrics, Token, useBackerRewardsContext } from '@/app/collective-rewards/rewards'
-import { usePricesContext } from '@/shared/context'
+import { Token, useBackerRewardsContext } from '@/app/collective-rewards/rewards'
 import { TOKENS } from '@/lib/tokens'
 
-const useBackerRewardsPerToken = ({ symbol, address }: Token) => {
+const useBackerRewardsPerToken = ({ address }: Token) => {
   const { data: backerRewards, isLoading, error } = useBackerRewardsContext()
-  const { prices } = usePricesContext()
 
   const { earned } = backerRewards[address]
   const totalEarned = Object.values(earned).reduce((acc, earned) => acc + earned, 0n)
-  const price = prices[symbol]?.price ?? 0
-  const formatted = formatMetrics(totalEarned, price, symbol)
 
   return {
-    ...formatted,
+    amount: totalEarned,
     isLoading,
     error,
   }
 }
 
 export const useBackerUnclaimedRewards = () => {
-  const { rif, rbtc } = TOKENS
+  const { rif, rbtc, usdrif } = TOKENS
 
-  const rifData = useBackerRewardsPerToken(rif)
-  const rbtcData = useBackerRewardsPerToken(rbtc)
+  const rifAmount = useBackerRewardsPerToken(rif)
+  const rbtcAmount = useBackerRewardsPerToken(rbtc)
+  const usdrifAmount = useBackerRewardsPerToken(usdrif)
 
   return {
-    rif: {
-      ...rifData,
-    },
-    rbtc: {
-      ...rbtcData,
-    },
+    rif: rifAmount,
+    rbtc: rbtcAmount,
+    usdrif: usdrifAmount,
   }
 }

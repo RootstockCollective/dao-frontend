@@ -52,17 +52,17 @@ export const RewardsInfo: FC<RewardsInfoProps> = ({ backerRewardPercentage, esti
                     {
                       symbol: RBTC,
                       value: formatSymbol(estimatedRewards.rbtc.amount.value, RBTC),
-                      fiatValue: formatCurrency(getFiatAmount(estimatedRewards.rbtc.amount)),
+                      fiatValue: getFiatAmount(estimatedRewards.rbtc.amount).toFixed(2),
                     },
                     {
                       symbol: RIF,
                       value: formatSymbol(estimatedRewards.rif.amount.value, RIF),
-                      fiatValue: formatCurrency(getFiatAmount(estimatedRewards.rif.amount)),
+                      fiatValue: getFiatAmount(estimatedRewards.rif.amount).toFixed(2),
                     },
                     {
                       symbol: USDRIF,
                       value: formatSymbol(estimatedRewards.usdrif.amount.value, USDRIF),
-                      fiatValue: formatCurrency(getFiatAmount(estimatedRewards.usdrif.amount)),
+                      fiatValue: getFiatAmount(estimatedRewards.usdrif.amount).toFixed(2),
                     },
                   ]}
                 />

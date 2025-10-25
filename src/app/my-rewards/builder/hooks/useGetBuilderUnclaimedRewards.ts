@@ -1,6 +1,5 @@
-import { formatMetrics, Token } from '@/app/collective-rewards/rewards'
+import { Token } from '@/app/collective-rewards/rewards'
 import { TOKENS } from '@/lib/tokens'
-import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { Address } from 'viem'
 
@@ -9,33 +8,23 @@ interface UseBuilderUnclaimedRewardsProps {
   gauge: Address
 }
 
-interface TokenRewardData {
-  amount: string
-  fiatAmount: string
-  isLoading: boolean
-  error: Error | null
-}
-
 interface UnclaimedRewardsData {
-  rif: TokenRewardData
-  rbtc: TokenRewardData
+  rif: bigint
+  rbtc: bigint
+  usdrif: bigint
   isLoading: boolean
   error: Error | null
 }
 
 const useGetBuilderRewardsPerToken = (gauge: Address, token: Token) => {
-  const { prices } = usePricesContext()
   const {
     data: rewards,
     isLoading: isLoading,
     error: error,
   } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [token.address] })
 
-  const price = prices[token.symbol]?.price ?? 0
-  const formatted = formatMetrics(rewards ?? 0n, price, token.symbol)
-
   return {
-    ...formatted,
+    amount: rewards ?? 0n,
     isLoading,
     error,
   }
@@ -44,18 +33,29 @@ const useGetBuilderRewardsPerToken = (gauge: Address, token: Token) => {
 export const useGetBuilderUnclaimedRewards = ({
   gauge,
 }: UseBuilderUnclaimedRewardsProps): UnclaimedRewardsData => {
-  const { rif, rbtc } = TOKENS
-  const rifData = useGetBuilderRewardsPerToken(gauge, rif)
-  const rbtcData = useGetBuilderRewardsPerToken(gauge, rbtc)
+  const { rif, rbtc, usdrif } = TOKENS
+
+  const {
+    amount: rifAmount,
+    isLoading: rifIsLoading,
+    error: rifError,
+  } = useGetBuilderRewardsPerToken(gauge, rif)
+  const {
+    amount: rbtcAmount,
+    isLoading: rbtcIsLoading,
+    error: rbtcError,
+  } = useGetBuilderRewardsPerToken(gauge, rbtc)
+  const {
+    amount: usdrifAmount,
+    isLoading: usdrifIsLoading,
+    error: usdrifError,
+  } = useGetBuilderRewardsPerToken(gauge, usdrif)
 
   return {
-    rif: {
-      ...rifData,
-    },
-    rbtc: {
-      ...rbtcData,
-    },
-    isLoading: rifData.isLoading || rbtcData.isLoading,
-    error: rifData.error || rbtcData.error,
+    rif: rifAmount,
+    rbtc: rbtcAmount,
+    usdrif: usdrifAmount,
+    isLoading: rifIsLoading || rbtcIsLoading || usdrifIsLoading,
+    error: rifError || rbtcError || usdrifError,
   }
 }

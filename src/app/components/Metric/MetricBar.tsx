@@ -24,7 +24,7 @@ export const MetricBar = ({ segments, className, ...barProps }: MetricBarProps):
     return <></>
   }
 
-  const totalFiatValue = segments.reduce((sum, { fiatValue }) => sum.add(fiatValue), Big(0))
+  const totalFiatValue = segments.reduce((sum, { fiatValue }) => sum.add(Big(fiatValue)), Big(0))
   const allZero = totalFiatValue.eq(0)
 
   return (
