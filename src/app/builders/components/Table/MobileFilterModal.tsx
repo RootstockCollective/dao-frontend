@@ -35,23 +35,20 @@ export const MobileFilterModal: FC<MobileFilterModalProps> = ({
   const [tempSort, setTempSort] = useState<ColumnId | null>(currentSort)
   const [tempSortDirection, setTempSortDirection] = useState<SortDirection | null>(currentSortDirection)
 
-  // Sync internal state when modal opens or current values change
-  const resetTempState = () => {
-    setTempFilter(currentFilter)
-    setTempSort(currentSort)
-    setTempSortDirection(currentSortDirection)
-  }
-
   useEffect(() => {
     if (isOpen) {
-      resetTempState()
+      setTempFilter(currentFilter)
+      setTempSort(currentSort)
+      setTempSortDirection(currentSortDirection)
     }
   }, [isOpen, currentFilter, currentSort, currentSortDirection])
 
   if (!isOpen) return null
 
   const handleClose = () => {
-    resetTempState()
+    setTempFilter(currentFilter)
+    setTempSort(currentSort)
+    setTempSortDirection(currentSortDirection)
     onClose()
   }
 
