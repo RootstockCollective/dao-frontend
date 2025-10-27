@@ -105,7 +105,11 @@ export default function ProposalReview() {
           </div>
         )}
       </div>
-      <ProposalSubfooter submitForm={onSubmit} buttonText="Review proposal" disabled={!formState.isValid} />
+      <ProposalSubfooter
+        submitForm={onSubmit}
+        buttonText="Review proposal"
+        nextDisabled={!formState.isValid}
+      />
     </div>
   )
 }
