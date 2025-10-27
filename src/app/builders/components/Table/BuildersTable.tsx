@@ -238,7 +238,7 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
       type: 'SET_ROWS',
       payload: convertDataToRowData(buildersRewardsData, prices, allocations),
     })
-  }, [buildersRewardsData, prices, dispatch])
+  }, [buildersRewardsData, prices, allocations, dispatch])
 
   useEffect(() => {
     dispatch({

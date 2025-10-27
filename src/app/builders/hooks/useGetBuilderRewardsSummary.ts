@@ -110,7 +110,7 @@ export const useGetBuilderRewardsSummary = (currency = USD) => {
         },
       }
     })
-  }, [estimatedRewards, totalAllocation, notifyRewardEventLastCycle, prices, rif, rbtc, currency])
+  }, [estimatedRewards, totalAllocation, notifyRewardEventLastCycle, prices, rif, rbtc, usdrif, currency])
 
   const isLoading =
     estimatedRewardsLoading ||
