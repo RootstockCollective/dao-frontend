@@ -17,8 +17,10 @@ import {
 } from '../schemas/ActivationProposalSchema'
 import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
 import { Header } from '@/components/Typography'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 export default function ActivationProposalForm() {
+  const isDesktop = useIsDesktop()
   const router = useRouter()
   const { record, setRecord } = useReviewProposal()
 
@@ -49,8 +51,11 @@ export default function ActivationProposalForm() {
     [handleSubmit, router],
   )
 
-  // eslint-disable-next-line
-  useEffect(() => setFocus('builderName'), [])
+  useEffect(() => {
+    if (isDesktop) {
+      setFocus('builderName')
+    }
+  }, [setFocus, isDesktop])
 
   return (
     <div className="mt-10 md:mt-12 flex flex-col md:flex-row gap-8 md:gap-6">
