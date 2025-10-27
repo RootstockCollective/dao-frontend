@@ -2,7 +2,7 @@ import { JSX } from 'react'
 import { Address } from 'viem'
 
 export type Token = {
-  symbol: string
+  symbol: string // FIXME: I think this often refers to key not to symbol. !! Use RewardToken type instead
   address: Address
 }
 

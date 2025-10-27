@@ -1,5 +1,5 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { formatSymbol } from '@/app/collective-rewards/rewards'
+import { formatSymbol } from '@/app/shared/formatter'
 import {
   BuilderInactiveState,
   builderInactiveStateMessage,

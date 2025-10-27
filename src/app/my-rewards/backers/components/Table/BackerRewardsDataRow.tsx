@@ -4,7 +4,7 @@ import { selectedRowStyle, unselectedRowStyle } from '@/app/builders/components/
 import { getActionType } from '@/app/builders/components/Table/Cell/ActionCell'
 import { RewardsCell, RewardsCellProps } from '@/app/builders/components/Table/Cell/RewardsCell'
 import { BackerRewards } from '@/app/collective-rewards/rewards/backers/hooks'
-import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils'
+import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { ConditionalTooltip } from '@/app/components/Tooltip/ConditionalTooltip'
 import { GetPricesResult } from '@/app/user/types'

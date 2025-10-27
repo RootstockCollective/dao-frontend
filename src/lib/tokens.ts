@@ -7,21 +7,21 @@ export const TOKENS = {
     address: getAddress(tokenContracts.RIF),
     symbol: RIF,
   },
-  strif: {
-    address: getAddress(tokenContracts.stRIF),
-    symbol: STRIF,
+  rbtc: {
+    address: COINBASE_ADDRESS,
+    symbol: RBTC,
   },
   usdrif: {
     address: getAddress(tokenContracts.USDRIF),
     symbol: USDRIF,
   },
-  rbtc: {
-    address: COINBASE_ADDRESS,
-    symbol: RBTC,
+  strif: {
+    address: getAddress(tokenContracts.stRIF),
+    symbol: STRIF,
   },
 } as const
 
-export const REWARD_TOKEN_KEYS = Object.keys(TOKENS).filter(key => key !== 'strif') as Array<
-  keyof Omit<typeof TOKENS, 'strif'>
->
+export const REWARD_TOKEN_KEYS = ['rif', 'usdrif', 'rbtc'] as Array<keyof Omit<typeof TOKENS, 'strif'>>
+export type RewardTokenKey = (typeof REWARD_TOKEN_KEYS)[number]
 export const REWARD_TOKENS = REWARD_TOKEN_KEYS.map(tokenKey => TOKENS[tokenKey])
+export type RewardToken = (typeof TOKENS)[RewardTokenKey]
