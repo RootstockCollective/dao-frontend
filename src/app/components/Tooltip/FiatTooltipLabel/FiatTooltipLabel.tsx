@@ -9,10 +9,10 @@ export type FiatTooltipLabelProps = CommonComponentProps & {
   label?: Partial<LabelProps>
 }
 
-export const FiatTooltipLabel = ({ tooltip: { text, ...tooltipProps }, label }: FiatTooltipLabelProps) => {
+export const FiatTooltipLabel = ({ tooltip: tooltipProps, label }: FiatTooltipLabelProps) => {
   const { className: labelClassName, style: labelStyle, ...labelProps } = label || {}
   return (
-    <Tooltip text={text} {...tooltipProps}>
+    <Tooltip {...tooltipProps}>
       <Label
         variant="body-s"
         className={cn('font-medium leading-[145%]', labelClassName)}
