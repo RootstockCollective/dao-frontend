@@ -1,6 +1,7 @@
 import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { GaugeAbi } from '@/lib/abis/tok/GaugeAbi'
+import { TOKENS } from '@/lib/tokens'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { Address } from 'viem'
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
@@ -47,27 +48,29 @@ const useClaimBuilderReward = (builder: Address, gauge: Address, rewardToken?: A
   }
 }
 
-export const useClaimBuilderRewards = (
-  builder: Address,
-  gauge: Address,
-  { rif, rbtc, usdrif }: { rif: Address; rbtc: Address; usdrif: Address },
-) => {
+export const useClaimBuilderRewards = (builder: Address, gauge: Address) => {
+  const {
+    rif: { address: rifAddress },
+    rbtc: { address: rbtcAddress },
+    usdrif: { address: usdrifAddress },
+  } = TOKENS
+
   const { error: claimBuilderRewardError, ...rest } = useClaimBuilderReward(builder, gauge)
   const { isClaimable: rifClaimable, error: claimRifError } = useClaimBuilderRewardsPerToken(
     builder,
     gauge,
-    rif,
+    rifAddress,
   )
   const { isClaimable: rbtcClaimable, error: claimRbtcError } = useClaimBuilderRewardsPerToken(
     builder,
     gauge,
-    rbtc,
+    rbtcAddress,
   )
 
   const { isClaimable: usdrifClaimable, error: claimUsdrifError } = useClaimBuilderRewardsPerToken(
     builder,
     gauge,
-    usdrif,
+    usdrifAddress,
   )
 
   const isClaimable = rifClaimable || rbtcClaimable || usdrifClaimable
