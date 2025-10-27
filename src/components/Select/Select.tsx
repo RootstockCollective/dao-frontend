@@ -102,7 +102,8 @@ function SelectDropdown({
           side="bottom"
           align="start"
           alignOffset={0}
-          avoidCollisions={false}
+          avoidCollisions={true}
+          collisionPadding={16}
           /* show shadow only when content is fully visible and not closing */
           className={cn('transition-shadow duration-100 ease-out', {
             'shadow-2xl': showShadow && !isAnimating,
