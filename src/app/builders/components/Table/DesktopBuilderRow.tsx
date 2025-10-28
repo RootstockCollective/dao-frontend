@@ -1,7 +1,6 @@
 import { FC, HtmlHTMLAttributes, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { useAccount } from 'wagmi'
-import { DisclaimerFlow } from '@/shared/walletConnection'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
 import { BuilderRowLogic, BuilderTable } from './BuilderTable.config'
 import { DESKTOP_ROW_STYLES } from './utils/builderRowUtils'
@@ -31,8 +30,7 @@ export const DesktopBuilderRow: FC<DesktopBuilderRowProps> = ({
   ...props
 }) => {
   const { isConnected } = useAccount()
-  const { intermediateStep, handleConnectWallet, handleCloseIntermediateStep, onConnectWalletButtonClick } =
-    useAppKitFlow()
+  const { onConnectWalletButtonClick } = useAppKitFlow()
 
   const [isHovered, setIsHovered] = useState(false)
 
@@ -89,10 +87,6 @@ export const DesktopBuilderRow: FC<DesktopBuilderRowProps> = ({
           <td className="w-[24px]"></td>
         </tr>
       </BuilderRowConditionalTooltip>
-
-      {!!intermediateStep && (
-        <DisclaimerFlow onAgree={handleConnectWallet} onClose={handleCloseIntermediateStep} />
-      )}
     </>
   )
 }

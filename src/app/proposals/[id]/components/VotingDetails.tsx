@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useRef, useState } from 'react'
+import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { zeroAddress } from 'viem'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
@@ -25,6 +25,7 @@ import { Eta } from '../../shared/types'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { MobileVotingButton } from './MobileVotingButton'
 import { Modal } from '@/components/Modal'
+import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
 
 // Keep old actions for backward compatibility
 const legacyActionNameToActionTypeMap = new Map<string, ActionType>([
@@ -60,6 +61,7 @@ export const VotingDetails = ({
   voteStart,
   voteOnProposalData,
 }: VotingDetailsProps) => {
+  const { onConnectWalletButtonClick } = useAppKitFlow()
   const { address, isConnected } = useAccount()
   const [vote, setVote] = useGetVoteForSpecificProposal(address ?? zeroAddress, proposalId)
   const [isChoosingVote, setIsChoosingVote] = useState(false)
@@ -163,13 +165,21 @@ export const VotingDetails = ({
     }
   }
 
-  const handleProposalAction = (action: () => void) => (_: MouseEvent<HTMLButtonElement>) => {
-    if (!isConnected) {
-      setPopoverOpen(true)
-      return
-    }
-    action()
-  }
+  const handleProposalAction = useCallback(
+    (action: () => void) => (_: MouseEvent<HTMLButtonElement>) => {
+      if (!isDesktop) {
+        onConnectWalletButtonClick()
+        return
+      }
+      if (!isConnected) {
+        setPopoverOpen(true)
+        return
+      }
+
+      action()
+    },
+    [isConnected, isDesktop, onConnectWalletButtonClick],
+  )
 
   const getButtonActionForState = (
     state?: ProposalState,
