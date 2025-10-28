@@ -37,7 +37,9 @@ export const BannerContent: FC<BannerContentProps> = ({
           </Button>
         )}
       </div>
-      {rightContent && <div className="flex-shrink-0 w-1/2 text-right">{rightContent}</div>}
+      {rightContent && (
+        <div className="flex-shrink-0 w-full md:w-1/2 text-left md:text-right">{rightContent}</div>
+      )}
     </div>
   )
 }
