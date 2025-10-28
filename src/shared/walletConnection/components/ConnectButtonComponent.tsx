@@ -6,6 +6,8 @@ import { ConnectButtonComponentProps } from '../types'
 /**
  * New button that shows Connect Wallet
  * @param onClick
+ * @param className
+ * @param textClassName
  * @constructor
  */
 export const ConnectButtonComponent = ({
