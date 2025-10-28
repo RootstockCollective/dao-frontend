@@ -75,7 +75,7 @@ export const ProposalDetails = ({
   link,
   readOnly,
 }: ProposalDetailsProps) => {
-  const { builderName } = splitCombinedName(name)
+  const { builderName } = splitCombinedName((description ?? '').split(';')[0])
   const discourseLink =
     link ?? (description ? getDiscourseLinkFromProposalDescription(description) : undefined)
   const addressToWhitelist = parsedAction.builder
