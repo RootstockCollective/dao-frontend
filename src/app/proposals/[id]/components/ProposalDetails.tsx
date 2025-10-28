@@ -6,6 +6,7 @@ import { Address, formatEther } from 'viem'
 import {
   convertAmountToBigint,
   DecodedFunctionName,
+  DISPLAY_NAME_SEPARATOR,
   getDiscourseLinkFromProposalDescription,
   splitCombinedName,
 } from '@/app/proposals/shared/utils'
@@ -65,6 +66,19 @@ const DiscourseLink = ({ link, readOnly }: DiscourseLinkProps) => {
   )
 }
 
+/**
+ *  This is being used in both Proposal Details page and Review Proposal page
+ *
+ * @param name
+ * @param description
+ * @param proposer
+ * @param startsAt
+ * @param parsedAction
+ * @param actionName
+ * @param link
+ * @param readOnly
+ * @constructor
+ */
 export const ProposalDetails = ({
   name,
   description,
@@ -75,7 +89,9 @@ export const ProposalDetails = ({
   link,
   readOnly,
 }: ProposalDetailsProps) => {
-  const { builderName } = splitCombinedName((description ?? '').split(';')[0])
+  const nameToUse = name.includes(DISPLAY_NAME_SEPARATOR) ? name : (description ?? '').split(';')[0]
+  const { builderName } = splitCombinedName(nameToUse)
+
   const discourseLink =
     link ?? (description ? getDiscourseLinkFromProposalDescription(description) : undefined)
   const addressToWhitelist = parsedAction.builder
