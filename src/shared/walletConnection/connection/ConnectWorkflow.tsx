@@ -15,7 +15,7 @@ export const ConnectWorkflow = ({ ConnectComponent = ConnectButtonComponent }: C
 
   return (
     <>
-      <ConnectComponent onClick={onConnectWalletButtonClick} />
+      <ConnectComponent onClick={onConnectWalletButtonClick} className="w-auto" />
       {!!intermediateStep && (
         <DisclaimerFlow onAgree={handleConnectWallet} onClose={handleCloseIntermediateStep} />
       )}
