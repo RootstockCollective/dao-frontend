@@ -167,15 +167,14 @@ export const VotingDetails = ({
 
   const handleProposalAction = useCallback(
     (action: () => void) => (_: MouseEvent<HTMLButtonElement>) => {
-      if (!isDesktop) {
-        onConnectWalletButtonClick()
-        return
-      }
       if (!isConnected) {
+        if (!isDesktop) {
+          onConnectWalletButtonClick()
+          return
+        }
         setPopoverOpen(true)
         return
       }
-
       action()
     },
     [isConnected, isDesktop, onConnectWalletButtonClick],
