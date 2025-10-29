@@ -1,7 +1,7 @@
 import { Token, useBackerRewardsContext } from '@/app/collective-rewards/rewards'
 import { TOKENS } from '@/lib/tokens'
 
-const useBackerRewardsPerToken = ({ symbol, address }: Token) => {
+const useBackerRewardsPerToken = ({ address }: Token) => {
   const { data: backerRewards, isLoading, error } = useBackerRewardsContext()
 
   const { earned, claimed } = backerRewards[address]

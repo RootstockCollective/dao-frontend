@@ -42,7 +42,6 @@ export const calculateAbi = (rewardsPerStRif: Big, rifPrice: number): Big => {
 
 export const useGetABI = (abiData: AbiData | undefined) => {
   const { prices } = usePricesContext()
-  const { rif, rbtc, usdrif } = TOKENS
 
   return useMemo(() => {
     if (!abiData?.builders || !abiData.cycles?.length) {
@@ -61,9 +60,9 @@ export const useGetABI = (abiData: AbiData | undefined) => {
         rifPrice,
         rbtcPrice,
         usdrifPrice,
-        BigInt(rewardPerToken[rif.address.toLowerCase()] ?? 0n),
-        BigInt(rewardPerToken[rbtc.address.toLowerCase()] ?? 0n),
-        BigInt(rewardPerToken[usdrif.address.toLowerCase()] ?? 0n),
+        BigInt(rewardPerToken[TOKENS.rif.address.toLowerCase()] ?? 0n),
+        BigInt(rewardPerToken[TOKENS.rbtc.address.toLowerCase()] ?? 0n),
+        BigInt(rewardPerToken[TOKENS.usdrif.address.toLowerCase()] ?? 0n),
       ).toString(),
     )
 

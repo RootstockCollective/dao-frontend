@@ -1,5 +1,7 @@
 import { _lastBlockNumber } from './lastBlockNumber'
 
-export default {
+const strategies = {
   lastBlockNumber: _lastBlockNumber,
 }
+
+export default strategies

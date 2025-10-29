@@ -1,6 +1,4 @@
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'
-
-import { useBackerRewardsContext } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { MetricBar } from '@/app/components/Metric/MetricBar'
 import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
@@ -14,7 +12,6 @@ import { useBackerTotalEarned } from '../hooks/useBackerTotalEarned'
 
 export const TotalEarned = () => {
   const tokens = useBackerTotalEarned()
-  const { data: backerRewards } = useBackerRewardsContext()
   const { prices } = usePricesContext()
   useHandleErrors({
     error: tokens.rif.error ?? tokens.rbtc.error ?? tokens.usdrif.error,
