@@ -1,28 +1,26 @@
 import { HTMLAttributes } from 'react'
 import { AnimatedTilesProgress } from './AnimatedTiles/AnimatedTilesProgress'
-import { type Color, progressBarColors } from './colors'
+import { type GradientColors, progressBarColors, type Color } from './colors'
 import { cn } from '@/lib/utils'
-
-type GradientColors = Color | [Color] | [Color, Color] | [Color, Color, Color]
 
 interface Props extends Omit<HTMLAttributes<SVGSVGElement>, 'color'> {
   /** 1 - 100 */
   progress: number
-  color?: keyof typeof progressBarColors | [GradientColors, GradientColors] | GradientColors
+  color?: GradientColors | (Color | [Color, Color])[]
 }
 
-export function ProgressBar({ progress, color = 'gradient', className, ...props }: Props) {
+export function ProgressBar({ progress, color = progressBarColors, className, ...props }: Props) {
   const getColors = (): [GradientColors, GradientColors] => {
-    if (Array.isArray(color)) {
-      // Check if it's a tuple of two gradients [currentGradient, nextGradient]
-      // This is only true if the first element is an array (nested structure)
-      if (color.length === 2 && Array.isArray(color[0])) {
-        return color as [GradientColors, GradientColors]
-      }
-      // Single gradient (1-3 colors) - use gray for unprogressed area, gradient for progressed area
+    // If it's an array of color pairs (for cycling), use the first one as current and second as next
+    if (Array.isArray(color) && color.length > 0 && Array.isArray(color[0])) {
+      const colorPairs = color as [Color, Color][]
+      return [colorPairs[0], colorPairs[1] || colorPairs[0]]
+    }
+    // If it's an array of single colors, create a gradient from all colors
+    if (Array.isArray(color) && color.length > 0 && typeof color[0] === 'string') {
       return ['#66605C', color as GradientColors]
     }
-    // Single color string - use gray for unprogressed area, color for progressed area
+    // Single color or gradient - use gray for unprogressed area, color for progressed area
     return ['#66605C', color as GradientColors]
   }
 
