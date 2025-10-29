@@ -168,6 +168,7 @@ export const ConnectedSection = () => {
             'transition-all duration-300 overflow-hidden',
             shouldShowDelegates || didIDelegateToMyself ? 'max-h-[100%] opacity-100' : 'max-h-0 opacity-0',
           )}
+          data-testid="DelegatesContainer"
         >
           <DelegatesContainer
             didIDelegateToMyself={didIDelegateToMyself}

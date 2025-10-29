@@ -62,7 +62,12 @@ export function NewProposalCard({ card, onSelectCard, className, ...props }: Pro
           )}
 
           {/* Button Section */}
-          <Button variant="secondary" className="py-3 px-4 self-end" onClick={() => onSelectCard(card.type)}>
+          <Button
+            variant="secondary"
+            className="py-3 px-4 self-end"
+            onClick={() => onSelectCard(card.type)}
+            data-testid={card.buttonDataTestId}
+          >
             {buttonText}
           </Button>
         </div>
