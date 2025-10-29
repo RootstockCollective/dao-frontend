@@ -11,11 +11,8 @@ type Story = StoryObj<typeof ProgressBar>
 
 const progress = [5, 10, 30, 50, 80, 90, 100]
 
-export const Blue: Story = {
-  render: () => <Container ProgressComponent={props => <ProgressBar {...props} color="blue" />} />,
-}
-export const Gradient: Story = {
-  render: () => <Container ProgressComponent={props => <ProgressBar {...props} color="gradient" />} />,
+export const Default: Story = {
+  render: () => <Container ProgressComponent={props => <ProgressBar {...props} />} />,
 }
 export const CustomColor: Story = {
   render: () => (
