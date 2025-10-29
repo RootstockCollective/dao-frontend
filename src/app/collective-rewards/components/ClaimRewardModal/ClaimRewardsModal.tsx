@@ -1,7 +1,7 @@
 import { useBackerRewardsContext } from '@/app/collective-rewards/rewards/backers'
-import { getFiatAmount } from '@/app/collective-rewards/rewards/utils'
+import { getFiatAmount } from '@/app/shared/formatter'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { TOKENS, REWARD_TOKEN_KEYS } from '@/lib/tokens'
+import { TOKENS, REWARD_TOKEN_KEYS, REWARD_TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
@@ -21,14 +21,6 @@ const getRewardTokenAddress = (value: ClaimRewardType) => {
       return TOKENS[value as keyof typeof TOKENS]?.address
   }
 }
-
-const REWARD_TOKENS = REWARD_TOKEN_KEYS.reduce(
-  (acc, tokenKey) => ({
-    ...acc,
-    [tokenKey]: TOKENS[tokenKey],
-  }),
-  {} as Record<string, { symbol: string; address: string }>,
-)
 
 const ClaimBackerRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps, 'isBacker'>): ReactNode => {
   const [selectedRewardType, setSelectedRewardType] = useState<ClaimRewardType>('all')
@@ -80,7 +72,6 @@ const ClaimBackerRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps,
         isClaimable={isClaimable}
         isLoading={isLoading}
         isTxPending={isPendingTx || isLoadingReceipt}
-        tokens={REWARD_TOKENS}
       />
     )
   )
@@ -165,11 +156,7 @@ const ClaimBuilderRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps
     isLoadingReceipt,
     isPendingTx,
     error: errorClaim,
-  } = useClaimBuilderRewards(builderAddress as Address, buildersGauge as Address, {
-    rif: TOKENS.rif.address,
-    rbtc: TOKENS.rbtc.address,
-    usdrif: TOKENS.usdrif.address,
-  })
+  } = useClaimBuilderRewards(builderAddress as Address, buildersGauge as Address)
 
   useHandleErrors({ error: errorGauge, title: 'Error fetching builder gauge' })
   useHandleErrors({ error: errorRif, title: 'Error fetching builder rewards' })
@@ -190,7 +177,6 @@ const ClaimBuilderRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps
         isClaimable={isClaimable}
         isLoading={isLoadingRif || isLoadingRbtc || isLoadingUsdrif || isLoadingGauge}
         isTxPending={isPendingTx || isLoadingReceipt}
-        tokens={REWARD_TOKENS}
       />
     )
   )

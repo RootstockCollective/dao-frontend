@@ -1,5 +1,5 @@
 import { useGetTotalAllocation } from '@/app/collective-rewards/metrics/hooks/useGetTotalAllocation'
-import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
+import { formatSymbol } from '@/app/shared/formatter'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { Metric } from '@/components/Metric'

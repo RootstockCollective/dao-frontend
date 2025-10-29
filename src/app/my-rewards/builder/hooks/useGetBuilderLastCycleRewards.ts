@@ -1,6 +1,5 @@
 import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
 import {
-  formatMetrics,
   getNotifyRewardAmount,
   useGetGaugeNotifyRewardLogs,
   useGetLastCycleDistribution,

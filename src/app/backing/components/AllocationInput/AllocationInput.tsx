@@ -1,5 +1,5 @@
 import { useExitOnOutsideClick } from '@/app/backing/hooks/useExitOnOutsideClick'
-import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils/formatter'
+import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { GetPricesResult } from '@/app/user/types'
 import { CommonComponentProps } from '@/components/commonProps'

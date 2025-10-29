@@ -1,6 +1,4 @@
 import {
-  formatSymbol,
-  getFiatAmount,
   NotifyRewardEvent,
   useGetGaugesNotifyReward,
   UseGetGaugesNotifyRewardReturnType,
@@ -11,6 +9,7 @@ import { FiatTooltipLabel } from '@/app/components'
 import { MetricBar } from '@/app/components/Metric/MetricBar'
 import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
 import { MetricToken } from '@/app/components/Metric/types'
+import { createMetricToken } from '@/app/components/Metric/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { MetricTitle } from '@/components/Metric'
 import { Metric } from '@/components/Metric/Metric'
@@ -98,7 +97,8 @@ function useConvertRewardLogData(
   const allRewardEvents = Object.values(rewardsData).map<NotifyRewardEvent[]>(events => events)
 
   return REWARD_TOKENS.map<MetricToken>(({ address: tokenAddress, symbol }) => {
-    const totalTokenRewards = allRewardEvents.reduce(
+    const price = prices[symbol]?.price ?? 0
+    const value = allRewardEvents.reduce(
       (totalTokenReward, events) =>
         totalTokenReward +
         events.reduce(
@@ -111,13 +111,10 @@ function useConvertRewardLogData(
       0n,
     )
 
-    const fiatValue = getFiatAmount(totalTokenRewards, prices[symbol]?.price ?? 0).toFixed(2)
-    const value = formatSymbol(totalTokenRewards, symbol).toString()
-
-    return {
+    return createMetricToken({
       symbol,
       value,
-      fiatValue,
-    }
+      price,
+    })
   })
 }
