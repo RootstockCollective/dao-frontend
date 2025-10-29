@@ -1,6 +1,7 @@
 import { Header, Paragraph } from '@/components/Typography'
 import { Expandable, ExpandableHeader, ExpandableContent } from '@/components/Expandable'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { parseProposalDescription } from '@/app/proposals/shared/utils'
 
 interface DescriptionProps {
   description?: string
@@ -34,7 +35,9 @@ const DescriptionContent = ({ descriptionHtml }: { descriptionHtml: string }) =>
 
 export const Description = ({ description }: DescriptionProps) => {
   const isDesktop = useIsDesktop()
-  const descriptionHtml = linkfyUrls(description)
+  // Parse the raw description to extract just the display text (without name/metadata)
+  const parsedDescription = description ? parseProposalDescription(description).description : ''
+  const descriptionHtml = linkfyUrls(parsedDescription)
 
   return (
     <div className="md:px-6 px-4 py-10 sm:pb-8">

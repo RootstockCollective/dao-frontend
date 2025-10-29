@@ -192,7 +192,7 @@ interface ParsedDescription {
   fullProposalName?: string // Used to parse builder name
 }
 
-const parseProposalDescription = (description: string): ParsedDescription => {
+export const parseProposalDescription = (description: string): ParsedDescription => {
   // If the proposal description contains semicolon, we will automatically assume it's ours (for now)
   if (description.includes(';')) {
     const [name, ...rest] = description.split(';')

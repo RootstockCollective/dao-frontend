@@ -60,7 +60,7 @@ export function buildProposal(
     calldatasParsed: serializeBigInts(eventArgs.calldatasParsed),
     name: eventArgs.name,
     proposer: eventArgs.proposer,
-    description: eventArgs.description,
+    description: proposal.description,
     proposalId: eventArgs.proposalId,
     Starts: eventArgs.Starts.toISOString(),
     blockNumber: eventArgs.blockNumber,
