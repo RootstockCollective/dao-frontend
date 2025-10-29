@@ -80,8 +80,8 @@ export const useGetBuilderEstimatedRewards = ({
   // Calculate estimated rewards for RIF
   const rifAmount = useMemo(() => {
     const rifRewardsAmountCalc =
-      isRewarded && rewardShares && totalPotentialRewards
-        ? (rifTokenReward.data ?? 0n * rewardShares) / totalPotentialRewards
+      isRewarded && rewardShares && totalPotentialRewards && rifTokenReward.data
+        ? (rifTokenReward.data * rewardShares) / totalPotentialRewards
         : 0n
     const rifEstimatedRewards = (rifRewardsAmountCalc * (WeiPerEther - rewardPercentageToApply)) / WeiPerEther
     return rifEstimatedRewards
@@ -90,8 +90,8 @@ export const useGetBuilderEstimatedRewards = ({
   // Calculate estimated rewards for rBTC
   const rbtcAmount = useMemo(() => {
     const rbtcRewardsAmountCalc =
-      isRewarded && rewardShares && totalPotentialRewards
-        ? (rbtcTokenReward.data ?? 0n * rewardShares) / totalPotentialRewards
+      isRewarded && rewardShares && totalPotentialRewards && rbtcTokenReward.data
+        ? (rbtcTokenReward.data * rewardShares) / totalPotentialRewards
         : 0n
     const rbtcEstimatedRewards =
       (rbtcRewardsAmountCalc * (WeiPerEther - rewardPercentageToApply)) / WeiPerEther
@@ -101,8 +101,8 @@ export const useGetBuilderEstimatedRewards = ({
   // Calculate estimated rewards for USDRIF
   const usdrifAmount = useMemo(() => {
     const usdrifRewardsAmountCalc =
-      isRewarded && rewardShares && totalPotentialRewards
-        ? (usdrifTokenReward.data ?? 0n * rewardShares) / totalPotentialRewards
+      isRewarded && rewardShares && totalPotentialRewards && usdrifTokenReward.data
+        ? (usdrifTokenReward.data * rewardShares) / totalPotentialRewards
         : 0n
     const usdrifEstimatedRewards =
       (usdrifRewardsAmountCalc * (WeiPerEther - rewardPercentageToApply)) / WeiPerEther
