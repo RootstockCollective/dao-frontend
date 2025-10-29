@@ -1,7 +1,6 @@
 'use client'
 
 import { NoContextProviderError } from '@/lib/errors/ContextError'
-import { MAIN_CONTAINER_ID } from '@/lib/constants'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { createContext, useContext, useMemo, useState, useEffect, useRef, useCallback } from 'react'
 import type { PropsWithChildren, ReactNode } from 'react'
@@ -52,8 +51,6 @@ export function LayoutProvider({ children }: PropsWithChildren) {
 
   // Refs for layout elements
   const drawerRef = useRef<HTMLDivElement | null>(null)
-  const [drawerHeight, setDrawerHeight] = useState(0)
-  const [showPadding, setShowPadding] = useState(false)
 
   const openDrawer = useCallback((content: ReactNode, closeOnRouteChange = false) => {
     setDrawerContent(content)
@@ -71,49 +68,6 @@ export function LayoutProvider({ children }: PropsWithChildren) {
   const setDrawerRef = (ref: HTMLDivElement | null) => {
     drawerRef.current = ref
   }
-
-  // Update drawer height when drawer content changes
-  useEffect(() => {
-    if (drawerRef.current) {
-      setDrawerHeight(drawerRef.current.offsetHeight)
-    } else {
-      setDrawerHeight(0)
-    }
-  }, [drawerContent])
-
-  // Manage showPadding state
-  useEffect(() => {
-    if (isDrawerOpen && drawerHeight > 0) {
-      setShowPadding(true)
-    }
-  }, [isDrawerOpen, drawerHeight])
-
-  // Manage main container padding
-  useEffect(() => {
-    const container = document.getElementById(MAIN_CONTAINER_ID) as HTMLDivElement | null
-    if (!container) return
-
-    container.style.transition = 'padding-bottom 0.3s ease-in-out'
-    if (showPadding && drawerHeight > 0) {
-      container.style.paddingBottom = `${drawerHeight}px`
-    } else {
-      container.style.paddingBottom = '0px'
-    }
-
-    return () => {
-      if (container) {
-        container.style.paddingBottom = '0px'
-        container.style.transition = ''
-      }
-    }
-  }, [drawerHeight, showPadding])
-
-  // Reset showPadding when drawer closes
-  useEffect(() => {
-    if (!isDrawerOpen) {
-      setShowPadding(false)
-    }
-  }, [isDrawerOpen])
 
   const value = useMemo<LayoutState>(
     () => ({
