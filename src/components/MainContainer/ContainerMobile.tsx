@@ -27,7 +27,7 @@ export default function ContainerMobile({ className, children, ...props }: HTMLA
           <TopPageHeader />
           {children}
         </main>
-        <BottomDrawer />
+        {!isSidebarOpen && <BottomDrawer />}
         <FooterMobile />
       </div>
     </div>
