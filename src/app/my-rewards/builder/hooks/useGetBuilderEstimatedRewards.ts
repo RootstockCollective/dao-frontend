@@ -99,7 +99,7 @@ export const useGetBuilderEstimatedRewards = ({
           .mul((WeiPerEther - rewardPercentageToApply).toString())
           .div(WeiPerEther.toString())
 
-        return { ...acc, [tokenKey]: BigInt(tokenEstimatedRewardsAmount.toFixed(0)) }
+        return { ...acc, [tokenKey]: BigInt(tokenEstimatedRewardsAmount.toFixed(0, 0)) }
       },
       {} as Record<RewardTokenKey, bigint>,
     )
