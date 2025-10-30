@@ -1,4 +1,3 @@
-import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
 import { getBackerRewardPercentage, useGetPerTokenRewards } from '@/app/collective-rewards/rewards'
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
@@ -7,7 +6,6 @@ import { REWARD_TOKEN_KEYS } from '@/lib/tokens'
 import { useReadBackersManager, useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import Big from 'big.js'
-import { DateTime } from 'luxon'
 import { useMemo } from 'react'
 import { Address } from 'viem'
 
@@ -45,12 +43,6 @@ export const useGetBuilderEstimatedRewards = ({
   } = useReadGauge({ address: gauge, functionName: 'rewardShares' })
 
   const {
-    data: { cycleNext },
-    isLoading: cycleLoading,
-    error: cycleError,
-  } = useCycleContext()
-
-  const {
     data: rawBackerRewardsPct,
     isLoading: backerRewardsPctLoading,
     error: backerRewardsPctError,
@@ -67,7 +59,7 @@ export const useGetBuilderEstimatedRewards = ({
   const rewards = useGetPerTokenRewards()
 
   const data: Record<(typeof REWARD_TOKEN_KEYS)[number], bigint> = useMemo(() => {
-    const rewardPercentageToApply = getCurrentRewardPercentage(cycleNext, rawBackerRewardsPct)
+    const rewardPercentageToApply = getCurrentRewardPercentage(rawBackerRewardsPct)
     const claimingBuilder = getBuilderByAddress(builder)
     const isRewardable = isBuilderRewardable(claimingBuilder?.stateFlags)
 
@@ -99,33 +91,23 @@ export const useGetBuilderEstimatedRewards = ({
           .mul((WeiPerEther - rewardPercentageToApply).toString())
           .div(WeiPerEther.toString())
 
-        return { ...acc, [tokenKey]: BigInt(tokenEstimatedRewardsAmount.toFixed(0)) }
+        return { ...acc, [tokenKey]: BigInt(tokenEstimatedRewardsAmount.toFixed(0, 0)) }
       },
       {} as Record<(typeof REWARD_TOKEN_KEYS)[number], bigint>,
     )
-  }, [
-    rewards,
-    builder,
-    getBuilderByAddress,
-    rewardShares,
-    totalPotentialRewards,
-    rawBackerRewardsPct,
-    cycleNext,
-  ])
+  }, [rewards, builder, getBuilderByAddress, rewardShares, totalPotentialRewards, rawBackerRewardsPct])
 
   const isLoading =
     Object.values(rewards).some(({ isLoading }) => isLoading) ||
     totalPotentialRewardsLoading ||
     rewardSharesLoading ||
-    backerRewardsPctLoading ||
-    cycleLoading
+    backerRewardsPctLoading
 
   const error =
     Object.values(rewards).find(({ error }) => error)?.error ??
     totalPotentialRewardsError ??
     rewardSharesError ??
-    backerRewardsPctError ??
-    cycleError
+    backerRewardsPctError
 
   return {
     ...data,
@@ -134,20 +116,9 @@ export const useGetBuilderEstimatedRewards = ({
   }
 }
 
-const getCurrentRewardPercentage = (
-  cycleNext: DateTime<boolean>,
-  rawBackerRewardsPct?: readonly [bigint, bigint, bigint],
-) => {
-  if (!cycleNext) {
-    return 0n
-  }
+const getCurrentRewardPercentage = (rawBackerRewardsPct?: readonly [bigint, bigint, bigint]) => {
   const [current, next, cooldownEndTime] = rawBackerRewardsPct ?? [0n, 0n, 0n]
-  const rewardPercentageToApply = getBackerRewardPercentage(
-    current,
-    next,
-    cooldownEndTime,
-    cycleNext.toSeconds(),
-  )
+  const rewardPercentageToApply = getBackerRewardPercentage(current, next, cooldownEndTime)
 
   return rewardPercentageToApply.current
 }
