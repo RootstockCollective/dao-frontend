@@ -14,9 +14,26 @@ function useHasHover() {
   try {
     return matchMedia('(hover: hover)').matches
   } catch {
-    // Assume that if browser too old to support matchMedia it's likely not a touch device
     return true
   }
+}
+
+// Track if a pointer is currently down (mouse/touch/pen)
+function usePointerDown() {
+  const [down, setDown] = useState(false)
+  useEffect(() => {
+    const onDown = () => setDown(true)
+    const onUp = () => setDown(false)
+    window.addEventListener('pointerdown', onDown)
+    window.addEventListener('pointerup', onUp)
+    window.addEventListener('pointercancel', onUp)
+    return () => {
+      window.removeEventListener('pointerdown', onDown)
+      window.removeEventListener('pointerup', onUp)
+      window.removeEventListener('pointercancel', onUp)
+    }
+  }, [])
+  return down
 }
 
 type TooltipTriggerContextType = {
@@ -69,23 +86,27 @@ export function Tooltip({
   disabled = false,
   delayDuration = 100,
   supportMobileTap = true,
+  // allow callers to override; if omitted we switch to rAF while dragging
+  updatePositionStrategy: updatePositionStrategyProp,
   ...props
 }: TooltipProps) {
   const [open, setOpen] = useState<boolean>(false)
   const hasHover = useHasHover()
   const isMobile = !hasHover && supportMobileTap
+  const pointerDown = usePointerDown()
+
+  // Prefer rAF updates while pointer is down to avoid ResizeObserver loop warnings.
+  const updatePositionStrategy =
+    (updatePositionStrategyProp as 'optimized' | 'always' | undefined) ??
+    (pointerDown ? 'always' : 'optimized')
 
   useEffect(() => {
     if (!open || !isMobile) return
-
     const handlePopState = () => setOpen(false)
-
     window.history.pushState({ tooltip: true }, '')
     window.addEventListener('popstate', handlePopState)
-
     return () => {
       window.removeEventListener('popstate', handlePopState)
-      // If still on the tooltip state, go back
       if (window.history.state?.tooltip) {
         window.history.back()
       }
@@ -102,12 +123,14 @@ export function Tooltip({
         <TooltipTrigger asChild>{children}</TooltipTrigger>
         <RadixTooltip.Portal>
           <RadixTooltip.Content
-            side={isMobile ? 'top' : side} // always top for mobile; it switches to bottom automatically if it's not enough space
+            side={isMobile ? 'top' : side}
             sideOffset={sideOffset}
             collisionPadding={16}
+            {...({ updatePositionStrategy } as { updatePositionStrategy?: 'optimized' | 'always' })}
             className={cn(
               'rounded-sm bg-v3-text-80 text-v3-bg-accent-60 px-2 py-1 text-xs font-normal shadow-lg font-rootstock-sans',
-              /* Mixing in new classes (not replacing all the default classes) */
+              // reduce layout jumps/jitters when numbers change
+              'whitespace-nowrap [font-variant-numeric:tabular-nums]',
               className,
             )}
             {...props}
