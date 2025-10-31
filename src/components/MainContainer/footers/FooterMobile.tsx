@@ -3,7 +3,7 @@ import { BUILD_ID, ENV, GITHUB_ORG } from '@/lib/constants'
 
 export function FooterMobile() {
   return (
-    <footer className="flex flex-col space-y-6 py-6 text-sm border-t border-dark-gray text-warm-gray w-[90%] mx-auto">
+    <footer className="flex flex-col space-y-6 py-6 text-sm border-t border-dark-gray text-warm-gray w-full mx-auto">
       <div className=" flex flex-row justify-around items-center">
         <a
           href={`https://github.com/${GITHUB_ORG}/dao-frontend/commit/${BUILD_ID}`}

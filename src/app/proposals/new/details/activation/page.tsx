@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import type { Address } from 'viem'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { ProposalSubfooter } from '../../components/ProposalSubfooter'
 import { BaseProposalFields, ProposalInfoSidebar } from '../components'
 import { useReviewProposal } from '@/app/providers'
@@ -21,7 +20,6 @@ import { Header } from '@/components/Typography'
 
 export default function ActivationProposalForm() {
   const router = useRouter()
-  const { openDrawer, closeDrawer } = useLayoutContext()
   const { record, setRecord } = useReviewProposal()
 
   const { handleSubmit, control, setFocus, formState } = useForm<ActivationProposal>({
@@ -50,17 +48,6 @@ export default function ActivationProposalForm() {
     // eslint-disable-next-line
     [handleSubmit, router],
   )
-
-  useEffect(() => {
-    openDrawer(
-      <ProposalSubfooter
-        submitForm={onSubmit}
-        buttonText="Review proposal"
-        nextDisabled={!formState.isValid}
-      />,
-    )
-    return () => closeDrawer()
-  }, [formState.isValid, onSubmit, openDrawer, closeDrawer])
 
   // eslint-disable-next-line
   useEffect(() => setFocus('builderName'), [])
@@ -95,6 +82,11 @@ export default function ActivationProposalForm() {
       <div className="basis-1/3 flex flex-row gap-2 items-start">
         <ProposalInfoSidebar kycLink="https://gov.rootstockcollective.xyz/t/general-guidelines-for-rewards-applications/495/2" />
       </div>
+      <ProposalSubfooter
+        submitForm={onSubmit}
+        buttonText="Review proposal"
+        nextDisabled={!formState.isValid}
+      />
     </div>
   )
 }

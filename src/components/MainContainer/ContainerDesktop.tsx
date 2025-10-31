@@ -21,7 +21,7 @@ export function ContainerDesktop({ children, className, ...props }: HTMLAttribut
       {/* Central section */}
       <div className="grow flex flex-col overflow-x-hidden">
         <HeaderDesktop />
-        <div className="grow flex flex-col">
+        <div className="grow flex flex-col pb-24">
           <div className="flex flex-1 flex-col mt-10" id={MAIN_CONTAINER_ID}>
             <main className="p-8 mb-25 grow">
               <TopPageHeader />
