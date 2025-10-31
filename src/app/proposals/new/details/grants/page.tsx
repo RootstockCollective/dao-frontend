@@ -52,7 +52,11 @@ export default function ProposalReview() {
   )
   // set focus on proposal name field
   // eslint-disable-next-line
-  useEffect(() => setFocus('proposalName'), [])
+  useEffect(() => {
+    if (isDesktop) {
+      setFocus('proposalName')
+    }
+  }, [setFocus, isDesktop])
 
   return (
     <div className="flex flex-col lg:flex-row gap-6 mt-10">

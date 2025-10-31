@@ -14,8 +14,10 @@ import { type DeactivationProposal, DeactivationProposalSchema } from '../schema
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { Header } from '@/components/Typography'
 import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 export default function DeactivationProposalForm() {
+  const isDesktop = useIsDesktop()
   const router = useRouter()
   const { record, setRecord } = useReviewProposal()
   const { getBuilderByAddress } = useBuilderContext()
@@ -57,8 +59,11 @@ export default function DeactivationProposalForm() {
     [handleSubmit, router],
   )
 
-  // eslint-disable-next-line
-  useEffect(() => setFocus('proposalName'), [])
+  useEffect(() => {
+    if (isDesktop) {
+      setFocus('proposalName')
+    }
+  }, [setFocus, isDesktop])
 
   return (
     <div className="mt-10 md:mt-12">
