@@ -48,7 +48,15 @@ export function CommunityInfoHeader({ address: nftAddress }: { address: Address 
     <div className={cn('p-4 pb-8 rounded-sm bg-bg-80', 'flex flex-col sm:flex-row sm:gap-8')}>
       {/* NFT image. Members see their own NFT, non-members see community cover */}
       <div className={cn('relative transition-all duration-300 ', isMember ? 'grow' : 'basis-1/2')}>
-        <Image width={525} height={525} src={image} alt={title} className="w-full h-fit object-cover" />
+        <Image
+          width={525}
+          height={525}
+          src={image}
+          alt={title}
+          className="w-full h-fit object-cover"
+          crossOrigin="anonymous"
+          unoptimized
+        />
         <ImageDebris className="block sm:hidden" image={image} config="bottomRightDiagonal" />
         <ImageDebris className="hidden sm:block" image={image} config="topRightDiagonal" />
       </div>
