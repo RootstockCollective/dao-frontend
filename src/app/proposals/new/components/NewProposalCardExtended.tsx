@@ -81,6 +81,7 @@ export function NewProposalCardExtended({ card, className, cancelCardSelection, 
                 variant="primary"
                 className="py-3 px-6 md:w-auto flex-1 md:flex-none"
                 textClassName="flex-shrink-0"
+                data-testid="ContinueToDetailsButton"
               >
                 Continue to details
               </Button>

@@ -1,8 +1,13 @@
 import { CopyButton } from '@/components/CopyButton'
 import { shortAddress, shortProposalId } from '@/lib/utils'
 import { Address } from 'viem'
+import { HTMLAttributes } from 'react'
 
-export const ShortenAndCopy = ({ value }: { value: string | number }) => {
+interface Props extends HTMLAttributes<HTMLDivElement> {
+  value: string | number
+}
+
+export const ShortenAndCopy = ({ value, ...props }: Props) => {
   if (!value) return null
   const str = value.toString()
   // Use shortAddress logic for addresses, otherwise shorten long IDs
@@ -10,7 +15,7 @@ export const ShortenAndCopy = ({ value }: { value: string | number }) => {
   const display = isAddress ? shortAddress(str as Address) : shortProposalId(str)
 
   return (
-    <CopyButton copyText={str} className="justify-start">
+    <CopyButton copyText={str} className="justify-start" {...props}>
       {display}
     </CopyButton>
   )
