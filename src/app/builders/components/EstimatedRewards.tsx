@@ -52,21 +52,13 @@ export const EstimatedRewards = () => {
               rif: acc.backer.rif + builder.backerEstimatedRewards.rif.amount.value,
               rbtc: acc.backer.rbtc + builder.backerEstimatedRewards.rbtc.amount.value,
               usdrif: acc.backer.usdrif + builder.backerEstimatedRewards.usdrif.amount.value,
-              fiatTotal: acc.backer.fiatTotal
-                .add(
-                  getCombinedFiatAmount([
-                    builder.backerEstimatedRewards.rif.amount,
-                    builder.backerEstimatedRewards.usdrif.amount,
-                    builder.backerEstimatedRewards.rbtc.amount,
-                  ]),
-                )
-                .add(
-                  getCombinedFiatAmount([
-                    builder.backerEstimatedRewards.rif.amount,
-                    builder.backerEstimatedRewards.usdrif.amount,
-                    builder.backerEstimatedRewards.rbtc.amount,
-                  ]),
-                ),
+              fiatTotal: acc.backer.fiatTotal.add(
+                getCombinedFiatAmount([
+                  builder.backerEstimatedRewards.rif.amount,
+                  builder.backerEstimatedRewards.usdrif.amount,
+                  builder.backerEstimatedRewards.rbtc.amount,
+                ]),
+              ),
             },
             builder: {
               rif: acc.builder.rif + builder.builderEstimatedRewards.rif.amount.value,
