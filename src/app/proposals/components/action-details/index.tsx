@@ -70,41 +70,50 @@ export const ActionDetails = ({ parsedAction, actionType, className, readOnly }:
         <>
           <div className="grid grid-cols-2">
             <div>
-              <Span variant="tag-s" className="text-white/70">
+              <Span variant="tag-s" className="text-white/70" data-testid="TypeLabel">
                 Type
               </Span>
-              <Paragraph variant="body">{actionType}</Paragraph>
+              <Paragraph variant="body" data-testid="Type">
+                {actionType}
+              </Paragraph>
             </div>
             <div className="flex flex-col">
-              <Span variant="tag-s" className="text-white/70">
+              <Span variant="tag-s" className="text-white/70" data-testid="ToAddressLabel">
                 To address
               </Span>
               {parsedAction.toAddress ? (
                 !readOnly ? (
                   <Span className="text-primary">
-                    <ShortenAndCopy value={parsedAction.toAddress} />
+                    <ShortenAndCopy value={parsedAction.toAddress} data-testid="ToAddress" />
                   </Span>
                 ) : (
-                  <Span variant="body">{shortAddress(parsedAction.toAddress as Address)}</Span>
+                  <Span variant="body" data-testid="ToAddress">
+                    {shortAddress(parsedAction.toAddress as Address)}
+                  </Span>
                 )
               ) : (
-                <Span variant="body">—</Span>
+                <Span variant="body" data-testid="ToAddress">
+                  —
+                </Span>
               )}
             </div>
           </div>
           {/* Amount block full width */}
           <div>
-            <Span variant="tag-s" className="text-white/70">
+            <Span variant="tag-s" className="text-white/70" data-testid="AmountLabel">
               Amount
             </Span>
             <div className="grid grid-cols-2 gap-x-2 w-max">
               {/* Left column: values, right-aligned */}
               <div className="flex flex-col items-end text-right">
-                <Span className="text-[18px] font-bold">
+                <Span className="text-[18px] font-bold" data-testid="Amount">
                   {formatNumberWithCommas(formatEther(convertAmountToBigint(parsedAction.amount)))}
                 </Span>
                 {parsedAction.price !== undefined && (
-                  <Span className="text-xs text-white/50 font-normal leading-none">
+                  <Span
+                    className="text-xs text-white/50 font-normal leading-none"
+                    data-testid="AmountCurrency"
+                  >
                     {formatCurrency(
                       Big(formatEther(convertAmountToBigint(parsedAction.amount)))
                         .times(parsedAction.price)
@@ -118,11 +127,15 @@ export const ActionDetails = ({ parsedAction, actionType, className, readOnly }:
                 {parsedAction.tokenSymbol && (
                   <div className="flex items-center">
                     <TokenImage symbol={parsedAction.tokenSymbol} />
-                    <Span className="ml-1">{parsedAction.tokenSymbol}</Span>
+                    <Span className="ml-1" data-testid="AmountTokenSymbol">
+                      {parsedAction.tokenSymbol}
+                    </Span>
                   </div>
                 )}
                 {/* TODO: make sure USD is perfectly aligned with its value */}
-                <Span className="font-normal text-xs text-white/50">USD</Span>
+                <Span className="font-normal text-xs text-white/50" data-testid="AmountCurrencySymbol">
+                  USD
+                </Span>
               </div>
             </div>
           </div>

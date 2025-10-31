@@ -81,7 +81,7 @@ export default function ActivationProposalForm() {
           <BaseProposalFields control={control} />
         </div>
         <div className="flex flex-col gap-6 md:gap-4">
-          <Header caps variant="h2" className="leading-loose tracking-wide">
+          <Header caps variant="h2" className="leading-loose tracking-wide" data-testid="ProposalActionLabel">
             Proposal Action
           </Header>
           <TextInput
@@ -89,6 +89,7 @@ export default function ActivationProposalForm() {
             name="builderAddress"
             label="Builder address to whitelist"
             maxLength={BASE_PROPOSAL_LIMITS.address.max}
+            data-testid="BuilderAddress"
           />
         </div>
       </form>
