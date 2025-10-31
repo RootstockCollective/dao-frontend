@@ -30,10 +30,6 @@ export const RewardsMetrics: FC<RewardsMetricsProps> = ({ title, rewardTokens })
     totalEstimatedRewards: string
   } = rewardTokens.reduce(
     ({ rewardMetricPerToken, totalEstimatedRewards }, { symbol, value }) => {
-      if (value === 0n) {
-        return { rewardMetricPerToken, totalEstimatedRewards }
-      }
-
       const tokenPrice = prices[symbol]?.price || '0'
       const fiatValue = formatCurrencyWithLabel(getFiatAmount(value, tokenPrice), {
         showCurrencyLabel: false,
