@@ -123,14 +123,16 @@ const WalletDetailsButton = () => {
   const { open } = useAppKit()
   const openWalletDetails = () => open({ view: 'Account' })
 
-  return (
-    <Button
-      variant="secondary-outline"
-      onClick={openWalletDetails}
-      className="inline md:mr-4 py-1.5 px-2 whitespace-nowrap"
-      data-testid="WalletDetailsButton"
-    >
-      <Span>Wallet Details</Span>
-    </Button>
-  )
+  return null
+  // Commented due to reown issues - it will be enabled when reown is fixed
+  // return (
+  //   <Button
+  //     variant="secondary-outline"
+  //     onClick={openWalletDetails}
+  //     className="inline md:mr-4 py-1.5 px-2 whitespace-nowrap"
+  //     data-testid="WalletDetailsButton"
+  //   >
+  //     <Span>Wallet Details</Span>
+  //   </Button>
+  // )
 }
