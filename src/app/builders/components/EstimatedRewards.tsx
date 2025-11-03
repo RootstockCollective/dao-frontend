@@ -135,7 +135,6 @@ export const EstimatedRewards = () => {
         },
       ),
     [builder, backer, prices],
-  )
 
   const { fiatTotal: builderFiatTotal } = builder
   const { fiatTotal: backerFiatTotal } = backer

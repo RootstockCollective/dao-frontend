@@ -151,3 +151,10 @@ const getCurrentRewardPercentage = (
 
   return rewardPercentageToApply.current
 }
+
+const getCurrentRewardPercentage = (rawBackerRewardsPct?: readonly [bigint, bigint, bigint]) => {
+  const [current, next, cooldownEndTime] = rawBackerRewardsPct ?? [0n, 0n, 0n]
+  const rewardPercentageToApply = getBackerRewardPercentage(current, next, cooldownEndTime)
+
+  return rewardPercentageToApply.current
+}
