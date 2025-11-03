@@ -134,24 +134,6 @@ export const useGetBuilderEstimatedRewards = ({
   }
 }
 
-const getCurrentRewardPercentage = (
-  cycleNext: DateTime<boolean>,
-  rawBackerRewardsPct?: readonly [bigint, bigint, bigint],
-) => {
-  if (!cycleNext) {
-    return 0n
-  }
-  const [current, next, cooldownEndTime] = rawBackerRewardsPct ?? [0n, 0n, 0n]
-  const rewardPercentageToApply = getBackerRewardPercentage(
-    current,
-    next,
-    cooldownEndTime,
-    cycleNext.toSeconds(),
-  )
-
-  return rewardPercentageToApply.current
-}
-
 const getCurrentRewardPercentage = (rawBackerRewardsPct?: readonly [bigint, bigint, bigint]) => {
   const [current, next, cooldownEndTime] = rawBackerRewardsPct ?? [0n, 0n, 0n]
   const rewardPercentageToApply = getBackerRewardPercentage(current, next, cooldownEndTime)
