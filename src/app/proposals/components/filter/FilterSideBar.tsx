@@ -152,12 +152,13 @@ export function FilterSideBar({
             variant="transparent"
             className={`${isDesktop ? 'w-full' : 'flex-1'} border border-text-20 text-white hover:bg-white/5 flex items-center justify-center gap-2`}
             disabled={!hasActiveFilters}
+            data-testid="ResetFiltersButton"
           >
             <TrashIcon size={16} />
             Reset filters
           </Button>
           {!isDesktop && (
-            <Button onClick={onClose} variant="primary" className="flex-1">
+            <Button onClick={onClose} variant="primary" className="flex-1" data-testid="ApplyButton">
               Apply
             </Button>
           )}
