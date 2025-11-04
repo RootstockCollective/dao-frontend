@@ -2,7 +2,6 @@
 import { DelegateCard } from '@/app/delegate/components/DelegateCard'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import { Button } from '@/components/Button'
-import { Address } from 'viem'
 import { useRef } from 'react'
 import Image from 'next/image'
 import { EditIconKoto } from '@/components/Icons'
@@ -12,13 +11,8 @@ import { useDelegateContext } from '../../contexts/DelegateContext'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
 
 interface Props {
-  delegateeAddress: Address
-  isReclaimPending: boolean
-  isDelegationPending: boolean
   onShowReclaim: () => void
   onShowDelegates: () => void
-  delegateeRns?: string
-  delegateeImageIpfs?: string | null
 }
 
 /**
@@ -26,44 +20,37 @@ interface Props {
  * Shows delegate information like address, RNS name, voting power, etc.
  * Allows users to reclaim their delegation or update their delegate.
  */
-export const DelegationDetailsSection = ({
-  delegateeAddress,
-  isReclaimPending,
-  isDelegationPending,
-  onShowReclaim,
-  onShowDelegates,
-  delegateeRns,
-  delegateeImageIpfs,
-}: Props) => {
-  const {
-    delegateeDelegatedSince,
-    delegateeVotingWeight,
-    delegateeTotalVotes,
-    delegateeDelegators,
-    delegateeVotingPower,
-  } = useDelegateContext()
+export const DelegationDetailsSection = ({ onShowReclaim, onShowDelegates }: Props) => {
+  const { displayedDelegatee, isDelegationPending, isReclaimPending } = useDelegateContext()
 
   const isDesktop = useIsDesktop()
   const delegateCardRef = useRef<HTMLDivElement>(null)
   const updateDelegateButtonRef = useRef<HTMLButtonElement>(null)
 
-  const chosenAddress = isDesktop ? delegateeAddress : shortAddress(delegateeAddress)
+  if (!displayedDelegatee) {
+    return null
+  }
+
+  const { address, rns, imageIpfs, delegatedSince, votingPower, votingWeight, totalVotes, delegators } =
+    displayedDelegatee
+
+  const chosenAddress = isDesktop ? address : shortAddress(address)
 
   return (
     <div ref={delegateCardRef} className="flex flex-col md:flex-row gap-8 bg-bg-80 p-6">
       <DelegateCard
-        address={delegateeAddress}
-        name={delegateeRns}
-        imageIpfs={delegateeImageIpfs}
-        since={formatTimestampToMonthYear(delegateeDelegatedSince) || ' - '}
-        votingPower={delegateeVotingPower ? Number(delegateeVotingPower).toFixed(0) : ' - '}
-        votingWeight={delegateeVotingWeight || ' - '}
-        totalVotes={delegateeTotalVotes?.toString() || ' - '}
-        delegators={delegateeDelegators?.toString() || ' - '}
+        address={address}
+        name={rns}
+        imageIpfs={imageIpfs}
+        since={formatTimestampToMonthYear(delegatedSince) || ' - '}
+        votingPower={votingPower ? Number(votingPower).toFixed(0) : ' - '}
+        votingWeight={votingWeight || ' - '}
+        totalVotes={totalVotes?.toString() || ' - '}
+        delegators={delegators?.toString() || ' - '}
         onDelegate={onShowReclaim}
         buttonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
         buttonVariant="primary"
-        data-testid={`delegateCard-${delegateeAddress}`}
+        data-testid={`delegateCard-${address}`}
         buttonDisabled={isDelegationPending || isReclaimPending}
         isDelegationPending={isDelegationPending}
         isReclaimPending={isReclaimPending}
@@ -98,19 +85,19 @@ export const DelegationDetailsSection = ({
           <div className="flex flex-col gap-1">
             {isDelegationPending ? (
               <Paragraph>
-                Delegating your voting power to{' '}
-                <span className="text-primary">{delegateeRns || chosenAddress}</span> is pending.
+                Delegating your voting power to <span className="text-primary">{rns || chosenAddress}</span>{' '}
+                is pending.
               </Paragraph>
             ) : isReclaimPending ? (
               <Paragraph>
-                Reclaiming your voting power from{' '}
-                <span className="text-primary">{delegateeRns || chosenAddress}</span> is pending.
+                Reclaiming your voting power from <span className="text-primary">{rns || chosenAddress}</span>{' '}
+                is pending.
               </Paragraph>
             ) : (
               <>
                 <Paragraph data-testid="DelegateeAddress">
-                  You have chosen <span className="text-primary">{delegateeRns || chosenAddress}</span> to
-                  take part in governance decisions on your behalf.
+                  You have chosen <span className="text-primary">{rns || chosenAddress}</span> to take part in
+                  governance decisions on your behalf.
                 </Paragraph>
                 <Paragraph>You only delegated your own voting power, not your tokens.</Paragraph>
               </>
