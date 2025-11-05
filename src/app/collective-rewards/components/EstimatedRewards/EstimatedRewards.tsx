@@ -33,9 +33,6 @@ export const EstimatedRewards = () => {
       const { symbol } = TOKENS[tokenKey]
       const amount = cycleRewards[tokenKey] ?? 0n
       const price = prices[symbol]?.price || 0
-      if (amount === 0n || price === 0) {
-        return acc
-      }
 
       const fiatValue = getFiatAmount(amount, price)
       const value = formatSymbol(amount, symbol).toString()
