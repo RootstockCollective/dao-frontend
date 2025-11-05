@@ -62,7 +62,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
     functionName: 'totalSupply',
   })
   // Find current delegatee's data efficiently in a single useMemo
-  const delegateeData = useCallback(
+  const getDelegateeData = useCallback(
     (delegateeAddress: string | undefined) => {
       if (!delegateeAddress)
         return {
@@ -106,7 +106,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
     totalVotes: delegateeTotalVotes,
     delegators: delegateeDelegators,
     votingWeight: delegateeVotingWeight,
-  } = delegateeData(delegateeAddress)
+  } = getDelegateeData(delegateeAddress)
 
   // Actions
   const setIsDelegationPending = useCallback((isPending: boolean) => {
@@ -130,15 +130,10 @@ export const DelegateContextProvider = ({ children }: Props) => {
       setDataState(
         produce(draft => {
           if (nextDelegatee) {
-            const knownDelegatee = delegateeData(nextDelegatee.address)
-            if (knownDelegatee) {
-              draft.nextDelegatee = {
-                ...knownDelegatee,
-                address: nextDelegatee.address,
-                rns: nextDelegatee.rns,
-              }
-            } else {
-              draft.nextDelegatee = nextDelegatee
+            const knownDelegatee = getDelegateeData(nextDelegatee.address)
+            draft.nextDelegatee = {
+              ...nextDelegatee,
+              ...knownDelegatee,
             }
           } else {
             draft.nextDelegatee = undefined
@@ -146,7 +141,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
         }),
       )
     },
-    [delegateeData],
+    [getDelegateeData],
   )
 
   const refetch = useCallback(() => {
@@ -204,15 +199,10 @@ export const DelegateContextProvider = ({ children }: Props) => {
         } else if (uiState.isReclaimPending) {
           draft.displayedDelegatee = dataState.currentDelegatee
         } else if (dataState.nextDelegatee) {
-          const knownDelegatee = delegateeData(dataState.nextDelegatee.address)
-          if (knownDelegatee) {
-            draft.displayedDelegatee = {
-              ...knownDelegatee,
-              address: dataState.nextDelegatee.address,
-              rns: dataState.nextDelegatee.rns,
-            }
-          } else {
-            draft.displayedDelegatee = dataState.nextDelegatee
+          const knownDelegatee = getDelegateeData(dataState.nextDelegatee.address)
+          draft.displayedDelegatee = {
+            ...dataState.nextDelegatee,
+            ...knownDelegatee,
           }
         } else {
           draft.displayedDelegatee = dataState.currentDelegatee
@@ -224,7 +214,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
     dataState.currentDelegatee,
     uiState.isDelegationPending,
     uiState.isReclaimPending,
-    delegateeData,
+    getDelegateeData,
   ])
 
   // Update loading state when UI state changes
