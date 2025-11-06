@@ -20,7 +20,6 @@ export function useNftHoldersWithVotingPower() {
   const [nftHolders, setNftHolders] = useState<NftHolder[]>([])
 
   const load = useCallback(async () => {
-    console.log('Loading NFT holders with voting power')
     const [contributors, cachedHolders] = await Promise.all([
       fetchContributorsFromAPI(),
       getCachedNftHoldersShepherds(),
