@@ -7,6 +7,7 @@ interface LedgerConnectorOptions {
 }
 
 interface LedgerConnectorState {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   provider: any | null
   account: Address | null
   isConnecting: boolean
@@ -433,6 +434,7 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
         const chainId = await this.getChainId()
 
         return {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           request: async ({ method, params }: { method: string; params?: any[] }) => {
             if (!state.provider) {
               throw new Error('Ledger not connected')
@@ -452,12 +454,15 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
                 const hexChainId = `0x${chainId.toString(16)}`
                 return hexChainId
               case 'personal_sign':
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 return state.provider.personalSign(params as any)
               case 'eth_signTypedData_v4':
                 // RLogin provider doesn't have typed data signing, so we'll fall back to personal sign
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 return state.provider.personalSign([params?.[1], params?.[0]] as any)
               case 'eth_sendTransaction':
                 if (!params?.[0]) throw new Error('Transaction params required')
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 return state.provider.ethSendTransaction(params as any)
               default:
                 // For other methods, delegate to the underlying provider

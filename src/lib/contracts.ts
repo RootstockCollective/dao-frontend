@@ -67,6 +67,7 @@ const abiContractsMap = {
   [nftContracts.OG_PARTNERS]: EarlyAdoptersNFTAbi,
   [nftContracts.VANGUARD]: VotingVanguardsNftAbi,
   [nftContracts.BB]: EarlyAdoptersNFTAbi,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [nftContracts.ROOTLINGS_S1]: RootlingsS1ABI as any, // Type assertion to avoid TS deep instantiation error
 }
 

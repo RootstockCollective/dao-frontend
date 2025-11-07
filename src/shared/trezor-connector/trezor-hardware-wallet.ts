@@ -86,6 +86,7 @@ export class TrezorHardwareWallet {
    * Logs messages using the configured logger instance
    * @param args - Arguments to log
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private log(...args: any[]): void {
     if (this.shouldLog) {
       this.logger.log(...args)
@@ -96,6 +97,7 @@ export class TrezorHardwareWallet {
    * Logs error messages using the configured logger instance
    * @param args - Arguments to log as errors
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private logError(...args: any[]): void {
     if (this.shouldLog) {
       this.logger.error(...args)
@@ -273,6 +275,7 @@ export class TrezorHardwareWallet {
     this.log('[Trezor] Creating EIP-6963 provider')
 
     return {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       request: async ({ method, params }: { method: string; params?: any[] }) => {
         this.log('[Trezor] EIP-6963 request:', method, params)
         return this.handleProviderRequest(method, params)
@@ -305,6 +308,7 @@ export class TrezorHardwareWallet {
    * @param params - Method parameters
    * @returns Promise resolving to a method result
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async handleProviderRequest(method: string, params?: any[]): Promise<any> {
     switch (method) {
       case 'eth_accounts':
@@ -368,6 +372,7 @@ export class TrezorHardwareWallet {
    * Handles eth_sendTransaction RPC method
    * @param params - Transaction parameters
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async handleEthSendTransaction(params?: any[]): Promise<string> {
     if (!params || !params[0]) {
       throw new Error('Transaction parameters required')
@@ -440,6 +445,7 @@ export class TrezorHardwareWallet {
    * @param params - Method parameters
    * @returns Promise resolving to RPC result
    */
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async rpcCall(rpcUrl: string, method: string, params: any[]): Promise<any> {
     const response = await fetch(rpcUrl, {
       method: 'POST',
