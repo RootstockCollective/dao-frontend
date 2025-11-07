@@ -1,11 +1,14 @@
 {
   "root": true,
   "extends": ["next/core-web-vitals", "plugin:storybook/recommended", "plugin:prettier/recommended"],
+  "ignorePatterns": ["**/*.test.ts", "**/*.test.tsx", "**/*.stories.tsx"],
+  "plugins": ["@typescript-eslint"],
   "rules": {
     "semi": [2, "never"],
     "quotes": "off",
     "object-curly-spacing": [2, "always"],
-    "eol-last": [2, "always"]
+    "eol-last": [2, "always"],
+    "@typescript-eslint/no-explicit-any": "error"
   },
   "overrides": [
     {

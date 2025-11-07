@@ -18,6 +18,7 @@ export const useReadRewardDistributor = <TFunctionName extends RewardDistributor
   return useReadContract({
     abi: getAbi('RewardDistributorAbi'),
     address: RewardDistributorAddress,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...(config as any),
     query: {
       retry: true,

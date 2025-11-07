@@ -1,7 +1,11 @@
 export interface Logger {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   log: (...args: any[]) => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error: (...args: any[]) => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   warn?: (...args: any[]) => void
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   info?: (...args: any[]) => void
 }
 
@@ -20,6 +24,7 @@ export interface EIP6963ProviderInfo {
 }
 
 export interface EIP6963Provider {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   request: (params: { method: string; params?: any[] }) => Promise<any>
   isMetaMask: boolean
   isTrezor: boolean

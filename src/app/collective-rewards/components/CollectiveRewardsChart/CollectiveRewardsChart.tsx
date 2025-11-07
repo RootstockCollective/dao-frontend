@@ -193,6 +193,7 @@ export function CollectiveRewardsDualAxisChart({
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={chartMargins} stackOffset="none">
           <XAxis
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             dataKey={(p: any) => (p.day instanceof Date ? p.day.getTime() : p.day)}
             type="number"
             domain={xDomain ?? ['auto', 'auto']}

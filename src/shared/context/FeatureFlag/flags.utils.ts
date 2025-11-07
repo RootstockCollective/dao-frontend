@@ -66,6 +66,7 @@ export const getEnvFlags = (): FeatureFlags => loadEnvFlags()
 
 export const getEnvFlag = (flag: FeatureFlag): boolean | undefined => loadEnvFlags()[flag]
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const validateUserFlags = (flags: Record<string, any>): flags is BaseFlags => {
   const allowedUserFlags = loadEnvFlags()[USER_FLAGS_FEATURE] ?? []
   return Object.keys(flags).every(key => {
