@@ -32,7 +32,7 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
     statusMessage: '',
   })
 
-  const delegates = useNftHoldersWithVotingPower()
+  const { nftHolders: delegates } = useNftHoldersWithVotingPower()
 
   const { data: totalSupply } = useReadContract({
     abi: StRIFTokenAbi,
