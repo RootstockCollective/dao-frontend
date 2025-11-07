@@ -9,14 +9,18 @@ import { formatEther } from 'viem'
 const ONE_ETHER = Big('1e18')
 
 export function buildProposal(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   proposal: any,
   {
     parseTargets,
     parseCalldatas,
     proposerTransform,
   }: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parseTargets: (targets: any[]) => any[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     parseCalldatas: (calldatas: any[]) => any[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     proposerTransform: (proposer: any) => `0x${string}`
   },
 ) {
@@ -67,6 +71,7 @@ export function buildProposal(
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function safeBig(value: any, defaultValue: string | number = '0') {
   try {
     if (value === null || value === undefined || value === '') return Big(defaultValue)

@@ -1,14 +1,18 @@
 interface TokenHolderAddress {
   ens_domain_name: string
   hash: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   implementations: any[]
   is_contract: boolean
   is_verified: boolean
   metadata: null
   name: null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private_tags: any[]
   proxy_type: null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public_tags: any[]
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   watchlist_names: any[]
 }
 
