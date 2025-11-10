@@ -37,12 +37,12 @@ const transformFormToActionDetails = (
 ) => {
   switch (category) {
     case ProposalCategory.Grants: {
-      const { transferAmount, token, targetAddress } = form as GrantProposal
+      const { transferAmount, token, targetAddress, targetAddressInput } = form as GrantProposal
       return {
         type: ProposalType.WITHDRAW,
         amount: transferAmount,
         tokenSymbol: token,
-        toAddress: targetAddress,
+        toAddress: targetAddressInput || targetAddress,
         price: prices[token]?.price ?? 0,
       }
     }
