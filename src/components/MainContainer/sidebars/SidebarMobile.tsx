@@ -35,7 +35,7 @@ export function SidebarMobile() {
       onClick={closeSidebar}
     >
       <div className="h-full flex flex-col justify-start">
-        <ul className="w-fit">
+        <ul className="w-fit mt-12">
           {menuDataToUse.map(data => (
             <Fragment key={data.buttonProps.id}>
               {'type' in data && data.type === 'category' ? (
