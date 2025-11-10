@@ -1,6 +1,6 @@
 import Image from 'next/image'
-import { FC } from 'react'
-import { Popover } from '@/components/Popover/Popover'
+import { FC, useState } from 'react'
+import { NewPopover } from '@/components/NewPopover'
 import { HourglassIcon } from '@/components/Icons/HourglassIcon'
 
 interface PendingAllocationProps {
@@ -9,8 +9,14 @@ interface PendingAllocationProps {
 }
 
 export const PendingAllocation: FC<PendingAllocationProps> = ({ pendingBacking, currentBacking }) => {
+  const [isOpen, setIsOpen] = useState(false)
+
   const popoverContent = (
-    <div className="min-w-[220px] text-v3-text-0 rounded-lg p-4" data-testid="pendingAllocationPopover">
+    <div
+      className="min-w-[220px] text-v3-text-0 rounded-lg p-4"
+      data-testid="pendingAllocationPopover"
+      onMouseLeave={() => setIsOpen(false)}
+    >
       <div className="flex justify-between items-center mb-2">
         <span>Pending</span>
         <span className="flex items-center gap-1">
@@ -25,8 +31,16 @@ export const PendingAllocation: FC<PendingAllocationProps> = ({ pendingBacking, 
     </div>
   )
   return (
-    <Popover trigger="hover" position="top" background="light" content={popoverContent} size="small">
-      <HourglassIcon className="flex-shrink-0 cursor-pointer" size={16} />
-    </Popover>
+    <NewPopover
+      open={isOpen}
+      onOpenChange={setIsOpen}
+      anchor={
+        <div onMouseEnter={() => setIsOpen(true)}>
+          <HourglassIcon className="flex-shrink-0 cursor-pointer" size={16} />
+        </div>
+      }
+      content={popoverContent}
+      side="top"
+    />
   )
 }
