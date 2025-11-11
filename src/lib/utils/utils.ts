@@ -4,7 +4,7 @@ import { BigSource } from 'big.js'
 import { ClassValue, clsx } from 'clsx'
 import { Duration } from 'luxon'
 import { twMerge } from 'tailwind-merge'
-import { Address, formatEther } from 'viem'
+import { Address, formatEther, isAddress } from 'viem'
 import { CHAIN_ID, RIF_WALLET_SERVICES_URL } from '../constants'
 
 /**
@@ -25,6 +25,11 @@ export const shortAddress = (address: Address | undefined, amount = 4): string =
   if (!address) {
     return ''
   }
+  // if not an address, don't modify
+  if (!isAddress(address)) {
+    return address
+  }
+
   const prefixLength = amount + 2 // 2 for '0x' prefix
   return `${address.slice(0, prefixLength)}…${address.slice(-amount)}`
 }

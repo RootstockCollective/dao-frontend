@@ -23,6 +23,7 @@ interface ActionDetailsProps {
     price?: number
     toAddress?: string
     builder?: string
+    rns?: string
   }
   actionType: ActionType
   className?: ClassNameValue
@@ -67,38 +68,36 @@ export const ActionDetails = ({ parsedAction, actionType, className, readOnly }:
   switch (parsedAction.type) {
     case ProposalType.WITHDRAW: {
       content = (
-        <>
-          <div className="grid grid-cols-2">
-            <div>
-              <Span variant="tag-s" className="text-white/70" data-testid="TypeLabel">
-                Type
-              </Span>
-              <Paragraph variant="body" data-testid="Type">
-                {actionType}
-              </Paragraph>
-            </div>
-            <div className="flex flex-col">
-              <Span variant="tag-s" className="text-white/70" data-testid="ToAddressLabel">
-                To address
-              </Span>
-              {parsedAction.toAddress ? (
-                !readOnly ? (
-                  <Span className="text-primary">
-                    <ShortenAndCopy value={parsedAction.toAddress} data-testid="ToAddress" />
-                  </Span>
-                ) : (
-                  <Span variant="body" data-testid="ToAddress">
-                    {shortAddress(parsedAction.toAddress as Address)}
-                  </Span>
-                )
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Span variant="tag-s" className="text-white/70" data-testid="TypeLabel">
+              Type
+            </Span>
+            <Paragraph variant="body" data-testid="Type">
+              {actionType}
+            </Paragraph>
+          </div>
+          <div className="flex flex-col">
+            <Span variant="tag-s" className="text-white/70" data-testid="ToAddressLabel">
+              To address
+            </Span>
+            {parsedAction.toAddress ? (
+              !readOnly ? (
+                <Span className="text-primary">
+                  <ShortenAndCopy value={parsedAction.toAddress} data-testid="ToAddress" />
+                </Span>
               ) : (
                 <Span variant="body" data-testid="ToAddress">
-                  —
+                  {shortAddress(parsedAction.toAddress as Address)}
                 </Span>
-              )}
-            </div>
+              )
+            ) : (
+              <Span variant="body" data-testid="ToAddress">
+                —
+              </Span>
+            )}
           </div>
-          {/* Amount block full width */}
+
           <div>
             <Span variant="tag-s" className="text-white/70" data-testid="AmountLabel">
               Amount
@@ -139,7 +138,17 @@ export const ActionDetails = ({ parsedAction, actionType, className, readOnly }:
               </div>
             </div>
           </div>
-        </>
+          {parsedAction.rns ? (
+            <div>
+              <Span variant="tag-s" className="text-white/70" data-testid="TypeLabel">
+                to RNS
+              </Span>
+              <Paragraph variant="body" data-testid="Type">
+                {parsedAction.rns}
+              </Paragraph>
+            </div>
+          ) : null}
+        </div>
       )
       break
     }
