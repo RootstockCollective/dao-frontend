@@ -17,7 +17,7 @@ export const LatestProposalCard = ({
       className="text-primary group-hover:underline group-hover:text-bg-100 group-hover:decoration-bg-40 flex-grow"
       href={`/proposals/${proposalId}`}
     >
-      <Paragraph className="w-full line-clamp-3">{name}</Paragraph>
+      <Paragraph className="w-full line-clamp-3 break-all">{name}</Paragraph>
     </Link>
     <CreatorRowComponent
       className={'mt-3 flex-shrink-0'}
