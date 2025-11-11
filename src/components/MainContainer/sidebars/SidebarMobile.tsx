@@ -34,7 +34,7 @@ export function SidebarMobile() {
       transition={{ duration: 0.3, ease: 'circOut' }}
       onClick={closeSidebar}
     >
-      <div className="h-full flex flex-col justify-start">
+      <div className="h-full flex flex-col justify-start overflow-y-auto">
         <ul className="w-fit mt-12">
           {menuDataToUse.map(data => (
             <Fragment key={data.buttonProps.id}>
