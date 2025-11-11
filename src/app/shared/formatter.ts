@@ -83,3 +83,24 @@ export const formatSymbol = (value: bigint | string, symbol: string) => {
     roundingMode: 'floor',
   }).format(amount.toString() as never)
 }
+
+/**
+ * Formats APY values from the vault contract
+ * @param apyValue - APY value where 1e9 = 100% (e.g., 5e7 = 5%, 1e8 = 10%)
+ * @param displayDecimals - Number of decimal places to show (default: 2)
+ * @returns Formatted percentage string
+ */
+export const formatApy = (apyValue: bigint | string, displayDecimals: number = 2): string => {
+  if (!apyValue || apyValue === '0' || apyValue === 0n) {
+    return '0.00'
+  }
+
+  // APY scale: 1e9 = 100%
+  const percentage = Big(apyValue.toString()).div(Big(10).pow(7))
+
+  return new Intl.NumberFormat('en-US', {
+    minimumFractionDigits: displayDecimals,
+    maximumFractionDigits: displayDecimals,
+    roundingMode: 'floor',
+  }).format(percentage.toString() as never)
+}

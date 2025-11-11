@@ -197,4 +197,67 @@ export const TX_MESSAGES = {
       loading: false,
     },
   },
+  vaultAllowance: {
+    pending: {
+      title: 'Allowance in process',
+      content: 'Wait for Allowance transaction to be completed.',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Allowance successful',
+      content: 'Allowance successfully granted!',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Error on allowance',
+      content:
+        'An unexpected error occurred while trying to execute the allowance. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
+  vaultDeposit: {
+    pending: {
+      title: 'Deposit in process',
+      content: 'Wait for Deposit transaction to be completed.',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Deposit successful',
+      content: 'Deposit successfully granted!',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Error on deposit',
+      content:
+        'An unexpected error occurred while trying to execute the deposit. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
+  vaultWithdraw: {
+    pending: {
+      title: 'Withdraw in process',
+      content: 'Wait for Withdraw transaction to be completed.',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Withdraw successful',
+      content: 'Withdraw successfully granted!',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Error on withdraw',
+      content:
+        'An unexpected error occurred while trying to execute the withdraw. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
 } as const
