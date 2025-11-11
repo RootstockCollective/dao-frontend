@@ -1,4 +1,3 @@
-import { BaseTypography } from '@/components/Typography/Typography'
 import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { CommonComponentProps } from '../../components/commonProps'

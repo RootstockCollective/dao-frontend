@@ -29,6 +29,7 @@ import { useBuilderContext } from '../collective-rewards/user'
 import { BuilderAllocationBar } from './components/BuilderAllocationBar'
 import { BackerAnnualBackersIncentives } from './components/Metrics/BackerAnnualBackersIncentives'
 import { Spotlight } from './components/Spotlight'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 const NAME = 'Backing'
 
@@ -57,43 +58,46 @@ const StakeButton = () => {
       }
 
   return (
-    <>
-      <Button variant="primary" className="flex h-7 px-4 py-3 items-center gap-2" onClick={onClick}>
-        <Span variant="body-s" bold>
-          {text}
-        </Span>
-      </Button>
-    </>
+    <Button
+      variant="primary"
+      className="md:h-1 px-2 py-1.5 md:px-4 md:py-3 w-auto md:w-fit border-4 md:border-auto"
+      onClick={onClick}
+    >
+      <Span variant="body-s" bold>
+        {text}
+      </Span>
+    </Button>
   )
 }
 
-const DistributeButton = ({ onClick }: ButtonProps) => (
-  <div className="flex items-center gap-3">
-    <Button variant="secondary-outline" className="flex h-7 px-2 py-1 items-center gap-2" onClick={onClick}>
-      <Label variant="tag-s" className="text-white font-rootstock-sans text-sm font-normal leading-[145%]">
-        Distribute equally
-      </Label>
-    </Button>
-    <div className="flex w-4 py-[6px] flex-col justify-center items-center self-stretch aspect-square">
-      <Tooltip
-        text={
-          <div className="flex w-[269px] p-6 flex-col items-start gap-2">
-            <Label className="self-stretch text-v3-bg-accent-100 font-rootstock-sans text-[14px] font-normal leading-[145%]">
-              You&apos;ll be distributing equally to each of the Builders below
+const DistributeButton = ({ onClick }: ButtonProps) => {
+  const isDesktop = useIsDesktop()
+  return (
+    <div className="flex items-center gap-3">
+      <Button variant="secondary-outline" className="flex h-7 px-2 py-1 items-center gap-2" onClick={onClick}>
+        <Label variant="tag-s" className="text-white font-rootstock-sans text-sm font-normal leading-[145%]">
+          Distribute equally
+        </Label>
+      </Button>
+      <div className="flex w-4 py-[6px] flex-col justify-center items-center self-stretch aspect-square">
+        <Tooltip
+          text={
+            <Label variant={isDesktop ? 'body-s' : 'body-xs'}>
+              You&apos;ll be distributing equally <br /> to each of the Builders below
             </Label>
-          </div>
-        }
-        side="top"
-        align="center"
-        alignOffset={-60}
-        sideOffset={10}
-        className="bg-v3-text-80 rounded-[4px] shadow-lg"
-      >
-        <KotoQuestionMarkIcon />
-      </Tooltip>
+          }
+          side="top"
+          align="center"
+          alignOffset={-60}
+          sideOffset={10}
+          className="bg-v3-text-80 rounded-[4px] shadow-lg"
+        >
+          <KotoQuestionMarkIcon />
+        </Tooltip>
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 export const BackingPage = () => {
   const searchParams = useSearchParams()
@@ -172,7 +176,7 @@ export const BackingPage = () => {
       {isConnected && (
         <ActionMetricsContainer className="flex flex-col w-full items-start px-0 py-6 gap-2 rounded-[4px] bg-v3-bg-accent-80">
           <div className="flex flex-col items-center gap-10 w-full">
-            <div className="flex items-start gap-14 w-full px-6">
+            <div className="flex flex-col md:flex-row items-start gap-4 md:gap-0 w-full px-6">
               <div className="basis-1/2">
                 <TokenAmountDisplay
                   label="Available for backing"
@@ -188,14 +192,13 @@ export const BackingPage = () => {
                   }
                 />
               </div>
-              <div className="flex items-start basis-1/2 gap-14">
-                <div className="basis-1/2">
-                  <TokenAmountDisplay
-                    label="Total backing"
-                    amount={formatSymbol(cumulativeAllocation, STRIF)}
-                    tokenSymbol={STRIF}
-                  />
-                </div>
+              <div className="flex flex-col md:flex-row items-start basis-1/2">
+                <TokenAmountDisplay
+                  label="Total backing"
+                  amount={formatSymbol(cumulativeAllocation, STRIF)}
+                  tokenSymbol={STRIF}
+                  isFlexEnd
+                />
                 {hasAllocations && (
                   <div className="basis-1/2">
                     <BackerAnnualBackersIncentives />

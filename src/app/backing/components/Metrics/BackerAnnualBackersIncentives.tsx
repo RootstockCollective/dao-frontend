@@ -4,11 +4,12 @@ import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
-import { Header } from '@/components/Typography'
-import { BaseTypography } from '@/components/Typography/Typography'
+import { Header, Label, Span } from '@/components/Typography'
 import { ABIFormula } from '../ABIFormula'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 export const BackerAnnualBackersIncentives = () => {
+  const isDesktop = useIsDesktop()
   const { address: backer } = useAccount()
   const { data: abiPct, isLoading, error } = useGetBackerABI(backer as Address)
   useHandleErrors({ error, title: 'Error loading backers abi' })
@@ -19,21 +20,15 @@ export const BackerAnnualBackersIncentives = () => {
     <Metric
       title={
         <MetricTitle
-          title={
-            <BaseTypography
-              variant="tag"
-              className="text-v3-bg-accent-0 text-base font-medium font-rootstock-sans leading-[150%]"
-            >
-              Annual Backers Incentives
-            </BaseTypography>
-          }
+          title={<Span variant="tag">Annual Backers Incentives</Span>}
           infoIconProps={{
             tooltipClassName: 'max-w-sm text-sm',
           }}
           info={
-            <BaseTypography>
-              Your Annual Backers Incentives (%) represents an estimate of the annualized percentage of
-              rewards that you could receive based on your backing allocations.
+            <Label variant={isDesktop ? 'body' : 'body-xs'}>
+              Your Annual Backers Incentives (%) represents an <br /> estimate of the annualized percentage of
+              rewards <br />
+              that you could receive based on your <br /> backing allocations.
               <br />
               <br />
               The calculation follows the formula:
@@ -42,15 +37,16 @@ export const BackerAnnualBackersIncentives = () => {
               </span>
               <br />
               <br />
-              This estimation is dynamic and may vary based on total rewards and user activity. This data is
-              for informational purposes only.
-            </BaseTypography>
+              This estimation is dynamic and may vary based on <br /> total rewards and user activity. <br />
+              This data is for informational purposes only.
+            </Label>
           }
         />
       }
     >
-      <Header variant="h1">
-        {abiPct.toFixed(0)} <BaseTypography variant="body-l">% (estimated)</BaseTypography>
+      <Header variant={isDesktop ? 'h1' : 'h3'}>
+        {abiPct.toFixed(0)}
+        <Label variant={isDesktop ? 'body-l' : 'body-s'}>% (estimated)</Label>
       </Header>
     </Metric>
   )
