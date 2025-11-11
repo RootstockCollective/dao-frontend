@@ -23,6 +23,7 @@ interface ActionDetailsProps {
     price?: number
     toAddress?: string
     builder?: string
+    rns?: string
   }
   actionType: ActionType
   className?: ClassNameValue
