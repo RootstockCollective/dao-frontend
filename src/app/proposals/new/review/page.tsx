@@ -28,6 +28,7 @@ import { DeactivationProposal } from '../details/schemas/DeactivationProposalSch
 import { usePricesContext } from '@/shared/context'
 import { GetPricesResult } from '@/app/user/types'
 import { useBuilderContext } from '@/app/collective-rewards/user'
+import { isRnsDomain } from '@/lib/rns'
 
 // Transform form data to ParsedActionDetails for all proposal types
 const transformFormToActionDetails = (
@@ -42,8 +43,9 @@ const transformFormToActionDetails = (
         type: ProposalType.WITHDRAW,
         amount: transferAmount,
         tokenSymbol: token,
-        toAddress: targetAddressInput || targetAddress,
+        toAddress: targetAddress,
         price: prices[token]?.price ?? 0,
+        rns: isRnsDomain(targetAddressInput) ? targetAddressInput : undefined,
       }
     }
     case ProposalCategory.Activation: {
