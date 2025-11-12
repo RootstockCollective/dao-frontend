@@ -82,7 +82,7 @@ function transformProposalsData(
     const proposalData: Proposal = {
       votes: {
         ...voteData,
-        quorum: Big(quorum || '0'),
+        quorumReached: voteData.forVotes.add(voteData.abstainVotes),
       },
       blocksUntilClosure: Big(proposal.proposalDeadline).minus(Big(latestBlockNumber?.toString() || '0')),
       votingPeriod: Big(proposal.votingPeriod || '0'),
