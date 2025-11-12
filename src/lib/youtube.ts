@@ -10,11 +10,14 @@ import type { DiscourseDetails } from '@/shared/types/discourse'
 export function isYouTubeUrl(url: string): boolean {
   try {
     const urlObj = new URL(url)
+    // Accept youtube.com, any subdomain of youtube.com, and youtu.be
+    const hostname = urlObj.hostname.toLowerCase();
     return (
-      urlObj.hostname.includes('youtube.com') ||
-      urlObj.hostname === 'youtu.be' ||
-      urlObj.hostname.includes('youtube.com/embed')
-    )
+      hostname === 'youtube.com' ||
+      hostname === 'www.youtube.com' ||
+      hostname.endsWith('.youtube.com') ||
+      hostname === 'youtu.be'
+    );
   } catch {
     return false
   }
@@ -29,8 +32,16 @@ export function extractYouTubeVideoId(url: string): string | null {
     const urlObj = new URL(url)
 
     // youtube.com/watch?v=VIDEO_ID
-    if (urlObj.hostname.includes('youtube.com') && urlObj.searchParams.has('v')) {
-      return urlObj.searchParams.get('v')
+    {
+      const hostname = urlObj.hostname.toLowerCase();
+      if (
+        (hostname === 'youtube.com' ||
+          hostname === 'www.youtube.com' ||
+          hostname.endsWith('.youtube.com')) &&
+        urlObj.searchParams.has('v')
+      ) {
+        return urlObj.searchParams.get('v');
+      }
     }
 
     // youtu.be/VIDEO_ID
@@ -39,8 +50,16 @@ export function extractYouTubeVideoId(url: string): string | null {
     }
 
     // youtube.com/embed/VIDEO_ID
-    if (urlObj.hostname.includes('youtube.com') && urlObj.pathname.startsWith('/embed/')) {
-      return urlObj.pathname.split('/embed/')[1]?.split('?')[0] || null
+    {
+      const hostname = urlObj.hostname.toLowerCase();
+      if (
+        (hostname === 'youtube.com' ||
+          hostname === 'www.youtube.com' ||
+          hostname.endsWith('.youtube.com')) &&
+        urlObj.pathname.startsWith('/embed/')
+      ) {
+        return urlObj.pathname.split('/embed/')[1]?.split('?')[0] || null;
+      }
     }
 
     return null
