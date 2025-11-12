@@ -5,6 +5,8 @@ import { withBuilderSettingsProvider } from '@/app/collective-rewards/settings'
 import { Header } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
+import { Section } from '../components/Section'
+import TransactionHistoryTableContainer from './components/Table/TransactionHistoryTableContainer'
 
 const NAME = 'Transactions History'
 const TransactionHistoryPage = () => {
@@ -20,6 +22,11 @@ const TransactionHistoryPage = () => {
         <Header caps variant="h1" className="text-3xl leading-10 pb-[2.5rem]">
           {NAME}
         </Header>
+        <div data-testid="main-container" className="flex flex-col w-full items-start gap-2">
+          <Section>
+            <TransactionHistoryTableContainer />
+          </Section>
+        </div>
       </div>
     </CycleContextProvider>
   )
