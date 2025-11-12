@@ -21,7 +21,7 @@ export const TOKENS = {
   },
 } as const
 
-export const REWARD_TOKEN_KEYS = ['rif', 'usdrif', 'rbtc'] as Array<keyof Omit<typeof TOKENS, 'strif'>>
+export const REWARD_TOKEN_KEYS = ['rif', 'rbtc', 'usdrif'] as Array<keyof Omit<typeof TOKENS, 'strif'>>
 export type RewardTokenKey = (typeof REWARD_TOKEN_KEYS)[number]
 export const REWARD_TOKENS = REWARD_TOKEN_KEYS.map(tokenKey => TOKENS[tokenKey])
 export type RewardToken = (typeof TOKENS)[RewardTokenKey]
