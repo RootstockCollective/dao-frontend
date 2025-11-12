@@ -52,7 +52,7 @@ export const BackerEstimatedRewards = () => {
           </span>
         </span>
       }
-      className="flex-row sm:flex-col justify-between w-full"
+      className="flex flex-col justify-between w-full"
     >
       <div className="flex items-center gap-2">
         <Header variant="h3">
@@ -60,7 +60,7 @@ export const BackerEstimatedRewards = () => {
           <FiatTooltipLabel tooltip={{ side: 'top', text: <MetricTooltipContent tokens={metricTokens} /> }} />
         </Header>
       </div>
-      <MetricBar segments={metricTokens} className="w-full max-w-[180px]" />
+      <MetricBar segments={metricTokens} className="w-full md:max-w-[180px]" />
     </RewardCard>
   )
 }
