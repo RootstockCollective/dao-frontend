@@ -5,19 +5,26 @@ import type { DiscourseDetails } from '@/shared/types/discourse'
  */
 
 /**
+ * Checks if a hostname is a YouTube domain (youtube.com or any subdomain)
+ */
+function isYouTubeDomain(hostname: string): boolean {
+  const lowerHostname = hostname.toLowerCase()
+  return (
+    lowerHostname === 'youtube.com' ||
+    lowerHostname === 'www.youtube.com' ||
+    lowerHostname.endsWith('.youtube.com')
+  )
+}
+
+/**
  * Checks if a URL is a YouTube URL
  */
 export function isYouTubeUrl(url: string): boolean {
   try {
     const urlObj = new URL(url)
     // Accept youtube.com, any subdomain of youtube.com, and youtu.be
-    const hostname = urlObj.hostname.toLowerCase();
-    return (
-      hostname === 'youtube.com' ||
-      hostname === 'www.youtube.com' ||
-      hostname.endsWith('.youtube.com') ||
-      hostname === 'youtu.be'
-    );
+    const hostname = urlObj.hostname.toLowerCase()
+    return isYouTubeDomain(hostname) || hostname === 'youtu.be'
   } catch {
     return false
   }
@@ -30,36 +37,24 @@ export function isYouTubeUrl(url: string): boolean {
 export function extractYouTubeVideoId(url: string): string | null {
   try {
     const urlObj = new URL(url)
+    const hostname = urlObj.hostname
 
     // youtube.com/watch?v=VIDEO_ID
-    {
-      const hostname = urlObj.hostname.toLowerCase();
-      if (
-        (hostname === 'youtube.com' ||
-          hostname === 'www.youtube.com' ||
-          hostname.endsWith('.youtube.com')) &&
-        urlObj.searchParams.has('v')
-      ) {
-        return urlObj.searchParams.get('v');
+    if (isYouTubeDomain(hostname)) {
+      const videoId = urlObj.searchParams.get('v')
+      if (videoId) {
+        return videoId
       }
     }
 
     // youtu.be/VIDEO_ID
-    if (urlObj.hostname === 'youtu.be') {
+    if (hostname === 'youtu.be') {
       return urlObj.pathname.slice(1) // Remove leading slash
     }
 
     // youtube.com/embed/VIDEO_ID
-    {
-      const hostname = urlObj.hostname.toLowerCase();
-      if (
-        (hostname === 'youtube.com' ||
-          hostname === 'www.youtube.com' ||
-          hostname.endsWith('.youtube.com')) &&
-        urlObj.pathname.startsWith('/embed/')
-      ) {
-        return urlObj.pathname.split('/embed/')[1]?.split('?')[0] || null;
-      }
+    if (isYouTubeDomain(hostname) && urlObj.pathname.startsWith('/embed/')) {
+      return urlObj.pathname.split('/embed/')[1]?.split('?')[0] || null
     }
 
     return null
