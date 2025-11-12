@@ -1,6 +1,6 @@
 {
   "name": "dao-frontend",
-  "version": "1.14.1",
+  "version": "1.14.3",
   "scripts": {
     "dev": "next dev --turbo",
     "dev:webpack": "next dev",
