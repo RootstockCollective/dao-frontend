@@ -46,7 +46,7 @@ export const BackerAnnualBackersIncentives = () => {
     >
       <Header variant={isDesktop ? 'h1' : 'h3'}>
         {abiPct.toFixed(0)}
-        <Label variant={isDesktop ? 'body-l' : 'body-s'}>% (estimated)</Label>
+        <Label variant={isDesktop ? 'body-l' : 'body-s'}> % (estimated)</Label>
       </Header>
     </Metric>
   )

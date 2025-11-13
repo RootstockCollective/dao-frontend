@@ -14,7 +14,7 @@ interface Props {
   isFlexEnd?: boolean
   balance?: string
   actions?: ReactNode // TODO: @analyse could be children
-  pending?: boolean
+  isPending?: boolean
 }
 
 export const TokenAmountDisplay = ({
@@ -26,14 +26,14 @@ export const TokenAmountDisplay = ({
   isFlexEnd = false,
   balance,
   actions,
-  pending = false,
+  isPending = false,
 }: Props) => {
   const isDesktop = useIsDesktop()
   return (
     <div className={cn('flex-1', isFlexEnd ? 'flex-col md:items-end' : 'mb-4 md:mb-0', className)}>
       {label && (
-        <Label variant="tag" className="text-bg-0" data-testid={`${label}Label`}>
-          {label}
+        <Label variant="tag" className="flex items-center gap-1 text-bg-0" data-testid={`${label}Label`}>
+          {label} {isPending && isDesktop && <HourglassIcon color="var(--color-bg-0)" />}
         </Label>
       )}
       <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 mt-1">
@@ -43,14 +43,14 @@ export const TokenAmountDisplay = ({
               <Header variant={isDesktop ? 'h1' : 'h3'} data-testid={`${label}Amount`}>
                 {amount}
               </Header>
-              {pending && <HourglassIcon color="var(--color-bg-0)" />}
+              {isPending && !isDesktop && <HourglassIcon color="var(--color-bg-0)" />}
             </div>
             <TokenImage symbol={tokenSymbol} size={isDesktop ? 24 : 16} />
             <Span variant={isDesktop ? 'body-l' : 'body-s'} bold data-testid={`${label}Symbol`}>
               {tokenSymbol}
             </Span>
           </div>
-          {amountInCurrency ? (
+          {amountInCurrency && (
             <Span
               variant={isDesktop ? 'body-s' : 'body-xs'}
               bold
@@ -59,8 +59,6 @@ export const TokenAmountDisplay = ({
             >
               {amountInCurrency}
             </Span>
-          ) : (
-            <br />
           )}
         </div>
         {actions}

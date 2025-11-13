@@ -5,17 +5,19 @@ import { BackerAnnualBackersIncentives } from './Metrics/BackerAnnualBackersInce
 import { Address } from 'viem'
 import { useContext, useMemo } from 'react'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface Props {
   cumulativeAllocation: bigint
-  hasAllocations: boolean
+  hasAllocations?: boolean
 }
 
-export const TotalBackingDisplay = ({ cumulativeAllocation, hasAllocations }: Props) => {
+export const TotalBackingDisplay = ({ cumulativeAllocation, hasAllocations = false }: Props) => {
   const {
     state: { allocations },
     initialState: { allocations: initialAllocations },
   } = useContext(AllocationsContext)
+  const isDesktop = useIsDesktop()
 
   // Check if there are unsaved changes
   const hasUnsavedChanges = useMemo(() => {
@@ -27,14 +29,24 @@ export const TotalBackingDisplay = ({ cumulativeAllocation, hasAllocations }: Pr
     )
   }, [initialAllocations, allocations])
 
+  const label = useMemo(() => {
+    if (!hasUnsavedChanges) {
+      return 'Total backing'
+    }
+    if (isDesktop) {
+      return 'Total Future backing'
+    }
+    return 'Future backing'
+  }, [isDesktop, hasUnsavedChanges])
+
   return (
-    <div className="flex flex-col md:flex-row items-start basis-1/2">
+    <div className="flex flex-col md:flex-row items-start basis-1/2 gap-6">
       <TokenAmountDisplay
-        label={hasUnsavedChanges ? 'Future total backing' : 'Total backing'}
+        label={label}
         amount={formatSymbol(cumulativeAllocation, STRIF)}
         tokenSymbol={STRIF}
+        isPending={hasUnsavedChanges}
         isFlexEnd
-        pending={hasUnsavedChanges}
       />
       {hasAllocations && (
         <div className="basis-1/2">

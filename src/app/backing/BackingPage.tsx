@@ -14,23 +14,23 @@ import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { Button, ButtonProps } from '@/components/Button'
 import { ActionMetricsContainer, ActionsContainer, MetricsContainer } from '@/components/containers'
+import { Expandable, ExpandableContent, ExpandableTrigger } from '@/components/Expandable'
 import { KotoQuestionMarkIcon } from '@/components/Icons'
 import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
 import { Tooltip } from '@/components/Tooltip'
 import { Header, Label, Span } from '@/components/Typography'
 import { RIF, STRIF } from '@/lib/constants'
 import { currentLinks } from '@/lib/links'
-import { formatCurrency } from '@/lib/utils'
+import { cn, formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useContext, useMemo } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { useBuilderContext } from '../collective-rewards/user'
 import { BuilderAllocationBar } from './components/BuilderAllocationBar'
 import { Spotlight } from './components/Spotlight'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { Expandable, ExpandableContent, ExpandableTrigger } from '@/components/Expandable'
 
 const NAME = 'Backing'
 
@@ -71,7 +71,11 @@ const StakeButton = () => {
   )
 }
 
-const DistributeButton = ({ onClick }: ButtonProps) => {
+interface DistributeButtonProps extends ButtonProps {
+  hideTooltip?: boolean
+}
+
+const DistributeButton = ({ onClick, hideTooltip = false }: DistributeButtonProps) => {
   const isDesktop = useIsDesktop()
   return (
     <div className="flex items-center gap-3">
@@ -80,22 +84,24 @@ const DistributeButton = ({ onClick }: ButtonProps) => {
           Distribute equally
         </Label>
       </Button>
-      <div className="flex w-4 py-[6px] flex-col justify-center items-center self-stretch aspect-square">
-        <Tooltip
-          text={
-            <Label variant={isDesktop ? 'body-s' : 'body-xs'}>
-              You&apos;ll be distributing equally <br /> to each of the Builders below
-            </Label>
-          }
-          side="top"
-          align="center"
-          alignOffset={-60}
-          sideOffset={10}
-          className="bg-v3-text-80 rounded-[4px] shadow-lg"
-        >
-          <KotoQuestionMarkIcon />
-        </Tooltip>
-      </div>
+      {!hideTooltip && (
+        <div className="flex w-4 py-[6px] flex-col justify-center items-center self-stretch aspect-square">
+          <Tooltip
+            text={
+              <Label variant={isDesktop ? 'body-s' : 'body-xs'}>
+                You&apos;ll be distributing equally <br /> to each of the Builders below
+              </Label>
+            }
+            side="top"
+            align="center"
+            alignOffset={-60}
+            sideOffset={10}
+            className="bg-v3-text-80 rounded-[4px] shadow-lg"
+          >
+            <KotoQuestionMarkIcon />
+          </Tooltip>
+        </div>
+      )}
     </div>
   )
 }
@@ -110,13 +116,14 @@ export const BackingPage = () => {
       allocations,
     },
     initialState: {
-      backer: { amountToAllocate: totalOnchainAllocation, balance: totalVotingPower },
+      backer: { amountToAllocate: totalOnchainAllocation },
     },
     actions: { updateAllocations },
   } = useContext(AllocationsContext)
 
   const { randomBuilders } = useBuilderContext()
   const { prices } = usePricesContext()
+  const [isExpanded, setIsExpanded] = useState(false)
 
   const availableForBacking = balance - cumulativeAllocation
   const availableBackingUSD = useMemo(() => {
@@ -152,8 +159,8 @@ export const BackingPage = () => {
   }
 
   const userSelections = useMemo(() => searchParams.get('builders')?.split(',') as Address[], [searchParams])
-
   const hasAllocations = isConnected && totalOnchainAllocation > 0n
+  const hideTooltip = !isExpanded && !isDesktop && hasAllocations
 
   return (
     <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">
@@ -177,35 +184,40 @@ export const BackingPage = () => {
 
       {isConnected && (
         <ActionMetricsContainer className="flex flex-col w-full items-start px-0 py-6 gap-2 rounded-[4px] bg-v3-bg-accent-80">
-          <div className="flex flex-col items-center gap-10 w-full">
-            <div className="flex flex-col md:flex-row items-start gap-4 md:gap-0 w-full px-6">
-              <div className="basis-1/2">
+          <div className="flex flex-col items-center gap-6 md:gap-10 w-full">
+            <div className="flex flex-col md:flex-row items-start w-full px-6 md:gap-14">
+              <div className="flex flex-row gap-6 w-full md:w-auto">
                 <TokenAmountDisplay
-                  label="Available for backing"
+                  label={isDesktop ? 'Available for backing' : 'Available stRIF'}
                   amount={formatSymbol(availableForBacking, STRIF)}
                   tokenSymbol={STRIF}
-                  amountInCurrency={availableBackingUSD}
+                  amountInCurrency={hideTooltip ? undefined : availableBackingUSD}
                   actions={
                     availableForBacking > 0n ? (
-                      <DistributeButton onClick={distributeBackingEqually} />
+                      <DistributeButton onClick={distributeBackingEqually} hideTooltip={hideTooltip} />
                     ) : (
                       <StakeButton />
                     )
                   }
                 />
+                {!isDesktop && hasAllocations && !isExpanded && (
+                  <TotalBackingDisplay cumulativeAllocation={cumulativeAllocation} />
+                )}
               </div>
-              {isDesktop ? (
+              {(isDesktop || !hasAllocations) && (
                 <TotalBackingDisplay
                   cumulativeAllocation={cumulativeAllocation}
                   hasAllocations={hasAllocations}
                 />
-              ) : (
-                <Expandable className="w-full">
+              )}
+
+              {!isDesktop && hasAllocations && (
+                <Expandable className="w-full gap-0" onToggleExpanded={setIsExpanded}>
                   <ExpandableTrigger color="var(--color-bg-0)" className="justify-center" />
                   <ExpandableContent>
                     <TotalBackingDisplay
                       cumulativeAllocation={cumulativeAllocation}
-                      hasAllocations={hasAllocations}
+                      hasAllocations={hasAllocations && isExpanded}
                     />
                   </ExpandableContent>
                 </Expandable>
