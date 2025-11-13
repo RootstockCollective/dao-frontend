@@ -33,21 +33,19 @@ export const TotalBackingDisplay = ({ cumulativeAllocation, hasAllocations = fal
   }, [currentAllocation, futureAllocation])
 
   const label = useMemo(() => {
-    if (currentAllocation > futureAllocation) {
-      return 'Total backing'
+    if (hasUnsavedChanges) {
+      return 'Future backing'
     }
-    return 'Future backing'
-  }, [currentAllocation, futureAllocation])
+    return 'Total backing'
+  }, [hasUnsavedChanges])
 
   const status = useMemo(() => {
     if (!hasUnsavedChanges) {
       return undefined
     }
-
     if (isAllocationTxPending) {
       return 'pending'
     }
-
     if (currentAllocation > futureAllocation) {
       return 'increasing'
     }
