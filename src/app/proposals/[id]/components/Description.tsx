@@ -1,59 +1,41 @@
-import { Header, Paragraph } from '@/components/Typography'
+import { Header } from '@/components/Typography'
 import { Expandable, ExpandableHeader, ExpandableContent } from '@/components/Expandable'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { parseProposalDescription } from '@/app/proposals/shared/utils'
+import { MD } from '@/components/MD'
 
 interface DescriptionProps {
   description?: string
 }
 
-const linkfyUrls = (description: string | undefined | null): string => {
-  if (typeof description !== 'string') return ''
-  const urlRegex =
-    /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/g
-  return description.replace(urlRegex, url => {
-    const href = url.startsWith('http') || url.startsWith('https') ? url : `https://${url}`
-    return `<a href="${href}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">${url}</a>`
-  })
-}
-
-const DescriptionHeader = () => (
-  <Header variant="h2" className="text-xl text-white">
-    DESCRIPTION
-  </Header>
-)
-const DescriptionContent = ({ descriptionHtml }: { descriptionHtml: string }) => {
-  const isDesktop = useIsDesktop()
-  return isDesktop ? (
-    <Paragraph variant="body" className="text-base text-white" html>
-      {descriptionHtml}
-    </Paragraph>
-  ) : (
-    <ExpandableContent showPreview={!isDesktop && !!descriptionHtml}>{descriptionHtml}</ExpandableContent>
-  )
-}
-
 export const Description = ({ description }: DescriptionProps) => {
   const isDesktop = useIsDesktop()
   // Parse the raw description to extract just the display text (without name/metadata)
-  const parsedDescription = description ? parseProposalDescription(description).description : ''
-  const descriptionHtml = linkfyUrls(parsedDescription)
+  const descriptionText = description ? parseProposalDescription(description).description : ''
+
+  if (isDesktop) {
+    return (
+      <div className="md:px-6 px-4 py-10 sm:pb-8">
+        <Header variant="h2" className="text-xl text-white">
+          DESCRIPTION
+        </Header>
+        <MD>{descriptionText}</MD>
+      </div>
+    )
+  }
 
   return (
     <div className="md:px-6 px-4 py-10 sm:pb-8">
-      {!isDesktop ? (
-        <Expandable expanded={isDesktop}>
-          <ExpandableHeader triggerColor="white">
-            <DescriptionHeader />
-          </ExpandableHeader>
-          <DescriptionContent descriptionHtml={descriptionHtml} />
-        </Expandable>
-      ) : (
-        <>
-          <DescriptionHeader />
-          <DescriptionContent descriptionHtml={descriptionHtml} />
-        </>
-      )}
+      <Expandable expanded={false}>
+        <ExpandableHeader triggerColor="white">
+          <Header variant="h2" className="text-xl text-white">
+            DESCRIPTION
+          </Header>
+        </ExpandableHeader>
+        <ExpandableContent showPreview={!!descriptionText}>
+          <MD>{descriptionText}</MD>
+        </ExpandableContent>
+      </Expandable>
     </div>
   )
 }
