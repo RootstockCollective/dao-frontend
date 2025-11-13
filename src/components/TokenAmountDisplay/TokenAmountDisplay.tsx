@@ -3,6 +3,7 @@ import { Header, Label, Paragraph, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { HourglassIcon } from '@/components/Icons/HourglassIcon'
 
 interface Props {
   label?: string
@@ -13,6 +14,7 @@ interface Props {
   isFlexEnd?: boolean
   balance?: string
   actions?: ReactNode // TODO: @analyse could be children
+  pending?: boolean
 }
 
 export const TokenAmountDisplay = ({
@@ -24,6 +26,7 @@ export const TokenAmountDisplay = ({
   isFlexEnd = false,
   balance,
   actions,
+  pending = false,
 }: Props) => {
   const isDesktop = useIsDesktop()
   return (
@@ -36,9 +39,12 @@ export const TokenAmountDisplay = ({
       <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6 mt-1">
         <div className="flex flex-col items-start">
           <div className="flex items-center gap-2">
-            <Header variant={isDesktop ? 'h1' : 'h3'} data-testid={`${label}Amount`}>
-              {amount}
-            </Header>
+            <div className="flex items-center gap-1">
+              <Header variant={isDesktop ? 'h1' : 'h3'} data-testid={`${label}Amount`}>
+                {amount}
+              </Header>
+              {pending && <HourglassIcon color="var(--color-bg-0)" />}
+            </div>
             <TokenImage symbol={tokenSymbol} size={isDesktop ? 24 : 16} />
             <Span variant={isDesktop ? 'body-l' : 'body-s'} bold data-testid={`${label}Symbol`}>
               {tokenSymbol}
