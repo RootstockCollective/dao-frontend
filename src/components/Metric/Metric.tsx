@@ -1,4 +1,3 @@
-import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { FC, ReactNode, isValidElement } from 'react'
 import { CommonComponentProps } from '../../components/commonProps'

@@ -5,6 +5,7 @@ import { BackingInfoTitleControl } from '@/app/backing/components/BackingInfoTit
 import { BackingInfoContainer } from '@/app/backing/components/Container/BackingInfoContainer/BackingInfoContainer'
 import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/EstimatedRewardsMetric'
 import { GlobalAnnualBackersIncentives } from '@/app/backing/components/Metrics/GlobalAnnualBackersIncentives'
+import { TotalBackingDisplay } from '@/app/backing/components/TotalBackingDisplay'
 import {
   Allocations,
   AllocationsContext,
@@ -27,9 +28,9 @@ import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { useBuilderContext } from '../collective-rewards/user'
 import { BuilderAllocationBar } from './components/BuilderAllocationBar'
-import { BackerAnnualBackersIncentives } from './components/Metrics/BackerAnnualBackersIncentives'
 import { Spotlight } from './components/Spotlight'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { Expandable, ExpandableContent, ExpandableTrigger } from '@/components/Expandable'
 
 const NAME = 'Backing'
 
@@ -100,6 +101,7 @@ const DistributeButton = ({ onClick }: ButtonProps) => {
 }
 
 export const BackingPage = () => {
+  const isDesktop = useIsDesktop()
   const searchParams = useSearchParams()
   const { isConnected } = useAccount()
   const {
@@ -192,19 +194,22 @@ export const BackingPage = () => {
                   }
                 />
               </div>
-              <div className="flex flex-col md:flex-row items-start basis-1/2">
-                <TokenAmountDisplay
-                  label="Total backing"
-                  amount={formatSymbol(cumulativeAllocation, STRIF)}
-                  tokenSymbol={STRIF}
-                  isFlexEnd
+              {isDesktop ? (
+                <TotalBackingDisplay
+                  cumulativeAllocation={cumulativeAllocation}
+                  hasAllocations={hasAllocations}
                 />
-                {hasAllocations && (
-                  <div className="basis-1/2">
-                    <BackerAnnualBackersIncentives />
-                  </div>
-                )}
-              </div>
+              ) : (
+                <Expandable className="w-full">
+                  <ExpandableTrigger color="var(--color-bg-0)" className="justify-center" />
+                  <ExpandableContent>
+                    <TotalBackingDisplay
+                      cumulativeAllocation={cumulativeAllocation}
+                      hasAllocations={hasAllocations}
+                    />
+                  </ExpandableContent>
+                </Expandable>
+              )}
             </div>
             {(hasAllocations || userSelections) && <Spotlight />}
           </div>
