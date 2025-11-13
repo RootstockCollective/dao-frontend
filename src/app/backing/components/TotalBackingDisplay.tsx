@@ -2,10 +2,8 @@ import { formatSymbol } from '@/app/shared/formatter'
 import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
 import { STRIF } from '@/lib/constants'
 import { BackerAnnualBackersIncentives } from './Metrics/BackerAnnualBackersIncentives'
-import { Address } from 'viem'
 import { useContext, useMemo } from 'react'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface Props {
   cumulativeAllocation: bigint
@@ -14,30 +12,47 @@ interface Props {
 
 export const TotalBackingDisplay = ({ cumulativeAllocation, hasAllocations = false }: Props) => {
   const {
-    state: { allocations },
+    state: { allocations, isAllocationTxPending },
     initialState: { allocations: initialAllocations },
   } = useContext(AllocationsContext)
-  const isDesktop = useIsDesktop()
 
-  // Check if there are unsaved changes
+  const currentAllocation = useMemo(() => {
+    return Object.entries(allocations).reduce((acc, [builderAddress, allocation]) => {
+      return acc + allocation
+    }, 0n)
+  }, [allocations])
+
+  const futureAllocation = useMemo(() => {
+    return Object.entries(initialAllocations).reduce((acc, [builderAddress, allocation]) => {
+      return acc + allocation
+    }, 0n)
+  }, [initialAllocations])
+
   const hasUnsavedChanges = useMemo(() => {
-    const uniqueAddresses = [...new Set([...Object.keys(initialAllocations), ...Object.keys(allocations)])]
-    return uniqueAddresses.some(
-      builderAddress =>
-        (initialAllocations[builderAddress as Address] || 0n) !==
-        (allocations[builderAddress as Address] || 0n),
-    )
-  }, [initialAllocations, allocations])
+    return currentAllocation !== futureAllocation
+  }, [currentAllocation, futureAllocation])
 
   const label = useMemo(() => {
-    if (!hasUnsavedChanges) {
+    if (currentAllocation > futureAllocation) {
       return 'Total backing'
     }
-    if (isDesktop) {
-      return 'Total Future backing'
-    }
     return 'Future backing'
-  }, [isDesktop, hasUnsavedChanges])
+  }, [currentAllocation, futureAllocation])
+
+  const status = useMemo(() => {
+    if (!hasUnsavedChanges) {
+      return undefined
+    }
+
+    if (isAllocationTxPending) {
+      return 'pending'
+    }
+
+    if (currentAllocation > futureAllocation) {
+      return 'increasing'
+    }
+    return 'decreasing'
+  }, [hasUnsavedChanges, currentAllocation, futureAllocation, isAllocationTxPending])
 
   return (
     <div className="flex flex-col md:flex-row items-start basis-1/2 gap-6">
@@ -45,7 +60,7 @@ export const TotalBackingDisplay = ({ cumulativeAllocation, hasAllocations = fal
         label={label}
         amount={formatSymbol(cumulativeAllocation, STRIF)}
         tokenSymbol={STRIF}
-        isPending={hasUnsavedChanges}
+        status={status}
         isFlexEnd
       />
       {hasAllocations && (

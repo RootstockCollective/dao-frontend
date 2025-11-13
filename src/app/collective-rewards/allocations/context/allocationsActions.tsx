@@ -6,6 +6,7 @@ export const createActions = (
   setSelections: Dispatch<SetStateAction<Selections>>,
   setAllocations: Dispatch<SetStateAction<Allocations>>,
   setBacker: Dispatch<SetStateAction<Backer>>,
+  setIsAllocationTxPending: Dispatch<SetStateAction<boolean>>,
   initialState: InitialState,
 ): AllocationsActions => ({
   toggleSelectedBuilder: (builderAddress: Address) => {
@@ -59,5 +60,8 @@ export const createActions = (
     setResetVersion(prev => prev + 1)
     setAllocations(initialState.allocations)
     setBacker(initialState.backer)
+  },
+  setIsAllocationTxPending: value => {
+    setIsAllocationTxPending(value)
   },
 })
