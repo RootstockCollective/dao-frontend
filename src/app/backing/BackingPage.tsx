@@ -114,6 +114,7 @@ export const BackingPage = () => {
     state: {
       backer: { balance, allocationsCount, cumulativeAllocation },
       allocations,
+      isAllocationTxPending,
     },
     initialState: {
       backer: { amountToAllocate: totalOnchainAllocation },
@@ -125,6 +126,7 @@ export const BackingPage = () => {
   const { prices } = usePricesContext()
   const [isExpanded, setIsExpanded] = useState(false)
 
+  const availableToAllocate = balance - totalOnchainAllocation
   const availableForBacking = balance - cumulativeAllocation
   const availableBackingUSD = useMemo(() => {
     const rifPriceUsd = prices[RIF]?.price ?? 0
@@ -162,6 +164,13 @@ export const BackingPage = () => {
   const hasAllocations = isConnected && totalOnchainAllocation > 0n
   const hideTooltip = !isExpanded && !isDesktop && hasAllocations
 
+  const availableForBackingStatus = useMemo(() => {
+    if (isAllocationTxPending) return 'pending'
+    if (availableForBacking > availableToAllocate) return 'increasing'
+    if (availableForBacking < availableToAllocate) return 'decreasing'
+    return undefined
+  }, [availableForBacking, availableToAllocate, isAllocationTxPending])
+
   return (
     <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">
       <Header caps variant="h1" className="text-3xl leading-10 pb-[2.5rem]">
@@ -192,6 +201,7 @@ export const BackingPage = () => {
                   amount={formatSymbol(availableForBacking, STRIF)}
                   tokenSymbol={STRIF}
                   amountInCurrency={hideTooltip ? undefined : availableBackingUSD}
+                  status={availableForBackingStatus}
                   actions={
                     availableForBacking > 0n ? (
                       <DistributeButton onClick={distributeBackingEqually} hideTooltip={hideTooltip} />
