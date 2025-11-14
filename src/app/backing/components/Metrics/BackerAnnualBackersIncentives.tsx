@@ -26,9 +26,8 @@ export const BackerAnnualBackersIncentives = () => {
           }}
           info={
             <Label variant={isDesktop ? 'body' : 'body-xs'}>
-              Your Annual Backers Incentives (%) represents an <br /> estimate of the annualized percentage of
-              rewards <br />
-              that you could receive based on your <br /> backing allocations.
+              Your Annual Backers Incentives (%) represents an estimate of the annualized percentage of
+              rewards that you could receive based on your backing allocations.
               <br />
               <br />
               The calculation follows the formula:
@@ -37,8 +36,8 @@ export const BackerAnnualBackersIncentives = () => {
               </span>
               <br />
               <br />
-              This estimation is dynamic and may vary based on <br /> total rewards and user activity. <br />
-              This data is for informational purposes only.
+              This estimation is dynamic and may vary based on total rewards and user activity. This data is
+              for informational purposes only.
             </Label>
           }
         />

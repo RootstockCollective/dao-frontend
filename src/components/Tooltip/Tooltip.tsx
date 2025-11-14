@@ -130,7 +130,7 @@ export function Tooltip({
             className={cn(
               'rounded-sm bg-v3-text-80 text-v3-bg-accent-60 px-2 py-1 text-xs font-normal shadow-lg font-rootstock-sans',
               // reduce layout jumps/jitters when numbers change
-              'whitespace-nowrap [font-variant-numeric:tabular-nums]',
+              '[font-variant-numeric:tabular-nums]',
               className,
             )}
             {...props}
