@@ -79,20 +79,37 @@ export const DateCell: FC<DateCellProps> = ({ formatted }): ReactElement => {
 }
 
 interface FromToCellProps {
-  builderAddress: string
+  builderAddress?: string
   type: 'Claim' | 'Back'
+  isGrouped?: boolean
 }
 
-export const FromToCell: FC<FromToCellProps> = ({ builderAddress }): ReactElement => {
+export const FromToCell: FC<FromToCellProps> = ({ builderAddress, isGrouped }): ReactElement => {
   const { builders } = useBuilderContext()
-  const builder = builders.find(b => b.address.toLowerCase() === builderAddress.toLowerCase())
 
-  const name = builder?.builderName || builderAddress
+  // Grouped row - show purple circle and "Multiple Builders"
+  if (isGrouped) {
+    return (
+      <TableCell columnId="from_to" className="gap-3 overflow-hidden">
+        <div className="rounded-full bg-v3-rsk-purple min-w-10 size-10" />
+        <div className="flex items-center min-w-0 flex-1">
+          <Paragraph variant="body" className="text-v3-primary font-rootstock-sans">
+            Multiple Builders
+          </Paragraph>
+        </div>
+      </TableCell>
+    )
+  }
+
+  // Single builder row - show Jdenticon and builder name
+  const builder = builders.find(b => b.address.toLowerCase() === builderAddress?.toLowerCase())
+
+  const name = builder?.builderName || builderAddress || ''
   const displayName = truncate(name, 18)
 
   return (
     <TableCell columnId="from_to" className="gap-3 overflow-hidden">
-      <Jdenticon className="rounded-full bg-white min-w-10 size-10" value={builderAddress} />
+      <Jdenticon className="rounded-full bg-white min-w-10 size-10" value={builderAddress || ''} />
       <div className="flex items-center min-w-0 flex-1">
         <Link
           href={`/proposals/${builder?.proposal.id}`}
@@ -140,7 +157,7 @@ export const AmountCell: FC<AmountCellProps> = ({ amounts, type, increased }): R
   const showArrow = isBack && increased !== undefined
 
   return (
-    <TableCell columnId="amount" className="flex items-center gap-1">
+    <TableCell columnId="amount" className="flex flex-col items-center justify-center gap-1">
       {amounts.map((amount, idx) => {
         const token = getTokenByAddress(amount.address)
         const symbol = token?.symbol || '???'

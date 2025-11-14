@@ -60,8 +60,9 @@ export type TransactionHistoryCellDataMap = {
   cycle: { cycle: string | null }
   date: { timestamp: string; formatted: string }
   from_to: {
-    builderAddress: string
+    builderAddress?: string
     type: 'Claim' | 'Back'
+    isGrouped?: boolean
   }
   type: { type: 'Claim' | 'Back'; increased?: boolean }
   amount: { amounts: Array<{ address: string; value: string }>; type: 'Claim' | 'Back'; increased?: boolean }
