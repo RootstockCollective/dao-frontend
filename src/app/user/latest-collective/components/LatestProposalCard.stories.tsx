@@ -26,7 +26,7 @@ const baseMockProposal: Proposal = {
     forVotes: Big(2000),
     againstVotes: Big(3000),
     abstainVotes: Big(4000),
-    quorum: Big(5000),
+    quorumReached: Big(5000),
   },
   blocksUntilClosure: Big(0),
   votingPeriod: Big(0),
@@ -45,7 +45,7 @@ const baseMockProposal: Proposal = {
   votesAgainst: '3000000000000000000000',
   votesFor: '2000000000000000000000',
   votesAbstains: '4000000000000000000000',
-  quorum: '5000000000000000000000',
+  quorumReached: '5000000000000000000000',
 }
 
 const mockProposal: Proposal = { ...baseMockProposal }

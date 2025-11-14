@@ -1,7 +1,6 @@
 import { FC, HtmlHTMLAttributes, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { useAccount } from 'wagmi'
-import { DisclaimerFlow } from '@/shared/walletConnection'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { useLongPressTouch } from '@/shared/hooks/useLongPressTouch'
@@ -36,8 +35,7 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({
   ...props
 }) => {
   const { isConnected } = useAccount()
-  const { intermediateStep, handleConnectWallet, handleCloseIntermediateStep, onConnectWalletButtonClick } =
-    useAppKitFlow()
+  const { onConnectWalletButtonClick } = useAppKitFlow()
 
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -212,10 +210,6 @@ export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({
           </td>
         </tr>
       </ConnectTooltip>
-
-      {!!intermediateStep && (
-        <DisclaimerFlow onAgree={handleConnectWallet} onClose={handleCloseIntermediateStep} />
-      )}
     </>
   )
 }

@@ -6,14 +6,14 @@ import type { ClassNameValue } from 'tailwind-merge'
 import { SmallLineSeparator } from '@/components/Separators/SmallLineSeparator'
 
 interface QuorumColumnProps {
-  quorumVotes: Big
+  quorumReached: Big
   quorumAtSnapshot: Big
   className?: ClassNameValue
   hideQuorumTarget?: boolean
 }
 
 export const QuorumColumn = ({
-  quorumVotes,
+  quorumReached,
   quorumAtSnapshot,
   className,
   hideQuorumTarget,
@@ -22,7 +22,7 @@ export const QuorumColumn = ({
   // If quorumAtSnapshot is 0, percentage defaults to 0
   const percentage = quorumAtSnapshot.eq(0)
     ? Big(0)
-    : quorumVotes.div(quorumAtSnapshot).mul(100).round(undefined, Big.roundHalfEven)
+    : quorumReached.div(quorumAtSnapshot).mul(100).round(undefined, Big.roundHalfEven)
 
   // Determine the color class based on the percentage
   const colorClass = percentage.gte(100)

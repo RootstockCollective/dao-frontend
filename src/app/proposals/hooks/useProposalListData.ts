@@ -72,7 +72,7 @@ export function useProposalListData({ proposals }: Props) {
             againstVotes,
             forVotes,
             abstainVotes,
-            quorum: forVotes.add(abstainVotes),
+            quorumReached: forVotes.add(abstainVotes),
           },
           blocksUntilClosure: deadlineBlock.minus(latestBlockNumber?.toString() || 0),
           votingPeriod: deadlineBlock.minus(creationBlock),

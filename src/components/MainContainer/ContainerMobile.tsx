@@ -21,13 +21,13 @@ export default function ContainerMobile({ className, children, ...props }: HTMLA
       )}
     >
       <HeaderMobile />
-      <div className="relative px-4 grow flex flex-col" id={MAIN_CONTAINER_ID}>
+      <div className="relative px-4 grow flex flex-col pb-24" id={MAIN_CONTAINER_ID}>
         <SidebarMobile />
         <main className="grow mb-8">
           <TopPageHeader />
           {children}
         </main>
-        <BottomDrawer />
+        {!isSidebarOpen && <BottomDrawer />}
         <FooterMobile />
       </div>
     </div>

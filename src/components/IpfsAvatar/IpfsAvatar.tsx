@@ -35,7 +35,7 @@ export const IpfsAvatar = ({ imageIpfs, address, name, size = 88, className }: I
           unoptimized
         />
       ) : (
-        <Jdenticon className="bg-v3-text-100" value={address} size={size.toString()} />
+        <Jdenticon className="bg-v3-text-100" value={address.toLowerCase()} size={size.toString()} />
       )}
     </div>
   )

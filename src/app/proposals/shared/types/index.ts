@@ -12,7 +12,7 @@ export interface Proposal {
     againstVotes: Big
     forVotes: Big
     abstainVotes: Big
-    quorum: Big
+    quorumReached: Big
   }
   blocksUntilClosure: Big
   votingPeriod: Big
@@ -38,7 +38,7 @@ export interface Proposal {
   votesAgainst?: string
   votesFor?: string
   votesAbstains?: string
-  quorum?: string
+  quorumReached?: string
   // Fields from getProposalEventArguments
   fullProposalName?: string
 }

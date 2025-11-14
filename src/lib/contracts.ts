@@ -27,8 +27,10 @@ import {
   STRIF_ADDRESS,
   USDRIF,
   USDRIF_ADDRESS,
+  USDRIF_VAULT_ADDRESS,
   VANGUARD_NFT_ADDRESS,
 } from './constants'
+import { VaultAbi } from '@/lib/abis/VaultAbi'
 
 const tokenContracts = {
   [RIF]: RIF_ADDRESS,
@@ -102,4 +104,9 @@ export const governor = {
 export const stRif = {
   address: STRIF_ADDRESS,
   abi: StRIFTokenAbi,
+} as const
+
+export const vault = {
+  address: USDRIF_VAULT_ADDRESS,
+  abi: VaultAbi,
 } as const

@@ -11,6 +11,7 @@ import { GlobalErrorBoundary } from '@/components/ErrorPage/GlobalErrorBoundary'
 import { currentEnvChain, wagmiAdapter, wagmiAdapterConfig } from '@/config'
 import { REOWN_METADATA_URL, REOWN_PROJECT_ID } from '@/lib/constants'
 import { FeatureFlagProvider } from '@/shared/context/FeatureFlag'
+import { ConnectWalletProvider } from '@/shared/walletConnection/connection/ConnectWalletProvider'
 import { AllocationsContextProvider } from '../collective-rewards/allocations/context'
 import { BuilderContextProviderWithPrices } from '../collective-rewards/user'
 import { BoosterProvider } from './NFT/BoosterContext'
@@ -55,8 +56,10 @@ createAppKit({
   ],
   features: {
     analytics: true,
-    email: true,
-    socials: ['google', 'x', 'github', 'discord', 'apple', 'facebook'],
+    // email: true,
+    // socials: ['google', 'x', 'github', 'discord', 'apple', 'facebook'],
+    email: false,
+    socials: false,
     collapseWallets: true,
     emailShowWallets: true,
     onramp: true,
@@ -71,19 +74,21 @@ export const ContextProviders = ({ children, initialState }: Props) => {
       <FeatureFlagProvider>
         <WagmiProvider config={wagmiAdapterConfig} initialState={initialState}>
           <QueryClientProvider client={queryClient}>
-            <BuilderContextProviderWithPrices>
-              <BoosterProvider>
-                <AllocationsContextProvider>
-                  <BalancesProvider>
-                    <TooltipProvider>
-                      <ReviewProposalProvider>
-                        <NavigationGuardProvider>{children}</NavigationGuardProvider>
-                      </ReviewProposalProvider>
-                    </TooltipProvider>
-                  </BalancesProvider>
-                </AllocationsContextProvider>
-              </BoosterProvider>
-            </BuilderContextProviderWithPrices>
+            <ConnectWalletProvider>
+              <BuilderContextProviderWithPrices>
+                <BoosterProvider>
+                  <AllocationsContextProvider>
+                    <BalancesProvider>
+                      <TooltipProvider>
+                        <ReviewProposalProvider>
+                          <NavigationGuardProvider>{children}</NavigationGuardProvider>
+                        </ReviewProposalProvider>
+                      </TooltipProvider>
+                    </BalancesProvider>
+                  </AllocationsContextProvider>
+                </BoosterProvider>
+              </BuilderContextProviderWithPrices>
+            </ConnectWalletProvider>
           </QueryClientProvider>
         </WagmiProvider>
       </FeatureFlagProvider>

@@ -1,4 +1,4 @@
-import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards'
+import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { useGetCycleRewards } from '@/app/collective-rewards/shared/hooks/useGetCycleRewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { FiatTooltipLabel } from '@/app/components'
@@ -33,9 +33,6 @@ export const EstimatedRewards = () => {
       const { symbol } = TOKENS[tokenKey]
       const amount = cycleRewards[tokenKey] ?? 0n
       const price = prices[symbol]?.price || 0
-      if (amount === 0n || price === 0) {
-        return acc
-      }
 
       const fiatValue = getFiatAmount(amount, price)
       const value = formatSymbol(amount, symbol).toString()

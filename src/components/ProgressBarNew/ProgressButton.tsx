@@ -1,21 +1,27 @@
 import { HTMLAttributes } from 'react'
 import { AnimatedTilesLoop } from './AnimatedTiles/AnimatedTilesLoop'
-import { type Color, progressBarColors } from './colors'
+import { type Color, progressButtonColors } from './colors'
 import { cn } from '@/lib/utils'
 import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
 
 interface Props extends Omit<HTMLAttributes<HTMLDivElement>, 'color'> {
   tileSize?: number
-  color?: keyof typeof progressBarColors | (Color | [Color, Color])[]
+  color?: (Color | [Color, Color])[]
 }
 
-export function ProgressButton({ tileSize = 12, color = 'gray', className, children, ...props }: Props) {
+export function ProgressButton({
+  tileSize = 12,
+  color = progressButtonColors,
+  className,
+  children,
+  ...props
+}: Props) {
   return (
     <AnimatedTilesLoop
       tileSize={tileSize}
       speed={8}
       dispersion={0.7}
-      colors={Array.isArray(color) ? color : progressBarColors[color]}
+      colors={color}
       tileAnimationDuration={0.2}
       className={cn('w-full md:w-[231px] h-12 border border-bg-40', className)}
       {...props}

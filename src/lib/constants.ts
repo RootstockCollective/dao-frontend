@@ -1,5 +1,5 @@
 import { Feature } from '@/config/features.conf'
-import { Address } from 'viem'
+import { Address, zeroAddress } from 'viem'
 
 export const GITHUB_ORG = 'RootstockCollective'
 export const ENV = process.env.NEXT_PUBLIC_ENV as 'mainnet' | 'testnet'
@@ -10,6 +10,7 @@ export const BUILD_ID = process.env.NEXT_PUBLIC_BUILD_ID as string
 export const RIF_ADDRESS = process.env.NEXT_PUBLIC_RIF_ADDRESS as Address
 export const STRIF_ADDRESS = process.env.NEXT_PUBLIC_STRIF_ADDRESS as Address
 export const USDRIF_ADDRESS = process.env.NEXT_PUBLIC_USDRIF_ADDRESS as Address
+export const USDRIF_VAULT_ADDRESS = (process.env.NEXT_PUBLIC_USDRIF_VAULT_ADDRESS as Address) || zeroAddress
 export const GOVERNOR_ADDRESS = process.env.NEXT_PUBLIC_GOVERNOR_ADDRESS as Address
 // NFTs
 export const EA_NFT_ADDRESS = process.env.NEXT_PUBLIC_EA_NFT_ADDRESS?.toLowerCase() as Address
@@ -75,6 +76,7 @@ const FEATURE_FLAGS: Record<Feature, string> = {
   use_the_graph: process.env.NEXT_PUBLIC_ENABLE_FEATURE_USE_THE_GRAPH ?? '',
   use_state_sync: process.env.NEXT_PUBLIC_ENABLE_FEATURE_USE_STATE_SYNC ?? '',
   debug_logs: process.env.NEXT_PUBLIC_ENABLE_FEATURE_DEBUG_LOGS ?? '',
+  vault: process.env.NEXT_PUBLIC_ENABLE_FEATURE_VAULT ?? '',
 }
 
 export const getFeatureEnvFlags = (): Record<Feature, string> => FEATURE_FLAGS

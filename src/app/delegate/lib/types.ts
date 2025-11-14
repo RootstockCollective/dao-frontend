@@ -19,14 +19,20 @@ export interface CardsState {
 export interface DelegateDataState {
   cards: CardsState
   didIDelegateToMyself: boolean
-  delegateeAddress?: Address
-  delegateeRns?: string
-  delegateeVotingPower?: string
-  delegateeImageIpfs?: string | null
-  delegateeDelegatedSince?: string
-  delegateeTotalVotes?: number
-  delegateeDelegators?: number
-  delegateeVotingWeight?: string
+  currentDelegatee?: DelegateeState
+  nextDelegatee?: DelegateeState
+  displayedDelegatee?: DelegateeState
+}
+
+export interface DelegateeState {
+  address: Address
+  rns?: string
+  imageIpfs?: string | null
+  delegatedSince?: string
+  totalVotes?: number
+  delegators?: number
+  votingWeight?: string
+  votingPower?: string
 }
 
 // UI state interface
@@ -37,6 +43,7 @@ export interface DelegateUIState {
 
 // Actions interface
 export interface DelegateActions {
+  setNextDelegatee: (nextDelegatee: DelegateeState | undefined) => void
   setIsDelegationPending: (isPending: boolean) => void
   setIsReclaimPending: (isPending: boolean) => void
   refetch: () => void

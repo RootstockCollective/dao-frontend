@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import type { Address } from 'viem'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { ProposalSubfooter } from '../../components/ProposalSubfooter'
 import { BaseProposalFields } from '../components/BaseProposalFields'
 import { useReviewProposal } from '@/app/providers'
@@ -15,10 +14,11 @@ import { type DeactivationProposal, DeactivationProposalSchema } from '../schema
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { Header } from '@/components/Typography'
 import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 export default function DeactivationProposalForm() {
+  const isDesktop = useIsDesktop()
   const router = useRouter()
-  const { openDrawer, closeDrawer } = useLayoutContext()
   const { record, setRecord } = useReviewProposal()
   const { getBuilderByAddress } = useBuilderContext()
 
@@ -60,18 +60,10 @@ export default function DeactivationProposalForm() {
   )
 
   useEffect(() => {
-    openDrawer(
-      <ProposalSubfooter
-        submitForm={onSubmit}
-        buttonText="Review proposal"
-        nextDisabled={!formState.isValid}
-      />,
-    )
-    return () => closeDrawer()
-  }, [formState.isValid, onSubmit, openDrawer, closeDrawer])
-
-  // eslint-disable-next-line
-  useEffect(() => setFocus('proposalName'), [])
+    if (isDesktop) {
+      setFocus('proposalName')
+    }
+  }, [setFocus, isDesktop])
 
   return (
     <div className="mt-10 md:mt-12">
@@ -91,6 +83,11 @@ export default function DeactivationProposalForm() {
           </div>
         </div>
       </form>
+      <ProposalSubfooter
+        submitForm={onSubmit}
+        buttonText="Review proposal"
+        nextDisabled={!formState.isValid}
+      />
     </div>
   )
 }

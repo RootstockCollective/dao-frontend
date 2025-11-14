@@ -58,3 +58,7 @@ export async function getEnsDomainName(address: string): Promise<string | undefi
     return undefined
   }
 }
+
+export const isRnsDomain = (domain: string) => {
+  return domain.toLowerCase().trim().endsWith('.rsk')
+}

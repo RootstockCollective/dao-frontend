@@ -1,4 +1,4 @@
-import { formatSymbol } from '@/app/collective-rewards/rewards/utils'
+import { formatSymbol } from '@/app/shared/formatter'
 import { ConditionalTooltip } from '@/app/components'
 import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
 import { Button } from '@/components/Button'
@@ -11,6 +11,7 @@ import { Separator } from '@radix-ui/react-select'
 import { FC, ReactNode } from 'react'
 import { ClaimRewardRadioGroup } from './ClaimRewardRadioGroup'
 import { ClaimRewardType } from './types'
+import { REWARD_TOKEN_KEYS, TOKENS, type RewardToken } from '@/lib/tokens'
 
 interface ClaimRewardsModalViewProps {
   onClose: () => void
@@ -24,7 +25,6 @@ interface ClaimRewardsModalViewProps {
   isTxPending?: boolean
   isLoading?: boolean
   className?: string
-  tokens: Record<string, { symbol: string; address: string }>
 }
 
 export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
@@ -39,7 +39,6 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
   isTxPending = false,
   isLoading = false,
   className,
-  tokens,
 }) => {
   const radioOptions: Array<{
     value: ClaimRewardType
@@ -51,12 +50,12 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
       label: 'All Rewards',
       subLabel: formatCurrencyWithLabel(totalFiatAmount),
     },
-    ...Object.entries(tokens).map(([tokenKey, tokenInfo]) => ({
-      value: tokenKey as ClaimRewardType,
+    ...REWARD_TOKEN_KEYS.map(tokenKey => ({
+      value: tokenKey,
       label: (
         <div className="flex items-center gap-2">
-          {formatSymbol(tokenAmounts[tokenKey], tokenInfo.symbol)}{' '}
-          <TokenImage symbol={tokenInfo.symbol} size={tokenInfo.symbol === RBTC ? 18 : 16} />
+          {formatSymbol(tokenAmounts[tokenKey], TOKENS[tokenKey].symbol)}{' '}
+          <TokenImage symbol={TOKENS[tokenKey].symbol} size={TOKENS[tokenKey].symbol === RBTC ? 18 : 16} />
         </div>
       ),
       subLabel: `${formatCurrencyWithLabel(tokenFiatAmounts[tokenKey])}`,

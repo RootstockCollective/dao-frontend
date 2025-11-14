@@ -1,8 +1,8 @@
-import { formatMetrics, useGetBuilderRewardsClaimedLogs } from '@/app/collective-rewards/rewards'
+import { useGetBuilderRewardsClaimedLogs } from '@/app/collective-rewards/rewards'
 import { TOKENS } from '@/lib/tokens'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
-import { Address } from 'viem'
 import { useMemo } from 'react'
+import { Address } from 'viem'
 
 interface UseBuilderAllTimeRewardsProps {
   gauge: Address
@@ -17,8 +17,6 @@ interface AllTimeRewardsData {
 }
 
 export const useGetBuilderAllTimeRewards = ({ gauge }: UseBuilderAllTimeRewardsProps): AllTimeRewardsData => {
-  const { rif, rbtc, usdrif } = TOKENS
-
   const {
     data: builderRewardsPerToken,
     isLoading: builderRewardsPerTokenLoading,
@@ -29,37 +27,37 @@ export const useGetBuilderAllTimeRewards = ({ gauge }: UseBuilderAllTimeRewardsP
     data: rifClaimableRewards,
     isLoading: rifClaimableRewardsLoading,
     error: rifClaimableRewardsError,
-  } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [rif.address] })
+  } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [TOKENS.rif.address] })
 
   const {
     data: rbtcClaimableRewards,
     isLoading: rbtcClaimableRewardsLoading,
     error: rbtcClaimableRewardsError,
-  } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [rbtc.address] })
+  } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [TOKENS.rbtc.address] })
 
   const {
     data: usdrifClaimableRewards,
     isLoading: usdrifClaimableRewardsLoading,
     error: usdrifClaimableRewardsError,
-  } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [usdrif.address] })
+  } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [TOKENS.usdrif.address] })
 
   const { rifAllTimeRewards, rbtcAllTimeRewards, usdrifAllTimeRewards } = useMemo(() => {
     // Calculate total claimed rewards for RIF
     const rifTotalClaimedRewards =
-      builderRewardsPerToken[rif.address]?.reduce((acc, event) => {
+      builderRewardsPerToken[TOKENS.rif.address]?.reduce((acc, event) => {
         const amount = event.args.amount_ ?? 0n
         return acc + amount
       }, 0n) ?? 0n
 
     // Calculate total claimed rewards for rBTC
     const rbtcTotalClaimedRewards =
-      builderRewardsPerToken[rbtc.address]?.reduce((acc, event) => {
+      builderRewardsPerToken[TOKENS.rbtc.address]?.reduce((acc, event) => {
         const amount = event.args.amount_ ?? 0n
         return acc + amount
       }, 0n) ?? 0n
 
     const usdrifTotalClaimedRewards =
-      builderRewardsPerToken[usdrif.address]?.reduce((acc, event) => {
+      builderRewardsPerToken[TOKENS.usdrif.address]?.reduce((acc, event) => {
         const amount = event.args.amount_ ?? 0n
         return acc + amount
       }, 0n) ?? 0n

@@ -30,15 +30,12 @@ export function SidebarMobile() {
       variants={variants}
       initial="drawer"
       animate="drawer"
-      className={cn(
-        'h-[calc(100dvh-var(--header-height))] w-full pl-10 py-12',
-        'fixed inset-0 z-40 bg-l-black',
-      )}
+      className={cn('h-screen w-full pl-10 py-12', 'fixed inset-0 z-40 bg-l-black')}
       transition={{ duration: 0.3, ease: 'circOut' }}
       onClick={closeSidebar}
     >
-      <div className="h-full flex flex-col justify-between gap-4 ">
-        <ul className="w-fit">
+      <div className="h-full flex flex-col justify-start">
+        <ul className="w-fit mt-12">
           {menuDataToUse.map(data => (
             <Fragment key={data.buttonProps.id}>
               {'type' in data && data.type === 'category' ? (
@@ -53,7 +50,7 @@ export function SidebarMobile() {
             </Fragment>
           ))}
         </ul>
-        <UsefulLinks className="ml-4" />
+        <UsefulLinks className="ml-4 mt-12" />
       </div>
     </motion.div>
   )

@@ -1,10 +1,9 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import moment from 'moment'
 import { useAccount } from 'wagmi'
 import { useReviewProposal } from '@/app/providers'
-import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { ProposalSubfooter } from '../components/ProposalSubfooter'
 import { ProposalCategory } from '@/shared/types'
 import { PreviewLabel } from './components/PreviewLabel'
@@ -29,6 +28,7 @@ import { DeactivationProposal } from '../details/schemas/DeactivationProposalSch
 import { usePricesContext } from '@/shared/context'
 import { GetPricesResult } from '@/app/user/types'
 import { useBuilderContext } from '@/app/collective-rewards/user'
+import { isRnsDomain } from '@/lib/rns'
 
 // Transform form data to ParsedActionDetails for all proposal types
 const transformFormToActionDetails = (
@@ -38,13 +38,14 @@ const transformFormToActionDetails = (
 ) => {
   switch (category) {
     case ProposalCategory.Grants: {
-      const { transferAmount, token, targetAddress } = form as GrantProposal
+      const { transferAmount, token, targetAddress, targetAddressInput } = form as GrantProposal
       return {
         type: ProposalType.WITHDRAW,
         amount: transferAmount,
         tokenSymbol: token,
         toAddress: targetAddress,
         price: prices[token]?.price ?? 0,
+        rns: isRnsDomain(targetAddressInput) ? targetAddressInput : undefined,
       }
     }
     case ProposalCategory.Activation: {
@@ -165,19 +166,6 @@ export default function ProposalReview() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [record, onCreateTreasuryTransferProposal, onCreateBuilderWhitelistProposal, onRemoveBuilderProposal])
 
-  // inject sticky drawer with submit button to the footer layout
-  const { openDrawer, closeDrawer } = useLayoutContext()
-  useEffect(() => {
-    openDrawer(
-      <ProposalSubfooter
-        submitForm={onSubmit}
-        buttonText="Publish proposal"
-        disabled={loading || !isConnected}
-      />,
-    )
-    return () => closeDrawer()
-  }, [loading, onSubmit, openDrawer, closeDrawer, isConnected])
-
   // Verify that the context has passed correct proposal type
   if (!record?.form || !record?.category) {
     return null
@@ -250,6 +238,11 @@ export default function ProposalReview() {
           readOnly
         />
       </div>
+      <ProposalSubfooter
+        submitForm={onSubmit}
+        buttonText="Publish proposal"
+        disabled={loading || !isConnected}
+      />
     </div>
   )
 }

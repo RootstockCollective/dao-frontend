@@ -57,7 +57,7 @@ export const ProposalCardDesktop = ({ proposal }: Props) => {
           </Span>
           <QuorumColumn
             className="w-auto mt-2 text-left"
-            quorumVotes={forVotes.add(abstainVotes)}
+            quorumReached={forVotes.add(abstainVotes)}
             quorumAtSnapshot={quorumAtSnapshot}
           />
         </div>

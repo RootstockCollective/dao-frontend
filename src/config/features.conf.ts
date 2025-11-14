@@ -8,6 +8,7 @@ const features = {
   use_the_graph: 'Use the graph protocol for data collection',
   use_state_sync: 'Use the state sync for data collection',
   debug_logs: 'Enable debug logs',
+  vault: 'USDRIF Vault page',
 } as const
 
 type Feature = keyof typeof features

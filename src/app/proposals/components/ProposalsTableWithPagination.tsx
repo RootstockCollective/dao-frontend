@@ -118,24 +118,28 @@ const ProposalsTableWithPagination = forwardRef<ProposalsTableRef, ProposalsTabl
             </div>
           ),
           cell: ({ row }) => {
-            const quorum = row.original.quorumAtSnapshot
+            const quorumAtSnapshot = row.original.quorumAtSnapshot
             const { forVotes, abstainVotes } = row.original.votes
             return (
               <QuorumColumn
-                quorumVotes={forVotes.add(abstainVotes)}
-                quorumAtSnapshot={quorum}
+                quorumReached={forVotes.add(abstainVotes)}
+                quorumAtSnapshot={quorumAtSnapshot}
                 hideQuorumTarget={isFilterSidebarOpen}
               />
             )
           },
           sortingFn: (a, b) => {
-            const getQuorumPercent = (quorum: Big, quorumAtSnapshot: Big) =>
+            const getQuorumPercent = (quorumReached: Big, quorumAtSnapshot: Big) =>
               quorumAtSnapshot.eq(0)
                 ? Big(0)
-                : quorum.div(quorumAtSnapshot).mul(100).round(undefined, Big.roundHalfEven)
-            const percentA = getQuorumPercent(a.original.votes.quorum, a.original.quorumAtSnapshot)
-            const percentB = getQuorumPercent(b.original.votes.quorum, b.original.quorumAtSnapshot)
-            return percentA.cmp(percentB)
+                : quorumReached.div(quorumAtSnapshot).mul(100).round(undefined, Big.roundHalfEven)
+            const percentA = getQuorumPercent(a.original.votes.quorumReached, a.original.quorumAtSnapshot)
+            const percentB = getQuorumPercent(b.original.votes.quorumReached, b.original.quorumAtSnapshot)
+            const percentComparison = percentA.cmp(percentB)
+            if (percentComparison === 0) {
+              return a.original.quorumAtSnapshot.cmp(b.original.quorumAtSnapshot)
+            }
+            return percentComparison
           },
           meta: {
             width: '1.4fr',
