@@ -31,9 +31,6 @@ const AllocationDrawerContent = () => {
     actions: { resetAllocations },
   } = useContext(AllocationsContext)
 
-  const onSaveAllocations = () => {
-    saveAllocations()
-  }
   const onCancelAllocations = () => {
     resetAllocations()
     closeDrawer()
