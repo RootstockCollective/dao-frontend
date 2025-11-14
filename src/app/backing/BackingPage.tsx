@@ -81,7 +81,7 @@ const DistributeButton = ({ onClick, hideTooltip = false }: DistributeButtonProp
   return (
     <div className="flex items-center gap-3">
       <Button variant="secondary-outline" className="flex h-7 px-2 py-1 items-center gap-2" onClick={onClick}>
-        <Label variant="tag-s" className="text-white font-rootstock-sans text-sm font-normal leading-[145%]">
+        <Label variant="body-s" className="whitespace-nowrap">
           Distribute equally
         </Label>
       </Button>
@@ -223,7 +223,7 @@ export const BackingPage = () => {
                   }
                 />
                 {!isDesktop && (
-                  <div className="basis-2/5">
+                  <div className="basis-1/2">
                     <AnimatePresence>
                       {hasAllocations && !isExpanded && (
                         <motion.div
