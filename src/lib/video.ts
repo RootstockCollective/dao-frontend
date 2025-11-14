@@ -178,14 +178,17 @@ export function extractTwitchVideoId(url: string): string | null {
 
 /**
  * Extracts Rumble video ID from Rumble URL
- * Supports: rumble.com/vVIDEO_ID
+ * Supports: rumble.com/vVIDEO_ID or rumble.com/vVIDEO_ID-title.html
+ * Returns only the short ID part (e.g., "6upn69" from "v6upn69-title.html")
+ * The embed URL format is: https://rumble.com/embed/v{SHORT_ID}/
  */
 export function extractRumbleVideoId(url: string): string | null {
   try {
     const urlObj = new URL(url)
     const pathname = urlObj.pathname
-    // Rumble URLs: /vVIDEO_ID
-    const match = pathname.match(/^\/v([\w-]+)/)
+    // Rumble URLs: /vVIDEO_ID or /vVIDEO_ID-title.html
+    // Extract only the short ID (alphanumeric characters after 'v' and before the first hyphen)
+    const match = pathname.match(/^\/v([a-zA-Z0-9]+)/)
     return match ? match[1] : null
   } catch {
     return null
@@ -254,16 +257,22 @@ export function getVideoEmbedConfig(url: string): VideoEmbedConfig | null {
     }
   }
 
-  // Rumble
-  if (isRumbleUrl(url)) {
-    const videoId = extractRumbleVideoId(url)
-    if (!videoId) return null
-    return {
-      embedUrl: `https://rumble.com/embed/${videoId}/`,
-      title: 'Rumble video player',
-      allow: 'autoplay; fullscreen',
-    }
-  }
+  // Rumble - temporarily disabled
+  // Rumble embed IDs differ from video page IDs, requiring server-side fetching
+  // TODO: Implement proper Rumble embed ID fetching solution
+  // if (isRumbleUrl(url)) {
+  //   const videoId = extractRumbleVideoId(url)
+  //   if (!videoId) return null
+  //   // NOTE: Rumble embed IDs may differ from video page IDs.
+  //   // We attempt to use the video ID from the URL, but this may not work for all videos.
+  //   // To get the correct embed ID, users need to copy it from Rumble's embed button.
+  //   // Rumble embed URL format: https://rumble.com/embed/v{EMBED_ID}/
+  //   return {
+  //     embedUrl: `https://rumble.com/embed/v${videoId}/`,
+  //     title: 'Rumble video player',
+  //     allow: 'encrypted-media *; fullscreen *;',
+  //   }
+  // }
 
   return null
 }

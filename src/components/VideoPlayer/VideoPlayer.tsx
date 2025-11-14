@@ -10,7 +10,8 @@ interface VideoPlayerProps {
 
 /**
  * Video player component that supports multiple video platforms:
- * YouTube, Vimeo, Loom, Twitch, and Rumble
+ * YouTube, Vimeo, Loom, Twitch
+ * Note: Rumble support is temporarily disabled
  */
 export const VideoPlayer = ({ url, className, 'data-testid': dataTestId }: VideoPlayerProps) => {
   if (!url) {
