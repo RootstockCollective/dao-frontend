@@ -25,3 +25,8 @@ export const REWARD_TOKEN_KEYS = Object.keys(TOKENS).filter(key => key !== 'stri
   keyof Omit<typeof TOKENS, 'strif'>
 >
 export const REWARD_TOKENS = REWARD_TOKEN_KEYS.map(tokenKey => TOKENS[tokenKey])
+
+export const getTokenByAddress = (address: string) => {
+  const normalizedAddress = address.toLowerCase()
+  return Object.values(TOKENS).find(token => token.address.toLowerCase() === normalizedAddress)
+}
