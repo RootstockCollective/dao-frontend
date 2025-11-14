@@ -169,14 +169,18 @@ export const getDiscourseLinkFromProposalDescription = (description: string): st
   }
 
   const afterLink = startIndex + DISCOURSE_LINK_SEPARATOR.length
-  const lastSpaceIndex = description.lastIndexOf(' ')
 
-  // If there's no space after the link, take everything to the end
-  if (lastSpaceIndex <= afterLink) {
-    return description.substring(afterLink).trim()
+  // Find the first whitespace character (space, newline, tab, etc.) after the link starts
+  const remainingText = description.substring(afterLink)
+  const whitespaceMatch = remainingText.match(/[\s\n\r\t]/)
+
+  if (!whitespaceMatch || whitespaceMatch.index === undefined) {
+    // If there's no whitespace after the link, take everything to the end
+    return remainingText.trim()
   }
 
-  return description.substring(afterLink, lastSpaceIndex).trim()
+  // Extract the link up to the first whitespace character
+  return remainingText.substring(0, whitespaceMatch.index).trim()
 }
 
 // each parameter uses 32 bytes in the calldata but we only need the address which is 20 bytes

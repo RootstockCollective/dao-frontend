@@ -1,6 +1,6 @@
 'use client'
 
-import { isYouTubeUrl, extractYouTubeVideoId } from '@/lib/youtube'
+import { getVideoEmbedConfig } from '@/lib/video'
 
 interface VideoPlayerProps {
   url: string | null | undefined
@@ -9,37 +9,28 @@ interface VideoPlayerProps {
 }
 
 /**
- * Video player component that supports YouTube and can be extended for other platforms
+ * Video player component that supports multiple video platforms:
+ * YouTube, Vimeo, Loom, Twitch, and Rumble
  */
 export const VideoPlayer = ({ url, className, 'data-testid': dataTestId }: VideoPlayerProps) => {
   if (!url) {
     return null
   }
 
-  // YouTube support
-  if (isYouTubeUrl(url)) {
-    const videoId = extractYouTubeVideoId(url)
-    if (!videoId) {
-      return null
-    }
-
-    const embedUrl = `https://www.youtube.com/embed/${videoId}`
-
-    return (
-      <div className={className} data-testid={dataTestId}>
-        <iframe
-          src={embedUrl}
-          title="YouTube video player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-          className="w-full aspect-video rounded"
-        />
-      </div>
-    )
+  const embedConfig = getVideoEmbedConfig(url)
+  if (!embedConfig) {
+    return null
   }
 
-  // Future: Add support for other video platforms here
-  // Example: Vimeo, Dailymotion, etc.
-
-  return null
+  return (
+    <div className={className} data-testid={dataTestId}>
+      <iframe
+        src={embedConfig.embedUrl}
+        title={embedConfig.title}
+        allow={embedConfig.allow}
+        allowFullScreen
+        className="w-full aspect-video rounded"
+      />
+    </div>
+  )
 }

@@ -12,6 +12,29 @@ export interface DiscourseDetails {
   }>
 }
 
+export interface DiscourseLinkCount {
+  url?: string
+  href?: string
+  internal?: boolean
+  reflection?: boolean
+  title?: string
+  clicks?: number
+  [key: string]: unknown
+}
+
+export interface DiscoursePost {
+  id?: number
+  cooked?: string // HTML content
+  raw?: string // Raw markdown/text content
+  link_counts?: DiscourseLinkCount[] // Links extracted from the post by Discourse
+  [key: string]: unknown
+}
+
+export interface DiscoursePostData {
+  posts?: DiscoursePost[]
+  [key: string]: unknown
+}
+
 /**
  * Discourse topic response - minimal type with only fields we use
  */
@@ -20,5 +43,7 @@ export interface DiscourseTopicResponse {
   title: string
   fancy_title: string
   created_at: string
-  details: DiscourseDetails
+  details?: DiscourseDetails
+  post_stream?: DiscoursePostData // Discourse API returns this as post_stream
+  [key: string]: unknown
 }

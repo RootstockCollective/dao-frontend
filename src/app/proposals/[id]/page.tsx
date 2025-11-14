@@ -21,7 +21,7 @@ import { Proposal } from '../shared/types'
 import { useProposalAddressResolution } from './hooks/useProposalAddressResolution'
 import { useMemo } from 'react'
 import { VideoPlayer } from '@/components/VideoPlayer'
-import { useDiscourseYouTube } from '@/shared/hooks/useDiscourseYouTube'
+import { useDiscourseVideo } from '@/shared/hooks/useDiscourseVideo'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -112,7 +112,7 @@ const PageWithProposal = (proposal: Proposal) => {
   const parsedAction = useProposalAddressResolution(parsedActionBase)
   const voteOnProposalData = useVoteOnProposal(proposalId)
   const snapshot = useGetProposalSnapshot(proposalId)
-  const { data: youtubeUrl } = useDiscourseYouTube(getDiscourseLinkFromProposalDescription(description))
+  const { data: videoUrl } = useDiscourseVideo(getDiscourseLinkFromProposalDescription(description))
 
   const actionName = calldatasParsed?.[0]?.type === 'decoded' ? calldatasParsed[0].functionName : undefined
 
@@ -142,7 +142,7 @@ const PageWithProposal = (proposal: Proposal) => {
               actionName={actionName}
             />
             <Description description={description} />
-            <VideoPlayer url={youtubeUrl} className="p-4 md:p-6" />
+            <VideoPlayer url={videoUrl} className="p-4 md:p-6" />
           </div>
           <TechnicalDetails proposalId={proposalId} snapshot={snapshot} />
         </div>
