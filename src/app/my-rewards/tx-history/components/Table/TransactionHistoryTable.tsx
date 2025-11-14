@@ -42,8 +42,6 @@ export default function TransactionHistoryTable() {
     sortDirection,
   })
 
-  console.log(cycleDuration)
-
   const rowData = useMemo(() => {
     return convertDataToRowData(data, cycleDuration, prices)
   }, [data, cycleDuration, prices])

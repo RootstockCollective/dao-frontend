@@ -41,7 +41,6 @@ export const useGetTransactionHistory = (params?: UseGetTransactionHistoryParams
       }
 
       const result = await response.json()
-      console.log('Transaction history response:', result)
 
       return result as TransactionHistoryResponse
     },
