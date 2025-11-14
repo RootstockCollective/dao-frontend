@@ -7,10 +7,15 @@ import { AllocationsContext } from '@/app/collective-rewards/allocations/context
 
 interface Props {
   cumulativeAllocation: bigint
+  amountInCurrency?: string
   hasAllocations?: boolean
 }
 
-export const TotalBackingDisplay = ({ cumulativeAllocation, hasAllocations = false }: Props) => {
+export const TotalBackingDisplay = ({
+  cumulativeAllocation,
+  amountInCurrency,
+  hasAllocations = false,
+}: Props) => {
   const {
     state: { allocations, isAllocationTxPending },
     initialState: { allocations: initialAllocations },
@@ -59,6 +64,7 @@ export const TotalBackingDisplay = ({ cumulativeAllocation, hasAllocations = fal
         amount={formatSymbol(cumulativeAllocation, STRIF)}
         tokenSymbol={STRIF}
         status={status}
+        amountInCurrency={amountInCurrency}
         isFlexEnd
       />
       {hasAllocations && (

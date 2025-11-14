@@ -138,6 +138,13 @@ export const BackingPage = () => {
       : formatCurrency(getFiatAmount(availableForBacking, rifPriceUsd))
   }, [availableForBacking, prices])
 
+  const cumulativeAllocationUSD = useMemo(() => {
+    const rifPriceUsd = prices[RIF]?.price ?? 0
+    return !cumulativeAllocation || !rifPriceUsd
+      ? formatCurrency(0)
+      : formatCurrency(getFiatAmount(cumulativeAllocation, rifPriceUsd))
+  }, [cumulativeAllocation, prices])
+
   const hasUnsavedChanges = useMemo(() => {
     const uniqueAddresses = [...new Set([...Object.keys(initialAllocations), ...Object.keys(allocations)])]
     return uniqueAddresses.some(
@@ -206,7 +213,7 @@ export const BackingPage = () => {
       {isConnected && (
         <ActionMetricsContainer className="flex flex-col w-full items-start px-0 py-6 gap-2 rounded-[4px] bg-v3-bg-accent-80">
           <div className="flex flex-col items-center gap-6 md:gap-10 w-full">
-            <div className="flex flex-col md:flex-row items-start w-full px-6 md:gap-14">
+            <div className="flex flex-col md:flex-row items-start w-full px-6 gap-6 md:gap-14">
               <div className="flex flex-row gap-6 w-full md:w-auto">
                 <TokenAmountDisplay
                   label={isDesktop ? 'Available for backing' : 'Available stRIF'}
@@ -243,6 +250,7 @@ export const BackingPage = () => {
               {(isDesktop || !hasAllocations) && (
                 <TotalBackingDisplay
                   cumulativeAllocation={cumulativeAllocation}
+                  amountInCurrency={cumulativeAllocationUSD}
                   hasAllocations={hasAllocations}
                 />
               )}
@@ -258,6 +266,7 @@ export const BackingPage = () => {
                     <TotalBackingDisplay
                       cumulativeAllocation={cumulativeAllocation}
                       hasAllocations={hasAllocations && isExpanded}
+                      amountInCurrency={cumulativeAllocationUSD}
                     />
                   </motion.div>
                 )}
