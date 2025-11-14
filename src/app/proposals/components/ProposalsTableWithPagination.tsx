@@ -135,7 +135,11 @@ const ProposalsTableWithPagination = forwardRef<ProposalsTableRef, ProposalsTabl
                 : quorumReached.div(quorumAtSnapshot).mul(100).round(undefined, Big.roundHalfEven)
             const percentA = getQuorumPercent(a.original.votes.quorumReached, a.original.quorumAtSnapshot)
             const percentB = getQuorumPercent(b.original.votes.quorumReached, b.original.quorumAtSnapshot)
-            return percentA.cmp(percentB)
+            const percentComparison = percentA.cmp(percentB)
+            if (percentComparison === 0) {
+              return a.original.quorumAtSnapshot.cmp(b.original.quorumAtSnapshot)
+            }
+            return percentComparison
           },
           meta: {
             width: '1.4fr',
