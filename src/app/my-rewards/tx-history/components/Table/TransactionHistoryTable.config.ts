@@ -62,10 +62,6 @@ export type TransactionHistoryCellDataMap = {
   from_to: {
     builderAddress: string
     type: 'Claim' | 'Back'
-    builderName?: string
-    proposalId?: string
-    hasAirdrop?: boolean
-    isHighlighted?: boolean
   }
   type: { type: 'Claim' | 'Back'; increased?: boolean }
   amount: { amounts: Array<{ address: string; value: string }>; type: 'Claim' | 'Back'; increased?: boolean }

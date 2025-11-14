@@ -1,5 +1,5 @@
 import { FC, HtmlHTMLAttributes, ReactElement, ReactNode } from 'react'
-import { cn, shortAddress } from '@/lib/utils'
+import { cn, truncate } from '@/lib/utils'
 import { useTableContext } from '@/shared/context'
 import { ColumnId, COLUMN_TRANSFORMS, TransactionHistoryCellDataMap } from './TransactionHistoryTable.config'
 import { Paragraph } from '@/components/Typography'
@@ -8,6 +8,8 @@ import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
 import { ArrowDownIcon } from '@/components/Icons/ArrowDownIcon'
 import { TokenImage } from '@/components/TokenImage'
 import { getTokenByAddress } from '@/lib/tokens'
+import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
+import Link from 'next/link'
 
 const TableCellBase = ({
   children,
@@ -82,14 +84,33 @@ interface FromToCellProps {
 }
 
 export const FromToCell: FC<FromToCellProps> = ({ builderAddress }): ReactElement => {
-  const displayName = shortAddress(builderAddress as any)
+  const { builders } = useBuilderContext()
+  const builder = builders.find(b => b.address.toLowerCase() === builderAddress.toLowerCase())
+
+  const name = builder?.builderName || builderAddress
+  const displayName = truncate(name, 18)
 
   return (
-    <TableCell columnId="from_to" className="gap-3">
-      <Jdenticon className="rounded-full bg-white w-10" value={builderAddress} />
-      <Paragraph variant="body" className="text-v3-primary font-medium">
-        {displayName}
-      </Paragraph>
+    <TableCell columnId="from_to" className="gap-3 overflow-hidden">
+      <Jdenticon className="rounded-full bg-white min-w-10 size-10" value={builderAddress} />
+      <div className="flex items-center min-w-0 flex-1">
+        <Link
+          href={`/proposals/${builder?.proposal.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="min-w-0 flex-1"
+        >
+          <Paragraph
+            variant="body"
+            className={cn(
+              'text-v3-primary font-rootstock-sans hover:underline hover:underline-offset-2',
+              'truncate overflow-hidden text-ellipsis whitespace-nowrap',
+            )}
+          >
+            {displayName}
+          </Paragraph>
+        </Link>
+      </div>
     </TableCell>
   )
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, useState } from 'react'
+import { FC } from 'react'
 import { cn } from '@/lib/utils'
 import { TransactionHistoryTable } from './TransactionHistoryTable.config'
 import { CycleCell, DateCell, FromToCell, TypeCell, AmountCell, TotalAmountCell } from './Cells'
