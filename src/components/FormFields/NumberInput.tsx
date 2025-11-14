@@ -10,6 +10,7 @@ interface Props<T extends FieldValues> extends NumericFormatProps {
   name: FieldPath<T>
   control: Control<T>
   prefix?: string
+  'data-testid'?: string
 }
 
 export function NumberInput<T extends FieldValues>({
@@ -20,6 +21,7 @@ export function NumberInput<T extends FieldValues>({
   control,
   prefix,
   onFocus,
+  'data-testid': dataTestId,
   ...props
 }: Props<T>) {
   const [isFocused, setIsFocused] = useState(false)
@@ -38,7 +40,10 @@ export function NumberInput<T extends FieldValues>({
         const shouldFloat = isFocused || hasValue
 
         return (
-          <ErrorMessage errorMsg={error?.message}>
+          <ErrorMessage
+            errorMsg={error?.message}
+            {...(dataTestId ? { dataTestId: dataTestId + 'Error' } : {})}
+          >
             <FloatingLabel htmlFor={newId} isFloating={shouldFloat} label={label}>
               <NumericFormat
                 id={newId}
@@ -64,6 +69,7 @@ export function NumberInput<T extends FieldValues>({
                   'w-full h-16 px-4 pt-4 bg-bg-60 rounded-sm text-text-100 focus:outline-none font-rootstock-sans flex justify-end items-end overflow-hidden',
                   className,
                 )}
+                {...(dataTestId ? { dataTestId: dataTestId } : {})}
                 {...props}
               />
             </FloatingLabel>

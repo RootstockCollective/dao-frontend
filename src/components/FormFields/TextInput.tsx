@@ -10,6 +10,7 @@ interface Props<T extends FieldValues> extends InputHTMLAttributes<HTMLInputElem
   name: FieldPath<T>
   control: Control<T>
   infoMessage?: ReactNode
+  'data-testid'?: string
 }
 
 export function TextInput<T extends FieldValues>({
@@ -20,6 +21,7 @@ export function TextInput<T extends FieldValues>({
   control,
   infoMessage,
   onFocus,
+  'data-testid': dataTestId,
   ...props
 }: Props<T>) {
   const ownId = useId()
@@ -38,7 +40,10 @@ export function TextInput<T extends FieldValues>({
         const shouldFloat = isFocused || hasValue
 
         return (
-          <ErrorMessage errorMsg={error?.message}>
+          <ErrorMessage
+            errorMsg={error?.message}
+            {...(dataTestId ? { dataTestId: dataTestId + 'Error' } : {})}
+          >
             <FloatingLabel htmlFor={newId} isFloating={shouldFloat} label={label}>
               <input
                 id={newId}
@@ -61,6 +66,7 @@ export function TextInput<T extends FieldValues>({
                 }}
                 onChange={onChange}
                 autoComplete="off"
+                {...(dataTestId ? { dataTestId: dataTestId } : {})}
                 {...props}
               />
             </FloatingLabel>
