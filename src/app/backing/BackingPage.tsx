@@ -31,6 +31,7 @@ import { useAccount } from 'wagmi'
 import { useBuilderContext } from '../collective-rewards/user'
 import { BuilderAllocationBar } from './components/BuilderAllocationBar'
 import { Spotlight } from './components/Spotlight'
+import { AnimatePresence, motion } from 'motion/react'
 
 const NAME = 'Backing'
 
@@ -210,10 +211,24 @@ export const BackingPage = () => {
                     )
                   }
                 />
-                {!isDesktop && hasAllocations && !isExpanded && (
-                  <TotalBackingDisplay cumulativeAllocation={cumulativeAllocation} />
+                {!isDesktop && (
+                  <div className="basis-2/5">
+                    <AnimatePresence>
+                      {hasAllocations && !isExpanded && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 10 }}
+                          transition={{ duration: 0.25 }}
+                        >
+                          <TotalBackingDisplay cumulativeAllocation={cumulativeAllocation} />
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 )}
               </div>
+
               {(isDesktop || !hasAllocations) && (
                 <TotalBackingDisplay
                   cumulativeAllocation={cumulativeAllocation}
@@ -221,15 +236,25 @@ export const BackingPage = () => {
                 />
               )}
 
-              {!isDesktop && hasAllocations && (
-                <Expandable className="w-full gap-0" onToggleExpanded={setIsExpanded}>
-                  <ExpandableTrigger color="var(--color-bg-0)" className="justify-center" />
-                  <ExpandableContent>
+              <AnimatePresence>
+                {isExpanded && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.25 }}
+                  >
                     <TotalBackingDisplay
                       cumulativeAllocation={cumulativeAllocation}
                       hasAllocations={hasAllocations && isExpanded}
                     />
-                  </ExpandableContent>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {!isDesktop && hasAllocations && (
+                <Expandable className="w-full" onToggleExpanded={setIsExpanded}>
+                  <ExpandableTrigger color="var(--color-bg-0)" className="justify-center" />
                 </Expandable>
               )}
             </div>
