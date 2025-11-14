@@ -119,6 +119,7 @@ export const BackingPage = () => {
     },
     initialState: {
       backer: { amountToAllocate: totalOnchainAllocation },
+      allocations: initialAllocations,
     },
     actions: { updateAllocations },
   } = useContext(AllocationsContext)
@@ -136,6 +137,15 @@ export const BackingPage = () => {
       ? formatCurrency(0)
       : formatCurrency(getFiatAmount(availableForBacking, rifPriceUsd))
   }, [availableForBacking, prices])
+
+  const hasUnsavedChanges = useMemo(() => {
+    const uniqueAddresses = [...new Set([...Object.keys(initialAllocations), ...Object.keys(allocations)])]
+    return uniqueAddresses.some(
+      builderAddress =>
+        (initialAllocations[builderAddress as Address] || 0n) !==
+        (allocations[builderAddress as Address] || 0n),
+    )
+  }, [allocations, initialAllocations])
 
   const distributeBackingEqually = () => {
     //FIXME: Take into account the inactive builders
@@ -167,10 +177,11 @@ export const BackingPage = () => {
 
   const availableForBackingStatus = useMemo(() => {
     if (isAllocationTxPending) return 'pending'
+    if (!hasUnsavedChanges) return undefined
     if (availableForBacking > availableToAllocate) return 'increasing'
     if (availableForBacking < availableToAllocate) return 'decreasing'
     return undefined
-  }, [availableForBacking, availableToAllocate, isAllocationTxPending])
+  }, [availableForBacking, availableToAllocate, isAllocationTxPending, hasUnsavedChanges])
 
   return (
     <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">
