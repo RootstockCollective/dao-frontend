@@ -278,27 +278,6 @@ export function getVideoEmbedConfig(url: string): VideoEmbedConfig | null {
 }
 
 /**
- * Extracts YouTube URL from Discourse topic details.links
- * Returns the first YouTube URL found, or null if none found
- * @deprecated Use extractVideoUrlFromDiscourseTopic instead
- */
-export function extractYouTubeUrlFromDiscourseTopic(topic: { details?: DiscourseDetails }): string | null {
-  const links = topic.details?.links
-  if (!links || !Array.isArray(links)) {
-    return null
-  }
-
-  for (const link of links) {
-    const url = link.url || link.href
-    if (typeof url === 'string' && isYouTubeUrl(url)) {
-      return url
-    }
-  }
-
-  return null
-}
-
-/**
  * Extracts video URL from post content (HTML)
  * Parses HTML to extract links from <a> tags
  */
