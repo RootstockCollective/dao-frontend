@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { getDiscourseLinkFromProposalDescription, DISCOURSE_LINK_SEPARATOR } from './utils' // adjust import path
+import { getDiscourseLinkFromProposalDescription } from './utils' // adjust import path
 
 describe('getDiscourseLinkFromProposalDescription', () => {
   test('should return undefined when description does not contain DiscourseLink:', () => {
