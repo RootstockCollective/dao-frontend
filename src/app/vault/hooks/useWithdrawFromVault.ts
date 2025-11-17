@@ -19,8 +19,8 @@ export const useWithdrawFromVault = (amount: string) => {
     txHash: withdrawTxHash,
   } = useContractWrite({
     ...vault,
-    functionName: 'withdraw',
-    args: [parseEther(amount), address, address],
+    functionName: 'withdraw' as const,
+    args: [parseEther(amount), address!, address!] as const,
   })
 
   return {
