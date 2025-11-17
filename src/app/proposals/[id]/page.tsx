@@ -18,6 +18,8 @@ import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { useProposalById } from '../context'
 import { Category } from '../components/category'
 import { Proposal } from '../shared/types'
+import { useProposalAddressResolution } from './hooks/useProposalAddressResolution'
+import { useMemo } from 'react'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
@@ -100,7 +102,12 @@ const PageWithProposal = (proposal: Proposal) => {
     category,
   } = proposal
   const { prices } = usePricesContext()
-  const parsedAction = parseProposalActionDetails(calldatasParsed, prices)
+  // Memoize parsedActionBase to ensure stable reference - only changes when dependencies change
+  const parsedActionBase = useMemo(
+    () => parseProposalActionDetails(calldatasParsed, prices),
+    [calldatasParsed, prices],
+  )
+  const parsedAction = useProposalAddressResolution(parsedActionBase)
   const voteOnProposalData = useVoteOnProposal(proposalId)
   const snapshot = useGetProposalSnapshot(proposalId)
 
