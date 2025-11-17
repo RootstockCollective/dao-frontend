@@ -162,7 +162,7 @@ export function CommunityInfoHeader({ address: nftAddress }: { address: Address 
 }
 
 const ConnectButton = (props: ConnectButtonComponentProps) => (
-  <Button className="whitespace-nowrap" {...props}>
+  <Button className="whitespace-nowrap w-full" {...props} data-testid="ConnectButtonEligibility">
     Connect wallet to check eligibility
   </Button>
 )

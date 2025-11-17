@@ -19,7 +19,7 @@ export const ConnectButtonComponent = ({
     onClick={onClick}
     data-testid="ConnectWallet"
     variant="secondary-outline"
-    className={cn('px-2 py-1.5 border-bg-40', className)}
+    className={cn('px-2 py-1.5 border-bg-40 w-auto', className)}
   >
     <Span variant="body-s" className={textClassName}>
       Connect Wallet
