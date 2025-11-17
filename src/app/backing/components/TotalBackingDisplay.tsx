@@ -22,20 +22,20 @@ export const TotalBackingDisplay = ({
   } = useContext(AllocationsContext)
 
   const currentAllocation = useMemo(() => {
-    return Object.entries(allocations).reduce((acc, [builderAddress, allocation]) => {
-      return acc + allocation
-    }, 0n)
-  }, [allocations])
-
-  const futureAllocation = useMemo(() => {
     return Object.entries(initialAllocations).reduce((acc, [builderAddress, allocation]) => {
       return acc + allocation
     }, 0n)
   }, [initialAllocations])
 
+  const futureAllocation = useMemo(() => {
+    return Object.entries(allocations).reduce((acc, [builderAddress, allocation]) => {
+      return acc + allocation
+    }, 0n)
+  }, [allocations])
+
   const hasUnsavedChanges = useMemo(() => {
-    return currentAllocation !== futureAllocation
-  }, [currentAllocation, futureAllocation])
+    return futureAllocation !== currentAllocation
+  }, [futureAllocation, currentAllocation])
 
   const label = useMemo(() => {
     if (hasUnsavedChanges) {
@@ -51,11 +51,11 @@ export const TotalBackingDisplay = ({
     if (isAllocationTxPending) {
       return 'pending'
     }
-    if (currentAllocation > futureAllocation) {
+    if (futureAllocation > currentAllocation) {
       return 'increasing'
     }
     return 'decreasing'
-  }, [hasUnsavedChanges, currentAllocation, futureAllocation, isAllocationTxPending])
+  }, [hasUnsavedChanges, futureAllocation, currentAllocation, isAllocationTxPending])
 
   return (
     <div className="flex flex-col md:flex-row items-start basis-1/2 gap-6">
