@@ -10,7 +10,8 @@ import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
 import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { config } from '@/config'
-import { executeTxFlow } from '@/shared/notification'
+import { executeTxFlow, showToast } from '@/shared/notification'
+import { useCheckTreasuryFunds } from '@/app/proposals/hooks/useCheckTreasuryFunds'
 import { Vote } from '@/shared/types'
 import { ProposalState } from '@/shared/types'
 import Big from '@/lib/big'
@@ -84,6 +85,7 @@ export const VotingDetails = ({
   const { onExecuteProposal, canProposalBeExecuted, proposalEta, proposalQueuedTime } =
     useExecuteProposal(proposalId)
   const [isExecuting, setIsExecuting] = useState(false)
+  const { hasEnoughFunds, missingAsset, isLoading: isLoadingFundsCheck } = useCheckTreasuryFunds(proposalId)
 
   const [popoverOpen, setPopoverOpen] = useState(false)
   const voteButtonRef = useRef<HTMLButtonElement>(null)
@@ -147,6 +149,16 @@ export const VotingDetails = ({
   }
 
   const handleExecuteProposal = async () => {
+    // Check if treasury has enough funds before executing
+    if (!isLoadingFundsCheck && !hasEnoughFunds && missingAsset) {
+      showToast({
+        severity: 'error',
+        title: 'Cannot Execute',
+        content: `The transaction will fail because the treasury does not have enough ${missingAsset}.`,
+      })
+      return
+    }
+
     const txHash = await executeTxFlow({
       onRequestTx: () => {
         setIsExecuting(true)
