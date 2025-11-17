@@ -24,9 +24,10 @@ const QuerySchema = z
 
 export const revalidate = 60
 
-export async function GET(req: NextRequest, context: { params: { address: string } }) {
+export async function GET(req: NextRequest, context: { params: Promise<{ address: string }> }) {
   try {
-    const address = AddressSchema.parse(context.params.address)
+    const { address: addressParam } = await context.params
+    const address = AddressSchema.parse(addressParam)
     const searchParams = new URL(req.url).searchParams
     const qp = (k: string) => {
       const v = searchParams.get(k)
