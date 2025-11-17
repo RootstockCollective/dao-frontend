@@ -10,6 +10,7 @@ interface TextAreaProps<T extends FieldValues> extends TextareaHTMLAttributes<HT
   maxRows?: number
   name: FieldPath<T>
   control: Control<T>
+  'data-testid'?: string
 }
 
 export function TextArea<T extends FieldValues>({
@@ -22,6 +23,7 @@ export function TextArea<T extends FieldValues>({
   control,
   onInput,
   onFocus,
+  'data-testid': dataTestId,
   ...props
 }: TextAreaProps<T>) {
   const [isFocused, setIsFocused] = useState(false)
@@ -93,7 +95,10 @@ export function TextArea<T extends FieldValues>({
         }
 
         return (
-          <ErrorMessage errorMsg={error?.message}>
+          <ErrorMessage
+            errorMsg={error?.message}
+            {...(dataTestId ? { dataTestId: dataTestId + 'Error' } : {})}
+          >
             <FloatingLabel htmlFor={newId} isFloating={shouldFloat} label={label}>
               <div className="w-full px-4 pt-8 pb-2 bg-bg-60 rounded-sm ">
                 <textarea
@@ -120,6 +125,7 @@ export function TextArea<T extends FieldValues>({
                     onBlur()
                   }}
                   autoComplete="off"
+                  {...(dataTestId ? { dataTestId: dataTestId } : {})}
                   {...props}
                 />
               </div>
