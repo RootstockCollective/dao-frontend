@@ -1,4 +1,4 @@
-import { zeroAddress } from 'viem'
+import { zeroAddress, Address } from 'viem'
 import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'
 import { GovernorAbi } from './abis/Governor'
 import { RootlingsS1ABI } from './abis/RootlingsS1'
@@ -31,6 +31,7 @@ import {
   VANGUARD_NFT_ADDRESS,
 } from './constants'
 import { VaultAbi } from '@/lib/abis/VaultAbi'
+import { StrategyAbi } from '@/lib/abis/StrategyAbi'
 
 const tokenContracts = {
   [RIF]: RIF_ADDRESS,
@@ -110,3 +111,13 @@ export const vault = {
   address: USDRIF_VAULT_ADDRESS,
   abi: VaultAbi,
 } as const
+
+/**
+ * Helper function to create a strategy contract configuration
+ * @param address - The strategy contract address
+ * @returns Strategy contract configuration object
+ */
+export const getStrategyContract = (address: string) => ({
+  address: address as Address,
+  abi: StrategyAbi,
+} as const)
