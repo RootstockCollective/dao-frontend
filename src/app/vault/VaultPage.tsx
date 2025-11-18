@@ -6,7 +6,7 @@ import { SupplyModal } from './components/SupplyModal'
 import { WithdrawModal } from './components/WithdrawModal'
 import { useModal } from '@/shared/hooks/useModal'
 
-const NAME = 'USDRIF Vault'
+const NAME = 'USD Vault'
 
 export const VaultPage = () => {
   const supplyModal = useModal()
