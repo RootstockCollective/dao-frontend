@@ -1,17 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
-import { FilterSideBar } from './FilterSideBar'
+import { ProposalsFilterSideBar } from './ProposalsFilterSideBar'
 import { useState } from 'react'
-import { FilterItem, FilterType } from './types'
+import { FilterItem } from './types'
 
-const meta: Meta<typeof FilterSideBar> = {
-  title: 'Proposals/FilterSideBar',
-  component: FilterSideBar,
+const meta: Meta<typeof ProposalsFilterSideBar> = {
+  title: 'Proposals/ProposalsFilterSideBar',
+  component: ProposalsFilterSideBar,
   tags: ['autodocs'],
 }
 
 export default meta
 
-type Story = StoryObj<typeof FilterSideBar>
+type Story = StoryObj<typeof ProposalsFilterSideBar>
 
 export const Default: Story = {
   render() {
@@ -20,7 +20,7 @@ export const Default: Story = {
 
     return (
       <div className="h-screen bg-bg-80">
-        <FilterSideBar
+        <ProposalsFilterSideBar
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
           activeFilters={activeFilters}

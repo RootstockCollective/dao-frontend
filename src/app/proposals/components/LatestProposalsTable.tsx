@@ -3,7 +3,7 @@ import { useMemo, memo, useState, useRef, useCallback, useEffect } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
 import { DebounceSearch } from '@/components/DebounceSearch'
 import { FilterButton } from './filter/FilterButton'
-import { FilterSideBar } from './filter/FilterSideBar'
+import { ProposalsFilterSideBar } from './filter/ProposalsFilterSideBar'
 import { cn } from '@/lib/utils'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { SearchButton } from './SearchButton'
@@ -236,7 +236,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
         >
           {/* container for useClickOutside ref */}
           <div ref={filterSidebarRef} className="pl-2 h-full">
-            <FilterSideBar
+            <ProposalsFilterSideBar
               isOpen={isFilterSidebarOpen}
               onClose={() => setIsFilterSidebarOpen(false)}
               activeFilters={activeFilters}
