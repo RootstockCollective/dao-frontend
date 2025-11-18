@@ -1,7 +1,7 @@
-import Image from 'next/image'
 import { FC, useState } from 'react'
 import { NewPopover } from '@/components/NewPopover'
 import { HourglassIcon } from '@/components/Icons/HourglassIcon'
+import { Span } from '@/components/Typography'
 
 interface PendingAllocationProps {
   pendingBacking: string
@@ -18,15 +18,19 @@ export const PendingAllocation: FC<PendingAllocationProps> = ({ pendingBacking, 
       onMouseLeave={() => setIsOpen(false)}
     >
       <div className="flex justify-between items-center mb-2">
-        <span>Pending</span>
-        <span className="flex items-center gap-1">
+        <Span variant="body-s">Pending</Span>
+        <Span variant="body-s" className="flex items-center gap-1">
           <HourglassIcon className="flex-shrink-0 cursor-pointer" size={16} />
-          <span data-testid="pendingAllocationPending">{pendingBacking}</span>
-        </span>
+          <Span variant="body-s" data-testid="pendingAllocationPending">
+            {pendingBacking}
+          </Span>
+        </Span>
       </div>
       <div className="flex justify-between items-center">
-        <span>Current backing</span>
-        <span data-testid="pendingAllocationCurrent">{currentBacking}</span>
+        <Span variant="body-s">Current backing</Span>
+        <Span variant="body-s" data-testid="pendingAllocationCurrent">
+          {currentBacking}
+        </Span>
       </div>
     </div>
   )
@@ -41,6 +45,10 @@ export const PendingAllocation: FC<PendingAllocationProps> = ({ pendingBacking, 
       }
       content={popoverContent}
       side="top"
+      align="center"
+      sideOffset={4}
+      alignOffset={0}
+      className="bg-white"
     />
   )
 }
