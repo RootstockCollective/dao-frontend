@@ -1,6 +1,5 @@
 import { BLOCKSCOUT_URL } from '@/lib/constants'
 import { Address } from 'viem'
-import { NextResponse } from 'next/server'
 
 export interface StrategyNameInfo {
   address: Address
@@ -76,21 +75,21 @@ export async function POST(req: Request) {
     const body = await req.json()
 
     if (!body || !Array.isArray(body.addresses)) {
-      return NextResponse.json({ error: 'Invalid request: addresses array is required' }, { status: 400 })
+      return Response.json({ error: 'Invalid request: addresses array is required' }, { status: 400 })
     }
 
     const addresses = body.addresses as Address[]
 
     if (addresses.length === 0) {
-      return NextResponse.json({} as StrategyNamesResponse)
+      return Response.json({} as StrategyNamesResponse)
     }
 
     const result = await getStrategyNames(addresses)
 
-    return NextResponse.json(result)
+    return Response.json(result)
   } catch (error) {
     console.error('Error in strategy-name API route:', error)
-    return NextResponse.json(
+    return Response.json(
       { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 },
     )
