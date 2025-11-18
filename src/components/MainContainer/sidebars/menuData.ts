@@ -79,6 +79,18 @@ export const menuData = [
     buttonProps: { id: 'Button_Builders', name: 'builders' },
     iconUrl: '/images/sidemenukoto/Builders.svg',
   },
+  {
+    href: '-',
+    text: 'BETA TOOLS',
+    buttonProps: { id: 'Button_Beta_Tools', name: 'beta-tools', className: 'mt-5' },
+    type: 'category',
+  },
+  {
+    href: 'vault',
+    text: 'USD Vault Sandbox',
+    buttonProps: { id: 'Button_Vault', name: 'vault' },
+    iconUrl: '/images/sidemenukoto/Holdings.svg',
+  },
 ] as const satisfies MenuData[]
 
 export const menuDataNotConnected = [
@@ -141,5 +153,17 @@ export const menuDataNotConnected = [
     text: 'Builders',
     buttonProps: { id: 'Button_Builders', name: 'builders' },
     iconUrl: '/images/sidemenukoto/Builders.svg',
+  },
+  {
+    href: '-',
+    text: 'BETA TOOLS',
+    buttonProps: { id: 'Button_Beta_Tools_Not_Connected', name: 'beta-tools', className: 'mt-5' },
+    type: 'category',
+  },
+  {
+    href: 'vault',
+    text: 'USD Vault Sandbox',
+    buttonProps: { id: 'Button_Vault_Not_Connected', name: 'vault' },
+    iconUrl: '/images/sidemenukoto/Holdings.svg',
   },
 ] as const satisfies MenuData[]
