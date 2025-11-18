@@ -180,7 +180,7 @@ export const ProposalDetails = ({
       <DetailItem label="Proposed by" data-testid="ProposedByLabel">
         {proposer ? (
           !readOnly ? (
-            <ShortenAndCopy value={proposer} data-testid="ProposedBy" />
+            <ShortenAndCopy value={proposer} data-testid="ProposedBy" className="text-primary" />
           ) : (
             <Span variant="body" data-testid="ProposedBy">
               {shortAddress(proposer as Address)}
