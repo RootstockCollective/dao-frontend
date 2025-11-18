@@ -50,7 +50,7 @@ export const StrategiesInfo = () => {
         id: 'funds',
         header: 'Funds',
         cell: ({ row }) => (
-          <Paragraph>{isLoading ? '...' : formatSymbol(row.original.funds, USDRIF)}</Paragraph>
+          <Paragraph>{isLoading ? '...' : formatSymbol(row.original.funds, USDRIF)} USDRIF</Paragraph>
         ),
         enableSorting: true,
         sortingFn: (a, b) => {
