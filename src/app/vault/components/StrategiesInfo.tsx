@@ -1,20 +1,14 @@
 'use client'
 
-import { useMemo, useState } from 'react'
-import {
-  createColumnHelper,
-  getCoreRowModel,
-  getSortedRowModel,
-  SortingState,
-  useReactTable,
-} from '@tanstack/react-table'
+import { useMemo } from 'react'
+import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table'
 import { GridTable } from '@/components/Table'
 import { MetricsContainer } from '@/components/containers'
 import { Header } from '@/components/Typography'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
 import { useStrategies, StrategyInfo } from '../hooks/useStrategies'
-import { formatSymbol, formatApy } from '@/app/shared/formatter'
+import { formatSymbol } from '@/app/shared/formatter'
 import { truncateMiddle } from '@/lib/utils'
 import { USDRIF } from '@/lib/constants'
 import { CopyButton } from '@/components/CopyButton'
@@ -26,7 +20,6 @@ import { CircularProgress } from './CircularProgress'
  */
 export const StrategiesInfo = () => {
   const { strategies, isLoading, error } = useStrategies()
-  const [sorting, setSorting] = useState<SortingState>([])
 
   // Table data definition helper
   const { accessor } = createColumnHelper<StrategyInfo>()
@@ -41,7 +34,6 @@ export const StrategiesInfo = () => {
             <Paragraph>{truncateMiddle(row.original.name, 10, 10)}</Paragraph>
           </CopyButton>
         ),
-        enableSorting: false,
         meta: {
           width: '1.5fr',
         },
@@ -52,12 +44,6 @@ export const StrategiesInfo = () => {
         cell: ({ row }) => (
           <Paragraph>{isLoading ? '...' : formatSymbol(row.original.funds, USDRIF)} USDRIF</Paragraph>
         ),
-        enableSorting: true,
-        sortingFn: (a, b) => {
-          if (a.original.funds > b.original.funds) return 1
-          if (a.original.funds < b.original.funds) return -1
-          return 0
-        },
         meta: {
           width: '1.2fr',
         },
@@ -74,12 +60,6 @@ export const StrategiesInfo = () => {
             )}
           </div>
         ),
-        enableSorting: true,
-        sortingFn: (a, b) => {
-          if (a.original.percentageAllocated > b.original.percentageAllocated) return 1
-          if (a.original.percentageAllocated < b.original.percentageAllocated) return -1
-          return 0
-        },
         meta: {
           width: '1fr',
         },
@@ -88,32 +68,21 @@ export const StrategiesInfo = () => {
         id: 'estimatedApy',
         header: 'Est. APY',
         cell: ({ row }) => (
-          <Paragraph>{isLoading ? '...' : `${formatApy(row.original.estimatedApy)}%`}</Paragraph>
+          <Paragraph>{isLoading ? '...' : `${row.original.estimatedApy.toFixed(2)}%`}</Paragraph>
         ),
-        enableSorting: true,
-        sortingFn: (a, b) => {
-          if (a.original.estimatedApy > b.original.estimatedApy) return 1
-          if (a.original.estimatedApy < b.original.estimatedApy) return -1
-          return 0
-        },
         meta: {
           width: '1fr',
         },
       }),
     ],
-    [isLoading],
+    [accessor, isLoading],
   )
 
   // Create table data model
   const table = useReactTable({
     columns,
     data: strategies,
-    state: {
-      sorting,
-    },
-    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
   })
 
   return (
