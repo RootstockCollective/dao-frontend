@@ -4,6 +4,7 @@ import { Button } from '@/components/Button'
 import { VaultMetrics } from './components/VaultMetrics'
 import { SupplyModal } from './components/SupplyModal'
 import { WithdrawModal } from './components/WithdrawModal'
+import { VaultDisclaimer } from './components/VaultDisclaimer'
 import { useModal } from '@/shared/hooks/useModal'
 
 const NAME = 'USDRIF Vault'
@@ -18,6 +19,7 @@ export const VaultPage = () => {
       className="flex flex-col items-start w-full h-full pt-[0.13rem] md:gap-6 rounded-sm"
     >
       <div data-testid="vault-content" className="flex flex-col w-full items-start gap-6">
+        <VaultDisclaimer />
         <VaultMetrics />
 
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-start w-full">
