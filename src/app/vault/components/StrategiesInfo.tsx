@@ -35,10 +35,10 @@ export const StrategiesInfo = () => {
     () => [
       accessor('name', {
         id: 'name',
-        header: 'Strategy Address', // @TODO this should be strategy name - fetch from blockscout
+        header: 'Strategy Name',
         cell: ({ row }) => (
           <CopyButton copyText={row.original.address} className="flex items-center">
-            <Paragraph>{truncateMiddle(row.original.address, 10, 10)}</Paragraph>
+            <Paragraph>{truncateMiddle(row.original.name, 10, 10)}</Paragraph>
           </CopyButton>
         ),
         enableSorting: false,

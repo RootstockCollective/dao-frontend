@@ -5,7 +5,8 @@ import { vault } from '@/lib/contracts'
 import { StrategyAbi } from '@/lib/abis/StrategyAbi'
 import { useVaultBalance } from './useVaultBalance'
 import Big from '@/lib/big'
-import { log } from 'console'
+import { useQuery } from '@tanstack/react-query'
+import type { StrategyNamesReturnType } from '@/app/vault/api/strategy-name/route'
 
 export interface StrategyInfo {
   address: Address
@@ -23,7 +24,11 @@ export function useStrategies() {
   const { totalAssets } = useVaultBalance()
 
   // Fetch strategy addresses from vault
-  const { data: strategyAddresses, isLoading: isLoadingStrategies, error: strategiesError } = useReadContract({
+  const {
+    data: strategyAddresses,
+    isLoading: isLoadingStrategies,
+    error: strategiesError,
+  } = useReadContract({
     address: vault.address,
     abi: vault.abi,
     functionName: 'strategies',
@@ -68,12 +73,43 @@ export function useStrategies() {
   }, [strategyAddresses])
 
   // Fetch strategy data using multicall
-  const { data: strategyData, isLoading: isLoadingStrategyData, error: strategyDataError } = useReadContracts({
+  const {
+    data: strategyData,
+    isLoading: isLoadingStrategyData,
+    error: strategyDataError,
+  } = useReadContracts({
     contracts: strategyContracts,
     query: {
       enabled: strategyContracts.length > 0,
       refetchInterval: 60_000, // Refetch every minute
     },
+  })
+
+  // Fetch strategy names from API
+  const { data: strategyNames } = useQuery<StrategyNamesReturnType>({
+    queryKey: ['strategyNames', strategyAddresses],
+    queryFn: async () => {
+      if (!strategyAddresses || strategyAddresses.length === 0) {
+        return {}
+      }
+      const response = await fetch('/vault/api/strategy-name', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          addresses: strategyAddresses,
+        }),
+      })
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch strategy names: ${response.statusText}`)
+      }
+
+      return response.json() as Promise<StrategyNamesReturnType>
+    },
+    enabled: !!strategyAddresses && strategyAddresses.length > 0,
+    staleTime: 3600_000, // 1 hour - matches API revalidate
   })
 
   return useMemo(() => {
@@ -121,21 +157,25 @@ export function useStrategies() {
       const estimatedApyPercentage = apyBasisPointsBig.gt(0)
         ? estimatedApyBig.div(apyBasisPointsBig).mul(100).toNumber()
         : 0
-      
+
       // Convert to the format expected by formatApy (1e9 = 100%)
       // estimatedApyPercentage is already a percentage (e.g., 5 for 5%)
       // formatApy expects: value / 1e7 = percentage, so value = percentage * 1e7
       const estimatedApy = BigInt(Math.round(estimatedApyPercentage * 1e7))
-      console.log({ totalAssets, totalDeposited })
+
       // Calculate percentage allocated based on vault's totalAssets
       // This shows what percentage of the vault's total funds each strategy represents
       const totalDepositedBig = Big(totalDeposited.toString())
-      const percentageAllocated =
-        totalAssetsBig.gt(0) ? totalDepositedBig.div(totalAssetsBig).mul(100).toNumber() : 0
+      const percentageAllocated = totalAssetsBig.gt(0)
+        ? totalDepositedBig.div(totalAssetsBig).mul(100).toNumber()
+        : 0
+
+      // Get contract name from API, fallback to address if not available
+      const contractName = strategyNames?.[address] || address
 
       strategies.push({
         address,
-        name: address, // Will be truncated in component, can be enhanced with Blockscout API later
+        name: contractName,
         funds: totalDeposited,
         percentageAllocated,
         estimatedApy,
@@ -147,6 +187,14 @@ export function useStrategies() {
       isLoading: false,
       error: undefined,
     }
-  }, [strategyAddresses, strategyData, totalAssets, isLoadingStrategies, isLoadingStrategyData, strategiesError, strategyDataError])
+  }, [
+    strategyAddresses,
+    strategyData,
+    strategyNames,
+    totalAssets,
+    isLoadingStrategies,
+    isLoadingStrategyData,
+    strategiesError,
+    strategyDataError,
+  ])
 }
-
