@@ -125,7 +125,7 @@ export function TextArea<T extends FieldValues>({
                     onBlur()
                   }}
                   autoComplete="off"
-                  {...(dataTestId ? { dataTestId: dataTestId } : {})}
+                  {...(dataTestId ? { ['data-testid']: dataTestId } : {})}
                   {...props}
                 />
               </div>

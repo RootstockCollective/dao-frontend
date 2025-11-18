@@ -69,7 +69,7 @@ export function NumberInput<T extends FieldValues>({
                   'w-full h-16 px-4 pt-4 bg-bg-60 rounded-sm text-text-100 focus:outline-none font-rootstock-sans flex justify-end items-end overflow-hidden',
                   className,
                 )}
-                {...(dataTestId ? { dataTestId: dataTestId } : {})}
+                {...(dataTestId ? { ['data-testid']: dataTestId } : {})}
                 {...props}
               />
             </FloatingLabel>
