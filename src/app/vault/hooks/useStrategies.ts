@@ -1,6 +1,6 @@
 import { useReadContract, useReadContracts } from 'wagmi'
 import { useMemo } from 'react'
-import { Address } from 'viem'
+import { Address, zeroAddress } from 'viem'
 import { vault } from '@/lib/contracts'
 import { StrategyAbi } from '@/lib/abis/StrategyAbi'
 import { useVaultBalance } from './useVaultBalance'
@@ -142,12 +142,16 @@ export function useStrategies() {
     const totalAssetsBig = Big(totalAssets.toString())
 
     // Build strategies with calculated percentages and APY
+    let totalStrategyFunds = 0n
     for (let i = 0; i < strategyAddresses.length; i++) {
       const address = strategyAddresses[i]
 
       const totalDeposited = (strategyData[i * 3]?.result as bigint | undefined) ?? 0n
       const estimatedApyRaw = (strategyData[i * 3 + 1]?.result as bigint | undefined) ?? 0n
       const apyBasisPoints = (strategyData[i * 3 + 2]?.result as bigint | undefined) ?? 1n
+
+      // Accumulate total strategy funds for buffer calculation
+      totalStrategyFunds += totalDeposited
 
       // Calculate actual APY percentage: estimatedApy / APY_BASIS_POINTS * 100
       // This gives us the percentage (e.g., 5 for 5%)
@@ -175,6 +179,23 @@ export function useStrategies() {
         funds: totalDeposited,
         percentageAllocated,
         estimatedApy,
+      })
+    }
+
+    // Add hardcoded Buffer strategy representing unallocated funds
+    const bufferFunds = totalAssets > totalStrategyFunds ? totalAssets - totalStrategyFunds : 0n
+    if (bufferFunds > 0n) {
+      const bufferFundsBig = Big(bufferFunds.toString())
+      const bufferPercentageAllocated = totalAssetsBig.gt(0)
+        ? bufferFundsBig.div(totalAssetsBig).mul(100).toNumber()
+        : 0
+
+      strategies.push({
+        address: zeroAddress, // Use zero address as placeholder for hardcoded strategy
+        name: 'Buffer',
+        funds: bufferFunds,
+        percentageAllocated: bufferPercentageAllocated,
+        estimatedApy: 0, // Buffer doesn't earn APY
       })
     }
 
