@@ -66,7 +66,7 @@ export function TextInput<T extends FieldValues>({
                 }}
                 onChange={onChange}
                 autoComplete="off"
-                {...(dataTestId ? { dataTestId: dataTestId } : {})}
+                {...(dataTestId ? { ['data-testid']: dataTestId } : {})}
                 {...props}
               />
             </FloatingLabel>
