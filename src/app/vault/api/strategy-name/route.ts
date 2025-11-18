@@ -16,10 +16,6 @@ export interface StrategyNamesResponse {
  * @returns Record mapping addresses to their contract names (if verified)
  */
 async function getStrategyNames(addresses: Address[]): Promise<StrategyNamesResponse> {
-  if (!BLOCKSCOUT_URL) {
-    throw new Error('BLOCKSCOUT_URL is not configured')
-  }
-
   // Fetch contract data from Blockscout for all addresses in parallel
   const contractDataPromises = addresses.map(async (address): Promise<StrategyNameInfo> => {
     try {
