@@ -1,5 +1,5 @@
 import { Address } from 'viem'
-import { TX_MESSAGES } from '../txMessages'
+import { ContractReadResult } from '@/app/communities/communityUtils'
 
 /**
  * NFT metadata properties from JSON metadata files
@@ -67,7 +67,7 @@ export interface CommunityData {
   /**
    * Call function to read data from the smart contract
    */
-  onReadFunctions: (functions: { functionName: string; args: string[] }[]) => Promise<any>
+  onReadFunctions: (functions: { functionName: string; args: string[] }[]) => Promise<ContractReadResult>
   /**
    * NFT Metadata
    */
