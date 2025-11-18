@@ -19,8 +19,8 @@ export const useSupplyToVault = (amount: string) => {
     txHash: supplyTxHash,
   } = useContractWrite({
     ...vault,
-    functionName: 'deposit',
-    args: [parseEther(amount), address],
+    functionName: 'deposit' as const,
+    args: [parseEther(amount), address!] as const,
   })
 
   return {
