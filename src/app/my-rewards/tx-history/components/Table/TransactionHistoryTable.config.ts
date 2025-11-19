@@ -1,5 +1,6 @@
 import { Column, TypedTable } from '@/shared/context'
 import { Address } from 'viem'
+import { Builder } from '@/app/collective-rewards/types'
 
 const COLUMN_IDS = ['cycle', 'date', 'from_to', 'type', 'amount', 'total_amount'] as const
 export type ColumnId = (typeof COLUMN_IDS)[number]
@@ -20,7 +21,7 @@ export const COLUMN_TRANSFORMS: Record<ColumnId, string> = {
   date: 'flex-[1_1_8rem] min-w-[8rem]',
   from_to: 'flex-[1_1_12rem] min-w-[12rem]',
   type: 'flex-[1_1_6rem] min-w-[6rem] justify-center',
-  amount: 'flex-[1_1_10rem] min-w-[10rem]',
+  amount: 'flex-[1_1_7rem] min-w-[6rem]',
   total_amount: 'flex-[1_1_8rem] min-w-[8rem] justify-center',
 }
 
@@ -59,18 +60,18 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
 
 export type GroupedTransactionDetail = {
   id: string
-  builderAddress: string
-  builderName?: string
+  builder?: Builder
   blockTimestamp: string
   amount: { address: string; value: string; symbol: string }
   usdValue: string
+  increased?: boolean
 }
 
 export type TransactionHistoryCellDataMap = {
   cycle: { cycle: string | null }
   date: { timestamp: string; formatted: string }
   from_to: {
-    builderAddress?: string
+    builder?: Builder
     type: 'Claim' | 'Back'
     isGrouped?: boolean
     groupedDetails?: GroupedTransactionDetail[]
