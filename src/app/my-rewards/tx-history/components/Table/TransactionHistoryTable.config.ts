@@ -52,7 +52,7 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
   {
     id: 'total_amount',
     hidden: false,
-    sortable: true,
+    sortable: false,
   },
 ]
 
