@@ -1,9 +1,12 @@
 import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
+import { ReactNode } from 'react'
+
 export interface SelectableOption {
   label: string
   value: string
+  icon?: ReactNode
 }
 
 interface Props {
@@ -48,7 +51,10 @@ export const SelectableItem = ({ option, selected, onClick, variant = 'square', 
           selected ? 'border-5' : 'border-[1.5px]',
         )}
       />
-      <Paragraph>{option.label}</Paragraph>
+      <div className="flex items-center gap-1">
+        {option.icon && <div className="flex items-center">{option.icon}</div>}
+        <Paragraph>{option.label}</Paragraph>
+      </div>
     </button>
   )
 }

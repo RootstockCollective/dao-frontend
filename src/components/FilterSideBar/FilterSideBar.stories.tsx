@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs'
 import { FilterSideBar } from './FilterSideBar'
 import { useState } from 'react'
 import { FilterGroup, ActiveFilter } from './types'
+import { TokenImage } from '@/components/TokenImage'
 
 const meta: Meta<typeof FilterSideBar> = {
   title: 'Components/FilterSideBar',
@@ -143,9 +144,9 @@ export const TransactionHistoryFilters: Story = {
         allTestId: 'AllClaimTokens',
         isMultiSelect: true,
         options: [
-          { label: '🔵 RIF', value: 'rif' },
-          { label: '🔵 USDRIF', value: 'usdrif' },
-          { label: '🟠 rBTC', value: 'rbtc' },
+          { label: 'RIF', value: 'rif', icon: <TokenImage symbol="RIF" size={16} /> },
+          { label: 'USDRIF', value: 'usdrif', icon: <TokenImage symbol="USDRIF" size={16} /> },
+          { label: 'rBTC', value: 'rbtc', icon: <TokenImage symbol="RBTC" size={16} /> },
         ],
       },
       {

@@ -1,6 +1,9 @@
+import { ReactNode } from 'react'
+
 export interface FilterOption {
   label: string
   value: string
+  icon?: ReactNode
 }
 
 export interface FilterGroup {
