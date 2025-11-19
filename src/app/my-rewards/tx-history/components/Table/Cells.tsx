@@ -1,7 +1,12 @@
 import { FC, HtmlHTMLAttributes, ReactElement, ReactNode } from 'react'
 import { cn, truncate } from '@/lib/utils'
 import { useTableContext } from '@/shared/context'
-import { ColumnId, COLUMN_TRANSFORMS, TransactionHistoryCellDataMap } from './TransactionHistoryTable.config'
+import {
+  ColumnId,
+  COLUMN_TRANSFORMS,
+  GroupedTransactionDetail,
+  TransactionHistoryCellDataMap,
+} from './TransactionHistoryTable.config'
 import { Paragraph } from '@/components/Typography'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
@@ -82,9 +87,14 @@ interface FromToCellProps {
   builderAddress?: string
   type: 'Claim' | 'Back'
   isGrouped?: boolean
+  groupedDetails?: GroupedTransactionDetail[]
 }
 
-export const FromToCell: FC<FromToCellProps> = ({ builderAddress, isGrouped }): ReactElement => {
+export const FromToCell: FC<FromToCellProps> = ({
+  builderAddress,
+  isGrouped,
+  groupedDetails,
+}): ReactElement => {
   const { builders } = useBuilderContext()
 
   // Grouped row - show purple circle and "Multiple Builders"

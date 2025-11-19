@@ -1,5 +1,5 @@
 import { TransactionHistoryItem } from '../../utils/types'
-import { TransactionHistoryTable } from './TransactionHistoryTable.config'
+import { GroupedTransactionDetail, TransactionHistoryTable } from './TransactionHistoryTable.config'
 import { FIRST_CYCLE_START_SECONDS } from '@/app/collective-rewards/constants/chartConstants'
 import { Duration } from 'luxon'
 import { GetPricesResult } from '@/app/user/types'
@@ -140,8 +140,12 @@ export const convertDataToRowData = (
 
       const amountsByToken: Record<string, { total: Big; price: number }> = {}
       let totalUsdValue = Big(0)
+      const groupedDetails: GroupedTransactionDetail[] = []
 
       items.forEach(item => {
+        const itemAmounts: Array<{ address: string; value: string; symbol: string }> = []
+        let itemUsdValue = Big(0)
+
         if (item.type === 'Claim' && item.amount && item.rewardToken) {
           const tokenAddress = item.rewardToken
           const token = getTokenByAddress(tokenAddress)
@@ -158,18 +162,35 @@ export const convertDataToRowData = (
           }
           amountsByToken[tokenAddress].total = amountsByToken[tokenAddress].total.plus(item.amount)
 
+          const formattedAmount = formatSymbol(BigInt(item.amount), symbol)
+          itemAmounts.push({ address: tokenAddress, value: formattedAmount, symbol })
+
           const usdAmount = getFiatAmount(BigInt(item.amount), price)
           totalUsdValue = totalUsdValue.plus(usdAmount)
+          itemUsdValue = itemUsdValue.plus(usdAmount)
         } else if (item.type === 'Back' && item.allocation) {
           const tokenAddress = tokenContracts.stRIF
+          const symbol = TOKENS.strif.symbol
           if (!amountsByToken[tokenAddress]) {
             amountsByToken[tokenAddress] = { total: Big(0), price: rifPrice }
           }
           amountsByToken[tokenAddress].total = amountsByToken[tokenAddress].total.plus(item.allocation)
 
+          const formattedAmount = formatSymbol(BigInt(item.allocation), symbol)
+          itemAmounts.push({ address: tokenAddress, value: formattedAmount, symbol })
+
           const usdAmount = getFiatAmount(BigInt(item.allocation), rifPrice)
           totalUsdValue = totalUsdValue.plus(usdAmount)
+          itemUsdValue = itemUsdValue.plus(usdAmount)
         }
+
+        groupedDetails.push({
+          id: item.id,
+          builderAddress: item.builder,
+          blockTimestamp: item.blockTimestamp,
+          amounts: itemAmounts,
+          usdValue: itemUsdValue.toFixed(2),
+        })
       })
 
       // Convert aggregated amounts to formatted strings
@@ -193,6 +214,7 @@ export const convertDataToRowData = (
           from_to: {
             type: transactionType,
             isGrouped: true,
+            groupedDetails,
           },
           type: {
             type: transactionType,
