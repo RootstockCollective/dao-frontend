@@ -36,13 +36,13 @@ export function FilterSection({
             variant={group.isMultiSelect ? 'square' : 'round'}
           />
         </li>
-        {group.options.map((option, i) => (
-          <li key={i}>
+        {group.options.map(option => (
+          <li key={option.value}>
             <SelectableItem
               selected={isFilterSelected(group.id, option)}
               option={option}
               onClick={() => onFilterToggle(group.id, option)}
-              data-testid={`${group.id}Filter-${option.label}`}
+              data-testid={`Filter-${group.id}-${option.value}`}
               variant={group.isMultiSelect ? 'square' : 'round'}
             />
           </li>
