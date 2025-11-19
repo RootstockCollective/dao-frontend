@@ -10,9 +10,11 @@ import { Header } from '@/components/Typography'
 import { CallToActionSection } from './components/CallToActionSection'
 import { CollectiveRewardsChartContainer } from './components/CollectiveRewardsChart'
 import { TotalRewardsDistributed } from './components/TotalRewardsDistributed'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 const NAME = 'Collective Rewards'
 export const CollectiveRewardsPage = () => {
+  const isDesktop = useIsDesktop()
   return (
     <div className="flex flex-col">
       <Header caps variant="h1" className="text-3xl leading-10 pb-[2.5rem]">
@@ -30,12 +32,12 @@ export const CollectiveRewardsPage = () => {
           className="flex flex-col gap-10 px-4 py-8 md:px-6 md:pt-6 md:pb-10 bg-v3-bg-accent-80"
           title={
             <Header variant="h3" caps>
-              THE REWARDS AT WORK - CURRENT CYCLE
+              THE REWARDS AT WORK - {!isDesktop && <br />} CURRENT CYCLE
             </Header>
           }
         >
-          <div className="w-full flex flex-col gap-10">
-            <div className="flex items-start w-full justify-between md:w-[90%] mx-auto">
+          <div className="flex flex-col gap-10 w-full">
+            <div className="flex flex-col md:flex-row gap-4 items-start justify-around">
               <CycleContextProvider>
                 <CycleMetrics />
               </CycleContextProvider>

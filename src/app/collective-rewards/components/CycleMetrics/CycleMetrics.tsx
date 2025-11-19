@@ -29,5 +29,5 @@ export const CycleMetrics = () => {
   if (isDesktop) {
     return content
   }
-  return <div className="flex flex-row gap-4 justify-between">{content}</div>
+  return <div className="flex flex-row justify-between w-full">{content}</div>
 }

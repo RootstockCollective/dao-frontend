@@ -60,34 +60,36 @@ export const ChartTooltipContent = ({ active, payload }: ChartTooltipProps) => {
       </div>
 
       <div className="flex flex-col gap-4">
-        <div className="flex items-center gap-6">
-          <Metric
-            title={
-              <Label variant="tag" className="text-bg-40">
-                Cycle
-              </Label>
-            }
-            className="w-auto text-bg-40"
-            containerClassName="gap-1"
-          >
-            <Header variant="h3" className="text-bg-100">
-              {cycleNumber}
-            </Header>
-          </Metric>
+        <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
+          <div className="flex items-center gap-6">
+            <Metric
+              title={
+                <Label variant="tag" className="text-bg-40">
+                  Cycle
+                </Label>
+              }
+              className="w-auto text-bg-40"
+              containerClassName="gap-1"
+            >
+              <Header variant="h3" className="text-bg-100">
+                {cycleNumber}
+              </Header>
+            </Metric>
 
-          <Metric
-            title={
-              <Label variant="tag" className="text-bg-40">
-                Day
-              </Label>
-            }
-            className="w-auto text-bg-40"
-            containerClassName="gap-1"
-          >
-            <Header variant="h3" className="text-bg-100">
-              {dayInCycle}
-            </Header>
-          </Metric>
+            <Metric
+              title={
+                <Label variant="tag" className="text-bg-40">
+                  Day
+                </Label>
+              }
+              className="w-auto text-bg-40"
+              containerClassName="gap-1"
+            >
+              <Header variant="h3" className="text-bg-100">
+                {dayInCycle}
+              </Header>
+            </Metric>
+          </div>
 
           <div className="flex items-start gap-2">
             <div className="size-3 mt-1.5 rounded-full bg-v3-rif-blue" />

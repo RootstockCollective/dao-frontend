@@ -23,6 +23,7 @@ import {
   X_DOMAIN_BUFFER,
   ONE_DAY_IN_MS,
 } from '@/app/collective-rewards/constants/chartConstants'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 /**
  * Custom cursor component that draws a vertical line from the X-axis to the backing data point.
@@ -124,6 +125,7 @@ export function CollectiveRewardsDualAxisChart({
   height = DEFAULT_CHART_HEIGHT,
 }: DualAxisChartProps) {
   const data = useMergedSeries(backingSeries, rewardsSeries, cycles)
+  const isDesktop = useIsDesktop()
 
   const backingMaxDomain = useMemo(() => {
     if (!data.length) return 100
@@ -160,7 +162,7 @@ export function CollectiveRewardsDualAxisChart({
   return (
     <div className="w-full" style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ left: 8, right: 8, top: 60, bottom: 10 }} stackOffset="none">
+        <AreaChart data={data} margin={{ left: -20, right: 0, top: 60, bottom: 10 }} stackOffset="none">
           <XAxis
             dataKey={(p: any) => (p.day instanceof Date ? p.day.getTime() : p.day)}
             type="number"
@@ -187,6 +189,7 @@ export function CollectiveRewardsDualAxisChart({
               angle: 0,
               position: 'top',
               offset: 40,
+              dx: 50,
               fill: '#7C89F5',
               fontSize: 12,
             }}
@@ -206,6 +209,7 @@ export function CollectiveRewardsDualAxisChart({
               angle: 0,
               position: 'top',
               offset: 40,
+              dx: -60,
               fill: colors.rewards,
               fontSize: 12,
             }}
@@ -261,15 +265,19 @@ export function CollectiveRewardsDualAxisChart({
               key={`line-${i}`}
               x={convertToTimestamp(c.start)}
               stroke="transparent"
-              label={{
-                value: c.label,
-                position: 'insideBottomLeft',
-                offset: 5,
-                fill: 'white',
-                fontSize: 12,
-                fontFamily: 'var(--font-rootstock-sans)',
-                style: { mixBlendMode: 'exclusion', marginBottom: 10 },
-              }}
+              label={
+                isDesktop
+                  ? {
+                      value: c.label,
+                      position: 'insideBottomLeft',
+                      offset: 5,
+                      fill: 'white',
+                      fontSize: 12,
+                      fontFamily: 'var(--font-rootstock-sans)',
+                      style: { mixBlendMode: 'exclusion', marginBottom: 10 },
+                    }
+                  : undefined
+              }
             />
           ))}
 
