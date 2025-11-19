@@ -201,6 +201,8 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
                 {i < currentItems.length - 1 && isResizable && (
                   <Tooltip
                     text={<AllocationBarTooltip {...getTooltipProps(dragTargetIndex, item, currentItems)} />}
+                    // reduce layout jumps/jitters when numbers change
+                    className="whitespace-nowrap [font-variant-numeric:tabular-nums]"
                     side="top"
                     align="center"
                   >

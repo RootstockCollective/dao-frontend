@@ -23,16 +23,14 @@ export interface BuilderCardControlProps {
 
 // TODO: this component should really create its own context and stop prop drilling
 const AllocationDrawerContent = () => {
-  const { saveAllocations, isPendingTx, isLoadingReceipt, isSuccess } = useAllocateVotes()
+  const { saveAllocations, isSuccess } = useAllocateVotes()
 
   const { closeDrawer } = useLayoutContext()
   const {
+    state: { isAllocationTxPending },
     actions: { resetAllocations },
   } = useContext(AllocationsContext)
 
-  const onSaveAllocations = () => {
-    saveAllocations()
-  }
   const onCancelAllocations = () => {
     resetAllocations()
     closeDrawer()
@@ -50,10 +48,10 @@ const AllocationDrawerContent = () => {
         <Button variant="secondary-outline" onClick={onCancelAllocations}>
           Cancel
         </Button>
-        {isPendingTx || isLoadingReceipt ? (
+        {isAllocationTxPending ? (
           <TransactionInProgressButton />
         ) : (
-          <Button variant="primary" onClick={onSaveAllocations}>
+          <Button variant="primary" onClick={saveAllocations}>
             Save new backing amounts
           </Button>
         )}

@@ -12,6 +12,7 @@ export const useAllocateVotes = () => {
   const {
     initialState: { allocations: initialAllocations },
     state: { allocations, getBuilder, isValidState, refetchRawAllocations },
+    actions: { setIsAllocationTxPending },
   } = useContext(AllocationsContext)
 
   const canSaveAllocation = isValidState()
@@ -19,6 +20,11 @@ export const useAllocateVotes = () => {
   const { isLoading, isSuccess, data, error: receiptError } = useWaitForTransactionReceipt({ hash })
 
   const error = executionError ?? receiptError
+
+  // Update context state when transaction state changes
+  useEffect(() => {
+    setIsAllocationTxPending(isPending || isLoading)
+  }, [isPending, isLoading, setIsAllocationTxPending])
 
   // Trigger data refresh after successful transaction
   useEffect(() => {

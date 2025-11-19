@@ -29,6 +29,7 @@ interface State {
   backer: Backer
   isContextLoading: boolean
   contextError: Error | null
+  isAllocationTxPending: boolean
   getBuilder: (address: Address) => Builder | null
   isValidState: () => boolean
   refetchRawAllocations: () => void
@@ -40,6 +41,7 @@ export interface AllocationsActions {
   updateAllocations: (newAllocations: Allocations) => void
   updateAmountToAllocate: (value: bigint) => void
   resetAllocations: () => void
+  setIsAllocationTxPending: (value: boolean) => void
 }
 
 export type InitialState = Pick<State, 'backer' | 'allocations'>
@@ -72,6 +74,7 @@ const DEFAULT_CONTEXT: AllocationsContext = {
     },
     isContextLoading: true,
     contextError: null,
+    isAllocationTxPending: false,
     getBuilder: () => null,
     isValidState: () => false,
     refetchRawAllocations: () => {},
@@ -82,6 +85,7 @@ const DEFAULT_CONTEXT: AllocationsContext = {
     updateAllocations: () => {},
     updateAmountToAllocate: () => {},
     resetAllocations: () => {},
+    setIsAllocationTxPending: () => {},
   },
 }
 export const AllocationsContext = createContext<AllocationsContext>(DEFAULT_CONTEXT)
@@ -93,7 +97,9 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
   const [resetVersion, setResetVersion] = useState(DEFAULT_CONTEXT.state.resetVersion)
   const [selections, setSelections] = useState<Selections>(DEFAULT_CONTEXT.state.selections)
   const [allocations, setAllocations] = useState<Allocations>(DEFAULT_CONTEXT.state.allocations)
-
+  const [isAllocationTxPending, setIsAllocationTxPending] = useState(
+    DEFAULT_CONTEXT.state.isAllocationTxPending,
+  )
   const [isContextLoading, setIsContextLoading] = useState(DEFAULT_CONTEXT.state.isContextLoading)
   const [contextError, setContextError] = useState<Error | null>(DEFAULT_CONTEXT.state.contextError)
   const [backer, setBacker] = useState<Backer>(DEFAULT_CONTEXT.state.backer)
@@ -249,6 +255,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
       backer,
       isContextLoading,
       contextError,
+      isAllocationTxPending,
       getBuilder,
       isValidState,
       refetchRawAllocations,
@@ -259,6 +266,7 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
     backer,
     isContextLoading,
     contextError,
+    isAllocationTxPending,
     getBuilder,
     isValidState,
     resetVersion,
@@ -266,7 +274,15 @@ export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ childr
   ])
 
   const actions: AllocationsActions = useMemo(
-    () => createActions(setResetVersion, setSelections, setAllocations, setBacker, initialState),
+    () =>
+      createActions(
+        setResetVersion,
+        setSelections,
+        setAllocations,
+        setBacker,
+        setIsAllocationTxPending,
+        initialState,
+      ),
     [initialState],
   )
 
