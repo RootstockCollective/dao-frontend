@@ -4,10 +4,10 @@ import { FIRST_CYCLE_START_SECONDS } from '@/app/collective-rewards/constants/ch
 import { Duration } from 'luxon'
 import { GetPricesResult } from '@/app/user/types'
 import { RBTC, RIF, USDRIF } from '@/lib/constants'
-import { formatSymbol, getFiatAmount } from '@/app/collective-rewards/rewards/utils'
 import { tokenContracts } from '@/lib/contracts'
 import { getTokenByAddress, TOKENS } from '@/lib/tokens'
 import Big from 'big.js'
+import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 
 const calculateCycleNumber = (cycleStartTimestamp: string, cycleDuration: Duration): number => {
   const cycleStartSeconds = Number(cycleStartTimestamp)
