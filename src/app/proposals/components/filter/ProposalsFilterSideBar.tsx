@@ -39,7 +39,7 @@ export function ProposalsFilterSideBar({
         title: 'FILTER BY CATEGORY',
         allLabel: 'All categories',
         allTestId: 'AllCategories',
-        multiSelect: true,
+        isMultiSelect: true,
         options: categoryFilterOptions,
       },
       {
@@ -47,7 +47,7 @@ export function ProposalsFilterSideBar({
         title: 'FILTER BY STATUS',
         allLabel: 'All statuses',
         allTestId: 'AllStatuses',
-        multiSelect: true,
+        isMultiSelect: true,
         options: statusFilterOptions,
       },
       {
@@ -55,7 +55,7 @@ export function ProposalsFilterSideBar({
         title: 'FILTER BY TIME',
         allLabel: 'All proposals',
         allTestId: 'AllProposals',
-        multiSelect: false,
+        isMultiSelect: false,
         options: timeFilterOptions,
       },
     ],
