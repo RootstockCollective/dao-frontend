@@ -85,6 +85,20 @@ export function useStrategies() {
     },
   })
 
+  // Fetch ratioBuffer from vault contract
+  const {
+    data: ratioBuffer,
+    isLoading: isLoadingRatioBuffer,
+    error: ratioBufferError,
+  } = useReadContract({
+    address: vault.address,
+    abi: vault.abi,
+    functionName: 'ratioBuffer',
+    query: {
+      refetchInterval: 60_000, // Refetch every minute
+    },
+  })
+
   // Fetch strategy names from API
   const { data: strategyNames } = useQuery<StrategyNamesReturnType>({
     queryKey: ['strategyNames', strategyAddresses],
@@ -113,7 +127,7 @@ export function useStrategies() {
   })
 
   return useMemo(() => {
-    if (isLoadingStrategies || isLoadingStrategyData) {
+    if (isLoadingStrategies || isLoadingStrategyData || isLoadingRatioBuffer) {
       return {
         strategies: [] as StrategyInfo[],
         isLoading: true,
@@ -121,11 +135,17 @@ export function useStrategies() {
       }
     }
 
-    if (strategiesError || strategyDataError || !strategyAddresses || strategyAddresses.length === 0) {
+    if (
+      strategiesError ||
+      strategyDataError ||
+      ratioBufferError ||
+      !strategyAddresses ||
+      strategyAddresses.length === 0
+    ) {
       return {
         strategies: [] as StrategyInfo[],
         isLoading: false,
-        error: strategiesError || strategyDataError,
+        error: strategiesError || strategyDataError || ratioBufferError,
       }
     }
 
@@ -142,16 +162,12 @@ export function useStrategies() {
     const totalAssetsBig = Big(totalAssets.toString())
 
     // Build strategies with calculated percentages and APY
-    let totalStrategyFunds = 0n
     for (let i = 0; i < strategyAddresses.length; i++) {
       const address = strategyAddresses[i]
 
       const totalDeposited = (strategyData[i * 3]?.result as bigint | undefined) ?? 0n
       const estimatedApyRaw = (strategyData[i * 3 + 1]?.result as bigint | undefined) ?? 0n
       const apyBasisPoints = (strategyData[i * 3 + 2]?.result as bigint | undefined) ?? 1n
-
-      // Accumulate total strategy funds for buffer calculation
-      totalStrategyFunds += totalDeposited
 
       // Calculate actual APY percentage: estimatedApy / APY_BASIS_POINTS * 100
       // This gives us the percentage (e.g., 5 for 5%)
@@ -182,10 +198,10 @@ export function useStrategies() {
       })
     }
 
-    // Add hardcoded Buffer strategy representing unallocated funds
-    const bufferFunds = totalAssets > totalStrategyFunds ? totalAssets - totalStrategyFunds : 0n
-    if (bufferFunds > 0n) {
-      const bufferFundsBig = Big(bufferFunds.toString())
+    // Add hardcoded Buffer strategy using ratioBuffer from vault contract
+    const ratioBufferValue = (ratioBuffer as bigint | undefined) ?? 0n
+    if (ratioBufferValue > 0n) {
+      const bufferFundsBig = Big(ratioBufferValue.toString())
       const bufferPercentageAllocated = totalAssetsBig.gt(0)
         ? bufferFundsBig.div(totalAssetsBig).mul(100).toNumber()
         : 0
@@ -193,7 +209,7 @@ export function useStrategies() {
       strategies.push({
         address: zeroAddress, // Use zero address as placeholder for hardcoded strategy
         name: 'Buffer',
-        funds: bufferFunds,
+        funds: ratioBufferValue,
         percentageAllocated: bufferPercentageAllocated,
         estimatedApy: 0, // Buffer doesn't earn APY
       })
@@ -209,9 +225,12 @@ export function useStrategies() {
     strategyData,
     strategyNames,
     totalAssets,
+    ratioBuffer,
     isLoadingStrategies,
     isLoadingStrategyData,
+    isLoadingRatioBuffer,
     strategiesError,
     strategyDataError,
+    ratioBufferError,
   ])
 }
