@@ -52,7 +52,11 @@ export const CircularProgress = ({ percentage, className = '', size = 'default' 
       </svg>
       {/* Center text */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className={isSmall ? 'text-xs font-bold text-v3-text-primary' : 'text-2xl font-bold text-v3-text-primary'}>
+        <span
+          className={
+            isSmall ? 'text-xs font-bold text-v3-text-primary' : 'text-2xl font-bold text-v3-text-primary'
+          }
+        >
           {percentage.toFixed(2)}%
         </span>
         {!isSmall && <span className="text-xs text-v3-text-secondary">of vault</span>}
