@@ -41,7 +41,7 @@ const MobileDescriptionContent = ({ descriptionText }: { descriptionText: string
       )}
       <div
         className={`transition-all duration-300 ease-in-out overflow-hidden ${
-          isExpanded ? 'max-h-[1000px] opacity-100 my-2' : 'max-h-0 opacity-0'
+          isExpanded ? 'max-h-[2500px] opacity-100 my-2' : 'max-h-0 opacity-0'
         }`}
       >
         <MD>{descriptionText}</MD>
