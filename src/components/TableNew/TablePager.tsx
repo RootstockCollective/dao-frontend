@@ -89,16 +89,29 @@ export const TablePager: React.FC<TablePagerProps> = ({
   mode,
   className,
 }) => {
-  const [{ start, end }, setRange] = useState(getDefaultRange(pageSize, totalItems))
 
   if (!isMode(mode)) {
     throw new Error(`Invalid mode: ${mode}`)
   }
 
-  // Reset the range when the mode, pageSize, or totalItems changes
+  const [{ start, end }, setRange] = useState(() => getDefaultRange(pageSize, totalItems))
+
   useEffect(() => {
+    // reset only when mode changes
     setRange(getDefaultRange(pageSize, totalItems))
-  }, [mode, totalItems, pageSize])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode])
+
+  useEffect(() => {
+    // if total increases, keep current range
+    // if total decreases below current end, clamp down
+    setRange(prev => {
+      if (!totalItems) return prev
+      if (prev.start === 0) return getDefaultRange(pageSize, totalItems) // safety for initial 0
+      if (prev.end > totalItems) return { ...prev, end: totalItems }
+      return prev
+    })
+  }, [totalItems, pageSize]) // (optional) remove pageSize if it's constant
 
   const handleNext = () => {
     if (totalItems) {
