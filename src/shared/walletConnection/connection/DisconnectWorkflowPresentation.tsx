@@ -1,4 +1,4 @@
-import { Popover } from '@/components/Popover'
+import { NewPopover } from '@/components/NewPopover'
 import { DisconnectButton } from '@/shared/walletConnection'
 import { AccountAddress } from '@/components/Header'
 import { DisconnectWalletModal } from '@/components/Modal/DisconnectWalletModal'
@@ -9,6 +9,7 @@ import { Tooltip } from '@/components/Tooltip'
 import { KotoQuestionMarkIcon } from '@/components/Icons'
 import { onRampDisclaimerText } from '@/shared/walletConnection/constants'
 import { Span } from '@/components/Typography'
+import { useState } from 'react'
 
 interface DisconnectWorkflowPresentationProps {
   shortAddress: string
@@ -33,6 +34,7 @@ export const DisconnectWorkflowPresentation = ({
 }: DisconnectWorkflowPresentationProps) => {
   const { open } = useAppKit()
   const openRamp = () => open({ view: 'OnRampProviders' })
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   return (
     <>
       <div className="flex items-center gap-1 md:mr-4">
@@ -63,10 +65,19 @@ export const DisconnectWorkflowPresentation = ({
           </Button>
         </Tooltip>
       </div>
-      <Popover
-        contentContainerClassName="w-[233px] max-w-[calc(100vw-1rem)] right-0"
-        contentSubContainerClassName="w-full p-[24px] text-center rounded border-[#2D2D2D] cursor-pointer select-none bg-bg-60 mt-2 flex justify-center"
-        className="flex items-center"
+      <NewPopover
+        open={isPopoverOpen}
+        onOpenChange={setIsPopoverOpen}
+        anchor={
+          <div className="flex items-center cursor-pointer" onClick={() => setIsPopoverOpen(!isPopoverOpen)}>
+            <AccountAddress
+              address={address}
+              shortAddress={shortAddress}
+              withCopy={false}
+              data-testid="AccountAddress"
+            />
+          </div>
+        }
         content={
           <PopoverDisconnectContentContainer
             address={address ?? ''}
@@ -74,15 +85,11 @@ export const DisconnectWorkflowPresentation = ({
             onDisconnectClick={onOpenModal}
           />
         }
-        trigger="click"
-      >
-        <AccountAddress
-          address={address}
-          shortAddress={shortAddress}
-          withCopy={false}
-          data-testid="AccountAddress"
-        />
-      </Popover>
+        contentClassName="p-0 w-[233px] max-w-[calc(100vw-1rem)] p-6 text-center rounded border border-[#2D2D2D] cursor-pointer select-none bg-bg-60 flex items-center justify-center"
+        side="bottom"
+        align="end"
+        sideOffset={8}
+      />
       {isModalOpened && (
         <DisconnectWalletModal onClose={onCloseModal} onConfirm={onDisconnect} onCancel={onCloseModal} />
       )}
