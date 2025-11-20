@@ -1,21 +1,47 @@
 import { db } from '@/lib/db'
 
-export type StakingHistoryTransaction = {
+/**
+ * Represents a single staking transaction from the history
+ */
+export interface StakingHistoryTransaction {
+  /** User address (wallet address) that performed the transaction */
   user: string
+  /** Action type: "STAKE" or "UNSTAKE" */
   action: string
+  /** Amount of tokens involved in the transaction (as string to handle large numbers) */
   amount: string
+  /** Block number at which the transaction occurred */
   blockNumber: string
+  /** Unix timestamp (in seconds) when the transaction occurred */
   timestamp: number | string
+  /** Transaction hash identifier */
   transactionHash: string
 }
 
-export type StakingHistoryByPeriodAndAction = {
+/**
+ * Represents staking history grouped by period (month) and action type
+ */
+export interface StakingHistoryByPeriodAndAction {
+  /** Period in format "YYYY-MM" (e.g., "2024-01") */
   period: string
+  /** Action type: "STAKE" or "UNSTAKE" */
   action: string
+  /** Sum of all amounts for transactions in this period+action group (as string to handle large numbers) */
   amount: string
+  /** Array of individual transactions in this group */
   transactions: StakingHistoryTransaction[]
 }
 
+/**
+ * Retrieves staking history from the database grouped by period and action
+ * @param params - Query parameters
+ * @param params.address - User wallet address to filter transactions
+ * @param params.limit - Maximum number of records to return
+ * @param params.offset - Number of records to skip (for pagination)
+ * @param params.sort_field - Field to sort by: 'period', 'amount', or 'action'
+ * @param params.sort_direction - Sort direction: 'asc' (ascending) or 'desc' (descending)
+ * @returns Array of staking history grouped by period and action
+ */
 export async function getStakingHistoryFromDB(params: {
   address: string
   limit: number
@@ -64,6 +90,11 @@ export async function getStakingHistoryFromDB(params: {
   }))
 }
 
+/**
+ * Counts the total number of distinct period+action combinations for a given address
+ * @param address - User wallet address to count transactions for
+ * @returns Total count of distinct period+action combinations
+ */
 export async function getStakingHistoryCountFromDB(address: string): Promise<number> {
   const result = await db('StakingHistory')
     .count({ count: db.raw(`DISTINCT (DATE_TRUNC('month', to_timestamp(timestamp)), "action")`) })
