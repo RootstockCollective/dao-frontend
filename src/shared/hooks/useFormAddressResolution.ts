@@ -7,6 +7,7 @@ import { type Address, isAddress } from 'viem'
 interface Props {
   rnsOrAddressFieldName?: string
   resolvedAddressFieldName?: string
+  rnsFieldName?: string
 }
 
 /**
@@ -39,6 +40,7 @@ interface Props {
 export function useFormAddressResolution(props?: Props) {
   const resolvedAddressFieldName = props?.resolvedAddressFieldName ?? 'targetAddress'
   const rnsOrAddressFieldName = props?.rnsOrAddressFieldName ?? 'targetAddressInput'
+  const rnsFieldName = props?.rnsFieldName ?? 'targetAddressRNS'
   const [resolutionMsg, setResolutionMsg] = useState('')
   const [isResolving, setIsResolving] = useState(false)
   const { watch, setValue, setError, resetField, clearErrors } = useFormContext()
@@ -62,6 +64,7 @@ export function useFormAddressResolution(props?: Props) {
           try {
             const address = (await resolveRnsDomain(debouncedInput)) as Address
             if (address) {
+              setValue(rnsFieldName, debouncedInput, { shouldValidate: true, shouldDirty: true })
               setValue(resolvedAddressFieldName, address, { shouldValidate: true, shouldDirty: true }) // fill hidden field
               setResolutionMsg(`✓ Resolves to: ${address}`)
             } else {
@@ -75,6 +78,7 @@ export function useFormAddressResolution(props?: Props) {
           try {
             const rns = await getEnsDomainName(debouncedInput)
             setResolutionMsg(rns ? `📍 RNS: ${rns}` : '')
+            setValue(rnsFieldName, rns ?? '')
           } catch (_error) {
             setResolutionMsg('')
           }
@@ -101,6 +105,7 @@ export function useFormAddressResolution(props?: Props) {
     clearErrors,
     resolvedAddressFieldName,
     rnsOrAddressFieldName,
+    rnsFieldName,
   ])
 
   return useMemo(() => ({ resolutionMsg, isResolving }), [isResolving, resolutionMsg])

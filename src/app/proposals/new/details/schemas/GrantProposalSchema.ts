@@ -4,6 +4,7 @@ import { BaseProposalSchema } from './BaseProposalSchema'
 import { TokenFieldsSchema } from './TokenSchema'
 import { GRANT_TOKEN_LIMITS } from '@/lib/constants'
 import { Milestones } from '@/app/proposals/shared/types'
+import { isRnsDomain } from '@/lib/rns'
 
 // Grant proposal form schema
 export const GrantProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)
@@ -19,6 +20,11 @@ export const GrantProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)
       .trim()
       .refine(value => isAddress(value, { strict: false }), 'Invalid Rootstock address')
       .transform(value => getAddress(value)),
+    targetAddressRNS: z
+      .string()
+      .trim()
+      .optional()
+      .refine(value => value && isRnsDomain(value), 'Invalid RNS domain'),
   })
   .superRefine((data, ctx) => {
     const num = Number(data.transferAmount)

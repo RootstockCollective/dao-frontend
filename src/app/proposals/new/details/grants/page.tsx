@@ -18,7 +18,7 @@ import { MilestoneInfoSidebar } from '../components/MilestoneInfoSidebar'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { RnsAddressInput } from './RnsAddressInput'
 
-export default function ProposalReview() {
+export default function GrantsProposalForm() {
   const isDesktop = useIsDesktop()
   const { record, setRecord } = useReviewProposal()
   const router = useRouter()

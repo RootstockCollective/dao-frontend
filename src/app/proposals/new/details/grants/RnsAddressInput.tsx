@@ -28,6 +28,7 @@ export function RnsAddressInput() {
 
       {/* Hidden form field with verified target Rootstock address resolved from RNS */}
       <input type="hidden" {...register('targetAddress')} />
+      <input type="hidden" {...register('targetAddressRNS')} />
     </div>
   )
 }

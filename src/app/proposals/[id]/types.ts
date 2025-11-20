@@ -12,6 +12,7 @@ export interface ParsedActionDetails {
   price?: number // The price of the token (if relevant)
   toAddress?: string // The recipient address (if relevant)
   builder?: string // The builder address (if relevant)
+  rns?: string // The RNS domain name for the address (resolved asynchronously)
   // Add more fields as needed for other action types
 }
 
