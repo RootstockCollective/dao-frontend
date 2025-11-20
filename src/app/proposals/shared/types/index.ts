@@ -1,4 +1,5 @@
 import Big from '@/lib/big'
+import { Address } from 'viem'
 import { DecodedData } from '@/app/proposals/shared/utils'
 import { ProposalCategory, ProposalState } from '@/shared/types'
 
@@ -21,7 +22,7 @@ export interface Proposal {
   proposalState: ProposalState
   category: ProposalCategory
   name: string
-  proposer: `0x${string}`
+  proposer: Address
   description: string
   proposalId: string
   Starts: moment.Moment
@@ -47,15 +48,15 @@ export interface Eta extends Omit<CountdownProps, 'className'> {
   type: 'vote end in' | 'queue ends in'
 }
 
-export type ProposalApiResponse = {
+export interface ProposalApiResponse {
   blockNumber: string
-  calldatasParsed: any[]
-  category: string
+  calldatasParsed: DecodedData[]
+  category: ProposalCategory
   description: string
   name: string
   proposalDeadline: string
   proposalId: string
-  proposer: `0x${string}`
+  proposer: Address
   Starts: string
   voteStart: string
   voteEnd: string

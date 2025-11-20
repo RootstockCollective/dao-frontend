@@ -2,7 +2,26 @@ import { db } from '@/lib/db'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { buildProposal } from '@/app/proposals/actions/utils'
 
-function transformProposal(proposal: any): ProposalApiResponse {
+interface ProposalDBRow {
+  proposalId: string
+  description: string
+  votesFor: string | null
+  votesAgainst: string | null
+  votesAbstains: string | null
+  voteEnd: string
+  voteStart: string
+  quorum: string | null
+  rawState: number | null
+  state: string | null
+  proposer: string
+  calldatas: string[]
+  values: string[]
+  createdAtBlock: string
+  targets: string[]
+  createdAt: string
+}
+
+function transformProposal(proposal: ProposalDBRow): ProposalApiResponse {
   const parseBytea = (el: string) => Buffer.from(el.slice(2), 'hex').toString()
 
   return buildProposal(proposal, {
