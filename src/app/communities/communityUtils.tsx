@@ -5,6 +5,22 @@ import { Header, Paragraph } from '@/components/Typography'
 import { ipfsGatewayUrl } from '@/lib/ipfs'
 import { ROOTLINGS_S1_NFT_ADDRESS } from '@/lib/constants'
 
+/**
+ * Represents the result of a contract read operation.
+ * Each element in the array corresponds to a function call result.
+ */
+export type ContractReadResult = Array<{ result?: unknown }>
+
+/**
+ * Type for additional check functions used in community NFT validation.
+ * The check function receives an array of contract read results and returns a boolean.
+ */
+export interface AdditionalCheck {
+  name: string
+  check: (data: ContractReadResult) => boolean
+  alertMessage: string
+}
+
 export interface CommunityItem {
   leftImageSrc: string
   title: string
@@ -19,7 +35,7 @@ export interface CommunityItem {
   activation: string
   requirement: string
   isMintable?: boolean
-  additionalChecks?: { name: string; check: (data: any) => boolean; alertMessage: string }[]
+  additionalChecks?: AdditionalCheck[]
   readMoreLink?: string
   discussionLink?: string
   campaignDetails?: FC<{ activation?: ReactNode }>
@@ -151,15 +167,17 @@ export const vanguardCommunity: CommunityItem = {
   additionalChecks: [
     {
       name: 'hasVoted',
-      check: (data: any) => data[0].result,
+      check: (data: ContractReadResult) => Boolean(data[0]?.result),
       alertMessage:
         'You are not eligible for this NFT. You must have voted on one of the last three proposals to mint.',
     },
     {
       name: 'mintLimitReached',
-      check: (data: any) => {
-        const mintLimit = data[0].result
-        const totalSupply = data[1].result
+      check: (data: ContractReadResult) => {
+        const mintLimit = data[0]?.result
+        const totalSupply = data[1]?.result
+        // viem/wagmi always returns bigint for uint256 values
+        if (typeof mintLimit !== 'bigint' || typeof totalSupply !== 'bigint') return false
         return mintLimit > totalSupply
       },
       alertMessage:
