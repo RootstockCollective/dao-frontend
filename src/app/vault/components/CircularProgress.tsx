@@ -3,6 +3,7 @@
 interface CircularProgressProps {
   percentage: number
   className?: string
+  size?: 'small' | 'default'
 }
 
 /**
@@ -10,20 +11,25 @@ interface CircularProgressProps {
  * * This is used for the vaults.
  * * When design is finished, this should be removed.
  */
-export const CircularProgress = ({ percentage, className = '' }: CircularProgressProps) => {
-  const strokeWidth = 8
-  const size = 100 // viewBox size
-  const radius = (size - strokeWidth) / 2
+export const CircularProgress = ({ percentage, className = '', size = 'default' }: CircularProgressProps) => {
+  const strokeWidth = size === 'small' ? 4 : 8
+  const viewBoxSize = 100 // viewBox size
+  const radius = (viewBoxSize - strokeWidth) / 2
   const circumference = radius * 2 * Math.PI
   const offset = circumference - (percentage / 100) * circumference
 
+  const isSmall = size === 'small'
+  const containerClasses = isSmall
+    ? `relative w-16 h-16 ${className}`
+    : `relative w-full max-w-[200px] aspect-square ${className}`
+
   return (
-    <div className={`relative w-full max-w-[200px] aspect-square ${className}`}>
-      <svg viewBox={`0 0 ${size} ${size}`} className="w-full h-full transform -rotate-90">
+    <div className={containerClasses}>
+      <svg viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`} className="w-full h-full transform -rotate-90">
         {/* Background circle */}
         <circle
-          cx={size / 2}
-          cy={size / 2}
+          cx={viewBoxSize / 2}
+          cy={viewBoxSize / 2}
           r={radius}
           fill="none"
           stroke="currentColor"
@@ -32,8 +38,8 @@ export const CircularProgress = ({ percentage, className = '' }: CircularProgres
         />
         {/* Progress circle */}
         <circle
-          cx={size / 2}
-          cy={size / 2}
+          cx={viewBoxSize / 2}
+          cy={viewBoxSize / 2}
           r={radius}
           fill="none"
           stroke="currentColor"
@@ -46,8 +52,14 @@ export const CircularProgress = ({ percentage, className = '' }: CircularProgres
       </svg>
       {/* Center text */}
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-2xl font-bold text-v3-text-primary">{percentage.toFixed(2)}%</span>
-        <span className="text-xs text-v3-text-secondary">of vault</span>
+        <span
+          className={
+            isSmall ? 'text-xs font-bold text-v3-text-primary' : 'text-2xl font-bold text-v3-text-primary'
+          }
+        >
+          {percentage.toFixed(2)}%
+        </span>
+        {!isSmall && <span className="text-xs text-v3-text-secondary">of vault</span>}
       </div>
     </div>
   )
