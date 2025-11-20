@@ -10,6 +10,7 @@ import {
 } from '@/app/proposals/shared/utils'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function transformEventLogProposal(proposal: any): ProposalApiResponse {
   const eventArgs = getProposalEventArguments(proposal as unknown as EventArgumentsParameter)
   const category = getProposalCategory(eventArgs.calldatasParsed)
@@ -35,6 +36,7 @@ export async function getProposalsFromNode() {
 
   let proposals = parseEventLogs({
     abi: GovernorAbi,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     logs: data.data as any,
     eventName: 'ProposalCreated',
   })

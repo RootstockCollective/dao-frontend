@@ -54,6 +54,7 @@ function parseBlockNumber(blockNumber: string | undefined): string {
 
 function transformProposalsData(
   proposalsData: ProposalApiResponse[] | undefined,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   blockchainData: any[] | undefined,
   latestBlockNumber: bigint | undefined,
 ) {
@@ -95,6 +96,7 @@ function transformProposalsData(
       description: proposal.description,
       proposalId: proposal.proposalId,
       Starts: moment(proposal.Starts),
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       calldatasParsed: proposal.calldatasParsed as any,
       blockNumber,
       voteStart: proposal.voteStart,
@@ -170,8 +172,11 @@ export function useGetProposalsWithGraph() {
         return acc
       },
       {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         votesContracts: [] as any[],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         quorumContracts: [] as any[],
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         stateContracts: [] as any[],
       },
     )
