@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from 'react'
 
 interface UsePaginatedQueryOptions<T> {
   queryKey: string[]
-  queryFn: (pageParam: any) => Promise<T[]>
+  queryFn: () => Promise<T[]>
   resultsPerTablePage: number
 }
 
