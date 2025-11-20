@@ -11,11 +11,17 @@ interface UseStickyHeaderOptions {
   mode?: 'direction-based' | 'position-based'
 }
 
+// Type-safe helper to convert React.CSSProperties key to CSS property name (kebab-case)
+const toCSSPropertyName = (key: string): string => {
+  return key.replace(/([A-Z])/g, '-$1').toLowerCase()
+}
+
 export const useStickyHeader = (options: UseStickyHeaderOptions = {}) => {
   const { isEnabled = true, style = undefined, threshold = 10, mode = 'position-based' } = options
 
   const headerRef = useRef<HTMLDivElement>(null)
   const originalHeaderTop = useRef<number>(0)
+  const appliedStyleKeys = useRef<Set<string>>(new Set())
   const [isSticky, setIsSticky] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const lastScrollY = useRef(0)
@@ -32,6 +38,10 @@ export const useStickyHeader = (options: UseStickyHeaderOptions = {}) => {
     headerRef.current.style.right = '0'
     // Then apply custom styles if provided
     if (style) {
+      appliedStyleKeys.current.clear()
+      Object.keys(style).forEach(key => {
+        appliedStyleKeys.current.add(key)
+      })
       Object.assign(headerRef.current.style, style)
     }
   }, [style])
@@ -45,12 +55,15 @@ export const useStickyHeader = (options: UseStickyHeaderOptions = {}) => {
     headerRef.current.style.left = ''
     headerRef.current.style.right = ''
     // Clear custom styles if they were applied
-    if (style) {
-      Object.keys(style).forEach(key => {
-        headerRef.current!.style[key as any] = ''
-      })
-    }
-  }, [style])
+    // Use removeProperty which is the most performant and type-safe way to remove CSS properties
+    // It handles both camelCase React.CSSProperties keys and converts them to kebab-case
+    const styleObj = headerRef.current.style
+    appliedStyleKeys.current.forEach(key => {
+      // removeProperty is more performant than setProperty('', '') and semantically correct
+      styleObj.removeProperty(toCSSPropertyName(key))
+    })
+    appliedStyleKeys.current.clear()
+  }, [])
 
   // Automatically apply/clear styles when isSticky changes
   useEffect(() => {
