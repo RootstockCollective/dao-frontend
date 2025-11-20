@@ -11,7 +11,7 @@ import {
   SORT_BY_PARAM_NAME,
 } from './constants'
 
-type ValidationError = {
+interface ValidationError {
   type: 'ValidationError'
   message: string
   statusCode: number
@@ -19,7 +19,12 @@ type ValidationError = {
 
 const SORT_DIRECTIONS = [SORT_DIRECTION_ASC, SORT_DIRECTION_DESC] as const
 type SortDirection = (typeof SORT_DIRECTIONS)[number]
-type PaginationParams = {
+
+function isSortDirection(value: unknown): value is SortDirection {
+  return value === SORT_DIRECTION_ASC || value === SORT_DIRECTION_DESC
+}
+
+interface PaginationParams {
   page: number
   pageSize: number
   sortDirection: SortDirection
@@ -30,15 +35,18 @@ type PaginationResult = { success: true; data: PaginationParams } | { success: f
 
 type ParamKey = keyof PaginationParams
 
-const paramConfigs: Record<
-  ParamKey,
-  {
-    name: string
-    parse: (value: string | null) => any
-    validate?: (value: any) => boolean
-    errorMessage?: string
-  }
-> = {
+interface ParamConfig<K extends ParamKey> {
+  name: string
+  parse: (value: string | null) => PaginationParams[K]
+  validate?: (value: PaginationParams[K]) => boolean
+  errorMessage?: string
+}
+
+type ParamConfigs = {
+  [K in ParamKey]: ParamConfig<K>
+}
+
+const paramConfigs: ParamConfigs = {
   page: {
     name: PAGE_PARAM_NAME,
     parse: v => parseInt(v ?? DEFAULT_PAGE_NUMBER, 10),
@@ -53,8 +61,11 @@ const paramConfigs: Record<
   },
   sortDirection: {
     name: SORT_DIRECTION_PARAM_NAME,
-    parse: v => v ?? DEFAULT_SORT_DIRECTION,
-    validate: v => SORT_DIRECTIONS.includes(v),
+    parse: (v): SortDirection => {
+      const value = v ?? DEFAULT_SORT_DIRECTION
+      return isSortDirection(value) ? value : DEFAULT_SORT_DIRECTION
+    },
+    validate: isSortDirection,
     errorMessage: 'Invalid sortDirection parameter',
   },
   sortBy: {
@@ -64,26 +75,37 @@ const paramConfigs: Record<
   },
 }
 
+function processParam<K extends ParamKey>(
+  key: K,
+  config: ParamConfig<K>,
+  searchParams: URLSearchParams,
+  parsedParams: Partial<PaginationParams>,
+): ValidationError | null {
+  const rawValue = searchParams.get(config.name)
+  const parsed = config.parse(rawValue)
+
+  if (config.validate && !config.validate(parsed)) {
+    return {
+      type: 'ValidationError',
+      message: config.errorMessage || `Invalid ${key} parameter`,
+      statusCode: 400,
+    }
+  }
+
+  parsedParams[key] = parsed
+  return null
+}
+
 export function parsePaginationParams(url: string, allowedColumns?: string[]): PaginationResult {
   const { searchParams } = new URL(url)
   const parsedParams: Partial<PaginationParams> = {}
 
-  for (const [key, config] of Object.entries(paramConfigs)) {
-    const rawValue = searchParams.get(config.name)
-    const parsed = config.parse(rawValue)
-
-    if (config.validate && !config.validate(parsed)) {
-      return {
-        success: false,
-        error: {
-          type: 'ValidationError',
-          message: config.errorMessage || `Invalid ${key} parameter`,
-          statusCode: 400,
-        },
-      }
+  for (const key of Object.keys(paramConfigs) as ParamKey[]) {
+    const config = paramConfigs[key]
+    const error = processParam(key, config as ParamConfig<typeof key>, searchParams, parsedParams)
+    if (error) {
+      return { success: false, error }
     }
-
-    parsedParams[key as ParamKey] = parsed
   }
 
   // Extra validation for sortBy
