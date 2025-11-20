@@ -169,13 +169,16 @@ export const getDiscourseLinkFromProposalDescription = (description: string): st
   }
 
   const afterLink = startIndex + DISCOURSE_LINK_SEPARATOR.length
+
+  // Find the last space in the entire description
   const lastSpaceIndex = description.lastIndexOf(' ')
 
-  // If there's no space after the link, take everything to the end
-  if (lastSpaceIndex <= afterLink) {
+  if (lastSpaceIndex === -1 || lastSpaceIndex < afterLink) {
+    // If there's no space or the last space is before DiscourseLink:, take everything to the end
     return description.substring(afterLink).trim()
   }
 
+  // Extract everything from after DiscourseLink: up to (but not including) the last space
   return description.substring(afterLink, lastSpaceIndex).trim()
 }
 

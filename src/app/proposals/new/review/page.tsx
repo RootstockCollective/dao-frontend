@@ -28,6 +28,9 @@ import { DeactivationProposal } from '../details/schemas/DeactivationProposalSch
 import { usePricesContext } from '@/shared/context'
 import { GetPricesResult } from '@/app/user/types'
 import { useBuilderContext } from '@/app/collective-rewards/user'
+import { isRnsDomain } from '@/lib/rns'
+import { VideoPlayer } from '@/components/VideoPlayer'
+import { useDiscourseVideo } from '@/shared/hooks/useDiscourseVideo'
 
 // Transform form data to ParsedActionDetails for all proposal types
 const transformFormToActionDetails = (
@@ -104,6 +107,7 @@ export default function ProposalReview() {
   const isDesktop = useIsDesktop()
   const { prices } = usePricesContext()
   const { getBuilderByAddress } = useBuilderContext()
+  const { data: videoUrl } = useDiscourseVideo(record?.form?.discourseLink)
 
   const onSubmit = useCallback(async () => {
     setLoading(true)
@@ -229,6 +233,7 @@ export default function ProposalReview() {
             readOnly
           />
           <Description description={description} />
+          <VideoPlayer url={videoUrl} className="p-4 md:p-6" />
         </div>
         <ActionDetails
           parsedAction={parsedAction}
