@@ -242,7 +242,7 @@ export const parseProposalDescription = (description: string): ParsedDescription
 // Helper function to determine proposal category
 export function getProposalCategory(calldatasParsed: DecodedData[]): ProposalCategory {
   const hasWithdrawAction = calldatasParsed
-    .filter(data => data.type === 'decoded')
+    .filter((data): data is Extract<DecodedData, { type: 'decoded' }> => data.type === 'decoded')
     .find(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
 
   return hasWithdrawAction ? ProposalCategory.Grants : ProposalCategory.Activation
@@ -299,20 +299,69 @@ export function getProposalCategoryFromParsedData(
   return ProposalCategory.Grants
 }
 
-export function serializeBigInts(obj: any): any {
-  if (typeof obj === 'bigint') {
-    return obj.toString()
-  }
+// Type utility to serialize bigint values to strings recursively
+export type SerializeBigInt<T> = T extends bigint
+  ? string
+  : T extends (infer U)[]
+    ? SerializeBigInt<U>[]
+    : T extends object
+      ? { [K in keyof T]: SerializeBigInt<T[K]> }
+      : T
 
-  if (Array.isArray(obj)) {
-    return obj.map(serializeBigInts)
-  }
+// Serialized version of DecodedData (explicit type for our use case)
+export type SerializedDecodedData =
+  | {
+      type: 'decoded'
+      functionName: DecodedFunctionName
+      args: SerializeBigInt<DecodedFunctionData['args']>
+      inputs: FunctionInputs
+    }
+  | {
+      type: 'fallback'
+      affectedAddress: string
+      callData: string
+    }
 
-  if (obj !== null && typeof obj === 'object') {
-    return Object.fromEntries(Object.entries(obj).map(([key, value]) => [key, serializeBigInts(value)]))
+/**
+ * Recursively converts bigint values to strings in an object/array.
+ * Helper function for the recursive transformation.
+ */
+function serializeValue(value: unknown): unknown {
+  if (typeof value === 'bigint') {
+    return value.toString()
   }
+  if (Array.isArray(value)) {
+    return value.map(serializeValue)
+  }
+  if (value !== null && typeof value === 'object') {
+    const result: Record<string, unknown> = {}
+    for (const key in value) {
+      if (Object.prototype.hasOwnProperty.call(value, key)) {
+        result[key] = serializeValue((value as Record<string, unknown>)[key])
+      }
+    }
+    return result
+  }
+  return value
+}
 
-  return obj
+/**
+ * Converts DecodedData array to SerializedDecodedData array by converting bigints to strings.
+ * This is a simpler, explicit version for our specific use case.
+ */
+export function serializeBigInts(calldatasParsed: DecodedData[]): SerializedDecodedData[] {
+  return calldatasParsed.map(item => {
+    if (item.type === 'decoded') {
+      return {
+        type: 'decoded' as const,
+        functionName: item.functionName,
+        args: serializeValue(item.args) as SerializeBigInt<DecodedFunctionData['args']>,
+        inputs: item.inputs,
+      }
+    }
+    // Fallback case has no bigints, so no transformation needed
+    return item
+  })
 }
 
 export function formatTimestampToMonthYear(timestamp: string | undefined): string {

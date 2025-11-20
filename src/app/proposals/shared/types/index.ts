@@ -1,12 +1,38 @@
 import Big from '@/lib/big'
 import { Address } from 'viem'
-import { DecodedData } from '@/app/proposals/shared/utils'
+import { DecodedData, SerializedDecodedData } from '@/app/proposals/shared/utils'
 import { ProposalCategory, ProposalState } from '@/shared/types'
 
 import { type GrantProposal } from '../../new/details/schemas/GrantProposalSchema'
 import { type ActivationProposal } from '../../new/details/schemas/ActivationProposalSchema'
 import { type DeactivationProposal } from '../../new/details/schemas/DeactivationProposalSchema'
 import { CountdownProps } from '@/components/Countdown'
+
+// Base proposal input type that covers all sources (GraphQL, DB, Node)
+export interface BaseProposalInput {
+  proposalId: string
+  description: string
+  votesFor: string
+  votesAgainst: string
+  votesAbstains: string
+  voteEnd: string
+  voteStart: string
+  createdAt: string
+  createdAtBlock: string
+  state: string
+  targets: string[]
+  values: string[]
+  calldatas: string[]
+  proposer: string | { id: string } // Can be string (DB) or object (GraphQL)
+  quorum?: string | bigint | null
+}
+
+// Transform functions for building proposals from different sources
+export interface ProposalTransformFunctions {
+  parseTargets: (targets: string[]) => string[]
+  parseCalldatas: (calldatas: string[]) => string[]
+  proposerTransform: (proposer: string | { id: string }) => Address
+}
 
 export interface Proposal {
   votes: {
@@ -50,7 +76,7 @@ export interface Eta extends Omit<CountdownProps, 'className'> {
 
 export interface ProposalApiResponse {
   blockNumber: string
-  calldatasParsed: DecodedData[]
+  calldatasParsed: SerializedDecodedData[]
   category: ProposalCategory
   description: string
   name: string
