@@ -58,17 +58,17 @@ export const convertDataToRowData = (
   if (!data.length) return []
 
   // Group transactions by blockHash
-  const groupedByBlock = data.reduce<Record<string, TransactionHistoryItem[]>>((acc, item) => {
-    if (!acc[item.blockHash]) {
-      acc[item.blockHash] = []
+  const groupedByTransactionHash = data.reduce<Record<string, TransactionHistoryItem[]>>((acc, item) => {
+    if (!acc[item.transactionHash]) {
+      acc[item.transactionHash] = []
     }
-    acc[item.blockHash].push(item)
+    acc[item.transactionHash].push(item)
     return acc
   }, {})
 
   const rows: TransactionHistoryTable['Row'][] = []
 
-  Object.entries(groupedByBlock).forEach(([blockHash, items]) => {
+  Object.entries(groupedByTransactionHash).forEach(([blockHash, items]) => {
     if (items.length === 1) {
       // Single transaction - create normal row
       const item = items[0]
@@ -105,6 +105,7 @@ export const convertDataToRowData = (
           },
           from_to: {
             builder,
+            builderAddress,
             type: transactionType,
           },
           type: {
@@ -180,6 +181,7 @@ export const convertDataToRowData = (
         groupedDetails.push({
           id: item.id,
           builder,
+          builderAddress,
           blockTimestamp: item.blockTimestamp,
           amount: amount!,
           usdValue: formatCurrency(usdValue, { showCurrencyLabel: false, showCurrencySymbol: false }),

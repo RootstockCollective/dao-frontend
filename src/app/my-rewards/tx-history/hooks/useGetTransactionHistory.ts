@@ -58,6 +58,3 @@ export const useGetTransactionHistory = (params?: UseGetTransactionHistoryParams
     error,
   }
 }
-
-// Legacy export for backward compatibility
-export const useGetAllocationHistory = useGetTransactionHistory

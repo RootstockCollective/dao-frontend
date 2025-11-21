@@ -92,6 +92,7 @@ export const DateCell: FC<DateCellProps> = ({ formatted, isHovered }): ReactElem
 
 interface FromToCellProps {
   builder?: Builder
+  builderAddress?: string
   type: 'Claim' | 'Back'
   isGrouped?: boolean
   isExpanded?: boolean
@@ -101,6 +102,7 @@ interface FromToCellProps {
 
 export const FromToCell: FC<FromToCellProps> = ({
   builder,
+  builderAddress,
   isGrouped,
   isExpanded,
   isHovered,
@@ -126,8 +128,8 @@ export const FromToCell: FC<FromToCellProps> = ({
     )
   }
 
-  const builderAddress = builder?.address || ''
-  const shortedAddress = shortAddress(builderAddress as Address)
+  const address = builder?.address ?? builderAddress ?? ''
+  const shortedAddress = shortAddress(address as Address)
 
   const builderName = builder?.builderName || ''
   const displayName = builderName ? truncate(builderName, 15) : shortedAddress

@@ -9,6 +9,7 @@ export interface TransactionHistoryItem {
   builder: Address
   blockHash: string
   blockTimestamp: string
+  transactionHash: string
   cycleStart: string
   // AllocationHistory specific
   allocation?: string
