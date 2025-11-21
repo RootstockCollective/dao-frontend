@@ -24,15 +24,15 @@ const getFirstLines = (text: string, lineCount: number = 3): string => {
   return lines.slice(0, lineCount).join('\n')
 }
 
-interface DescriptionProps {
+interface DescriptionContentProps {
   descriptionText: string
 }
 
-const DesktopDescriptionContent = ({ descriptionText }: DescriptionProps) => {
+const DesktopDescriptionContent = ({ descriptionText }: DescriptionContentProps) => {
   return <MD>{descriptionText}</MD>
 }
 
-const MobileDescriptionContent = ({ descriptionText }: DescriptionProps) => {
+const MobileDescriptionContent = ({ descriptionText }: DescriptionContentProps) => {
   const { isExpanded } = useExpandableContext()
   const previewText = getFirstLines(descriptionText, 3)
 
