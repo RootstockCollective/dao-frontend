@@ -89,7 +89,6 @@ export const TablePager: React.FC<TablePagerProps> = ({
   mode,
   className,
 }) => {
-
   if (!isMode(mode)) {
     throw new Error(`Invalid mode: ${mode}`)
   }
@@ -107,11 +106,14 @@ export const TablePager: React.FC<TablePagerProps> = ({
     // if total decreases below current end, clamp down
     setRange(prev => {
       if (!totalItems) return prev
-      if (prev.start === 0) return getDefaultRange(pageSize, totalItems) // safety for initial 0
-      if (prev.end > totalItems) return { ...prev, end: totalItems }
+      // Only reset if range is uninitialized and totalItems just became positive
+      if (prev.start === 0 && prev.end === 0 && totalItems > 0) return getDefaultRange(pageSize, totalItems)
+      if (prev.end - prev.start + 1 !== pageSize) {
+        return { ...prev, end: Math.min(prev.start + pageSize - 1, totalItems) }
+      }
       return prev
     })
-  }, [totalItems, pageSize]) // (optional) remove pageSize if it's constant
+  }, [totalItems, pageSize])
 
   const handleNext = () => {
     if (totalItems) {
