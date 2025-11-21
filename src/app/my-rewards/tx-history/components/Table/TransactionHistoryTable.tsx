@@ -14,6 +14,7 @@ import { convertDataToRowData } from './convertDataToRowData'
 import { useCycleContext } from '@/app/collective-rewards/metrics/context'
 import { TablePager } from '@/components/TableNew'
 import { Header } from '@/components/Typography'
+import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 
 const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
   cycle: 'cycleStart',
@@ -30,7 +31,7 @@ export default function TransactionHistoryTable() {
   const {
     data: { cycleDuration },
   } = useCycleContext()
-
+  const { getBuilderByAddress } = useBuilderContext()
   // Map sort columnId to database field
   const sortBy = sort?.columnId ? COLUMN_TO_DB_FIELD[sort.columnId] : 'blockTimestamp'
   const sortDirection = sort?.direction || 'desc'
@@ -43,8 +44,8 @@ export default function TransactionHistoryTable() {
   })
 
   const rowData = useMemo(() => {
-    return convertDataToRowData(data, cycleDuration, prices)
-  }, [data, cycleDuration, prices])
+    return convertDataToRowData(data, cycleDuration, prices, getBuilderByAddress)
+  }, [data, cycleDuration, prices, getBuilderByAddress])
 
   useEffect(() => {
     dispatch({

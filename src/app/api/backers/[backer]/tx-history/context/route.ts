@@ -4,6 +4,14 @@ import { Address, isAddress } from 'viem'
 import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
 import { TX_HISTORY_COLUMNS } from '@/app/api/db/constants'
 
+function parseMultiParam(search: URLSearchParams, key: string): string[] {
+  const values = search.getAll(key)
+  return values
+    .flatMap(v => v.split(','))
+    .map(v => v.trim())
+    .filter(Boolean)
+}
+
 export async function GET(req: Request, { params }: { params: Promise<{ backer: Address }> }) {
   const { backer } = await params
 
@@ -12,6 +20,23 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
   }
 
   try {
+    const url = new URL(req.url || '')
+    const search = url.searchParams
+
+    const typeFiltersRaw = parseMultiParam(search, 'type') // Back | Claim
+    const builderFiltersRaw = parseMultiParam(search, 'builder')
+    const rewardTokenFiltersRaw = parseMultiParam(search, 'rewardToken')
+
+    const builderFilters = builderFiltersRaw.map(b => b.toLowerCase())
+    const rewardTokenFilters = rewardTokenFiltersRaw.map(r => r.toLowerCase())
+
+    if (builderFilters.length && !builderFilters.every(b => isAddress(b as Address))) {
+      return NextResponse.json({ error: 'Invalid builder address in filter' }, { status: 400 })
+    }
+    if (rewardTokenFilters.length && !rewardTokenFilters.every(r => isAddress(r as Address))) {
+      return NextResponse.json({ error: 'Invalid rewardToken address in filter' }, { status: 400 })
+    }
+
     const paginationResult = parsePaginationParams(req.url || '', TX_HISTORY_COLUMNS)
 
     if (!paginationResult.success) {
@@ -22,6 +47,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
     }
 
     const { page, pageSize, sortBy, sortDirection } = paginationResult.data
+
+    const limitToBack = typeFiltersRaw.length > 0 && !typeFiltersRaw.includes('Claim')
+    const limitToClaim = typeFiltersRaw.length > 0 && !typeFiltersRaw.includes('Back')
 
     const allocationHistory = db('AllocationHistory')
       .select(
@@ -38,6 +66,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
         db.raw('NULL as "rewardToken"'),
       )
       .where('backer', '=', backer.toLowerCase())
+      .modify(qb => {
+        if (builderFilters.length) qb.whereIn('builder', builderFilters)
+        if (limitToClaim) qb.whereRaw('FALSE')
+      })
 
     const claimedRewardsHistory = db('ClaimedRewardsHistory')
       .select(
@@ -54,19 +86,22 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
         'rewardToken',
       )
       .where('backer', '=', backer.toLowerCase())
+      .modify(qb => {
+        if (builderFilters.length) qb.whereIn('builder', builderFilters)
+        if (rewardTokenFilters.length) qb.whereIn('rewardToken', rewardTokenFilters)
+        if (limitToBack) qb.whereRaw('FALSE')
+      })
 
     const combinedQuery = allocationHistory.union(claimedRewardsHistory)
 
-    const data = await db
-      .select('*')
-      .from(db.raw(`(${combinedQuery.toString()}) as combined`))
-      .orderBy(sortBy || 'blockTimestamp', sortDirection || 'desc')
-      .limit(pageSize)
-
-    const countResult = await db
-      .count('* as count')
-      .from(db.raw(`(${combinedQuery.toString()}) as combined`))
-      .first()
+    const [data, countResult] = await Promise.all([
+      combinedQuery
+        .clone()
+        .orderBy(sortBy || 'blockTimestamp', sortDirection || 'desc')
+        .limit(pageSize)
+        .offset((page - 1) * pageSize),
+      db.count('* as count').from(combinedQuery.clone()).first(),
+    ])
 
     const count = Number(countResult?.count || 0)
 

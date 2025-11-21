@@ -1,19 +1,17 @@
 import { FC, HtmlHTMLAttributes, ReactElement, ReactNode } from 'react'
-import { cn, truncate } from '@/lib/utils'
+import { cn, shortAddress, truncate } from '@/lib/utils'
 import { useTableContext } from '@/shared/context'
-import {
-  ColumnId,
-  COLUMN_TRANSFORMS,
-  GroupedTransactionDetail,
-  TransactionHistoryCellDataMap,
-} from './TransactionHistoryTable.config'
+import { ColumnId, COLUMN_TRANSFORMS, TransactionHistoryCellDataMap } from './TransactionHistoryTable.config'
 import { Paragraph, Span } from '@/components/Typography'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
 import { ArrowDownIcon } from '@/components/Icons/ArrowDownIcon'
+import { ChevronDownIcon } from '@/components/Icons/ChevronDownIcon'
+import { ChevronUpIcon } from '@/components/Icons/ChevronUpIcon'
 import { TokenImage } from '@/components/TokenImage'
-import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import Link from 'next/link'
+import { Builder } from '@/app/collective-rewards/types'
+import { Address } from 'viem'
 
 const TableCellBase = ({
   children,
@@ -55,14 +53,21 @@ const TableCell = ({
 
 interface CycleCellProps {
   cycle: string | null
+  isExpanded?: boolean
+  isHovered?: boolean
+  isDetailRow?: boolean
 }
 
-export const CycleCell: FC<CycleCellProps> = ({ cycle }): ReactElement => {
+export const CycleCell: FC<CycleCellProps> = ({ cycle, isHovered, isDetailRow }): ReactElement => {
+  const showContent = !isDetailRow
+
   return (
     <TableCell columnId="cycle" className="justify-center">
-      <Paragraph variant="body" className="text-v3-text-100" bold>
-        {cycle || '-'}
-      </Paragraph>
+      {showContent && (
+        <Paragraph variant="body" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')} bold>
+          {cycle || '-'}
+        </Paragraph>
+      )}
     </TableCell>
   )
 }
@@ -70,12 +75,15 @@ export const CycleCell: FC<CycleCellProps> = ({ cycle }): ReactElement => {
 interface DateCellProps {
   timestamp: string
   formatted: string
+  isExpanded?: boolean
+  isHovered?: boolean
+  isDetailRow?: boolean
 }
 
-export const DateCell: FC<DateCellProps> = ({ formatted }): ReactElement => {
+export const DateCell: FC<DateCellProps> = ({ formatted, isHovered }): ReactElement => {
   return (
     <TableCell columnId="date">
-      <Paragraph variant="body-s" className="text-v3-text-100">
+      <Paragraph variant="body-s" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
         {formatted}
       </Paragraph>
     </TableCell>
@@ -83,42 +91,50 @@ export const DateCell: FC<DateCellProps> = ({ formatted }): ReactElement => {
 }
 
 interface FromToCellProps {
-  builderAddress?: string
+  builder?: Builder
   type: 'Claim' | 'Back'
   isGrouped?: boolean
-  groupedDetails?: GroupedTransactionDetail[]
+  isExpanded?: boolean
+  isHovered?: boolean
+  isDetailRow?: boolean
 }
 
 export const FromToCell: FC<FromToCellProps> = ({
-  builderAddress,
+  builder,
   isGrouped,
-  groupedDetails,
+  isExpanded,
+  isHovered,
+  isDetailRow,
 }): ReactElement => {
-  const { builders } = useBuilderContext()
-
   // Grouped row - show purple circle and "Multiple Builders"
-  if (isGrouped) {
+  if (isGrouped && !isDetailRow) {
+    const showContent = !isExpanded
+
     return (
       <TableCell columnId="from_to" className="gap-3 overflow-hidden">
-        <div className="rounded-full bg-v3-rsk-purple min-w-10 size-10" />
-        <div className="flex items-center min-w-0 flex-1">
-          <Paragraph variant="body" className="text-v3-primary">
-            Multiple Builders
-          </Paragraph>
-        </div>
+        {showContent && (
+          <>
+            <div className="rounded-full bg-v3-rsk-purple min-w-10 size-10" />
+            <div className="flex items-center min-w-0 flex-1">
+              <Paragraph variant="body" className={cn(isHovered ? 'text-black' : 'text-v3-primary')}>
+                Multiple Builders
+              </Paragraph>
+            </div>
+          </>
+        )}
       </TableCell>
     )
   }
 
-  // Single builder row - show Jdenticon and builder name
-  const builder = builders.find(b => b.address.toLowerCase() === builderAddress?.toLowerCase())
+  const builderAddress = builder?.address || ''
+  const shortedAddress = shortAddress(builderAddress as Address)
 
-  const name = builder?.builderName || builderAddress || ''
-  const displayName = truncate(name, 18)
+  const builderName = builder?.builderName || ''
+  const displayName = builderName ? truncate(builderName, 15) : shortedAddress
 
   return (
     <TableCell columnId="from_to" className="gap-3 overflow-hidden">
-      <Jdenticon className="rounded-full bg-white min-w-10 size-10" value={builderAddress || ''} />
+      <Jdenticon className="rounded-full bg-white min-w-10 size-10" value={builderAddress} />
       <div className="flex items-center min-w-0 flex-1">
         <Link
           href={`/proposals/${builder?.proposal.id}`}
@@ -129,8 +145,9 @@ export const FromToCell: FC<FromToCellProps> = ({
           <Paragraph
             variant="body"
             className={cn(
-              'text-v3-primary hover:underline hover:underline-offset-2',
+              'hover:underline hover:underline-offset-2',
               'truncate overflow-hidden text-ellipsis whitespace-nowrap',
+              isHovered ? 'text-black' : 'text-v3-primary',
             )}
           >
             {displayName}
@@ -143,14 +160,21 @@ export const FromToCell: FC<FromToCellProps> = ({
 
 interface TypeCellProps {
   type: 'Claim' | 'Back'
+  isExpanded?: boolean
+  isHovered?: boolean
+  isDetailRow?: boolean
 }
 
-export const TypeCell: FC<TypeCellProps> = ({ type }): ReactElement => {
+export const TypeCell: FC<TypeCellProps> = ({ type, isHovered, isDetailRow }): ReactElement => {
+  const showContent = !isDetailRow
+
   return (
     <TableCell columnId="type" className="justify-center gap-2">
-      <Paragraph variant="body" className="text-v3-text-100">
-        {type}
-      </Paragraph>
+      {showContent && (
+        <Paragraph variant="body" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
+          {type}
+        </Paragraph>
+      )}
     </TableCell>
   )
 }
@@ -159,52 +183,112 @@ interface AmountCellProps {
   amounts: Array<{ address: string; value: string; symbol: string }>
   type: 'Claim' | 'Back'
   increased?: boolean
+  isExpanded?: boolean
+  isHovered?: boolean
+  isDetailRow?: boolean
 }
 
-export const AmountCell: FC<AmountCellProps> = ({ amounts, type, increased }): ReactElement => {
+export const AmountCell: FC<AmountCellProps> = ({
+  amounts,
+  type,
+  increased,
+  isExpanded,
+  isHovered,
+  isDetailRow,
+}): ReactElement => {
   const isBack = type === 'Back'
   const showArrow = isBack && increased !== undefined
+  const showContent = !isExpanded || isDetailRow
 
   return (
     <TableCell columnId="amount" className="flex flex-col items-center justify-center gap-1">
-      {amounts.map(({ value, symbol }, idx) => {
-        return (
-          <div key={idx} className="flex items-center gap-2">
-            {showArrow && (
-              <span className="flex items-center">
-                {increased ? (
-                  <ArrowUpIcon size={16} color="#1bc47d" />
-                ) : (
-                  <ArrowDownIcon size={16} color="#f68" />
+      {showContent &&
+        amounts.map(({ value, symbol }, idx) => {
+          return (
+            <div key={idx} className="flex items-center gap-2">
+              {showArrow && (
+                <span className="flex items-center">
+                  {increased ? (
+                    <ArrowUpIcon size={16} color="#1bc47d" />
+                  ) : (
+                    <ArrowDownIcon size={16} color="#f68" />
+                  )}
+                </span>
+              )}
+              <Paragraph
+                variant="body"
+                className={cn(
+                  showArrow
+                    ? increased
+                      ? 'text-v3-success'
+                      : 'text-error'
+                    : isHovered
+                      ? 'text-black'
+                      : 'text-v3-text-100',
                 )}
-              </span>
-            )}
-            <Paragraph
-              variant="body"
-              className={cn(showArrow ? (increased ? 'text-v3-success' : 'text-error') : 'text-v3-text-100')}
-            >
-              {value}
-            </Paragraph>
-            <TokenImage symbol={symbol} size={16} />
-            <Span variant="tag-s" className="text-v3-text-100">
-              {symbol}
-              {idx < amounts.length - 1 ? ' +' : ''}
-            </Span>
-          </div>
-        )
-      })}
+              >
+                {value}
+              </Paragraph>
+              <TokenImage symbol={symbol} size={16} />
+              <Span variant="tag-s" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
+                {symbol}
+                {idx < amounts.length - 1 ? ' +' : ''}
+              </Span>
+            </div>
+          )
+        })}
     </TableCell>
   )
 }
 
 interface TotalAmountCellProps {
   usd: string
+  isGrouped?: boolean
+  isExpanded?: boolean
+  isHovered?: boolean
+  isDetailRow?: boolean
+  onToggle?: () => void
 }
 
-export const TotalAmountCell: FC<TotalAmountCellProps> = ({ usd }): ReactElement => {
+export const TotalAmountCell: FC<TotalAmountCellProps> = ({
+  usd,
+  isGrouped,
+  isExpanded,
+  isHovered,
+  isDetailRow,
+  onToggle,
+}): ReactElement => {
+  // For grouped rows: show USD when not hovered and not expanded
+  if (isGrouped && !isDetailRow) {
+    return (
+      <TableCell columnId="total_amount" className="justify-center">
+        {isHovered ? (
+          <button
+            onClick={onToggle}
+            className="flex items-center gap-2 bg-transparent border-none cursor-pointer"
+          >
+            <Paragraph variant="body-s" className="text-black font-medium">
+              {isExpanded ? 'Hide details' : 'Show details'}
+            </Paragraph>
+            {isExpanded ? (
+              <ChevronUpIcon size={12} color="black" />
+            ) : (
+              <ChevronDownIcon size={12} color="black" />
+            )}
+          </button>
+        ) : !isExpanded ? (
+          <Paragraph variant="body" className="text-v3-text-100">
+            {usd}
+          </Paragraph>
+        ) : null}
+      </TableCell>
+    )
+  }
+
+  // For normal rows and detail rows: always show USD
   return (
     <TableCell columnId="total_amount" className="justify-center">
-      <Paragraph variant="body" className="text-v3-text-100">
+      <Paragraph variant="body" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
         {usd}
       </Paragraph>
     </TableCell>

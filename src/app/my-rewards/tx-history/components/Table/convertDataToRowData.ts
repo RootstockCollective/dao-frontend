@@ -9,6 +9,7 @@ import Big from 'big.js'
 import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { Address, getAddress } from 'viem'
 import { formatCurrency } from '@/lib/utils'
+import { Builder } from '@/app/collective-rewards/types'
 
 const calculateCycleNumber = (cycleStartTimestamp: string, cycleDuration: Duration): number => {
   const cycleStartSeconds = Number(cycleStartTimestamp)
@@ -52,6 +53,7 @@ export const convertDataToRowData = (
   data: TransactionHistoryItem[],
   cycleDuration: Duration,
   prices: GetPricesResult,
+  getBuilderByAddress: (address: Address) => Builder | undefined,
 ): TransactionHistoryTable['Row'][] => {
   if (!data.length) return []
 
@@ -70,6 +72,8 @@ export const convertDataToRowData = (
     if (items.length === 1) {
       // Single transaction - create normal row
       const item = items[0]
+      const builderAddress = getAddress(item.builder)
+      const builder = getBuilderByAddress(builderAddress)
       const cycleNumber = calculateCycleNumber(item.cycleStart, cycleDuration)
       const dateRange = formatDateRange(item.cycleStart, cycleDuration)
       const transactionType = item.type
@@ -100,7 +104,7 @@ export const convertDataToRowData = (
             formatted: dateRange,
           },
           from_to: {
-            builderAddress: item.builder,
+            builder,
             type: transactionType,
           },
           type: {
@@ -125,10 +129,15 @@ export const convertDataToRowData = (
       const amountsByToken: Record<Address, { symbol: string; amount: bigint }> = {}
 
       let totalUsdValue = Big(0)
-      let increased = false
+      let increased: boolean | undefined = undefined
       const groupedDetails: GroupedTransactionDetail[] = []
 
       items.forEach(item => {
+        let amount: { address: Address; value: string; symbol: string } | undefined = undefined
+        let usdValue = Big(0)
+        const builderAddress = getAddress(item.builder)
+        const builder = getBuilderByAddress(builderAddress)
+
         if (item.type === 'Claim' && item.amount && item.rewardToken) {
           const tokenAddress = getAddress(item.rewardToken)
           const symbol = TOKENS_BY_ADDRESS[tokenAddress]?.symbol || ''
@@ -137,6 +146,7 @@ export const convertDataToRowData = (
           const itemAmount = BigInt(item.amount)
 
           const usdAmount = getFiatAmount(itemAmount, price)
+          usdValue = usdValue.plus(usdAmount)
           totalUsdValue = totalUsdValue.plus(usdAmount)
           // if token is already there we need to sum it
           if (amountsByToken[tokenAddress]) {
@@ -144,6 +154,7 @@ export const convertDataToRowData = (
           } else {
             amountsByToken[tokenAddress] = { symbol, amount: itemAmount }
           }
+          amount = { address: tokenAddress, value: formatSymbol(itemAmount, symbol), symbol }
         } else if (item.type === 'Back' && item.allocation) {
           const tokenAddress = tokenContracts.stRIF
           const symbol = TOKENS_BY_ADDRESS[tokenAddress]?.symbol || ''
@@ -151,6 +162,7 @@ export const convertDataToRowData = (
           const itemAllocation = BigInt(item.allocation)
 
           const usdAmount = getFiatAmount(itemAllocation, price)
+          usdValue = usdValue.plus(usdAmount)
           // Adjust total USD value and token amount based on increase
           const allocationChange = item.increased ? itemAllocation : -itemAllocation
           totalUsdValue = item.increased ? totalUsdValue.plus(usdAmount) : totalUsdValue.minus(usdAmount)
@@ -160,9 +172,19 @@ export const convertDataToRowData = (
           } else {
             amountsByToken[tokenAddress] = { symbol, amount: allocationChange }
           }
-          const amount = amountsByToken[tokenAddress].amount
-          increased = amount < 0n ? false : true
+          const tokenAmount = amountsByToken[tokenAddress].amount
+          increased = tokenAmount === 0n ? undefined : tokenAmount < 0n ? false : true
+          amount = { address: tokenAddress, value: formatSymbol(itemAllocation, symbol), symbol }
         }
+
+        groupedDetails.push({
+          id: item.id,
+          builder,
+          blockTimestamp: item.blockTimestamp,
+          amount: amount!,
+          usdValue: formatCurrency(usdValue, { showCurrencyLabel: false, showCurrencySymbol: false }),
+          increased: item.increased,
+        })
       })
 
       const amounts = Object.entries(amountsByToken).map(([address, { symbol, amount }]) => {
