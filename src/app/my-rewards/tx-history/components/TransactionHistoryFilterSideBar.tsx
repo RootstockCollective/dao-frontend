@@ -5,6 +5,8 @@ import { FilterSideBar } from '@/components/FilterSideBar'
 import { FilterGroup, ActiveFilter } from '@/components/FilterSideBar/types'
 import { TokenImage } from '@/components/TokenImage'
 import { TOKENS } from '@/lib/tokens'
+import { useGetBackedBuilders } from '../hooks/useGetBackedBuilders'
+import { useAccount } from 'wagmi'
 
 interface TransactionHistoryFilterSideBarProps {
   isOpen: boolean
@@ -13,7 +15,6 @@ interface TransactionHistoryFilterSideBarProps {
   onFilterToggle: (groupId: string, option: { label: string; value: string }) => void
   onClearGroup: (groupId: string) => void
   onClearAll: () => void
-  builders?: Array<{ label: string; value: string }>
 }
 
 /**
@@ -27,8 +28,10 @@ export function TransactionHistoryFilterSideBar({
   onFilterToggle,
   onClearGroup,
   onClearAll,
-  builders = [],
 }: TransactionHistoryFilterSideBarProps) {
+  const { address } = useAccount()
+  const { builders } = useGetBackedBuilders(address)
+
   const filterGroups: FilterGroup[] = useMemo(
     () => [
       {

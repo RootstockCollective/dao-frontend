@@ -1,5 +1,5 @@
 import { Paragraph } from '@/components/Typography'
-import { cn } from '@/lib/utils'
+import { cn, truncate } from '@/lib/utils'
 
 import { ReactNode } from 'react'
 
@@ -53,7 +53,9 @@ export const SelectableItem = ({ option, selected, onClick, variant = 'square', 
       />
       <div className="flex items-center gap-1">
         {option.icon && <div className="flex items-center">{option.icon}</div>}
-        <Paragraph>{option.label}</Paragraph>
+        <Paragraph className="text-left" title={option.label}>
+          {truncate(option.label, 20)}
+        </Paragraph>
       </div>
     </button>
   )
