@@ -15,7 +15,7 @@ const DB_COMMAND_COALESCE = `
   '[]')
 `
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ backer: Address }> }) {
+export async function GET(req: Request, { params }: { params: Promise<{ backer: Address }> }) {
   const { backer } = await params
 
   if (!isAddress(backer)) {
