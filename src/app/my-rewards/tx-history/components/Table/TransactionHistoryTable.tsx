@@ -45,7 +45,7 @@ export default function TransactionHistoryTable() {
 
   const rowData = useMemo(() => {
     return convertDataToRowData(data, cycleDuration, prices, getBuilderByAddress)
-  }, [data, cycleDuration, prices])
+  }, [data, cycleDuration, prices, getBuilderByAddress])
 
   useEffect(() => {
     dispatch({
