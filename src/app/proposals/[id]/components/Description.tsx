@@ -1,20 +1,12 @@
-import { Header, Paragraph } from '@/components/Typography'
-import { Expandable, ExpandableHeader, ExpandableContent } from '@/components/Expandable'
+import { Header } from '@/components/Typography'
+import { Expandable, ExpandableHeader } from '@/components/Expandable'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { parseProposalDescription } from '@/app/proposals/shared/utils'
+import { MD } from '@/components/MD'
+import { useExpandableContext } from '@/components/Expandable/ExpandableContext'
 
 interface DescriptionProps {
   description?: string
-}
-
-const linkfyUrls = (description: string | undefined | null): string => {
-  if (typeof description !== 'string') return ''
-  const urlRegex =
-    /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/g
-  return description.replace(urlRegex, url => {
-    const href = url.startsWith('http') || url.startsWith('https') ? url : `https://${url}`
-    return `<a href="${href}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline;">${url}</a>`
-  })
 }
 
 const DescriptionHeader = () => (
@@ -22,36 +14,64 @@ const DescriptionHeader = () => (
     DESCRIPTION
   </Header>
 )
-const DescriptionContent = ({ descriptionHtml }: { descriptionHtml: string }) => {
-  const isDesktop = useIsDesktop()
-  return isDesktop ? (
-    <Paragraph variant="body" className="text-base text-white" html>
-      {descriptionHtml}
-    </Paragraph>
-  ) : (
-    <ExpandableContent showPreview={!isDesktop && !!descriptionHtml}>{descriptionHtml}</ExpandableContent>
+
+/**
+ * Extracts the first N lines from markdown text
+ * Preserves markdown formatting for preview
+ */
+const getFirstLines = (text: string, lineCount: number = 3): string => {
+  const lines = text.split('\n')
+  return lines.slice(0, lineCount).join('\n')
+}
+
+interface DescriptionContentProps {
+  descriptionText: string
+}
+
+const DesktopDescriptionContent = ({ descriptionText }: DescriptionContentProps) => {
+  return <MD>{descriptionText}</MD>
+}
+
+const MobileDescriptionContent = ({ descriptionText }: DescriptionContentProps) => {
+  const { isExpanded } = useExpandableContext()
+  const previewText = getFirstLines(descriptionText, 3)
+
+  return (
+    <>
+      {!isExpanded && (
+        <div className="my-2 relative">
+          <MD className="line-clamp-3">{previewText}</MD>
+        </div>
+      )}
+      <div
+        className={`transition-all duration-300 ease-in-out overflow-hidden ${
+          isExpanded ? 'max-h-[2500px] opacity-100 my-2' : 'max-h-0 opacity-0'
+        }`}
+      >
+        <MD>{descriptionText}</MD>
+      </div>
+    </>
   )
 }
 
 export const Description = ({ description }: DescriptionProps) => {
   const isDesktop = useIsDesktop()
   // Parse the raw description to extract just the display text (without name/metadata)
-  const parsedDescription = description ? parseProposalDescription(description).description : ''
-  const descriptionHtml = linkfyUrls(parsedDescription)
+  const descriptionText = description ? parseProposalDescription(description).description : ''
 
   return (
     <div className="md:px-6 px-4 py-10 sm:pb-8">
       {!isDesktop ? (
-        <Expandable expanded={isDesktop}>
+        <Expandable expanded={false}>
           <ExpandableHeader triggerColor="white">
             <DescriptionHeader />
           </ExpandableHeader>
-          <DescriptionContent descriptionHtml={descriptionHtml} />
+          <MobileDescriptionContent descriptionText={descriptionText} />
         </Expandable>
       ) : (
         <>
           <DescriptionHeader />
-          <DescriptionContent descriptionHtml={descriptionHtml} />
+          <DesktopDescriptionContent descriptionText={descriptionText} />
         </>
       )}
     </div>
