@@ -7,7 +7,7 @@ import {
   GroupedTransactionDetail,
   TransactionHistoryCellDataMap,
 } from './TransactionHistoryTable.config'
-import { Paragraph } from '@/components/Typography'
+import { Paragraph, Span } from '@/components/Typography'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
 import { ArrowDownIcon } from '@/components/Icons/ArrowDownIcon'
@@ -186,10 +186,10 @@ export const AmountCell: FC<AmountCellProps> = ({ amounts, type, increased }): R
               {value}
             </Paragraph>
             <TokenImage symbol={symbol} size={16} />
-            <Paragraph variant="body" className="text-v3-text-100">
+            <Span variant="tag-s" className="text-v3-text-100">
               {symbol}
               {idx < amounts.length - 1 ? ' +' : ''}
-            </Paragraph>
+            </Span>
           </div>
         )
       })}

@@ -68,13 +68,7 @@ const dispatchSortRoundRobin = (
 }
 
 const HeaderTitle: FC<{ className?: string; children: ReactNode }> = ({ className, children }) => (
-  <Label
-    variant="tag-s"
-    className={cn(
-      'text-v3-text-100 cursor-[inherit] rootstock-sans text-[0.875rem] leading-5 font-normal',
-      className,
-    )}
-  >
+  <Label variant="tag-s" className={cn('cursor-[inherit]', className)}>
     {children}
   </Label>
 )
