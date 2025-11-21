@@ -15,11 +15,22 @@ type UseGetTransactionHistoryParams = {
   pageSize?: number
   sortBy?: string
   sortDirection?: 'asc' | 'desc'
+  type?: string[]
+  builder?: string[]
+  rewardToken?: string[]
 }
 
 export const useGetTransactionHistory = (params?: UseGetTransactionHistoryParams) => {
   const { address } = useAccount()
-  const { page = 1, pageSize = 20, sortBy = 'blockTimestamp', sortDirection = 'desc' } = params || {}
+  const {
+    page = 1,
+    pageSize = 20,
+    sortBy = 'blockTimestamp',
+    sortDirection = 'desc',
+    type = [],
+    builder = [],
+    rewardToken = [],
+  } = params || {}
 
   const { data, isLoading, error } = useQuery<TransactionHistoryResponse, Error>({
     queryFn: async (): Promise<TransactionHistoryResponse> => {
@@ -34,6 +45,11 @@ export const useGetTransactionHistory = (params?: UseGetTransactionHistoryParams
         page: page.toString(),
       })
 
+      // Add filter parameters
+      type.forEach(t => searchParams.append('type', t))
+      builder.forEach(b => searchParams.append('builder', b))
+      rewardToken.forEach(rt => searchParams.append('rewardToken', rt))
+
       const response = await fetch(`/api/backers/${address}/tx-history/context?${searchParams}`)
 
       if (!response.ok) {
@@ -44,7 +60,17 @@ export const useGetTransactionHistory = (params?: UseGetTransactionHistoryParams
 
       return result as TransactionHistoryResponse
     },
-    queryKey: ['transactionHistory', address, page, pageSize, sortBy, sortDirection],
+    queryKey: [
+      'transactionHistory',
+      address,
+      page,
+      pageSize,
+      sortBy,
+      sortDirection,
+      type,
+      builder,
+      rewardToken,
+    ],
     refetchInterval: AVERAGE_BLOCKTIME,
     enabled: !!address,
   })
