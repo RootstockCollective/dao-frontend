@@ -4,17 +4,12 @@ import { useMemo } from 'react'
 import { Address } from 'viem'
 import { shortAddress } from '@/lib/utils'
 
-type BackerToBuilderResponse = {
-  data: Array<{
-    id: string
-    backer: string
-    builder: string
-    totalAllocation: string
-  }>
-  count: number
-  page: number
-  pageSize: number
-}
+type BackerToBuilderResponse = Array<{
+  id: string
+  backer: string
+  builder: string
+  totalAllocation: string
+}>
 
 /**
  * Hook to fetch builders that a specific backer has backed
@@ -32,21 +27,17 @@ export const useGetBackedBuilders = (address?: Address) => {
   >({
     queryFn: async (): Promise<BackerToBuilderResponse> => {
       if (!address) {
-        return { data: [], count: 0, page: 1, pageSize: 100 }
+        return []
       }
 
-      const searchParams = new URLSearchParams({
-        pageSize: '100',
-        page: '1',
-      })
-
-      const response = await fetch(`/api/backers/${address}/backer-to-builder?${searchParams}`)
+      const response = await fetch(`/api/backers/${address}/backer-to-builder`)
 
       if (!response.ok) {
         throw new Error('Failed to fetch backed builders')
       }
 
-      return await response.json()
+      const body = await response.json()
+      return body.data
     },
     queryKey: ['backerToBuilder', address],
     enabled: !!address,
@@ -54,15 +45,14 @@ export const useGetBackedBuilders = (address?: Address) => {
 
   // Transform the data into filter options
   const builderOptions = useMemo(() => {
-    if (!backerToBuilder?.data || !allBuilders) {
+    if (!backerToBuilder || !allBuilders) {
       return []
     }
 
-    return backerToBuilder.data
+    return backerToBuilder
       .map(({ builder }) => {
         const builderKey = Object.keys(allBuilders).find(k => k.toLowerCase() === builder.toLowerCase())
         const builderData = builderKey ? allBuilders[builderKey as Address] : undefined
-        console.log('🚀 ~ useGetBackedBuilders ~ builderData?.builderName:', builderData?.builderName)
 
         return {
           label: builderData?.builderName || shortAddress(builder as Address),
