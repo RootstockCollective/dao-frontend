@@ -1,7 +1,7 @@
 'use client'
 
 import { useTableActionsContext, useTableContext } from '@/shared/context'
-import { ReactElement, Suspense } from 'react'
+import { ReactElement, ReactNode, Suspense } from 'react'
 import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
 import { Label } from '@/components/Typography'
 import { cn } from '@/lib/utils'
@@ -67,9 +67,9 @@ const dispatchSortRoundRobin = (
   dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: nextSort ? columnId : null, direction: nextSort } })
 }
 
-const HeaderTitle: FC<{ className?: string; children: React.ReactNode }> = ({ className, children }) => (
+const HeaderTitle: FC<{ className?: string; children: ReactNode }> = ({ className, children }) => (
   <Label
-    variant="tag"
+    variant="tag-s"
     className={cn(
       'text-v3-text-100 cursor-[inherit] rootstock-sans text-[0.875rem] leading-5 font-normal',
       className,

@@ -3,11 +3,12 @@ import { GroupedTransactionDetail, TransactionHistoryTable } from './Transaction
 import { FIRST_CYCLE_START_SECONDS } from '@/app/collective-rewards/constants/chartConstants'
 import { Duration } from 'luxon'
 import { GetPricesResult } from '@/app/user/types'
-import { RBTC, RIF, USDRIF } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
-import { getTokenByAddress, TOKENS } from '@/lib/tokens'
+import { TOKENS_BY_ADDRESS } from '@/lib/tokens'
 import Big from 'big.js'
 import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
+import { Address, getAddress } from 'viem'
+import { formatCurrency } from '@/lib/utils'
 
 const calculateCycleNumber = (cycleStartTimestamp: string, cycleDuration: Duration): number => {
   const cycleStartSeconds = Number(cycleStartTimestamp)
@@ -54,10 +55,6 @@ export const convertDataToRowData = (
 ): TransactionHistoryTable['Row'][] => {
   if (!data.length) return []
 
-  const rifPrice = prices[RIF]?.price ?? 0
-  const rbtcPrice = prices[RBTC]?.price ?? 0
-  const usdrifPrice = prices[USDRIF]?.price ?? 0
-
   // Group transactions by blockHash
   const groupedByBlock = data.reduce<Record<string, TransactionHistoryItem[]>>((acc, item) => {
     if (!acc[item.blockHash]) {
@@ -76,32 +73,20 @@ export const convertDataToRowData = (
       const cycleNumber = calculateCycleNumber(item.cycleStart, cycleDuration)
       const dateRange = formatDateRange(item.cycleStart, cycleDuration)
       const transactionType = item.type
-
-      const amounts: Array<{ address: string; value: string; price: number }> = []
+      const amounts: { address: Address; value: string; symbol: string }[] = []
       let totalUsdValue = Big(0)
-
       if (transactionType === 'Claim' && item.amount && item.rewardToken) {
-        const tokenAddress = item.rewardToken
-        const token = getTokenByAddress(tokenAddress)
-        const symbol = token?.symbol || ''
-        const priceMap: Record<string, number> = {
-          [RIF]: rifPrice,
-          [RBTC]: rbtcPrice,
-          [USDRIF]: usdrifPrice,
-        }
-        const price = priceMap[symbol] || 0
-
-        const formattedAmount = formatSymbol(BigInt(item.amount), symbol)
-        amounts.push({ address: tokenAddress, value: formattedAmount, price })
-
-        const usdAmount = getFiatAmount(BigInt(item.amount), price)
-        totalUsdValue = totalUsdValue.plus(usdAmount)
+        const symbol = TOKENS_BY_ADDRESS[item.rewardToken]?.symbol || ''
+        const price = prices[symbol]?.price ?? 0
+        const itemAmount = BigInt(item.amount)
+        amounts.push({ address: item.rewardToken, value: formatSymbol(itemAmount, symbol), symbol })
+        totalUsdValue = getFiatAmount(itemAmount, price)
       } else if (transactionType === 'Back' && item.allocation) {
-        const formattedAmount = formatSymbol(BigInt(item.allocation), TOKENS.strif.symbol)
-        amounts.push({ address: tokenContracts.stRIF, value: formattedAmount, price: rifPrice })
-
-        const usdAmount = getFiatAmount(BigInt(item.allocation), rifPrice)
-        totalUsdValue = totalUsdValue.plus(usdAmount)
+        const symbol = TOKENS_BY_ADDRESS[tokenContracts.stRIF]?.symbol || ''
+        const price = prices[symbol]?.price ?? 0
+        const itemAllocation = BigInt(item.allocation)
+        amounts.push({ address: tokenContracts.stRIF, value: formatSymbol(itemAllocation, symbol), symbol })
+        totalUsdValue = getFiatAmount(itemAllocation, price)
       }
 
       rows.push({
@@ -123,7 +108,7 @@ export const convertDataToRowData = (
             increased: item.increased,
           },
           amount: {
-            amounts: amounts.map(a => ({ address: a.address, value: a.value })),
+            amounts: amounts,
             type: transactionType,
             increased: item.increased,
           },
@@ -137,68 +122,52 @@ export const convertDataToRowData = (
       const cycleNumber = calculateCycleNumber(firstItem.cycleStart, cycleDuration)
       const dateRange = formatDateRange(firstItem.cycleStart, cycleDuration)
       const transactionType = firstItem.type
+      const amountsByToken: Record<Address, { symbol: string; amount: bigint }> = {}
 
-      const amountsByToken: Record<string, { total: Big; price: number }> = {}
       let totalUsdValue = Big(0)
+      let increased = false
       const groupedDetails: GroupedTransactionDetail[] = []
 
       items.forEach(item => {
-        const itemAmounts: Array<{ address: string; value: string; symbol: string }> = []
-        let itemUsdValue = Big(0)
-
         if (item.type === 'Claim' && item.amount && item.rewardToken) {
-          const tokenAddress = item.rewardToken
-          const token = getTokenByAddress(tokenAddress)
-          const symbol = token?.symbol || ''
-          const priceMap: Record<string, number> = {
-            [RIF]: rifPrice,
-            [RBTC]: rbtcPrice,
-            [USDRIF]: usdrifPrice,
-          }
-          const price = priceMap[symbol] || 0
+          const tokenAddress = getAddress(item.rewardToken)
+          const symbol = TOKENS_BY_ADDRESS[tokenAddress]?.symbol || ''
+          const price = prices[symbol]?.price ?? 0
 
-          if (!amountsByToken[tokenAddress]) {
-            amountsByToken[tokenAddress] = { total: Big(0), price }
-          }
-          amountsByToken[tokenAddress].total = amountsByToken[tokenAddress].total.plus(item.amount)
+          const itemAmount = BigInt(item.amount)
 
-          const formattedAmount = formatSymbol(BigInt(item.amount), symbol)
-          itemAmounts.push({ address: tokenAddress, value: formattedAmount, symbol })
-
-          const usdAmount = getFiatAmount(BigInt(item.amount), price)
+          const usdAmount = getFiatAmount(itemAmount, price)
           totalUsdValue = totalUsdValue.plus(usdAmount)
-          itemUsdValue = itemUsdValue.plus(usdAmount)
+          // if token is already there we need to sum it
+          if (amountsByToken[tokenAddress]) {
+            amountsByToken[tokenAddress].amount += itemAmount
+          } else {
+            amountsByToken[tokenAddress] = { symbol, amount: itemAmount }
+          }
         } else if (item.type === 'Back' && item.allocation) {
           const tokenAddress = tokenContracts.stRIF
-          const symbol = TOKENS.strif.symbol
-          if (!amountsByToken[tokenAddress]) {
-            amountsByToken[tokenAddress] = { total: Big(0), price: rifPrice }
+          const symbol = TOKENS_BY_ADDRESS[tokenAddress]?.symbol || ''
+          const price = prices[symbol]?.price ?? 0
+          const itemAllocation = BigInt(item.allocation)
+
+          const usdAmount = getFiatAmount(itemAllocation, price)
+          // Adjust total USD value and token amount based on increase
+          const allocationChange = item.increased ? itemAllocation : -itemAllocation
+          totalUsdValue = item.increased ? totalUsdValue.plus(usdAmount) : totalUsdValue.minus(usdAmount)
+
+          if (amountsByToken[tokenAddress]) {
+            amountsByToken[tokenAddress].amount += allocationChange
+          } else {
+            amountsByToken[tokenAddress] = { symbol, amount: allocationChange }
           }
-          amountsByToken[tokenAddress].total = amountsByToken[tokenAddress].total.plus(item.allocation)
-
-          const formattedAmount = formatSymbol(BigInt(item.allocation), symbol)
-          itemAmounts.push({ address: tokenAddress, value: formattedAmount, symbol })
-
-          const usdAmount = getFiatAmount(BigInt(item.allocation), rifPrice)
-          totalUsdValue = totalUsdValue.plus(usdAmount)
-          itemUsdValue = itemUsdValue.plus(usdAmount)
+          const amount = amountsByToken[tokenAddress].amount
+          increased = amount < 0n ? false : true
         }
-
-        groupedDetails.push({
-          id: item.id,
-          builderAddress: item.builder,
-          blockTimestamp: item.blockTimestamp,
-          amounts: itemAmounts,
-          usdValue: itemUsdValue.toFixed(2),
-        })
       })
 
-      // Convert aggregated amounts to formatted strings
-      const amounts = Object.entries(amountsByToken).map(([address, { total, price }]) => {
-        const token = getTokenByAddress(address)
-        const symbol = token?.symbol || TOKENS.strif.symbol
-        const formattedAmount = formatSymbol(BigInt(total.toFixed(0)), symbol)
-        return { address, value: formattedAmount, price }
+      const amounts = Object.entries(amountsByToken).map(([address, { symbol, amount }]) => {
+        const unsignedAmount = amount < 0n ? -amount : amount
+        return { address: address as Address, value: formatSymbol(unsignedAmount, symbol), symbol }
       })
 
       rows.push({
@@ -218,13 +187,15 @@ export const convertDataToRowData = (
           },
           type: {
             type: transactionType,
+            increased,
           },
           amount: {
-            amounts: amounts.map(a => ({ address: a.address, value: a.value })),
+            amounts: amounts,
             type: transactionType,
+            increased,
           },
           total_amount: {
-            usd: totalUsdValue.toFixed(2),
+            usd: formatCurrency(totalUsdValue.abs(), { showCurrencyLabel: false, showCurrencySymbol: false }),
           },
         },
       })

@@ -12,7 +12,6 @@ import { Jdenticon } from '@/components/Header/Jdenticon'
 import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
 import { ArrowDownIcon } from '@/components/Icons/ArrowDownIcon'
 import { TokenImage } from '@/components/TokenImage'
-import { getTokenByAddress } from '@/lib/tokens'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import Link from 'next/link'
 
@@ -61,7 +60,7 @@ interface CycleCellProps {
 export const CycleCell: FC<CycleCellProps> = ({ cycle }): ReactElement => {
   return (
     <TableCell columnId="cycle" className="justify-center">
-      <Paragraph variant="body" className="text-v3-text-100 font-medium">
+      <Paragraph variant="body" className="text-v3-text-100" bold>
         {cycle || '-'}
       </Paragraph>
     </TableCell>
@@ -76,7 +75,7 @@ interface DateCellProps {
 export const DateCell: FC<DateCellProps> = ({ formatted }): ReactElement => {
   return (
     <TableCell columnId="date">
-      <Paragraph variant="body" className="text-v3-text-100">
+      <Paragraph variant="body-s" className="text-v3-text-100">
         {formatted}
       </Paragraph>
     </TableCell>
@@ -103,7 +102,7 @@ export const FromToCell: FC<FromToCellProps> = ({
       <TableCell columnId="from_to" className="gap-3 overflow-hidden">
         <div className="rounded-full bg-v3-rsk-purple min-w-10 size-10" />
         <div className="flex items-center min-w-0 flex-1">
-          <Paragraph variant="body" className="text-v3-primary font-rootstock-sans">
+          <Paragraph variant="body" className="text-v3-primary">
             Multiple Builders
           </Paragraph>
         </div>
@@ -130,7 +129,7 @@ export const FromToCell: FC<FromToCellProps> = ({
           <Paragraph
             variant="body"
             className={cn(
-              'text-v3-primary font-rootstock-sans hover:underline hover:underline-offset-2',
+              'text-v3-primary hover:underline hover:underline-offset-2',
               'truncate overflow-hidden text-ellipsis whitespace-nowrap',
             )}
           >
@@ -157,7 +156,7 @@ export const TypeCell: FC<TypeCellProps> = ({ type }): ReactElement => {
 }
 
 interface AmountCellProps {
-  amounts: Array<{ address: string; value: string }>
+  amounts: Array<{ address: string; value: string; symbol: string }>
   type: 'Claim' | 'Back'
   increased?: boolean
 }
@@ -168,10 +167,7 @@ export const AmountCell: FC<AmountCellProps> = ({ amounts, type, increased }): R
 
   return (
     <TableCell columnId="amount" className="flex flex-col items-center justify-center gap-1">
-      {amounts.map((amount, idx) => {
-        const token = getTokenByAddress(amount.address)
-        const symbol = token?.symbol || '???'
-
+      {amounts.map(({ value, symbol }, idx) => {
         return (
           <div key={idx} className="flex items-center gap-2">
             {showArrow && (
@@ -187,7 +183,7 @@ export const AmountCell: FC<AmountCellProps> = ({ amounts, type, increased }): R
               variant="body"
               className={cn(showArrow ? (increased ? 'text-v3-success' : 'text-error') : 'text-v3-text-100')}
             >
-              {amount.value}
+              {value}
             </Paragraph>
             <TokenImage symbol={symbol} size={16} />
             <Paragraph variant="body" className="text-v3-text-100">

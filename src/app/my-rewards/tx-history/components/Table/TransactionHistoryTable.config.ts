@@ -1,4 +1,5 @@
 import { Column, TypedTable } from '@/shared/context'
+import { Address } from 'viem'
 
 const COLUMN_IDS = ['cycle', 'date', 'from_to', 'type', 'amount', 'total_amount'] as const
 export type ColumnId = (typeof COLUMN_IDS)[number]
@@ -61,7 +62,7 @@ export type GroupedTransactionDetail = {
   builderAddress: string
   builderName?: string
   blockTimestamp: string
-  amounts: Array<{ address: string; value: string; symbol: string }>
+  amount: { address: string; value: string; symbol: string }
   usdValue: string
 }
 
@@ -75,7 +76,11 @@ export type TransactionHistoryCellDataMap = {
     groupedDetails?: GroupedTransactionDetail[]
   }
   type: { type: 'Claim' | 'Back'; increased?: boolean }
-  amount: { amounts: Array<{ address: string; value: string }>; type: 'Claim' | 'Back'; increased?: boolean }
+  amount: {
+    amounts: Array<{ address: Address; value: string; symbol: string }>
+    type: 'Claim' | 'Back'
+    increased?: boolean
+  }
   total_amount: { usd: string }
 }
 

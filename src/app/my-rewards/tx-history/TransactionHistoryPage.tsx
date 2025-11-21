@@ -1,18 +1,12 @@
 'use client'
 
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
-import { withBuilderSettingsProvider } from '@/app/collective-rewards/settings'
 import { Header } from '@/components/Typography'
-import { useRouter } from 'next/navigation'
-import { useAccount } from 'wagmi'
 import { Section } from '../components/Section'
 import TransactionHistoryTableContainer from './components/Table/TransactionHistoryTableContainer'
 
 const NAME = 'Transactions History'
-const TransactionHistoryPage = () => {
-  const { address: userAddress, isConnected } = useAccount()
-  const router = useRouter()
-
+export const TransactionHistoryPage = () => {
   return (
     <CycleContextProvider>
       <div
@@ -31,5 +25,3 @@ const TransactionHistoryPage = () => {
     </CycleContextProvider>
   )
 }
-
-export default withBuilderSettingsProvider(TransactionHistoryPage)
