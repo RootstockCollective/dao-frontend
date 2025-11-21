@@ -21,6 +21,7 @@ const breadcrumbsMap = {
   '/proposals/new/review/grants': 'Review Grant Proposal',
   '/proposals/new/review/activation': 'Review Activation Proposal',
   '/proposals/new/review/deactivation': 'Review Deactivation Proposal',
+  '/my-rewards/tx-history': 'Transactions History',
   // community URLs
   ...Object.fromEntries(
     communitiesToRender.map(({ nftAddress, title }) => [`/communities/nft/${nftAddress}`, title]),

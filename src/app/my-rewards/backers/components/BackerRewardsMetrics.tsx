@@ -13,6 +13,9 @@ import { TOKENS } from '@/lib/tokens'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Collapsible } from '@/components/Collapsible'
+import { Button } from '@/components/Button'
+import { HistoryIcon } from '@/components/Icons/HistoryIcon'
+import { useRouter } from 'next/navigation'
 
 const Container = ({ children, className }: { children: ReactNode; className?: string }) => {
   return (
@@ -32,6 +35,8 @@ export const BackerRewardsMetrics = ({ backer }: { backer: Address }) => {
     isLoading: backerRewardsLoading,
     error: backerRewardsError,
   } = useBackerRewardsContext()
+  const router = useRouter()
+
   useHandleErrors({ error: backerRewardsError, title: 'Error loading backer rewards' })
 
   return (
@@ -68,7 +73,17 @@ export const BackerRewardsMetrics = ({ backer }: { backer: Address }) => {
             </Container>
             <Container className={`${isDetailedView ? 'visible' : 'invisible'} hidden md:block`}>
               <InnerContainer>
-                <TotalEarned />
+                <div className="items-center gap-2 w-[70%]">
+                  <TotalEarned />
+                  <Button
+                    variant="transparent"
+                    className="font-medium px-0 gap-1 text-sm font-rootstock-sans"
+                    onClick={() => router.push(`/my-rewards/tx-history`)}
+                  >
+                    <HistoryIcon className="size-5" />
+                    See Rewards History
+                  </Button>
+                </div>
                 <RBI backer={backer} tokens={TOKENS} />
               </InnerContainer>
             </Container>
