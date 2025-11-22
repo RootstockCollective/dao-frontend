@@ -83,6 +83,7 @@ export const StrategiesInfo = () => {
     columns,
     data: strategies,
     getCoreRowModel: getCoreRowModel(),
+    enableSorting: false,
   })
 
   return (
