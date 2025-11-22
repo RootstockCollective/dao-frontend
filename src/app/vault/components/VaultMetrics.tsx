@@ -5,10 +5,10 @@ import { useVaultBalance } from '../hooks/useVaultBalance'
 import { formatSymbol, formatApy } from '@/app/shared/formatter'
 
 /**
- * Component displaying vault metrics including balance and lending parameters
+ * Component displaying vault metrics including balance, lending parameters, and price per share
  */
 export const VaultMetrics = () => {
-  const { totalAssets, estimatedApy, isLoading } = useVaultBalance()
+  const { totalAssets, estimatedApy, pricePerShare, isLoading } = useVaultBalance()
 
   return (
     <div className="flex flex-col gap-6 w-full">
@@ -24,6 +24,12 @@ export const VaultMetrics = () => {
           title="APY"
           amount={isLoading ? '...' : formatApy(estimatedApy)}
           symbol="%"
+        />
+        <BalanceInfo
+          className="max-w-[214px] min-w-[180px]"
+          title="Price per Share"
+          amount={isLoading ? '...' : formatSymbol(pricePerShare, 'USDRIF')}
+          symbol="USDRIF"
         />
       </div>
     </div>
