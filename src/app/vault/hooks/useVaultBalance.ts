@@ -2,10 +2,11 @@ import { useReadContracts, useAccount } from 'wagmi'
 import { formatEther } from 'viem'
 import { vault } from '@/lib/contracts'
 import { useMemo } from 'react'
+import { WeiPerEther } from '@/lib/constants'
 
 /**
  * Hook for reading vault data using multicall
- * Fetches totalAssets, estimatedApy, and balanceOf (if connected)
+ * Fetches totalAssets, estimatedApy, pricePerShare (via convertToAssets), and balanceOf (if connected)
  */
 export function useVaultBalance() {
   const { address: connectedAddress } = useAccount()
@@ -21,6 +22,12 @@ export function useVaultBalance() {
         address: vault.address,
         abi: vault.abi,
         functionName: 'estimatedApy',
+      } as const,
+      {
+        address: vault.address,
+        abi: vault.abi,
+        functionName: 'convertToAssets',
+        args: [WeiPerEther], // 1 share (1e18) to get price per share
       } as const,
     ]
 
@@ -49,15 +56,19 @@ export function useVaultBalance() {
   return useMemo(() => {
     const totalAssets = (data?.[0]?.result as bigint | undefined) ?? 0n
     const estimatedApy = (data?.[1]?.result as bigint | undefined) ?? 0n
-    const userBalance = connectedAddress && data?.[2]?.result ? (data[2].result as bigint) : 0n
+    const pricePerShare = (data?.[2]?.result as bigint | undefined) ?? 0n
+    const userBalance = connectedAddress && data?.[3]?.result ? (data[3].result as bigint) : 0n
 
     const formattedTotalAssets = formatEther(totalAssets)
     const formattedUserBalance = formatEther(userBalance)
+    const formattedPricePerShare = formatEther(pricePerShare)
 
     return {
       totalAssets,
       formattedTotalAssets,
       estimatedApy,
+      pricePerShare,
+      formattedPricePerShare,
       userBalance,
       formattedUserBalance,
       isLoading,
