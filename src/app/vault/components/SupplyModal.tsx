@@ -147,12 +147,22 @@ export const SupplyModal = ({ onCloseModal }: Props) => {
             </div>
           )}
 
-          <TransactionStatus
-            txHash={allowanceTxHash || supplyTxHash}
-            isTxFailed={isAllowanceFailed || isSupplyFailed}
-            failureMessage={isAllowanceFailed ? 'Allowance TX failed.' : 'Supply TX failed.'}
-            className="mt-8"
-          />
+          {isAllowancePending && allowanceTxHash && (
+            <TransactionStatus
+              txHash={allowanceTxHash}
+              isTxFailed={isAllowanceFailed}
+              failureMessage="Allowance TX failed."
+              className="mt-8"
+            />
+          )}
+          {supplyTxHash && (
+            <TransactionStatus
+              txHash={supplyTxHash}
+              isTxFailed={isSupplyFailed}
+              failureMessage="Supply TX failed."
+              className="mt-8"
+            />
+          )}
         </div>
 
         <Divider className="mb-4 mt-6" />
