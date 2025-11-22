@@ -171,13 +171,12 @@ export function useStrategies() {
 
       // Calculate actual APY percentage: estimatedApy / APY_BASIS_POINTS * 100
       // This gives us the percentage (e.g., 5 for 5%)
-      // We store it in the same format as vault APY (1e9 = 100%) for consistency with formatApy
       const estimatedApyBig = Big(estimatedApyRaw.toString())
       const apyBasisPointsBig = Big(apyBasisPoints.toString())
-      // Convert to the format expected by formatApy (1e9 = 100%)
-      // estimatedApyPercentage is already a percentage (e.g., 5 for 5%)
-      // formatApy expects: value / 1e7 = percentage, so value = percentage * 1e7
-      const estimatedApy = apyBasisPointsBig.gt(0) ? estimatedApyBig.div(apyBasisPointsBig).toNumber() : 0
+      // Convert to percentage by dividing by basis points and multiplying by 100
+      const estimatedApy = apyBasisPointsBig.gt(0)
+        ? estimatedApyBig.div(apyBasisPointsBig).mul(100).toNumber()
+        : 0
 
       // Calculate percentage allocated based on vault's totalAssets
       // This shows what percentage of the vault's total funds each strategy represents
