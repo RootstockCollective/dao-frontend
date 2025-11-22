@@ -61,6 +61,7 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
 export type GroupedTransactionDetail = {
   id: string
   builder?: Builder
+  builderAddress?: string
   blockTimestamp: string
   amount: { address: string; value: string; symbol: string }
   usdValue: string
@@ -72,6 +73,7 @@ export type TransactionHistoryCellDataMap = {
   date: { timestamp: string; formatted: string }
   from_to: {
     builder?: Builder
+    builderAddress?: string
     type: 'Claim' | 'Back'
     isGrouped?: boolean
     groupedDetails?: GroupedTransactionDetail[]

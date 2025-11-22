@@ -49,7 +49,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
     const { page, pageSize, sortBy, sortDirection } = paginationResult.data
 
     const limitToBack = typeFiltersRaw.length > 0 && !typeFiltersRaw.includes('Claim')
-    const limitToClaim = typeFiltersRaw.length > 0 && !typeFiltersRaw.includes('Back')
+    const limitToClaim =
+      (typeFiltersRaw.length > 0 && !typeFiltersRaw.includes('Back')) || rewardTokenFilters.length > 0
 
     const allocationHistory = db('AllocationHistory')
       .select(
@@ -59,6 +60,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
         'builder',
         'blockHash',
         'blockTimestamp',
+        'transactionHash',
         'cycleStart',
         'allocation',
         'increased',
@@ -79,6 +81,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
         'builder',
         'blockHash',
         'blockTimestamp',
+        'transactionHash',
         'cycleStart',
         db.raw('NULL as allocation'),
         db.raw('NULL as increased'),
