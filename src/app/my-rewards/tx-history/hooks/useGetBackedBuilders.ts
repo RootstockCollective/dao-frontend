@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
-import { useGetBuilders } from '@/app/collective-rewards/user/hooks/useGetBuilders'
 import { useMemo } from 'react'
-import { Address } from 'viem'
+import { Address, isAddressEqual } from 'viem'
 import { shortAddress } from '@/lib/utils'
+import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 
 type BackerToBuilderResponse = Array<{
   id: string
@@ -14,11 +14,12 @@ type BackerToBuilderResponse = Array<{
 /**
  * Hook to fetch builders that a specific backer has backed
  * Returns builder options formatted for the filter sidebar
+ * Uses BuilderContext for builder data
  * @param address - The backer's address
  */
 export const useGetBackedBuilders = (address?: Address) => {
-  // Fetch all builders with their names
-  const { data: allBuilders, isLoading: isLoadingBuilders } = useGetBuilders()
+  // Get all builders from BuilderContext
+  const { builders: allBuilders, isLoading: isLoadingBuilders } = useBuilderContext()
 
   // Fetch the backer-to-builder relationships
   const { data: backerToBuilder, isLoading: isLoadingRelationships } = useQuery<
@@ -51,15 +52,15 @@ export const useGetBackedBuilders = (address?: Address) => {
 
     return backerToBuilder
       .map(({ builder }) => {
-        const builderKey = Object.keys(allBuilders).find(k => k.toLowerCase() === builder.toLowerCase())
-        const builderData = builderKey ? allBuilders[builderKey as Address] : undefined
+        const builderAddress = builder as Address
+        const builderData = allBuilders.find(b => isAddressEqual(b.address, builderAddress))
 
         return {
-          label: builderData?.builderName || shortAddress(builder as Address),
-          value: builder,
+          label: builderData?.builderName || shortAddress(builderAddress),
+          value: builderAddress,
         }
       })
-      .filter((option): option is { label: string; value: string } => option !== null)
+      .filter(option => option !== null)
       .sort((a, b) => a.label.localeCompare(b.label))
   }, [backerToBuilder, allBuilders])
 
