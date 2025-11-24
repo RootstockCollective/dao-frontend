@@ -48,7 +48,7 @@ export function FilterSideBar({
   }
 
   const sidebarContent = (
-    <div className="h-full flex flex-col" onClick={e => e.stopPropagation()}>
+    <div className="flex flex-col" onClick={e => e.stopPropagation()}>
       <div className="flex-1 space-y-8 overflow-y-auto pb-8">
         {filterGroups.map(group => (
           <FilterSection
@@ -67,13 +67,19 @@ export function FilterSideBar({
         <div className="flex gap-3">
           <Button
             onClick={onClearAll}
-            variant="transparent"
-            className={`${isDesktop ? 'w-full' : 'flex-1'} border border-text-20 text-white hover:bg-white/5 flex items-center justify-center gap-2`}
+            variant="secondary-outline"
+            className={`${isDesktop ? 'w-full' : 'flex-1'} hover:bg-white/5 flex items-center justify-center gap-2`}
             disabled={!hasActiveFilters}
             data-testid="ResetFiltersButton"
           >
-            <TrashIcon size={16} />
-            Reset filters
+            {isDesktop ? (
+              'Reset filters'
+            ) : (
+              <>
+                <TrashIcon size={16} />
+                Reset
+              </>
+            )}
           </Button>
           {!isDesktop && (
             <Button onClick={onClose} variant="primary" className="flex-1" data-testid="ApplyButton">
