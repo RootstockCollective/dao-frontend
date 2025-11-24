@@ -1,0 +1,146 @@
+import { parseUnits, formatUnits, Address } from 'viem'
+import Big from '@/lib/big'
+import { publicClient } from '@/lib/viemPublicClient'
+
+/**
+ * Minimal ERC20 ABI for reading decimals
+ */
+const ERC20_DECIMALS_ABI = [
+  {
+    constant: true,
+    inputs: [],
+    name: 'decimals',
+    outputs: [{ name: '', type: 'uint8' }],
+    payable: false,
+    stateMutability: 'view',
+    type: 'function',
+  },
+] as const
+
+/**
+ * Convert human-readable amount to contract format (bigint)
+ * @param amount - Human-readable amount as string (e.g., "100.5")
+ * @param decimals - Number of decimals for the token
+ * @returns Amount in contract format as bigint
+ */
+export function scaleAmount(amount: string, decimals: number): bigint {
+  try {
+    // Validate input
+    if (!amount || amount.trim() === '') {
+      throw new Error('Amount cannot be empty')
+    }
+
+    // Use viem's parseUnits which handles decimal strings properly
+    return parseUnits(amount, decimals)
+  } catch (error) {
+    throw new Error(
+      `Failed to scale amount "${amount}" with ${decimals} decimals: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    )
+  }
+}
+
+/**
+ * Calculate price impact percentage
+ * @param amountIn - Input amount (human-readable)
+ * @param amountOut - Output amount (human-readable)
+ * @param spotPrice - Current spot price (output/input) - required to calculate impact
+ * @returns Price impact as percentage string (e.g., "0.5" for 0.5%)
+ */
+export function calculatePriceImpact(
+  amountIn: string,
+  amountOut: string,
+  spotPrice: string,
+): string | undefined {
+  try {
+    const amountInBig = new Big(amountIn)
+    const amountOutBig = new Big(amountOut)
+
+    if (amountInBig.lte(0)) {
+      return undefined
+    }
+
+    // Calculate effective price (output per input) from the swap quote
+    const effectivePrice = amountOutBig.div(amountInBig)
+    const spotPriceBig = new Big(spotPrice)
+
+    // Price impact = (spotPrice - effectivePrice) / spotPrice * 100
+    // This measures how much worse the swap rate is compared to market price
+    const priceImpact = spotPriceBig.minus(effectivePrice).div(spotPriceBig).abs().times(100)
+    return priceImpact.toFixed(4)
+  } catch {
+    return undefined
+  }
+}
+
+/**
+ * Validate amount string
+ * @param amount - Amount string to validate
+ * @returns true if amount is valid, false otherwise
+ */
+export function isValidAmount(amount: string): boolean {
+  try {
+    const amountBig = new Big(amount)
+    // Big.js constructor throws on invalid input, so if we get here it's valid
+    // Just check that it's greater than 0
+    return amountBig.gt(0)
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Read decimals from an ERC20 token contract
+ * @param tokenAddress - Address of the token contract
+ * @returns Number of decimals (e.g., 18 for USDRIF, 6 for USDT0)
+ * @throws Error if the contract call fails
+ */
+export async function getTokenDecimals(tokenAddress: Address): Promise<number> {
+  try {
+    const result = await publicClient.readContract({
+      address: tokenAddress,
+      abi: ERC20_DECIMALS_ABI,
+      functionName: 'decimals',
+    })
+
+    if (typeof result !== 'number') {
+      throw new Error(`Invalid decimals result: ${result}`)
+    }
+
+    return result
+  } catch (error) {
+    throw new Error(
+      `Failed to read decimals from token ${tokenAddress}: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    )
+  }
+}
+
+/**
+ * Read decimals from multiple token contracts in parallel
+ * @param tokenAddresses - Array of token addresses
+ * @returns Record mapping token addresses to their decimals
+ */
+export async function getTokenDecimalsBatch(tokenAddresses: Address[]): Promise<Record<Address, number>> {
+  try {
+    const results = await publicClient.multicall({
+      contracts: tokenAddresses.map(address => ({
+        address,
+        abi: ERC20_DECIMALS_ABI,
+        functionName: 'decimals',
+      })),
+    })
+
+    return results.reduce<Record<Address, number>>((acc, result, index) => {
+      const address = tokenAddresses[index]
+      if (result.status === 'success' && typeof result.result === 'number') {
+        acc[address] = result.result
+      } else {
+        throw new Error(`Failed to read decimals for token ${address}`)
+      }
+      return acc
+    }, {})
+  } catch (error) {
+    throw new Error(
+      `Failed to read decimals batch: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    )
+  }
+}
