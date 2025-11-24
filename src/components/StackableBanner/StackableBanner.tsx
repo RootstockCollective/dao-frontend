@@ -23,7 +23,7 @@ export const StackableBanner: FC<StackableBannerProps> = ({
   const isDesktop = useIsDesktop()
   return (
     <div
-      className={cn('relative self-stretch py-6 px-10 text-v3-text-0', className)}
+      className={cn('relative self-stretch py-6 px-10 text-v3-text-0 mt-7 md:mt-0', className)}
       style={{
         background: isDesktop ? background : 'linear-gradient(270deg, #7B83CF 0%, #E3FFEB 52.87%)',
       }}

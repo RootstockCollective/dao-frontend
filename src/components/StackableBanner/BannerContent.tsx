@@ -6,8 +6,8 @@ import { BaseTypography } from '@/components/Typography/Typography'
 export interface BannerContentProps {
   title: ReactNode
   description: ReactNode
-  buttonText?: string
   buttonOnClick: () => void
+  buttonText?: string
   rightContent?: ReactNode
   className?: string
 }
