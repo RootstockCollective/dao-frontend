@@ -88,6 +88,7 @@ export const AllocationBarSegment = ({
   }
 
   const baseClasses = 'h-full relative overflow-visible flex items-stretch p-0 group'
+  const roundedClasses = 'first:rounded-l-lg last:rounded-r-lg md:first:rounded-l-sm md:last:rounded-r-sm'
   const transitionClasses =
     dragIndex !== null ? 'transition-none' : 'transition-transform duration-200 ease-out'
   const dragStateClasses = isDragging ? 'opacity-60 z-[99]' : 'opacity-100'
@@ -103,13 +104,7 @@ export const AllocationBarSegment = ({
         <div
           ref={setNodeRef}
           style={style}
-          className={cn(
-            'first:rounded-l-sm last:rounded-r-sm',
-            baseClasses,
-            transitionClasses,
-            dragStateClasses,
-            className,
-          )}
+          className={cn(baseClasses, roundedClasses, transitionClasses, dragStateClasses, className)}
         >
           {/* DRAG HANDLE of the size of the segment */}
           {isDraggable && <AllocationBarDragHandle attributes={attributes} listeners={listeners} />}

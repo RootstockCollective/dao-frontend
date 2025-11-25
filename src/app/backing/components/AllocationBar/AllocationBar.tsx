@@ -170,7 +170,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   const collapsedSegments: boolean[] = getSegmentsCollapsedState(currentValues, totalBacking)
 
   return (
-    <div className={cn('w-full p-8 flex flex-col gap-6', className)}>
+    <div className={cn('w-full p-0 mb-4 md:p-8 md:mb-0 flex flex-col gap-6', className)}>
       <DndContext
         sensors={sensors}
         collisionDetection={pointerWithin}

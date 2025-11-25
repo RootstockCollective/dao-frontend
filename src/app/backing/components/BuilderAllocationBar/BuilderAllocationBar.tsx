@@ -6,6 +6,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Address, zeroAddress } from 'viem'
 import AllocationBar from '../AllocationBar/AllocationBar'
 import { AllocationBarProps, AllocationChangeData, AllocationItem } from '../AllocationBar/types'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 const UNALLOCATED_LABEL = 'Available backing' as const
 
@@ -37,6 +38,7 @@ function createUnallocatedItem(
 }
 
 const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<AllocationBarProps> }) => {
+  const isDesktop = useIsDesktop()
   const {
     initialState: {
       allocations: initialAllocations,
@@ -147,50 +149,26 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
     [updateAllocation],
   )
 
-  const isEmpty = cumulativeAllocation === 0n && Object.keys(allocations).length === 0
-
   if (balance === 0n) {
-    return (
-      <AllocationBar
-        itemsData={[
-          {
-            key: zeroAddress,
-            label: UNALLOCATED_LABEL,
-            value: 1n,
-            initialValue: 1n,
-            displayColor: 'var(--background-60)',
-            isTemporary: true,
-            isEditable: false,
-          },
-        ]}
-        valueDisplay={{
-          showPercent: false,
-        }}
-        isResizable={false}
-        isDraggable={false}
-        height="1rem"
-        onChange={() => {}}
-        className="min-h-52"
-        {...barOverrides}
-      />
-    )
+    return null
   }
 
+  const isEmpty = cumulativeAllocation === 0n && Object.keys(allocations).length === 0
   return (
     <AllocationBar
       itemsData={itemsData}
       valueDisplay={{
-        showPercent: true,
+        showPercent: isDesktop,
         format: {
           percentDecimals: 2,
         },
       }}
-      isResizable={!isEmpty}
-      isDraggable={!isEmpty}
-      height={isEmpty ? '1rem' : undefined}
+      isResizable={!isEmpty && isDesktop}
+      isDraggable={!isEmpty && isDesktop}
+      showLegend={isDesktop}
+      height={isEmpty || !isDesktop ? '1rem' : undefined}
       onChange={handleAllocationChange}
       // we want the component to have the same height
-      className={`${isEmpty ? 'min-h-52' : ''}`}
       {...barOverrides}
     />
   )
