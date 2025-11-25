@@ -44,13 +44,22 @@ export function scaleAmount(amount: string, decimals: number): bigint {
  * @param amountIn - Input amount (human-readable)
  * @param amountOut - Output amount (human-readable)
  * @param spotPrice - Current spot price (output/input) - required to calculate impact
- * @returns Price impact as percentage string (e.g., "0.5" for 0.5%)
+ * @returns Price impact as Big instance (percentage).
+ *   - Positive value = worse rate (getting less than spot price, e.g., 5 for 5% worse)
+ *   - Negative value = better rate (getting more than spot price, e.g., -5 for 5% better)
+ *   - Returns undefined if calculation fails.
+ * @example
+ * // Getting less than spot (worse)
+ * const impact = calculatePriceImpact('100', '95', '1.0') // Returns 5 (5% worse)
+ *
+ * // Getting more than spot (better)
+ * const impact = calculatePriceImpact('100', '105', '1.0') // Returns -5 (5% better)
  */
 export function calculatePriceImpact(
   amountIn: string,
   amountOut: string,
   spotPrice: string,
-): string | undefined {
+): Big | undefined {
   try {
     const amountInBig = new Big(amountIn)
     const amountOutBig = new Big(amountOut)
@@ -64,9 +73,10 @@ export function calculatePriceImpact(
     const spotPriceBig = new Big(spotPrice)
 
     // Price impact = (spotPrice - effectivePrice) / spotPrice * 100
-    // This measures how much worse the swap rate is compared to market price
-    const priceImpact = spotPriceBig.minus(effectivePrice).div(spotPriceBig).abs().times(100)
-    return priceImpact.toFixed(4)
+    // Positive = worse (getting less than spot), Negative = better (getting more than spot)
+    // Removed .abs() to preserve sign and distinguish better vs worse rates
+    const priceImpact = spotPriceBig.minus(effectivePrice).div(spotPriceBig).times(100)
+    return priceImpact
   } catch {
     return undefined
   }
