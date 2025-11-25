@@ -80,13 +80,15 @@ export const convertDataToRowData = (
       const amounts: { address: Address; value: string; symbol: string }[] = []
       let totalUsdValue = Big(0)
       if (transactionType === 'Claim' && item.amount && item.rewardToken) {
-        const symbol = TOKENS_BY_ADDRESS[item.rewardToken]?.symbol || ''
+        const tokenAddress = getAddress(item.rewardToken)
+        const symbol = TOKENS_BY_ADDRESS[tokenAddress]?.symbol || ''
         const price = prices[symbol]?.price ?? 0
         const itemAmount = BigInt(item.amount)
         amounts.push({ address: item.rewardToken, value: formatSymbol(itemAmount, symbol), symbol })
         totalUsdValue = getFiatAmount(itemAmount, price)
       } else if (transactionType === 'Back' && item.allocation) {
-        const symbol = TOKENS_BY_ADDRESS[tokenContracts.stRIF]?.symbol || ''
+        const tokenAddress = getAddress(tokenContracts.stRIF)
+        const symbol = TOKENS_BY_ADDRESS[tokenAddress]?.symbol || ''
         const price = prices[symbol]?.price ?? 0
         const itemAllocation = BigInt(item.allocation)
         amounts.push({ address: tokenContracts.stRIF, value: formatSymbol(itemAllocation, symbol), symbol })
@@ -157,7 +159,7 @@ export const convertDataToRowData = (
           }
           amount = { address: tokenAddress, value: formatSymbol(itemAmount, symbol), symbol }
         } else if (item.type === 'Back' && item.allocation) {
-          const tokenAddress = tokenContracts.stRIF
+          const tokenAddress = getAddress(tokenContracts.stRIF)
           const symbol = TOKENS_BY_ADDRESS[tokenAddress]?.symbol || ''
           const price = prices[symbol]?.price ?? 0
           const itemAllocation = BigInt(item.allocation)
