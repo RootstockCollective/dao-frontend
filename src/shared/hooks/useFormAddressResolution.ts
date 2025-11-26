@@ -43,7 +43,7 @@ export function useFormAddressResolution(props?: Props) {
   const rnsFieldName = props?.rnsFieldName ?? 'targetAddressRNS'
   const [resolutionMsg, setResolutionMsg] = useState('')
   const [isResolving, setIsResolving] = useState(false)
-  const { watch, setValue, setError, resetField, clearErrors } = useFormContext()
+  const { watch, setValue, setError, clearErrors } = useFormContext()
   const targetAddressInput: string = watch(rnsOrAddressFieldName) ?? ''
   const [debouncedInput] = useDebounce(targetAddressInput, 600)
 
@@ -51,7 +51,8 @@ export function useFormAddressResolution(props?: Props) {
     if (!debouncedInput.trim() || debouncedInput.length < 3) {
       setResolutionMsg('')
       setIsResolving(false)
-      resetField(resolvedAddressFieldName)
+      setValue(resolvedAddressFieldName, '')
+      setValue(rnsFieldName, '')
       return
     }
 
@@ -90,7 +91,8 @@ export function useFormAddressResolution(props?: Props) {
           message: error instanceof Error ? error.message : 'Invalid RNS/address format',
         })
         setResolutionMsg('')
-        resetField(resolvedAddressFieldName)
+        setValue(resolvedAddressFieldName, '')
+        setValue(rnsFieldName, '')
       } finally {
         setIsResolving(false)
       }
@@ -99,7 +101,6 @@ export function useFormAddressResolution(props?: Props) {
     resolve()
   }, [
     debouncedInput,
-    resetField,
     setError,
     setValue,
     clearErrors,

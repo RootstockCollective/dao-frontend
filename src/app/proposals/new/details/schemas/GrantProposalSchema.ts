@@ -23,7 +23,7 @@ export const GrantProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema).e
     .string()
     .trim()
     .optional()
-    .refine(value => value && isRnsDomain(value), 'Invalid RNS domain'),
+    .refine(value => !value || isRnsDomain(value), 'Invalid RNS domain'),
   // Override transferAmount to add range validation
   transferAmount: z
     .string()
