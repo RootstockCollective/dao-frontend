@@ -1,4 +1,4 @@
-import { parseUnits, formatUnits, Address } from 'viem'
+import { parseUnits, Address, getAddress } from 'viem'
 import Big from '@/lib/big'
 import { publicClient } from '@/lib/viemPublicClient'
 
@@ -105,22 +105,24 @@ export function isValidAmount(amount: string): boolean {
  * @throws Error if the contract call fails
  */
 export async function getTokenDecimals(tokenAddress: Address): Promise<number> {
+  // Normalize address to ensure proper checksumming
+  const normalizedAddress = getAddress(tokenAddress)
+
   try {
     const result = await publicClient.readContract({
-      address: tokenAddress,
+      address: normalizedAddress,
       abi: ERC20_DECIMALS_ABI,
       functionName: 'decimals',
     })
 
-    if (typeof result !== 'number') {
-      throw new Error(`Invalid decimals result: ${result}`)
+    if (typeof result === 'number' && result >= 0 && result <= 255) {
+      return result
     }
 
-    return result
+    throw new Error(`Invalid decimals result: ${result}`)
   } catch (error) {
-    throw new Error(
-      `Failed to read decimals from token ${tokenAddress}: ${error instanceof Error ? error.message : 'Unknown error'}`,
-    )
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    throw new Error(`Failed to read decimals from token ${tokenAddress}: ${errorMessage}`)
   }
 }
 
@@ -130,27 +132,66 @@ export async function getTokenDecimals(tokenAddress: Address): Promise<number> {
  * @returns Record mapping token addresses to their decimals
  */
 export async function getTokenDecimalsBatch(tokenAddresses: Address[]): Promise<Record<Address, number>> {
+  // Normalize all addresses to ensure proper checksumming and use as keys
+  const normalizedAddresses = tokenAddresses.map(addr => getAddress(addr))
+
   try {
+    // Use multicall for efficiency
     const results = await publicClient.multicall({
-      contracts: tokenAddresses.map(address => ({
+      contracts: normalizedAddresses.map(address => ({
         address,
         abi: ERC20_DECIMALS_ABI,
         functionName: 'decimals',
       })),
     })
 
-    return results.reduce<Record<Address, number>>((acc, result, index) => {
-      const address = tokenAddresses[index]
-      if (result.status === 'success' && typeof result.result === 'number') {
-        acc[address] = result.result
+    // Process results and handle failures
+    // Use normalized addresses as keys for consistent lookups
+    const decimalsMap: Record<Address, number> = {}
+    const failedAddresses: Address[] = []
+
+    results.forEach((result, index) => {
+      const normalizedAddress = normalizedAddresses[index]
+
+      if (
+        result.status === 'success' &&
+        typeof result.result === 'number' &&
+        result.result >= 0 &&
+        result.result <= 255
+      ) {
+        decimalsMap[normalizedAddress] = result.result
       } else {
-        throw new Error(`Failed to read decimals for token ${address}`)
+        failedAddresses.push(normalizedAddress)
+        // Log failure reason for debugging
+        if (result.status === 'failure' && result.error) {
+          console.warn(
+            `Failed to read decimals for ${normalizedAddress}:`,
+            result.error instanceof Error ? result.error.message : result.error,
+          )
+        }
       }
-      return acc
-    }, {})
+    })
+
+    // Check if we got decimals for all addresses
+    const missingAddresses = normalizedAddresses.filter(addr => typeof decimalsMap[addr] !== 'number')
+
+    if (missingAddresses.length > 0) {
+      const errorDetails =
+        failedAddresses.length > 0
+          ? ` RPC multicall returned failures for: ${failedAddresses.join(', ')}`
+          : ''
+      throw new Error(`Failed to read decimals for tokens: ${missingAddresses.join(', ')}${errorDetails}`)
+    }
+
+    return decimalsMap
   } catch (error) {
-    throw new Error(
-      `Failed to read decimals batch: ${error instanceof Error ? error.message : 'Unknown error'}`,
-    )
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    // Preserve original error details for debugging
+    if (error instanceof Error && error.cause) {
+      throw new Error(
+        `Failed to read decimals batch: ${errorMessage}. Cause: ${error.cause instanceof Error ? error.cause.message : String(error.cause)}`,
+      )
+    }
+    throw new Error(`Failed to read decimals batch: ${errorMessage}`)
   }
 }

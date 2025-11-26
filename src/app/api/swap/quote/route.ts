@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Address, isAddress } from 'viem'
+import { Address, isAddress, getAddress } from 'viem'
 import { uniswapProvider } from '@/lib/swap/providers/uniswap'
 import { SWAP_TOKEN_ADDRESSES } from '@/lib/swap/constants'
 import { getTokenDecimalsBatch, scaleAmount, isValidAmount } from '@/lib/swap/utils'
@@ -46,9 +46,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Read decimals for both tokens in parallel
+    // getTokenDecimalsBatch returns map with normalized (checksummed) addresses as keys
     const decimalsMap = await getTokenDecimalsBatch([tokenIn, tokenOut])
-    const tokenInDecimals = decimalsMap[tokenIn]
-    const tokenOutDecimals = decimalsMap[tokenOut]
+    const tokenInDecimals = decimalsMap[getAddress(tokenIn)]
+    const tokenOutDecimals = decimalsMap[getAddress(tokenOut)]
 
     if (typeof tokenInDecimals !== 'number' || typeof tokenOutDecimals !== 'number') {
       return NextResponse.json({ error: 'Failed to read token decimals' }, { status: 500 })
