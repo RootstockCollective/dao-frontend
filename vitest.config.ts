@@ -6,12 +6,13 @@ import { fileURLToPath } from 'url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react({ jsxRuntime: 'automatic' })],
   test: {
     // Use projects to define different configurations for different test files
     projects: [
       {
         // Default project: testnet configuration for most tests
+        plugins: [react({ jsxRuntime: 'automatic' })],
         resolve: {
           alias: {
             '@': path.resolve(__dirname, './src'),
@@ -28,6 +29,7 @@ export default defineConfig({
           ],
           // Exclude swap/quote tests from testnet project
           exclude: [
+            '**/node_modules/**',
             '**/swap/**/*.test.ts',
             '**/swap/**/*.test.tsx',
             '**/providers/uniswap.test.ts',
@@ -59,6 +61,7 @@ export default defineConfig({
       },
       {
         // Mainnet project: for swap/quote tests only
+        plugins: [react({ jsxRuntime: 'automatic' })],
         resolve: {
           alias: {
             '@': path.resolve(__dirname, './src'),
@@ -80,6 +83,7 @@ export default defineConfig({
             '**/providers/uniswap.test.ts',
             '**/api/swap/**/*.test.ts',
           ],
+          exclude: ['**/node_modules/**'],
           env: {
             // Mainnet configuration for quote tests
             // Quoting is read-only (view function), so it's safe to test on mainnet - no transactions or gas costs
