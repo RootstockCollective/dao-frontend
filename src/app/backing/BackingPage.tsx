@@ -196,7 +196,10 @@ export const BackingPage = () => {
         {NAME}
       </Header>
       {!hasAllocations && (
-        <div data-testid="CenterContainer" className="flex w-full items-stretch gap-2">
+        <div
+          data-testid="CenterContainer"
+          className="flex flex-col-reverse md:flex-row w-full items-stretch gap-2"
+        >
           <BackingInfoContainer title={<BackingInfoTitleControl />}>
             <BackingBanner />
           </BackingInfoContainer>

@@ -36,7 +36,7 @@ export const GlobalAnnualBackersIncentives = () => {
                 }
               />
             }
-            className="pb-6"
+            className="pb-3 md:pb-6"
           >
             <Header variant="h1">{abiPct.toFixed(0)}%</Header>
           </Metric>
