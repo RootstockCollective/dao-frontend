@@ -9,7 +9,7 @@ export const BackingInfoTitleControl = () => {
     initialState: { backer },
   } = useContext(AllocationsContext)
 
-  const hasAllocations = backer.amountToAllocate > 0n
+  const hasFunds = backer.balance > 0n
 
-  return <BackingInfoTitle hasAllocations={hasAllocations} isConnected={isConnected} />
+  return <BackingInfoTitle hasFunds={hasFunds} isConnected={isConnected} />
 }
