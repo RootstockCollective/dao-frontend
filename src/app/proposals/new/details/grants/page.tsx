@@ -24,7 +24,7 @@ export default function GrantsProposalForm() {
   const router = useRouter()
 
   const form = useForm<GrantProposal>({
-    mode: 'onChange',
+    mode: 'onTouched',
     reValidateMode: 'onChange',
     resolver: zodResolver(GrantProposalSchema),
     defaultValues:
@@ -34,6 +34,7 @@ export default function GrantsProposalForm() {
             proposalName: '',
             description: '',
             discourseLink: '',
+            targetAddressInput: '',
             targetAddress: '' as Address,
             token: 'USDRIF',
             transferAmount: '',
