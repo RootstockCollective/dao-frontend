@@ -131,6 +131,7 @@ export function Tooltip({
               'rounded-sm bg-v3-text-80 text-v3-bg-accent-60 px-2 py-1 text-xs font-normal shadow-lg font-rootstock-sans',
               className,
             )}
+            style={{ zIndex: 1000 }}
             {...props}
           >
             <div className="max-w-[calc(100vw-64px)]">{text}</div>
