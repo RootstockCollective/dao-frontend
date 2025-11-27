@@ -1,7 +1,7 @@
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Label } from '@/components/Typography'
 import { RBTC, USD } from '@/lib/constants'
-import { cn } from '@/lib/utils'
+import { cn, formatCurrency } from '@/lib/utils'
 import { ReactElement } from 'react'
 import { MetricToken } from './types'
 
@@ -39,7 +39,7 @@ export const MetricTooltipContent = ({ tokens }: MetricTooltipContentProps): Rea
             variant="body-xs"
             className="leading-[150%] text-v3-bg-accent-40 font-medium justify-self-end"
           >
-            {fiatValue}
+            {formatCurrency(fiatValue, { showCurrencySymbol: false })}
           </Label>
           <Label variant="body-xs" className="leading-[150%] text-v3-bg-accent-40">
             {USD}
