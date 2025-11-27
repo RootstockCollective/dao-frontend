@@ -43,19 +43,17 @@ const AllocationDrawerContent = () => {
   }, [isSuccess, closeDrawer])
 
   return (
-    <ActionsContainer className="bg-v3-bg-accent-60">
-      <div className="flex justify-center gap-2 w-full">
-        <Button variant="secondary-outline" onClick={onCancelAllocations}>
-          Cancel
+    <ActionsContainer className="bg-v3-bg-accent-60" containerClassName="flex flex-row">
+      <Button variant="secondary-outline" onClick={onCancelAllocations} className="flex-1">
+        Cancel
+      </Button>
+      {isAllocationTxPending ? (
+        <TransactionInProgressButton />
+      ) : (
+        <Button variant="primary" onClick={saveAllocations} className="whitespace-nowrap flex-4">
+          Save new backing amounts
         </Button>
-        {isAllocationTxPending ? (
-          <TransactionInProgressButton />
-        ) : (
-          <Button variant="primary" onClick={saveAllocations}>
-            Save new backing amounts
-          </Button>
-        )}
-      </div>
+      )}
     </ActionsContainer>
   )
 }
