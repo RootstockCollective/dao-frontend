@@ -63,8 +63,8 @@ export type GroupedTransactionDetail = {
   builder?: Builder
   builderAddress?: string
   blockTimestamp: string
-  amount: { address: string; value: string; symbol: string }
-  usdValue: string
+  amounts: Array<{ address: string; value: string; symbol: string }>
+  usdValue: string | string[]
   increased?: boolean
 }
 
@@ -84,7 +84,7 @@ export type TransactionHistoryCellDataMap = {
     type: 'Claim' | 'Back'
     increased?: boolean
   }
-  total_amount: { usd: string }
+  total_amount: { usd: string | string[] }
 }
 
 export type TransactionHistoryTable = TypedTable<ColumnId, TransactionHistoryCellDataMap>
