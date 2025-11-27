@@ -12,8 +12,8 @@ export const useStakeRIF = (amount: string, tokenToReceiveContract: Address) => 
     () => ({
       abi: StRIFTokenAbi,
       address: tokenToReceiveContract,
-      functionName: 'depositAndDelegate',
-      args: [address, parseEther(amount)],
+      functionName: 'depositAndDelegate' as const,
+      args: [address!, parseEther(amount)] as const,
     }),
     [tokenToReceiveContract, address, amount],
   )

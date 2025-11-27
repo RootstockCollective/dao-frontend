@@ -33,8 +33,8 @@ export const useVaultAllowance = (amount: string) => {
     () => ({
       abi: RIFTokenAbi,
       address: tokenContracts.USDRIF,
-      functionName: 'approve',
-      args: [vault.address, parseEther(amount)],
+      functionName: 'approve' as const,
+      args: [vault.address, parseEther(amount)] as const,
     }),
     [amount],
   )
