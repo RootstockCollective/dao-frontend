@@ -107,7 +107,6 @@ export default function TransactionHistoryTable() {
     setActiveFilters(prev => prev.filter(f => f.groupId !== groupId))
     setPageEnd(PAGE_SIZE)
     setPagerKey(prev => prev + 1)
-
   }
 
   const handleClearAll = () => {
