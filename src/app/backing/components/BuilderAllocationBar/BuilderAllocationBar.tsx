@@ -116,7 +116,7 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
           isEditable: isBuilderRewardable(builder?.stateFlags),
         }
       })
-      .filter(item => item !== null)
+      .filter(item => item !== null && item?.value > 0n)
   }, [orderedKeys, allocations, cumulativeAllocation, initialData, getBuilder])
 
   // Local state for itemsData so bar updates on interactions
