@@ -203,39 +203,50 @@ export const AmountCell: FC<AmountCellProps> = ({
   const showContent = !isExpanded || isDetailRow
 
   return (
-    <TableCell columnId="amount" className="flex flex-col items-center justify-center gap-1">
+    <TableCell columnId="amount" className="flex w-full flex-col items-stretch justify-center gap-2">
       {showContent &&
         amounts.map(({ value, symbol }, idx) => {
           return (
-            <div key={idx} className="flex items-center gap-2">
-              {showArrow && (
-                <span className="flex items-center">
-                  {increased ? (
-                    <ArrowUpIcon size={16} color="#1bc47d" />
-                  ) : (
-                    <ArrowDownIcon size={16} color="#f68" />
-                  )}
-                </span>
-              )}
-              <Paragraph
-                variant="body"
-                className={cn(
-                  showArrow
-                    ? increased
-                      ? 'text-v3-success'
-                      : 'text-error'
-                    : isHovered
-                      ? 'text-black'
-                      : 'text-v3-text-100',
+            <div key={idx} className="grid w-full grid-cols-2 gap-2 items-center">
+              <div className="flex items-center justify-end gap-2 text-right">
+                {showArrow && (
+                  <span className="flex items-center">
+                    {increased ? (
+                      <ArrowUpIcon size={16} color="#1bc47d" />
+                    ) : (
+                      <ArrowDownIcon size={16} color="#f68" />
+                    )}
+                  </span>
                 )}
-              >
-                {value}
-              </Paragraph>
-              <TokenImage symbol={symbol} size={16} />
-              <Span variant="tag-s" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
-                {symbol}
-                {idx < amounts.length - 1 ? ' +' : ''}
-              </Span>
+
+                <Paragraph
+                  variant="body"
+                  className={cn(
+                    'leading-none',
+                    showArrow
+                      ? increased
+                        ? 'text-v3-success'
+                        : 'text-error'
+                      : isHovered
+                        ? 'text-black'
+                        : 'text-v3-text-100',
+                  )}
+                >
+                  {value}
+                </Paragraph>
+              </div>
+
+              <div className="flex items-center justify-start gap-1">
+                <TokenImage symbol={symbol} size={16} />
+
+                <Span
+                  variant="tag-s"
+                  className={cn('leading-none', isHovered ? 'text-black' : 'text-v3-text-100')}
+                >
+                  {symbol}
+                  {idx < amounts.length - 1 ? ' +' : ''}
+                </Span>
+              </div>
             </div>
           )
         })}
@@ -244,7 +255,7 @@ export const AmountCell: FC<AmountCellProps> = ({
 }
 
 interface TotalAmountCellProps {
-  usd: string
+  usd: string | string[]
   isGrouped?: boolean
   isExpanded?: boolean
   isHovered?: boolean
@@ -260,6 +271,8 @@ export const TotalAmountCell: FC<TotalAmountCellProps> = ({
   isDetailRow,
   onToggle,
 }): ReactElement => {
+  const isMultipleUsd = Array.isArray(usd)
+
   // For grouped rows: show USD when not hovered and not expanded
   if (isGrouped && !isDetailRow) {
     return (
@@ -279,9 +292,19 @@ export const TotalAmountCell: FC<TotalAmountCellProps> = ({
             )}
           </button>
         ) : !isExpanded ? (
-          <Paragraph variant="body" className="text-v3-text-100">
-            {usd}
-          </Paragraph>
+          isMultipleUsd ? (
+            <div className="flex flex-col items-center gap-1">
+              {usd.map((value, idx) => (
+                <Paragraph key={idx} variant="body" className="text-v3-text-100">
+                  {value}
+                </Paragraph>
+              ))}
+            </div>
+          ) : (
+            <Paragraph variant="body" className="text-v3-text-100">
+              {usd}
+            </Paragraph>
+          )
         ) : null}
       </TableCell>
     )
@@ -290,9 +313,19 @@ export const TotalAmountCell: FC<TotalAmountCellProps> = ({
   // For normal rows and detail rows: always show USD
   return (
     <TableCell columnId="total_amount" className="justify-center">
-      <Paragraph variant="body" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
-        {usd}
-      </Paragraph>
+      {isMultipleUsd ? (
+        <div className="flex flex-col items-center gap-1">
+          {usd.map((value, idx) => (
+            <Paragraph key={idx} variant="body" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
+              {value}
+            </Paragraph>
+          ))}
+        </div>
+      ) : (
+        <Paragraph variant="body" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
+          {usd}
+        </Paragraph>
+      )}
     </TableCell>
   )
 }

@@ -70,10 +70,16 @@ export const TransactionHistoryDataRow: FC<TransactionHistoryDataRowProps> = ({ 
               isDetailRow
               isHovered={isHovered}
             />
-            <FromToCell builder={detail.builder} type={from_to.type} isDetailRow isHovered={isHovered} />
+            <FromToCell
+              builder={detail.builder}
+              builderAddress={detail.builderAddress}
+              type={from_to.type}
+              isDetailRow
+              isHovered={isHovered}
+            />
             <TypeCell type={type.type} isDetailRow isHovered={isHovered} />
             <AmountCell
-              amounts={[detail.amount]}
+              amounts={detail.amounts}
               type={type.type}
               increased={detail.increased}
               isDetailRow
