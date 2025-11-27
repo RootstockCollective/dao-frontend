@@ -26,6 +26,7 @@ export const useReadBuilderRegistryForMultipleArgs = <TFunctionName extends Buil
       abi,
       address: BuilderRegistryAddress,
       args: argsPerCall,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ...(config as any),
     })),
     query: {
