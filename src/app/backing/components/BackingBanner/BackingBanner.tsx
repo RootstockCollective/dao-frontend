@@ -8,7 +8,10 @@ import { CRWhitepaperLink } from '@/app/collective-rewards/shared/components/CRW
 export const BackingBanner: FC<CommonComponentProps> = ({ className = '' }) => {
   return (
     <div
-      className={cn('relative flex flex-col items-start gap-2 self-stretch p-6 text-v3-text-0', className)}
+      className={cn(
+        'relative flex flex-col items-start gap-2 self-stretch py-6 px-4 md:p-6 text-v3-text-0',
+        className,
+      )}
       style={{
         background: 'linear-gradient(270deg, #442351 0%, #C0F7FF 49.49%, #E3FFEB 139.64%)',
       }}
@@ -27,7 +30,7 @@ export const BackingBanner: FC<CommonComponentProps> = ({ className = '' }) => {
           <Paragraph>Retain full ownership and access to your stRIF</Paragraph>
         </li>
       </ul>
-      <Span>
+      <Span className="mt-2">
         See the <CRWhitepaperLink>Whitepaper</CRWhitepaperLink>
       </Span>
     </div>
