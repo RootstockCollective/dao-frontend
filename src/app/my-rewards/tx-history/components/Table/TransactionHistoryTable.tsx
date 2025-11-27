@@ -99,10 +99,12 @@ export default function TransactionHistoryTable() {
         return [...prev, { groupId, option }]
       }
     })
+    setPageEnd(PAGE_SIZE)
   }
 
   const handleClearGroup = (groupId: string) => {
     setActiveFilters(prev => prev.filter(f => f.groupId !== groupId))
+    setPageEnd(PAGE_SIZE)
   }
 
   const handleClearAll = () => {
