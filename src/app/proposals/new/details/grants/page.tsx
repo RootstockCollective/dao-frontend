@@ -36,12 +36,16 @@ export default function GrantsProposalForm() {
             discourseLink: '',
             targetAddressInput: '',
             targetAddress: '' as Address,
+            targetAddressError: '',
             token: 'USDRIF',
             transferAmount: '',
             milestone: undefined,
           },
   })
   const { handleSubmit, control, setFocus, formState } = form
+
+  // Check if form has any errors (more reliable than isValid for async validation)
+  const hasErrors = Object.keys(formState.errors).length > 0
 
   const onSubmit = useCallback(
     () =>
@@ -113,7 +117,7 @@ export default function GrantsProposalForm() {
       <ProposalSubfooter
         submitForm={onSubmit}
         buttonText="Review proposal"
-        nextDisabled={!formState.isValid}
+        nextDisabled={!formState.isValid || hasErrors}
       />
     </div>
   )
