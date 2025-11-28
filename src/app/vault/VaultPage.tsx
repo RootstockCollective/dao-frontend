@@ -7,6 +7,7 @@ import { SupplyModal } from './components/SupplyModal'
 import { WithdrawModal } from './components/WithdrawModal'
 import { VaultDisclaimer } from './components/VaultDisclaimer'
 import { useModal } from '@/shared/hooks/useModal'
+import { Span } from '@/components/Typography'
 
 const NAME = 'USD Vault'
 
@@ -31,6 +32,14 @@ export const VaultPage = () => {
           </Button>
           <Button variant="secondary-outline" onClick={withdrawModal.openModal} data-testid="withdraw-button">
             Withdraw
+          </Button>
+          <Button
+            variant="secondary-outline"
+            onClick={withdrawModal.openModal}
+            data-testid="withdraw-button"
+            className="max-w-28 max-h-13"
+          >
+            <Span variant="body-s">{'USDT0 -> USDRIF'}</Span>
           </Button>
         </div>
       </div>
