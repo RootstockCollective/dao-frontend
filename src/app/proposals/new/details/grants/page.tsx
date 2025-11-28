@@ -24,7 +24,7 @@ export default function GrantsProposalForm() {
   const router = useRouter()
 
   const form = useForm<GrantProposal>({
-    mode: 'onChange',
+    mode: 'onTouched',
     reValidateMode: 'onChange',
     resolver: zodResolver(GrantProposalSchema),
     defaultValues:
@@ -34,13 +34,18 @@ export default function GrantsProposalForm() {
             proposalName: '',
             description: '',
             discourseLink: '',
+            targetAddressInput: '',
             targetAddress: '' as Address,
+            targetAddressError: '',
             token: 'USDRIF',
             transferAmount: '',
             milestone: undefined,
           },
   })
   const { handleSubmit, control, setFocus, formState } = form
+
+  // Check if form has any errors (more reliable than isValid for async validation)
+  const hasErrors = Object.keys(formState.errors).length > 0
 
   const onSubmit = useCallback(
     () =>
@@ -112,7 +117,7 @@ export default function GrantsProposalForm() {
       <ProposalSubfooter
         submitForm={onSubmit}
         buttonText="Review proposal"
-        nextDisabled={!formState.isValid}
+        nextDisabled={!formState.isValid || hasErrors}
       />
     </div>
   )
