@@ -33,6 +33,7 @@ const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
 export default function TransactionHistoryTable() {
   const isDesktop = useIsDesktop()
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
+  const [pagerKey, setPagerKey] = useState(0)
   const { rows, sort } = useTableContext<ColumnId, TransactionHistoryCellDataMap>()
   const dispatch = useTableActionsContext<ColumnId, TransactionHistoryCellDataMap>()
   const { prices } = usePricesContext()
@@ -99,12 +100,10 @@ export default function TransactionHistoryTable() {
         return [...prev, { groupId, option }]
       }
     })
-    setPageEnd(PAGE_SIZE)
   }
 
   const handleClearGroup = (groupId: string) => {
     setActiveFilters(prev => prev.filter(f => f.groupId !== groupId))
-    setPageEnd(PAGE_SIZE)
   }
 
   const handleClearAll = () => {
@@ -112,6 +111,11 @@ export default function TransactionHistoryTable() {
   }
 
   const hasActiveFilters = useMemo(() => activeFilters.length > 0, [activeFilters])
+
+  useEffect(() => {
+    setPageEnd(PAGE_SIZE)
+    setPagerKey(prev => prev + 1)
+  }, [activeFilters])
 
   useEffect(() => {
     dispatch({
@@ -188,6 +192,7 @@ export default function TransactionHistoryTable() {
       </div>
 
       <TablePager
+        key={pagerKey}
         pageSize={PAGE_SIZE}
         totalItems={count}
         onPageChange={({ end }) => {
