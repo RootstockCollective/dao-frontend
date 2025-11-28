@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from 'react'
 import moment from 'moment'
+import type { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { useReviewProposal } from '@/app/providers'
 import { ProposalSubfooter } from '../components/ProposalSubfooter'
@@ -128,7 +129,7 @@ export default function ProposalReview() {
           if (!tokenAddress) throw new Error('Unknown contract address')
 
           txHash = await onCreateTreasuryTransferProposal(
-            targetAddress,
+            targetAddress as Address,
             transferAmount,
             proposalDescription,
             tokenAddress,
