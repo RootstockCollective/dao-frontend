@@ -12,6 +12,7 @@ import { NewPopover } from '@/components/NewPopover'
 import { Span, Paragraph as ParagraphComponent } from '@/components/Typography'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
+import { useStakingContext } from '../StakingContext'
 
 interface StepWrapperProps {
   onCloseModal: () => void
@@ -20,6 +21,7 @@ interface StepWrapperProps {
 export const StepWrapper = ({ onCloseModal }: StepWrapperProps) => {
   const isDesktop = useIsDesktop()
   const [helpPopoverOpen, setHelpPopoverOpen] = useState(false)
+  const { buttonActions } = useStakingContext()
 
   // UI Logic: Handle step management internally
   const { step, ...stepFunctions } = useSteps(stepConfig.length)
@@ -59,6 +61,7 @@ export const StepWrapper = ({ onCloseModal }: StepWrapperProps) => {
           )}
           <Divider />
           <StepActionButtons
+            buttonActions={buttonActions}
             leftContent={
               isDesktop &&
               step === 1 && <HelpPopover open={helpPopoverOpen} onOpenChange={setHelpPopoverOpen} />

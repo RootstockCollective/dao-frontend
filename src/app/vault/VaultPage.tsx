@@ -8,12 +8,14 @@ import { WithdrawModal } from './components/WithdrawModal'
 import { VaultDisclaimer } from './components/VaultDisclaimer'
 import { useModal } from '@/shared/hooks/useModal'
 import { Span } from '@/components/Typography'
+import { SwappingFlow } from '@/app/user/Swap'
 
 const NAME = 'USD Vault'
 
 export const VaultPage = () => {
   const supplyModal = useModal()
   const withdrawModal = useModal()
+  const swapModal = useModal()
 
   return (
     <div
@@ -35,9 +37,9 @@ export const VaultPage = () => {
           </Button>
           <Button
             variant="secondary-outline"
-            onClick={withdrawModal.openModal}
-            data-testid="withdraw-button"
-            className="max-w-28 max-h-13"
+            onClick={swapModal.openModal}
+            data-testid="swap-button"
+            className="md:max-w-28 md:max-h-13"
           >
             <Span variant="body-s">{'USDT0 -> USDRIF'}</Span>
           </Button>
@@ -46,6 +48,7 @@ export const VaultPage = () => {
 
       {supplyModal.isModalOpened && <SupplyModal onCloseModal={supplyModal.closeModal} />}
       {withdrawModal.isModalOpened && <WithdrawModal onCloseModal={withdrawModal.closeModal} />}
+      {swapModal.isModalOpened && <SwappingFlow onCloseModal={swapModal.closeModal} />}
     </div>
   )
 }
