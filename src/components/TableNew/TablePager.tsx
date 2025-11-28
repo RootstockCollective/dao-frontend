@@ -116,11 +116,6 @@ export const TablePager: React.FC<TablePagerProps> = ({
         return { ...prev, end: totalItems }
       }
 
-      // reset if showing fewer than a full page or missing any items
-      if (prev.end < pageSize || prev.end < totalItems) {
-        return getDefaultRange(pageSize, totalItems)
-      }
-
       return prev
     })
   }, [totalItems, pageSize])
