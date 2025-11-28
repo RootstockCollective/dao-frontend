@@ -116,6 +116,15 @@ export const VaultActions = () => {
           <Span className="flex-shrink-0">Withdraw</Span>
           <MoneyIconKoto />
         </Button>
+
+        <Button
+          variant="secondary-outline"
+          onClick={withdrawModal.openModal}
+          data-testid="withdraw-button"
+          className="max-w-28 max-h-13"
+        >
+          <Span variant="body-s">{'USDT0 -> USDRIF'}</Span>
+        </Button>
       </div>
 
       {depositModal.isModalOpened && <DepositModal onCloseModal={depositModal.closeModal} />}
