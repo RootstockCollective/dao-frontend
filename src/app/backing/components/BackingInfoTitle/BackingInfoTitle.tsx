@@ -1,29 +1,27 @@
 import { Button } from '@/components/Button'
-import { Span } from '@/components/Typography'
-import { BaseTypography } from '@/components/Typography/Typography'
-import { CommonComponentProps } from '@/components/commonProps'
-import { cn } from '@/lib/utils'
-import { FC } from 'react'
+import { Paragraph, Span } from '@/components/Typography'
+import { useRouter } from 'next/navigation'
 
-interface BackingInfoTitleProps extends CommonComponentProps {
-  hasAllocations: boolean
+interface Props {
+  hasFunds: boolean
   isConnected: boolean
 }
 
-export const BackingInfoTitle: FC<BackingInfoTitleProps> = ({
-  hasAllocations,
-  isConnected,
-  className = '',
-}) => {
+export const BackingInfoTitle = ({ hasFunds, isConnected }: Props) => {
+  const router = useRouter()
   return (
-    <div className={cn('flex flex-row gap-3', className)}>
-      <BaseTypography className="text-v3-text-100">
-        {isConnected && <Span className="font-bold">You are not backing any Builders yet. </Span>}
-        <Span>Use your stRIF backing power to support the Builders you believe in.</Span>
-      </BaseTypography>
+    <div className="flex flex-col md:flex-row items-start justify-between gap-4">
+      <Paragraph variant="body">
+        {isConnected && <Span bold>You are not backing any Builders yet. </Span>}
+        Use your stRIF backing power to support the Builders you believe in.
+      </Paragraph>
 
-      {isConnected && hasAllocations && (
-        <Button variant="primary" className="shrink-0 ml-auto">
+      {isConnected && hasFunds && (
+        <Button
+          variant="primary"
+          className="shrink-0 w-auto md:self-center"
+          onClick={() => router.push('/builders')}
+        >
           See all Builders
         </Button>
       )}

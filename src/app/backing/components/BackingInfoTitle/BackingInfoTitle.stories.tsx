@@ -10,9 +10,9 @@ const meta: Meta<typeof BackingInfoTitle> = {
   },
   tags: ['autodocs'],
   argTypes: {
-    hasAllocations: {
+    hasFunds: {
       control: 'boolean',
-      description: 'Whether the user has any allocations',
+      description: 'Whether the user has funds to back',
       defaultValue: false,
     },
     isConnected: {
@@ -47,21 +47,21 @@ export const Default: Story = {
 
 export const NoAllocations: Story = {
   args: {
-    hasAllocations: false,
+    hasFunds: false,
     isConnected: true,
   },
 }
 
 export const WithAllocations: Story = {
   args: {
-    hasAllocations: true,
+    hasFunds: true,
     isConnected: true,
   },
 }
 
 export const NotConnected: Story = {
   args: {
-    hasAllocations: false,
+    hasFunds: false,
     isConnected: false,
   },
 }
