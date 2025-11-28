@@ -13,6 +13,7 @@ import { useModal } from '@/shared/hooks/useModal'
 import { DepositModal } from './DepositModal'
 import { WithdrawModal } from './WithdrawModal'
 import { MoneyIconKoto } from '@/components/Icons'
+import { SwappingFlow } from '@/app/user/Swap'
 
 /**
  * Component providing deposit and withdraw actions for the vault
@@ -31,8 +32,12 @@ export const VaultActions = () => {
   const { isConnected } = useAccount()
   const { onConnectWalletButtonClick } = useAppKitFlow()
   const isDesktop = useIsDesktop()
+
+  // Modal states
   const depositModal = useModal()
   const withdrawModal = useModal()
+  const swapModal = useModal()
+
   const [depositPopoverOpen, setDepositPopoverOpen] = useState(false)
   const [withdrawPopoverOpen, setWithdrawPopoverOpen] = useState(false)
   const depositButtonRef = useRef<HTMLButtonElement>(null)
@@ -119,7 +124,7 @@ export const VaultActions = () => {
 
         <Button
           variant="secondary-outline"
-          onClick={withdrawModal.openModal}
+          onClick={swapModal.openModal}
           data-testid="withdraw-button"
           className="max-w-28 max-h-13"
         >
@@ -129,6 +134,7 @@ export const VaultActions = () => {
 
       {depositModal.isModalOpened && <DepositModal onCloseModal={depositModal.closeModal} />}
       {withdrawModal.isModalOpened && <WithdrawModal onCloseModal={withdrawModal.closeModal} />}
+      {swapModal.isModalOpened && <SwappingFlow onCloseModal={swapModal.closeModal} />}
     </div>
   )
 }
