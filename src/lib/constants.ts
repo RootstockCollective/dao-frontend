@@ -7,10 +7,19 @@ export const RIF_WALLET_SERVICES_URL = process.env.NEXT_PUBLIC_RIF_WALLET_SERVIC
 export const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER
 export const BUILD_ID = process.env.NEXT_PUBLIC_BUILD_ID as string
 
+// TOKENS
 export const RIF_ADDRESS = process.env.NEXT_PUBLIC_RIF_ADDRESS as Address
 export const STRIF_ADDRESS = process.env.NEXT_PUBLIC_STRIF_ADDRESS as Address
 export const USDRIF_ADDRESS = process.env.NEXT_PUBLIC_USDRIF_ADDRESS as Address
 export const USDRIF_VAULT_ADDRESS = (process.env.NEXT_PUBLIC_USDRIF_VAULT_ADDRESS as Address) || zeroAddress
+export const USDT0_ADDRESS = process.env.NEXT_PUBLIC_USDT0_ADDRESS as Address
+
+// DEX Router Addresses
+export const UNISWAP_UNIVERSAL_ROUTER_ADDRESS = process.env
+  .NEXT_PUBLIC_UNISWAP_UNIVERSAL_ROUTER_ADDRESS as Address
+export const UNISWAP_QUOTER_V2_ADDRESS = process.env.NEXT_PUBLIC_UNISWAP_QUOTER_V2_ADDRESS as Address
+export const ICECREAMSWAP_ROUTER_ADDRESS = process.env.NEXT_PUBLIC_ICECREAMSWAP_ROUTER_ADDRESS as Address
+export const USDT0_USDRIF_POOL_ADDRESS = process.env.NEXT_PUBLIC_USDT0_USDRIF_POOL_ADDRESS as Address
 export const GOVERNOR_ADDRESS = process.env.NEXT_PUBLIC_GOVERNOR_ADDRESS as Address
 // NFTs
 export const EA_NFT_ADDRESS = process.env.NEXT_PUBLIC_EA_NFT_ADDRESS?.toLowerCase() as Address
@@ -43,6 +52,7 @@ export const USD = 'USD'
 export const RBTC = ENV === 'mainnet' ? 'rBTC' : 'tRBTC'
 export const STRIF = 'stRIF'
 export const USDRIF = 'USDRIF'
+export const USDT0 = 'USDT0'
 export const TRIF = 'tRIF'
 
 export const GRANT_TOKEN_LIMITS = {

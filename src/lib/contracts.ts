@@ -28,6 +28,8 @@ import {
   USDRIF,
   USDRIF_ADDRESS,
   USDRIF_VAULT_ADDRESS,
+  USDT0,
+  USDT0_ADDRESS,
   VANGUARD_NFT_ADDRESS,
 } from './constants'
 import { VaultAbi } from '@/lib/abis/VaultAbi'
@@ -37,6 +39,7 @@ const tokenContracts = {
   [STRIF]: STRIF_ADDRESS,
   [RBTC]: zeroAddress,
   [USDRIF]: USDRIF_ADDRESS,
+  [USDT0]: USDT0_ADDRESS,
 }
 // Needed when creating proposal - uppercase [avoid case sensitive search]
 export const uppercasedTokenContracts = Object.fromEntries(
