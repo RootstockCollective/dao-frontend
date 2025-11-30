@@ -33,6 +33,7 @@ export interface AllocationBarProps {
   showLegend?: boolean
   className?: string
   onChange?: (data: AllocationChangeData) => void
+  useModal?: boolean
 }
 
 type Enumerate<N extends number, Acc extends number[] = []> = Acc['length'] extends N
