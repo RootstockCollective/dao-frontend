@@ -17,6 +17,7 @@ import {
   clamp,
   valueToPercentage,
 } from './utils'
+import { BackingDetailsModal } from './BackingDetailsModal'
 
 const getSegmentsCollapsedState = (values: bigint[], totalValue: bigint): boolean[] => {
   const NEIGHBOR_SUM_THRESHOLD = 8 // 8%
@@ -49,10 +50,12 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   showLegend = true,
   className = '',
   onChange,
+  useModal = false,
 }) => {
   const isControlled = typeof onChange === 'function'
   const [localItemsData, setLocalItemsData] = useState(itemsData)
   const [localValues, setLocalValues] = useState(itemsData.map(item => item.value))
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   // Reactive current state
   const currentItems = isControlled ? itemsData : localItemsData
@@ -197,6 +200,8 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
                   tooltipContentProps={getTooltipProps(dragTargetIndex, item, currentItems)}
                   dragIndex={dragTargetIndex}
                   isDraggable={isDraggable}
+                  useModal={useModal}
+                  onModalOpen={() => setIsModalOpen(true)}
                 />
                 {i < currentItems.length - 1 && isResizable && (
                   <Tooltip
@@ -219,6 +224,15 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
         </SortableContext>
       </DndContext>
       {showLegend && <Legend title="Total:" items={currentItems} />}
+
+      {useModal && (
+        <BackingDetailsModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          itemsData={currentItems}
+          totalBacking={totalBacking}
+        />
+      )}
     </div>
   )
 }
