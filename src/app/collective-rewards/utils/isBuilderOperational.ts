@@ -40,6 +40,7 @@ export const isBuilderRewardable = (stateFlags?: BuilderStateFlags) => {
     stateFlags?.initialized &&
       stateFlags?.communityApproved &&
       stateFlags?.kycApproved &&
+      !stateFlags?.kycPaused &&
       !stateFlags?.selfPaused,
   )
 }
@@ -67,8 +68,8 @@ export const getBuilderInactiveState = (builder: Builder): BuilderInactiveState 
 }
 
 export const builderInactiveStateMessage: Record<BuilderInactiveState, string> = {
-  [BUILDER_DEACTIVATED]: 'The Builder was voted out by the community.',
-  [BUILDER_KYC_REVOKED]: 'The Builder was removed by the Foundation.',
-  [BUILDER_PAUSED]: 'The Builder’s KYC has been paused by the Foundation.',
-  [BUILDER_SELF_PAUSED]: 'The Builder has paused their participation.',
+  [BUILDER_DEACTIVATED]: 'The Builder was voted out by the community',
+  [BUILDER_KYC_REVOKED]: 'The Builder was removed by the Foundation',
+  [BUILDER_PAUSED]: 'The Builder’s KYC has been paused by the Foundation',
+  [BUILDER_SELF_PAUSED]: 'The Builder has paused their participation',
 } as const
