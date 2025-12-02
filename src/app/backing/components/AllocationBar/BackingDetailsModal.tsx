@@ -6,8 +6,9 @@ import { Modal } from '@/components/Modal/Modal'
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Span } from '@/components/Typography'
 import { STRIF } from '@/lib/constants'
+import { AllocationBarSegmentVisual } from './AllocationBarSegmentVisual'
 import { AllocationItem } from './types'
-import { checkerboardStyle, valueToPercentage } from './utils'
+import { valueToPercentage } from './utils'
 
 interface Props {
   isOpen: boolean
@@ -34,22 +35,9 @@ export const BackingDetailsModal = ({ isOpen, onClose, itemsData, totalBacking }
 
         {/* Visual allocation bar */}
         <div className="flex items-center w-full h-20 rounded overflow-hidden">
-          {itemsData.map(item => {
-            const percentageWidth = valueToPercentage(item.value, totalBacking)
-            const effectiveWidth = item.value > 0n && percentageWidth < 0.5 ? 0.5 : percentageWidth
-
-            return (
-              <div
-                key={item.key}
-                className="h-full first:rounded-l-sm last:rounded-r-sm"
-                style={{
-                  ...(item.isTemporary ? checkerboardStyle() : {}),
-                  width: `${effectiveWidth}%`,
-                  backgroundColor: item.displayColor,
-                }}
-              />
-            )
-          })}
+          {itemsData.map(item => (
+            <AllocationBarSegmentVisual key={item.key} item={item} totalValue={totalBacking} />
+          ))}
         </div>
 
         <div className="flex flex-col gap-4">
