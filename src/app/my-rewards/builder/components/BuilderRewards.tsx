@@ -45,7 +45,7 @@ export const BuilderRewards = ({ address, gauge }: { address: Address; gauge: Ad
           BUILDER REWARDS
         </Header>
       }
-      className="bg-v3-bg-accent-80 pb-10"
+      className="bg-v3-bg-accent-80 pb-10 px-4 pt-8"
       containerClassName="gap-10"
     >
       <Collapsible.Root defaultOpen={false}>
