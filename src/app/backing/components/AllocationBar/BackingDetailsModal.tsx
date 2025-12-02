@@ -2,6 +2,7 @@
 
 import { formatSymbol } from '@/app/shared/formatter'
 import { Circle } from '@/components/Circle'
+import { HourglassIcon } from '@/components/Icons/HourglassIcon'
 import { Modal } from '@/components/Modal/Modal'
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Span } from '@/components/Typography'
@@ -40,15 +41,15 @@ export const BackingDetailsModal = ({ isOpen, onClose, itemsData, totalBacking }
           ))}
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-6">
           {itemsData.map(item => {
             const percent = valueToPercentage(item.value, totalBacking).toLocaleString(undefined, {
               maximumFractionDigits: 0,
             })
 
             return (
-              <div key={item.key} className="flex flex-col gap-2">
-                <div className="flex items-center justify-between gap-4">
+              <div key={item.key} className="flex flex-col">
+                <div className="flex items-center justify-between gap-4 mb-2">
                   <div className="flex items-center gap-2 min-w-0 flex-1">
                     <Circle color={item.displayColor} className="w-[10px] h-[10px] min-w-[10px]" />
                     <Label variant="body-s" bold className="truncate">
@@ -60,12 +61,26 @@ export const BackingDetailsModal = ({ isOpen, onClose, itemsData, totalBacking }
                   </Label>
                 </div>
 
+                {item.isTemporary && (
+                  <div className="flex items-center justify-between gap-4">
+                    <Label variant="body-s" className="pl-4">
+                      Pending
+                    </Label>
+                    <div className="flex items-center gap-1 whitespace-nowrap">
+                      <HourglassIcon className="size-4" />
+                      <Span>{formatSymbol(item.value, STRIF)}</Span>
+                      <TokenImage symbol={STRIF} />
+                      <Span variant="body-s"> {STRIF}</Span>
+                    </div>
+                  </div>
+                )}
+
                 <div className="flex items-center justify-between gap-4">
                   <Label variant="body-s" className="pl-4">
                     Current backing
                   </Label>
                   <div className="flex items-center gap-1 whitespace-nowrap">
-                    <Span>{formatSymbol(item.value, STRIF)}</Span>
+                    <Span>{formatSymbol(item.initialValue ?? 0n, STRIF)}</Span>
                     <TokenImage symbol={STRIF} />
                     <Span variant="body-s"> {STRIF}</Span>
                   </div>
