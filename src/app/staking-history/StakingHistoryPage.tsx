@@ -2,7 +2,7 @@
 
 import { Header } from '@/components/Typography'
 import { Section } from '@/app/my-rewards/components/Section'
-import StakingHistoryTableContainer from '@/app/staking/components/StakingHistoryTableContainer'
+import StakingHistoryTableContainer from '@/app/staking-history/components/StakingHistoryTableContainer'
 
 export const NAME = 'Staking History'
 export const StakingHistoryPage = () => {

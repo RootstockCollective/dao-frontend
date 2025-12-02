@@ -3,14 +3,13 @@ import { StakingFlow } from '@/app/user/Stake'
 import { UnstakeModal } from '@/app/user/Unstake'
 import { useModal } from '@/shared/hooks/useModal'
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { Button } from '@/components/Button'
-import { MoneyIconKoto } from '@/components/Icons'
+import { HistoryIcon, MoneyIconKoto } from '@/components/Icons'
 import { useRef } from 'react'
 import { Span } from '@/components/Typography'
 import { RBTC, RIF, STRIF, USDRIF } from '@/lib/constants'
-import { cn } from '@/lib/utils'
 import Big from '@/lib/big'
 import { useGetAddressBalances } from './hooks/useGetAddressBalances'
 
@@ -49,7 +48,10 @@ export const BalancesSection = () => {
           <BalanceInfoForUser symbol={STRIF} className="min-w-[268px]" />
           {Big(balances[STRIF].balance).gt(0) && <UnstakeButton onClick={unstakeModal.openModal} />}
         </div>
-        <BalanceInfoForUser symbol={USDRIF} className={balanceStyle} />
+        <div className="flex flex-col gap-4">
+          <BalanceInfoForUser symbol={USDRIF} className={balanceStyle} />
+          <StakingHistoryButton />
+        </div>
         <BalanceInfoForUser symbol={RBTC} className={balanceStyle} />
       </div>
       <div>
@@ -91,6 +93,20 @@ const UnstakeButton = ({ onClick }: { onClick: () => void }) => {
     >
       <Span className="flex-shrink-0">Unstake stRIF</Span>
       <MoneyIconKoto />
+    </Button>
+  )
+}
+
+const StakingHistoryButton = () => {
+  const router = useRouter()
+  return (
+    <Button
+      variant="transparent"
+      className="flex flex-row gap-2 pl-0 max-w-[200px] justify-start font-medium text-sm font-rootstock-sans"
+      onClick={() => router.push(`/staking-history`)}
+    >
+      <HistoryIcon />
+      <Span className="flex-shrink-0">See Staking History</Span>
     </Button>
   )
 }

@@ -1,6 +1,6 @@
 import { GetPricesResult } from '@/app/user/types'
-import { StakingHistoryItem } from '@/app/staking/utils/types'
-import { StakingHistoryTable } from '@/app/staking/components/StakingHistoryTable.config'
+import { StakingHistoryItem } from '@/app/staking-history/utils/types'
+import { StakingHistoryTable } from '@/app/staking-history/components/StakingHistoryTable.config'
 import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { RIF, STRIF } from '@/lib/constants'
 import { formatExpandedDate } from '@/app/my-rewards/tx-history/utils/utils'
@@ -18,11 +18,16 @@ export const convertDataToRowData = (
   if (!data.length) return []
 
   const price = prices[RIF]?.price ?? 0
-  const rows: StakingHistoryTable['Row'][] = []
-  data.forEach((staking, i) => {
+
+  // Pre-allocate array size for better performance
+  const rows: StakingHistoryTable['Row'][] = new Array(data.length)
+
+  for (let i = 0; i < data.length; i++) {
+    const staking = data[i]
     const itemAmount = BigInt(staking.amount)
     const usdAmount = getFiatAmount(itemAmount, price)
-    rows.push({
+
+    rows[i] = {
       id: `${staking.period}-${i}`,
       data: {
         period: formatPeriod(staking.period),
@@ -37,7 +42,8 @@ export const convertDataToRowData = (
         })),
         actions: '',
       },
-    })
-  })
+    }
+  }
+
   return rows
 }

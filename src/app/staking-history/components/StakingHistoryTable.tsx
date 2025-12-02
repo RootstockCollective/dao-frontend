@@ -4,20 +4,20 @@ import { cn } from '@/lib/utils'
 import { motion } from 'motion/react'
 import { TablePager } from '@/components/TableNew'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
 import { ActiveFilter } from '@/components/FilterSideBar'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
-import { DesktopStakingHistory } from '@/app/staking/components/DesktopStakingHistory'
+import { DesktopStakingHistory } from '@/app/staking-history/components/DesktopStakingHistory'
 import {
   ColumnId,
   DEFAULT_HEADERS,
   PAGE_SIZE,
   StakingHistoryCellDataMap,
-} from '@/app/staking/components/StakingHistoryTable.config'
-import { useGetStakingHistory } from '@/app/staking/hooks/useGetStakingHistory'
-import { StakingHistoryFilterSideBar } from '@/app/staking/StakingHistoryFilterSideBar'
-import { convertDataToRowData } from '@/app/staking/components/convertDataToRowData'
+} from '@/app/staking-history/components/StakingHistoryTable.config'
+import { useGetStakingHistory } from '@/app/staking-history/hooks/useGetStakingHistory'
+import { StakingHistoryFilterSideBar } from '@/app/staking-history/StakingHistoryFilterSideBar'
+import { convertDataToRowData } from '@/app/staking-history/components/convertDataToRowData'
 
 const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
   period: 'period',
@@ -46,10 +46,8 @@ export default function StakingHistoryTable() {
 
   // Convert active filters to API format
   const apiFilters = useMemo(() => {
-    const filter = (activeFilters: ActiveFilter[], groupId: string) =>
-      activeFilters.filter(f => f.groupId === groupId).map(f => f.option.value)
     return {
-      type: filter(activeFilters, 'type'),
+      type: activeFilters.filter(f => f.groupId === 'type').map(f => f.option.value),
     }
   }, [activeFilters])
 
@@ -64,7 +62,7 @@ export default function StakingHistoryTable() {
   const rowData = useMemo(() => convertDataToRowData(data, prices), [data, prices])
 
   // Filter handlers
-  const handleFilterToggle = (groupId: string, option: { label: string; value: string }) => {
+  const handleFilterToggle = useCallback((groupId: string, option: { label: string; value: string }) => {
     setActiveFilters(prev => {
       if (groupId === 'type') {
         // Enforce single select: toggle selection, only allow one value for 'type'
@@ -84,15 +82,23 @@ export default function StakingHistoryTable() {
         return [...prev, { groupId, option }]
       }
     })
-  }
+  }, [])
 
-  const handleClearGroup = (groupId: string) => {
+  const handleClearGroup = useCallback((groupId: string) => {
     setActiveFilters(prev => prev.filter(f => f.groupId !== groupId))
-  }
+  }, [])
 
-  const handleClearAll = () => {
+  const handleClearAll = useCallback(() => {
     setActiveFilters([])
-  }
+  }, [])
+
+  const handleCloseFilterSidebar = useCallback(() => {
+    setIsFilterSidebarOpen(false)
+  }, [])
+
+  const handlePageChange = useCallback(({ end }: { end: number }) => {
+    setPageEnd(end)
+  }, [])
 
   const hasActiveFilters = useMemo(() => activeFilters.length > 0, [activeFilters])
 
@@ -157,7 +163,7 @@ export default function StakingHistoryTable() {
           <div ref={filterSidebarRef} className="pl-2 h-full">
             <StakingHistoryFilterSideBar
               isOpen={isFilterSidebarOpen}
-              onClose={() => setIsFilterSidebarOpen(false)}
+              onClose={handleCloseFilterSidebar}
               activeFilters={activeFilters}
               onFilterToggle={handleFilterToggle}
               onClearGroup={handleClearGroup}
@@ -173,9 +179,7 @@ export default function StakingHistoryTable() {
       <TablePager
         pageSize={PAGE_SIZE}
         totalItems={count}
-        onPageChange={({ end }) => {
-          setPageEnd(end)
-        }}
+        onPageChange={handlePageChange}
         pagedItemName="events"
         mode="expandable"
       />

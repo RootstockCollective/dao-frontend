@@ -40,6 +40,7 @@ export interface StakingHistoryByPeriodAndAction {
  * @param params.offset - Number of records to skip (for pagination)
  * @param params.sort_field - Field to sort by: 'period', 'amount', or 'action'
  * @param params.sort_direction - Sort direction: 'asc' (ascending) or 'desc' (descending)
+ * @param params.type - Optional array of action types to filter by: 'stake' or 'unstake'
  * @returns Array of staking history grouped by period and action
  */
 export async function getStakingHistoryFromDB(params: {
@@ -48,10 +49,11 @@ export async function getStakingHistoryFromDB(params: {
   offset: number
   sort_field: 'period' | 'amount' | 'action'
   sort_direction: 'asc' | 'desc'
+  type?: ('stake' | 'unstake')[]
 }): Promise<StakingHistoryByPeriodAndAction[]> {
-  const { address, limit, offset, sort_field, sort_direction } = params
+  const { address, limit, offset, sort_field, sort_direction, type } = params
 
-  const result = await db('StakingHistory')
+  let query = db('StakingHistory')
     .select(
       db.raw(`
         TO_CHAR(DATE_TRUNC('month', to_timestamp(timestamp)), 'YYYY-MM') as period
@@ -77,6 +79,15 @@ export async function getStakingHistoryFromDB(params: {
       `),
     })
     .where(`user`, address)
+
+  // Apply type filter if provided
+  if (type && type.length > 0) {
+    // Convert 'stake'/'unstake' to 'STAKE'/'UNSTAKE' (uppercase) to match DB values
+    const upperCaseTypes = type.map(t => t.toUpperCase())
+    query = query.whereIn('action', upperCaseTypes)
+  }
+
+  const result = await query
     .groupByRaw(`DATE_TRUNC('month', to_timestamp(timestamp)), "action"`)
     .orderBy(sort_field, sort_direction)
     .limit(limit)
@@ -93,13 +104,25 @@ export async function getStakingHistoryFromDB(params: {
 /**
  * Counts the total number of distinct period+action combinations for a given address
  * @param address - User wallet address to count transactions for
+ * @param type - Optional array of action types to filter by: 'stake' or 'unstake'
  * @returns Total count of distinct period+action combinations
  */
-export async function getStakingHistoryCountFromDB(address: string): Promise<number> {
-  const result = await db('StakingHistory')
+export async function getStakingHistoryCountFromDB(
+  address: string,
+  type?: ('stake' | 'unstake')[],
+): Promise<number> {
+  let query = db('StakingHistory')
     .count({ count: db.raw(`DISTINCT (DATE_TRUNC('month', to_timestamp(timestamp)), "action")`) })
     .where(`user`, address)
-    .first()
+
+  // Apply type filter if provided
+  if (type && type.length > 0) {
+    // Convert 'stake'/'unstake' to 'STAKE'/'UNSTAKE' (uppercase) to match DB values
+    const upperCaseTypes = type.map(t => t.toUpperCase())
+    query = query.whereIn('action', upperCaseTypes)
+  }
+
+  const result = await query.first()
 
   return Number(result?.count ?? 0)
 }

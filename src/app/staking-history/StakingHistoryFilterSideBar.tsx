@@ -3,7 +3,6 @@
 import { useMemo } from 'react'
 import { FilterSideBar } from '@/components/FilterSideBar'
 import { FilterGroup, ActiveFilter } from '@/components/FilterSideBar/types'
-import { useAccount } from 'wagmi'
 
 interface TransactionHistoryFilterSideBarProps {
   isOpen: boolean
@@ -26,8 +25,6 @@ export function StakingHistoryFilterSideBar({
   onClearGroup,
   onClearAll,
 }: TransactionHistoryFilterSideBarProps) {
-  const { address } = useAccount()
-
   const filterGroups: FilterGroup[] = useMemo(
     () => [
       {
