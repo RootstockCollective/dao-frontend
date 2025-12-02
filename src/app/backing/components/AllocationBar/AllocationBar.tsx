@@ -4,6 +4,7 @@ import { SortableContext, arrayMove, horizontalListSortingStrategy } from '@dnd-
 import { AllocationBarTooltip, AllocationBarTooltipProps } from './AllocationBarTooltip'
 import { Tooltip } from '@/components/Tooltip'
 import React, { Fragment, useEffect, useRef, useState } from 'react'
+import { useModal } from '@/shared/hooks/useModal'
 
 import { Legend } from '@/components/Legend'
 import { cn } from '@/lib/utils'
@@ -50,12 +51,12 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   showLegend = true,
   className = '',
   onChange,
-  useModal = false,
+  withModal = false,
 }) => {
   const isControlled = typeof onChange === 'function'
   const [localItemsData, setLocalItemsData] = useState(itemsData)
   const [localValues, setLocalValues] = useState(itemsData.map(item => item.value))
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const { isModalOpened, openModal, closeModal } = useModal()
 
   // Reactive current state
   const currentItems = isControlled ? itemsData : localItemsData
@@ -200,8 +201,8 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
                   tooltipContentProps={getTooltipProps(dragTargetIndex, item, currentItems)}
                   dragIndex={dragTargetIndex}
                   isDraggable={isDraggable}
-                  useModal={useModal}
-                  onModalOpen={() => setIsModalOpen(true)}
+                  withModal={withModal}
+                  onModalOpen={openModal}
                 />
                 {i < currentItems.length - 1 && isResizable && (
                   <Tooltip
@@ -225,10 +226,10 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
       </DndContext>
       {showLegend && <Legend title="Total:" items={currentItems} />}
 
-      {useModal && (
+      {withModal && (
         <BackingDetailsModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          isOpen={isModalOpened}
+          onClose={closeModal}
           itemsData={currentItems}
           totalBacking={totalBacking}
         />
