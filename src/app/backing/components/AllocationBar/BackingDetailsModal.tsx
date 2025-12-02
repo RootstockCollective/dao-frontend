@@ -7,7 +7,7 @@ import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Span } from '@/components/Typography'
 import { STRIF } from '@/lib/constants'
 import { AllocationItem } from './types'
-import { valueToPercentage } from './utils'
+import { checkerboardStyle, valueToPercentage } from './utils'
 
 interface Props {
   isOpen: boolean
@@ -43,6 +43,7 @@ export const BackingDetailsModal = ({ isOpen, onClose, itemsData, totalBacking }
                 key={item.key}
                 className="h-full first:rounded-l-sm last:rounded-r-sm"
                 style={{
+                  ...(item.isTemporary ? checkerboardStyle() : {}),
                   width: `${effectiveWidth}%`,
                   backgroundColor: item.displayColor,
                 }}
