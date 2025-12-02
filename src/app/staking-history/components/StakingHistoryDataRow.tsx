@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, useState, Fragment } from 'react'
+import { FC, useState, Fragment, memo, useCallback } from 'react'
 import { cn } from '@/lib/utils'
 import { StakingHistoryTable } from './StakingHistoryTable.config'
 import { PeriodCell, ActionCell, AmountCell, TotalAmountCell, ActionsCell } from './Cells'
@@ -9,7 +9,7 @@ interface TransactionHistoryDataRowProps {
   row: StakingHistoryTable['Row']
 }
 
-export const StakingHistoryDataRow: FC<TransactionHistoryDataRowProps> = ({ row, ...props }) => {
+export const StakingHistoryDataRow: FC<TransactionHistoryDataRowProps> = memo(({ row, ...props }) => {
   const {
     data: { period, action, amount, transactions, total_amount },
   }: StakingHistoryTable['Row'] = row
@@ -17,9 +17,17 @@ export const StakingHistoryDataRow: FC<TransactionHistoryDataRowProps> = ({ row,
   const [isExpanded, setIsExpanded] = useState(false)
   const [isHovered, setIsHovered] = useState(false)
 
-  const handleToggleExpand = () => {
-    setIsExpanded(!isExpanded)
-  }
+  const handleToggleExpand = useCallback(() => {
+    setIsExpanded(prev => !prev)
+  }, [])
+
+  const handleMouseEnter = useCallback(() => {
+    setIsHovered(true)
+  }, [])
+
+  const handleMouseLeave = useCallback(() => {
+    setIsHovered(false)
+  }, [])
 
   const mainRowClassName = cn(
     'flex border-b-v3-bg-accent-60 border-b-1 gap-4 pl-4 py-3 min-h-[65px]',
@@ -38,8 +46,8 @@ export const StakingHistoryDataRow: FC<TransactionHistoryDataRowProps> = ({ row,
       <tr
         {...props}
         className={mainRowClassName}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         onClick={handleToggleExpand}
       >
         <PeriodCell period={period} isExpanded={isExpanded} isHovered={isHovered} />
@@ -66,4 +74,6 @@ export const StakingHistoryDataRow: FC<TransactionHistoryDataRowProps> = ({ row,
         ))}
     </Fragment>
   )
-}
+})
+
+StakingHistoryDataRow.displayName = 'StakingHistoryDataRow'

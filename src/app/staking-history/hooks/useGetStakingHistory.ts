@@ -1,9 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useAccount } from 'wagmi'
+import { StakingHistoryItem } from '../utils/types'
 
-type StakingHistoryResponse = {
-  data: any[]
+interface StakingHistoryResponse {
+  data: StakingHistoryItem[]
   pagination: {
     total: number
     limit: number
@@ -11,7 +12,7 @@ type StakingHistoryResponse = {
   }
 }
 
-type UseGetStakingHistoryParams = {
+interface UseGetStakingHistoryParams {
   page?: number
   pageSize?: number
   sortBy?: string
@@ -51,7 +52,16 @@ export const useGetStakingHistory = (params?: UseGetStakingHistoryParams) => {
 
       return result as StakingHistoryResponse
     },
-    queryKey: ['stakingHistory', address, page, pageSize, sortBy, sortDirection, type],
+    // Serialize type array to ensure stable query key (sort copy to avoid mutation)
+    queryKey: [
+      'stakingHistory',
+      address,
+      page,
+      pageSize,
+      sortBy,
+      sortDirection,
+      type.length > 0 ? [...type].sort().join(',') : '',
+    ],
     refetchInterval: AVERAGE_BLOCKTIME,
     enabled: !!address,
   })

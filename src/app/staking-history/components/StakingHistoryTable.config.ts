@@ -1,5 +1,5 @@
 import { Column, TypedTable } from '@/shared/context'
-import { StakingHistoryTransaction } from '@/app/staking/utils/types'
+import { StakingHistoryTransaction } from '@/app/staking-history/utils/types'
 
 const COLUMN_IDS = ['period', 'action', 'amount', 'total_amount', 'transactions', 'actions'] as const
 export type ColumnId = (typeof COLUMN_IDS)[number]
