@@ -5,9 +5,10 @@ import { cn } from '@/lib/utils'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { AllocationBarDragHandle } from './AllocationBarDragHandle'
+import { AllocationBarSegmentVisual } from './AllocationBarSegmentVisual'
 import { AllocationBarTooltip, AllocationBarTooltipProps } from './AllocationBarTooltip'
 import { AllocationBarValueDisplay, AllocationItem } from './types'
-import { checkerboardStyle, valueToPercentage } from './utils'
+import { valueToPercentage } from './utils'
 
 type AllocationBarSegmentPercentProps = {
   pendingValue: bigint
@@ -77,22 +78,7 @@ export const AllocationBarSegment = ({
     id: item.key,
   })
 
-  // Calculate the percentage width based on the actual value and total value
-  const percentageWidth = valueToPercentage(pendingValue, totalBacking)
-
-  // For segments with very small values, ensure they have a minimum visible width
-  // but only if the value is actually greater than 0
-  const effectiveWidth = pendingValue > 0n && percentageWidth < 0.5 ? 0.5 : percentageWidth
-
-  const style: React.CSSProperties = {
-    ...(item.isTemporary ? checkerboardStyle() : {}),
-    width: `${effectiveWidth}%`,
-    transform: CSS.Translate.toString(transform),
-    backgroundColor: item.displayColor,
-  }
-
-  const baseClasses = 'h-full relative overflow-visible flex items-stretch p-0 group'
-  const roundedClasses = 'first:rounded-l-lg last:rounded-r-lg md:first:rounded-l-sm md:last:rounded-r-sm'
+  const baseClasses = 'relative overflow-visible flex items-stretch p-0 group'
   const transitionClasses =
     dragIndex !== null ? 'transition-none' : 'transition-transform duration-200 ease-out'
   const dragStateClasses = isDragging ? 'opacity-60 z-[99]' : 'opacity-100'
@@ -104,10 +90,13 @@ export const AllocationBarSegment = ({
   }
 
   const segmentContent = (
-    <div
+    <AllocationBarSegmentVisual
       ref={setNodeRef}
-      style={style}
-      className={cn(baseClasses, roundedClasses, transitionClasses, dragStateClasses, className)}
+      item={item}
+      totalValue={totalBacking}
+      value={pendingValue}
+      style={{ transform: CSS.Translate.toString(transform) }}
+      className={cn(baseClasses, transitionClasses, dragStateClasses, className)}
       onClick={withModal ? handleSegmentClick : undefined}
     >
       {/* DRAG HANDLE of the size of the segment */}
@@ -132,7 +121,7 @@ export const AllocationBarSegment = ({
           />
         )}
       </div>
-    </div>
+    </AllocationBarSegmentVisual>
   )
 
   // If using modal, don't wrap with tooltip
