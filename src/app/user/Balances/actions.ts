@@ -19,7 +19,7 @@ import {
   TokenHoldersResponse,
 } from '@/app/user/Balances/types'
 import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
-import { Address, padHex } from 'viem'
+import { Address, isAddress, padHex } from 'viem'
 
 const fetchAddressTokens = (address: string, chainId = 31) =>
   axiosInstance
@@ -34,7 +34,12 @@ export const fetchPrices = () =>
   axiosInstance
     .get<GetPricesResult>(
       fetchPricesEndpoint
-        .replace('{{addresses}}', Object.values(tokenContracts).join(','))
+        .replace(
+          '{{addresses}}',
+          Object.values(tokenContracts)
+            .filter(address => address && isAddress(address))
+            .join(','),
+        )
         .replace('{{convert}}', 'USD'),
     )
     .then(({ data: prices }) => {
