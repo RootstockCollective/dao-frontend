@@ -69,7 +69,7 @@ export const VaultActions = () => {
   }
 
   return (
-    <>
+    <div className="flex flex-row justify-end w-full mt-2">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-start w-full">
         <NewPopover
           open={depositPopoverOpen}
@@ -126,7 +126,7 @@ export const VaultActions = () => {
           variant="secondary-outline"
           onClick={swapModal.openModal}
           data-testid="withdraw-button"
-          className="max-w-28 max-h-13"
+          className="md:max-w-28 md:max-h-13"
         >
           <Span variant="body-s">{'USDT0 -> USDRIF'}</Span>
         </Button>
@@ -135,6 +135,6 @@ export const VaultActions = () => {
       {depositModal.isModalOpened && <DepositModal onCloseModal={depositModal.closeModal} />}
       {withdrawModal.isModalOpened && <WithdrawModal onCloseModal={withdrawModal.closeModal} />}
       {swapModal.isModalOpened && <SwappingFlow onCloseModal={swapModal.closeModal} />}
-    </>
+    </div>
   )
 }
