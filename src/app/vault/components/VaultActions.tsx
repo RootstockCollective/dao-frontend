@@ -126,7 +126,7 @@ export const VaultActions = () => {
           variant="secondary-outline"
           onClick={swapModal.openModal}
           data-testid="withdraw-button"
-          className="max-w-28 max-h-13"
+          className="md:max-w-28 md:max-h-13"
         >
           <Span variant="body-s">{'USDT0 -> USDRIF'}</Span>
         </Button>
