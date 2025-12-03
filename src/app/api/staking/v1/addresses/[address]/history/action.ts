@@ -33,6 +33,20 @@ export interface StakingHistoryByPeriodAndAction {
 }
 
 /**
+ * Represents a raw database row from the staking history query before transformation
+ */
+interface StakingHistoryDatabaseRow {
+  /** Period in format "YYYY-MM" (e.g., "2024-01") */
+  period: string
+  /** Action type: "STAKE" or "UNSTAKE" */
+  action: string
+  /** Sum of all amounts for transactions in this period+action group (may be null if no rows to sum) */
+  amount: number | bigint | null
+  /** Array of individual transactions in this group (always an array due to COALESCE) */
+  transactions: StakingHistoryTransaction[]
+}
+
+/**
  * Retrieves staking history from the database grouped by period and action
  * @param params - Query parameters
  * @param params.address - User wallet address to filter transactions
@@ -93,7 +107,7 @@ export async function getStakingHistoryFromDB(params: {
     .limit(limit)
     .offset(offset)
 
-  return result.map((row: any) => ({
+  return result.map((row: StakingHistoryDatabaseRow) => ({
     period: row.period,
     action: row.action,
     amount: String(row.amount || 0),
