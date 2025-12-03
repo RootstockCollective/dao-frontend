@@ -23,6 +23,7 @@ const envChains = {
   mainnet: rootstock,
   testnet: rootstockTestnet,
   regtest: rskRegtest,
+  fork: rootstock, // Local fork uses mainnet chain config
 } as const
 
 export const currentEnvChain: Chain = envChains[ENV as keyof typeof envChains]

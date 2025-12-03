@@ -14,7 +14,9 @@
     "e2e-open": "start-server-and-test dev:webpack http://localhost:3000 \"cypress open --e2e\"",
     "e2e-test": "start-server-and-test dev:webpack http://localhost:3000 \"cypress run --e2e\"",
     "test": "vitest",
-    "build:start": "next build && next start"
+    "build:start": "next build && next start",
+    "fork:stop": "pkill -f anvil || true",
+    "fork:anvil": "anvil --fork-url https://public-node.rsk.co --chain-id 30"
   },
   "dependencies": {
     "@apollo/client": "^3.13.9",
