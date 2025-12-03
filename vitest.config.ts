@@ -127,7 +127,8 @@ export default defineConfig({
             ['**/providers/**/*.test.ts', 'node'],
           ],
           // Only include swap/quote tests in fork project
-          // Note: To use this project, set FORK_RPC_URL environment variable before running tests
+          // Note: Fork is required for testing swap execution (write operations) without spending real funds
+          // These tests will run when FORK_RPC_URL is set (CI and local development)
           include: [
             '**/swap/**/*.test.ts',
             '**/swap/**/*.test.tsx',
