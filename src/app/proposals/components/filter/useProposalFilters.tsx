@@ -36,54 +36,6 @@ export const useProposalFilters = (): FilterState & FilterActions => {
     return availableOptions.every(option => selectedFilters.some(filter => filter.value === option.value))
   }
 
-  const addFilter = useCallback((newFilter: FilterItem) => {
-    setActiveFilters(prev => {
-      // If new filter is "all" OR exclusive, remove ALL other filters of same type and add this one
-      if (newFilter.isAll || newFilter.exclusive) {
-        return prev.filter(f => f.type !== newFilter.type).concat(newFilter)
-      }
-
-      // Special handling for milestone filters
-      // No 'Grant - all milestones' chosen together with other milestone filters
-      if (newFilter.type === FilterType.CATEGORY) {
-        if (newFilter.value === MILESTONE_SEPARATOR) {
-          // "All milestones" selected - remove all other milestone filters
-          return prev
-            .filter(
-              f =>
-                f.type !== newFilter.type ||
-                f.value === MILESTONE_SEPARATOR ||
-                !f.value.startsWith(MILESTONE_SEPARATOR),
-            )
-            .concat(newFilter)
-        }
-        if (newFilter.value.startsWith(MILESTONE_SEPARATOR) && newFilter.value !== MILESTONE_SEPARATOR) {
-          // Specific milestone selected - remove "all milestones" filter
-          return prev
-            .filter(f => f.type !== newFilter.type || f.value !== MILESTONE_SEPARATOR)
-            .concat(newFilter)
-        }
-      }
-
-      // For regular filters, add the new filter and remove any "all" filter of the same type
-      let updatedFilters = prev
-        .filter(f => f.type !== newFilter.type || (!f.isAll && f.id !== newFilter.id))
-        .concat(newFilter)
-
-      // Check if all filters of this type are now selected
-      if (areAllFiltersOfTypeSelected(newFilter.type, updatedFilters)) {
-        // Remove all individual filters of this type and add the "all" filter
-        const allFilters = createAllFilters()
-        const allFilter = allFilters.find(f => f.type === newFilter.type)
-        if (allFilter) {
-          updatedFilters = updatedFilters.filter(f => f.type !== newFilter.type).concat(allFilter)
-        }
-      }
-
-      return updatedFilters
-    })
-  }, [])
-
   const removeFilter = useCallback(
     (id: string) => {
       const filter = activeFilters.find(f => f.id === id)
@@ -114,6 +66,36 @@ export const useProposalFilters = (): FilterState & FilterActions => {
     [activeFilters],
   )
 
+  // Replace all filters at once (used when applying filters from sidebar)
+  const setFilters = useCallback((filters: FilterItem[]) => {
+    // Preserve search filter if it exists and is not in the new filters
+    setActiveFilters(prev => {
+      const existingSearchFilter = prev.find(f => f.type === FilterType.SEARCH)
+      const hasNewSearchFilter = filters.some(f => f.type === FilterType.SEARCH)
+
+      // If we have an existing search filter and no new one, keep it
+      if (existingSearchFilter && !hasNewSearchFilter) {
+        // Add "all" filters for types that have no filters selected
+        const allFilters = createAllFilters()
+        const typesWithFilters = new Set(filters.map(f => f.type))
+
+        const missingAllFilters = allFilters.filter(
+          f => !typesWithFilters.has(f.type) && f.type !== FilterType.SEARCH,
+        )
+
+        return [...filters, ...missingAllFilters, existingSearchFilter]
+      }
+
+      // Add "all" filters for types that have no filters selected
+      const allFilters = createAllFilters()
+      const typesWithFilters = new Set(filters.map(f => f.type))
+
+      const missingAllFilters = allFilters.filter(f => !typesWithFilters.has(f.type))
+
+      return [...filters, ...missingAllFilters]
+    })
+  }, [])
+
   const clearAllFilters = useCallback(() => {
     setActiveFilters(createAllFilters())
     setSearchValue('')
@@ -141,8 +123,8 @@ export const useProposalFilters = (): FilterState & FilterActions => {
   return {
     activeFilters,
     searchValue,
-    addFilter,
     removeFilter,
+    setFilters,
     clearAllFilters,
     updateSearchValue,
   }

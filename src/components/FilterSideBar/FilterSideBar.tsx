@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { type HTMLAttributes } from 'react'
+import { type HTMLAttributes, useState, useEffect, useMemo } from 'react'
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
 import { TrashIcon } from '@/components/Icons'
@@ -12,80 +12,128 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
   onClose: () => void
   filterGroups: FilterGroup[]
   activeFilters: ActiveFilter[]
-  onFilterToggle: (groupId: string, option: FilterOption) => void
-  onClearGroup: (groupId: string) => void
-  onClearAll: () => void
+  onApply: (filters: ActiveFilter[]) => void
 }
 
 /**
  * Reusable sidebar panel containing configurable filter groups
  * Shows as modal on mobile, sidebar on desktop
- * Filters apply immediately on toggle
+ * Filters are only applied when clicking Apply button
  */
 export function FilterSideBar({
   isOpen,
   onClose,
   filterGroups,
   activeFilters,
-  onFilterToggle,
-  onClearGroup,
-  onClearAll,
+  onApply,
   className,
   ...props
 }: Props) {
   const isDesktop = useIsDesktop()
 
-  const hasActiveFilters = activeFilters.length > 0
+  // Pending filters: what user is selecting before clicking Apply
+  const [pendingFilters, setPendingFilters] = useState<ActiveFilter[]>(activeFilters)
 
-  // Helper to check if a filter is selected
+  // Sync pending filters with active filters when sidebar opens
+  useEffect(() => {
+    if (isOpen) {
+      setPendingFilters(activeFilters)
+    }
+  }, [isOpen, activeFilters])
+
+  const hasFiltersChanged = useMemo(
+    () => JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters),
+    [pendingFilters, activeFilters],
+  )
+
+  // Helper to check if a filter is selected (in pending state)
   const isFilterSelected = (groupId: string, option: FilterOption) => {
-    return activeFilters.some(f => f.groupId === groupId && f.option.value === option.value)
+    return pendingFilters.some(f => f.groupId === groupId && f.option.value === option.value)
   }
 
   // Helper to check if "all" filter is selected for a group (no filters active)
   const isAllSelected = (groupId: string) => {
-    return !activeFilters.some(f => f.groupId === groupId)
+    return !pendingFilters.some(f => f.groupId === groupId)
+  }
+
+  // Handle toggling a filter option
+  const handleFilterToggle = (groupId: string, option: FilterOption) => {
+    const group = filterGroups.find(g => g.id === groupId)
+    const isMultiSelect = group?.isMultiSelect ?? false
+
+    setPendingFilters(prev => {
+      const isSelected = prev.some(f => f.groupId === groupId && f.option.value === option.value)
+
+      if (isSelected) {
+        // Remove the filter
+        return prev.filter(f => !(f.groupId === groupId && f.option.value === option.value))
+      }
+
+      if (isMultiSelect) {
+        // Add to existing filters
+        return [...prev, { groupId, option }]
+      }
+
+      // Single select: replace any existing filter for this group
+      return [...prev.filter(f => f.groupId !== groupId), { groupId, option }]
+    })
+  }
+
+  // Handle clearing all filters for a group
+  const handleClearGroup = (groupId: string) => {
+    setPendingFilters(prev => prev.filter(f => f.groupId !== groupId))
+  }
+
+  // Handle clearing all filters
+  const handleClearAll = () => {
+    setPendingFilters([])
+  }
+
+  // Handle applying the pending filters
+  const handleApply = () => {
+    onApply(pendingFilters)
+    onClose()
   }
 
   const sidebarContent = (
     <div className="flex flex-col" onClick={e => e.stopPropagation()}>
-      <div className="flex-1 space-y-8 overflow-y-auto pb-8">
+      <div className="flex-1 space-y-10 overflow-y-auto md:pb-2">
         {filterGroups.map(group => (
           <FilterSection
             key={group.id}
             group={group}
             isAllSelected={isAllSelected}
             isFilterSelected={isFilterSelected}
-            onClearGroup={onClearGroup}
-            onFilterToggle={onFilterToggle}
+            onClearGroup={handleClearGroup}
+            onFilterToggle={handleFilterToggle}
           />
         ))}
-      </div>
 
-      {/* Footer with Reset and Apply buttons - sticky on mobile */}
-      <div className={`pt-6 border-t border-text-20 ${!isDesktop ? 'sticky bottom-0 bg-bg-80' : ''}`}>
-        <div className="flex gap-3">
-          <Button
-            onClick={onClearAll}
-            variant="secondary-outline"
-            className={`${isDesktop ? 'w-full' : 'flex-1'} hover:bg-white/5 flex items-center justify-center gap-2`}
-            disabled={!hasActiveFilters}
-            data-testid="ResetFiltersButton"
-          >
-            {isDesktop ? (
-              'Reset filters'
-            ) : (
+        {/* Footer with Reset and Apply buttons - sticky on mobile */}
+        <div className={`pt-4 ${!isDesktop ? 'border-t border-bg-60 sticky bottom-0 bg-bg-80' : ''}`}>
+          <div className="flex gap-3">
+            <Button
+              onClick={handleClearAll}
+              variant="secondary-outline"
+              className="flex-1 hover:bg-white/5 flex items-center justify-center gap-2"
+              disabled={pendingFilters.length > 0}
+              data-testid="ResetFiltersButton"
+            >
               <>
-                <TrashIcon size={16} />
+                {!isDesktop && <TrashIcon size={16} />}
                 Reset
               </>
-            )}
-          </Button>
-          {!isDesktop && (
-            <Button onClick={onClose} variant="primary" className="flex-1" data-testid="ApplyButton">
+            </Button>
+            <Button
+              onClick={handleApply}
+              variant="primary"
+              className="flex-1"
+              disabled={!hasFiltersChanged}
+              data-testid="ApplyButton"
+            >
               Apply
             </Button>
-          )}
+          </div>
         </div>
       </div>
     </div>
@@ -94,7 +142,7 @@ export function FilterSideBar({
   if (isDesktop) {
     // Desktop: Show as sidebar
     return (
-      <div className={cn('w-[256px] h-full pt-[56px] pb-4 px-6 bg-bg-60 rounded-sm', className)} {...props}>
+      <div className={cn('w-[256px] h-full pt-14 pb-4 px-6 bg-bg-60 rounded-sm', className)} {...props}>
         {sidebarContent}
       </div>
     )

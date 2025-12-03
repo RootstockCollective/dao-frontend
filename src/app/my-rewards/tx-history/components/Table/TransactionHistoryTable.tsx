@@ -30,6 +30,10 @@ const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
   total_amount: 'blockTimestamp', // Use timestamp as fallback since total is calculated
 }
 
+/**
+ * Table component for displaying transaction history.
+ * Includes filter sidebar and table pager.
+ */
 export default function TransactionHistoryTable() {
   const isDesktop = useIsDesktop()
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
@@ -55,12 +59,12 @@ export default function TransactionHistoryTable() {
 
   // Convert active filters to API format
   const apiFilters = useMemo(() => {
-    const filter = (activeFilters: ActiveFilter[], groupId: string) =>
+    const filter = (groupId: string) =>
       activeFilters.filter(f => f.groupId === groupId).map(f => f.option.value)
     return {
-      type: filter(activeFilters, 'type'),
-      builder: filter(activeFilters, 'builder'),
-      rewardToken: filter(activeFilters, 'claim-token'),
+      type: filter('type'),
+      builder: filter('builder'),
+      rewardToken: filter('claim-token'),
     }
   }, [activeFilters])
 
@@ -78,35 +82,8 @@ export default function TransactionHistoryTable() {
     return convertDataToRowData(data, cycleDuration, prices, getBuilderByAddress)
   }, [data, cycleDuration, prices, getBuilderByAddress])
 
-  // Filter handlers
-  const handleFilterToggle = (groupId: string, option: { label: string; value: string }) => {
-    setActiveFilters(prev => {
-      if (groupId === 'type') {
-        // Enforce single select: toggle selection, only allow one value for 'type'
-        const exists = prev.some(f => f.groupId === groupId && f.option.value === option.value)
-        if (exists) {
-          // Unselect (clear)
-          return prev.filter(f => f.groupId !== groupId)
-        }
-        // Set new value, remove any previous type filter
-        return [...prev.filter(f => f.groupId !== groupId), { groupId, option }]
-      } else {
-        // Multi-select for other groups
-        const exists = prev.some(f => f.groupId === groupId && f.option.value === option.value)
-        if (exists) {
-          return prev.filter(f => !(f.groupId === groupId && f.option.value === option.value))
-        }
-        return [...prev, { groupId, option }]
-      }
-    })
-  }
-
-  const handleClearGroup = (groupId: string) => {
-    setActiveFilters(prev => prev.filter(f => f.groupId !== groupId))
-  }
-
-  const handleClearAll = () => {
-    setActiveFilters([])
+  const handleApplyFilters = (filters: ActiveFilter[]) => {
+    setActiveFilters(filters)
   }
 
   const hasActiveFilters = useMemo(() => activeFilters.length > 0, [activeFilters])
@@ -174,9 +151,7 @@ export default function TransactionHistoryTable() {
               isOpen={isFilterSidebarOpen}
               onClose={() => setIsFilterSidebarOpen(false)}
               activeFilters={activeFilters}
-              onFilterToggle={handleFilterToggle}
-              onClearGroup={handleClearGroup}
-              onClearAll={handleClearAll}
+              onApply={handleApplyFilters}
             />
           </div>
         </motion.div>

@@ -62,38 +62,8 @@ export const ProposalsFilters: Story = {
       },
     ]
 
-    const handleFilterToggle = (groupId: string, option: { label: string; value: string }) => {
-      setActiveFilters(prev => {
-        const group = proposalsFilterGroups.find(g => g.id === groupId)
-
-        if (group?.isMultiSelect) {
-          // Toggle on/off for multi-selectable group
-          const exists = prev.some(f => f.groupId === groupId && f.option.value === option.value)
-          if (exists) {
-            // Remove this filter from the selected group
-            return prev.filter(f => !(f.groupId === groupId && f.option.value === option.value))
-          }
-          // Add to the group (multi-select)
-          return [...prev, { groupId, option }]
-        } else {
-          // For single-select group: clear all in group, then add if not already selected
-          const alreadySelected = prev.some(f => f.groupId === groupId && f.option.value === option.value)
-          if (alreadySelected) {
-            // If same option is selected, remove it
-            return prev.filter(f => !(f.groupId === groupId && f.option.value === option.value))
-          }
-          // Remove all in group then add selected
-          return [...prev.filter(f => f.groupId !== groupId), { groupId, option }]
-        }
-      })
-    }
-
-    const handleClearGroup = (groupId: string) => {
-      setActiveFilters(prev => prev.filter(f => f.groupId !== groupId))
-    }
-
-    const handleClearAll = () => {
-      setActiveFilters([])
+    const handleApply = (filters: ActiveFilter[]) => {
+      setActiveFilters(filters)
     }
 
     return (
@@ -103,9 +73,7 @@ export const ProposalsFilters: Story = {
           onClose={() => setIsOpen(false)}
           filterGroups={proposalsFilterGroups}
           activeFilters={activeFilters}
-          onFilterToggle={handleFilterToggle}
-          onClearGroup={handleClearGroup}
-          onClearAll={handleClearAll}
+          onApply={handleApply}
         />
       </div>
     )
@@ -159,23 +127,8 @@ export const TransactionHistoryFilters: Story = {
       },
     ]
 
-    const handleFilterToggle = (groupId: string, option: { label: string; value: string }) => {
-      setActiveFilters(prev => {
-        const exists = prev.some(f => f.groupId === groupId && f.option.value === option.value)
-        if (exists) {
-          return prev.filter(f => !(f.groupId === groupId && f.option.value === option.value))
-        } else {
-          return [...prev, { groupId, option }]
-        }
-      })
-    }
-
-    const handleClearGroup = (groupId: string) => {
-      setActiveFilters(prev => prev.filter(f => f.groupId !== groupId))
-    }
-
-    const handleClearAll = () => {
-      setActiveFilters([])
+    const handleApply = (filters: ActiveFilter[]) => {
+      setActiveFilters(filters)
     }
 
     return (
@@ -185,9 +138,7 @@ export const TransactionHistoryFilters: Story = {
           onClose={() => setIsOpen(false)}
           filterGroups={filterGroups}
           activeFilters={activeFilters}
-          onFilterToggle={handleFilterToggle}
-          onClearGroup={handleClearGroup}
-          onClearAll={handleClearAll}
+          onApply={handleApply}
         />
         <div className="flex-1 p-8 text-white">
           <h2 className="text-xl font-bold mb-4">Active Filters:</h2>
