@@ -10,6 +10,8 @@ import { STRIF } from '@/lib/constants'
 import { AllocationBarSegmentVisual } from './AllocationBarSegmentVisual'
 import { AllocationItem } from './types'
 import { valueToPercentage } from './utils'
+import { isAddress } from 'viem'
+import { shortAddress } from '@/lib/utils'
 
 interface Props {
   isOpen: boolean
@@ -53,10 +55,10 @@ export const BackingDetailsModal = ({ isOpen, onClose, itemsData, totalBacking }
                   <div className="flex items-center gap-2 min-w-0 flex-1">
                     <Circle color={item.displayColor} className="w-[10px] h-[10px] min-w-[10px]" />
                     <Label variant="body-s" bold className="truncate">
-                      {item.label}
+                      {isAddress(item.label) ? shortAddress(item.label) : item.label}
                     </Label>
                   </div>
-                  <Label variant="body-s" bold>
+                  <Label variant="body-s" bold className="mr-14">
                     {percent}%
                   </Label>
                 </div>
