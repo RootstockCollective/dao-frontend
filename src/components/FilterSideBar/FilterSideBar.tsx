@@ -41,10 +41,19 @@ export function FilterSideBar({
     }
   }, [isOpen, activeFilters])
 
-  const hasFiltersChanged = useMemo(
-    () => JSON.stringify(pendingFilters) !== JSON.stringify(activeFilters),
-    [pendingFilters, activeFilters],
-  )
+  const hasFiltersChanged = useMemo(() => {
+    if (pendingFilters.length !== activeFilters.length) {
+      return true
+    }
+    // check if any filter is different
+    return pendingFilters.some((pendingFilter, i) => {
+      const activeFilter = activeFilters[i]
+      return (
+        pendingFilter.groupId !== activeFilter?.groupId ||
+        pendingFilter.option.value !== activeFilter?.option.value
+      )
+    })
+  }, [pendingFilters, activeFilters])
 
   // Helper to check if a filter is selected (in pending state)
   const isFilterSelected = (groupId: string, option: FilterOption) => {
@@ -116,7 +125,7 @@ export function FilterSideBar({
               onClick={handleClearAll}
               variant="secondary-outline"
               className="flex-1 hover:bg-white/5 flex items-center justify-center gap-2"
-              disabled={pendingFilters.length > 0}
+              disabled={pendingFilters.length === 0}
               data-testid="ResetFiltersButton"
             >
               <>
