@@ -49,6 +49,7 @@ export interface Eta extends Omit<CountdownProps, 'className'> {
 
 export type ProposalApiResponse = {
   blockNumber: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   calldatasParsed: any[]
   category: string
   description: string

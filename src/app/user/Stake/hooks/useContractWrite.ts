@@ -12,9 +12,11 @@ import { useTransactionStatus } from './useTransactionStatus'
  * @property {any[]} args - The arguments to pass to the function
  */
 interface ContractWriteConfig {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   abi: any
   address: Address
   functionName: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   args: any[]
 }
 

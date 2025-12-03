@@ -236,6 +236,7 @@ export const parseProposalDescription = (description: string): ParsedDescription
 }
 
 // Helper function to determine proposal category
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getProposalCategory(calldatasParsed: any[]): string {
   const hasWithdrawAction = calldatasParsed
     .filter(data => data.type === 'decoded')
@@ -295,6 +296,7 @@ export function getProposalCategoryFromParsedData(
   return ProposalCategory.Grants
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function serializeBigInts(obj: any): any {
   if (typeof obj === 'bigint') {
     return obj.toString()

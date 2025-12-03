@@ -2,6 +2,7 @@ import { db } from '@/lib/db'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { buildProposal } from '@/app/proposals/actions/utils'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function transformProposal(proposal: any): ProposalApiResponse {
   const parseBytea = (el: string) => Buffer.from(el.slice(2), 'hex').toString()
 
