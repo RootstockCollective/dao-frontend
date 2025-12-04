@@ -2,6 +2,7 @@ import { getCombinedFiatAmount, useHandleErrors } from '@/app/collective-rewards
 import { MetricTooltipContent, MetricTooltipContentProps } from '@/app/components/Metric/MetricTooltipContent'
 import { MetricToken } from '@/app/components/Metric/types'
 import { createMetricToken } from '@/app/components/Metric/utils'
+import { MetricBar } from '@/app/components/Metric/MetricBar'
 import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/FiatTooltipLabel'
 import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
@@ -146,6 +147,7 @@ export const EstimatedRewards = () => {
         <LoadingSpinner size="medium" />
       ) : (
         <Metric
+          contentClassName="flex flex-col gap-2"
           title={
             <MetricTitle
               title="Estimated Rewards for Builders"
@@ -165,6 +167,7 @@ export const EstimatedRewards = () => {
           }
         >
           <USDWithTokensRewards usd={builderFiatTotal} tokens={builderMetricTokens} />
+          <MetricBar segments={builderMetricTokens} className="w-full max-w-[200px]" />
         </Metric>
       )}
       {builderEstimatedRewardsLoading ? (
@@ -173,6 +176,7 @@ export const EstimatedRewards = () => {
         <Metric
           className="md:justify-end"
           containerClassName="w-auto"
+          contentClassName="flex flex-col gap-2 items-start"
           title={
             <MetricTitle
               title="Estimated Rewards for Backers"
@@ -192,6 +196,7 @@ export const EstimatedRewards = () => {
           }
         >
           <USDWithTokensRewards usd={backerFiatTotal} tokens={backerMetricTokens} />
+          <MetricBar segments={backerMetricTokens} className="w-full max-w-[200px]" />
         </Metric>
       )}
     </div>
