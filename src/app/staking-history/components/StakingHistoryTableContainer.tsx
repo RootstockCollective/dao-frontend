@@ -1,3 +1,5 @@
+'use client'
+
 import { withTableContext } from '@/shared/context'
 import { ReactElement } from 'react'
 import { StakingHistoryCellDataMap, ColumnId } from './StakingHistoryTable.config'
