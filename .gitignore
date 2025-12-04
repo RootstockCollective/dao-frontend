@@ -50,3 +50,5 @@ bun.lockb
 
 #VSCode
 .vscode
+
+storybook-static
