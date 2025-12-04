@@ -48,13 +48,19 @@ export const getTokenBalance = (
   const { equivalentSymbols, currentContract } = symbolsToGetFromArray[symbol]
   const normalizedContract = currentContract.toLowerCase()
 
-  const matchingToken = arrayToSearch.find(token => {
+  // First try to match by both symbol and contract address
+  let matchingToken = arrayToSearch.find(token => {
     const tokenSymbolMatches = equivalentSymbols.some(
       equivalentSymbol => token.symbol?.toLowerCase() === equivalentSymbol.toLowerCase(),
     )
     const contractMatches = token.contractAddress.toLowerCase() === normalizedContract
     return tokenSymbolMatches && contractMatches
   })
+
+  // If no match, try matching by contract address only (in case symbol differs)
+  if (!matchingToken) {
+    matchingToken = arrayToSearch.find(token => token.contractAddress.toLowerCase() === normalizedContract)
+  }
 
   if (!matchingToken) {
     return defaultBalance
