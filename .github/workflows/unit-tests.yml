@@ -26,7 +26,7 @@ jobs:
         run: |
           # Start Anvil fork in background for swap execution tests
           # Fork is required for testing swap execution (write operations) without spending real funds
-          anvil --fork-url https://public-node.rsk.co --chain-id 30 > /tmp/anvil.log 2>&1 &
+          anvil --fork-url https://public-node.rsk.co --chain-id 31337 > /tmp/anvil.log 2>&1 &
           echo $! > /tmp/anvil.pid
           # Wait for fork to be ready (with timeout)
           timeout=30

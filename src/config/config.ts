@@ -19,11 +19,36 @@ const rskRegtest = defineChain({
   },
 })
 
+// Custom chain for local fork - uses Anvil's default chain ID to avoid MetaMask conflicts
+const rootstockFork = defineChain({
+  id: 31337,
+  name: 'Rootstock Mainnet Fork',
+  network: 'rootstock-fork',
+  nativeCurrency: { name: 'rBTC', symbol: 'rBTC', decimals: 18 },
+  rpcUrls: {
+    default: {
+      http: [process.env.NEXT_PUBLIC_NODE_URL || 'http://127.0.0.1:8545'],
+    },
+  },
+  blockExplorers: {
+    default: {
+      name: 'Rootstock Blockscout',
+      url: process.env.NEXT_PUBLIC_BLOCKSCOUT_URL || 'https://rootstock.blockscout.com',
+    },
+  },
+  contracts: {
+    multicall3: {
+      address: '0xcA11bde05977b3631167028862bE2a173976CA11',
+      blockCreated: 4249540, // Same as mainnet since it's a fork
+    },
+  },
+})
+
 const envChains = {
   mainnet: rootstock,
   testnet: rootstockTestnet,
   regtest: rskRegtest,
-  fork: rootstock, // Local fork uses mainnet chain config
+  fork: rootstockFork, // Local fork uses custom chain ID to avoid MetaMask conflicts
 } as const
 
 export const currentEnvChain: Chain = envChains[ENV as keyof typeof envChains]

@@ -140,7 +140,7 @@ export default defineConfig({
             // Fork configuration for swap tests
             // Uses local fork of Rootstock Mainnet - allows testing swap execution without real funds
             NEXT_PUBLIC_ENV: 'fork',
-            NEXT_PUBLIC_CHAIN_ID: '30', // Rootstock mainnet chain ID (same as mainnet)
+            NEXT_PUBLIC_CHAIN_ID: '31337', // Local fork chain ID (Anvil default, avoids MetaMask conflicts)
             // Fork RPC URL - should be set via FORK_RPC_URL env var or defaults to local Anvil
             NEXT_PUBLIC_NODE_URL: process.env.FORK_RPC_URL || 'http://127.0.0.1:8545',
             NEXT_PUBLIC_BLOCKSCOUT_URL: 'https://rootstock.blockscout.com',

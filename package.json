@@ -3,6 +3,7 @@
   "version": "1.15.0",
   "scripts": {
     "dev": "next dev --turbo",
+    "dev:fork": "PROFILE=fork next dev --turbo",
     "dev:webpack": "next dev",
     "build": "next build",
     "start": "next start",
@@ -16,7 +17,7 @@
     "test": "vitest",
     "build:start": "next build && next start",
     "fork:stop": "pkill -f anvil || true",
-    "fork:anvil": "anvil --fork-url https://public-node.rsk.co --chain-id 30"
+    "fork:anvil": "anvil --fork-url https://public-node.rsk.co --chain-id 31337"
   },
   "dependencies": {
     "@apollo/client": "^3.13.9",
