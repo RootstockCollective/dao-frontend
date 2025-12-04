@@ -26,7 +26,11 @@ export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElem
       )}
     >
       <div className="basis-1/2">
-        <Hamburger isOpen={isSidebarOpen} onClick={toggleSidebar} />
+        <Hamburger
+          isOpen={isSidebarOpen}
+          onClick={toggleSidebar}
+          ariaLabel={isSidebarOpen ? 'Close menu' : 'Open menu'}
+        />
       </div>
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="p-1 rounded-full">

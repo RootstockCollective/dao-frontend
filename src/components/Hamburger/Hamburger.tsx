@@ -1,10 +1,11 @@
-import { HTMLAttributes } from 'react'
+import type { HTMLAttributes } from 'react'
 import { motion, type SVGMotionProps } from 'motion/react'
 import { cn } from '@/lib/utils'
 
 interface HamburgerProps extends HTMLAttributes<HTMLSpanElement> {
   isOpen: boolean
   strokeWidth?: number
+  ariaLabel?: string
 }
 
 /**
@@ -17,17 +18,19 @@ export function Hamburger({
   onClick,
   isOpen,
   className,
+  ariaLabel,
   ...props
 }: HamburgerProps) {
   return (
     <span className={cn('flex w-fit', className)} {...props}>
-      <button onClick={onClick} data-testid="SidebarToggle">
+      <button type="button" onClick={onClick} data-testid="SidebarToggle" aria-label={ariaLabel}>
         <motion.svg
           width="24"
           height="24"
           viewBox="0 0 24 24"
           animate={isOpen ? 'open' : 'closed'}
           initial={false}
+          aria-hidden="true"
         >
           <Path
             variants={{
