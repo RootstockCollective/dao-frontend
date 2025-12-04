@@ -21,6 +21,26 @@ const defaultComponents: Components = {
   code: props => <code className="px-1.5 py-0.5 bg-background-800 rounded text-sm font-mono" {...props} />,
   pre: props => <pre className="my-4 p-4 bg-background-800 rounded overflow-x-auto" {...props} />,
   blockquote: props => <blockquote className="my-4 pl-4 border-l-4 border-accent-500 italic" {...props} />,
+  table: props => (
+    <div className="my-5 w-full overflow-x-auto">
+      <table className="w-full border-collapse" {...props} />
+    </div>
+  ),
+  thead: props => <thead className="border-b border-b-text-60" {...props} />,
+  tbody: props => (
+    <tbody
+      className="[&>tr:hover]:bg-text-80 [&>tr:hover]:text-bg-100 [&>tr]:transition-colors [&>tr]:duration-200"
+      {...props}
+    />
+  ),
+  tr: props => <tr className="border-b border-b-bg-60" {...props} />,
+  th: props => (
+    <th
+      className="px-3 md:px-4 pb-3 md:pb-5 text-left font-semibold font-rootstock-sans text-sm"
+      {...props}
+    />
+  ),
+  td: props => <td className="px-3 md:px-4 py-3 md:py-5 text-sm md:text-base" {...props} />,
 }
 
 export function MD({ children, className, ...props }: Options & { className?: string }) {
