@@ -58,13 +58,13 @@ export const EstimatedRewards = () => {
   return (
     <Metric
       title="Estimated Rewards"
-      className="w-auto"
+      className="w-full md:w-auto"
       containerClassName="gap-1 md:gap-4"
       contentClassName="flex flex-col gap-2"
     >
       <Header
         variant="h2"
-        className="text-v3-text-100 overflow-hidden text-ellipsis leading-[125%] tracking-[0.03rem]"
+        className="text-v3-text-100 overflow-hidden text-ellipsis leading-[125%] tracking-[0.03rem] text-xl"
       >
         {formatCurrency(combinedRewardsFiat, { showCurrencySymbol: false })}{' '}
         <FiatTooltipLabel tooltip={{ side: 'top', text: <MetricTooltipContent tokens={rewardPerToken} /> }} />
