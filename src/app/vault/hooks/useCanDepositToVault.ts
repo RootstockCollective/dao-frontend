@@ -1,27 +1,23 @@
-import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useVaultDepositLimiter } from './useVaultDepositLimiter'
 import { useMemo } from 'react'
 import { formatEther } from 'viem'
 import Big from '@/lib/big'
-import { USDRIF } from '@/lib/constants'
 
 /**
  * Hook for validating if a user can deposit to the vault
- * Combines balance check, whitelist status, and deposit limit from contract
+ * Combines user deposits check, whitelist status, and deposit limit from contract
  */
 export function useCanDepositToVault() {
-  const { balances, isBalancesLoading } = useGetAddressBalances()
   const {
     isWhitelisted,
     maxDefaultDepositLimit,
+    userDeposits,
     isLoading: isLimiterLoading,
     error: limiterError,
   } = useVaultDepositLimiter()
 
-  const usdrifBalance = balances[USDRIF]
-
   return useMemo(() => {
-    const isLoading = isBalancesLoading || isLimiterLoading
+    const isLoading = isLimiterLoading
     const error = limiterError
 
     // Convert maxDefaultDepositLimit from wei to USDRIF
@@ -39,10 +35,10 @@ export function useCanDepositToVault() {
       }
     }
 
-    const balanceInUsdrif = Big(usdrifBalance.balance)
+    const userDepositsInUsdrif = Big(formatEther(userDeposits))
 
-    // If balance <= limit, user can always deposit
-    if (balanceInUsdrif.lte(limitInUsdrif)) {
+    // If userDeposits <= limit, user can always deposit
+    if (userDepositsInUsdrif.lte(limitInUsdrif)) {
       return {
         canDeposit: true,
         isLoading: false,
@@ -52,7 +48,7 @@ export function useCanDepositToVault() {
       }
     }
 
-    // If balance > limit, check whitelist status
+    // If userDeposits > limit, check whitelist status
     if (isWhitelisted) {
       return {
         canDeposit: true,
@@ -63,7 +59,7 @@ export function useCanDepositToVault() {
       }
     }
 
-    // Balance > limit AND not whitelisted -> cannot deposit, needs KYC
+    // UserDeposits > limit AND not whitelisted -> cannot deposit, needs KYC
     return {
       canDeposit: false,
       isLoading: false,
@@ -71,12 +67,5 @@ export function useCanDepositToVault() {
       reason: 'KYC required for deposits above the limit',
       maxDefaultDepositLimit: formattedLimit,
     }
-  }, [
-    isBalancesLoading,
-    isLimiterLoading,
-    limiterError,
-    isWhitelisted,
-    maxDefaultDepositLimit,
-    usdrifBalance.balance,
-  ])
+  }, [isLimiterLoading, limiterError, isWhitelisted, maxDefaultDepositLimit, userDeposits])
 }
