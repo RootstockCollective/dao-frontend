@@ -8,7 +8,7 @@ interface VaultDepositValidationContextType {
   isLoading: boolean
   error: Error | null | undefined
   reason?: string
-  maxDefaultDepositLimit: string
+  maxDepositLimit: string
 }
 
 const initialContextState: VaultDepositValidationContextType = {
@@ -16,7 +16,7 @@ const initialContextState: VaultDepositValidationContextType = {
   isLoading: true,
   error: null,
   reason: undefined,
-  maxDefaultDepositLimit: '0',
+  maxDepositLimit: '0',
 }
 
 const VaultDepositValidationContext = createContext<VaultDepositValidationContextType>(initialContextState)
@@ -34,7 +34,7 @@ interface VaultDepositValidationProviderProps {
 }
 
 export const VaultDepositValidationProvider = ({ children }: VaultDepositValidationProviderProps) => {
-  const { canDeposit, isLoading, error, reason, maxDefaultDepositLimit } = useCanDepositToVault()
+  const { canDeposit, isLoading, error, reason, maxDepositLimit } = useCanDepositToVault()
 
   const value = useMemo(
     () => ({
@@ -42,9 +42,9 @@ export const VaultDepositValidationProvider = ({ children }: VaultDepositValidat
       isLoading,
       error,
       reason,
-      maxDefaultDepositLimit,
+      maxDepositLimit,
     }),
-    [canDeposit, isLoading, error, reason, maxDefaultDepositLimit],
+    [canDeposit, isLoading, error, reason, maxDepositLimit],
   )
 
   return (
