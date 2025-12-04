@@ -1,28 +1,28 @@
-import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
+import { type MouseEvent, useCallback, useRef, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { zeroAddress } from 'viem'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
 import { useProposalQuorumAtSnapshot } from '@/app/proposals/hooks/useProposalQuorumAtSnapshot'
 import { useGetVoteForSpecificProposal } from '@/app/proposals/hooks/useVoteCast'
-import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
+import type { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
 import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { config } from '@/config'
 import { executeTxFlow, showToast } from '@/shared/notification'
 import { useCheckTreasuryFunds } from '@/app/proposals/hooks/useCheckTreasuryFunds'
-import { Vote } from '@/shared/types'
+import type { Vote } from '@/shared/types'
 import { ProposalState } from '@/shared/types'
 import Big from '@/lib/big'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { ConnectButtonComponent } from '@/shared/walletConnection/components/ConnectButtonComponent'
 import { NewPopover } from '@/components/NewPopover'
-import { VotingDetails as VotingDetailsComponent, ButtonAction } from '../../components/vote-details'
+import { VotingDetails as VotingDetailsComponent, type ButtonAction } from '../../components/vote-details'
 import { ActionDetails } from '../../components/action-details'
-import { ParsedActionDetails, ActionType } from '../types'
+import { type ParsedActionDetails, type ParsedActionsResult, ActionType } from '../types'
 import { Span } from '@/components/Typography'
-import { Eta } from '../../shared/types'
+import type { Eta } from '../../shared/types'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { MobileVotingButton } from './MobileVotingButton'
 import { Modal } from '@/components/Modal'
@@ -46,6 +46,7 @@ const actionNameToActionTypeMap = new Map<string, ActionType>([
 interface VotingDetailsProps {
   proposalId: string
   parsedAction: ParsedActionDetails
+  parsedActionsResult: ParsedActionsResult
   actionName: string | undefined
   snapshot: bigint | undefined
   proposalDeadline: Big
@@ -56,6 +57,7 @@ interface VotingDetailsProps {
 export const VotingDetails = ({
   proposalId,
   parsedAction,
+  parsedActionsResult,
   actionName,
   snapshot,
   proposalDeadline,
@@ -292,7 +294,7 @@ export const VotingDetails = ({
         actionDisabled={isQueueing || isExecuting}
         eta={getEta(proposalState)}
       />
-      {isDesktop && <ActionDetails parsedAction={parsedAction} actionType={actionType} />}
+      {isDesktop && <ActionDetails parsedActions={parsedActionsResult.actions} actionType={actionType} />}
     </div>
   )
 
@@ -300,7 +302,7 @@ export const VotingDetails = ({
   if (!isDesktop) {
     return (
       <>
-        <ActionDetails parsedAction={parsedAction} actionType={actionType} />
+        <ActionDetails parsedActions={parsedActionsResult.actions} actionType={actionType} />
         {isModalOpen && (
           <Modal onClose={() => setIsModalOpen(false)} fullscreen>
             <VotingDetailsContent />

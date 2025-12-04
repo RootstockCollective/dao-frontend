@@ -3,6 +3,8 @@ export enum ProposalType {
   BUILDER_ACTIVATION = 'Builder Activation',
   BUILDER_DEACTIVATION = 'Builder Deactivation',
   WITHDRAW = 'Transfer of',
+  RAW_TRANSFER = 'Raw transfer',
+  UNKNOWN = 'Unknown action',
 }
 
 export interface ParsedActionDetails {
@@ -14,6 +16,12 @@ export interface ParsedActionDetails {
   builder?: string // The builder address (if relevant)
   rns?: string // The RNS domain name for the address (resolved asynchronously)
   // Add more fields as needed for other action types
+}
+
+// Container for multiple actions in a proposal
+export interface ParsedActionsResult {
+  actions: ParsedActionDetails[]
+  totalCount: number
 }
 
 export enum ActionType {

@@ -1,10 +1,10 @@
 'use client'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
-import { DecodedData, getDiscourseLinkFromProposalDescription } from '@/app/proposals/shared/utils'
+import { type DecodedData, getDiscourseLinkFromProposalDescription } from '@/app/proposals/shared/utils'
 import { Header, Paragraph } from '@/components/Typography'
 import { useParams } from 'next/navigation'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { ParsedActionDetails, ProposalType } from './types'
+import { type ParsedActionDetails, type ParsedActionsResult, ProposalType } from './types'
 import type { GetPricesResult } from '@/app/user/types'
 import { RBTC, RIF, RIF_ADDRESS, USDRIF, USDRIF_ADDRESS, TRIF, ENV } from '@/lib/constants'
 import {
@@ -17,7 +17,7 @@ import {
 import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { useProposalById } from '../context'
 import { Category } from '../components/category'
-import { Proposal } from '../shared/types'
+import type { Proposal } from '../shared/types'
 import { useProposalAddressResolution } from './hooks/useProposalAddressResolution'
 import { useMemo } from 'react'
 import { VideoPlayer } from '@/components/VideoPlayer'
@@ -37,12 +37,19 @@ const tokenAddressToSymbol = {
   // Add more tokens here
 }
 
-const parseProposalActionDetails = (
-  calldatasParsed: DecodedData[],
-  prices: GetPricesResult,
-): ParsedActionDetails => {
-  const action = calldatasParsed?.[0]
-  if (!action || action.type !== 'decoded') return { type: '-', amount: undefined, tokenSymbol: undefined }
+// Parse a single action from decoded data
+const parseSingleAction = (action: DecodedData, prices: GetPricesResult): ParsedActionDetails => {
+  if (action.type !== 'decoded') {
+    // Fallback case - simple ETH transfer (no calldata)
+    return {
+      type: ProposalType.RAW_TRANSFER,
+      amount: BigInt(action.value),
+      tokenSymbol: RBTC,
+      price: prices?.[RBTC]?.price ?? 0,
+      toAddress: action.affectedAddress,
+    }
+  }
+
   const { functionName, args } = action
   switch (functionName) {
     case 'withdraw': {
@@ -87,7 +94,36 @@ const parseProposalActionDetails = (
       }
     }
     default:
-      return { type: '-', amount: undefined, tokenSymbol: undefined }
+      // Decoded but not in our supported list - unsupported function
+      return {
+        type: ProposalType.UNKNOWN,
+      }
+  }
+}
+
+// Parse all actions in a proposal
+const parseAllProposalActions = (
+  calldatasParsed: DecodedData[],
+  prices: GetPricesResult,
+  proposalId?: string,
+): ParsedActionsResult => {
+  if (!calldatasParsed || calldatasParsed.length === 0) {
+    return {
+      actions: [{ type: '-', amount: undefined, tokenSymbol: undefined }],
+      totalCount: 0,
+    }
+  }
+
+  const actions: ParsedActionDetails[] = []
+
+  for (const calldata of calldatasParsed) {
+    const parsed = parseSingleAction(calldata, prices)
+    actions.push(parsed)
+  }
+
+  return {
+    actions,
+    totalCount: actions.length,
   }
 }
 
@@ -104,12 +140,17 @@ const PageWithProposal = (proposal: Proposal) => {
     category,
   } = proposal
   const { prices } = usePricesContext()
-  // Memoize parsedActionBase to ensure stable reference - only changes when dependencies change
-  const parsedActionBase = useMemo(
-    () => parseProposalActionDetails(calldatasParsed, prices),
-    [calldatasParsed, prices],
+
+  // Parse all actions in the proposal
+  const parsedActionsResult = useMemo(
+    () => parseAllProposalActions(calldatasParsed, prices, proposalId),
+    [calldatasParsed, prices, proposalId],
   )
+
+  // For backward compatibility, get first action with RNS resolution
+  const parsedActionBase = parsedActionsResult.actions[0]
   const parsedAction = useProposalAddressResolution(parsedActionBase)
+
   const voteOnProposalData = useVoteOnProposal(proposalId)
   const snapshot = useGetProposalSnapshot(proposalId)
   const { data: videoUrl } = useDiscourseVideo(getDiscourseLinkFromProposalDescription(description))
@@ -140,6 +181,7 @@ const PageWithProposal = (proposal: Proposal) => {
               startsAt={Starts}
               parsedAction={parsedAction}
               actionName={actionName}
+              totalActionsCount={parsedActionsResult.totalCount}
             />
             <Description description={description} />
             <VideoPlayer url={videoUrl} className="p-4 md:p-6" />
@@ -149,6 +191,7 @@ const PageWithProposal = (proposal: Proposal) => {
         <VotingDetails
           proposalId={proposalId}
           parsedAction={parsedAction}
+          parsedActionsResult={parsedActionsResult}
           actionName={actionName}
           snapshot={snapshot}
           proposalDeadline={proposalDeadline}
