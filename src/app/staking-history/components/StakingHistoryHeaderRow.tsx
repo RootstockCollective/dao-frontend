@@ -1,12 +1,12 @@
 'use client'
 
 import { useTableActionsContext, useTableContext } from '@/shared/context'
-import { ReactElement, ReactNode, Suspense } from 'react'
+import { ReactNode, Suspense } from 'react'
 import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
 import { Label } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { SORT_DIRECTION_ASC, SORT_DIRECTIONS } from '@/shared/context/TableContext/constants'
-import { Dispatch, FC } from 'react'
+import { Dispatch } from 'react'
 import {
   StakingHistoryCellDataMap,
   StakingHistoryTable,
@@ -17,12 +17,20 @@ import { ArrowsUpDown } from '@/components/Icons/v3design/ArrowsUpDown'
 import { ArrowDownWFill } from '@/components/Icons/v3design/ArrowDownWFill'
 import { ArrowUpWFill } from '@/components/Icons/v3design/ArrowUpWFill'
 
-const OrderIndicatorContainer: FC<{ className?: string; children: React.ReactNode }> = ({
-  className,
-  children,
-}) => <div className={cn('flex pt-1 justify-center gap-2', className)}>{children}</div>
+interface OrderIndicatorContainerProps {
+  children: ReactNode
+  className?: string
+}
 
-const OrderIndicator: FC<{ columnId: ColumnId }> = ({ columnId }) => {
+const OrderIndicatorContainer = ({ className, children }: OrderIndicatorContainerProps) => (
+  <div className={cn('flex pt-1 justify-center gap-2', className)}>{children}</div>
+)
+
+interface OrderIndicatorProps {
+  columnId: ColumnId
+}
+
+const OrderIndicator = ({ columnId }: OrderIndicatorProps) => {
   const { sort } = useTableContext<ColumnId, StakingHistoryCellDataMap>()
 
   if (!sort || columnId === undefined) return null
@@ -67,21 +75,24 @@ const dispatchSortRoundRobin = (
   dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: nextSort ? columnId : null, direction: nextSort } })
 }
 
-const HeaderTitle: FC<{ className?: string; children: ReactNode }> = ({ className, children }) => (
+interface HeaderTitleProps {
+  children: ReactNode
+  className?: string
+}
+
+const HeaderTitle = ({ className, children }: HeaderTitleProps) => (
   <Label variant="tag-s" className={cn('cursor-[inherit]', className)}>
     {children}
   </Label>
 )
 
-export const HeaderCell = ({
-  className,
-  children,
-  columnId,
-}: {
-  className?: string
-  children: React.ReactNode
+interface HeaderCellProps {
+  children: ReactNode
   columnId: ColumnId
-}): ReactElement | null => {
+  className?: string
+}
+
+export const HeaderCell = ({ className, children, columnId }: HeaderCellProps) => {
   const { sort, columns } = useTableContext<ColumnId, StakingHistoryCellDataMap>()
   const dispatch = useTableActionsContext<ColumnId, StakingHistoryCellDataMap>()
 
@@ -109,7 +120,7 @@ export const HeaderCell = ({
   )
 }
 
-export const StakingHistoryHeaderRow = (): ReactElement => {
+export const StakingHistoryHeaderRow = () => {
   return (
     <Suspense fallback={<div>Loading table headers...</div>}>
       <tr className="flex border-b-1 border-b-v3-text-60 select-none gap-4 pb-4 pl-4">

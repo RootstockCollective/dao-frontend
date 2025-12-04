@@ -12,9 +12,7 @@ export const DesktopStakingHistory = memo(
     return (
       <div className="w-full overflow-x-auto bg-v3-bg-accent-80 hidden md:block">
         <table className="w-full min-w-[700px]">
-          <thead>
-            <StakingHistoryHeaderRow />
-          </thead>
+          <StakingHistoryHeaderRow />
           <Suspense fallback={<div>Loading table data...</div>}>
             <tbody>
               {rows.map(row => (

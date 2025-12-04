@@ -1,3 +1,5 @@
+'use client'
+
 import { Header } from '@/components/Typography'
 import { FilterButton } from '@/app/proposals/components/filter/FilterButton'
 import { cn } from '@/lib/utils'
