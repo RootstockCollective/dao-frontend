@@ -45,12 +45,12 @@ export function FilterSideBar({
     if (pendingFilters.length !== activeFilters.length) {
       return true
     }
-    // check if any filter is different
-    return pendingFilters.some((pendingFilter, i) => {
-      const activeFilter = activeFilters[i]
-      return (
-        pendingFilter.groupId !== activeFilter?.groupId ||
-        pendingFilter.option.value !== activeFilter?.option.value
+    // check if any pending filter doesn't have a match in active filters
+    return pendingFilters.some(pendingFilter => {
+      return !activeFilters.some(
+        activeFilter =>
+          pendingFilter.groupId === activeFilter.groupId &&
+          pendingFilter.option.value === activeFilter.option.value,
       )
     })
   }, [pendingFilters, activeFilters])
