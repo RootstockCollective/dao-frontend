@@ -39,7 +39,7 @@ const rbtc = {
 
 const usdrif = {
   decimals: 18,
-  displayDecimals: 0,
+  displayDecimals: 2,
 }
 
 const symbols: { [key: string]: SymbolFormatOptions } = {
