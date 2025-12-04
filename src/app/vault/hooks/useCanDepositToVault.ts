@@ -11,6 +11,7 @@ export function useCanDepositToVault() {
   const {
     isWhitelisted,
     maxDefaultDepositLimit,
+    maxWhitelistedDepositLimit,
     userDeposits,
     isLoading: isLimiterLoading,
     error: limiterError,
@@ -20,8 +21,9 @@ export function useCanDepositToVault() {
     const isLoading = isLimiterLoading
     const error = limiterError
 
-    // Convert maxDefaultDepositLimit from wei to USDRIF
-    const limitInUsdrif = Big(formatEther(maxDefaultDepositLimit))
+    // Use appropriate limit based on whitelist status
+    const applicableLimit = isWhitelisted ? maxWhitelistedDepositLimit : maxDefaultDepositLimit
+    const limitInUsdrif = Big(formatEther(applicableLimit))
     const formattedLimit = limitInUsdrif.toFixedNoTrailing(2)
 
     // If still loading or error, return early
@@ -31,7 +33,7 @@ export function useCanDepositToVault() {
         isLoading,
         error,
         reason: error ? 'Failed to check deposit eligibility' : undefined,
-        maxDefaultDepositLimit: formattedLimit,
+        maxDepositLimit: formattedLimit,
       }
     }
 
@@ -44,7 +46,7 @@ export function useCanDepositToVault() {
         isLoading: false,
         error: undefined,
         reason: undefined,
-        maxDefaultDepositLimit: formattedLimit,
+        maxDepositLimit: formattedLimit,
       }
     }
 
@@ -55,7 +57,7 @@ export function useCanDepositToVault() {
         isLoading: false,
         error: undefined,
         reason: undefined,
-        maxDefaultDepositLimit: formattedLimit,
+        maxDepositLimit: formattedLimit,
       }
     }
 
@@ -65,7 +67,14 @@ export function useCanDepositToVault() {
       isLoading: false,
       error: undefined,
       reason: 'KYC required for deposits above the limit',
-      maxDefaultDepositLimit: formattedLimit,
+      maxDepositLimit: formattedLimit,
     }
-  }, [isLimiterLoading, limiterError, isWhitelisted, maxDefaultDepositLimit, userDeposits])
+  }, [
+    isLimiterLoading,
+    limiterError,
+    isWhitelisted,
+    maxDefaultDepositLimit,
+    maxWhitelistedDepositLimit,
+    userDeposits,
+  ])
 }
