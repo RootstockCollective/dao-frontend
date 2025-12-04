@@ -33,6 +33,7 @@ const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
 export default function TransactionHistoryTable() {
   const isDesktop = useIsDesktop()
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
+  const [pagerKey, setPagerKey] = useState(0)
   const { rows, sort } = useTableContext<ColumnId, TransactionHistoryCellDataMap>()
   const dispatch = useTableActionsContext<ColumnId, TransactionHistoryCellDataMap>()
   const { prices } = usePricesContext()
@@ -112,6 +113,11 @@ export default function TransactionHistoryTable() {
   const hasActiveFilters = useMemo(() => activeFilters.length > 0, [activeFilters])
 
   useEffect(() => {
+    setPageEnd(PAGE_SIZE)
+    setPagerKey(prev => prev + 1)
+  }, [activeFilters])
+
+  useEffect(() => {
     dispatch({
       type: 'SET_COLUMNS',
       payload: DEFAULT_HEADERS,
@@ -186,6 +192,7 @@ export default function TransactionHistoryTable() {
       </div>
 
       <TablePager
+        key={pagerKey}
         pageSize={PAGE_SIZE}
         totalItems={count}
         onPageChange={({ end }) => {
