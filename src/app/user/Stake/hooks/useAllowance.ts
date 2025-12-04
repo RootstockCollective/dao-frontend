@@ -32,8 +32,8 @@ export const useAllowance = (
     () => ({
       abi: RIFTokenAbi,
       address: tokenToSendContract,
-      functionName: 'approve',
-      args: [tokenToReceiveContract, parseEther(amount)],
+      functionName: 'approve' as const,
+      args: [tokenToReceiveContract, parseEther(amount)] as const,
     }),
     [tokenToSendContract, tokenToReceiveContract, amount],
   )
