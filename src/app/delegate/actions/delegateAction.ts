@@ -1,7 +1,7 @@
 'use server'
 
-import { daoClient } from '@/shared/components/ApolloClient'
 import { ContributorGraphResponse } from '@/app/proposals/shared/types'
+import { daoClient } from '@/shared/components/ApolloClient'
 import { gql as apolloGQL } from '@apollo/client'
 
 const query = apolloGQL`
@@ -24,5 +24,5 @@ const query = apolloGQL`
 
 export async function fetchContributors(): Promise<ContributorGraphResponse> {
   const { data } = await daoClient.query<ContributorGraphResponse>({ query, fetchPolicy: 'no-cache' })
-  return data
+  return data as ContributorGraphResponse // unsafe cast
 }

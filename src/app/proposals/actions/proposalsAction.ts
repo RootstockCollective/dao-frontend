@@ -1,12 +1,12 @@
 'use server'
 
-import { publicClient } from '@/lib/viemPublicClient'
+import { GovernorAbi } from '@/lib/abis/Governor'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { GovernorAddress, tokenContracts } from '@/lib/contracts'
-import { GovernorAbi } from '@/lib/abis/Governor'
-import { unstable_cache } from 'next/cache'
-import { gql as apolloGQL } from '@apollo/client'
+import { publicClient } from '@/lib/viemPublicClient'
 import { daoClient } from '@/shared/components/ApolloClient'
+import { gql as apolloGQL } from '@apollo/client'
+import { unstable_cache } from 'next/cache'
 
 const fetchProposalSharedDetails = async () => {
   // Proposal Threshold (from governor)
@@ -103,7 +103,7 @@ interface Counter {
 
 export async function fetchProposals(): Promise<GraphQLResponse> {
   const { data } = await daoClient.query<GraphQLResponse>({ query, fetchPolicy: 'no-cache' })
-  return data
+  return data as GraphQLResponse // unsafe cast
 }
 
 export const getCachedProposals = unstable_cache(fetchProposals, ['cached_proposals'], {

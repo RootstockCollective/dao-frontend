@@ -1,7 +1,7 @@
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useQuery } from '@tanstack/react-query'
 import { getCachedABIData } from '../actions/fetchABIData'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { useGetABI } from './useGetABI'
+import { AbiData, useGetABI } from './useGetABI'
 
 export const useGetMetricsAbiWithGraph = () => {
   const {
@@ -14,7 +14,7 @@ export const useGetMetricsAbiWithGraph = () => {
     refetchInterval: AVERAGE_BLOCKTIME,
   })
 
-  const data = useGetABI(abiData)
+  const data = useGetABI(abiData as AbiData)
 
   return {
     data,

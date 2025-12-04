@@ -33,5 +33,5 @@ export async function fetchBackerStakingHistory(backer: Address) {
       backer,
     },
   })
-  return data.backerStakingHistory
+  return data?.backerStakingHistory as BackerStakingHistory // unsafe cast
 }
