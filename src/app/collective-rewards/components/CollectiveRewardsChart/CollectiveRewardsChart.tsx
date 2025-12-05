@@ -149,6 +149,26 @@ export function CollectiveRewardsDualAxisChart({
     return [0, maxWithBuffer]
   }, [data])
 
+  const monthTicks = useMemo<number[]>(() => {
+    if (!data.length) return []
+
+    const rawFirst = data[0].day
+    const rawLast = data[data.length - 1].day
+    const firstDate = rawFirst instanceof Date ? rawFirst : new Date(rawFirst as string | number)
+    const lastDate = rawLast instanceof Date ? rawLast : new Date(rawLast as string | number)
+
+    const current = new Date(firstDate.getFullYear(), firstDate.getMonth(), 1)
+    const ticks: number[] = []
+
+    // Generate ticks at the first day of each month until we pass the last date
+    while (current <= lastDate) {
+      ticks.push(current.getTime())
+      current.setMonth(current.getMonth() + 1)
+    }
+
+    return ticks
+  }, [data])
+
   const xDomain = useMemo<[number, number] | undefined>(() => {
     if (!data.length) return undefined
     const first = data[0].day instanceof Date ? data[0].day.getTime() : +new Date(data[0].day)
@@ -167,6 +187,7 @@ export function CollectiveRewardsDualAxisChart({
             dataKey={(p: any) => (p.day instanceof Date ? p.day.getTime() : p.day)}
             type="number"
             domain={xDomain ?? ['auto', 'auto']}
+            ticks={monthTicks}
             tickFormatter={v => new Date(v).toLocaleString(undefined, { month: 'short' }).toUpperCase()}
             tickMargin={10}
             axisLine={true}
