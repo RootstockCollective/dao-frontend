@@ -1,9 +1,9 @@
 'use client'
 
 import { useTableActionsContext, useTableContext } from '@/shared/context'
-import { ReactElement, ReactNode, Suspense } from 'react'
+import { ReactElement, ReactNode, Suspense, useMemo } from 'react'
 import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
-import { Label } from '@/components/Typography'
+import { Label, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { SORT_DIRECTION_ASC, SORT_DIRECTIONS } from '@/shared/context/TableContext/constants'
 import { Dispatch, FC } from 'react'
@@ -73,6 +73,12 @@ const HeaderTitle: FC<{ className?: string; children: ReactNode }> = ({ classNam
   </Label>
 )
 
+const HeaderSubtotal: FC<{ value: string }> = ({ value }) => (
+  <Paragraph variant="body" bold className="mt-1 text-v3-text-100">
+    {value}
+  </Paragraph>
+)
+
 export const HeaderCell = ({
   className,
   children,
@@ -110,6 +116,40 @@ export const HeaderCell = ({
 }
 
 export const TransactionHistoryHeaderRow = (): ReactElement => {
+  const { rows } = useTableContext<ColumnId, TransactionHistoryCellDataMap>()
+
+  const visibleTotalAmountUsd = useMemo(() => {
+    if (!rows.length) return ''
+
+    let sum = 0
+
+    const addValue = (raw: string) => {
+      if (!raw) return
+      const sanitized = raw.replace(/,/g, '').replace(/^</, '')
+      const parsed = Number(sanitized)
+      if (!Number.isNaN(parsed)) {
+        sum += parsed
+      }
+    }
+
+    rows.forEach(row => {
+      const usd = row.data.total_amount.usd
+      if (Array.isArray(usd)) {
+        usd.forEach(addValue)
+      } else {
+        addValue(usd)
+      }
+    })
+
+    if (sum === 0) return ''
+
+    return new Intl.NumberFormat('en-US', {
+      style: 'decimal',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(sum)
+  }, [rows])
+
   return (
     <Suspense fallback={<div>Loading table headers...</div>}>
       <tr className="flex border-b-1 border-b-v3-text-60 select-none gap-4 pb-4 pl-4">
@@ -129,7 +169,10 @@ export const TransactionHistoryHeaderRow = (): ReactElement => {
           <HeaderTitle>Amount</HeaderTitle>
         </HeaderCell>
         <HeaderCell columnId="total_amount">
-          <HeaderTitle>Total Amount (USD)</HeaderTitle>
+          <div className="flex flex-col items-center">
+            <HeaderTitle>Total Amount (USD)</HeaderTitle>
+            {visibleTotalAmountUsd && <HeaderSubtotal value={visibleTotalAmountUsd} />}
+          </div>
         </HeaderCell>
       </tr>
     </Suspense>
