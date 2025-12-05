@@ -1,24 +1,34 @@
 import { SwapInputComponent, SwapInputToken } from '@/components/SwapInput'
 import { handleAmountInput } from '@/lib/utils'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
-import { SwapStepProps, ButtonActions } from '../types'
-
-// TODO: Import and use useSwappingContext when SwappingProvider is merged from dao-1767
-// import { useSwappingContext } from '@/shared/context/SwappingContext'
+import { SwapStepProps } from '../types'
+import { useSwapInput, useTokenSelection } from '@/shared/context/SwappingContext/hooks'
+import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { USDT0, USDRIF } from '@/lib/constants'
+import Big from '@/lib/big'
 
 export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
-  // TODO: Replace with actual useSwappingContext when SwappingProvider is merged
-  // const { amount, onAmountChange, tokenToSend, tokenToReceive, amountOut, setButtonActions } = useSwappingContext()
-
-  // Temporary placeholder - remove when SwappingProvider is available
+  const { amountIn, setAmountIn, formattedAmountOut, isQuoting, isQuoteExpired } = useSwapInput()
+  const { tokenInData, tokenOutData } = useTokenSelection()
+  const { balances, prices } = useBalancesContext()
   const inputRef = useRef<HTMLInputElement>(null)
 
-  // Mock data - will be replaced with actual context
-  const amount = ''
-  const onAmountChange = (_value: string) => {}
-  const tokenToSend = { balance: '0', symbol: 'USDT0', price: '1', contract: '0x0' }
-  const tokenToReceive = { balance: '0', symbol: 'USDRIF', price: '1', contract: '0x0' }
-  const amountOut = '0'
+  // Map context values to component expectations
+  const tokenToSend = {
+    balance: balances[USDT0]?.balance || '0',
+    symbol: tokenInData.symbol,
+    price: prices[USDT0]?.price?.toString(),
+    contract: tokenInData.address,
+  }
+  const tokenToReceive = {
+    balance: balances[USDRIF]?.balance || '0',
+    symbol: tokenOutData.symbol,
+    price: prices[USDRIF]?.price?.toString(),
+    contract: tokenOutData.address,
+  }
+  const amountOut = formattedAmountOut || '0'
+
+  console.log('amountOut', amountOut)
 
   useEffect(() => {
     if (inputRef.current) {
@@ -27,75 +37,85 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   }, [])
 
   const isAmountOverBalance = useMemo(() => {
-    if (!amount) return false
-    const rawAmount = parseFloat(amount)
-    const rawBalance = parseFloat(tokenToSend.balance)
-    return rawAmount > rawBalance
-  }, [amount, tokenToSend.balance])
+    if (!amountIn) return false
+    return Big(amountIn).gt(tokenToSend.balance)
+  }, [amountIn, tokenToSend.balance])
 
   // Set button actions
-  // TODO: Re-enable validation when actual functionality is wired
   useEffect(() => {
+    const hasValidAmount = amountIn && Big(amountIn).gt(0)
+    const hasQuote = formattedAmountOut && Big(formattedAmountOut).gt(0)
+    // Disable if quote is expired, still loading, or invalid
+    const isDisabled = !hasValidAmount || isAmountOverBalance || isQuoting || !hasQuote || isQuoteExpired
+
     setButtonActions({
       primary: {
         label: 'Continue',
         onClick: onGoNext,
-        disabled: false, // Temporarily disabled for UI demo - will be: !amount || Number(amount) <= 0 || isAmountOverBalance
-        loading: false,
+        disabled: isDisabled,
+        loading: isQuoting,
       },
     })
-  }, [onGoNext, setButtonActions])
+  }, [
+    amountIn,
+    isAmountOverBalance,
+    formattedAmountOut,
+    isQuoting,
+    isQuoteExpired,
+    onGoNext,
+    setButtonActions,
+  ])
 
   const handleAmountChange = useCallback(
     (value: string) => {
-      onAmountChange(handleAmountInput(value))
+      setAmountIn(handleAmountInput(value))
     },
-    [onAmountChange],
+    [setAmountIn],
   )
 
   const handlePercentageClick = useCallback(
     (percentage: number) => {
-      const calculatedAmount = (parseFloat(tokenToSend.balance) * percentage).toString()
-      onAmountChange(calculatedAmount)
+      const calculatedAmount = Big(tokenToSend.balance).mul(percentage).toString()
+      setAmountIn(calculatedAmount)
     },
-    [tokenToSend.balance, onAmountChange],
+    [tokenToSend.balance, setAmountIn],
   )
 
   // Prepare tokens for SwapInputComponent
   const tokens: SwapInputToken[] = useMemo(
     () => [
       {
-        symbol: tokenToSend.symbol,
-        address: tokenToSend.contract,
-        name: tokenToSend.symbol,
-        decimals: 6, // USDT0 typically has 6 decimals
+        symbol: tokenInData.symbol,
+        address: tokenInData.address,
+        name: tokenInData.name,
+        decimals: tokenInData.decimals,
         price: tokenToSend.price ? parseFloat(tokenToSend.price) : undefined,
       },
     ],
-    [tokenToSend],
+    [tokenInData, tokenToSend.price],
   )
 
   const selectedToken: SwapInputToken = useMemo(
     () => ({
-      symbol: tokenToSend.symbol,
-      address: tokenToSend.contract,
-      name: tokenToSend.symbol,
-      decimals: 6,
+      symbol: tokenInData.symbol,
+      address: tokenInData.address,
+      name: tokenInData.name,
+      decimals: tokenInData.decimals || 6,
       price: tokenToSend.price ? parseFloat(tokenToSend.price) : undefined,
     }),
-    [tokenToSend],
+    [tokenInData, tokenToSend.price],
   )
 
   // Token for output (readonly)
   const outputToken: SwapInputToken = useMemo(
     () => ({
-      symbol: tokenToReceive.symbol,
-      address: tokenToReceive.contract,
-      name: tokenToReceive.symbol,
-      decimals: 18, // USDRIF typically has 18 decimals
+      symbol: tokenOutData.symbol,
+      address: tokenOutData.address,
+      name: tokenOutData.name,
+      decimals: tokenOutData.decimals || 18,
       price: tokenToReceive.price ? parseFloat(tokenToReceive.price) : undefined,
     }),
-    [tokenToReceive],
+    [tokenOutData, tokenToReceive.price],
   )
 
   return (
@@ -107,7 +127,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
           tokens={tokens}
           selectedToken={selectedToken}
           onTokenChange={() => {}} // Token selection disabled for swap
-          amount={amount}
+          amount={amountIn}
           onAmountChange={handleAmountChange}
           balance={tokenToSend.balance}
           onPercentageClick={handlePercentageClick}

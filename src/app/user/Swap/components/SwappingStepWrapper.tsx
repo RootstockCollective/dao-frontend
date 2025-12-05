@@ -11,9 +11,6 @@ import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { cn } from '@/lib/utils'
 import { ButtonActions } from '../types'
 
-// TODO: Uncomment when SwappingProvider is merged from dao-1767
-// import { useSwappingContext } from '../SwappingContext'
-
 interface SwappingStepWrapperProps {
   onCloseModal: () => void
 }
@@ -31,9 +28,6 @@ const DEFAULT_BUTTON_ACTIONS: ButtonActions = {
 export const SwappingStepWrapper = ({ onCloseModal }: SwappingStepWrapperProps) => {
   const isDesktop = useIsDesktop()
   const [buttonActions, setButtonActions] = useState<ButtonActions>(DEFAULT_BUTTON_ACTIONS)
-
-  // TODO: Replace with actual useSwappingContext when SwappingProvider is merged
-  // const { buttonActions } = useSwappingContext()
 
   // UI Logic: Handle step management internally
   const { step, ...stepFunctions } = useSteps(swapStepConfig.length)

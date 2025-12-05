@@ -260,4 +260,25 @@ export const TX_MESSAGES = {
       loading: false,
     },
   },
+  swap: {
+    pending: {
+      title: 'Swap in process',
+      content: 'Your swap transaction is in progress. It will be visible when the transaction is confirmed.',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Swap successful',
+      content: 'Swap successful. Your tokens have been swapped successfully!',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Error on swap',
+      content:
+        'An unexpected error occurred while trying to execute the swap. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
 } as const
