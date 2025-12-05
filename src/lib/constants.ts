@@ -42,6 +42,7 @@ export const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID as string
 export const BACKERS_MANAGER_ADDRESS = process.env.NEXT_PUBLIC_BACKERS_MANAGER_ADDRESS as Address
 export const BUILDER_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_BUILDER_REGISTRY_ADDRESS as Address
 export const REWARD_DISTRIBUTOR_ADDRESS = process.env.NEXT_PUBLIC_REWARD_DISTRIBUTOR_ADDRESS as Address
+export const VAULT_DEPOSIT_LIMITER_ADDRESS = process.env.NEXT_PUBLIC_VAULT_DEPOSIT_LIMITER_ADDRESS as Address
 export const NFT_BOOSTER_DATA_URL = (process.env.NEXT_PUBLIC_NFT_BOOSTER_DATA_URL as string) ?? ''
 
 export const AVERAGE_BLOCKTIME = 60_000
@@ -94,6 +95,8 @@ export const getFeatureEnvFlags = (): Record<Feature, string> => FEATURE_FLAGS
 export const MAX_PAGE_SIZE = 1000
 
 export const BLOCKSCOUT_URL = process.env.NEXT_PUBLIC_BLOCKSCOUT_URL as string
+
+export const VAULT_KYC_URL = process.env.NEXT_PUBLIC_VAULT_KYC_URL as string
 
 /**
  * State sync config constants
