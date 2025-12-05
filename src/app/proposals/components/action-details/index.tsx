@@ -180,12 +180,7 @@ const renderSingleActionContent = (
   }
 }
 
-export const ActionDetails = ({
-  parsedActions,
-  actionType,
-  className,
-  readOnly,
-}: ActionDetailsProps) => {
+export const ActionDetails = ({ parsedActions, actionType, className, readOnly }: ActionDetailsProps) => {
   const isDesktop = useIsDesktop()
   const totalCount = parsedActions.length
 
