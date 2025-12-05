@@ -17,7 +17,7 @@ export const FilterChip = ({ filter, onRemove, className }: FilterChipProps) => 
 
   return (
     <div
-      className={cn('inline-flex items-center gap-2 whitespace-nowrap flex-shrink-0', className)}
+      className={cn('inline-flex items-center gap-1 whitespace-nowrap flex-shrink-0', className)}
       data-testid={`FilterChip-${filter.type}-${filter.value}`}
     >
       <Button

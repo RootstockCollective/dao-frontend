@@ -20,6 +20,8 @@ type UseGetTransactionHistoryParams = {
   rewardToken?: string[]
 }
 
+const EMPTY_DATA = [] as TransactionHistoryItem[]
+
 export const useGetTransactionHistory = (params?: UseGetTransactionHistoryParams) => {
   const { address } = useAccount()
   const {
@@ -35,7 +37,7 @@ export const useGetTransactionHistory = (params?: UseGetTransactionHistoryParams
   const { data, isLoading, error } = useQuery<TransactionHistoryResponse, Error>({
     queryFn: async (): Promise<TransactionHistoryResponse> => {
       if (!address) {
-        return { data: [], count: 0, page: 1, pageSize: 20 }
+        return { data: EMPTY_DATA, count: 0, page: 1, pageSize: 20 }
       }
 
       const searchParams = new URLSearchParams({
@@ -76,7 +78,7 @@ export const useGetTransactionHistory = (params?: UseGetTransactionHistoryParams
   })
 
   return {
-    data: data?.data || [],
+    data: data?.data || EMPTY_DATA, // use stable reference to avoid re-rendering the table on every render
     count: data?.count || 0,
     page: data?.page || 1,
     pageSize: data?.pageSize || 20,

@@ -20,8 +20,8 @@ export interface FilterState {
 }
 
 export interface FilterActions {
-  addFilter: (f: FilterItem) => void
   removeFilter: (id: string) => void
+  setFilters: (filters: FilterItem[]) => void
   clearAllFilters: () => void
   updateSearchValue: (value: string) => void
 }
