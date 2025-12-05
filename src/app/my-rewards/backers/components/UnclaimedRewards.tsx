@@ -49,7 +49,7 @@ export const UnclaimedRewards = () => {
           <FiatTooltipLabel tooltip={{ side: 'top', text: <MetricTooltipContent tokens={metricTokens} /> }} />
         </Header>
       </div>
-      <MetricBar segments={metricTokens} className="w-full max-w-[180px]" />
+      <MetricBar segments={metricTokens} className="w-full md:max-w-[180px]" />
       <div className="flex justify-start">
         <ClaimRewardsButton onClick={() => openModal()} />
       </div>

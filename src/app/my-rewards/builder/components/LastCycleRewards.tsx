@@ -24,7 +24,7 @@ export const LastCycleRewards = ({ gauge }: { gauge: Address }) => {
       isLoading={isLoading}
       title="Last cycle"
       info="Your rewards from the previous cycle"
-      className="flex-row sm:flex-col justify-between w-full"
+      className="flex-col justify-between w-full"
     >
       <div className="flex items-center gap-2">
         <Header variant="h3">
@@ -32,7 +32,7 @@ export const LastCycleRewards = ({ gauge }: { gauge: Address }) => {
           <FiatTooltipLabel tooltip={{ side: 'top', text: <MetricTooltipContent tokens={metricTokens} /> }} />
         </Header>
       </div>
-      <MetricBar segments={metricTokens} className="w-full max-w-[180px]" />
+      <MetricBar segments={metricTokens} className="w-full md:max-w-[180px]" />
     </RewardCard>
   )
 }
