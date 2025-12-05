@@ -21,7 +21,6 @@ export interface BuilderCardControlProps {
   showAnimation?: boolean
 }
 
-// TODO: this component should really create its own context and stop prop drilling
 const AllocationDrawerContent = () => {
   const { saveAllocations, isSuccess } = useAllocateVotes()
 
@@ -44,16 +43,22 @@ const AllocationDrawerContent = () => {
 
   return (
     <ActionsContainer className="bg-v3-bg-accent-60" containerClassName="flex flex-row">
-      <Button variant="secondary-outline" onClick={onCancelAllocations} className="flex-1">
-        Cancel
-      </Button>
-      {isAllocationTxPending ? (
-        <TransactionInProgressButton />
-      ) : (
-        <Button variant="primary" onClick={saveAllocations} className="whitespace-nowrap flex-4">
-          Save new backing amounts
+      <div className="flex justify-center gap-2 w-full">
+        <Button variant="secondary-outline" onClick={onCancelAllocations} className="flex-1 md:flex-none">
+          Cancel
         </Button>
-      )}
+        {isAllocationTxPending ? (
+          <TransactionInProgressButton />
+        ) : (
+          <Button
+            variant="primary"
+            onClick={saveAllocations}
+            className="whitespace-nowrap flex-4 md:flex-none"
+          >
+            Save new backing amounts
+          </Button>
+        )}
+      </div>
     </ActionsContainer>
   )
 }
