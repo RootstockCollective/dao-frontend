@@ -20,7 +20,7 @@ import { ConnectButtonComponent } from '@/shared/walletConnection/components/Con
 import { NewPopover } from '@/components/NewPopover'
 import { VotingDetails as VotingDetailsComponent, type ButtonAction } from '../../components/vote-details'
 import { ActionDetails } from '../../components/action-details'
-import { type ParsedActionDetails, type ParsedActionsResult, ActionType } from '../types'
+import { type ParsedActionsResult, ActionType } from '../types'
 import { Span } from '@/components/Typography'
 import type { Eta } from '../../shared/types'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
@@ -45,7 +45,6 @@ const actionNameToActionTypeMap = new Map<string, ActionType>([
 
 interface VotingDetailsProps {
   proposalId: string
-  parsedAction: ParsedActionDetails
   parsedActionsResult: ParsedActionsResult
   actionName: string | undefined
   snapshot: bigint | undefined
@@ -56,7 +55,6 @@ interface VotingDetailsProps {
 
 export const VotingDetails = ({
   proposalId,
-  parsedAction,
   parsedActionsResult,
   actionName,
   snapshot,

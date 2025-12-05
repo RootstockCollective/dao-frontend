@@ -10,7 +10,7 @@ import {
   getDiscourseLinkFromProposalDescription,
   splitCombinedName,
 } from '@/app/proposals/shared/utils'
-import { type ParsedActionDetails, ProposalType } from '../types'
+import { type ParsedActionsResult, ProposalType } from '../types'
 import type { Moment } from 'moment'
 
 interface ProposalDetailsProps {
@@ -19,11 +19,10 @@ interface ProposalDetailsProps {
   proposer: string
   startsAt: Moment
   fullProposalName?: string
-  parsedAction: ParsedActionDetails
+  parsedActionsResult: ParsedActionsResult
   actionName: DecodedFunctionName | undefined
   link?: string
   readOnly?: boolean
-  totalActionsCount?: number
 }
 
 interface DetailItemProps {
@@ -88,14 +87,17 @@ export const ProposalDetails = ({
   description,
   proposer,
   startsAt,
-  parsedAction,
+  parsedActionsResult,
   actionName,
   link,
   readOnly,
-  totalActionsCount = 1,
 }: ProposalDetailsProps) => {
   const nameToUse = name.includes(DISPLAY_NAME_SEPARATOR) ? name : (description ?? '').split(';')[0]
   const { builderName } = splitCombinedName(nameToUse)
+
+  // For display purposes, we use the first action
+  const parsedAction = parsedActionsResult.actions[0]
+  const totalActionsCount = parsedActionsResult.totalCount
 
   const discourseLink =
     link ?? (description ? getDiscourseLinkFromProposalDescription(description) : undefined)

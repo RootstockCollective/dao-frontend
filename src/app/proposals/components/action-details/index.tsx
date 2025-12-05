@@ -5,7 +5,7 @@ import { TokenImage } from '@/components/TokenImage'
 import Big from '@/lib/big'
 import { formatNumberWithCommas, formatCurrency, cn, shortAddress } from '@/lib/utils'
 import { type Address, formatEther } from 'viem'
-import { type ActionType, ProposalType } from '../../[id]/types'
+import { type ActionType, type ParsedActionDetails, ProposalType } from '../../[id]/types'
 import type { ClassNameValue } from 'tailwind-merge'
 import { convertAmountToBigint } from '../../shared/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
@@ -16,24 +16,7 @@ interface InfoGridItem {
 }
 
 interface ActionDetailsProps {
-  parsedAction?: {
-    type: string
-    amount?: bigint | string
-    tokenSymbol?: string
-    price?: number
-    toAddress?: string
-    builder?: string
-    rns?: string
-  }
-  parsedActions?: Array<{
-    type: string
-    amount?: bigint | string
-    tokenSymbol?: string
-    price?: number
-    toAddress?: string
-    builder?: string
-    rns?: string
-  }>
+  parsedActions: ParsedActionDetails[]
   actionType: ActionType
   className?: ClassNameValue
   readOnly?: boolean
@@ -72,13 +55,11 @@ const makeRightLabel = (proposalType: ProposalType, isDesktop: boolean) => {
 
 // Render content for a single action
 const renderSingleActionContent = (
-  parsedAction: ActionDetailsProps['parsedAction'],
+  parsedAction: ParsedActionDetails,
   actionType: ActionType,
   isDesktop: boolean,
   readOnly?: boolean,
 ): ReactNode => {
-  if (!parsedAction) return null
-
   switch (parsedAction.type) {
     case ProposalType.RAW_TRANSFER:
     case ProposalType.WITHDRAW: {
@@ -200,21 +181,17 @@ const renderSingleActionContent = (
 }
 
 export const ActionDetails = ({
-  parsedAction,
   parsedActions,
   actionType,
   className,
   readOnly,
 }: ActionDetailsProps) => {
   const isDesktop = useIsDesktop()
-
-  // Determine which actions to render
-  const actionsToRender = parsedActions || (parsedAction ? [parsedAction] : [])
-  const totalCount = actionsToRender.length
+  const totalCount = parsedActions.length
 
   // For single transaction - render as before (backward compatibility)
   if (totalCount === 1) {
-    const content = renderSingleActionContent(actionsToRender[0], actionType, isDesktop, readOnly)
+    const content = renderSingleActionContent(parsedActions[0], actionType, isDesktop, readOnly)
     return (
       <div
         className={cn(
@@ -238,7 +215,7 @@ export const ActionDetails = ({
     >
       <Header variant="h3">ACTIONS ({totalCount})</Header>
       <div className="flex flex-col gap-4">
-        {actionsToRender.map((action, index) => {
+        {parsedActions.map((action, index) => {
           // Generate unique key - always include index to ensure uniqueness
           const actionKey = `action-${index}-${action.type}-${action.toAddress || action.builder || ''}`
           return (

@@ -19,7 +19,7 @@ import { DISCOURSE_LINK_SEPARATOR, DISPLAY_NAME_SEPARATOR, NO_MILESTONE } from '
 import { MILESTONE_SEPARATOR, labeledMilestones } from '@/app/proposals/shared/utils'
 import { Milestones } from '@/app/proposals/shared/types'
 import { ActionDetails } from '@/app/proposals/components/action-details'
-import { ActionType, ProposalType } from '@/app/proposals/[id]/types'
+import { ActionType, ProposalType, type ParsedActionsResult } from '@/app/proposals/[id]/types'
 import { Description, ProposalDetails } from '@/app/proposals/[id]/components'
 import { Category } from '@/app/proposals/components/category'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
@@ -178,6 +178,12 @@ export default function ProposalReview() {
   const { description, discourseLink, proposalName } = record.form
   const parsedAction = transformFormToActionDetails(record.form, record.category, prices)
 
+  // Review page always has a single action - wrap it in ParsedActionsResult
+  const parsedActionsResult: ParsedActionsResult = {
+    actions: [parsedAction],
+    totalCount: 1,
+  }
+
   // For activation and deactivation proposals, construct the name with builder name for ProposalDetails component
   // This matches how ProposalView works - the name contains the combined format
   const proposalNameForDetails = (() => {
@@ -228,7 +234,7 @@ export default function ProposalReview() {
             description={description}
             proposer={address ?? ''}
             startsAt={moment()}
-            parsedAction={parsedAction}
+            parsedActionsResult={parsedActionsResult}
             actionName={getActionName(record.category)}
             link={discourseLink}
             readOnly
@@ -237,7 +243,7 @@ export default function ProposalReview() {
           <VideoPlayer url={videoUrl} className="p-4 md:p-6" />
         </div>
         <ActionDetails
-          parsedAction={parsedAction}
+          parsedActions={parsedActionsResult.actions}
           actionType={getActionType(record.category)}
           className="md:mt-0"
           readOnly

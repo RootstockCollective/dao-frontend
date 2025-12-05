@@ -105,7 +105,6 @@ const parseSingleAction = (action: DecodedData, prices: GetPricesResult): Parsed
 const parseAllProposalActions = (
   calldatasParsed: DecodedData[],
   prices: GetPricesResult,
-  proposalId?: string,
 ): ParsedActionsResult => {
   if (!calldatasParsed || calldatasParsed.length === 0) {
     return {
@@ -142,14 +141,22 @@ const PageWithProposal = (proposal: Proposal) => {
   const { prices } = usePricesContext()
 
   // Parse all actions in the proposal
-  const parsedActionsResult = useMemo(
-    () => parseAllProposalActions(calldatasParsed, prices, proposalId),
-    [calldatasParsed, prices, proposalId],
+  const parsedActionsResultBase = useMemo(
+    () => parseAllProposalActions(calldatasParsed, prices),
+    [calldatasParsed, prices],
   )
 
-  // For backward compatibility, get first action with RNS resolution
-  const parsedActionBase = parsedActionsResult.actions[0]
-  const parsedAction = useProposalAddressResolution(parsedActionBase)
+  // Apply RNS resolution to the first action (most important for display)
+  const firstActionWithRns = useProposalAddressResolution(parsedActionsResultBase.actions[0])
+
+  // Create updated result with RNS-resolved first action
+  const parsedActionsResult = useMemo<ParsedActionsResult>(
+    () => ({
+      ...parsedActionsResultBase,
+      actions: [firstActionWithRns, ...parsedActionsResultBase.actions.slice(1)],
+    }),
+    [parsedActionsResultBase, firstActionWithRns],
+  )
 
   const voteOnProposalData = useVoteOnProposal(proposalId)
   const snapshot = useGetProposalSnapshot(proposalId)
@@ -179,9 +186,8 @@ const PageWithProposal = (proposal: Proposal) => {
               description={description}
               proposer={proposer}
               startsAt={Starts}
-              parsedAction={parsedAction}
+              parsedActionsResult={parsedActionsResult}
               actionName={actionName}
-              totalActionsCount={parsedActionsResult.totalCount}
             />
             <Description description={description} />
             <VideoPlayer url={videoUrl} className="p-4 md:p-6" />
@@ -190,7 +196,6 @@ const PageWithProposal = (proposal: Proposal) => {
         </div>
         <VotingDetails
           proposalId={proposalId}
-          parsedAction={parsedAction}
           parsedActionsResult={parsedActionsResult}
           actionName={actionName}
           snapshot={snapshot}
