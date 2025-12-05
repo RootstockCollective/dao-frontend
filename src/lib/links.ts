@@ -51,10 +51,14 @@ const regtest = {
     'https://docs.google.com/forms/d/e/1FAIpQLSeCzwut4WppI-YPc0AwNdbi5FVyOXGsTroZO5y-W7KVnpgS5A/viewform?usp=sharing&ouid=108559399286825656764',
 } as const satisfies Resources
 
+// Fork uses mainnet links since it's a fork of mainnet
+const fork = mainnet
+
 const environments = {
   regtest,
   testnet,
   mainnet,
+  fork,
 }
 
 export const currentLinks = environments[ENV as keyof typeof environments]

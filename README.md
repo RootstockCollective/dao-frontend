@@ -72,9 +72,10 @@ npm install
 .dev
 .testnet
 .mainnet
+.fork
 ```
 
-The chosen set of variables depends on the targeted contract versions you plan to work with. `.dev` is similar to the `.testnet` versions of the contract, with the exception of reduced wait times for `votingDelay`, `votingPeriod`, and `timelockMinDelay` for automation purposes. `.testnet` and `.mainnet` versions are aligned on time but target respective chains (chainIds 31 and 30).
+The chosen set of variables depends on the targeted contract versions you plan to work with. `.dev` is similar to the `.testnet` versions of the contract, with the exception of reduced wait times for `votingDelay`, `votingPeriod`, and `timelockMinDelay` for automation purposes. `.testnet` and `.mainnet` versions are aligned on time but target respective chains (chainIds 31 and 30). `.fork` uses a local fork of Rootstock Mainnet (via Anvil) for testing swap functionality without spending real funds - see [Fork Setup Guide](./docs/FORK_SETUP.md) for details.
 
 5. Run the development server:
 
@@ -102,6 +103,8 @@ The value must correspond to one of the `.env.` file endings.
 > To avoid **CORS errors** when running against testnet from localhost, you can proxy the calls to the RIF Wallet Services via a local loop that strips the CORS headers on the way out and adds the expected response ones on the way in.
 > This can be achieved by setting the `testnet.local` `PROFILE`:
 > `PROFILE=testnet.local npm run dev`
+>
+> **Fork Environment**: Use `PROFILE=fork` to test swap functionality on a local fork of Rootstock Mainnet without spending real funds. See [Fork Setup Guide](./docs/FORK_SETUP.md) for setup instructions.
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
@@ -115,15 +118,16 @@ The following table describes the different environments files that the teams in
 
 All environment files are prefixed with `.env`.
 
-| Environment                | Team     | Deployed URL                                                  |  Configuration          | Notes        |
-|----------------------------|----------|---------------------------------------------------------------| ----------------------- |--------------| 
+| Environment                | Team     | Deployed URL                                                  | Configuration                                                                                                                                                                              | Notes        |
+| -------------------------- | -------- | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------ |
 | .mainnet                   | DAO - CR | https://app.rootstockcollective.xyz                           | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/mainnet.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.30)     | -            |
-| .dev                       | DAO - CR | https://dev.app.rootstockcollective.xyz                       | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/dev.json)     | Requires VPN |
-| .testnet.local             | CR       | http://localhost:3000                                         | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/dev.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31.qa.dapp)     | -            |
-| .cr.qa                     | CR       | https://qa.cr.rootstockcollective.xyz                         | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/dev.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31.qa.dapp)     | Requires VPN |
+| .dev                       | DAO - CR | https://dev.app.rootstockcollective.xyz                       | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/dev.json)                                                                                                   | Requires VPN |
+| .testnet.local             | CR       | http://localhost:3000                                         | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/dev.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31.qa.dapp) | -            |
+| .cr.qa                     | CR       | https://qa.cr.rootstockcollective.xyz                         | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/dev.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31.qa.dapp) | Requires VPN |
 | .dao.qa                    | DAO      | https://qa.dao.rootstockcollective.xyz                        | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/testnet.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31)     | -            |
 | .release-candidate-testnet | DAO - CR | https://release-candidate-testnet.app.rootstockcollective.xyz | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/testnet.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.31)     | Requires VPN |
-| .release-candidate-mainnet | DAO - CR | https://release-candidate-mainnet.app.rootstockcollective.xyz | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/mainnet.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.30)     | Requires VPN   |
+| .release-candidate-mainnet | DAO - CR | https://release-candidate-mainnet.app.rootstockcollective.xyz | [DAO](https://github.com/RootstockCollective/dao-contracts/blob/develop/params/mainnet.json) <br> [CR](https://github.com/RootstockCollective/collective-rewards-sc/blob/main/.env.30)     | Requires VPN |
+
 **CR**: Rootstock Collective Rewards squad <br>
 **DAO**: Rootstock DAO squad
 
@@ -295,7 +299,6 @@ Optional:
 In order to get the prices, you need a coin market cap api key.
 After you get it, set it in the .env.dao
 COIN_MARKET_CAP_KEY=your_key
-
 
 ## Develop branch out of service (~2025-04)
 
