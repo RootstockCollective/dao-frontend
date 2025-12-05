@@ -10,7 +10,7 @@ import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlo
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { ConnectButtonComponent } from '@/shared/walletConnection/components/ConnectButtonComponent'
 import { useModal } from '@/shared/hooks/useModal'
-import { SupplyModal } from './SupplyModal'
+import { DepositModal } from './DepositModal'
 import { WithdrawModal } from './WithdrawModal'
 import { MoneyIconKoto } from '@/components/Icons'
 import { useVaultDepositValidation } from '../context'
@@ -20,12 +20,12 @@ import { VaultDepositKycPopover } from './VaultDepositKycPopover'
  * Component providing deposit and withdraw actions for the vault
  *
  * Features:
- * - Deposit button: Opens SupplyModal when wallet is connected, or prompts wallet connection
+ * - Deposit button: Opens DepositModal when wallet is connected, or prompts wallet connection
  * - Withdraw button: Opens WithdrawModal when wallet is connected, or prompts wallet connection
  * - Wallet connection handling:
  *   - On mobile: Directly triggers wallet connection flow
  *   - On desktop: Shows a popover with wallet connection options
- * - Manages modal state for both supply and withdraw operations
+ * - Manages modal state for both deposit and withdraw operations
  *
  * @returns Deposit and withdraw buttons with associated modals and connection popovers
  */
@@ -33,7 +33,7 @@ export const VaultActions = () => {
   const { isConnected } = useAccount()
   const { onConnectWalletButtonClick } = useAppKitFlow()
   const isDesktop = useIsDesktop()
-  const supplyModal = useModal()
+  const depositModal = useModal()
   const withdrawModal = useModal()
   const { canDeposit, isLoading: isValidationLoading } = useVaultDepositValidation()
   const [depositPopoverOpen, setDepositPopoverOpen] = useState(false)
@@ -63,7 +63,7 @@ export const VaultActions = () => {
       return
     }
 
-    supplyModal.openModal()
+    depositModal.openModal()
   }
 
   const handleWithdrawClick = () => {
@@ -107,7 +107,7 @@ export const VaultActions = () => {
         <Button
           variant="secondary-outline"
           onClick={handleDepositClick}
-          data-testid="supply-button"
+          data-testid="deposit-button"
           ref={depositButtonRef}
         >
           Deposit
@@ -139,7 +139,7 @@ export const VaultActions = () => {
         </Button>
       </div>
 
-      {supplyModal.isModalOpened && <SupplyModal onCloseModal={supplyModal.closeModal} />}
+      {depositModal.isModalOpened && <DepositModal onCloseModal={depositModal.closeModal} />}
       {withdrawModal.isModalOpened && <WithdrawModal onCloseModal={withdrawModal.closeModal} />}
     </>
   )
