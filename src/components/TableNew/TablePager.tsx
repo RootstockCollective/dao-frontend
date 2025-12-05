@@ -116,9 +116,18 @@ export const TablePager: React.FC<TablePagerProps> = ({
         return { ...prev, end: totalItems }
       }
 
+      // If totalItems changed and end is less than what we should show,
+      // update end to reflect available items (for expandable mode)
+      if (isExpandable(mode)) {
+        const minEnd = Math.min(pageSize, totalItems)
+        if (prev.end < minEnd && prev.end < totalItems) {
+          return { ...prev, end: minEnd }
+        }
+      }
+
       return prev
     })
-  }, [totalItems, pageSize])
+  }, [totalItems, pageSize, mode])
 
   // React to pageSize/mode changes WITHOUT needing the previous value:
   // - cyclic: force window size == pageSize

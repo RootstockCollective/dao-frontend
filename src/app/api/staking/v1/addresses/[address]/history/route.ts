@@ -15,6 +15,7 @@ const QuerySchema = z
     page: z.coerce.number().int().min(1).optional(), // optional convenience
     sort_field: SortFieldEnum.default('period'),
     sort_direction: SortDirectionEnum.default('desc'),
+    type: z.array(z.enum(['stake', 'unstake'])).optional(), // Filter by action type
   })
   .transform(q => {
     // If page is provided, compute offset = (page-1) * limit
@@ -33,12 +34,17 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
       const v = searchParams.get(k)
       return v === null || v === '' ? undefined : v
     }
+
+    // Handle multiple 'type' query params
+    const typeParams = searchParams.getAll('type').filter(v => v !== '')
+
     const parsed = QuerySchema.parse({
       limit: qp('limit'),
       offset: qp('offset'),
       page: qp('page'),
       sort_field: qp('sort_field'),
       sort_direction: qp('sort_direction'),
+      type: typeParams.length > 0 ? typeParams : undefined,
     })
 
     const stakingHistory = await getStakingHistoryFromDB({
@@ -47,8 +53,9 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
       offset: parsed.offset,
       sort_field: parsed.sort_field,
       sort_direction: parsed.sort_direction,
+      type: parsed.type,
     })
-    const total = await getStakingHistoryCountFromDB(address)
+    const total = await getStakingHistoryCountFromDB(address, parsed.type)
     return Response.json({
       data: stakingHistory,
       pagination: {
