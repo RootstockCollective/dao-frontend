@@ -44,6 +44,7 @@ type DecodedFallbackData = {
   type: 'fallback'
   affectedAddress: string
   callData: string
+  value: bigint
 }
 
 // Union type for all possible cases
@@ -71,6 +72,7 @@ const tryDecode = (data: string): DecodedData | undefined => {
       continue
     }
   }
+
   return undefined
 }
 /**
@@ -86,7 +88,7 @@ const tryDecode = (data: string): DecodedData | undefined => {
  * @param blockNumber
  */
 export const getProposalEventArguments = ({
-  args: { description, proposalId, proposer, targets, calldatas },
+  args: { description, proposalId, proposer, targets, calldatas, values },
   timeStamp,
   blockNumber,
 }: EventArgumentsParameter) => {
@@ -99,10 +101,12 @@ export const getProposalEventArguments = ({
         acc.push(decodedData)
       } else {
         const affectedAddress = targets[index]
+        const value = values[index] || 0n
         acc.push({
           affectedAddress,
           callData: cd,
           type: 'fallback',
+          value,
         })
       }
     } catch (err) {

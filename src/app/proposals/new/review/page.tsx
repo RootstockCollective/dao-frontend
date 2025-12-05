@@ -11,7 +11,7 @@ import { PreviewLabel } from './components/PreviewLabel'
 import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCreateTreasuryTransferProposal'
 import { useCreateBuilderWhitelistProposal } from '@/app/proposals/hooks/useCreateBuilderWhitelistProposal'
 import { useRemoveBuilderProposal } from '@/app/proposals/hooks/useRemoveBuilderProposal'
-import { tokenContracts, uppercasedTokenContracts } from '@/lib/contracts'
+import { type tokenContracts, uppercasedTokenContracts } from '@/lib/contracts'
 import { showToast } from '@/shared/notification'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
 import { Header, Paragraph } from '@/components/Typography'
@@ -19,17 +19,16 @@ import { DISCOURSE_LINK_SEPARATOR, DISPLAY_NAME_SEPARATOR, NO_MILESTONE } from '
 import { MILESTONE_SEPARATOR, labeledMilestones } from '@/app/proposals/shared/utils'
 import { Milestones } from '@/app/proposals/shared/types'
 import { ActionDetails } from '@/app/proposals/components/action-details'
-import { ActionType, ProposalType } from '@/app/proposals/[id]/types'
+import { ProposalType, type ParsedActionDetails } from '@/app/proposals/[id]/types'
 import { Description, ProposalDetails } from '@/app/proposals/[id]/components'
 import { Category } from '@/app/proposals/components/category'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { GrantProposal } from '../details/schemas/GrantProposalSchema'
-import { ActivationProposal } from '../details/schemas/ActivationProposalSchema'
-import { DeactivationProposal } from '../details/schemas/DeactivationProposalSchema'
+import type { GrantProposal } from '../details/schemas/GrantProposalSchema'
+import type { ActivationProposal } from '../details/schemas/ActivationProposalSchema'
+import type { DeactivationProposal } from '../details/schemas/DeactivationProposalSchema'
 import { usePricesContext } from '@/shared/context'
-import { GetPricesResult } from '@/app/user/types'
+import type { GetPricesResult } from '@/app/user/types'
 import { useBuilderContext } from '@/app/collective-rewards/user'
-import { isRnsDomain } from '@/lib/rns'
 import { VideoPlayer } from '@/components/VideoPlayer'
 import { useDiscourseVideo } from '@/shared/hooks/useDiscourseVideo'
 
@@ -67,34 +66,6 @@ const transformFormToActionDetails = (
     }
     default:
       return { type: '-', amount: undefined, tokenSymbol: undefined }
-  }
-}
-
-// Get the correct action name for ProposalDetails component
-const getActionName = (category: ProposalCategory) => {
-  switch (category) {
-    case ProposalCategory.Grants:
-      return 'withdraw'
-    case ProposalCategory.Activation:
-      return 'communityApproveBuilder'
-    case ProposalCategory.Deactivation:
-      return 'dewhitelistBuilder'
-    default:
-      return undefined
-  }
-}
-
-// Get the correct action type for ActionDetails component
-const getActionType = (category: ProposalCategory) => {
-  switch (category) {
-    case ProposalCategory.Grants:
-      return ActionType.Transfer
-    case ProposalCategory.Activation:
-      return ActionType.BuilderApproval
-    case ProposalCategory.Deactivation:
-      return ActionType.BuilderDeactivation
-    default:
-      return ActionType.Unknown
   }
 }
 
@@ -178,6 +149,9 @@ export default function ProposalReview() {
   const { description, discourseLink, proposalName } = record.form
   const parsedAction = transformFormToActionDetails(record.form, record.category, prices)
 
+  // Review page always has a single action
+  const parsedActions: ParsedActionDetails[] = [parsedAction]
+
   // For activation and deactivation proposals, construct the name with builder name for ProposalDetails component
   // This matches how ProposalView works - the name contains the combined format
   const proposalNameForDetails = (() => {
@@ -228,20 +202,14 @@ export default function ProposalReview() {
             description={description}
             proposer={address ?? ''}
             startsAt={moment()}
-            parsedAction={parsedAction}
-            actionName={getActionName(record.category)}
+            parsedActions={parsedActions}
             link={discourseLink}
             readOnly
           />
           <Description description={description} />
           <VideoPlayer url={videoUrl} className="p-4 md:p-6" />
         </div>
-        <ActionDetails
-          parsedAction={parsedAction}
-          actionType={getActionType(record.category)}
-          className="md:mt-0"
-          readOnly
-        />
+        <ActionDetails parsedActions={parsedActions} className="md:mt-0" readOnly />
       </div>
       <ProposalSubfooter
         submitForm={onSubmit}
