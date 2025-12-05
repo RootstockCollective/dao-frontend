@@ -7,6 +7,7 @@ import { executeTxFlow } from '@/shared/notification'
 import { useCallback, useMemo, useState, useEffect, useRef } from 'react'
 import { useSupplyToVault } from '../hooks/useSupplyToVault'
 import { useVaultAllowance } from '../hooks/useVaultAllowance'
+import { useCanDepositToVault } from '../hooks/useCanDepositToVault'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
 import { Divider } from '@/components/Divider'
@@ -49,6 +50,12 @@ export const SupplyModal = ({ onCloseModal }: Props) => {
     allowanceTxHash,
   } = useVaultAllowance(amount)
 
+  const {
+    canDeposit: isValidAmount,
+    reason: depositLimitReason,
+    isLoading: isDepositValidationLoading,
+  } = useCanDepositToVault(amount)
+
   const isAmountOverBalance = useMemo(() => {
     if (!amount) return false
     const rawAmount = Big(amount)
@@ -60,18 +67,40 @@ export const SupplyModal = ({ onCloseModal }: Props) => {
     if (isAmountOverBalance) {
       return 'This is more than the available USDRIF balance. Please update the amount.'
     }
+    if (!isValidAmount && depositLimitReason) {
+      return depositLimitReason
+    }
     return ''
-  }, [isAmountOverBalance])
+  }, [isAmountOverBalance, isValidAmount, depositLimitReason])
 
   const cannotProceedWithSupply = useMemo(
-    () => !amount || !Big(amount).gt(0) || isAmountOverBalance || isSupplyRequesting,
-    [amount, isAmountOverBalance, isSupplyRequesting],
+    () =>
+      !amount ||
+      !Big(amount).gt(0) ||
+      isAmountOverBalance ||
+      !isValidAmount ||
+      isDepositValidationLoading ||
+      isSupplyRequesting,
+    [amount, isAmountOverBalance, isValidAmount, isDepositValidationLoading, isSupplyRequesting],
   )
 
   const cannotProceedWithAllowance = useMemo(
     () =>
-      !amount || !Big(amount).gt(0) || isAmountOverBalance || isAllowanceRequesting || isAllowanceReadLoading,
-    [amount, isAmountOverBalance, isAllowanceRequesting, isAllowanceReadLoading],
+      !amount ||
+      !Big(amount).gt(0) ||
+      isAmountOverBalance ||
+      !isValidAmount ||
+      isDepositValidationLoading ||
+      isAllowanceRequesting ||
+      isAllowanceReadLoading,
+    [
+      amount,
+      isAmountOverBalance,
+      isValidAmount,
+      isDepositValidationLoading,
+      isAllowanceRequesting,
+      isAllowanceReadLoading,
+    ],
   )
 
   const handleAmountChange = useCallback(

@@ -6,8 +6,9 @@ import Big from '@/lib/big'
 /**
  * Hook for validating if a user can deposit to the vault
  * Combines user deposits check, whitelist status, and deposit limit from contract
+ * @param amount - Optional specific amount to validate (in USDRIF)
  */
-export function useCanDepositToVault() {
+export function useCanDepositToVault(amount?: string) {
   const {
     isWhitelisted,
     maxDefaultDepositLimit,
@@ -38,6 +39,26 @@ export function useCanDepositToVault() {
     }
 
     const userDepositsInUsdrif = Big(formatEther(userDeposits))
+
+    // If specific amount is provided, validate it
+    if (amount && amount !== '0') {
+      const depositAmount = Big(amount)
+
+      // Check if new deposit would exceed the user's applicable limit (both whitelisted and non-whitelisted users have limits)
+      const newTotalDeposits = userDepositsInUsdrif.plus(depositAmount)
+
+      if (newTotalDeposits.gt(limitInUsdrif)) {
+        return {
+          canDeposit: false,
+          isLoading: false,
+          error: undefined,
+          reason: isWhitelisted
+            ? `This deposit would exceed your whitelisted limit of ${formattedLimit} USDRIF.`
+            : 'This deposit would exceed your limit. Complete KYC to deposit more.',
+          maxDepositLimit: formattedLimit,
+        }
+      }
+    }
 
     // If userDeposits <= limit, user can always deposit
     if (userDepositsInUsdrif.lte(limitInUsdrif)) {
@@ -76,5 +97,6 @@ export function useCanDepositToVault() {
     maxDefaultDepositLimit,
     maxWhitelistedDepositLimit,
     userDeposits,
+    amount,
   ])
 }
