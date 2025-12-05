@@ -142,7 +142,7 @@ export const EstimatedRewards = () => {
   const { fiatTotal: backerFiatTotal } = backer
 
   return (
-    <div className="flex flex-col gap-4 md:gap-0 md:flex-row basis-3/5">
+    <div className="flex flex-col gap-4 md:gap-0 md:flex-row basis-3/5 max-md:w-full">
       {builderEstimatedRewardsLoading ? (
         <LoadingSpinner size="medium" />
       ) : (
@@ -167,7 +167,7 @@ export const EstimatedRewards = () => {
           }
         >
           <USDWithTokensRewards usd={builderFiatTotal} tokens={builderMetricTokens} />
-          <MetricBar segments={builderMetricTokens} className="w-full max-w-[200px]" />
+          <MetricBar segments={builderMetricTokens} className="w-full md:max-w-[200px]" />
         </Metric>
       )}
       {builderEstimatedRewardsLoading ? (
@@ -175,8 +175,8 @@ export const EstimatedRewards = () => {
       ) : (
         <Metric
           className="md:justify-end"
-          containerClassName="w-auto"
-          contentClassName="flex flex-col gap-2 items-start"
+          containerClassName="w-auto max-md:w-full"
+          contentClassName="flex flex-col gap-2 items-start max-md:w-full"
           title={
             <MetricTitle
               title="Estimated Rewards for Backers"
@@ -196,7 +196,7 @@ export const EstimatedRewards = () => {
           }
         >
           <USDWithTokensRewards usd={backerFiatTotal} tokens={backerMetricTokens} />
-          <MetricBar segments={backerMetricTokens} className="w-full max-w-[200px]" />
+          <MetricBar segments={backerMetricTokens} className="w-full md:max-w-[200px]" />
         </Metric>
       )}
     </div>
