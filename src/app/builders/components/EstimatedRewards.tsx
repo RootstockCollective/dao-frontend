@@ -2,6 +2,7 @@ import { getCombinedFiatAmount, useHandleErrors } from '@/app/collective-rewards
 import { MetricTooltipContent, MetricTooltipContentProps } from '@/app/components/Metric/MetricTooltipContent'
 import { MetricToken } from '@/app/components/Metric/types'
 import { createMetricToken } from '@/app/components/Metric/utils'
+import { MetricBar } from '@/app/components/Metric/MetricBar'
 import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/FiatTooltipLabel'
 import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
@@ -141,11 +142,12 @@ export const EstimatedRewards = () => {
   const { fiatTotal: backerFiatTotal } = backer
 
   return (
-    <div className="flex flex-col gap-4 md:gap-0 md:flex-row basis-3/5">
+    <div className="flex flex-col gap-4 md:gap-0 md:flex-row basis-3/5 max-md:w-full">
       {builderEstimatedRewardsLoading ? (
         <LoadingSpinner size="medium" />
       ) : (
         <Metric
+          contentClassName="flex flex-col gap-2"
           title={
             <MetricTitle
               title="Estimated Rewards for Builders"
@@ -165,6 +167,7 @@ export const EstimatedRewards = () => {
           }
         >
           <USDWithTokensRewards usd={builderFiatTotal} tokens={builderMetricTokens} />
+          <MetricBar segments={builderMetricTokens} className="w-full md:max-w-[200px]" />
         </Metric>
       )}
       {builderEstimatedRewardsLoading ? (
@@ -172,7 +175,8 @@ export const EstimatedRewards = () => {
       ) : (
         <Metric
           className="md:justify-end"
-          containerClassName="w-auto"
+          containerClassName="w-auto max-md:w-full"
+          contentClassName="flex flex-col gap-2 items-start max-md:w-full"
           title={
             <MetricTitle
               title="Estimated Rewards for Backers"
@@ -192,6 +196,7 @@ export const EstimatedRewards = () => {
           }
         >
           <USDWithTokensRewards usd={backerFiatTotal} tokens={backerMetricTokens} />
+          <MetricBar segments={backerMetricTokens} className="w-full md:max-w-[200px]" />
         </Metric>
       )}
     </div>
