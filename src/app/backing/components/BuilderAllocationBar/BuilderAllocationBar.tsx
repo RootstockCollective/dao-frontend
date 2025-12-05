@@ -92,32 +92,36 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
 
   // Build itemsData from orderedKeys including unallocated with its dynamic value
   const baseItems: AllocationItem[] = useMemo(() => {
-    return orderedKeys
-      .map((key: Address) => {
-        if (key === zeroAddress) {
-          return createUnallocatedItem(initialData, cumulativeAllocation)
-        }
+    return (
+      orderedKeys
+        .map((key: Address) => {
+          if (key === zeroAddress) {
+            return createUnallocatedItem(initialData, cumulativeAllocation)
+          }
 
-        const allocation = allocations[key]
-        const builder = getBuilder(key)
-        // TODO: Add a check to see if the builder is rewardable and
-        // and change the segment to allow certain actions only (e.g.: reduce but not increase)
+          const allocation = allocations[key]
+          const builder = getBuilder(key)
+          // TODO: Add a check to see if the builder is rewardable and
+          // and change the segment to allow certain actions only (e.g.: reduce but not increase)
 
-        const value = allocation || 0n
-        const initialValue = initialData.allocations[key] || 0n
+          const value = allocation || 0n
+          const initialValue = initialData.allocations[key] || 0n
 
-        return {
-          key,
-          label: builder?.builderName || shortAddress(key),
-          value,
-          initialValue,
-          displayColor: getBuilderColor(key),
-          isTemporary: initialData.allocations[key] !== allocation,
-          isEditable: isBuilderRewardable(builder?.stateFlags),
-        }
-      })
-      .filter(item => item !== null && item?.value > 0n)
-  }, [orderedKeys, allocations, cumulativeAllocation, initialData, getBuilder])
+          return {
+            key,
+            label: builder?.builderName || shortAddress(key),
+            value,
+            initialValue,
+            displayColor: getBuilderColor(key),
+            isTemporary: initialData.allocations[key] !== allocation,
+            isEditable: isBuilderRewardable(builder?.stateFlags),
+          }
+        })
+        // On mobile, exclude items with zero value as interaction handlers are unavailable
+        // This keeps the allocation bar cleaner and avoids uneditable entries for small screens
+        .filter(item => item !== null && (isDesktop || item.value > 0n))
+    )
+  }, [orderedKeys, allocations, getBuilder, initialData, cumulativeAllocation, isDesktop])
 
   // Local state for itemsData so bar updates on interactions
   const [itemsData, setItemsData] = useState<AllocationItem[]>(baseItems)
