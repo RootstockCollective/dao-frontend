@@ -26,4 +26,3 @@ export const swapStepConfig: StepConfig[] = [
     progress: 100,
   },
 ]
-

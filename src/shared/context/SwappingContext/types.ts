@@ -26,12 +26,14 @@ export interface SwapDirection {
 
 /**
  * Quote result from Uniswap Quoter
+ * sqrtPriceX96After and initializedTicksCrossed are optional as they're not used in the swap flow
  */
 export interface QuoteResult {
   amountOut: bigint
-  sqrtPriceX96After: bigint
-  initializedTicksCrossed: bigint
   gasEstimate: bigint
+  timestamp: number // Unix timestamp in milliseconds when quote was fetched
+  sqrtPriceX96After?: bigint // Price after swap (not used in our flow)
+  initializedTicksCrossed?: bigint // Ticks crossed (not used in our flow)
 }
 
 /**
@@ -129,23 +131,17 @@ export interface SwappingContextValue {
   setAmountIn: (amount: string) => void
   resetSwap: () => void
 
-  // Quote functions (to be implemented with Quoter contract)
-  getQuote: (
-    amountIn: bigint,
-    tokenIn: SwapTokenSymbol,
-    tokenOut: SwapTokenSymbol,
-  ) => Promise<QuoteResult | null>
+  // Swap execution state management - contract calls should be in hooks using useWriteContract
+  setSwapping: (isSwapping: boolean) => void
+  setSwapError: (error: Error | null) => void
+  setSwapTxHash: (txHash: string | null) => void
 
-  // Swap execution (to be implemented with Router contract)
-  executeSwap: (
-    amountIn: bigint,
-    amountOutMinimum: bigint,
-    tokenIn: SwapTokenSymbol,
-    tokenOut: SwapTokenSymbol,
-    deadline: bigint,
-  ) => Promise<string | null>
-
-  // Allowance functions
-  checkAllowance: (token: SwapTokenSymbol) => Promise<bigint | null>
-  approveToken: (token: SwapTokenSymbol, amount: bigint) => Promise<string | null>
+  // State management functions for hooks (internal use)
+  setQuoting: (isQuoting: boolean) => void
+  setQuote: (quote: QuoteResult | null) => void
+  setQuoteError: (error: Error | null) => void
+  setCheckingAllowance: (isChecking: boolean) => void
+  setAllowance: (allowance: bigint | null) => void
+  setApproving: (isApproving: boolean) => void
+  setApprovalTxHash: (txHash: string | null) => void
 }

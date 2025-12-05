@@ -1,89 +1,92 @@
 import { Header, Label } from '@/components/Typography'
-import { useEffect } from 'react'
-import { SwapStepProps, ButtonActions } from '../types'
+import { useEffect, useCallback, useMemo } from 'react'
+import { SwapStepProps } from '../types'
 import { StakeTokenAmountDisplay } from '@/app/user/Stake/components/StakeTokenAmountDisplay'
 import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
-import { Address } from 'viem'
-
-// Temporary type - should match SwappingContext interface
-interface SwappingContextValue {
-  amount: string
-  tokenToSend: {
-    balance: string
-    symbol: string
-    contract: Address
-    price?: string
-  }
-  tokenToReceive: {
-    balance: string
-    symbol: string
-    contract: Address
-    price?: string
-  }
-  swapPreviewFrom: {
-    amount: string
-    amountConvertedToCurrency: string
-    balance: string
-    tokenSymbol: string
-  }
-  setButtonActions: (actions: ButtonActions) => void
-}
-
-// TODO: Import and use useSwappingContext when SwappingProvider is merged from dao-1767
-// import { useSwappingContext } from '@/shared/context/SwappingContext'
+import { useSwapInput, useTokenSelection, useTokenAllowance } from '@/shared/context/SwappingContext/hooks'
+import { useSwappingContext } from '@/shared/context/SwappingContext'
+import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { executeTxFlow } from '@/shared/notification'
+import { parseUnits, Hash } from 'viem'
+import { USDT0 } from '@/lib/constants'
+import Big from '@/lib/big'
 
 export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepProps) => {
-  // TODO: Replace with actual useSwappingContext when SwappingProvider is merged
-  // const {
-  //   amount,
-  //   tokenToSend,
-  //   tokenToReceive,
-  //   swapPreviewFrom: from,
-  //   setButtonActions,
-  // } = useSwappingContext()
+  const { amountIn } = useSwapInput()
+  const { tokenInData } = useTokenSelection()
+  const { balances, prices } = useBalancesContext()
+  const { state } = useSwappingContext()
+  const { allowance, isApproving, hasSufficientAllowance, approve } = useTokenAllowance()
 
-  // Temporary placeholder - remove when SwappingProvider is available
-  const amount = '0' // Use '0' instead of '' to avoid Big.js errors in useAllowance
-  const tokenToSend = { balance: '0', symbol: 'USDT0', price: '1', contract: '0x0' as Address }
-  const tokenToReceive = { balance: '0', symbol: 'USDRIF', price: '1', contract: '0x0' as Address }
-  const from = {
-    amount: '0',
-    amountConvertedToCurrency: '$0.00',
-    balance: '0',
-    tokenSymbol: 'USDT0',
+  // At step 2, amountIn should always exist (user came from step 1)
+  if (!amountIn) {
+    // This shouldn't happen, but handle gracefully
+    return null
   }
 
-  // TODO: Re-enable useAllowance when functionality is wired - for now using placeholder values
-  // Note: For USDT0 (6 decimals), we need to use parseUnits with 6 decimals instead of parseEther
-  // This will need to be adjusted based on the actual token decimals
-  // const {
-  //   isAllowanceEnough,
-  //   isAllowanceReadLoading,
-  //   onRequestAllowance,
-  //   isRequesting,
-  //   isTxPending,
-  //   isTxFailed,
-  //   allowanceTxHash,
-  // } = useAllowance(amount, tokenToSend.contract, tokenToReceive.contract)
+  const from = useMemo(() => {
+    const priceValue = prices[USDT0]?.price || 0
+    const amountInCurrency = Big(amountIn).times(priceValue).toFixed(2)
+    return {
+      amount: amountIn,
+      amountConvertedToCurrency: `$${amountInCurrency}`,
+      balance: balances[USDT0]?.balance || '0',
+      tokenSymbol: tokenInData.symbol,
+    }
+  }, [amountIn, prices, balances, tokenInData.symbol])
 
-  // Placeholder values for UI demo
-  const isAllowanceEnough = false
-  const isAllowanceReadLoading = false
-  const isRequesting = false
-  const isTxPending = false
-  const isTxFailed = false
-  const allowanceTxHash = undefined as string | undefined
+  // Check if allowance is sufficient
+  const requiredAmount = useMemo(() => {
+    if (!amountIn || !tokenInData.decimals) {
+      return 0n
+    }
+    try {
+      return parseUnits(amountIn, tokenInData.decimals)
+    } catch {
+      return 0n
+    }
+  }, [amountIn, tokenInData.decimals])
+
+  const isAllowanceEnough = useMemo(() => {
+    if (!allowance || requiredAmount === 0n) {
+      return false
+    }
+    return hasSufficientAllowance(requiredAmount)
+  }, [allowance, requiredAmount, hasSufficientAllowance])
+
+  const handleRequestAllowance = useCallback(() => {
+    if (!requiredAmount || requiredAmount === 0n) {
+      return
+    }
+    executeTxFlow({
+      onRequestTx: async () => {
+        const txHash = await approve(requiredAmount)
+        if (!txHash) {
+          throw new Error('Transaction hash is null')
+        }
+        return txHash as Hash
+      },
+      onSuccess: onGoNext,
+      action: 'allowance',
+    })
+  }, [requiredAmount, approve, onGoNext])
+
+  // Auto-advance if allowance is sufficient
+  useEffect(() => {
+    if (isAllowanceEnough) {
+      onGoNext()
+    }
+  }, [isAllowanceEnough, onGoNext])
 
   // Set button actions
-  // TODO: Re-enable validation and actual allowance logic when functionality is wired
   useEffect(() => {
     setButtonActions({
       primary: {
         label: 'Request allowance',
-        onClick: onGoNext, // Temporarily use onGoNext for demo - will be: handleRequestAllowance
-        disabled: false, // Temporarily disabled for UI demo
-        loading: false,
-        isTxPending: false,
+        onClick: handleRequestAllowance,
+        disabled: !amountIn || !Big(amountIn).gt(0) || isAllowanceEnough,
+        loading: isApproving,
+        isTxPending: isApproving,
       },
       secondary: {
         label: 'Back',
@@ -92,7 +95,7 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
         loading: false,
       },
     })
-  }, [onGoNext, onGoBack, setButtonActions])
+  }, [amountIn, isAllowanceEnough, isApproving, handleRequestAllowance, onGoBack, setButtonActions])
 
   return (
     <>
@@ -102,21 +105,21 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
             Interacting with
           </Label>
           <div className="flex items-center gap-2 mt-2">
-            <Header variant="h1">{tokenToSend.symbol} smart contract</Header>
+            <Header variant="h1">{tokenInData.symbol} smart contract</Header>
           </div>
         </div>
         <StakeTokenAmountDisplay
           label="Allowance amount"
-          amount={amount}
-          tokenSymbol={tokenToSend.symbol}
+          amount={amountIn}
+          tokenSymbol={tokenInData.symbol}
           amountInCurrency={from.amountConvertedToCurrency}
           isFlexEnd
         />
       </div>
 
       <TransactionStatus
-        txHash={allowanceTxHash}
-        isTxFailed={isTxFailed}
+        txHash={state.approvalTxHash || undefined}
+        isTxFailed={false}
         failureMessage="Allowance TX failed."
       />
     </>
