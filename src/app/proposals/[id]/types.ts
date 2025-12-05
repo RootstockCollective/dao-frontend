@@ -3,7 +3,7 @@ export enum ProposalType {
   BUILDER_ACTIVATION = 'Builder Activation',
   BUILDER_DEACTIVATION = 'Builder Deactivation',
   WITHDRAW = 'Transfer of',
-  RAW_TRANSFER = 'Raw transfer',
+  RAW_TRANSFER = 'Raw',
   UNKNOWN = 'Unknown action',
 }
 

@@ -63,7 +63,7 @@ const renderSingleActionContent = (
   switch (parsedAction.type) {
     case ProposalType.RAW_TRANSFER:
     case ProposalType.WITHDRAW: {
-      const displayType = parsedAction.type === ProposalType.RAW_TRANSFER ? 'Raw' : actionType
+      const displayType = parsedAction.type === ProposalType.RAW_TRANSFER ? parsedAction.type : actionType
       return (
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -211,10 +211,9 @@ export const ActionDetails = ({ parsedActions, actionType, className, readOnly }
       <Header variant="h3">ACTIONS ({totalCount})</Header>
       <div className="flex flex-col gap-4">
         {parsedActions.map((action, index) => {
-          // Generate unique key - always include index to ensure uniqueness
-          const actionKey = `action-${index}-${action.type}-${action.toAddress || action.builder || ''}`
           return (
-            <div key={actionKey}>
+            // biome-ignore lint/suspicious/noArrayIndexKey: index is stable here, array is not reordered
+            <div key={`action-${index}`}>
               {index > 0 && <div className="border-t border-white/10 my-4" />}
               <Span variant="tag-s" className="text-white/70 mb-2">
                 Action {index + 1}
