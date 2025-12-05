@@ -7,8 +7,8 @@ interface VaultDepositValidationContextType {
   canDeposit: boolean
   isLoading: boolean
   error: Error | null | undefined
-  reason?: string
   maxDepositLimit: string
+  reason?: string
 }
 
 const initialContextState: VaultDepositValidationContextType = {
