@@ -35,9 +35,8 @@ export const VaultUserMetricsContainer = () => {
         )}
         <BalanceInfo
           className="max-w-[214px] min-w-[180px]"
-          title="Your total deposited"
-          amount={isLoading ? '...' : formatSymbol(userBalance, 'USDRIF')}
-          symbol="USDRIF"
+          title="Your Shares"
+          amount={isLoading ? '...' : formatSymbol(userBalance, 'cTokenVault')}
         />
         {isConnected && userBalance > 0 && (
           <div className="flex flex-col items-center gap-2">
