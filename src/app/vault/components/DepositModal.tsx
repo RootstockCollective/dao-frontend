@@ -8,6 +8,8 @@ import { useCallback, useMemo, useState, useEffect, useRef } from 'react'
 import { useDepositToVault } from '../hooks/useDepositToVault'
 import { useVaultAllowance } from '../hooks/useVaultAllowance'
 import { useCanDepositToVault } from '../hooks/useCanDepositToVault'
+import { useVaultDepositLimiter } from '../hooks/useVaultDepositLimiter'
+import { formatEther } from 'viem'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
 import { Divider } from '@/components/Divider'
@@ -26,6 +28,7 @@ interface Props {
 export const DepositModal = ({ onCloseModal }: Props) => {
   const { balances, isBalancesLoading } = useGetAddressBalances()
   const { prices } = usePricesContext()
+  const { userDeposits } = useVaultDepositLimiter()
   const isDesktop = useIsDesktop()
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -54,7 +57,11 @@ export const DepositModal = ({ onCloseModal }: Props) => {
     canDeposit: isValidAmount,
     reason: depositLimitReason,
     isLoading: isDepositValidationLoading,
+    maxDepositLimit,
   } = useCanDepositToVault(amount)
+
+  // Use the same data source as validation (deposit limiter) for consistency
+  const formattedUserDeposits = Big(formatEther(userDeposits)).toFixedNoTrailing(2)
 
   const isAmountOverBalance = useMemo(() => {
     if (!amount) return false
@@ -157,11 +164,19 @@ export const DepositModal = ({ onCloseModal }: Props) => {
           />
 
           <div className="flex flex-col justify-between mx-3 mt-2 gap-2">
-            <div className="flex items-center gap-1">
-              <TokenImage symbol="USDRIF" size={12} />
-              <Label variant="body-s" className="text-text-60" data-testid="totalBalanceLabel">
-                USDRIF available: {usdrifBalance.formattedBalance}
-              </Label>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-1">
+                <TokenImage symbol="USDRIF" size={12} />
+                <Label variant="body-s" className="text-text-60" data-testid="totalBalanceLabel">
+                  USDRIF available: {usdrifBalance.formattedBalance}
+                </Label>
+              </div>
+              <div className="flex items-center gap-1">
+                <TokenImage symbol="USDRIF" size={12} />
+                <Label variant="body-s" className="text-text-60" data-testid="depositLimitLabel">
+                  Vault deposits: {formattedUserDeposits} / {maxDepositLimit} USDRIF
+                </Label>
+              </div>
             </div>
             <div className="flex gap-1 self-end">
               <PercentageButtons onPercentageClick={handlePercentageClick} />
