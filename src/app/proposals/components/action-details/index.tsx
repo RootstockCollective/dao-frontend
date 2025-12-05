@@ -5,7 +5,7 @@ import { TokenImage } from '@/components/TokenImage'
 import Big from '@/lib/big'
 import { formatNumberWithCommas, formatCurrency, cn, shortAddress } from '@/lib/utils'
 import { type Address, formatEther } from 'viem'
-import { type ActionType, type ParsedActionDetails, ProposalType } from '../../[id]/types'
+import { type ParsedActionDetails, ProposalType } from '../../[id]/types'
 import type { ClassNameValue } from 'tailwind-merge'
 import { convertAmountToBigint } from '../../shared/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
@@ -17,7 +17,6 @@ interface InfoGridItem {
 
 interface ActionDetailsProps {
   parsedActions: ParsedActionDetails[]
-  actionType: ActionType
   className?: ClassNameValue
   readOnly?: boolean
 }
@@ -56,14 +55,12 @@ const makeRightLabel = (proposalType: ProposalType, isDesktop: boolean) => {
 // Render content for a single action
 const renderSingleActionContent = (
   parsedAction: ParsedActionDetails,
-  actionType: ActionType,
   isDesktop: boolean,
   readOnly?: boolean,
 ): ReactNode => {
   switch (parsedAction.type) {
     case ProposalType.RAW_TRANSFER:
     case ProposalType.WITHDRAW: {
-      const displayType = parsedAction.type === ProposalType.RAW_TRANSFER ? parsedAction.type : actionType
       return (
         <div className="grid grid-cols-2 gap-4">
           <div>
@@ -71,7 +68,7 @@ const renderSingleActionContent = (
               Type
             </Span>
             <Paragraph variant="body" data-testid="Type">
-              {displayType}
+              {parsedAction.type}
             </Paragraph>
           </div>
           <div className="flex flex-col">
@@ -152,7 +149,7 @@ const renderSingleActionContent = (
     case ProposalType.BUILDER_DEACTIVATION: {
       const rightLabel = makeRightLabel(parsedAction.type, isDesktop)
       const items: InfoGridItem[] = [
-        { label: 'Type', value: actionType },
+        { label: 'Type', value: parsedAction.type },
         {
           label: rightLabel,
           value: parsedAction.builder ? (
@@ -180,13 +177,13 @@ const renderSingleActionContent = (
   }
 }
 
-export const ActionDetails = ({ parsedActions, actionType, className, readOnly }: ActionDetailsProps) => {
+export const ActionDetails = ({ parsedActions, className, readOnly }: ActionDetailsProps) => {
   const isDesktop = useIsDesktop()
   const totalCount = parsedActions.length
 
   // For single transaction - render as before (backward compatibility)
   if (totalCount === 1) {
-    const content = renderSingleActionContent(parsedActions[0], actionType, isDesktop, readOnly)
+    const content = renderSingleActionContent(parsedActions[0], isDesktop, readOnly)
     return (
       <div
         className={cn(
@@ -218,7 +215,7 @@ export const ActionDetails = ({ parsedActions, actionType, className, readOnly }
               <Span variant="tag-s" className="text-white/70 mb-2">
                 Action {index + 1}
               </Span>
-              {renderSingleActionContent(action, actionType, isDesktop, readOnly)}
+              {renderSingleActionContent(action, isDesktop, readOnly)}
             </div>
           )
         })}

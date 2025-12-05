@@ -5,12 +5,11 @@ import { cn, formatNumberWithCommas, shortAddress } from '@/lib/utils'
 import { type Address, formatEther } from 'viem'
 import {
   convertAmountToBigint,
-  type DecodedFunctionName,
   DISPLAY_NAME_SEPARATOR,
   getDiscourseLinkFromProposalDescription,
   splitCombinedName,
 } from '@/app/proposals/shared/utils'
-import { type ParsedActionsResult, ProposalType } from '../types'
+import { type ParsedActionDetails, ProposalType } from '../types'
 import type { Moment } from 'moment'
 
 interface ProposalDetailsProps {
@@ -19,8 +18,7 @@ interface ProposalDetailsProps {
   proposer: string
   startsAt: Moment
   fullProposalName?: string
-  parsedActionsResult: ParsedActionsResult
-  actionName: DecodedFunctionName | undefined
+  parsedActions: ParsedActionDetails[]
   link?: string
   readOnly?: boolean
 }
@@ -77,7 +75,6 @@ const DiscourseLink = ({ link, readOnly, 'data-testid': dataTestId }: DiscourseL
  * @param proposer
  * @param startsAt
  * @param parsedAction
- * @param actionName
  * @param link
  * @param readOnly
  * @constructor
@@ -87,8 +84,7 @@ export const ProposalDetails = ({
   description,
   proposer,
   startsAt,
-  parsedActionsResult,
-  actionName,
+  parsedActions,
   link,
   readOnly,
 }: ProposalDetailsProps) => {
@@ -96,15 +92,15 @@ export const ProposalDetails = ({
   const { builderName } = splitCombinedName(nameToUse)
 
   // For display purposes, we use the first action
-  const parsedAction = parsedActionsResult.actions[0]
-  const totalActionsCount = parsedActionsResult.totalCount
+  const parsedAction = parsedActions[0]
+  const totalActionsCount = parsedActions.length
 
   const discourseLink =
     link ?? (description ? getDiscourseLinkFromProposalDescription(description) : undefined)
   const addressToWhitelist = parsedAction.builder
 
-  const isCommunityApproveBuilderAction = actionName === 'communityApproveBuilder'
-  const isBuilderDeactivationAction = actionName === 'dewhitelistBuilder'
+  const isCommunityApproveBuilderAction = parsedAction.type === ProposalType.BUILDER_ACTIVATION
+  const isBuilderDeactivationAction = parsedAction.type === ProposalType.BUILDER_DEACTIVATION
 
   const getProposalTypeLabel = () => {
     const additionalActionsText =

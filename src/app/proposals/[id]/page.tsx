@@ -4,7 +4,7 @@ import { type DecodedData, getDiscourseLinkFromProposalDescription } from '@/app
 import { Header, Paragraph } from '@/components/Typography'
 import { useParams } from 'next/navigation'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { type ParsedActionDetails, type ParsedActionsResult, ProposalType } from './types'
+import { type ParsedActionDetails, ProposalType } from './types'
 import type { GetPricesResult } from '@/app/user/types'
 import { RBTC, RIF, RIF_ADDRESS, USDRIF, USDRIF_ADDRESS, TRIF, ENV } from '@/lib/constants'
 import {
@@ -105,25 +105,12 @@ const parseSingleAction = (action: DecodedData, prices: GetPricesResult): Parsed
 const parseAllProposalActions = (
   calldatasParsed: DecodedData[],
   prices: GetPricesResult,
-): ParsedActionsResult => {
+): ParsedActionDetails[] => {
   if (!calldatasParsed || calldatasParsed.length === 0) {
-    return {
-      actions: [{ type: '-', amount: undefined, tokenSymbol: undefined }],
-      totalCount: 0,
-    }
+    return [{ type: ProposalType.UNKNOWN }]
   }
 
-  const actions: ParsedActionDetails[] = []
-
-  for (const calldata of calldatasParsed) {
-    const parsed = parseSingleAction(calldata, prices)
-    actions.push(parsed)
-  }
-
-  return {
-    actions,
-    totalCount: actions.length,
-  }
+  return calldatasParsed.map(calldata => parseSingleAction(calldata, prices))
 }
 
 const PageWithProposal = (proposal: Proposal) => {
@@ -141,28 +128,23 @@ const PageWithProposal = (proposal: Proposal) => {
   const { prices } = usePricesContext()
 
   // Parse all actions in the proposal
-  const parsedActionsResultBase = useMemo(
+  const parsedActionsBase = useMemo(
     () => parseAllProposalActions(calldatasParsed, prices),
     [calldatasParsed, prices],
   )
 
   // Apply RNS resolution to the first action (most important for display)
-  const firstActionWithRns = useProposalAddressResolution(parsedActionsResultBase.actions[0])
+  const firstActionWithRns = useProposalAddressResolution(parsedActionsBase[0])
 
   // Create updated result with RNS-resolved first action
-  const parsedActionsResult = useMemo<ParsedActionsResult>(
-    () => ({
-      ...parsedActionsResultBase,
-      actions: [firstActionWithRns, ...parsedActionsResultBase.actions.slice(1)],
-    }),
-    [parsedActionsResultBase, firstActionWithRns],
+  const parsedActions = useMemo<ParsedActionDetails[]>(
+    () => [firstActionWithRns, ...parsedActionsBase.slice(1)],
+    [parsedActionsBase, firstActionWithRns],
   )
 
   const voteOnProposalData = useVoteOnProposal(proposalId)
   const snapshot = useGetProposalSnapshot(proposalId)
   const { data: videoUrl } = useDiscourseVideo(getDiscourseLinkFromProposalDescription(description))
-
-  const actionName = calldatasParsed?.[0]?.type === 'decoded' ? calldatasParsed[0].functionName : undefined
 
   return (
     <div className="min-h-screen flex flex-col gap-4 w-full max-w-full">
@@ -186,8 +168,7 @@ const PageWithProposal = (proposal: Proposal) => {
               description={description}
               proposer={proposer}
               startsAt={Starts}
-              parsedActionsResult={parsedActionsResult}
-              actionName={actionName}
+              parsedActions={parsedActions}
             />
             <Description description={description} />
             <VideoPlayer url={videoUrl} className="p-4 md:p-6" />
@@ -196,8 +177,7 @@ const PageWithProposal = (proposal: Proposal) => {
         </div>
         <VotingDetails
           proposalId={proposalId}
-          parsedActionsResult={parsedActionsResult}
-          actionName={actionName}
+          parsedActions={parsedActions}
           snapshot={snapshot}
           proposalDeadline={proposalDeadline}
           voteStart={voteStart}

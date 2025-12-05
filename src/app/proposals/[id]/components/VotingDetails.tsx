@@ -20,7 +20,7 @@ import { ConnectButtonComponent } from '@/shared/walletConnection/components/Con
 import { NewPopover } from '@/components/NewPopover'
 import { VotingDetails as VotingDetailsComponent, type ButtonAction } from '../../components/vote-details'
 import { ActionDetails } from '../../components/action-details'
-import { type ParsedActionsResult, ActionType } from '../types'
+import type { ParsedActionDetails } from '../types'
 import { Span } from '@/components/Typography'
 import type { Eta } from '../../shared/types'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
@@ -28,25 +28,9 @@ import { MobileVotingButton } from './MobileVotingButton'
 import { Modal } from '@/components/Modal'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
 
-// Keep old actions for backward compatibility
-const legacyActionNameToActionTypeMap = new Map<string, ActionType>([
-  ['dewhitelistBuilder', ActionType.BuilderDeactivation],
-  ['whitelistBuilder', ActionType.BuilderApproval],
-  ['removeWhitelistedBuilder', ActionType.BuilderDeactivation],
-])
-// New actions names
-const actionNameToActionTypeMap = new Map<string, ActionType>([
-  ...legacyActionNameToActionTypeMap,
-  ['withdrawERC20', ActionType.Transfer],
-  ['withdraw', ActionType.Transfer],
-  ['communityApproveBuilder', ActionType.BuilderApproval],
-  ['communityBanBuilder', ActionType.BuilderDeactivation],
-])
-
 interface VotingDetailsProps {
   proposalId: string
-  parsedActionsResult: ParsedActionsResult
-  actionName: string | undefined
+  parsedActions: ParsedActionDetails[]
   snapshot: bigint | undefined
   proposalDeadline: Big
   voteStart: string | undefined
@@ -55,8 +39,7 @@ interface VotingDetailsProps {
 
 export const VotingDetails = ({
   proposalId,
-  parsedActionsResult,
-  actionName,
+  parsedActions,
   snapshot,
   proposalDeadline,
   voteStart,
@@ -89,11 +72,6 @@ export const VotingDetails = ({
 
   const [popoverOpen, setPopoverOpen] = useState(false)
   const voteButtonRef = useRef<HTMLButtonElement>(null)
-
-  const actionType: ActionType =
-    actionName && actionNameToActionTypeMap.has(actionName)
-      ? actionNameToActionTypeMap.get(actionName)!
-      : ActionType.Unknown
 
   const cannotCastVote =
     proposalState !== ProposalState.Succeeded &&
@@ -292,7 +270,7 @@ export const VotingDetails = ({
         actionDisabled={isQueueing || isExecuting}
         eta={getEta(proposalState)}
       />
-      {isDesktop && <ActionDetails parsedActions={parsedActionsResult.actions} actionType={actionType} />}
+      {isDesktop && <ActionDetails parsedActions={parsedActions} />}
     </div>
   )
 
@@ -300,7 +278,7 @@ export const VotingDetails = ({
   if (!isDesktop) {
     return (
       <>
-        <ActionDetails parsedActions={parsedActionsResult.actions} actionType={actionType} />
+        <ActionDetails parsedActions={parsedActions} />
         {isModalOpen && (
           <Modal onClose={() => setIsModalOpen(false)} fullscreen>
             <VotingDetailsContent />
