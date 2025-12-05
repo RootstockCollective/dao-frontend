@@ -118,8 +118,16 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
           }
         })
         // On mobile, exclude items with zero value as interaction handlers are unavailable
-        // This keeps the allocation bar cleaner and avoids uneditable entries for small screens
         .filter(item => item !== null && (isDesktop || item.value > 0n))
+        .sort((a, b) => {
+          // Available backing (zeroAddress) always last
+          if (a.key === zeroAddress) return 1
+          if (b.key === zeroAddress) return -1
+          // Non-editable items first, editable items after
+          // This avoids issues with the resize handles not working properly
+          if (a.isEditable === b.isEditable) return 0
+          return a.isEditable ? 1 : -1
+        })
     )
   }, [orderedKeys, allocations, getBuilder, initialData, cumulativeAllocation, isDesktop])
 
