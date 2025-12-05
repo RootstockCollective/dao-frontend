@@ -2,7 +2,6 @@ import type { HTMLAttributes } from 'react'
 import { RootstockLogoIcon } from '@/components/Icons'
 import { useLayoutContext } from '../LayoutProvider'
 import { Hamburger } from '@/components/Hamburger'
-import { Tooltip } from '@/components/Tooltip'
 import { cn } from '@/lib/utils'
 import { UserConnectionManager } from '@/shared/walletConnection'
 import { useStickyHeader } from '@/shared/hooks'
@@ -27,9 +26,11 @@ export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElem
       )}
     >
       <div className="basis-1/2">
-        <Tooltip text={isSidebarOpen ? 'Close menu' : 'Open menu'}>
-          <Hamburger isOpen={isSidebarOpen} onClick={toggleSidebar} />
-        </Tooltip>
+        <Hamburger
+          isOpen={isSidebarOpen}
+          onClick={toggleSidebar}
+          ariaLabel={isSidebarOpen ? 'Close menu' : 'Open menu'}
+        />
       </div>
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="p-1 rounded-full">
