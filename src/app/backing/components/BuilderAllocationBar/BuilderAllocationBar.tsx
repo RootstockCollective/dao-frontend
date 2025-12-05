@@ -181,7 +181,6 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
       height={isEmpty || !isDesktop ? '1rem' : undefined}
       onChange={handleAllocationChange}
       withModal={!isDesktop}
-      // we want the component to have the same height
       {...barOverrides}
     />
   )
