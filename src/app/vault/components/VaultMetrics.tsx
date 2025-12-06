@@ -31,7 +31,7 @@ export const VaultMetrics = () => {
             <div className="flex flex-col gap-2 text-wrap max-w-[35rem] text-xs p-2">
               <Paragraph>
                 In addition to the strategies APYs listed below, there is an additional synthetic yield
-                {!isLoadingSynthetic && <Span> of {formatApy(syntheticYield)}</Span>}
+                {!isLoadingSynthetic && <Span> of {formatApy(syntheticYield)}%</Span>}
               </Paragraph>
             </div>
           }
