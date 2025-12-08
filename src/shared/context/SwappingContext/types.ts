@@ -67,9 +67,6 @@ export interface SwapState {
   // Pool data
   poolAddress: Address | null
   poolFee: number | null
-
-  // Slippage tolerance (in percentage, e.g., 0.5 = 0.5%)
-  slippageTolerance: number | null
 }
 
 /**
@@ -92,7 +89,6 @@ export enum SwapActionType {
   SET_APPROVAL_TX_HASH = 'SET_APPROVAL_TX_HASH',
   SET_POOL_ADDRESS = 'SET_POOL_ADDRESS',
   SET_POOL_FEE = 'SET_POOL_FEE',
-  SET_SLIPPAGE_TOLERANCE = 'SET_SLIPPAGE_TOLERANCE',
   RESET_SWAP = 'RESET_SWAP',
 }
 
@@ -116,7 +112,6 @@ export type SwapAction =
   | { type: SwapActionType.SET_APPROVAL_TX_HASH; payload: string | null }
   | { type: SwapActionType.SET_POOL_ADDRESS; payload: Address | null }
   | { type: SwapActionType.SET_POOL_FEE; payload: number | null }
-  | { type: SwapActionType.SET_SLIPPAGE_TOLERANCE; payload: number | null }
   | { type: SwapActionType.RESET_SWAP }
 
 /**
@@ -149,5 +144,4 @@ export interface SwappingContextValue {
   setAllowance: (allowance: bigint | null) => void
   setApproving: (isApproving: boolean) => void
   setApprovalTxHash: (txHash: string | null) => void
-  setSlippageTolerance: (slippage: number | null) => void
 }
