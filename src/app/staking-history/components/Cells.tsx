@@ -158,8 +158,11 @@ export const ActionsCell: FC<TotalAmountCellProps> = ({
       <TableCell columnId="total_amount" className="justify-center">
         {isHovered ? (
           <button
-            onClick={onToggle}
-            className="flex items-center gap-2 bg-transparent border-none cursor-pointer"
+            onClick={e => {
+              e.stopPropagation()
+              onToggle?.()
+            }}
+            className="flex items-center gap-2 bg-transparent border-none cursor-pointer w-full h-full self-stretch justify-center"
             data-testid="StakingHistoryToggleDetailsButton"
           >
             <Paragraph variant="body-s" className="text-black font-medium">
