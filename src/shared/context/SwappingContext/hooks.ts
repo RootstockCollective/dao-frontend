@@ -207,32 +207,34 @@ export const useTokenAllowance = () => {
       try {
         const { publicClient } = await import('@/lib/viemPublicClient')
 
-        // Step 1: Approve Permit2 to spend tokens (ERC-20 approval)
-        let permit2ApprovalHash: `0x${string}` | undefined
-        try {
-          permit2ApprovalHash = await writeContractAsync({
+        // Step 1: Check if ERC-20 allowance to Permit2 is already sufficient
+        const existingErc20Allowance = await publicClient.readContract({
+          address: tokens[tokenIn].address,
+          abi: RIFTokenAbi,
+          functionName: 'allowance',
+          args: [address, PERMIT2_ADDRESS],
+        })
+
+        // Only request ERC-20 approval if insufficient
+        if (existingErc20Allowance < amount) {
+          const permit2ApprovalHash = await writeContractAsync({
             address: tokens[tokenIn].address,
             abi: RIFTokenAbi,
             functionName: 'approve',
             args: [PERMIT2_ADDRESS, amount],
           })
-        } catch (approvalError) {
-          // Preserve the original error so isUserRejectedTxError can detect it
-          throw approvalError
-        }
 
-        if (!permit2ApprovalHash) {
-          // If writeContractAsync returns undefined, it's likely a user rejection
-          // Create an error that matches the user rejection pattern
-          const rejectionError = new Error('User rejected the request')
-          ;(rejectionError as any).cause = { code: 4001 }
-          throw rejectionError
-        }
+          if (!permit2ApprovalHash) {
+            const rejectionError = new Error('User rejected the request')
+            ;(rejectionError as any).cause = { code: 4001 }
+            throw rejectionError
+          }
 
-        // Wait for first transaction to be confirmed before proceeding
-        await publicClient.waitForTransactionReceipt({
-          hash: permit2ApprovalHash,
-        })
+          // Wait for ERC-20 approval to be confirmed before proceeding
+          await publicClient.waitForTransactionReceipt({
+            hash: permit2ApprovalHash,
+          })
+        }
 
         // Step 2: Set Permit2 allowance for Universal Router
         // Permit2.approve(token, spender, amount, expiration)
