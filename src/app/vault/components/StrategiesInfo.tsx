@@ -42,7 +42,10 @@ export const StrategiesInfo = () => {
         id: 'funds',
         header: 'Funds',
         cell: ({ row }) => (
-          <Paragraph>{isLoading ? '...' : formatSymbol(row.original.funds, USDRIF)} USDRIF</Paragraph>
+          <Paragraph>
+            {isLoading ? '...' : formatSymbol(row.original.funds, USDRIF, { useNewUSDRIFDecimals: true })}{' '}
+            USDRIF
+          </Paragraph>
         ),
         meta: {
           width: '1.2fr',

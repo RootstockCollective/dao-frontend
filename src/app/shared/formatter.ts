@@ -55,15 +55,36 @@ const symbols: { [key: string]: SymbolFormatOptions } = {
   ctokenvault,
 }
 
-export const formatSymbol = (value: bigint | string, symbol: string) => {
+/**
+ * Formats a token amount with appropriate decimal places based on symbol
+ * @param value - The token amount (bigint or string)
+ * @param symbol - The token symbol (e.g., 'USDRIF', 'RIF', 'RBTC')
+ * @param options - Optional formatting options
+ * @param options.useNewUSDRIFDecimals - When true, formats USDRIF with 2 decimals instead of 0.
+ *                                        This option is intended for incremental rollout of the new
+ *                                        USDRIF decimal formatting across the codebase.
+ */
+export const formatSymbol = (
+  value: bigint | string,
+  symbol: string,
+  options?: { useNewUSDRIFDecimals?: boolean },
+) => {
   if (!value || value === '0') {
     return '0'
   }
-  const { decimals, displayDecimals } = symbols[symbol.toLocaleLowerCase()] ?? {
+  const symbolLower = symbol.toLocaleLowerCase()
+  const symbolConfig = symbols[symbolLower] ?? {
     decimals: 18,
     displayDecimals: 2,
   }
 
+  // Override displayDecimals for USDRIF when useNewUSDRIFDecimals is true
+  let displayDecimals = symbolConfig.displayDecimals
+  if (options?.useNewUSDRIFDecimals && symbolLower === 'usdrif') {
+    displayDecimals = 2
+  }
+
+  const { decimals } = symbolConfig
   const amount = Big(value.toString()).div(Big(10).pow(decimals))
   const minimumAmount = Big(1).div(Big(10).pow(displayDecimals))
 

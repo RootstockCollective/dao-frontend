@@ -24,7 +24,11 @@ export const VaultUserMetricsContainer = () => {
           <BalanceInfo
             className="max-w-[214px] min-w-[180px]"
             title="Your Wallet Balance"
-            amount={isBalancesLoading ? '...' : userUsdrifBalance.formattedBalance}
+            amount={
+              isBalancesLoading
+                ? '...'
+                : formatTokenBalance(userUsdrifBalance.balance, USDRIF, { useNewUSDRIFDecimals: true })
+            }
             symbol="USDRIF"
           />
         )}

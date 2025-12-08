@@ -19,7 +19,7 @@ export const VaultMetrics = () => {
         <BalanceInfo
           className="max-w-[214px] min-w-[180px]"
           title="Vault Balance"
-          amount={isLoading ? '...' : formatSymbol(totalAssets, 'USDRIF')}
+          amount={isLoading ? '...' : formatSymbol(totalAssets, 'USDRIF', { useNewUSDRIFDecimals: true })}
           symbol="USDRIF"
         />
         <BalanceInfo
@@ -40,7 +40,7 @@ export const VaultMetrics = () => {
         <BalanceInfo
           className="max-w-[214px] min-w-[180px]"
           title="Price per Share"
-          amount={isLoading ? '...' : formatSymbol(pricePerShare, 'USDRIF')}
+          amount={isLoading ? '...' : formatSymbol(pricePerShare, 'USDRIF', { useNewUSDRIFDecimals: true })}
           symbol="USDRIF"
         />
       </div>
