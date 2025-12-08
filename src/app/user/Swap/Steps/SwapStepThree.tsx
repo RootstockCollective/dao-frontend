@@ -9,19 +9,24 @@ import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { USDT0, USDRIF } from '@/lib/constants'
 import { Hash } from 'viem'
 import Big from '@/lib/big'
+import { Button } from '@/components/Button'
+import { Span, Label } from '@/components/Typography'
+
+// Slippage tolerance options (in percentage)
+const SLIPPAGE_OPTIONS = [
+  { value: 0.1, label: '0.1%', testId: 'slippage-0.1' },
+  { value: 0.5, label: '0.5%', testId: 'slippage-0.5' },
+  { value: 1.0, label: '1%', testId: 'slippage-1.0' },
+  { value: 3.0, label: '3%', testId: 'slippage-3.0' },
+] as const
 
 export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: SwapStepProps) => {
   const { amountIn, formattedAmountOut } = useSwapInput()
   const { tokenInData, tokenOutData } = useTokenSelection()
-  const { state } = useSwappingContext()
+  const { state, setSlippageTolerance } = useSwappingContext()
   const { balances, prices } = useBalancesContext()
   const { execute, isSwapping, swapError, swapTxHash, canExecute } = useSwapExecution()
-
-  // At step 3, amountIn should always exist (user came from steps 1 and 2)
-  if (!amountIn) {
-    // This shouldn't happen, but handle gracefully
-    return null
-  }
+  const { slippageTolerance } = state
 
   const from = useMemo(() => {
     const priceValue = prices[USDT0]?.price || 0
@@ -46,8 +51,15 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
     }
   }, [formattedAmountOut, prices, balances, tokenOutData.symbol])
 
+  const handleSlippageClick = useCallback(
+    (slippage: number) => {
+      setSlippageTolerance(slippage)
+    },
+    [setSlippageTolerance],
+  )
+
   const handleConfirmSwap = useCallback(() => {
-    if (!canExecute) {
+    if (!canExecute || slippageTolerance === null) {
       return
     }
     executeTxFlow({
@@ -61,7 +73,7 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
       onSuccess: onCloseModal,
       action: 'swap',
     })
-  }, [canExecute, execute, onCloseModal])
+  }, [canExecute, slippageTolerance, execute, onCloseModal])
 
   // Set button actions
   useEffect(() => {
@@ -69,7 +81,7 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
       primary: {
         label: 'Confirm swap',
         onClick: handleConfirmSwap,
-        disabled: !canExecute || !Big(amountIn).gt(0),
+        disabled: !canExecute || !Big(amountIn).gt(0) || slippageTolerance === null,
         loading: isSwapping,
         isTxPending: isSwapping,
       },
@@ -80,7 +92,13 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
         loading: false,
       },
     })
-  }, [canExecute, amountIn, isSwapping, handleConfirmSwap, onGoToStep, setButtonActions])
+  }, [canExecute, amountIn, isSwapping, slippageTolerance, handleConfirmSwap, onGoToStep, setButtonActions])
+
+  // At step 3, amountIn should always exist (user came from steps 1 and 2)
+  if (!amountIn) {
+    // This shouldn't happen, but handle gracefully
+    return null
+  }
 
   return (
     <>
@@ -100,6 +118,28 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
           balance={to.balance}
           isFlexEnd
         />
+      </div>
+
+      {/* Slippage Tolerance Selection */}
+      <div className="flex flex-col gap-2 mb-6">
+        <Label variant="body-s" className="text-text-60">
+          Slippage tolerance
+        </Label>
+        <div className="flex gap-1" data-testid="slippage-buttons">
+          {SLIPPAGE_OPTIONS.map(({ value, label, testId }) => (
+            <Button
+              key={value}
+              variant={slippageTolerance === value ? 'primary' : 'secondary'}
+              onClick={() => handleSlippageClick(value)}
+              className={
+                slippageTolerance === value ? 'px-2 py-0' : 'bg-transparent border border-bg-40 px-2 py-0'
+              }
+              data-testid={testId}
+            >
+              <Span variant="body-s">{label}</Span>
+            </Button>
+          ))}
+        </div>
       </div>
 
       <TransactionStatus

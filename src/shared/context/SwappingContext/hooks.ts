@@ -5,10 +5,12 @@ import { formatUnits, parseUnits } from 'viem'
 import { useAccount, useReadContract, useWriteContract } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
 import { useSwappingContext } from './SwappingContext'
-import { UNISWAP_UNIVERSAL_ROUTER_ADDRESS } from '@/lib/constants'
+import { UNISWAP_UNIVERSAL_ROUTER_ADDRESS, PERMIT2_ADDRESS } from '@/lib/constants'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
+import { Permit2Abi } from '@/lib/abis/Permit2Abi'
 import { QuoteResult } from './types'
-import { uniswapProvider } from '@/lib/swap/providers/uniswap'
+import { uniswapProvider, getSwapEncodedData } from '@/lib/swap/providers/uniswap'
+import { UniswapUniversalRouterAbi } from '@/lib/abis/UniswapUniversalRouterAbi'
 
 /**
  * Hook for managing swap input amount and getting quotes
@@ -71,16 +73,13 @@ export const useSwapInput = () => {
   // Update state when quote result changes
   useEffect(() => {
     if (isQuoteLoading) {
-      console.log('isQuoteLoading', isQuoteLoading)
       setQuoting(true)
       setQuoteError(null)
     } else if (quoteErrorData) {
       const err = quoteErrorData instanceof Error ? quoteErrorData : new Error('Failed to get quote')
-      console.log('quoteErrorData', quoteErrorData)
       setQuoteError(err)
       setQuoting(false)
     } else if (swapQuote) {
-      console.log('swapQuote', swapQuote)
       setQuote(swapQuote)
     }
   }, [swapQuote, isQuoteLoading, quoteErrorData, setQuoting, setQuote, setQuoteError])
@@ -151,27 +150,36 @@ export const useTokenAllowance = () => {
   const { address } = useAccount()
   const { writeContractAsync, isPending: isWritePending } = useWriteContract()
 
-  // Read allowance using useReadContract hook
-  const { data: allowanceData, isLoading: isAllowanceLoading } = useReadContract({
-    address: tokens[tokenIn].address,
-    abi: RIFTokenAbi,
+  // Read Permit2 allowance (Universal Router uses Permit2 when payerIsUser: true)
+  const {
+    data: permit2AllowanceData,
+    isLoading: isAllowanceLoading,
+    refetch: refetchAllowance,
+  } = useReadContract({
+    address: PERMIT2_ADDRESS,
+    abi: Permit2Abi,
     functionName: 'allowance',
     args:
-      address && UNISWAP_UNIVERSAL_ROUTER_ADDRESS ? [address, UNISWAP_UNIVERSAL_ROUTER_ADDRESS] : undefined,
+      address && tokens[tokenIn]?.address && UNISWAP_UNIVERSAL_ROUTER_ADDRESS
+        ? [address, tokens[tokenIn].address, UNISWAP_UNIVERSAL_ROUTER_ADDRESS]
+        : undefined,
     query: {
-      enabled: !!address && !!UNISWAP_UNIVERSAL_ROUTER_ADDRESS,
+      enabled: !!address && !!tokens[tokenIn]?.address && !!UNISWAP_UNIVERSAL_ROUTER_ADDRESS,
       refetchInterval: 5000,
     },
   })
 
   // Update state when allowance changes
+  // Permit2 returns (amount, expiration, nonce), we only need amount
   useEffect(() => {
     if (isAllowanceLoading) {
       setCheckingAllowance(true)
-    } else if (allowanceData !== undefined) {
-      setAllowance(typeof allowanceData === 'bigint' ? allowanceData : null)
+    } else if (permit2AllowanceData !== undefined) {
+      // Permit2 allowance returns [amount, expiration, nonce]
+      const amount = Array.isArray(permit2AllowanceData) ? permit2AllowanceData[0] : permit2AllowanceData
+      setAllowance(typeof amount === 'bigint' ? amount : null)
     }
-  }, [allowanceData, isAllowanceLoading, setCheckingAllowance, setAllowance])
+  }, [permit2AllowanceData, isAllowanceLoading, setCheckingAllowance, setAllowance])
 
   const hasSufficientAllowance = useCallback(
     (requiredAmount: bigint) => {
@@ -186,24 +194,85 @@ export const useTokenAllowance = () => {
   const approve = useCallback(
     async (amount: bigint) => {
       if (!address || !writeContractAsync || !UNISWAP_UNIVERSAL_ROUTER_ADDRESS) {
-        return null
+        throw new Error('Missing required parameters for approval')
+      }
+
+      if (!tokens[tokenIn]?.address) {
+        throw new Error(`Token address not found for ${tokenIn}`)
       }
 
       setApproving(true)
       setApprovalTxHash(null)
 
       try {
-        const hash = await writeContractAsync({
-          address: tokens[tokenIn].address,
-          abi: RIFTokenAbi,
-          functionName: 'approve',
-          args: [UNISWAP_UNIVERSAL_ROUTER_ADDRESS, amount],
+        const { publicClient } = await import('@/lib/viemPublicClient')
+
+        // Step 1: Approve Permit2 to spend tokens (ERC-20 approval)
+        let permit2ApprovalHash: `0x${string}` | undefined
+        try {
+          permit2ApprovalHash = await writeContractAsync({
+            address: tokens[tokenIn].address,
+            abi: RIFTokenAbi,
+            functionName: 'approve',
+            args: [PERMIT2_ADDRESS, amount],
+          })
+        } catch (approvalError) {
+          // Preserve the original error so isUserRejectedTxError can detect it
+          throw approvalError
+        }
+
+        if (!permit2ApprovalHash) {
+          // If writeContractAsync returns undefined, it's likely a user rejection
+          // Create an error that matches the user rejection pattern
+          const rejectionError = new Error('User rejected the request')
+          ;(rejectionError as any).cause = { code: 4001 }
+          throw rejectionError
+        }
+
+        // Wait for first transaction to be confirmed before proceeding
+        await publicClient.waitForTransactionReceipt({
+          hash: permit2ApprovalHash,
         })
-        setApprovalTxHash(hash)
-        return hash
+
+        // Step 2: Set Permit2 allowance for Universal Router
+        // Permit2.approve(token, spender, amount, expiration)
+        // expiration: max uint48 (2^48 - 1) for no expiration
+        // amount must be uint160, ensure it fits
+        // uint48 max value is 281474976710655, which is within JavaScript safe integer range
+        const maxExpiration = 2 ** 48 - 1 // Max uint48 (281474976710655)
+        const MAX_UINT160 = BigInt(2 ** 160 - 1)
+        const amountUint160 = amount > MAX_UINT160 ? MAX_UINT160 : amount
+
+        let permit2AllowanceHash: `0x${string}` | undefined
+        try {
+          permit2AllowanceHash = await writeContractAsync({
+            address: PERMIT2_ADDRESS,
+            abi: Permit2Abi,
+            functionName: 'approve',
+            args: [tokens[tokenIn].address, UNISWAP_UNIVERSAL_ROUTER_ADDRESS, amountUint160, maxExpiration],
+          })
+        } catch (allowanceError) {
+          // Preserve the original error so isUserRejectedTxError can detect it
+          throw allowanceError
+        }
+
+        if (!permit2AllowanceHash) {
+          // If writeContractAsync returns undefined, it's likely a user rejection
+          // Create an error that matches the user rejection pattern
+          const rejectionError = new Error('User rejected the request')
+          ;(rejectionError as any).cause = { code: 4001 }
+          throw rejectionError
+        }
+
+        setApprovalTxHash(permit2AllowanceHash)
+        // Note: setApproving(false) is handled by executeTxFlow's onComplete callback
+        // and by the useEffect that watches isWritePending
+        return permit2AllowanceHash
       } catch (error) {
         setApproving(false)
-        return null
+        setApprovalTxHash(null)
+        // Re-throw the error so executeTxFlow can handle it and show the user the actual error
+        throw error
       }
     },
     [address, writeContractAsync, tokenIn, tokens, setApproving, setApprovalTxHash],
@@ -222,52 +291,175 @@ export const useTokenAllowance = () => {
     isApproving: isApproving || isWritePending,
     hasSufficientAllowance,
     approve,
+    refetchAllowance,
     tokenAddress: tokens[tokenIn].address,
   }
 }
 
 /**
- * Hook for executing swaps
- * TODO: Implement with Uniswap Universal Router
- * Universal Router uses execute(commands, inputs) pattern which is more complex
- * This requires encoding the swap command and inputs properly
+ * Hook for executing swaps using Uniswap Universal Router
+ * Universal Router uses execute(commands, inputs) pattern
+ * Command 0x00 = V3_SWAP_EXACT_IN
  */
 export const useSwapExecution = () => {
   const { state, tokens, setSwapping, setSwapError, setSwapTxHash } = useSwappingContext()
-  const { tokenIn, tokenOut, amountIn, quote, isSwapping, swapError, swapTxHash, poolFee } = state
+  const {
+    tokenIn,
+    tokenOut,
+    amountIn,
+    quote,
+    isSwapping,
+    swapError,
+    swapTxHash,
+    poolFee,
+    slippageTolerance,
+  } = state
   const { address } = useAccount()
   const { writeContractAsync, isPending: isWritePending } = useWriteContract()
 
-  const execute = useCallback(
-    async (slippageTolerance: number = 0.5) => {
-      if (!address || !amountIn || !quote || !poolFee || !tokens[tokenIn].decimals || !writeContractAsync) {
-        return null
+  const execute = useCallback(async () => {
+    if (
+      !address ||
+      !amountIn ||
+      !quote ||
+      !poolFee ||
+      !tokens[tokenIn].decimals ||
+      !tokens[tokenOut].address ||
+      !tokens[tokenIn].address ||
+      !writeContractAsync ||
+      !UNISWAP_UNIVERSAL_ROUTER_ADDRESS ||
+      slippageTolerance === null
+    ) {
+      return null
+    }
+
+    setSwapping(true)
+    setSwapError(null)
+
+    try {
+      const amountInBigInt = parseUnits(amountIn, tokens[tokenIn].decimals)
+
+      // Import publicClient once for all operations
+      const { publicClient } = await import('@/lib/viemPublicClient')
+
+      // Verify both ERC-20 allowance (Permit2 -> token) and Permit2 allowance (user -> Universal Router)
+      // With payerIsUser: true, Universal Router uses Permit2, which requires:
+      // 1. ERC-20 approval: user -> Permit2 contract
+      // 2. Permit2 approval: user -> Universal Router
+      const { PERMIT2_ADDRESS: permit2Address } = await import('@/lib/constants')
+      const { Permit2Abi } = await import('@/lib/abis/Permit2Abi')
+      const { RIFTokenAbi } = await import('@/lib/abis/RIFTokenAbi')
+
+      // Check ERC-20 allowance: user -> Permit2
+      const erc20Allowance = await publicClient.readContract({
+        address: tokens[tokenIn].address,
+        abi: RIFTokenAbi,
+        functionName: 'allowance',
+        args: [address, permit2Address],
+      })
+
+      // Check Permit2 allowance: user -> Universal Router
+      const permit2Allowance = await publicClient.readContract({
+        address: permit2Address,
+        abi: Permit2Abi,
+        functionName: 'allowance',
+        args: [address, tokens[tokenIn].address, UNISWAP_UNIVERSAL_ROUTER_ADDRESS],
+      })
+      // Permit2 returns [amount: uint160, expiration: uint48, nonce: uint48]
+      // Viem may return uint48 as number or bigint depending on the value
+      const [permit2Amount, permit2Expiration, permit2Nonce] = permit2Allowance as [
+        bigint,
+        bigint | number,
+        bigint | number,
+      ]
+      const currentBlock = await publicClient.getBlock()
+      // Convert expiration to bigint for comparison
+      const expirationBigInt =
+        typeof permit2Expiration === 'bigint' ? permit2Expiration : BigInt(permit2Expiration)
+      const isExpired = currentBlock.timestamp > expirationBigInt
+
+      // Check ERC-20 allowance first (Permit2 needs this to transfer tokens)
+      if (erc20Allowance < amountInBigInt) {
+        throw new Error(
+          `Insufficient ERC-20 allowance for Permit2. Current: ${erc20Allowance.toString()}, Required: ${amountInBigInt.toString()}. Please approve Permit2 to spend your tokens.`,
+        )
       }
 
-      setSwapping(true)
-      setSwapError(null)
+      if (isExpired) {
+        throw new Error(
+          `Permit2 allowance has expired. Expiration: ${expirationBigInt.toString()}, Current block: ${currentBlock.timestamp.toString()}. Please renew your Permit2 approval.`,
+        )
+      }
 
-      try {
-        const amountInBigInt = parseUnits(amountIn, tokens[tokenIn].decimals)
-        const amountOutMinimum =
-          quote.amountOut - (quote.amountOut * BigInt(Math.floor(slippageTolerance * 100))) / 10000n
-        const deadline = BigInt(Math.floor(Date.now() / 1000) + 60 * 20) // 20 minutes from now
+      if (permit2Amount < amountInBigInt) {
+        throw new Error(
+          `Insufficient Permit2 allowance. Current: ${permit2Amount.toString()}, Required: ${amountInBigInt.toString()}. Please approve Permit2 to spend your tokens.`,
+        )
+      }
 
-        // TODO: Implement with Uniswap Universal Router
-        // Universal Router uses execute(commands, inputs) pattern which is more complex
-        // This requires encoding the swap command and inputs properly
-        // For now, return null to indicate not fully implemented
+      // Calculate minimum amount out based on slippage tolerance
+      // slippageTolerance is in percentage (e.g., 0.5 = 0.5%)
+      const slippageBps = BigInt(Math.floor(slippageTolerance * 100)) // Convert to basis points
+      const slippageAmount = (quote.amountOut * slippageBps) / 10000n
+      const amountOutMinimum = quote.amountOut - slippageAmount
 
+      // Ensure amountOutMinimum is not negative (shouldn't happen, but safety check)
+      const finalAmountOutMinimum = amountOutMinimum > 0n ? amountOutMinimum : 0n
+
+      // Use uniswapProvider's encoding logic
+      const { commands, inputs } = getSwapEncodedData({
+        tokenIn: tokens[tokenIn].address,
+        tokenOut: tokens[tokenOut].address,
+        amountIn: amountInBigInt,
+        amountOutMinimum: finalAmountOutMinimum,
+        poolFee,
+        recipient: address,
+      })
+
+      // Use execute WITHOUT deadline parameter as per docs
+      // The docs state that execute without deadline should not fail due to timestamp
+      const hash = await writeContractAsync({
+        address: UNISWAP_UNIVERSAL_ROUTER_ADDRESS,
+        abi: UniswapUniversalRouterAbi,
+        functionName: 'execute',
+        args: [commands, inputs], // No deadline parameter
+      })
+
+      setSwapTxHash(hash)
+      return hash
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      const errorString = String(error)
+
+      // Check for AllowanceExpired error (0xd81b2f2e) from Permit2/Universal Router
+      if (errorString.includes('0xd81b2f2e') || errorMessage.includes('AllowanceExpired')) {
+        const err = new Error(
+          'Allowance error detected. Please go back to Step 2 and click "Request allowance" again.',
+        )
+        setSwapError(err)
         setSwapping(false)
         return null
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error('Failed to execute swap')
-        setSwapError(err)
-        return null
       }
-    },
-    [address, amountIn, quote, tokenIn, poolFee, tokens, writeContractAsync, setSwapping, setSwapError],
-  )
+
+      const err = error instanceof Error ? error : new Error(`Failed to execute swap: ${errorMessage}`)
+      setSwapError(err)
+      setSwapping(false)
+      return null
+    }
+  }, [
+    address,
+    amountIn,
+    quote,
+    tokenIn,
+    tokenOut,
+    poolFee,
+    tokens,
+    writeContractAsync,
+    setSwapping,
+    setSwapError,
+    setSwapTxHash,
+    slippageTolerance,
+  ])
 
   // Update swapping state based on write contract status
   useEffect(() => {

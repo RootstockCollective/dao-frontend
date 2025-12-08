@@ -1,7 +1,7 @@
 import { publicClient } from '@/lib/viemPublicClient'
 import { UniswapQuoterV2Abi } from '@/lib/abis/UniswapQuoterV2Abi'
 import { ROUTER_ADDRESSES, SWAP_PROVIDERS } from '../constants'
-import { formatUnits } from 'viem'
+import { formatUnits, encodeAbiParameters, Address, Hex } from 'viem'
 import type { SwapProvider, SwapQuote, QuoteParams } from './'
 import Big from '@/lib/big'
 
@@ -151,6 +151,85 @@ async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
       amountOutRaw: '0',
       error: lastError ? lastError.message : 'Failed to get quote from Uniswap',
     }
+  }
+}
+
+/**
+ * Execute a swap using Uniswap Universal Router
+ * Universal Router uses execute(commands, inputs) pattern
+ * Command 0x00 = V3_SWAP_EXACT_IN
+ */
+export interface ExecuteSwapParams {
+  tokenIn: Address
+  tokenOut: Address
+  amountIn: bigint
+  amountOutMinimum: bigint
+  poolFee: number
+  recipient: Address
+}
+
+/**
+ * Encode the swap path for Uniswap V3
+ * Path format: tokenIn (20 bytes) + fee (3 bytes) + tokenOut (20 bytes) = 43 bytes
+ */
+function encodeSwapPath(tokenIn: Address, fee: number, tokenOut: Address): Hex {
+  // Remove '0x' prefix from addresses
+  const tokenInBytes = tokenIn.slice(2)
+  const tokenOutBytes = tokenOut.slice(2)
+
+  // Encode fee as uint24 (3 bytes, big-endian)
+  // For uint24, we need 3 bytes representing the value
+  // Example: fee=100 (0x64) should be encoded as [0x00, 0x00, 0x64]
+  // When written as uint32 big-endian: [0x00, 0x00, 0x00, 0x64]
+  // We need the last 3 bytes: [0x00, 0x00, 0x64]
+  const feeBuffer = new ArrayBuffer(4)
+  const feeView = new DataView(feeBuffer)
+  feeView.setUint32(0, fee, false) // false = big-endian, writes to bytes 0-3
+  const feeBytes = new Uint8Array(feeBuffer)
+  // For big-endian uint32, bytes are [MSB, MSB, MSB, LSB]
+  // For uint24, we want the value itself, so we take bytes 1-3 (skip the leading zero byte)
+  const feeBytes3 = feeBytes.slice(1, 4) // Take bytes 1, 2, 3 (last 3 bytes)
+
+  // Build path: tokenIn (20 bytes) + fee (3 bytes) + tokenOut (20 bytes)
+  const feeHex = Array.from(feeBytes3)
+    .map((b: number) => b.toString(16).padStart(2, '0'))
+    .join('')
+  return `0x${tokenInBytes}${feeHex}${tokenOutBytes}` as Hex
+}
+
+// Removed executeSwap function - not needed since we use getSwapEncodedData directly
+
+/**
+ * Get encoded swap data for Universal Router
+ * This is a synchronous helper that returns the encoded command and inputs
+ */
+export function getSwapEncodedData(params: ExecuteSwapParams): {
+  commands: Hex
+  inputs: [Hex]
+} {
+  const { tokenIn, tokenOut, amountIn, amountOutMinimum, poolFee, recipient } = params
+
+  // Encode the swap path
+  const path = encodeSwapPath(tokenIn, poolFee, tokenOut)
+
+  // Encode the V3_SWAP_EXACT_IN input
+  const input = encodeAbiParameters(
+    [
+      { name: 'recipient', type: 'address' },
+      { name: 'amountIn', type: 'uint256' },
+      { name: 'amountOutMinimum', type: 'uint256' },
+      { name: 'path', type: 'bytes' },
+      { name: 'payerIsUser', type: 'bool' },
+    ],
+    [recipient, amountIn, amountOutMinimum, path, true],
+  )
+
+  // Command byte: 0x00 = V3_SWAP_EXACT_IN
+  const commands = '0x00' as Hex
+
+  return {
+    commands,
+    inputs: [input as Hex],
   }
 }
 
