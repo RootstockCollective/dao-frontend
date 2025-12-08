@@ -34,7 +34,7 @@ export const VaultUserMetricsContainer = () => {
           amount={isLoading ? '...' : formattedUserUsdrifBalance}
           symbol="USDRIF"
         />
-        {isConnected && userShares > 0 && (
+        {isConnected && (
           <BalanceInfo
             className="max-w-[214px] min-w-[180px]"
             title="Your Share Balance"
