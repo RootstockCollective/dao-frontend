@@ -21,12 +21,8 @@ const isCorsBypassAllowed = process.env.NEXT_PUBLIC_ENABLE_CORS_BYPASS == 'true'
 // Define the proxy configurations
 const corsBypassProxyConfig = () => {
   if (!process.env.NEXT_PUBLIC_PROXY_DESTINATION) {
-<<<<<<< HEAD
     console.warn('⚠️  NEXT_PUBLIC_PROXY_DESTINATION is not set. CORS bypass proxy will be disabled.')
     return null
-=======
-    throw new Error('NEXT_PUBLIC_PROXY_DESTINATION is required when CORS bypass is enabled')
->>>>>>> 03e76ff0 (refactor: setup fork so that it works with metamask)
   }
 
   return {
