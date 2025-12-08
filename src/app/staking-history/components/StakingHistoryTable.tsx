@@ -193,4 +193,6 @@ function StakingHistoryTable() {
   )
 }
 
-export const StakingHistoryTableWithContext = withTableContext<ColumnId, StakingHistoryCellDataMap>(StakingHistoryTable)
+export const StakingHistoryTableWithContext = withTableContext<ColumnId, StakingHistoryCellDataMap>(
+  StakingHistoryTable,
+)
