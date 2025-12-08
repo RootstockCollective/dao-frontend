@@ -137,7 +137,7 @@ export const VaultActions = () => {
           className="flex flex-row gap-2 pl-0 justify-start"
         >
           <Span className="flex-shrink-0">Withdraw</Span>
-          <MoneyIconKoto style={{ transform: 'rotate(180deg)' }}/>
+          <MoneyIconKoto style={{ transform: 'rotate(180deg)' }} />
         </Button>
       </div>
 
