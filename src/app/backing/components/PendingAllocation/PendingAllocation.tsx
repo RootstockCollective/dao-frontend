@@ -1,7 +1,8 @@
 import { FC, useState } from 'react'
 import { NewPopover } from '@/components/NewPopover'
-import { HourglassIcon } from '@/components/Icons/HourglassIcon'
 import { Span } from '@/components/Typography'
+import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
+import { formatNumberWithCommas } from '@/lib/utils/utils'
 
 interface PendingAllocationProps {
   pendingBacking: string
@@ -13,23 +14,27 @@ export const PendingAllocation: FC<PendingAllocationProps> = ({ pendingBacking, 
 
   const popoverContent = (
     <div
-      className="min-w-[220px] text-v3-text-0 rounded-lg p-4"
+      className="flex flex-row justify-between text-v3-text-0 rounded-lg gap-4"
       data-testid="pendingAllocationPopover"
       onMouseLeave={() => setIsOpen(false)}
     >
-      <div className="flex justify-between items-center mb-2">
-        <Span variant="body-s">Pending</Span>
-        <Span variant="body-s" className="flex items-center gap-1">
-          <HourglassIcon className="flex-shrink-0 cursor-pointer" size={16} />
-          <Span variant="body-s" data-testid="pendingAllocationPending">
-            {pendingBacking}
-          </Span>
+      <div className="flex flex-col items-start gap-1 justify-between">
+        <Span variant="body-xs" bold>
+          Pending
         </Span>
+        <div className="flex items-center gap-1">
+          <HourglassAnimatedIcon className="flex-shrink-0 cursor-pointer" color="var(--color-bg-40)" />
+          <Span variant="body-l" data-testid="pendingAllocationPending">
+            {formatNumberWithCommas(pendingBacking)}
+          </Span>
+        </div>
       </div>
-      <div className="flex justify-between items-center">
-        <Span variant="body-s">Current backing</Span>
-        <Span variant="body-s" data-testid="pendingAllocationCurrent">
-          {currentBacking}
+      <div className="flex flex-col items-end gap-1 justify-between">
+        <Span variant="body-xs" bold>
+          Current
+        </Span>
+        <Span variant="body-l" data-testid="pendingAllocationCurrent">
+          {formatNumberWithCommas(currentBacking)}
         </Span>
       </div>
     </div>
@@ -40,7 +45,7 @@ export const PendingAllocation: FC<PendingAllocationProps> = ({ pendingBacking, 
       onOpenChange={setIsOpen}
       anchor={
         <div onMouseEnter={() => setIsOpen(true)}>
-          <HourglassIcon className="flex-shrink-0 cursor-pointer" size={16} />
+          <HourglassAnimatedIcon className="flex-shrink-0 cursor-pointer" />
         </div>
       }
       content={popoverContent}

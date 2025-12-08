@@ -77,6 +77,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
     state: {
       resetVersion,
       allocations,
+      isAllocationTxPending,
       backer: { balance, cumulativeAllocation: cumulativeBacking },
     },
     initialState: {
@@ -126,7 +127,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
         onConnect={() => router.push(`/backing?builders=${builder.address}`) /* 🤢 */}
         allocationInputProps={{
           builderAddress: builder.address,
-          allocationTxPending: false, // TODO: this is not currently used on main
+          allocationTxPending: isAllocationTxPending,
           disabled: false,
           balance,
           prices,
