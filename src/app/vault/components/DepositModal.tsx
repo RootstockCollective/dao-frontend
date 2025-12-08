@@ -39,7 +39,7 @@ const KycInfo = () => {
 
   return (
     <Paragraph variant="body-s" className="text-text-60 px-4 pt-4">
-      To deposit more than 100 USD, please{' '}
+      To deposit more than {formattedDefaultLimit} USD, please{' '}
       <ExternalLink
         href={VAULT_KYC_URL}
         target="_blank"
