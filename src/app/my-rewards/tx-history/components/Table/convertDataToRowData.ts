@@ -1,6 +1,5 @@
 import { TransactionHistoryItem } from '../../utils/types'
 import { GroupedTransactionDetail, TransactionHistoryTable } from './TransactionHistoryTable.config'
-import { FIRST_CYCLE_START_SECONDS } from '@/app/collective-rewards/constants/chartConstants'
 import { Duration } from 'luxon'
 import { GetPricesResult } from '@/app/user/types'
 import { tokenContracts } from '@/lib/contracts'
@@ -10,44 +9,7 @@ import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { Address, getAddress } from 'viem'
 import { formatCurrency } from '@/lib/utils'
 import { Builder } from '@/app/collective-rewards/types'
-
-const calculateCycleNumber = (cycleStartTimestamp: string, cycleDuration: Duration): number => {
-  const cycleStartSeconds = Number(cycleStartTimestamp)
-  const cycleDurationSeconds = cycleDuration.as('seconds')
-  return Math.floor((cycleStartSeconds - FIRST_CYCLE_START_SECONDS) / cycleDurationSeconds) + 1
-}
-
-const formatDateRange = (cycleStart: string, cycleDuration: Duration): string => {
-  const startDate = new Date(Number(cycleStart) * 1000)
-  const endDate = new Date((Number(cycleStart) + cycleDuration.as('seconds')) * 1000 - 1)
-
-  const formatOptions: Intl.DateTimeFormatOptions = {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }
-
-  const startFormatted = startDate.toLocaleDateString('en-US', formatOptions)
-  const endFormatted = endDate.toLocaleDateString('en-US', formatOptions)
-
-  // Extract parts for custom formatting
-  const startParts = startFormatted.split(', ')
-  const endParts = endFormatted.split(', ')
-  const [startMonth, startDay] = startParts[0].split(' ')
-  const [endMonth, endDay] = endParts[0].split(' ')
-  const startYear = startParts[1]
-  const endYear = endParts[1]
-
-  if (startMonth === endMonth && startYear === endYear) {
-    return `${startMonth} ${startDay} - ${endDay}, ${startYear}`
-  }
-
-  if (startYear === endYear) {
-    return `${startMonth} ${startDay} - ${endMonth} ${endDay}, ${endYear}`
-  }
-
-  return `${startMonth} ${startDay}, ${startYear} - ${endMonth} ${endDay}, ${endYear}`
-}
+import { calculateCycleNumber, formatDateRange } from '../../utils/utils'
 
 export const convertDataToRowData = (
   data: TransactionHistoryItem[],
@@ -89,6 +51,7 @@ export const convertDataToRowData = (
       const transactionType = item.type
       const amounts: { address: Address; value: string; symbol: string }[] = []
       let totalUsdValue = Big(0)
+
       if (transactionType === 'Claim' && item.amount && item.rewardToken) {
         const tokenAddress = getAddress(item.rewardToken)
         const symbol = TOKENS_BY_ADDRESS[tokenAddress]?.symbol || ''
@@ -130,7 +93,7 @@ export const convertDataToRowData = (
             increased: item.increased,
           },
           total_amount: {
-            usd: totalUsdValue.toFixed(2),
+            usd: formatCurrency(totalUsdValue, { showCurrencyLabel: false, showCurrencySymbol: false }),
           },
         },
       })

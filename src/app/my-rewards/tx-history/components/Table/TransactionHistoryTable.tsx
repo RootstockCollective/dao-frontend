@@ -3,6 +3,7 @@
 import { useGetTransactionHistory } from '../../hooks/useGetTransactionHistory'
 import { useTableActionsContext, useTableContext, usePricesContext } from '@/shared/context'
 import { useEffect, useMemo, useState, useRef } from 'react'
+import { useAccount } from 'wagmi'
 import {
   ColumnId,
   DEFAULT_HEADERS,
@@ -22,6 +23,7 @@ import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { ActiveFilter } from '@/components/FilterSideBar/types'
 import { FilterButton } from '@/app/proposals/components/filter/FilterButton'
+import { CsvButton } from '../CsvButton'
 
 const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
   cycle: 'cycleStart',
@@ -41,6 +43,7 @@ export default function TransactionHistoryTable() {
     data: { cycleDuration },
   } = useCycleContext()
   const { getBuilderByAddress } = useBuilderContext()
+  const { address } = useAccount()
 
   // Filter sidebar state
   const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false)
@@ -161,11 +164,24 @@ export default function TransactionHistoryTable() {
         <Header variant="h3" className="m-0" data-testid="events-list-header">
           EVENTS LIST
         </Header>
-        <FilterButton
-          isOpen={isFilterSidebarOpen}
-          setIsOpen={setIsFilterSidebarOpen}
-          isFiltering={hasActiveFilters}
-        />
+        <div className="flex items-center gap-3">
+          <CsvButton
+            address={address}
+            type={apiFilters.type}
+            builder={apiFilters.builder}
+            rewardToken={apiFilters.rewardToken}
+            sortBy={sortBy}
+            sortDirection={sortDirection}
+            cycleDuration={cycleDuration}
+            prices={prices}
+            getBuilderByAddress={getBuilderByAddress}
+          />
+          <FilterButton
+            isOpen={isFilterSidebarOpen}
+            setIsOpen={setIsFilterSidebarOpen}
+            isFiltering={hasActiveFilters}
+          />
+        </div>
       </div>
 
       <div className={cn('flex flex-row-reverse')}>
