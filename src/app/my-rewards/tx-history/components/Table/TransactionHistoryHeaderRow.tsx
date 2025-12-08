@@ -121,27 +121,19 @@ export const TransactionHistoryHeaderRow = (): ReactElement => {
   const visibleTotalAmountUsd = useMemo(() => {
     if (!rows.length) return ''
 
-    let sum = 0
-
-    const addValue = (raw: string) => {
-      if (!raw) return
-      const sanitized = raw.replace(/,/g, '').replace(/^</, '')
+    const sanitize = (raw: string | null | undefined) => {
+      if (!raw) return 0
+      if (raw.startsWith('<')) return 0
+      const sanitized = raw.replace(/,/g, '')
       const parsed = Number(sanitized)
-      if (!Number.isNaN(parsed)) {
-        sum += parsed
-      }
+      return Number.isNaN(parsed) ? 0 : parsed
     }
 
-    rows.forEach(row => {
+    const sum = rows.reduce((acc, row) => {
       const usd = row.data.total_amount.usd
-      if (Array.isArray(usd)) {
-        usd.forEach(addValue)
-      } else {
-        addValue(usd)
-      }
-    })
-
-    if (sum === 0) return ''
+      const values = Array.isArray(usd) ? usd : [usd]
+      return acc + values.reduce((subtotal, val) => subtotal + sanitize(val), 0)
+    }, 0)
 
     return new Intl.NumberFormat('en-US', {
       style: 'decimal',
