@@ -11,10 +11,9 @@ export interface TransactionHistoryItem {
   blockTimestamp: string
   transactionHash: string
   cycleStart: string
-  // AllocationHistory specific
-  allocation?: string
+  // Combined amount field (allocation for Back, amount for Claim)
+  amount?: string
   increased?: boolean
   // ClaimedRewardsHistory specific
-  amount?: string
   rewardToken?: Address
 }

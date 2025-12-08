@@ -96,13 +96,13 @@ export const convertDataToRowData = (
         const itemAmount = BigInt(item.amount)
         amounts.push({ address: item.rewardToken, value: formatSymbol(itemAmount, symbol), symbol })
         totalUsdValue = getFiatAmount(itemAmount, price)
-      } else if (transactionType === 'Back' && item.allocation) {
+      } else if (transactionType === 'Back' && item.amount) {
         const tokenAddress = getAddress(tokenContracts.stRIF)
         const symbol = TOKENS_BY_ADDRESS[tokenAddress]?.symbol || ''
         const price = prices[symbol]?.price ?? 0
-        const itemAllocation = BigInt(item.allocation)
-        amounts.push({ address: tokenContracts.stRIF, value: formatSymbol(itemAllocation, symbol), symbol })
-        totalUsdValue = getFiatAmount(itemAllocation, price)
+        const itemAmount = BigInt(item.amount)
+        amounts.push({ address: tokenContracts.stRIF, value: formatSymbol(itemAmount, symbol), symbol })
+        totalUsdValue = getFiatAmount(itemAmount, price)
       }
 
       rows.push({
@@ -159,18 +159,18 @@ export const convertDataToRowData = (
           } else {
             amountsByToken[tokenAddress] = { symbol, amount: itemAmount, price }
           }
-        } else if (item.type === 'Back' && item.allocation) {
+        } else if (item.type === 'Back' && item.amount) {
           const tokenAddress = getAddress(tokenContracts.stRIF)
           const symbol = TOKENS_BY_ADDRESS[tokenAddress]?.symbol || ''
           const price = prices[symbol]?.price ?? 0
-          const itemAllocation = BigInt(item.allocation)
+          const itemAmount = BigInt(item.amount)
 
-          const allocationChange = item.increased ? itemAllocation : -itemAllocation
+          const amountChange = item.increased ? itemAmount : -itemAmount
 
           if (amountsByToken[tokenAddress]) {
-            amountsByToken[tokenAddress].amount += allocationChange
+            amountsByToken[tokenAddress].amount += amountChange
           } else {
-            amountsByToken[tokenAddress] = { symbol, amount: allocationChange, price }
+            amountsByToken[tokenAddress] = { symbol, amount: amountChange, price }
           }
 
           const tokenAmount = amountsByToken[tokenAddress].amount
@@ -258,26 +258,26 @@ export const convertDataToRowData = (
             } else {
               builderAmountsByToken[tokenAddress] = { symbol, amount: itemAmount, price }
             }
-          } else if (item.type === 'Back' && item.allocation) {
+          } else if (item.type === 'Back' && item.amount) {
             const tokenAddress = getAddress(tokenContracts.stRIF)
             const symbol = TOKENS_BY_ADDRESS[tokenAddress]?.symbol || ''
             const price = prices[symbol]?.price ?? 0
-            const itemAllocation = BigInt(item.allocation)
-            const usdAmount = getFiatAmount(itemAllocation, price)
+            const itemAmount = BigInt(item.amount)
+            const usdAmount = getFiatAmount(itemAmount, price)
 
-            const allocationChange = item.increased ? itemAllocation : -itemAllocation
+            const amountChange = item.increased ? itemAmount : -itemAmount
             totalUsdValue = item.increased ? totalUsdValue.plus(usdAmount) : totalUsdValue.minus(usdAmount)
 
             if (amountsByToken[tokenAddress]) {
-              amountsByToken[tokenAddress].amount += allocationChange
+              amountsByToken[tokenAddress].amount += amountChange
             } else {
-              amountsByToken[tokenAddress] = { symbol, amount: allocationChange }
+              amountsByToken[tokenAddress] = { symbol, amount: amountChange }
             }
 
             if (builderAmountsByToken[tokenAddress]) {
-              builderAmountsByToken[tokenAddress].amount += allocationChange
+              builderAmountsByToken[tokenAddress].amount += amountChange
             } else {
-              builderAmountsByToken[tokenAddress] = { symbol, amount: allocationChange, price }
+              builderAmountsByToken[tokenAddress] = { symbol, amount: amountChange, price }
             }
 
             const tokenAmount = amountsByToken[tokenAddress].amount

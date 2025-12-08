@@ -3,6 +3,11 @@ import { db } from '@/lib/db'
 import { Address, isAddress } from 'viem'
 import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
 import { TX_HISTORY_COLUMNS } from '@/app/api/db/constants'
+import { createCsvReadableStream, createCsvResponse } from '@/app/api/utils/csvStream'
+
+export const runtime = 'nodejs'
+
+// ---------- Utils ----------
 
 function parseMultiParam(search: URLSearchParams, key: string): string[] {
   const values = search.getAll(key)
@@ -11,6 +16,8 @@ function parseMultiParam(search: URLSearchParams, key: string): string[] {
     .map(v => v.trim())
     .filter(Boolean)
 }
+
+// ---------- Route ----------
 
 export async function GET(req: Request, { params }: { params: Promise<{ backer: Address }> }) {
   const { backer } = await params
@@ -22,6 +29,8 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
   try {
     const url = new URL(req.url || '')
     const search = url.searchParams
+
+    const format = search.get('format') // 'csv' or null
 
     const typeFiltersRaw = parseMultiParam(search, 'type') // Back | Claim
     const builderFiltersRaw = parseMultiParam(search, 'builder')
@@ -39,18 +48,27 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
 
     const paginationResult = parsePaginationParams(req.url || '', TX_HISTORY_COLUMNS)
 
-    if (!paginationResult.success) {
+    if (!paginationResult.success && format !== 'csv') {
       return NextResponse.json(
         { error: paginationResult.error.message },
         { status: paginationResult.error.statusCode },
       )
     }
 
-    const { page, pageSize, sortBy, sortDirection } = paginationResult.data
+    const { page, pageSize, sortBy, sortDirection } = paginationResult.success
+      ? paginationResult.data
+      : {
+          page: 1,
+          pageSize: 10,
+          sortBy: 'blockTimestamp',
+          sortDirection: 'desc' as const,
+        }
 
     const limitToBack = typeFiltersRaw.length > 0 && !typeFiltersRaw.includes('Claim')
     const limitToClaim =
       (typeFiltersRaw.length > 0 && !typeFiltersRaw.includes('Back')) || rewardTokenFilters.length > 0
+
+    const backerLower = backer.toLowerCase() as Address
 
     const allocationHistory = db('AllocationHistory')
       .select(
@@ -62,12 +80,11 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
         'blockTimestamp',
         'transactionHash',
         'cycleStart',
-        'allocation',
+        db.raw('allocation as amount'),
         'increased',
-        db.raw('NULL as amount'),
         db.raw('NULL as "rewardToken"'),
       )
-      .where('backer', '=', backer.toLowerCase())
+      .where('backer', '=', backerLower)
       .modify(qb => {
         if (builderFilters.length) qb.whereIn('builder', builderFilters)
         if (limitToClaim) qb.whereRaw('FALSE')
@@ -83,20 +100,31 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
         'blockTimestamp',
         'transactionHash',
         'cycleStart',
-        db.raw('NULL as allocation'),
-        db.raw('NULL as increased'),
         'amount',
+        db.raw('NULL as increased'),
         'rewardToken',
       )
-      .where('backer', '=', backer.toLowerCase())
+      .where('backer', '=', backerLower)
       .modify(qb => {
         if (builderFilters.length) qb.whereIn('builder', builderFilters)
         if (rewardTokenFilters.length) qb.whereIn('rewardToken', rewardTokenFilters)
         if (limitToBack) qb.whereRaw('FALSE')
       })
 
+    // union loses some typing, so we reassert it to the correct shape
     const combinedQuery = allocationHistory.union(claimedRewardsHistory)
 
+    // ---------- CSV streaming mode ----------
+    if (format === 'csv') {
+      const orderedQuery = combinedQuery.clone().orderBy(sortBy || 'blockTimestamp', sortDirection || 'desc')
+
+      const stream = createCsvReadableStream(orderedQuery)
+      const filename = `tx-history-${backerLower}.csv`
+
+      return createCsvResponse(stream, filename)
+    }
+
+    // ---------- Default JSON (paginated) ----------
     const [data, countResult] = await Promise.all([
       combinedQuery
         .clone()
@@ -106,7 +134,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
       db.count('* as count').from(combinedQuery.clone()).first(),
     ])
 
-    const count = Number(countResult?.count || 0)
+    const count = Number(countResult?.count ?? 0)
 
     return NextResponse.json({
       data,
