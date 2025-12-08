@@ -21,7 +21,8 @@ const isCorsBypassAllowed = process.env.NEXT_PUBLIC_ENABLE_CORS_BYPASS == 'true'
 // Define the proxy configurations
 const corsBypassProxyConfig = () => {
   if (!process.env.NEXT_PUBLIC_PROXY_DESTINATION) {
-    throw new Error('NEXT_PUBLIC_PROXY_DESTINATION is required when CORS bypass is enabled')
+    console.warn('⚠️  NEXT_PUBLIC_PROXY_DESTINATION is not set. CORS bypass proxy will be disabled.')
+    return null
   }
 
   return {
@@ -88,6 +89,7 @@ const nextConfig = {
 
 const getNextConfig = () => {
   if (isCorsBypassAllowed) {
+    const proxyConfig = corsBypassProxyConfig()
     return {
       ...nextConfig,
       rewrites: corsBypassRewrite,
@@ -95,10 +97,14 @@ const getNextConfig = () => {
         if (options.isServer) {
           return config
         }
+        // Only add proxy middleware if config is valid
+        if (!proxyConfig) {
+          return nextConfig.webpack(config, options)
+        }
         const devServer = {
           ...config.devServer,
           before: app => {
-            app.use('/cors_bypass', createProxyMiddleware(corsBypassProxyConfig))
+            app.use('/cors_bypass', createProxyMiddleware(proxyConfig))
           },
         }
 

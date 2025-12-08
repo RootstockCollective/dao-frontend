@@ -1,6 +1,10 @@
-# Funding Your Wallet in Anvil Fork
+# Fork Environment Setup Guide
 
-This guide explains how to fund your wallet with test tokens in the Anvil fork for testing swap functionality and other dApp features.
+This guide explains how to set up and use the Anvil fork environment for testing swap functionality and other dApp features.
+
+## Resources
+
+This guide uses [Foundry's Anvil](https://getfoundry.sh/guides/forking-mainnet-with-cast-anvil) for creating local mainnet forks. Refer to the official Foundry documentation for more details on fork configuration and advanced usage.
 
 ## ⚠️ Fork Environment Limitations
 
