@@ -1,6 +1,6 @@
 import { Header } from '@/components/Typography'
 import { Section } from '@/app/my-rewards/components/Section'
-import StakingHistoryTableContainer from '@/app/staking-history/components/StakingHistoryTableContainer'
+import { StakingHistoryTableWithContext } from '@/app/staking-history/components/StakingHistoryTable'
 
 const NAME = 'Staking History'
 
@@ -17,7 +17,7 @@ export default function StakingPage() {
       </Header>
       <div data-testid="main-container" className="flex flex-col w-full items-start gap-2">
         <Section>
-          <StakingHistoryTableContainer />
+          <StakingHistoryTableWithContext />
         </Section>
       </div>
     </div>

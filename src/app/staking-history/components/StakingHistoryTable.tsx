@@ -7,7 +7,7 @@ import { motion } from 'motion/react'
 import { TablePager } from '@/components/TableNew'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
+import { usePricesContext, useTableActionsContext, useTableContext, withTableContext } from '@/shared/context'
 import { ActiveFilter } from '@/components/FilterSideBar'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { DesktopStakingHistory } from '@/app/staking-history/components/DesktopStakingHistory'
@@ -27,7 +27,7 @@ const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
   total_amount: 'amount',
 }
 
-export default function StakingHistoryTable() {
+function StakingHistoryTable() {
   const isDesktop = useIsDesktop()
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
   const { rows, sort } = useTableContext<ColumnId, StakingHistoryCellDataMap>()
@@ -192,3 +192,5 @@ export default function StakingHistoryTable() {
     </div>
   )
 }
+
+export const StakingHistoryTableWithContext = withTableContext<ColumnId, StakingHistoryCellDataMap>(StakingHistoryTable)
