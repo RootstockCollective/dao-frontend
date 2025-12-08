@@ -5,28 +5,11 @@ import { useVaultTermsAcceptance } from '../hooks/useVaultTermsAcceptance'
 import { useState, useCallback, useEffect } from 'react'
 
 const termsAndConditionsModalText = {
-  modalTitle: 'DISCLAIMER',
+  modalTitle: 'TERMS & CONDITIONS',
   modalDescription: (
     <>
       <Paragraph>
-        Please note that by interacting with the USD Sandbox Vault dApp, <br />
-        you acknowledge that your access, deposits, and use of the Vault <br />
-        are governed by the Sandbox Vault Terms & Conditions.
-      </Paragraph>
-      <br />
-      <Paragraph>
-        These Terms apply whether you are acting in your individual <br />
-        capacity or as an authorized representative of a legal entity.
-      </Paragraph>
-      <br />
-      <Paragraph>
-        Please read the Terms & Conditions carefully before depositing <br />
-        into the USD Sandbox Vault.
-      </Paragraph>
-      <br />
-      <Paragraph>
-        By proceeding, you confirm that you have read, understood, <br />
-        and agree to be bound by these Terms.
+        To continue with your deposit, you must agree to the Terms and Conditions for the USD Sandbox Vault.
       </Paragraph>
       <br />
       <Paragraph>
@@ -38,8 +21,9 @@ const termsAndConditionsModalText = {
           className="underline cursor-pointer"
           data-testid="TermsAndConditionsLink"
         >
-          Terms & Conditions
-        </a>
+          Terms and Conditions
+        </a>{' '}
+        carefully before proceeding.
       </Paragraph>
     </>
   ),
