@@ -51,6 +51,7 @@ export function StakingHistoryFilterSideBar({
       onFilterToggle={onFilterToggle}
       onClearGroup={onClearGroup}
       onClearAll={onClearAll}
+      data-testid="StakingHistoryFilterSideBar"
     />
   )
 }

@@ -49,6 +49,7 @@ export const StakingHistoryDataRow: FC<TransactionHistoryDataRowProps> = memo(({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         onClick={handleToggleExpand}
+        data-testid="StakingHistoryDataRow"
       >
         <PeriodCell period={period} isExpanded={isExpanded} isHovered={isHovered} />
         <ActionCell action={action} isExpanded={isExpanded} isHovered={isHovered} />
@@ -64,7 +65,11 @@ export const StakingHistoryDataRow: FC<TransactionHistoryDataRowProps> = memo(({
       </tr>
       {isExpanded &&
         transactions.map((detail, idx) => (
-          <tr key={`${row.id}-detail-${idx}`} className={detailRowClassName}>
+          <tr
+            key={`${row.id}-detail-${idx}`}
+            className={detailRowClassName}
+            data-testid="StakingHistoryDetailRow"
+          >
             <PeriodCell period={detail.date} isDetailRow isHovered={isHovered} />
             <ActionCell action={detail.action} isDetailRow isHovered={isHovered} />
             <AmountCell amount={detail.amount} action={detail.action} isDetailRow isHovered={isHovered} />

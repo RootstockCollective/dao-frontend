@@ -14,7 +14,7 @@ export const DesktopStakingHistory = memo(
         <table className="w-full min-w-[700px]">
           <StakingHistoryHeaderRow />
           <Suspense fallback={<div>Loading table data...</div>}>
-            <tbody>
+            <tbody data-testid="StakingHistoryTableBody">
               {rows.map(row => (
                 <StakingHistoryDataRow key={row.id} row={row} />
               ))}

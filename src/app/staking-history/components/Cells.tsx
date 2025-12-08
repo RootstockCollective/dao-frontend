@@ -26,6 +26,7 @@ const TableCellBase = ({
       <td
         className={cn('flex self-stretch items-center select-none', COLUMN_TRANSFORMS[columnId], className)}
         onClick={onClick}
+        data-testid={`StakingHistoryCell${columnId}`}
       >
         {children}
       </td>
@@ -159,6 +160,7 @@ export const ActionsCell: FC<TotalAmountCellProps> = ({
           <button
             onClick={onToggle}
             className="flex items-center gap-2 bg-transparent border-none cursor-pointer"
+            data-testid="StakingHistoryToggleDetailsButton"
           >
             <Paragraph variant="body-s" className="text-black font-medium">
               {isExpanded ? 'Hide details' : 'Show details'}

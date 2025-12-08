@@ -152,6 +152,7 @@ export default function StakingHistoryTable() {
           isOpen={isFilterSidebarOpen}
           setIsOpen={setIsFilterSidebarOpen}
           isFiltering={hasActiveFilters}
+          data-testid="StakingHistoryFilterButton"
         />
       </div>
 
@@ -162,7 +163,11 @@ export default function StakingHistoryTable() {
           className="overflow-hidden shrink-0"
         >
           {/* container for useClickOutside ref */}
-          <div ref={filterSidebarRef} className="pl-2 h-full">
+          <div
+            ref={filterSidebarRef}
+            className="pl-2 h-full"
+            data-testid="StakingHistoryFilterSidebarContainer"
+          >
             <StakingHistoryFilterSideBar
               isOpen={isFilterSidebarOpen}
               onClose={handleCloseFilterSidebar}
@@ -173,7 +178,7 @@ export default function StakingHistoryTable() {
             />
           </div>
         </motion.div>
-        <DesktopStakingHistory rows={rows} />
+        <DesktopStakingHistory rows={rows} data-testid="StakingHistoryDesktopTable" />
       </div>
 
       <TablePager
@@ -182,6 +187,7 @@ export default function StakingHistoryTable() {
         onPageChange={handlePageChange}
         pagedItemName="events"
         mode="expandable"
+        data-testid="StakingHistoryTablePager"
       />
     </div>
   )

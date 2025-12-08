@@ -23,7 +23,9 @@ interface OrderIndicatorContainerProps {
 }
 
 const OrderIndicatorContainer = ({ className, children }: OrderIndicatorContainerProps) => (
-  <div className={cn('flex pt-1 justify-center gap-2', className)}>{children}</div>
+  <div className={cn('flex pt-1 justify-center gap-2', className)} data-testid="StakingHistoryOrderIndicator">
+    {children}
+  </div>
 )
 
 interface OrderIndicatorProps {
@@ -111,6 +113,7 @@ export const HeaderCell = ({ className, children, columnId }: HeaderCellProps) =
       className={cn('h-full', columnClassNames, className)}
       contentClassName={isJustifyCenter ? 'justify-center' : ''}
       onClick={() => isSortable && dispatchSortRoundRobin(dispatch, columnId, sort)}
+      data-testid={`StakingHistoryHeaderCell${columnId}`}
     >
       {isSortable && <OrderIndicator columnId={columnId} />}
       <TableHeaderNode className={isSortable ? 'cursor-pointer' : 'cursor-default'}>
@@ -123,7 +126,10 @@ export const HeaderCell = ({ className, children, columnId }: HeaderCellProps) =
 export const StakingHistoryHeaderRow = () => {
   return (
     <Suspense fallback={<div>Loading table headers...</div>}>
-      <tr className="flex border-b-1 border-b-v3-text-60 select-none gap-4 pb-4 pl-4">
+      <tr
+        className="flex border-b-1 border-b-v3-text-60 select-none gap-4 pb-4 pl-4"
+        data-testid="StakingHistoryHeaderRow"
+      >
         <HeaderCell columnId="period">
           <HeaderTitle>Date</HeaderTitle>
         </HeaderCell>
