@@ -26,7 +26,7 @@ interface Props {
 }
 
 export const DepositModal = ({ onCloseModal }: Props) => {
-  const { balances, isBalancesLoading } = useGetAddressBalances()
+  const { balances } = useGetAddressBalances()
   const { prices } = usePricesContext()
   const { userDeposits } = useVaultDepositLimiter()
   const isDesktop = useIsDesktop()
