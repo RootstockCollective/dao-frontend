@@ -173,9 +173,7 @@ export default function StakingHistoryTable() {
             />
           </div>
         </motion.div>
-        <div className="grow overflow-y-auto">
-          <DesktopStakingHistory rows={rows} />
-        </div>
+        <DesktopStakingHistory rows={rows} />
       </div>
 
       <TablePager

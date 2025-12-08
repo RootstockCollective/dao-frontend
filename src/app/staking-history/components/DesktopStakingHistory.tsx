@@ -10,7 +10,7 @@ import { StakingHistoryDataRow } from '@/app/staking-history/components/StakingH
 export const DesktopStakingHistory = memo(
   ({ rows }: { rows: Row<ColumnId, Row['id'], StakingHistoryCellDataMap>[] }) => {
     return (
-      <div className="w-full overflow-x-auto bg-v3-bg-accent-80 hidden md:block">
+      <div className="w-full overflow-x-auto bg-v3-bg-accent-80 hidden md:block grow overflow-y-auto">
         <table className="w-full min-w-[700px]">
           <StakingHistoryHeaderRow />
           <Suspense fallback={<div>Loading table data...</div>}>
