@@ -53,6 +53,7 @@ createAppKit({
     '0cb0c532b518aa842786d5167e13df22046bc9301b6677808d7134c3d7366a9d', // WigWam
     'fb6ed96272ec885008e896c6146002048d8dc88c0b7e0e6fa42bcadf052a1569', // Enkrypt
     'io.trezor.hardware-wallet', // Add Trezor's EIP-6963 UUID
+    'f6488493aa7713ec6f915ebe80070d7a4dd17da9d162d72f53117cc4f230bd75', // Beexo
   ],
   features: {
     analytics: true,
