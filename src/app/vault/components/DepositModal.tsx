@@ -54,7 +54,6 @@ const KycInfo = () => {
 export const DepositModal = ({ onCloseModal }: Props) => {
   const { balances } = useGetAddressBalances()
   const { prices } = usePricesContext()
-  const { userDeposits } = useVaultDepositLimiter()
   const isDesktop = useIsDesktop()
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -85,11 +84,7 @@ export const DepositModal = ({ onCloseModal }: Props) => {
     canDeposit: isValidAmount,
     reason: depositLimitReason,
     isLoading: isDepositValidationLoading,
-    maxDepositLimit,
   } = useCanDepositToVault(amount)
-
-  // Use the same data source as validation (deposit limiter) for consistency
-  const formattedUserDeposits = Big(formatEther(userDeposits)).toFixedNoTrailing(2)
 
   const isAmountOverBalance = useMemo(() => {
     if (!amount) return false
@@ -218,12 +213,6 @@ export const DepositModal = ({ onCloseModal }: Props) => {
                   <TokenImage symbol="USDRIF" size={12} />
                   <Label variant="body-s" className="text-text-60" data-testid="totalBalanceLabel">
                     USDRIF available: {usdrifBalance.formattedBalance}
-                  </Label>
-                </div>
-                <div className="flex items-center gap-1">
-                  <TokenImage symbol="USDRIF" size={12} />
-                  <Label variant="body-s" className="text-text-60" data-testid="depositLimitLabel">
-                    Vault deposits: {formattedUserDeposits} / {maxDepositLimit} USDRIF
                   </Label>
                 </div>
               </div>
