@@ -42,7 +42,6 @@ export const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID as string
 export const BACKERS_MANAGER_ADDRESS = process.env.NEXT_PUBLIC_BACKERS_MANAGER_ADDRESS as Address
 export const BUILDER_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_BUILDER_REGISTRY_ADDRESS as Address
 export const REWARD_DISTRIBUTOR_ADDRESS = process.env.NEXT_PUBLIC_REWARD_DISTRIBUTOR_ADDRESS as Address
-export const VAULT_DEPOSIT_LIMITER_ADDRESS = process.env.NEXT_PUBLIC_VAULT_DEPOSIT_LIMITER_ADDRESS as Address
 export const NFT_BOOSTER_DATA_URL = (process.env.NEXT_PUBLIC_NFT_BOOSTER_DATA_URL as string) ?? ''
 
 export const AVERAGE_BLOCKTIME = 60_000
@@ -72,6 +71,7 @@ export const MAX_NAME_LENGTH_FOR_PROPOSAL = 100
 export const TALLY_DESCRIPTION_SEPARATOR = '  ' // Tally uses double spaces to separate name and description
 export const WeiPerEther = 10n ** 18n
 export const VAULT_BASIS_POINTS = 10n ** 9n // 1e9 = 100% for vault APY calculations
+export const VAULT_SHARE_MULTIPLIER = 10n ** 6n // 1e6 multiplier for vault shares (used in vault contract to prevent inflation attacks)
 // address(uint160(uint256(keccak256("COINBASE_ADDRESS"))))
 export const COINBASE_ADDRESS = '0xf7ab6cfaebbadfe8b5494022c4c6db776bd63b6b' as Address
 

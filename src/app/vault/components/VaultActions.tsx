@@ -109,8 +109,10 @@ export const VaultActions = () => {
           onClick={handleDepositClick}
           data-testid="deposit-button"
           ref={depositButtonRef}
+          className="flex flex-row gap-2 justify-center"
         >
-          Deposit
+          <Span className="flex-shrink-0">Deposit</Span>
+          <MoneyIconKoto />
         </Button>
         <NewPopover
           open={withdrawPopoverOpen}
@@ -135,7 +137,7 @@ export const VaultActions = () => {
           className="flex flex-row gap-2 pl-0 justify-start"
         >
           <Span className="flex-shrink-0">Withdraw</Span>
-          <MoneyIconKoto />
+          <MoneyIconKoto style={{ transform: 'rotate(180deg)' }} />
         </Button>
       </div>
 

@@ -42,8 +42,8 @@ const usdrif = {
   displayDecimals: 2,
 }
 
-const cTokenVault = {
-  decimals: 18,
+const ctokenvault = {
+  decimals: 24, // 18 (base) + 6 (VAULT_SHARE_MULTIPLIER) = 24 decimals
   displayDecimals: 2,
 }
 
@@ -52,7 +52,7 @@ const symbols: { [key: string]: SymbolFormatOptions } = {
   rbtc,
   strif,
   usdrif,
-  cTokenVault,
+  ctokenvault,
 }
 
 export const formatSymbol = (value: bigint | string, symbol: string) => {

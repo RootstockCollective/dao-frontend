@@ -1,7 +1,8 @@
 import { useReadContracts, useAccount } from 'wagmi'
-import { vaultDepositLimiter } from '@/lib/contracts'
+import { VaultDepositLimiterAbi } from '@/lib/abis/VaultDepositLimiterAbi'
 import { useMemo } from 'react'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { useVaultDepositLimiterAddress } from './useVaultDepositLimiterAddress'
 
 /**
  * Hook for reading vault deposit limiter contract data
@@ -9,17 +10,24 @@ import { AVERAGE_BLOCKTIME } from '@/lib/constants'
  */
 export function useVaultDepositLimiter() {
   const { address: connectedAddress } = useAccount()
+  const {
+    depositLimiterAddress,
+    isLoading: isAddressLoading,
+    error: addressError,
+  } = useVaultDepositLimiterAddress()
 
   const contracts = useMemo(() => {
+    if (!depositLimiterAddress) return []
+
     const baseContracts = [
       {
-        address: vaultDepositLimiter.address,
-        abi: vaultDepositLimiter.abi,
+        address: depositLimiterAddress,
+        abi: VaultDepositLimiterAbi,
         functionName: 'maxDefaultDepositLimit',
       } as const,
       {
-        address: vaultDepositLimiter.address,
-        abi: vaultDepositLimiter.abi,
+        address: depositLimiterAddress,
+        abi: VaultDepositLimiterAbi,
         functionName: 'maxWhitelistedDepositLimit',
       } as const,
     ]
@@ -28,14 +36,14 @@ export function useVaultDepositLimiter() {
       return [
         ...baseContracts,
         {
-          address: vaultDepositLimiter.address,
-          abi: vaultDepositLimiter.abi,
+          address: depositLimiterAddress,
+          abi: VaultDepositLimiterAbi,
           functionName: 'isWhitelisted',
           args: [connectedAddress],
         } as const,
         {
-          address: vaultDepositLimiter.address,
-          abi: vaultDepositLimiter.abi,
+          address: depositLimiterAddress,
+          abi: VaultDepositLimiterAbi,
           functionName: 'userDeposits',
           args: [connectedAddress],
         } as const,
@@ -43,16 +51,36 @@ export function useVaultDepositLimiter() {
     }
 
     return baseContracts
-  }, [connectedAddress])
+  }, [connectedAddress, depositLimiterAddress])
 
-  const { data, isLoading, error } = useReadContracts({
+  const {
+    data,
+    isLoading: isContractsLoading,
+    error: contractsError,
+  } = useReadContracts({
     contracts,
     query: {
       refetchInterval: AVERAGE_BLOCKTIME, // Refetch every minute
+      enabled: !!depositLimiterAddress, // Only run when we have the address
     },
   })
 
   return useMemo(() => {
+    const isLoading = isAddressLoading || isContractsLoading
+    const error = addressError || contractsError
+
+    // Return early if still loading or error
+    if (isLoading || error || !depositLimiterAddress) {
+      return {
+        maxDefaultDepositLimit: 0n,
+        maxWhitelistedDepositLimit: 0n,
+        isWhitelisted: false,
+        userDeposits: 0n,
+        isLoading,
+        error,
+      }
+    }
+
     const maxDefaultDepositLimit = (data?.[0]?.result as bigint | undefined) ?? 0n
     const maxWhitelistedDepositLimit = (data?.[1]?.result as bigint | undefined) ?? 0n
     const isWhitelisted = connectedAddress && data?.[2]?.result ? (data[2].result as boolean) : false
@@ -66,5 +94,13 @@ export function useVaultDepositLimiter() {
       isLoading,
       error,
     }
-  }, [data, connectedAddress, isLoading, error])
+  }, [
+    data,
+    connectedAddress,
+    depositLimiterAddress,
+    isAddressLoading,
+    isContractsLoading,
+    addressError,
+    contractsError,
+  ])
 }
