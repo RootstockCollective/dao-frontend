@@ -1,5 +1,5 @@
 import Big from '@/lib/big'
-import { USD, WeiPerEther } from '@/lib/constants'
+import { USD, WeiPerEther, VAULT_BASIS_POINTS } from '@/lib/constants'
 import { formatCurrencyWithLabel } from '@/lib/utils'
 import { BigSource } from 'big.js'
 
@@ -92,7 +92,7 @@ export const formatSymbol = (value: bigint | string, symbol: string) => {
 
 /**
  * Formats APY values from the vault contract
- * @param apyValue - APY value where 1e9 = 100% (e.g., 5e7 = 5%, 1e8 = 10%)
+ * @param apyValue - APY value where VAULT_BASIS_POINTS (1e9) = 100% (e.g., 5e7 = 5%, 1e8 = 10%)
  * @param displayDecimals - Number of decimal places to show (default: 2)
  * @returns Formatted percentage string
  */
@@ -101,12 +101,12 @@ export const formatApy = (apyValue: bigint | string, displayDecimals: number = 2
     return '0.00'
   }
 
-  // APY scale: 1e9 = 100%
-  const percentage = Big(apyValue.toString()).div(Big(10).pow(7))
+  // APY scale: VAULT_BASIS_POINTS (1e9) = 100%
+  const percentage = Big(apyValue.toString()).div(VAULT_BASIS_POINTS.toString()).mul(100)
 
   return new Intl.NumberFormat('en-US', {
     minimumFractionDigits: displayDecimals,
     maximumFractionDigits: displayDecimals,
-    roundingMode: 'floor',
+    roundingMode: 'halfExpand',
   }).format(percentage.toString() as never)
 }
