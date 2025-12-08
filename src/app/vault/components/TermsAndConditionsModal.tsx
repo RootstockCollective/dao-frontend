@@ -10,9 +10,6 @@ const termsAndConditionsModalText = {
     <>
       <Paragraph>
         To continue with your deposit, you must agree to the Terms and Conditions for the USD Sandbox Vault.
-      </Paragraph>
-      <br />
-      <Paragraph>
         Please read the{' '}
         <a
           href={VAULT_TERMS_CONDITIONS_URL || '#'}
@@ -21,9 +18,14 @@ const termsAndConditionsModalText = {
           className="underline cursor-pointer"
           data-testid="TermsAndConditionsLink"
         >
-          Terms and Conditions
+          <strong>Terms and Conditions</strong>
         </a>{' '}
         carefully before proceeding.
+      </Paragraph>
+      <br />
+      <Paragraph>
+        By selecting <strong>I Agree</strong>, you confirm that you have read, understood, and agree to these
+        Terms.
       </Paragraph>
     </>
   ),
