@@ -8,7 +8,6 @@ import { useCallback, useMemo, useState, useEffect, useRef } from 'react'
 import { useDepositToVault } from '../hooks/useDepositToVault'
 import { useVaultAllowance } from '../hooks/useVaultAllowance'
 import { useCanDepositToVault } from '../hooks/useCanDepositToVault'
-import { useVaultDepositLimiter } from '../hooks/useVaultDepositLimiter'
 import { formatEther } from 'viem'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
@@ -22,9 +21,34 @@ import { USDRIF } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context'
 import { TermsAndConditionsModal } from './TermsAndConditionsModal'
 import { useVaultTermsAcceptance } from '../hooks/useVaultTermsAcceptance'
+import { useVaultDepositLimiter } from '../hooks/useVaultDepositLimiter'
+import { ExternalLink } from '@/components/Link'
+import { VAULT_KYC_URL } from '@/lib/constants'
 
 interface Props {
   onCloseModal: () => void
+}
+
+const KycInfo = () => {
+  const { maxDefaultDepositLimit } = useVaultDepositLimiter()
+  const formattedDefaultLimit = Big(formatEther(maxDefaultDepositLimit)).toFixedNoTrailing(2)
+
+  return (
+    <div className="mt-4 p-4 bg-bg-80 rounded-1">
+      <Paragraph variant="body-s" className="text-text-60">
+        To deposit more than {formattedDefaultLimit} USDRIF, you need to complete KYC verification.{' '}
+        <ExternalLink
+          href={VAULT_KYC_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="underline cursor-pointer"
+          data-testid="KycLink"
+        >
+          Submit KYC
+        </ExternalLink>
+      </Paragraph>
+    </div>
+  )
 }
 
 export const DepositModal = ({ onCloseModal }: Props) => {
@@ -234,6 +258,7 @@ export const DepositModal = ({ onCloseModal }: Props) => {
             )}
           </div>
 
+          <KycInfo />
           <Divider className="mb-4 mt-6" />
 
           <DepositActions

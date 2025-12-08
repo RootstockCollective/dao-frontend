@@ -13,8 +13,6 @@ import { useModal } from '@/shared/hooks/useModal'
 import { DepositModal } from './DepositModal'
 import { WithdrawModal } from './WithdrawModal'
 import { MoneyIconKoto } from '@/components/Icons'
-import { useVaultDepositValidation } from '../context'
-import { VaultDepositKycPopover } from './VaultDepositKycPopover'
 
 /**
  * Component providing deposit and withdraw actions for the vault
@@ -35,9 +33,7 @@ export const VaultActions = () => {
   const isDesktop = useIsDesktop()
   const depositModal = useModal()
   const withdrawModal = useModal()
-  const { canDeposit, isLoading: isValidationLoading } = useVaultDepositValidation()
   const [depositPopoverOpen, setDepositPopoverOpen] = useState(false)
-  const [kycPopoverOpen, setKycPopoverOpen] = useState(false)
   const [withdrawPopoverOpen, setWithdrawPopoverOpen] = useState(false)
   const depositButtonRef = useRef<HTMLButtonElement>(null)
   const withdrawButtonRef = useRef<HTMLButtonElement>(null)
@@ -49,17 +45,6 @@ export const VaultActions = () => {
         return
       }
       setDepositPopoverOpen(true)
-      return
-    }
-
-    // Check if user can deposit (KYC validation)
-    if (!isValidationLoading && !canDeposit) {
-      if (!isDesktop) {
-        // On mobile, we could show a modal or navigate, but for now just show popover
-        setKycPopoverOpen(true)
-        return
-      }
-      setKycPopoverOpen(true)
       return
     }
 
@@ -95,14 +80,6 @@ export const VaultActions = () => {
               />
             </>
           }
-        />
-        <NewPopover
-          open={kycPopoverOpen}
-          onOpenChange={setKycPopoverOpen}
-          anchorRef={depositButtonRef}
-          className="bg-text-80 rounded-[4px] border border-text-80 p-6 shadow-lg w-72"
-          contentClassName="flex flex-col items-start bg-transparent h-full"
-          content={<VaultDepositKycPopover />}
         />
         <Button
           variant="secondary-outline"
