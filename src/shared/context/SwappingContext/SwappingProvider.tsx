@@ -73,7 +73,6 @@ const initialState: SwapState = {
   approvalTxHash: null,
   poolAddress: USDT0_USDRIF_POOL_ADDRESS,
   poolFee: DEFAULT_POOL_FEE,
-  slippageTolerance: null,
 }
 
 const swapReducer = (state: SwapState, action: SwapAction): SwapState => {
@@ -171,11 +170,6 @@ const swapReducer = (state: SwapState, action: SwapAction): SwapState => {
       return {
         ...state,
         poolFee: action.payload,
-      }
-    case SwapActionType.SET_SLIPPAGE_TOLERANCE:
-      return {
-        ...state,
-        slippageTolerance: action.payload,
       }
     case SwapActionType.RESET_SWAP:
       return {
@@ -311,10 +305,6 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
     dispatch({ type: SwapActionType.SET_APPROVING, payload: false })
   }, [])
 
-  const setSlippageTolerance = useCallback((slippage: number | null) => {
-    dispatch({ type: SwapActionType.SET_SLIPPAGE_TOLERANCE, payload: slippage })
-  }, [])
-
   const value: SwappingContextValue = useMemo(
     () => ({
       state,
@@ -335,7 +325,6 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
       setSwapping,
       setSwapError,
       setSwapTxHash,
-      setSlippageTolerance,
     }),
     [
       state,
@@ -355,7 +344,6 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
       setSwapping,
       setSwapError,
       setSwapTxHash,
-      setSlippageTolerance,
     ],
   )
 
