@@ -11,7 +11,7 @@ import { CircularProgress } from './CircularProgress'
 
 /**
  * Component displaying user-specific vault metrics and actions
- * Shows wallet balance, total supplied, and supply/withdraw buttons
+ * Shows wallet balance, total deposited, and deposit/withdraw buttons
  */
 export const VaultUserMetricsContainer = () => {
   const { totalAssets, userBalance, isLoading } = useVaultBalance()
@@ -35,9 +35,8 @@ export const VaultUserMetricsContainer = () => {
         )}
         <BalanceInfo
           className="max-w-[214px] min-w-[180px]"
-          title="Your total deposited"
-          amount={isLoading ? '...' : formatSymbol(userBalance, 'USDRIF')}
-          symbol="USDRIF"
+          title="Your Shares"
+          amount={isLoading ? '...' : formatSymbol(userBalance, 'cTokenVault')}
         />
         {isConnected && userBalance > 0 && (
           <div className="flex flex-col items-center gap-2">

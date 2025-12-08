@@ -16,12 +16,15 @@ import { TokenImage } from '@/components/TokenImage'
 import { PercentageButtons } from '@/app/user/Unstake/components/PercentageButtons'
 import { formatSymbol } from '@/app/shared/formatter'
 import { formatEther } from 'viem'
+import { usePricesContext } from '@/shared/context'
 
 interface Props {
   onCloseModal: () => void
 }
 
 export const WithdrawModal = ({ onCloseModal }: Props) => {
+  const { prices } = usePricesContext()
+
   const isDesktop = useIsDesktop()
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -86,7 +89,7 @@ export const WithdrawModal = ({ onCloseModal }: Props) => {
   }, [])
 
   // For now, no price data for USDRIF - can be added later
-  const amountToCurrency = formatCurrency(Big(0).mul(amount || 0))
+  const amountToCurrency = formatCurrency(Big(prices['USDRIF']?.price || 0).mul(amount || 0))
 
   return (
     <Modal width={688} onClose={onCloseModal} fullscreen={!isDesktop}>
@@ -108,7 +111,7 @@ export const WithdrawModal = ({ onCloseModal }: Props) => {
             <div className="flex items-center gap-1">
               <TokenImage symbol="USDRIF" size={12} />
               <Label variant="body-s" className="text-text-60" data-testid="totalBalanceLabel">
-                USDRIF deposited in vault: {vaultBalanceFormatted}
+                Shares in the vault: {vaultBalanceFormatted}
               </Label>
             </div>
             <div className="flex gap-1 self-end">

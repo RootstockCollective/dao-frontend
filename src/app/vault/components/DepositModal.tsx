@@ -5,8 +5,11 @@ import Big from '@/lib/big'
 import { cn, handleAmountInput, formatCurrency } from '@/lib/utils'
 import { executeTxFlow } from '@/shared/notification'
 import { useCallback, useMemo, useState, useEffect, useRef } from 'react'
-import { useSupplyToVault } from '../hooks/useSupplyToVault'
+import { useDepositToVault } from '../hooks/useDepositToVault'
 import { useVaultAllowance } from '../hooks/useVaultAllowance'
+import { useCanDepositToVault } from '../hooks/useCanDepositToVault'
+import { useVaultDepositLimiter } from '../hooks/useVaultDepositLimiter'
+import { formatEther } from 'viem'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
 import { Divider } from '@/components/Divider'
@@ -22,9 +25,10 @@ interface Props {
   onCloseModal: () => void
 }
 
-export const SupplyModal = ({ onCloseModal }: Props) => {
-  const { balances, isBalancesLoading } = useGetAddressBalances()
+export const DepositModal = ({ onCloseModal }: Props) => {
+  const { balances } = useGetAddressBalances()
   const { prices } = usePricesContext()
+  const { userDeposits } = useVaultDepositLimiter()
   const isDesktop = useIsDesktop()
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -32,12 +36,12 @@ export const SupplyModal = ({ onCloseModal }: Props) => {
   const usdrifBalance = balances[USDRIF]
 
   const {
-    onRequestSupply,
-    isRequesting: isSupplyRequesting,
-    isTxPending: isSupplyPending,
-    isTxFailed: isSupplyFailed,
-    supplyTxHash,
-  } = useSupplyToVault(amount)
+    onRequestDeposit,
+    isRequesting: isDepositRequesting,
+    isTxPending: isDepositPending,
+    isTxFailed: isDepositFailed,
+    depositTxHash,
+  } = useDepositToVault(amount)
 
   const {
     isAllowanceEnough,
@@ -48,6 +52,16 @@ export const SupplyModal = ({ onCloseModal }: Props) => {
     isTxFailed: isAllowanceFailed,
     allowanceTxHash,
   } = useVaultAllowance(amount)
+
+  const {
+    canDeposit: isValidAmount,
+    reason: depositLimitReason,
+    isLoading: isDepositValidationLoading,
+    maxDepositLimit,
+  } = useCanDepositToVault(amount)
+
+  // Use the same data source as validation (deposit limiter) for consistency
+  const formattedUserDeposits = Big(formatEther(userDeposits)).toFixedNoTrailing(2)
 
   const isAmountOverBalance = useMemo(() => {
     if (!amount) return false
@@ -60,18 +74,40 @@ export const SupplyModal = ({ onCloseModal }: Props) => {
     if (isAmountOverBalance) {
       return 'This is more than the available USDRIF balance. Please update the amount.'
     }
+    if (!isValidAmount && depositLimitReason) {
+      return depositLimitReason
+    }
     return ''
-  }, [isAmountOverBalance])
+  }, [isAmountOverBalance, isValidAmount, depositLimitReason])
 
-  const cannotProceedWithSupply = useMemo(
-    () => !amount || !Big(amount).gt(0) || isAmountOverBalance || isSupplyRequesting,
-    [amount, isAmountOverBalance, isSupplyRequesting],
+  const cannotProceedWithDeposit = useMemo(
+    () =>
+      !amount ||
+      !Big(amount).gt(0) ||
+      isAmountOverBalance ||
+      !isValidAmount ||
+      isDepositValidationLoading ||
+      isDepositRequesting,
+    [amount, isAmountOverBalance, isValidAmount, isDepositValidationLoading, isDepositRequesting],
   )
 
   const cannotProceedWithAllowance = useMemo(
     () =>
-      !amount || !Big(amount).gt(0) || isAmountOverBalance || isAllowanceRequesting || isAllowanceReadLoading,
-    [amount, isAmountOverBalance, isAllowanceRequesting, isAllowanceReadLoading],
+      !amount ||
+      !Big(amount).gt(0) ||
+      isAmountOverBalance ||
+      !isValidAmount ||
+      isDepositValidationLoading ||
+      isAllowanceRequesting ||
+      isAllowanceReadLoading,
+    [
+      amount,
+      isAmountOverBalance,
+      isValidAmount,
+      isDepositValidationLoading,
+      isAllowanceRequesting,
+      isAllowanceReadLoading,
+    ],
   )
 
   const handleAmountChange = useCallback(
@@ -89,13 +125,13 @@ export const SupplyModal = ({ onCloseModal }: Props) => {
     [usdrifBalance.balance],
   )
 
-  const handleConfirmSupply = useCallback(() => {
+  const handleConfirmDeposit = useCallback(() => {
     executeTxFlow({
-      onRequestTx: onRequestSupply,
+      onRequestTx: onRequestDeposit,
       onSuccess: onCloseModal,
       action: 'vaultDeposit',
     })
-  }, [onRequestSupply, onCloseModal])
+  }, [onRequestDeposit, onCloseModal])
 
   const handleRequestAllowance = useCallback(() => {
     executeTxFlow({
@@ -114,7 +150,7 @@ export const SupplyModal = ({ onCloseModal }: Props) => {
   return (
     <Modal width={688} onClose={onCloseModal} fullscreen={!isDesktop}>
       <div className={cn('h-full flex flex-col', !isDesktop ? 'p-4' : 'p-6')}>
-        <Header className="mt-16 mb-4">SUPPLY USDRIF</Header>
+        <Header className="mt-16 mb-4">DEPOSIT USDRIF</Header>
 
         <div className="flex-1">
           <VaultInput
@@ -122,17 +158,25 @@ export const SupplyModal = ({ onCloseModal }: Props) => {
             value={amount}
             onChange={handleAmountChange}
             symbol="USDRIF"
-            labelText="Amount to supply"
+            labelText="Amount to deposit"
             currencyValue={amountToCurrency}
             errorText={errorMessage}
           />
 
           <div className="flex flex-col justify-between mx-3 mt-2 gap-2">
-            <div className="flex items-center gap-1">
-              <TokenImage symbol="USDRIF" size={12} />
-              <Label variant="body-s" className="text-text-60" data-testid="totalBalanceLabel">
-                USDRIF available: {usdrifBalance.formattedBalance}
-              </Label>
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-1">
+                <TokenImage symbol="USDRIF" size={12} />
+                <Label variant="body-s" className="text-text-60" data-testid="totalBalanceLabel">
+                  USDRIF available: {usdrifBalance.formattedBalance}
+                </Label>
+              </div>
+              <div className="flex items-center gap-1">
+                <TokenImage symbol="USDRIF" size={12} />
+                <Label variant="body-s" className="text-text-60" data-testid="depositLimitLabel">
+                  Vault deposits: {formattedUserDeposits} / {maxDepositLimit} USDRIF
+                </Label>
+              </div>
             </div>
             <div className="flex gap-1 self-end">
               <PercentageButtons onPercentageClick={handlePercentageClick} />
@@ -142,7 +186,7 @@ export const SupplyModal = ({ onCloseModal }: Props) => {
           {!isAllowanceEnough && amount && Big(amount).gt(0) && !isAmountOverBalance && (
             <div className="mt-4 p-4 bg-bg-80 rounded-1">
               <Paragraph variant="body-s" className="text-text-60">
-                You need to approve USDRIF before supplying to the vault.
+                You need to approve USDRIF before depositing to the vault.
               </Paragraph>
             </div>
           )}
@@ -155,11 +199,11 @@ export const SupplyModal = ({ onCloseModal }: Props) => {
               className="mt-8"
             />
           )}
-          {supplyTxHash && (
+          {depositTxHash && (
             <TransactionStatus
-              txHash={supplyTxHash}
-              isTxFailed={isSupplyFailed}
-              failureMessage="Supply TX failed."
+              txHash={depositTxHash}
+              isTxFailed={isDepositFailed}
+              failureMessage="Deposit TX failed."
               className="mt-8"
             />
           )}
@@ -167,46 +211,46 @@ export const SupplyModal = ({ onCloseModal }: Props) => {
 
         <Divider className="mb-4 mt-6" />
 
-        <SupplyActions
+        <DepositActions
           isAllowanceEnough={isAllowanceEnough}
           isAllowancePending={isAllowancePending}
-          isSupplyPending={isSupplyPending}
+          isDepositPending={isDepositPending}
           isAllowanceRequesting={isAllowanceRequesting}
-          isSupplyRequesting={isSupplyRequesting}
+          isDepositRequesting={isDepositRequesting}
           cannotProceedWithAllowance={cannotProceedWithAllowance}
-          cannotProceedWithSupply={cannotProceedWithSupply}
+          cannotProceedWithDeposit={cannotProceedWithDeposit}
           onRequestAllowance={handleRequestAllowance}
-          onSupply={handleConfirmSupply}
+          onDeposit={handleConfirmDeposit}
         />
       </div>
     </Modal>
   )
 }
 
-interface SupplyActionsProps {
+interface DepositActionsProps {
   isAllowanceEnough: boolean
   isAllowancePending: boolean
-  isSupplyPending: boolean
+  isDepositPending: boolean
   isAllowanceRequesting: boolean
-  isSupplyRequesting: boolean
+  isDepositRequesting: boolean
   cannotProceedWithAllowance: boolean
-  cannotProceedWithSupply: boolean
+  cannotProceedWithDeposit: boolean
   onRequestAllowance: () => void
-  onSupply: () => void
+  onDeposit: () => void
 }
 
-const SupplyActions = ({
+const DepositActions = ({
   isAllowanceEnough,
   isAllowancePending,
-  isSupplyPending,
+  isDepositPending,
   isAllowanceRequesting,
-  isSupplyRequesting,
+  isDepositRequesting,
   cannotProceedWithAllowance,
-  cannotProceedWithSupply,
+  cannotProceedWithDeposit,
   onRequestAllowance,
-  onSupply,
-}: SupplyActionsProps) => {
-  if (isAllowancePending || isSupplyPending) {
+  onDeposit,
+}: DepositActionsProps) => {
+  if (isAllowancePending || isDepositPending) {
     return <TransactionInProgressButton />
   }
 
@@ -229,11 +273,11 @@ const SupplyActions = ({
     <div className="flex justify-end">
       <Button
         variant="primary"
-        onClick={onSupply}
-        disabled={cannotProceedWithSupply}
-        data-testid="SupplyButton"
+        onClick={onDeposit}
+        disabled={cannotProceedWithDeposit}
+        data-testid="DepositButton"
       >
-        {isSupplyRequesting ? 'Requesting...' : 'Supply'}
+        {isDepositRequesting ? 'Requesting...' : 'Deposit'}
       </Button>
     </div>
   )

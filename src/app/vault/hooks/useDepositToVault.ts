@@ -4,19 +4,19 @@ import { vault } from '@/lib/contracts'
 import { useContractWrite } from '@/app/user/Stake/hooks/useContractWrite'
 
 /**
- * Hook to supply (deposit) USDRIF to the vault
- * @param amount - The amount to supply in USDRIF
- * @returns Supply transaction handlers and status
+ * Hook to deposit USDRIF to the vault
+ * @param amount - The amount to deposit in USDRIF
+ * @returns Deposit transaction handlers and status
  */
-export const useSupplyToVault = (amount: string) => {
+export const useDepositToVault = (amount: string) => {
   const { address } = useAccount()
 
   const {
-    onRequestTransaction: onRequestSupply,
+    onRequestTransaction: onRequestDeposit,
     isRequesting,
     isTxPending,
     isTxFailed,
-    txHash: supplyTxHash,
+    txHash: depositTxHash,
   } = useContractWrite({
     ...vault,
     functionName: 'deposit' as const,
@@ -24,10 +24,10 @@ export const useSupplyToVault = (amount: string) => {
   })
 
   return {
-    onRequestSupply,
+    onRequestDeposit,
     isRequesting,
     isTxPending,
     isTxFailed,
-    supplyTxHash,
+    depositTxHash,
   }
 }
