@@ -20,20 +20,29 @@ export const VaultDisclaimer: FC<CommonComponentProps> = ({ className = '' }) =>
       <Header variant="h3">SANDBOX NOTICE</Header>
       <div className="flex flex-col gap-3">
         <Paragraph>
-          This is a <strong>SANDBOX by RootstockLabs</strong> in order to test out new treasury management
-          tooling. This tooling could be used in the future to help manage the Treasury from the DAO in the
-          Collective, and/or create additional financial products in the Rootstock ecosystem.
+          This is a <strong>SANDBOX by RootstockLabs</strong> in order to test out new tooling and is an
+          experimental, pre-production testing environment designed to simulate the functionality of a
+          potential future yield-bearing vault for USD-denominated crypto assets.
         </Paragraph>
         <Paragraph>
-          The Sandbox will operate with <strong>full transparency</strong> showing all business flows through
-          all parts of the Engine from deposit all the way through to Yield generating protocol.
+          The <strong>Sandbox Vault prototype</strong> is not a live investment product. It is provided solely
+          for testing, feedback, and evaluation purposes.
         </Paragraph>
         <Paragraph>
           The Sandbox will allow small test deposits of up to <strong>100 USD</strong> to clearly demonstrate
-          sandbox business flows. Amounts greater than 100 USD can be deposited in the other part of the
-          Sandbox where depositors are invited, whitelisted, and have performed KYB. This will form a friends
-          and family section of the Sandbox where any value that is received beyond the deposited capital is
-          agreed to be returned to the USD Engine.
+          sandbox business flows. Amounts greater than 100 USD can be deposited in another part of the Sandbox
+          where depositors are invited, whitelisted, and have performed KYC/AML. This will form a friends and
+          family section of the Sandbox where any value that is received beyond the deposited capital is
+          agreed to be returned during testing.{' '}
+          <a
+            href={process.env.NEXT_PUBLIC_VAULT_KYC_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:no-underline"
+          >
+            Click here
+          </a>{' '}
+          to register your interest for testing amounts greater than 100 USD.
         </Paragraph>
       </div>
     </div>
