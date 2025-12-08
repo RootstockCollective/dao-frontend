@@ -26,7 +26,16 @@ export const VaultDisclaimer: FC<CommonComponentProps> = ({ className = '' }) =>
         </Paragraph>
         <Paragraph>
           The <strong>Sandbox Vault prototype</strong> is not a live investment product. It is provided solely
-          for testing, feedback, and evaluation purposes.
+          for testing, feedback, and evaluation purposes. Please see the{' '}
+          <a
+            href={process.env.NEXT_PUBLIC_VAULT_TERMS_CONDITIONS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:no-underline"
+          >
+            Terms & Conditions here
+          </a>
+          .
         </Paragraph>
         <Paragraph>
           The Sandbox will allow small test deposits of up to <strong>100 USD</strong> to clearly demonstrate
@@ -40,7 +49,7 @@ export const VaultDisclaimer: FC<CommonComponentProps> = ({ className = '' }) =>
             rel="noopener noreferrer"
             className="underline hover:no-underline"
           >
-            Click here
+            Click &quot;Talk to the team&quot;
           </a>{' '}
           to register your interest for testing amounts greater than 100 USD.
         </Paragraph>
