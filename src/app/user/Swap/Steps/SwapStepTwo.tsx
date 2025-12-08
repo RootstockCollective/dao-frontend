@@ -16,13 +16,7 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
   const { tokenInData } = useTokenSelection()
   const { balances, prices } = useBalancesContext()
   const { state } = useSwappingContext()
-  const { allowance, isApproving, hasSufficientAllowance, approve } = useTokenAllowance()
-
-  // At step 2, amountIn should always exist (user came from step 1)
-  if (!amountIn) {
-    // This shouldn't happen, but handle gracefully
-    return null
-  }
+  const { allowance, isApproving, hasSufficientAllowance, approve, refetchAllowance } = useTokenAllowance()
 
   const from = useMemo(() => {
     const priceValue = prices[USDT0]?.price || 0
@@ -66,17 +60,34 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
         }
         return txHash as Hash
       },
-      onSuccess: onGoNext,
+      onSuccess: async () => {
+        // After transaction is confirmed, refetch allowance and verify it's sufficient
+        const { data: permit2AllowanceData } = await refetchAllowance()
+
+        // Permit2 returns [amount, expiration, nonce], extract the amount
+        const newAllowance = Array.isArray(permit2AllowanceData)
+          ? permit2AllowanceData[0]
+          : permit2AllowanceData
+
+        if (!newAllowance || typeof newAllowance !== 'bigint' || newAllowance < requiredAmount) {
+          throw new Error(
+            `Allowance verification failed. Current: ${newAllowance?.toString() || 'unknown'}, Required: ${requiredAmount.toString()}`,
+          )
+        }
+
+        onGoNext()
+      },
       action: 'allowance',
     })
-  }, [requiredAmount, approve, onGoNext])
+  }, [requiredAmount, approve, refetchAllowance, onGoNext])
 
-  // Auto-advance if allowance is sufficient
+  // Auto-advance if allowance is already sufficient (user may have approved in a previous session)
+  // Only auto-advance if not currently approving
   useEffect(() => {
-    if (isAllowanceEnough) {
+    if (isAllowanceEnough && !isApproving) {
       onGoNext()
     }
-  }, [isAllowanceEnough, onGoNext])
+  }, [isAllowanceEnough, isApproving, onGoNext])
 
   // Set button actions
   useEffect(() => {
@@ -96,6 +107,12 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
       },
     })
   }, [amountIn, isAllowanceEnough, isApproving, handleRequestAllowance, onGoBack, setButtonActions])
+
+  // At step 2, amountIn should always exist (user came from step 1)
+  if (!amountIn) {
+    // This shouldn't happen, but handle gracefully
+    return null
+  }
 
   return (
     <>

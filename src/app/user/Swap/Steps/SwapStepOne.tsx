@@ -28,8 +28,6 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   }
   const amountOut = formattedAmountOut || '0'
 
-  console.log('amountOut', amountOut)
-
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus()

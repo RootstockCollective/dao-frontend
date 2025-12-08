@@ -18,6 +18,11 @@ export const USDT0_ADDRESS = process.env.NEXT_PUBLIC_USDT0_ADDRESS as Address
 export const UNISWAP_UNIVERSAL_ROUTER_ADDRESS = process.env
   .NEXT_PUBLIC_UNISWAP_UNIVERSAL_ROUTER_ADDRESS as Address
 export const UNISWAP_QUOTER_V2_ADDRESS = process.env.NEXT_PUBLIC_UNISWAP_QUOTER_V2_ADDRESS as Address
+// Permit2 contract address
+// Note: Rootstock uses a different Permit2 address than the standard CREATE2 deployment
+// Rootstock Permit2: 0xFcf5986450E4A014fFE7ad4Ae24921B589D039b5
+// Standard Permit2: 0x000000000022D473030F116dDEE9F6B43aC78BA3
+export const PERMIT2_ADDRESS = process.env.NEXT_PUBLIC_PERMIT2_ADDRESS as Address
 export const ICECREAMSWAP_ROUTER_ADDRESS = process.env.NEXT_PUBLIC_ICECREAMSWAP_ROUTER_ADDRESS as Address
 export const USDT0_USDRIF_POOL_ADDRESS = process.env.NEXT_PUBLIC_USDT0_USDRIF_POOL_ADDRESS as Address
 export const GOVERNOR_ADDRESS = process.env.NEXT_PUBLIC_GOVERNOR_ADDRESS as Address
