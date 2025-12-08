@@ -107,7 +107,7 @@ export default function GrantsProposalForm() {
         </form>
       </FormProvider>
       <div className="flex flex-col gap-10 basis-1/4 justify-between">
-        <ProposalInfoSidebar kycLink="https://gov.rootstockcollective.xyz/t/general-guidelines-for-grant-applications/94/7" />
+        <ProposalInfoSidebar kycLink="https://docs.google.com/forms/d/e/1FAIpQLSd4HklyTFPFAo2I0l_N5fy_di01WZ27e4uFDG1KVy8ZIOSiow/viewform" />
         {isDesktop && (
           <div className="mb-40">
             <MilestoneInfoSidebar />

@@ -86,7 +86,7 @@ export default function ActivationProposalForm() {
         </div>
       </form>
       <div className="basis-1/3 flex flex-row gap-2 items-start">
-        <ProposalInfoSidebar kycLink="https://gov.rootstockcollective.xyz/t/general-guidelines-for-rewards-applications/495/2" />
+        <ProposalInfoSidebar kycLink="https://docs.google.com/forms/d/e/1FAIpQLSd4HklyTFPFAo2I0l_N5fy_di01WZ27e4uFDG1KVy8ZIOSiow/viewform" />
       </div>
       <ProposalSubfooter
         submitForm={onSubmit}
