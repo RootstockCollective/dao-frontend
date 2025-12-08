@@ -4,7 +4,7 @@ import { BalanceInfo } from '@/components/BalanceInfo'
 import { useVaultBalance } from '../hooks/useVaultBalance'
 import { useSubsidyPool } from '../hooks/useSubsidyPool'
 import { formatSymbol, formatApy } from '@/app/shared/formatter'
-import { Paragraph, Span } from '@/components/Typography'
+import { Paragraph } from '@/components/Typography'
 
 /**
  * Component displaying vault metrics including balance, lending parameters, and price per share
