@@ -19,7 +19,7 @@ export const VaultUserMetricsContainer = () => {
 
   return (
     <div className="flex flex-col gap-6 w-full">
-      <div className="flex flex-row flex-wrap gap-6 items-center w-full">
+      <div className="flex flex-row flex-wrap gap-6 md:gap-20 items-center w-full">
         {isConnected && (
           <BalanceInfo
             className="max-w-[214px] min-w-[180px]"

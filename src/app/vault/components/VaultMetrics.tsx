@@ -15,7 +15,7 @@ export const VaultMetrics = () => {
 
   return (
     <div className="flex flex-col gap-6 w-full">
-      <div className="flex flex-row flex-wrap gap-6">
+      <div className="flex flex-row flex-wrap gap-6 md:gap-20">
         <BalanceInfo
           className="max-w-[214px] min-w-[180px]"
           title="Vault Balance"
