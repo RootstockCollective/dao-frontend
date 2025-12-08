@@ -52,9 +52,7 @@ export function useCanDepositToVault(amount?: string) {
           canDeposit: false,
           isLoading: false,
           error: undefined,
-          reason: isWhitelisted
-            ? `This deposit would exceed your ${formattedLimit} USDRIF limit. Please talk to the team to deposit more.`
-            : 'This deposit would exceed your limit. Complete KYC to deposit more.',
+          reason: `This deposit would exceed your ${formattedLimit} USDRIF limit. Please talk to the team to deposit more.`,
           maxDepositLimit: formattedLimit,
         }
       }
