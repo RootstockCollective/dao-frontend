@@ -27,6 +27,17 @@ export const Modal: FC<ModalProps> = ({
   fullscreen,
   'data-testid': dataTestId,
 }) => {
+  const containerStyle: React.CSSProperties = {}
+
+  if (!fullscreen && width) {
+    containerStyle.width = `${width}px`
+    containerStyle.maxWidth = '95vw'
+  }
+
+  if (!fullscreen && height !== 'auto' && typeof height === 'number') {
+    containerStyle.height = `${height}px`
+  }
+
   return createPortal(
     <div
       className={cn(
@@ -36,28 +47,18 @@ export const Modal: FC<ModalProps> = ({
       data-testid={dataTestId}
     >
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-bg-100/50 backdrop-blur-xs max-w-screen max-h-screen overflow-hidden"></div>
+      <div className="fixed inset-0 bg-bg-100/50 backdrop-blur-xs max-w-screen max-h-screen overflow-hidden" />
 
       {/* Modal Container */}
       <div
         className={cn(
           'relative overflow-x-hidden bg-bg-80 rounded overflow-y-auto min-w-0',
-          // Width logic
-          fullscreen
-            ? 'w-screen' // Fullscreen: use viewport units
-            : width
-              ? `w-[${width}px] max-w-[95vw]` // Fixed width with viewport constraint
-              : 'w-[95vw] max-w-[380px] md:w-[688px] md:max-w-[97vw]', // Responsive width
-          // Height logic
-          fullscreen
-            ? 'h-screen' // Fullscreen: use viewport units
-            : height === 'auto'
-              ? 'h-full md:h-auto' // Auto on desktop, full on mobile when no height specified
-              : `h-[${height}px]`, // Fixed height
+          fullscreen ? 'w-screen h-screen' : 'w-[95vw] max-w-[380px] md:w-[688px] md:max-w-[97vw]',
+          height === 'auto' && !fullscreen ? 'h-full md:h-auto' : '',
           className,
         )}
+        style={containerStyle}
       >
-        {/* Close Button */}
         <button onClick={onClose} className="absolute top-4 right-4 z-10" data-testid="CloseButton">
           <CloseIconKoto size={24} aria-label="Close" color={closeButtonColor} />
         </button>
