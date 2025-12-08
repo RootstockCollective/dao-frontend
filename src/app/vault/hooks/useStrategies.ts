@@ -4,6 +4,7 @@ import { Address, zeroAddress } from 'viem'
 import { vault } from '@/lib/contracts'
 import { StrategyAbi } from '@/lib/abis/StrategyAbi'
 import { useVaultBalance } from './useVaultBalance'
+import { VAULT_BASIS_POINTS } from '@/lib/constants'
 import Big from '@/lib/big'
 import { useQuery } from '@tanstack/react-query'
 import type { StrategyNamesReturnType } from '@/app/vault/api/strategy-name/route'
@@ -37,7 +38,7 @@ export function useStrategies() {
     },
   })
 
-  // Build contracts array for multicall - fetch totalDeposited, estimatedApy, and APY_BASIS_POINTS for each strategy
+  // Build contracts array for multicall - fetch totalDeposited and estimatedApy for each strategy
   const strategyContracts = useMemo(() => {
     if (!strategyAddresses || strategyAddresses.length === 0) {
       return []
@@ -46,7 +47,7 @@ export function useStrategies() {
     const contracts: Array<{
       address: Address
       abi: typeof StrategyAbi
-      functionName: 'totalDeposited' | 'estimatedApy' | 'APY_BASIS_POINTS'
+      functionName: 'totalDeposited' | 'estimatedApy'
     }> = []
 
     strategyAddresses.forEach(address => {
@@ -60,11 +61,6 @@ export function useStrategies() {
           address,
           abi: StrategyAbi,
           functionName: 'estimatedApy',
-        },
-        {
-          address,
-          abi: StrategyAbi,
-          functionName: 'APY_BASIS_POINTS',
         },
       )
     })
@@ -85,15 +81,15 @@ export function useStrategies() {
     },
   })
 
-  // Fetch ratioBuffer from vault contract
+  // Fetch ratioBufferBalance from vault contract
   const {
-    data: ratioBuffer,
+    data: ratioBufferBalance,
     isLoading: isLoadingRatioBuffer,
     error: ratioBufferError,
   } = useReadContract({
     address: vault.address,
     abi: vault.abi,
-    functionName: 'ratioBuffer',
+    functionName: 'ratioBufferBalance',
     query: {
       refetchInterval: 60_000, // Refetch every minute
     },
@@ -157,7 +153,7 @@ export function useStrategies() {
       }
     }
 
-    // Process strategy data - each strategy has 3 results (totalDeposited, estimatedApy, APY_BASIS_POINTS)
+    // Process strategy data - each strategy has 2 results (totalDeposited, estimatedApy)
     const strategies: StrategyInfo[] = []
     const totalAssetsBig = Big(totalAssets.toString())
 
@@ -165,17 +161,16 @@ export function useStrategies() {
     for (let i = 0; i < strategyAddresses.length; i++) {
       const address = strategyAddresses[i]
 
-      const totalDeposited = (strategyData[i * 3]?.result as bigint | undefined) ?? 0n
-      const estimatedApyRaw = (strategyData[i * 3 + 1]?.result as bigint | undefined) ?? 0n
-      const apyBasisPoints = (strategyData[i * 3 + 2]?.result as bigint | undefined) ?? 1n
+      const totalDeposited = (strategyData[i * 2]?.result as bigint | undefined) ?? 0n
+      const estimatedApyRaw = (strategyData[i * 2 + 1]?.result as bigint | undefined) ?? 0n
 
-      // Calculate actual APY percentage: estimatedApy / APY_BASIS_POINTS * 100
+      // Calculate actual APY percentage using VAULT_BASIS_POINTS: estimatedApy / VAULT_BASIS_POINTS * 100
       // This gives us the percentage (e.g., 5 for 5%)
       const estimatedApyBig = Big(estimatedApyRaw.toString())
-      const apyBasisPointsBig = Big(apyBasisPoints.toString())
+      const vaultBasisPointsBig = Big(VAULT_BASIS_POINTS.toString())
       // Convert to percentage by dividing by basis points and multiplying by 100
-      const estimatedApy = apyBasisPointsBig.gt(0)
-        ? estimatedApyBig.div(apyBasisPointsBig).mul(100).toNumber()
+      const estimatedApy = vaultBasisPointsBig.gt(0)
+        ? estimatedApyBig.div(vaultBasisPointsBig).mul(100).toNumber()
         : 0
 
       // Calculate percentage allocated based on vault's totalAssets
@@ -197,8 +192,8 @@ export function useStrategies() {
       })
     }
 
-    // Add hardcoded Buffer strategy using ratioBuffer from vault contract
-    const ratioBufferValue = (ratioBuffer as bigint | undefined) ?? 0n
+    // Add hardcoded Buffer strategy using ratioBufferBalance from vault contract
+    const ratioBufferValue = (ratioBufferBalance as bigint | undefined) ?? 0n
     if (ratioBufferValue > 0n) {
       const bufferFundsBig = Big(ratioBufferValue.toString())
       const bufferPercentageAllocated = totalAssetsBig.gt(0)
@@ -224,7 +219,7 @@ export function useStrategies() {
     strategyData,
     strategyNames,
     totalAssets,
-    ratioBuffer,
+    ratioBufferBalance,
     isLoadingStrategies,
     isLoadingStrategyData,
     isLoadingRatioBuffer,

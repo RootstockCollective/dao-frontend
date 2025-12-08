@@ -14,7 +14,6 @@ import { Button } from '@/components/Button'
 import { VaultInput } from './VaultInput'
 import { TokenImage } from '@/components/TokenImage'
 import { PercentageButtons } from '@/app/user/Unstake/components/PercentageButtons'
-import { formatSymbol } from '@/app/shared/formatter'
 import { formatEther } from 'viem'
 import { usePricesContext } from '@/shared/context'
 
@@ -29,29 +28,29 @@ export const WithdrawModal = ({ onCloseModal }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [amount, setAmount] = useState('')
-  const { userBalance, isLoading: isVaultBalanceLoading } = useVaultBalance()
+  const {
+    userUsdrifBalance,
+    formattedUserUsdrifBalance,
+    isLoading: isVaultBalanceLoading,
+  } = useVaultBalance()
 
   const { onRequestWithdraw, isRequesting, isTxPending, isTxFailed, withdrawTxHash } =
     useWithdrawFromVault(amount)
 
-  const vaultBalanceFormatted = useMemo(() => {
-    return formatSymbol(userBalance, 'USDRIF')
-  }, [userBalance])
-
-  const vaultBalanceString = useMemo(() => {
-    return formatEther(userBalance)
-  }, [userBalance])
+  const userUsdrifBalanceString = useMemo(() => {
+    return formatEther(userUsdrifBalance)
+  }, [userUsdrifBalance])
 
   const isAmountOverBalance = useMemo(() => {
     if (!amount) return false
     const rawAmount = Big(amount)
-    const rawBalance = Big(vaultBalanceString)
+    const rawBalance = Big(userUsdrifBalanceString)
     return rawAmount.gt(rawBalance)
-  }, [amount, vaultBalanceString])
+  }, [amount, userUsdrifBalanceString])
 
   const errorMessage = useMemo(() => {
     if (isAmountOverBalance) {
-      return 'This is more than your vault balance. Please update the amount.'
+      return 'This is more than your available USDRIF balance. Please update the amount.'
     }
     return ''
   }, [isAmountOverBalance])
@@ -70,10 +69,10 @@ export const WithdrawModal = ({ onCloseModal }: Props) => {
 
   const handlePercentageClick = useCallback(
     (percentage: number) => {
-      const calculatedAmount = Big(vaultBalanceString).mul(percentage).toString()
+      const calculatedAmount = Big(userUsdrifBalanceString).mul(percentage).toString()
       setAmount(calculatedAmount)
     },
-    [vaultBalanceString],
+    [userUsdrifBalanceString],
   )
 
   const handleConfirmWithdraw = useCallback(() => {
@@ -111,7 +110,7 @@ export const WithdrawModal = ({ onCloseModal }: Props) => {
             <div className="flex items-center gap-1">
               <TokenImage symbol="USDRIF" size={12} />
               <Label variant="body-s" className="text-text-60" data-testid="totalBalanceLabel">
-                Shares in the vault: {vaultBalanceFormatted}
+                USDRIF deposited in vault: {formattedUserUsdrifBalance}
               </Label>
             </div>
             <div className="flex gap-1 self-end">

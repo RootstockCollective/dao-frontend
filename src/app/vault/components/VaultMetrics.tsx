@@ -25,13 +25,14 @@ export const VaultMetrics = () => {
         <BalanceInfo
           className="max-w-[214px] min-w-[180px]"
           title="APY"
-          amount={isLoading ? '...' : formatApy(estimatedApy)}
+          amount={isLoading || isLoadingSynthetic ? '...' : formatApy(syntheticYield + estimatedApy)}
           symbol="%"
           tooltipContent={
             <div className="flex flex-col gap-2 text-wrap max-w-[35rem] text-xs p-2">
               <Paragraph>
-                In addition to the strategies APYs listed below, there is an additional synthetic yield
-                {!isLoadingSynthetic && <Span> of {formatApy(syntheticYield)}%</Span>}
+                Strategies APY: {isLoading ? '...' : formatApy(estimatedApy)}%
+                <br />
+                Synthetic yield: {isLoadingSynthetic ? '...' : formatApy(syntheticYield)}%
               </Paragraph>
             </div>
           }
