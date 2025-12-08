@@ -34,20 +34,19 @@ const KycInfo = () => {
   const formattedDefaultLimit = Big(formatEther(maxDefaultDepositLimit)).toFixedNoTrailing(2)
 
   return (
-    <div className="mt-4 p-4 bg-bg-80 rounded-1">
-      <Paragraph variant="body-s" className="text-text-60">
-        To deposit more than {formattedDefaultLimit} USDRIF, you need to complete KYC verification.{' '}
-        <ExternalLink
-          href={VAULT_KYC_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline cursor-pointer"
-          data-testid="KycLink"
-        >
-          Submit KYC
-        </ExternalLink>
-      </Paragraph>
-    </div>
+    <Paragraph variant="body-s" className="text-text-60 px-4">
+      To deposit more than 100 USD, please{' '}
+      <ExternalLink
+        href={VAULT_KYC_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline cursor-pointer"
+        data-testid="KycLink"
+      >
+        Talk to the team
+      </ExternalLink>{' '}
+      and register your interest in joining the invited, whitelisted testing group.
+    </Paragraph>
   )
 }
 
@@ -207,7 +206,7 @@ export const DepositModal = ({ onCloseModal }: Props) => {
               errorText={errorMessage}
             />
 
-            <div className="flex flex-col justify-between mx-3 mt-2 gap-2">
+            <div className="flex flex-col justify-between mx-3 my-2 gap-2">
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-1">
                   <TokenImage symbol="USDRIF" size={12} />
@@ -222,7 +221,7 @@ export const DepositModal = ({ onCloseModal }: Props) => {
             </div>
 
             {!isAllowanceEnough && amount && Big(amount).gt(0) && !isAmountOverBalance && (
-              <div className="mt-4 p-4 bg-bg-80 rounded-1">
+              <div className="p-4 bg-bg-80 rounded-1">
                 <Paragraph variant="body-s" className="text-text-60">
                   You need to approve USDRIF before depositing to the vault.
                 </Paragraph>
