@@ -89,7 +89,7 @@ export const VaultActions = () => {
           className="flex flex-row gap-2 justify-center"
         >
           <Span className="flex-shrink-0">Deposit</Span>
-          <MoneyIconKoto />
+          <MoneyIconKoto style={{ transform: 'rotate(180deg)' }} />
         </Button>
         <NewPopover
           open={withdrawPopoverOpen}
@@ -114,7 +114,7 @@ export const VaultActions = () => {
           className="flex flex-row gap-2 pl-0 justify-start"
         >
           <Span className="flex-shrink-0">Withdraw</Span>
-          <MoneyIconKoto style={{ transform: 'rotate(180deg)' }} />
+          <MoneyIconKoto />
         </Button>
       </div>
 
