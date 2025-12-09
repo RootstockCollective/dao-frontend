@@ -5,7 +5,6 @@ import { StakeTokenAmountDisplay } from '@/app/user/Stake/components/StakeTokenA
 import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
 import { useSwapInput, useTokenSelection, useTokenAllowance } from '@/shared/context/SwappingContext/hooks'
 import { useSwappingContext } from '@/shared/context/SwappingContext'
-import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { executeTxFlow } from '@/shared/notification'
 import { parseUnits, Hash } from 'viem'
 import { USDT0 } from '@/lib/constants'
@@ -14,20 +13,14 @@ import Big from '@/lib/big'
 export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepProps) => {
   const { amountIn } = useSwapInput()
   const { tokenInData } = useTokenSelection()
-  const { balances, prices } = useBalancesContext()
-  const { state } = useSwappingContext()
+  const { state, tokenData } = useSwappingContext()
   const { allowance, isApproving, hasSufficientAllowance, approve, refetchAllowance } = useTokenAllowance()
 
-  const from = useMemo(() => {
-    const priceValue = prices[USDT0]?.price || 0
-    const amountInCurrency = Big(amountIn).times(priceValue).toFixed(2)
-    return {
-      amount: amountIn,
-      amountConvertedToCurrency: `$${amountInCurrency}`,
-      balance: balances[USDT0]?.balance || '0',
-      tokenSymbol: tokenInData.symbol,
-    }
-  }, [amountIn, prices, balances, tokenInData.symbol])
+  // Calculate amount in currency using price from context
+  const amountInCurrency = useMemo(() => {
+    const priceValue = tokenData.prices[USDT0]
+    return `$${Big(amountIn).times(priceValue).toFixed(2)}`
+  }, [amountIn, tokenData.prices])
 
   // Check if allowance is sufficient
   const requiredAmount = useMemo(() => {
@@ -129,7 +122,7 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
           label="Allowance amount"
           amount={amountIn}
           tokenSymbol={tokenInData.symbol}
-          amountInCurrency={from.amountConvertedToCurrency}
+          amountInCurrency={amountInCurrency}
           isFlexEnd
         />
       </div>

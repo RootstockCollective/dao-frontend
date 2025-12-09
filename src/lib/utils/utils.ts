@@ -290,3 +290,19 @@ export const durationToLabel = (duration: Duration | undefined): string | undefi
 
 // prettier-ignore
 export const formatAmount = (amount: string) => formatNumberWithCommas(formatEther(BigInt(amount)).split('.')[0])
+
+/**
+ * Formats a numeric string to a fixed number of decimal places for display
+ * @param value - The numeric string to format
+ * @param decimals - Number of decimal places (default: 2)
+ * @returns The formatted string, or '0.00' if invalid
+ * @example formatForDisplay('123.456789') // '123.46'
+ * @example formatForDisplay('1642.088864088341129143') // '1642.09'
+ */
+export const formatForDisplay = (value: string, decimals = 2): string => {
+  try {
+    return Big(value).toFixed(decimals)
+  } catch {
+    return '0.00'
+  }
+}

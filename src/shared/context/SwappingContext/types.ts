@@ -115,6 +115,16 @@ export type SwapAction =
   | { type: SwapActionType.RESET_SWAP }
 
 /**
+ * Token balances and prices for swap tokens
+ * Raw values only - formatting should be done at display time
+ */
+export interface SwapTokenData {
+  balances: Record<SwapTokenSymbol, string> // Raw balance strings
+  prices: Record<SwapTokenSymbol, number> // Raw price numbers
+  isLoading: boolean
+}
+
+/**
  * Context value interface
  */
 export interface SwappingContextValue {
@@ -123,6 +133,9 @@ export interface SwappingContextValue {
 
   // Available tokens
   tokens: Record<SwapTokenSymbol, SwapToken>
+
+  // Token balances and prices (fetched once in provider)
+  tokenData: SwapTokenData
 
   // Actions
   setTokenIn: (token: SwapTokenSymbol) => void

@@ -11,18 +11,12 @@ import {
   SwapToken,
   SwapTokenSymbol,
   SwappingContextValue,
+  SwapTokenData,
 } from './types'
-import {
-  USDRIF,
-  USDRIF_ADDRESS,
-  USDT0,
-  USDT0_ADDRESS,
-  USDT0_USDRIF_POOL_ADDRESS,
-  UNISWAP_UNIVERSAL_ROUTER_ADDRESS,
-  UNISWAP_QUOTER_V2_ADDRESS,
-} from '@/lib/constants'
+import { USDRIF, USDRIF_ADDRESS, USDT0, USDT0_ADDRESS, USDT0_USDRIF_POOL_ADDRESS } from '@/lib/constants'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { Address } from 'viem'
+import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 
 // Default pool fee - should be read from pool contract via fee() function when pool ABI is available
 // For stablecoin pairs (USDT0/USDRIF), typical fees are:
@@ -191,6 +185,25 @@ interface SwappingProviderProps {
 export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(swapReducer, initialState)
 
+  // Fetch balances and prices once from BalancesContext
+  const { balances, prices, isBalancesLoading } = useBalancesContext()
+
+  // Raw token data - formatting should be done at display time
+  const tokenData: SwapTokenData = useMemo(
+    () => ({
+      balances: {
+        [USDT0]: balances[USDT0]?.balance || '0',
+        [USDRIF]: balances[USDRIF]?.balance || '0',
+      },
+      prices: {
+        [USDT0]: prices[USDT0]?.price || 0,
+        [USDRIF]: prices[USDRIF]?.price || 0,
+      },
+      isLoading: isBalancesLoading,
+    }),
+    [balances, prices, isBalancesLoading],
+  )
+
   // Fetch decimals directly from contracts
   const { data: decimalsData } = useReadContracts({
     contracts: [
@@ -309,6 +322,7 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
     () => ({
       state,
       tokens,
+      tokenData,
       setTokenIn,
       setTokenOut,
       toggleTokenSelection,
@@ -329,6 +343,7 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
     [
       state,
       tokens,
+      tokenData,
       setTokenIn,
       setTokenOut,
       toggleTokenSelection,
