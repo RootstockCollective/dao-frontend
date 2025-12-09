@@ -177,7 +177,7 @@ export const AllocationInput = ({
           />
         </div>
         <div className="flex items-center gap-1 flex-shrink-0" data-testid="allocationInputActions">
-          {allocationTxPending && (
+          {allocationTxPending && updatedBacking !== onchainBacking && (
             <PendingAllocation
               pendingBacking={formatSymbol(updatedBacking, STRIF)}
               currentBacking={formatSymbol(onchainBacking, STRIF)}
