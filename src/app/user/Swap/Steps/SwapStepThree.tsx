@@ -5,8 +5,8 @@ import { StakeTokenAmountDisplay } from '@/app/user/Stake/components/StakeTokenA
 import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
 import { useSwapInput, useTokenSelection, useSwapExecution } from '@/shared/context/SwappingContext/hooks'
 import { useSwappingContext } from '@/shared/context/SwappingContext'
-import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { USDT0, USDRIF } from '@/lib/constants'
+import { formatForDisplay } from '@/lib/utils'
 import { Hash, formatUnits } from 'viem'
 import Big from '@/lib/big'
 import { Button } from '@/components/Button'
@@ -24,35 +24,38 @@ const SLIPPAGE_OPTIONS = [
 export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: SwapStepProps) => {
   const { amountIn, formattedAmountOut, quote } = useSwapInput()
   const { tokenInData, tokenOutData } = useTokenSelection()
-  const { state } = useSwappingContext()
-  const { balances, prices } = useBalancesContext()
+  const { state, tokenData } = useSwappingContext()
   const { execute, isSwapping, swapError, swapTxHash, canExecute } = useSwapExecution()
 
   // Slippage tolerance is local to Step 3 - only needed for final confirmation
   const [slippageTolerance, setSlippageTolerance] = useState<number | null>(null)
 
+  // Get values from tokenData
+  const tokenInPrice = tokenData.prices[USDT0]
+  const tokenOutPrice = tokenData.prices[USDRIF]
+  const tokenInBalance = tokenData.balances[USDT0]
+  const tokenOutBalance = tokenData.balances[USDRIF]
+
   const from = useMemo(() => {
-    const priceValue = prices[USDT0]?.price || 0
-    const amountInCurrency = Big(amountIn).times(priceValue).toFixed(2)
+    const amountInCurrency = Big(amountIn).times(tokenInPrice).toFixed(2)
     return {
-      amount: amountIn,
+      amount: formatForDisplay(amountIn),
       amountConvertedToCurrency: `$${amountInCurrency}`,
-      balance: balances[USDT0]?.balance || '0',
+      balance: formatForDisplay(tokenInBalance),
       tokenSymbol: tokenInData.symbol,
     }
-  }, [amountIn, prices, balances, tokenInData.symbol])
+  }, [amountIn, tokenInPrice, tokenInBalance, tokenInData.symbol])
 
   const to = useMemo(() => {
     const amountValue = formattedAmountOut || '0'
-    const priceValue = prices[USDRIF]?.price || 0
-    const amountInCurrency = Big(amountValue).times(priceValue).toFixed(2)
+    const amountInCurrency = Big(amountValue).times(tokenOutPrice).toFixed(2)
     return {
-      amount: amountValue,
+      amount: formatForDisplay(amountValue),
       amountConvertedToCurrency: `$${amountInCurrency}`,
-      balance: balances[USDRIF]?.balance || '0',
+      balance: formatForDisplay(tokenOutBalance),
       tokenSymbol: tokenOutData.symbol,
     }
-  }, [formattedAmountOut, prices, balances, tokenOutData.symbol])
+  }, [formattedAmountOut, tokenOutPrice, tokenOutBalance, tokenOutData.symbol])
 
   // Calculate minimum amount out based on slippage tolerance (local to Step 3)
   const amountOutMinimum = useMemo(() => {
@@ -63,10 +66,10 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
     return minimum > 0n ? minimum : 0n
   }, [quote?.amountOut, slippageTolerance])
 
-  // Format minimum amount for display
+  // Format minimum amount for display (2 decimals)
   const formattedMinimumReceived = useMemo(() => {
     if (!amountOutMinimum || !tokenOutData.decimals) return null
-    return formatUnits(amountOutMinimum, tokenOutData.decimals)
+    return formatForDisplay(formatUnits(amountOutMinimum, tokenOutData.decimals))
   }, [amountOutMinimum, tokenOutData.decimals])
 
   // Token for minimum output display
@@ -76,9 +79,9 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
       address: tokenOutData.address,
       name: tokenOutData.name,
       decimals: tokenOutData.decimals || 18,
-      price: prices[USDRIF]?.price,
+      price: tokenOutPrice || undefined,
     }),
-    [tokenOutData, prices],
+    [tokenOutData, tokenOutPrice],
   )
 
   const handleSlippageClick = useCallback((slippage: number) => {
