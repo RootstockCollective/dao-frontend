@@ -3,6 +3,7 @@
   "version": "1.15.2",
   "scripts": {
     "dev": "next dev --turbo",
+    "dev:fork": "PROFILE=fork next dev --turbo",
     "dev:webpack": "next dev",
     "build": "next build",
     "start": "next start",
@@ -14,7 +15,9 @@
     "e2e-open": "start-server-and-test dev:webpack http://localhost:3000 \"cypress open --e2e\"",
     "e2e-test": "start-server-and-test dev:webpack http://localhost:3000 \"cypress run --e2e\"",
     "test": "vitest",
-    "build:start": "next build && next start"
+    "build:start": "next build && next start",
+    "fork:stop": "pkill -f anvil || true",
+    "fork:anvil": "anvil --fork-url https://public-node.rsk.co --chain-id 31337"
   },
   "dependencies": {
     "@apollo/client": "^3.13.9",

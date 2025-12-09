@@ -29,6 +29,8 @@ yarn-error.log*
 # env file
 .env
 .env.local
+# Exception: .env.fork should be committed (template for fork environment)
+!.env.fork
 
 # vercel
 .vercel
