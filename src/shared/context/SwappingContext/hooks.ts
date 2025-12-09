@@ -169,26 +169,45 @@ export const useTokenAllowance = () => {
     },
   })
 
+  // Extract Permit2 allowance data (amount, expiration, nonce)
+  const permit2Amount = useMemo(() => {
+    if (!permit2AllowanceData || !Array.isArray(permit2AllowanceData)) return null
+    return typeof permit2AllowanceData[0] === 'bigint' ? permit2AllowanceData[0] : null
+  }, [permit2AllowanceData])
+
+  const permit2Expiration = useMemo(() => {
+    if (!permit2AllowanceData || !Array.isArray(permit2AllowanceData)) return null
+    const exp = permit2AllowanceData[1]
+    return typeof exp === 'bigint' ? exp : typeof exp === 'number' ? BigInt(exp) : null
+  }, [permit2AllowanceData])
+
   // Update state when allowance changes
-  // Permit2 returns (amount, expiration, nonce), we only need amount
   useEffect(() => {
     if (isAllowanceLoading) {
       setCheckingAllowance(true)
-    } else if (permit2AllowanceData !== undefined) {
-      // Permit2 allowance returns [amount, expiration, nonce]
-      const amount = Array.isArray(permit2AllowanceData) ? permit2AllowanceData[0] : permit2AllowanceData
-      setAllowance(typeof amount === 'bigint' ? amount : null)
+    } else if (permit2Amount !== null) {
+      setAllowance(permit2Amount)
     }
-  }, [permit2AllowanceData, isAllowanceLoading, setCheckingAllowance, setAllowance])
+  }, [permit2Amount, isAllowanceLoading, setCheckingAllowance, setAllowance])
 
+  // Check if allowance is sufficient AND not expired
   const hasSufficientAllowance = useCallback(
     (requiredAmount: bigint) => {
-      if (!allowance) {
+      if (!allowance || !permit2Expiration) {
         return false
       }
-      return allowance >= requiredAmount
+      // Check amount is sufficient
+      if (allowance < requiredAmount) {
+        return false
+      }
+      // Check expiration (compare with current timestamp in seconds)
+      const currentTimestamp = BigInt(Math.floor(Date.now() / 1000))
+      if (currentTimestamp > permit2Expiration) {
+        return false // Allowance is expired
+      }
+      return true
     },
-    [allowance],
+    [allowance, permit2Expiration],
   )
 
   const approve = useCallback(
