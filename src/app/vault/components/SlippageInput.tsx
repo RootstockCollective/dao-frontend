@@ -41,7 +41,7 @@ export const SlippageInput = ({ value, onChange, name = 'slippage-input' }: Prop
             inputProps={{
               decimalScale: 2,
               min: 0,
-              max: 100,
+              max: 10,
               step: 0.01,
             }}
           />
