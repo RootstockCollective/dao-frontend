@@ -4,6 +4,7 @@ import { SortableContext, arrayMove, horizontalListSortingStrategy } from '@dnd-
 import { AllocationBarTooltip, AllocationBarTooltipProps } from './AllocationBarTooltip'
 import { Tooltip } from '@/components/Tooltip'
 import React, { Fragment, useEffect, useRef, useState } from 'react'
+import { useModal } from '@/shared/hooks/useModal'
 
 import { Legend } from '@/components/Legend'
 import { cn } from '@/lib/utils'
@@ -17,6 +18,7 @@ import {
   clamp,
   valueToPercentage,
 } from './utils'
+import { BackingDetailsModal } from './BackingDetailsModal'
 
 const getSegmentsCollapsedState = (values: bigint[], totalValue: bigint): boolean[] => {
   const NEIGHBOR_SUM_THRESHOLD = 8 // 8%
@@ -49,10 +51,12 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   showLegend = true,
   className = '',
   onChange,
+  withModal = false,
 }) => {
   const isControlled = typeof onChange === 'function'
   const [localItemsData, setLocalItemsData] = useState(itemsData)
   const [localValues, setLocalValues] = useState(itemsData.map(item => item.value))
+  const { isModalOpened, openModal, closeModal } = useModal()
 
   // Reactive current state
   const currentItems = isControlled ? itemsData : localItemsData
@@ -170,7 +174,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   const collapsedSegments: boolean[] = getSegmentsCollapsedState(currentValues, totalBacking)
 
   return (
-    <div className={cn('w-full p-8 flex flex-col gap-6', className)}>
+    <div className={cn('w-full p-0 mb-4 md:p-8 md:mb-0 flex flex-col gap-6', className)}>
       <DndContext
         sensors={sensors}
         collisionDetection={pointerWithin}
@@ -197,6 +201,8 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
                   tooltipContentProps={getTooltipProps(dragTargetIndex, item, currentItems)}
                   dragIndex={dragTargetIndex}
                   isDraggable={isDraggable}
+                  withModal={withModal}
+                  onModalOpen={openModal}
                 />
                 {i < currentItems.length - 1 && isResizable && (
                   <Tooltip
@@ -219,6 +225,15 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
         </SortableContext>
       </DndContext>
       {showLegend && <Legend title="Total:" items={currentItems} />}
+
+      {withModal && (
+        <BackingDetailsModal
+          isOpen={isModalOpened}
+          onClose={closeModal}
+          itemsData={currentItems}
+          totalBacking={totalBacking}
+        />
+      )}
     </div>
   )
 }

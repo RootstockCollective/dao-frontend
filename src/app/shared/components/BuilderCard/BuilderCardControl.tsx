@@ -21,7 +21,6 @@ export interface BuilderCardControlProps {
   showAnimation?: boolean
 }
 
-// TODO: this component should really create its own context and stop prop drilling
 const AllocationDrawerContent = () => {
   const { saveAllocations, isSuccess } = useAllocateVotes()
 
@@ -43,15 +42,19 @@ const AllocationDrawerContent = () => {
   }, [isSuccess, closeDrawer])
 
   return (
-    <ActionsContainer className="bg-v3-bg-accent-60">
+    <ActionsContainer className="bg-v3-bg-accent-60" containerClassName="flex flex-row">
       <div className="flex justify-center gap-2 w-full">
-        <Button variant="secondary-outline" onClick={onCancelAllocations}>
+        <Button variant="secondary-outline" onClick={onCancelAllocations} className="flex-1 md:flex-none">
           Cancel
         </Button>
         {isAllocationTxPending ? (
           <TransactionInProgressButton />
         ) : (
-          <Button variant="primary" onClick={saveAllocations}>
+          <Button
+            variant="primary"
+            onClick={saveAllocations}
+            className="whitespace-nowrap flex-4 md:flex-none"
+          >
             Save new backing amounts
           </Button>
         )}
@@ -74,6 +77,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
     state: {
       resetVersion,
       allocations,
+      isAllocationTxPending,
       backer: { balance, cumulativeAllocation: cumulativeBacking },
     },
     initialState: {
@@ -123,7 +127,7 @@ export const BuilderCardControl: FC<BuilderCardControlProps> = ({
         onConnect={() => router.push(`/backing?builders=${builder.address}`) /* 🤢 */}
         allocationInputProps={{
           builderAddress: builder.address,
-          allocationTxPending: false, // TODO: this is not currently used on main
+          allocationTxPending: isAllocationTxPending,
           disabled: false,
           balance,
           prices,
