@@ -9,17 +9,17 @@ import { USDT0, USDRIF } from '@/lib/constants'
 import { formatForDisplay } from '@/lib/utils'
 import { Hash, formatUnits } from 'viem'
 import Big from '@/lib/big'
-import { Button } from '@/components/Button'
-import { Span, Label } from '@/components/Typography'
+import { Label } from '@/components/Typography'
 import { SwapInputComponent, SwapInputToken } from '@/components/SwapInput'
+import { OptionButtons, OptionButtonItem } from '@/components/OptionButtons'
 
 // Slippage tolerance options (in percentage)
-const SLIPPAGE_OPTIONS = [
+const SLIPPAGE_OPTIONS: OptionButtonItem<number>[] = [
   { value: 0.1, label: '0.1%', testId: 'slippage-0.1' },
   { value: 0.5, label: '0.5%', testId: 'slippage-0.5' },
   { value: 1.0, label: '1%', testId: 'slippage-1.0' },
   { value: 3.0, label: '3%', testId: 'slippage-3.0' },
-] as const
+]
 
 export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: SwapStepProps) => {
   const { amountIn, formattedAmountOut, quote } = useSwapInput()
@@ -83,10 +83,6 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
     }),
     [tokenOutData, tokenOutPrice],
   )
-
-  const handleSlippageClick = useCallback((slippage: number) => {
-    setSlippageTolerance(slippage)
-  }, [])
 
   const handleConfirmSwap = useCallback(() => {
     if (!canExecute || !amountOutMinimum) {
@@ -155,21 +151,12 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
         <Label variant="body-s" className="text-text-60">
           Slippage tolerance
         </Label>
-        <div className="flex gap-1" data-testid="slippage-buttons">
-          {SLIPPAGE_OPTIONS.map(({ value, label, testId }) => (
-            <Button
-              key={value}
-              variant={slippageTolerance === value ? 'primary' : 'secondary'}
-              onClick={() => handleSlippageClick(value)}
-              className={
-                slippageTolerance === value ? 'px-2 py-0' : 'bg-transparent border border-bg-40 px-2 py-0'
-              }
-              data-testid={testId}
-            >
-              <Span variant="body-s">{label}</Span>
-            </Button>
-          ))}
-        </div>
+        <OptionButtons
+          options={SLIPPAGE_OPTIONS}
+          value={slippageTolerance}
+          onChange={setSlippageTolerance}
+          testId="slippage-buttons"
+        />
       </div>
 
       {/* Minimum Received - shown after slippage is selected */}
