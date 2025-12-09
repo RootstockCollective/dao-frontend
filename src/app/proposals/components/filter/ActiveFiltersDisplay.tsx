@@ -33,7 +33,7 @@ export const ActiveFiltersDisplay = ({
           <Header variant="h5" className="text-text-40 whitespace-nowrap flex-shrink-0">
             SEARCHED FOR:
           </Header>
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center gap-4 min-w-0">
             {searchFilters.map(filter => (
               <FilterChip key={filter.id} filter={filter} onRemove={onRemoveFilter} />
             ))}
@@ -47,7 +47,7 @@ export const ActiveFiltersDisplay = ({
           <Header variant="h5" className="text-text-40 whitespace-nowrap flex-shrink-0">
             FILTERED BY:
           </Header>
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center gap-4 min-w-0">
             {displayFilters.map(filter => (
               <FilterChip key={filter.id} filter={filter} onRemove={onRemoveFilter} />
             ))}

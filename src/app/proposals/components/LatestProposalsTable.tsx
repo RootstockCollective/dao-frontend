@@ -130,7 +130,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   })
 
   // Enhanced filtering system
-  const { activeFilters, searchValue, addFilter, removeFilter, clearAllFilters, updateSearchValue } =
+  const { activeFilters, searchValue, setFilters, removeFilter, clearAllFilters, updateSearchValue } =
     useProposalFilters()
 
   // input field filtering
@@ -220,7 +220,6 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
             </div>
           )}
         </div>
-        {/* Active Filters Display */}
         <ActiveFiltersDisplay
           activeFilters={activeFilters.filter(f => !f.isAll)}
           onRemoveFilter={removeFilter}
@@ -240,8 +239,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
               isOpen={isFilterSidebarOpen}
               onClose={() => setIsFilterSidebarOpen(false)}
               activeFilters={activeFilters}
-              onAddFilter={addFilter}
-              onRemoveFilter={removeFilter}
+              onApplyFilters={setFilters}
             />
           </div>
         </motion.div>

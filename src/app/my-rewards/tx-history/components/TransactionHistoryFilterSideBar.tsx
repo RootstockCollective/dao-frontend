@@ -8,27 +8,18 @@ import { TOKENS } from '@/lib/tokens'
 import { useGetBackedBuilders } from '../hooks/useGetBackedBuilders'
 import { useAccount } from 'wagmi'
 
-interface TransactionHistoryFilterSideBarProps {
+interface Props {
   isOpen: boolean
   onClose: () => void
   activeFilters: ActiveFilter[]
-  onFilterToggle: (groupId: string, option: { label: string; value: string }) => void
-  onClearGroup: (groupId: string) => void
-  onClearAll: () => void
+  onApply: (filters: ActiveFilter[]) => void
 }
 
 /**
  * Filter sidebar specifically for transaction history
  * Provides filters for type, claim token, and builder
  */
-export function TransactionHistoryFilterSideBar({
-  isOpen,
-  onClose,
-  activeFilters,
-  onFilterToggle,
-  onClearGroup,
-  onClearAll,
-}: TransactionHistoryFilterSideBarProps) {
+export function TransactionHistoryFilterSideBar({ isOpen, onClose, activeFilters, onApply }: Props) {
   const { address } = useAccount()
   const { builders } = useGetBackedBuilders(address)
 
@@ -75,9 +66,7 @@ export function TransactionHistoryFilterSideBar({
       onClose={onClose}
       filterGroups={filterGroups}
       activeFilters={activeFilters}
-      onFilterToggle={onFilterToggle}
-      onClearGroup={onClearGroup}
-      onClearAll={onClearAll}
+      onApply={onApply}
     />
   )
 }
