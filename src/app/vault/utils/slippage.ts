@@ -1,9 +1,10 @@
 import Big from '@/lib/big'
+import { VAULT_DEFAULT_SLIPPAGE_PERCENTAGE } from '@/lib/constants'
 
 /**
- * Default slippage percentage (1%)
+ * Default slippage percentage - configurable via NEXT_PUBLIC_VAULT_DEFAULT_SLIPPAGE_PERCENTAGE
  */
-export const DEFAULT_SLIPPAGE_PERCENTAGE = 0.5
+export const DEFAULT_SLIPPAGE_PERCENTAGE = VAULT_DEFAULT_SLIPPAGE_PERCENTAGE
 
 /**
  * Calculate minimum shares out for deposit with slippage protection

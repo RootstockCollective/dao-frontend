@@ -100,6 +100,12 @@ export const BLOCKSCOUT_URL = process.env.NEXT_PUBLIC_BLOCKSCOUT_URL as string
 export const VAULT_KYC_URL = process.env.NEXT_PUBLIC_VAULT_KYC_URL as string
 export const VAULT_TERMS_CONDITIONS_URL = process.env.NEXT_PUBLIC_VAULT_TERMS_CONDITIONS_URL as string
 
+// Vault slippage configuration
+const DEFAULT_VAULT_SLIPPAGE_PERCENTAGE = 0.5
+export const VAULT_DEFAULT_SLIPPAGE_PERCENTAGE = Number(
+  process.env.NEXT_PUBLIC_VAULT_DEFAULT_SLIPPAGE_PERCENTAGE ?? DEFAULT_VAULT_SLIPPAGE_PERCENTAGE,
+)
+
 /**
  * State sync config constants
  */
