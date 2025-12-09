@@ -3,8 +3,13 @@ import { Header, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
 import { CommonComponentProps } from '@/components/commonProps'
+import { useVaultDepositLimiter } from '@/app/vault/hooks/useVaultDepositLimiter'
+import { formatEther } from 'viem'
+import Big from '@/lib/big'
 
 export const VaultDisclaimer: FC<CommonComponentProps> = ({ className = '' }) => {
+  const { maxDefaultDepositLimit } = useVaultDepositLimiter()
+  const formattedDefaultLimit = Big(formatEther(maxDefaultDepositLimit)).toFixedNoTrailing(2)
   return (
     <div
       className={cn(
@@ -38,11 +43,11 @@ export const VaultDisclaimer: FC<CommonComponentProps> = ({ className = '' }) =>
           .
         </Paragraph>
         <Paragraph>
-          The Sandbox will allow small test deposits of up to <strong>100 USD</strong> to clearly demonstrate
-          sandbox business flows. Amounts greater than 100 USD can be deposited in another part of the Sandbox
-          where depositors are invited, whitelisted, and have performed KYC/AML. This will form a friends and
-          family section of the Sandbox where any value that is received beyond the deposited capital is
-          agreed to be returned during testing.{' '}
+          The Sandbox will allow small test deposits of up to <strong>{formattedDefaultLimit} USD</strong> to
+          clearly demonstrate sandbox business flows. Amounts greater than {formattedDefaultLimit} USD can be
+          deposited in another part of the Sandbox where depositors are invited, whitelisted, and have
+          performed KYC/AML. This will form a friends and family section of the Sandbox where any value that
+          is received beyond the deposited capital is agreed to be returned during testing.{' '}
           <a
             href={process.env.NEXT_PUBLIC_VAULT_KYC_URL}
             target="_blank"

@@ -16,6 +16,10 @@ import { TokenImage } from '@/components/TokenImage'
 import { PercentageButtons } from '@/app/user/Unstake/components/PercentageButtons'
 import { formatEther } from 'viem'
 import { usePricesContext } from '@/shared/context'
+import { DEFAULT_SLIPPAGE_PERCENTAGE } from '../utils/slippage'
+import { Input } from '@/components/Input'
+import { SlippageInput } from './SlippageInput'
+import Image from 'next/image'
 
 interface Props {
   onCloseModal: () => void
@@ -28,14 +32,17 @@ export const WithdrawModal = ({ onCloseModal }: Props) => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [amount, setAmount] = useState('')
+  const [slippagePercentage, setSlippagePercentage] = useState(DEFAULT_SLIPPAGE_PERCENTAGE.toString())
   const {
     userUsdrifBalance,
     formattedUserUsdrifBalance,
     isLoading: isVaultBalanceLoading,
   } = useVaultBalance()
 
-  const { onRequestWithdraw, isRequesting, isTxPending, isTxFailed, withdrawTxHash } =
-    useWithdrawFromVault(amount)
+  const { onRequestWithdraw, isRequesting, isTxPending, isTxFailed, withdrawTxHash } = useWithdrawFromVault(
+    amount,
+    parseFloat(slippagePercentage),
+  )
 
   const userUsdrifBalanceString = useMemo(() => {
     return formatEther(userUsdrifBalance)
@@ -96,21 +103,63 @@ export const WithdrawModal = ({ onCloseModal }: Props) => {
         <Header className="mt-16 mb-4">WITHDRAW USDRIF</Header>
 
         <div className="flex-1">
-          <VaultInput
-            ref={inputRef}
-            value={amount}
-            onChange={handleAmountChange}
-            symbol="USDRIF"
-            labelText="Amount to withdraw"
-            currencyValue={amountToCurrency}
-            errorText={errorMessage}
-          />
+          <div className="flex flex-col py-3 px-4 rounded-1 w-full bg-bg-60">
+            <Label className="mb-3" data-testid="LabelText">
+              Amount to withdraw
+            </Label>
+            <div className="flex gap-2">
+              <Input
+                ref={inputRef}
+                name="amount-vault"
+                type="number"
+                value={amount}
+                onChange={handleAmountChange}
+                className={cn('grow', 'text-2xl font-bold', errorMessage ? 'text-error' : '')}
+                data-testid="AmountInput"
+                placeholder="0"
+                inputProps={{ decimalScale: 18 }}
+              />
+              <div className="flex items-center gap-1 shrink-0">
+                <TokenImage symbol="USDRIF" size={24} />
+                <Label variant="body-l" bold data-testid="Symbol">
+                  USDRIF
+                </Label>
+              </div>
+            </div>
+            {amountToCurrency && (
+              <Label variant="body-s" className="text-bg-0 mt-2" data-testid="CurrencyValue">
+                {amountToCurrency}
+              </Label>
+            )}
+
+            {/* Slippage field below the input */}
+            <SlippageInput
+              value={slippagePercentage}
+              onChange={setSlippagePercentage}
+              name="slippage-withdraw-input"
+            />
+
+            {errorMessage && (
+              <div className="flex items-start gap-2 mt-2 max-w-full">
+                <Image
+                  src="/images/warning-icon.svg"
+                  alt="Warning"
+                  width={24}
+                  height={24}
+                  className="shrink-0 mt-1"
+                />
+                <Label className="text-error break-words" data-testid="ErrorText">
+                  {errorMessage}
+                </Label>
+              </div>
+            )}
+          </div>
 
           <div className="flex flex-col justify-between mx-3 mt-2 gap-2">
             <div className="flex items-center gap-1">
-              <TokenImage symbol="USDRIF" size={12} />
+              <TokenImage symbol="USDRIF" size={16} />
               <Label variant="body-s" className="text-text-60" data-testid="totalBalanceLabel">
-                USDRIF deposited in vault: {formattedUserUsdrifBalance}
+                Your Vault Balance: {formattedUserUsdrifBalance}
               </Label>
             </div>
             <div className="flex gap-1 self-end">
