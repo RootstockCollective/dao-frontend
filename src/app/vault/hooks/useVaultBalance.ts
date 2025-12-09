@@ -102,5 +102,5 @@ export function useVaultBalance() {
       isLoading: isLoading || isLoadingUserBalance,
       error,
     }
-  }, [data, connectedAddress, isLoading, error, userShares, userUsdrifBalanceRaw, isLoadingUserBalance])
+  }, [data, isLoading, error, userShares, userUsdrifBalanceRaw, isLoadingUserBalance])
 }

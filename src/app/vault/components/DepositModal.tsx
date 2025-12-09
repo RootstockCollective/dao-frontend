@@ -8,7 +8,6 @@ import { useCallback, useMemo, useState, useEffect, useRef } from 'react'
 import { useDepositToVault } from '../hooks/useDepositToVault'
 import { useVaultAllowance } from '../hooks/useVaultAllowance'
 import { useCanDepositToVault } from '../hooks/useCanDepositToVault'
-import { useVaultDepositLimiter } from '../hooks/useVaultDepositLimiter'
 import { formatEther } from 'viem'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
@@ -20,19 +19,46 @@ import { TokenImage } from '@/components/TokenImage'
 import { PercentageButtons } from '@/app/user/Unstake/components/PercentageButtons'
 import { USDRIF } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context'
+import { TermsAndConditionsModal } from './TermsAndConditionsModal'
+import { useVaultTermsAcceptance } from '../hooks/useVaultTermsAcceptance'
+import { useVaultDepositLimiter } from '../hooks/useVaultDepositLimiter'
+import { ExternalLink } from '@/components/Link'
+import { VAULT_KYC_URL } from '@/lib/constants'
 
 interface Props {
   onCloseModal: () => void
 }
 
+const KycInfo = () => {
+  const { maxDefaultDepositLimit } = useVaultDepositLimiter()
+  const formattedDefaultLimit = Big(formatEther(maxDefaultDepositLimit)).toFixedNoTrailing(2)
+
+  return (
+    <Paragraph variant="body-s" className="text-text-60 px-4">
+      To deposit more than 100 USD, please{' '}
+      <ExternalLink
+        href={VAULT_KYC_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline cursor-pointer"
+        data-testid="KycLink"
+      >
+        Talk to the team
+      </ExternalLink>{' '}
+      and register your interest in joining the invited, whitelisted testing group.
+    </Paragraph>
+  )
+}
+
 export const DepositModal = ({ onCloseModal }: Props) => {
   const { balances } = useGetAddressBalances()
   const { prices } = usePricesContext()
-  const { userDeposits } = useVaultDepositLimiter()
   const isDesktop = useIsDesktop()
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [amount, setAmount] = useState('')
+  const [shouldShowTermsModal, setShouldShowTermsModal] = useState(false)
+  const { hasAcceptedTerms } = useVaultTermsAcceptance()
   const usdrifBalance = balances[USDRIF]
 
   const {
@@ -57,11 +83,7 @@ export const DepositModal = ({ onCloseModal }: Props) => {
     canDeposit: isValidAmount,
     reason: depositLimitReason,
     isLoading: isDepositValidationLoading,
-    maxDepositLimit,
   } = useCanDepositToVault(amount)
-
-  // Use the same data source as validation (deposit limiter) for consistency
-  const formattedUserDeposits = Big(formatEther(userDeposits)).toFixedNoTrailing(2)
 
   const isAmountOverBalance = useMemo(() => {
     if (!amount) return false
@@ -134,12 +156,32 @@ export const DepositModal = ({ onCloseModal }: Props) => {
   }, [onRequestDeposit, onCloseModal])
 
   const handleRequestAllowance = useCallback(() => {
+    if (!hasAcceptedTerms) {
+      setShouldShowTermsModal(true)
+      return
+    }
+
+    executeTxFlow({
+      onRequestTx: onRequestAllowance,
+      onSuccess: () => {},
+      action: 'vaultAllowance',
+    })
+  }, [onRequestAllowance, hasAcceptedTerms])
+
+  const handleTermsAccepted = useCallback(() => {
+    setShouldShowTermsModal(false)
+    // Proceed with allowance after accepting terms
     executeTxFlow({
       onRequestTx: onRequestAllowance,
       onSuccess: () => {},
       action: 'vaultAllowance',
     })
   }, [onRequestAllowance])
+
+  const handleTermsDeclined = useCallback(() => {
+    setShouldShowTermsModal(false)
+    // Don't proceed with allowance when terms are declined
+  }, [])
 
   useEffect(() => {
     inputRef.current?.focus()
@@ -148,82 +190,85 @@ export const DepositModal = ({ onCloseModal }: Props) => {
   const amountToCurrency = formatCurrency(Big(prices['USDRIF']?.price || 0).mul(amount || 0))
 
   return (
-    <Modal width={688} onClose={onCloseModal} fullscreen={!isDesktop}>
-      <div className={cn('h-full flex flex-col', !isDesktop ? 'p-4' : 'p-6')}>
-        <Header className="mt-16 mb-4">DEPOSIT USDRIF</Header>
+    <>
+      <Modal width={688} onClose={onCloseModal} fullscreen={!isDesktop}>
+        <div className={cn('h-full flex flex-col', !isDesktop ? 'p-4' : 'p-6')}>
+          <Header className="mt-16 mb-4">DEPOSIT USDRIF</Header>
 
-        <div className="flex-1">
-          <VaultInput
-            ref={inputRef}
-            value={amount}
-            onChange={handleAmountChange}
-            symbol="USDRIF"
-            labelText="Amount to deposit"
-            currencyValue={amountToCurrency}
-            errorText={errorMessage}
-          />
+          <div className="flex-1">
+            <VaultInput
+              ref={inputRef}
+              value={amount}
+              onChange={handleAmountChange}
+              symbol="USDRIF"
+              labelText="Amount to deposit"
+              currencyValue={amountToCurrency}
+              errorText={errorMessage}
+            />
 
-          <div className="flex flex-col justify-between mx-3 mt-2 gap-2">
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-1">
-                <TokenImage symbol="USDRIF" size={12} />
-                <Label variant="body-s" className="text-text-60" data-testid="totalBalanceLabel">
-                  USDRIF available: {usdrifBalance.formattedBalance}
-                </Label>
+            <div className="flex flex-col justify-between mx-3 my-2 gap-2">
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-1">
+                  <TokenImage symbol="USDRIF" size={12} />
+                  <Label variant="body-s" className="text-text-60" data-testid="totalBalanceLabel">
+                    USDRIF available: {usdrifBalance.formattedBalance}
+                  </Label>
+                </div>
               </div>
-              <div className="flex items-center gap-1">
-                <TokenImage symbol="USDRIF" size={12} />
-                <Label variant="body-s" className="text-text-60" data-testid="depositLimitLabel">
-                  Vault deposits: {formattedUserDeposits} / {maxDepositLimit} USDRIF
-                </Label>
+              <div className="flex gap-1 self-end">
+                <PercentageButtons onPercentageClick={handlePercentageClick} />
               </div>
             </div>
-            <div className="flex gap-1 self-end">
-              <PercentageButtons onPercentageClick={handlePercentageClick} />
-            </div>
+
+            {!isAllowanceEnough && amount && Big(amount).gt(0) && !isAmountOverBalance && (
+              <div className="p-4 bg-bg-80 rounded-1">
+                <Paragraph variant="body-s" className="text-text-60">
+                  You need to approve USDRIF before depositing to the vault.
+                </Paragraph>
+              </div>
+            )}
+
+            {isAllowancePending && allowanceTxHash && (
+              <TransactionStatus
+                txHash={allowanceTxHash}
+                isTxFailed={isAllowanceFailed}
+                failureMessage="Allowance TX failed."
+                className="mt-8"
+              />
+            )}
+            {depositTxHash && (
+              <TransactionStatus
+                txHash={depositTxHash}
+                isTxFailed={isDepositFailed}
+                failureMessage="Deposit TX failed."
+                className="mt-8"
+              />
+            )}
           </div>
 
-          {!isAllowanceEnough && amount && Big(amount).gt(0) && !isAmountOverBalance && (
-            <div className="mt-4 p-4 bg-bg-80 rounded-1">
-              <Paragraph variant="body-s" className="text-text-60">
-                You need to approve USDRIF before depositing to the vault.
-              </Paragraph>
-            </div>
-          )}
+          <KycInfo />
+          <Divider className="mb-4 mt-6" />
 
-          {isAllowancePending && allowanceTxHash && (
-            <TransactionStatus
-              txHash={allowanceTxHash}
-              isTxFailed={isAllowanceFailed}
-              failureMessage="Allowance TX failed."
-              className="mt-8"
-            />
-          )}
-          {depositTxHash && (
-            <TransactionStatus
-              txHash={depositTxHash}
-              isTxFailed={isDepositFailed}
-              failureMessage="Deposit TX failed."
-              className="mt-8"
-            />
-          )}
+          <DepositActions
+            isAllowanceEnough={isAllowanceEnough}
+            isAllowancePending={isAllowancePending}
+            isDepositPending={isDepositPending}
+            isAllowanceRequesting={isAllowanceRequesting}
+            isDepositRequesting={isDepositRequesting}
+            cannotProceedWithAllowance={cannotProceedWithAllowance}
+            cannotProceedWithDeposit={cannotProceedWithDeposit}
+            onRequestAllowance={handleRequestAllowance}
+            onDeposit={handleConfirmDeposit}
+          />
         </div>
+      </Modal>
 
-        <Divider className="mb-4 mt-6" />
-
-        <DepositActions
-          isAllowanceEnough={isAllowanceEnough}
-          isAllowancePending={isAllowancePending}
-          isDepositPending={isDepositPending}
-          isAllowanceRequesting={isAllowanceRequesting}
-          isDepositRequesting={isDepositRequesting}
-          cannotProceedWithAllowance={cannotProceedWithAllowance}
-          cannotProceedWithDeposit={cannotProceedWithDeposit}
-          onRequestAllowance={handleRequestAllowance}
-          onDeposit={handleConfirmDeposit}
-        />
-      </div>
-    </Modal>
+      <TermsAndConditionsModal
+        shouldShow={shouldShowTermsModal}
+        onAgree={handleTermsAccepted}
+        onDecline={handleTermsDeclined}
+      />
+    </>
   )
 }
 
