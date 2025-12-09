@@ -11,10 +11,10 @@ import { Hash, formatUnits } from 'viem'
 import Big from '@/lib/big'
 import { Label } from '@/components/Typography'
 import { SwapInputComponent, SwapInputToken } from '@/components/SwapInput'
-import { OptionButtons, OptionButtonItem } from '@/components/OptionButtons'
+import { PercentageButtons, PercentageButtonItem } from '@/components/PercentageButtons'
 
 // Slippage tolerance options (in percentage)
-const SLIPPAGE_OPTIONS: OptionButtonItem<number>[] = [
+const SLIPPAGE_OPTIONS: PercentageButtonItem<number>[] = [
   { value: 0.1, label: '0.1%', testId: 'slippage-0.1' },
   { value: 0.5, label: '0.5%', testId: 'slippage-0.5' },
   { value: 1.0, label: '1%', testId: 'slippage-1.0' },
@@ -151,10 +151,10 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
         <Label variant="body-s" className="text-text-60">
           Slippage tolerance
         </Label>
-        <OptionButtons
+        <PercentageButtons
           options={SLIPPAGE_OPTIONS}
           value={slippageTolerance}
-          onChange={setSlippageTolerance}
+          onPercentageClick={setSlippageTolerance}
           testId="slippage-buttons"
         />
       </div>
