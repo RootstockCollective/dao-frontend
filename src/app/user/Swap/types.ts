@@ -1,6 +1,6 @@
 import { Address } from 'viem'
 
-export type SwappingToken = {
+export interface SwappingToken {
   balance: string
   symbol: string
   price: string | undefined
