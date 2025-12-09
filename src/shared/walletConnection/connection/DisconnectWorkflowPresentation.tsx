@@ -10,6 +10,7 @@ import { KotoQuestionMarkIcon } from '@/components/Icons'
 import { onRampDisclaimerText } from '@/shared/walletConnection/constants'
 import { Span } from '@/components/Typography'
 import { useState } from 'react'
+import { useIsSocialLogin } from '@/shared/hooks/useIsSocialLogin'
 
 interface DisconnectWorkflowPresentationProps {
   shortAddress: string
@@ -69,13 +70,15 @@ export const DisconnectWorkflowPresentation = ({
         open={isPopoverOpen}
         onOpenChange={setIsPopoverOpen}
         anchor={
-          <div className="flex items-center cursor-pointer" onClick={() => setIsPopoverOpen(!isPopoverOpen)}>
-            <AccountAddress
-              address={address}
-              shortAddress={shortAddress}
-              withCopy={false}
-              data-testid="AccountAddress"
-            />
+          <div className="flex items-center cursor-pointer">
+            <button type="button" onClick={() => setIsPopoverOpen(!isPopoverOpen)}>
+              <AccountAddress
+                address={address}
+                shortAddress={shortAddress}
+                withCopy={false}
+                data-testid="AccountAddress"
+              />
+            </button>
           </div>
         }
         content={
@@ -130,6 +133,7 @@ const WalletDetailsButton = () => {
   const { open } = useAppKit()
   const openWalletDetails = () => open({ view: 'Account' })
 
+  if (!useIsSocialLogin()) return null
   return (
     <Button
       variant="secondary-outline"
