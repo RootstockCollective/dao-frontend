@@ -13,7 +13,7 @@ import { TransactionInProgressButton } from '@/app/user/Stake/components/Transac
 import { Button } from '@/components/Button'
 import { VaultInput } from './VaultInput'
 import { TokenImage } from '@/components/TokenImage'
-import { PercentageButtons } from '@/app/user/Unstake/components/PercentageButtons'
+import { PercentageButtons } from '@/components/PercentageButtons'
 import { formatEther } from 'viem'
 import { usePricesContext } from '@/shared/context'
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from '../utils/slippage'
