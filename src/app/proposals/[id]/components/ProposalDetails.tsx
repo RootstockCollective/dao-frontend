@@ -2,16 +2,15 @@ import { Paragraph, Span } from '@/components/Typography'
 import { TokenImage } from '@/components/TokenImage'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
 import { cn, formatNumberWithCommas, shortAddress } from '@/lib/utils'
-import { Address, formatEther } from 'viem'
+import { type Address, formatEther } from 'viem'
 import {
   convertAmountToBigint,
-  DecodedFunctionName,
   DISPLAY_NAME_SEPARATOR,
   getDiscourseLinkFromProposalDescription,
   splitCombinedName,
 } from '@/app/proposals/shared/utils'
-import { ParsedActionDetails, ProposalType } from '../types'
-import { Moment } from 'moment'
+import { type ParsedActionDetails, ProposalType } from '../types'
+import type { Moment } from 'moment'
 
 interface ProposalDetailsProps {
   name: string
@@ -19,8 +18,7 @@ interface ProposalDetailsProps {
   proposer: string
   startsAt: Moment
   fullProposalName?: string
-  parsedAction: ParsedActionDetails
-  actionName: DecodedFunctionName | undefined
+  parsedActions: ParsedActionDetails[]
   link?: string
   readOnly?: boolean
 }
@@ -77,7 +75,6 @@ const DiscourseLink = ({ link, readOnly, 'data-testid': dataTestId }: DiscourseL
  * @param proposer
  * @param startsAt
  * @param parsedAction
- * @param actionName
  * @param link
  * @param readOnly
  * @constructor
@@ -87,22 +84,30 @@ export const ProposalDetails = ({
   description,
   proposer,
   startsAt,
-  parsedAction,
-  actionName,
+  parsedActions,
   link,
   readOnly,
 }: ProposalDetailsProps) => {
   const nameToUse = name.includes(DISPLAY_NAME_SEPARATOR) ? name : (description ?? '').split(';')[0]
   const { builderName } = splitCombinedName(nameToUse)
 
+  // For display purposes, we use the first action
+  const parsedAction = parsedActions[0]
+  const totalActionsCount = parsedActions.length
+
   const discourseLink =
     link ?? (description ? getDiscourseLinkFromProposalDescription(description) : undefined)
   const addressToWhitelist = parsedAction.builder
 
-  const isCommunityApproveBuilderAction = actionName === 'communityApproveBuilder'
-  const isBuilderDeactivationAction = actionName === 'dewhitelistBuilder'
+  const isCommunityApproveBuilderAction = parsedAction.type === ProposalType.BUILDER_ACTIVATION
+  const isBuilderDeactivationAction = parsedAction.type === ProposalType.BUILDER_DEACTIVATION
 
   const getProposalTypeLabel = () => {
+    const additionalActionsText =
+      totalActionsCount > 1
+        ? ` (+${totalActionsCount - 1} more action${totalActionsCount - 1 > 1 ? 's' : ''})`
+        : ''
+
     if (parsedAction.type === ProposalType.WITHDRAW && parsedAction.amount && parsedAction.tokenSymbol) {
       return (
         <>
@@ -111,19 +116,20 @@ export const ProposalDetails = ({
             <TokenImage symbol={parsedAction.tokenSymbol} size={16} />
             <Span className="font-bold ml-1">{parsedAction.tokenSymbol}</Span>
           </Span>
+          {additionalActionsText && <Span className="text-white/70 ml-1">{additionalActionsText}</Span>}
         </>
       )
     }
 
     if (parsedAction.type === ProposalType.BUILDER_ACTIVATION) {
-      return 'Builder activation'
+      return `Builder activation${additionalActionsText}`
     }
 
     if (parsedAction.type === ProposalType.BUILDER_DEACTIVATION) {
-      return 'Builder deactivation'
+      return `Builder deactivation${additionalActionsText}`
     }
 
-    return parsedAction.type
+    return `${parsedAction.type}${additionalActionsText}`
   }
 
   return (

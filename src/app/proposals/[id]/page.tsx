@@ -1,10 +1,10 @@
 'use client'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
-import { DecodedData, getDiscourseLinkFromProposalDescription } from '@/app/proposals/shared/utils'
+import { type DecodedData, getDiscourseLinkFromProposalDescription } from '@/app/proposals/shared/utils'
 import { Header, Paragraph } from '@/components/Typography'
 import { useParams } from 'next/navigation'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { ParsedActionDetails, ProposalType } from './types'
+import { type ParsedActionDetails, ProposalType } from './types'
 import type { GetPricesResult } from '@/app/user/types'
 import { RBTC, RIF, RIF_ADDRESS, USDRIF, USDRIF_ADDRESS, TRIF, ENV } from '@/lib/constants'
 import {
@@ -17,7 +17,7 @@ import {
 import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { useProposalById } from '../context'
 import { Category } from '../components/category'
-import { Proposal } from '../shared/types'
+import type { Proposal } from '../shared/types'
 import { useProposalAddressResolution } from './hooks/useProposalAddressResolution'
 import { useMemo } from 'react'
 import { VideoPlayer } from '@/components/VideoPlayer'
@@ -37,12 +37,19 @@ const tokenAddressToSymbol = {
   // Add more tokens here
 }
 
-const parseProposalActionDetails = (
-  calldatasParsed: DecodedData[],
-  prices: GetPricesResult,
-): ParsedActionDetails => {
-  const action = calldatasParsed?.[0]
-  if (!action || action.type !== 'decoded') return { type: '-', amount: undefined, tokenSymbol: undefined }
+// Parse a single action from decoded data
+const parseSingleAction = (action: DecodedData, prices: GetPricesResult): ParsedActionDetails => {
+  if (action.type !== 'decoded') {
+    // Fallback case - simple ETH transfer (no calldata)
+    return {
+      type: ProposalType.RAW_TRANSFER,
+      amount: BigInt(action.value),
+      tokenSymbol: RBTC,
+      price: prices?.[RBTC]?.price ?? 0,
+      toAddress: action.affectedAddress,
+    }
+  }
+
   const { functionName, args } = action
   switch (functionName) {
     case 'withdraw': {
@@ -87,8 +94,23 @@ const parseProposalActionDetails = (
       }
     }
     default:
-      return { type: '-', amount: undefined, tokenSymbol: undefined }
+      // Decoded but not in our supported list - unsupported function
+      return {
+        type: ProposalType.UNKNOWN,
+      }
   }
+}
+
+// Parse all actions in a proposal
+const parseAllProposalActions = (
+  calldatasParsed: DecodedData[],
+  prices: GetPricesResult,
+): ParsedActionDetails[] => {
+  if (!calldatasParsed || calldatasParsed.length === 0) {
+    return [{ type: ProposalType.UNKNOWN }]
+  }
+
+  return calldatasParsed.map(calldata => parseSingleAction(calldata, prices))
 }
 
 const PageWithProposal = (proposal: Proposal) => {
@@ -104,17 +126,25 @@ const PageWithProposal = (proposal: Proposal) => {
     category,
   } = proposal
   const { prices } = usePricesContext()
-  // Memoize parsedActionBase to ensure stable reference - only changes when dependencies change
-  const parsedActionBase = useMemo(
-    () => parseProposalActionDetails(calldatasParsed, prices),
+
+  // Parse all actions in the proposal
+  const parsedActionsBase = useMemo(
+    () => parseAllProposalActions(calldatasParsed, prices),
     [calldatasParsed, prices],
   )
-  const parsedAction = useProposalAddressResolution(parsedActionBase)
+
+  // Apply RNS resolution to the first action (most important for display)
+  const firstActionWithRns = useProposalAddressResolution(parsedActionsBase[0])
+
+  // Create updated result with RNS-resolved first action
+  const parsedActions = useMemo<ParsedActionDetails[]>(
+    () => [firstActionWithRns, ...parsedActionsBase.slice(1)],
+    [parsedActionsBase, firstActionWithRns],
+  )
+
   const voteOnProposalData = useVoteOnProposal(proposalId)
   const snapshot = useGetProposalSnapshot(proposalId)
   const { data: videoUrl } = useDiscourseVideo(getDiscourseLinkFromProposalDescription(description))
-
-  const actionName = calldatasParsed?.[0]?.type === 'decoded' ? calldatasParsed[0].functionName : undefined
 
   return (
     <div className="min-h-screen flex flex-col gap-4 w-full max-w-full">
@@ -138,8 +168,7 @@ const PageWithProposal = (proposal: Proposal) => {
               description={description}
               proposer={proposer}
               startsAt={Starts}
-              parsedAction={parsedAction}
-              actionName={actionName}
+              parsedActions={parsedActions}
             />
             <Description description={description} />
             <VideoPlayer url={videoUrl} className="p-4 md:p-6" />
@@ -148,8 +177,7 @@ const PageWithProposal = (proposal: Proposal) => {
         </div>
         <VotingDetails
           proposalId={proposalId}
-          parsedAction={parsedAction}
-          actionName={actionName}
+          parsedActions={parsedActions}
           snapshot={snapshot}
           proposalDeadline={proposalDeadline}
           voteStart={voteStart}

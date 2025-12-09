@@ -4,9 +4,9 @@ import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
 import { TokenImage } from '@/components/TokenImage'
 import Big from '@/lib/big'
 import { formatNumberWithCommas, formatCurrency, cn, shortAddress } from '@/lib/utils'
-import { Address, formatEther } from 'viem'
-import { ActionType, ProposalType } from '../../[id]/types'
-import { ClassNameValue } from 'tailwind-merge'
+import { type Address, formatEther } from 'viem'
+import { type ParsedActionDetails, ProposalType } from '../../[id]/types'
+import type { ClassNameValue } from 'tailwind-merge'
 import { convertAmountToBigint } from '../../shared/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
@@ -16,16 +16,7 @@ interface InfoGridItem {
 }
 
 interface ActionDetailsProps {
-  parsedAction: {
-    type: string
-    amount?: bigint | string
-    tokenSymbol?: string
-    price?: number
-    toAddress?: string
-    builder?: string
-    rns?: string
-  }
-  actionType: ActionType
+  parsedActions: ParsedActionDetails[]
   className?: ClassNameValue
   readOnly?: boolean
 }
@@ -61,20 +52,23 @@ const makeRightLabel = (proposalType: ProposalType, isDesktop: boolean) => {
   return ''
 }
 
-export const ActionDetails = ({ parsedAction, actionType, className, readOnly }: ActionDetailsProps) => {
-  const isDesktop = useIsDesktop()
-  let content: ReactNode = null
-
+// Render content for a single action
+const renderSingleActionContent = (
+  parsedAction: ParsedActionDetails,
+  isDesktop: boolean,
+  readOnly?: boolean,
+): ReactNode => {
   switch (parsedAction.type) {
+    case ProposalType.RAW_TRANSFER:
     case ProposalType.WITHDRAW: {
-      content = (
+      return (
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Span variant="tag-s" className="text-white/70" data-testid="TypeLabel">
               Type
             </Span>
             <Paragraph variant="body" data-testid="Type">
-              {actionType}
+              {parsedAction.type}
             </Paragraph>
           </div>
           <div className="flex flex-col">
@@ -150,13 +144,12 @@ export const ActionDetails = ({ parsedAction, actionType, className, readOnly }:
           ) : null}
         </div>
       )
-      break
     }
     case ProposalType.BUILDER_ACTIVATION:
     case ProposalType.BUILDER_DEACTIVATION: {
       const rightLabel = makeRightLabel(parsedAction.type, isDesktop)
       const items: InfoGridItem[] = [
-        { label: 'Type', value: actionType },
+        { label: 'Type', value: parsedAction.type },
         {
           label: rightLabel,
           value: parsedAction.builder ? (
@@ -172,22 +165,61 @@ export const ActionDetails = ({ parsedAction, actionType, className, readOnly }:
           ),
         },
       ]
-      content = <InfoGrid items={items} />
-      break
+      return <InfoGrid items={items} />
     }
+    case ProposalType.UNKNOWN:
     default:
-      content = <Span>Action details not supported for this proposal type</Span>
+      return (
+        <Paragraph className="mt-2 text-text-secondary" variant="body-s">
+          Action details not supported for this proposal type
+        </Paragraph>
+      )
+  }
+}
+
+export const ActionDetails = ({ parsedActions, className, readOnly }: ActionDetailsProps) => {
+  const isDesktop = useIsDesktop()
+  const totalCount = parsedActions.length
+
+  // For single transaction - render as before (backward compatibility)
+  if (totalCount === 1) {
+    const content = renderSingleActionContent(parsedActions[0], isDesktop, readOnly)
+    return (
+      <div
+        className={cn(
+          'md:p-6 px-4 py-8 bg-bg-80 flex flex-col gap-4 md:w-[376px] md:max-h-[214px] md:mt-2 rounded-sm md:self-start',
+          className,
+        )}
+      >
+        <Header variant="h3">ACTIONS</Header>
+        {content}
+      </div>
+    )
   }
 
+  // For multiple transactions - render list with separators
   return (
     <div
       className={cn(
-        'md:p-6 px-4 py-8 bg-bg-80 flex flex-col gap-4 md:w-[376px] md:max-h-[214px] md:mt-2 rounded-sm md:self-start',
+        'md:p-6 px-4 py-8 bg-bg-80 flex flex-col gap-4 md:w-[376px] md:mt-2 rounded-sm md:self-start',
         className,
       )}
     >
-      <Header variant="h3">ACTIONS</Header>
-      {content}
+      <Header variant="h3">ACTIONS ({totalCount})</Header>
+      <div className="flex flex-col gap-4">
+        {parsedActions.map((action, index) => {
+          return (
+            // biome-ignore lint/suspicious/noArrayIndexKey: index is stable here, array is not reordered
+            <div key={`action-${index}`}>
+              {index > 0 && <div className="border-t border-white/10 my-4" />}
+              <Span variant="tag-s" className="text-white/70 mb-2">
+                Action {index + 1}
+              </Span>
+              {renderSingleActionContent(action, isDesktop, readOnly)}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
