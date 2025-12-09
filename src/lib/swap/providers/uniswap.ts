@@ -197,8 +197,6 @@ function encodeSwapPath(tokenIn: Address, fee: number, tokenOut: Address): Hex {
   return `0x${tokenInBytes}${feeHex}${tokenOutBytes}` as Hex
 }
 
-// Removed executeSwap function - not needed since we use getSwapEncodedData directly
-
 /**
  * Get encoded swap data for Universal Router
  * This is a synchronous helper that returns the encoded command and inputs
