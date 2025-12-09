@@ -63,35 +63,9 @@ function StakingHistoryTable() {
 
   const rowData = useMemo(() => convertDataToRowData(data, prices), [data, prices])
 
-  // Filter handlers
-  const handleFilterToggle = useCallback((groupId: string, option: { label: string; value: string }) => {
-    setActiveFilters(prev => {
-      if (groupId === 'type') {
-        // Enforce single select: toggle selection, only allow one value for 'type'
-        const exists = prev.some(f => f.groupId === groupId && f.option.value === option.value)
-        if (exists) {
-          // Unselect (clear)
-          return prev.filter(f => f.groupId !== groupId)
-        }
-        // Set new value, remove any previous type filter
-        return [...prev.filter(f => f.groupId !== groupId), { groupId, option }]
-      } else {
-        // Multi-select for other groups
-        const exists = prev.some(f => f.groupId === groupId && f.option.value === option.value)
-        if (exists) {
-          return prev.filter(f => !(f.groupId === groupId && f.option.value === option.value))
-        }
-        return [...prev, { groupId, option }]
-      }
-    })
-  }, [])
-
-  const handleClearGroup = useCallback((groupId: string) => {
-    setActiveFilters(prev => prev.filter(f => f.groupId !== groupId))
-  }, [])
-
-  const handleClearAll = useCallback(() => {
-    setActiveFilters([])
+  // Filter handler - receives final filters from FilterSideBar when Apply is clicked
+  const handleApplyFilters = useCallback((filters: ActiveFilter[]) => {
+    setActiveFilters(filters)
   }, [])
 
   const handleCloseFilterSidebar = useCallback(() => {
@@ -172,9 +146,7 @@ function StakingHistoryTable() {
               isOpen={isFilterSidebarOpen}
               onClose={handleCloseFilterSidebar}
               activeFilters={activeFilters}
-              onFilterToggle={handleFilterToggle}
-              onClearGroup={handleClearGroup}
-              onClearAll={handleClearAll}
+              onApply={handleApplyFilters}
             />
           </div>
         </motion.div>

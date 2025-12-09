@@ -4,27 +4,23 @@ import { useMemo } from 'react'
 import { FilterSideBar } from '@/components/FilterSideBar'
 import { FilterGroup, ActiveFilter } from '@/components/FilterSideBar/types'
 
-interface TransactionHistoryFilterSideBarProps {
+interface StakingHistoryFilterSideBarProps {
   isOpen: boolean
   onClose: () => void
   activeFilters: ActiveFilter[]
-  onFilterToggle: (groupId: string, option: { label: string; value: string }) => void
-  onClearGroup: (groupId: string) => void
-  onClearAll: () => void
+  onApply: (filters: ActiveFilter[]) => void
 }
 
 /**
- * Filter sidebar specifically for transaction history
- * Provides filters for type, claim token, and builder
+ * Filter sidebar specifically for staking history
+ * Provides filters for type (stake/unstake)
  */
 export function StakingHistoryFilterSideBar({
   isOpen,
   onClose,
   activeFilters,
-  onFilterToggle,
-  onClearGroup,
-  onClearAll,
-}: TransactionHistoryFilterSideBarProps) {
+  onApply,
+}: StakingHistoryFilterSideBarProps) {
   const filterGroups: FilterGroup[] = useMemo(
     () => [
       {
@@ -48,9 +44,7 @@ export function StakingHistoryFilterSideBar({
       onClose={onClose}
       filterGroups={filterGroups}
       activeFilters={activeFilters}
-      onFilterToggle={onFilterToggle}
-      onClearGroup={onClearGroup}
-      onClearAll={onClearAll}
+      onApply={onApply}
       data-testid="StakingHistoryFilterSideBar"
     />
   )
