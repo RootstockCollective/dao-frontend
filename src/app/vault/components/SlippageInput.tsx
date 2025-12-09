@@ -21,6 +21,13 @@ export const SlippageInput = ({ value, onChange, name = 'slippage-input' }: Prop
     [onChange],
   )
 
+  const handleSlippageBlur = useCallback(() => {
+    // If the input is empty when user finishes editing, set the default value
+    if (value === '') {
+      onChange(DEFAULT_SLIPPAGE_PERCENTAGE.toString())
+    }
+  }, [value, onChange])
+
   const handleResetSlippage = useCallback(() => {
     onChange(DEFAULT_SLIPPAGE_PERCENTAGE.toString())
   }, [onChange])
@@ -43,6 +50,7 @@ export const SlippageInput = ({ value, onChange, name = 'slippage-input' }: Prop
               min: 0,
               max: 10,
               step: 0.01,
+              onBlur: handleSlippageBlur,
             }}
           />
           <Span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-sm text-text-60 pointer-events-none">
