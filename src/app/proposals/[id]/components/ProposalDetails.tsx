@@ -142,7 +142,7 @@ export const ProposalDetails = ({
 
       <DetailItem label="Created on" data-testid="CreatedOnLabel">
         <Paragraph variant="body" data-testid="CreatedOn">
-          {startsAt ? startsAt.format('DD MMM YYYY') : '—'}
+          {startsAt ? startsAt.format('DD MMM YYYY, HH:mm') : '—'}
         </Paragraph>
       </DetailItem>
 
