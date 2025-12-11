@@ -15,15 +15,15 @@ export const VaultMetrics = () => {
 
   return (
     <div className="flex flex-col gap-6 w-full">
-      <div className="flex flex-row flex-wrap gap-6 md:gap-20">
+      <div className="flex flex-row flex-wrap gap-x-6 gap-y-6 md:gap-x-20">
         <BalanceInfo
-          className="max-w-[214px] min-w-[180px]"
+          className="w-[214px] min-w-[180px]"
           title="Vault Balance"
           amount={isLoading ? '...' : formatSymbol(totalAssets, 'USDRIF')}
           symbol="USDRIF"
         />
         <BalanceInfo
-          className="max-w-[214px] min-w-[180px]"
+          className="w-[214px] min-w-[180px]"
           title="APY"
           amount={isLoading ? '...' : formatApy(estimatedApy)}
           symbol="%"
@@ -39,7 +39,7 @@ export const VaultMetrics = () => {
           }
         />
         <BalanceInfo
-          className="max-w-[214px] min-w-[180px]"
+          className="w-[214px] min-w-[180px]"
           title="Price per Share"
           amount={isLoading ? '...' : formatSymbol(pricePerShare, 'USDRIF')}
           symbol="USDRIF"

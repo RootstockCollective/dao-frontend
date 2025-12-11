@@ -19,11 +19,9 @@ import { VaultMetrics } from './VaultMetrics'
  */
 export const VaultMetricsContainer = () => {
   return (
-    <MetricsContainer className="bg-v3-bg-accent-80 divide-y-0">
-      <div className="flex flex-col gap-6 w-full">
-        <VaultMetrics />
-        <VaultUserMetricsContainer />
-      </div>
+    <MetricsContainer className="bg-v3-bg-accent-80 divide-y-0 flex flex-col gap-6 w-full">
+      <VaultMetrics />
+      <VaultUserMetricsContainer />
     </MetricsContainer>
   )
 }
