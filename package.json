@@ -84,7 +84,7 @@
     "@chromatic-com/storybook": "^4.1.0",
     "@storybook/addon-docs": "^9.1.1",
     "@storybook/addon-links": "^9.1.1",
-    "@storybook/addon-onboarding": "^9.1.1",
+    "@storybook/addon-onboarding": "^10.1.5",
     "@storybook/nextjs": "^9.1.1",
     "@tailwindcss/postcss": "^4.1.11",
     "@testing-library/dom": "^10.4.1",
