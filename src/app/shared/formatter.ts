@@ -17,7 +17,7 @@ export const getFiatAmount = (amount: bigint | string, price: BigSource): Big =>
   return bigAmount.mul(price).div(WeiPerEther.toString())
 }
 
-type SymbolFormatOptions = {
+interface SymbolFormatOptions {
   decimals: number
   displayDecimals: number
 }
@@ -47,12 +47,17 @@ const ctokenvault = {
   displayDecimals: 2,
 }
 
+const usdt0 = {
+  decimals: 6,
+  displayDecimals: 2,
+}
 const symbols: { [key: string]: SymbolFormatOptions } = {
   rif,
   rbtc,
   strif,
   usdrif,
   ctokenvault,
+  usdt0,
 }
 
 export const formatSymbol = (value: bigint | string, symbol: string) => {

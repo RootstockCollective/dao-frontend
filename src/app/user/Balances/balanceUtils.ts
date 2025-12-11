@@ -1,15 +1,16 @@
 import { GetAddressTokenResult, TokenBalance } from '@/app/user/types'
 import { tokenContracts } from '@/lib/contracts'
-import { formatEther } from 'viem'
+import { formatUnits } from 'viem'
 import { formatNumberWithCommas } from '@/lib/utils'
 import Big from '@/lib/big'
-import { RIF, RBTC, STRIF, USDRIF } from '@/lib/constants'
+import { RIF, RBTC, STRIF, USDRIF, USDT0 } from '@/lib/constants'
 
 const symbolsToGetFromArray = {
-  [RIF]: { equivalentSymbols: ['tRIF', 'RIF'], currentContract: tokenContracts[RIF] },
-  [RBTC]: { equivalentSymbols: ['rBTC', 'RBTC', 'tRBTC'], currentContract: tokenContracts[RBTC] },
+  [RIF]: { equivalentSymbols: ['tRIF', RIF], currentContract: tokenContracts[RIF] },
+  [RBTC]: { equivalentSymbols: ['rBTC', RBTC, 'tRBTC'], currentContract: tokenContracts[RBTC] },
   [STRIF]: { equivalentSymbols: ['stRIF', 'FIRts'], currentContract: tokenContracts[STRIF] },
-  [USDRIF]: { equivalentSymbols: ['USDRIF'], currentContract: tokenContracts[USDRIF] },
+  [USDRIF]: { equivalentSymbols: [USDRIF], currentContract: tokenContracts[USDRIF] },
+  [USDT0]: { equivalentSymbols: [USDT0, 'USD₮0'], currentContract: tokenContracts[USDT0] },
 }
 
 type SymbolsEquivalentKeys = keyof typeof symbolsToGetFromArray
@@ -23,6 +24,7 @@ export const formatTokenBalance = (balance: string, symbol: SymbolsEquivalentKey
     case STRIF:
       return formatNumberWithCommas(balanceBig.floor())
     case USDRIF:
+    case USDT0:
       return formatNumberWithCommas(balanceBig.toFixedNoTrailing(2))
     case RBTC:
     default:
@@ -59,7 +61,7 @@ export const getTokenBalance = (
     return defaultBalance
   }
 
-  const balance = formatEther(BigInt(matchingToken.balance))
+  const balance = formatUnits(BigInt(matchingToken.balance), matchingToken.decimals ?? 18)
 
   return {
     balance,

@@ -1,3 +1,4 @@
+import { RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 
@@ -19,15 +20,17 @@ const getIconSource = (symbol: string | undefined): string | null => {
     return null
   }
   switch (symbol.toUpperCase()) {
-    case 'RIF':
+    case RIF:
     case 'TRIF':
-    case 'STRIF':
+    case STRIF:
       return '/images/rif-logo.png'
-    case 'USDRIF':
+    case USDRIF:
       return '/images/usdrif-logo.png'
-    case 'RBTC':
+    case RBTC:
     case 'TRBTC':
       return '/images/rbtc-icon.svg'
+    case USDT0:
+      return '/images/usdt0-logo.png'
     default:
       return null
   }
