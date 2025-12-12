@@ -22,10 +22,16 @@ const getTokenFunction = (
 
 type TokenData = { result: string | bigint; error?: object }[]
 
-const buildTokenBalanceObject = (symbol: keyof typeof tokenContracts, tokenData?: TokenData) => ({
+const buildTokenBalanceObject = (
+  symbol: keyof typeof tokenContracts,
+  tokenData?: TokenData,
+  decimals?: number,
+) => ({
   symbol: tokenData ? tokenData?.[1]?.result : symbol,
   contractAddress: tokenContracts[symbol],
   balance: tokenData?.[0]?.result ? tokenData[0].result.toString() : '0',
+  decimals: decimals ?? 18,
+  name: symbol,
 })
 
 export const useGetAddressTokens = (address: Address, chainId?: number) => {
@@ -39,6 +45,7 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
       getTokenFunction(tokenContracts.RIF, address, 'balanceOf'),
       getTokenFunction(tokenContracts.stRIF, address, 'balanceOf'),
       getTokenFunction(tokenContracts.USDRIF, address, 'balanceOf'),
+      getTokenFunction(tokenContracts.USDT0, address, 'balanceOf'),
     ],
     multicallAddress: MulticallAddress,
     query: {
@@ -68,16 +75,48 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
     tokenData &&
     ([contracts[2], { result: tokenData[tokenContracts.USDRIF].symbol }] as TokenData)
 
+  const USDT0Token =
+    contracts &&
+    tokenData &&
+    ([contracts[3], { result: tokenData[tokenContracts.USDT0].symbol }] as TokenData)
+
   return {
     data: [
-      buildTokenBalanceObject('stRIF', stRIF),
-      buildTokenBalanceObject('RIF', RIF),
+      buildTokenBalanceObject(
+        'stRIF',
+        stRIF,
+        tokenData?.[tokenContracts.stRIF]?.decimals
+          ? Number(tokenData[tokenContracts.stRIF].decimals)
+          : undefined,
+      ),
+      buildTokenBalanceObject(
+        'RIF',
+        RIF,
+        tokenData?.[tokenContracts.RIF]?.decimals
+          ? Number(tokenData[tokenContracts.RIF].decimals)
+          : undefined,
+      ),
       {
         symbol: RBTC,
         balance: rbtc?.value.toString() || '0',
         contractAddress: tokenContracts[RBTC],
+        decimals: 18,
+        name: RBTC,
       },
-      buildTokenBalanceObject('USDRIF', USDRIF),
+      buildTokenBalanceObject(
+        'USDRIF',
+        USDRIF,
+        tokenData?.[tokenContracts.USDRIF]?.decimals
+          ? Number(tokenData[tokenContracts.USDRIF].decimals)
+          : undefined,
+      ),
+      buildTokenBalanceObject(
+        'USDT0',
+        USDT0Token,
+        tokenData?.[tokenContracts.USDT0]?.decimals
+          ? Number(tokenData[tokenContracts.USDT0].decimals)
+          : undefined,
+      ),
     ] as AddressToken[],
     isLoading: rbtcLoading || contractsLoading || IsTokenDataLoading,
     error: rbtcError ?? contractsError ?? tokenDataError,

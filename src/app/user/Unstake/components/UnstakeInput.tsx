@@ -5,7 +5,7 @@ import { StakingToken } from '@/app/user/Stake/types'
 import { formatCurrency } from '@/lib/utils'
 import Big from '@/lib/big'
 import { forwardRef, useEffect, useRef } from 'react'
-import { PercentageButtons } from './PercentageButtons'
+import { PercentageButtons } from '@/components/PercentageButtons'
 
 interface Props {
   amount: string

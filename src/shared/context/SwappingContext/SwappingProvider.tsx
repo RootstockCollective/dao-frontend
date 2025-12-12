@@ -1,6 +1,7 @@
 'use client'
 
 import { FC, ReactNode, useCallback, useMemo, useReducer } from 'react'
+import { useReadContracts } from 'wagmi'
 import { SwappingContext } from './SwappingContext'
 import {
   QuoteResult,
@@ -10,15 +11,12 @@ import {
   SwapToken,
   SwapTokenSymbol,
   SwappingContextValue,
+  SwapTokenData,
 } from './types'
-import {
-  USDRIF,
-  USDRIF_ADDRESS,
-  USDT0,
-  USDT0_ADDRESS,
-  USDT0_USDRIF_POOL_ADDRESS,
-  UNISWAP_UNIVERSAL_ROUTER_ADDRESS,
-} from '@/lib/constants'
+import { USDRIF, USDRIF_ADDRESS, USDT0, USDT0_ADDRESS, USDT0_USDRIF_POOL_ADDRESS } from '@/lib/constants'
+import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
+import { Address } from 'viem'
+import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 
 // Default pool fee - should be read from pool contract via fee() function when pool ABI is available
 // For stablecoin pairs (USDT0/USDRIF), typical fees are:
@@ -186,7 +184,65 @@ interface SwappingProviderProps {
 
 export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
   const [state, dispatch] = useReducer(swapReducer, initialState)
-  const tokens = useMemo(() => getSwapTokens(), [])
+
+  // Fetch balances and prices once from BalancesContext
+  const { balances, prices, isBalancesLoading } = useBalancesContext()
+
+  // Raw token data - formatting should be done at display time
+  const tokenData: SwapTokenData = useMemo(
+    () => ({
+      balances: {
+        [USDT0]: balances[USDT0]?.balance || '0',
+        [USDRIF]: balances[USDRIF]?.balance || '0',
+      },
+      prices: {
+        [USDT0]: prices[USDT0]?.price || 0,
+        [USDRIF]: prices[USDRIF]?.price || 0,
+      },
+      isLoading: isBalancesLoading,
+    }),
+    [balances, prices, isBalancesLoading],
+  )
+
+  // Fetch decimals directly from contracts
+  const { data: decimalsData } = useReadContracts({
+    contracts: [
+      {
+        address: USDT0_ADDRESS as Address,
+        abi: RIFTokenAbi,
+        functionName: 'decimals',
+      },
+      {
+        address: USDRIF_ADDRESS as Address,
+        abi: RIFTokenAbi,
+        functionName: 'decimals',
+      },
+    ],
+  })
+
+  // Build tokens with decimals from contract calls
+  const tokens = useMemo(() => {
+    const baseTokens = getSwapTokens()
+    const updatedTokens: Record<SwapTokenSymbol, SwapToken> = { ...baseTokens }
+
+    // USDT0 decimals (index 0)
+    if (decimalsData?.[0]?.result && typeof decimalsData[0].result === 'number') {
+      updatedTokens[USDT0] = {
+        ...updatedTokens[USDT0],
+        decimals: decimalsData[0].result,
+      }
+    }
+
+    // USDRIF decimals (index 1)
+    if (decimalsData?.[1]?.result && typeof decimalsData[1].result === 'number') {
+      updatedTokens[USDRIF] = {
+        ...updatedTokens[USDRIF],
+        decimals: decimalsData[1].result,
+      }
+    }
+
+    return updatedTokens
+  }, [decimalsData])
 
   const setTokenIn = useCallback((token: SwapTokenSymbol) => {
     dispatch({ type: SwapActionType.SET_TOKEN_IN, payload: token })
@@ -209,193 +265,100 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
     dispatch({ type: SwapActionType.RESET_SWAP })
   }, [])
 
-  // Quote function - to be implemented with Quoter contract
-  const getQuote = useCallback(
-    async (
-      amountIn: bigint,
-      tokenIn: SwapTokenSymbol,
-      tokenOut: SwapTokenSymbol,
-    ): Promise<QuoteResult | null> => {
-      if (!amountIn || amountIn === 0n) {
-        return null
-      }
+  // Quote state management functions - contract calls should be in hooks using useReadContract
+  const setQuoting = useCallback((isQuoting: boolean) => {
+    dispatch({ type: SwapActionType.SET_QUOTING, payload: isQuoting })
+  }, [])
 
-      dispatch({ type: SwapActionType.SET_QUOTING, payload: true })
+  const setQuote = useCallback((quote: QuoteResult | null) => {
+    if (quote) {
+      dispatch({ type: SwapActionType.SET_QUOTE, payload: quote })
+      dispatch({ type: SwapActionType.SET_QUOTING, payload: false })
       dispatch({ type: SwapActionType.SET_QUOTE_ERROR, payload: null })
-
-      try {
-        // TODO: Implement with Uniswap Quoter contract
-        // This is a placeholder that should be replaced when Quoter contract is available
-        // Example implementation:
-        // const quoterAddress = QUOTER_ADDRESS
-        // const quoterAbi = QuoterAbi
-        // const result = await readContract({
-        //   address: quoterAddress,
-        //   abi: quoterAbi,
-        //   functionName: 'quoteExactInputSingle',
-        //   args: [
-        //     SWAP_TOKENS[tokenIn].address,
-        //     SWAP_TOKENS[tokenOut].address,
-        //     state.poolFee || DEFAULT_POOL_FEE,
-        //     amountIn,
-        //     0n, // sqrtPriceLimitX96
-        //   ],
-        // })
-
-        // For now, return null to indicate not implemented
-        // When implemented, dispatch the result:
-        // dispatch({ type: SwapActionType.SET_QUOTE, payload: result })
-        // dispatch({ type: SwapActionType.SET_QUOTING, payload: false })
-
-        dispatch({ type: SwapActionType.SET_QUOTING, payload: false })
-        return null
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error('Failed to get quote')
-        dispatch({ type: SwapActionType.SET_QUOTE_ERROR, payload: err })
-        return null
-      }
-    },
-    [],
-  )
-
-  // Swap execution - to be implemented with Router contract
-  const executeSwap = useCallback(
-    async (
-      amountIn: bigint,
-      amountOutMinimum: bigint,
-      tokenIn: SwapTokenSymbol,
-      tokenOut: SwapTokenSymbol,
-      deadline: bigint,
-    ): Promise<string | null> => {
-      dispatch({ type: SwapActionType.SET_SWAPPING, payload: true })
-      dispatch({ type: SwapActionType.SET_SWAP_ERROR, payload: null })
-
-      try {
-        // TODO: Implement with Uniswap Router contract
-        // This is a placeholder that should be replaced when Router contract is available
-        // Example implementation:
-        // const routerAddress = UNISWAP_ROUTER_ADDRESS
-        // const routerAbi = RouterAbi
-        // const hash = await writeContract({
-        //   address: routerAddress,
-        //   abi: routerAbi,
-        //   functionName: 'exactInputSingle',
-        //   args: [{
-        //     tokenIn: SWAP_TOKENS[tokenIn].address,
-        //     tokenOut: SWAP_TOKENS[tokenOut].address,
-        //     fee: state.poolFee || DEFAULT_POOL_FEE,
-        //     recipient: userAddress,
-        //     deadline,
-        //     amountIn,
-        //     amountOutMinimum,
-        //     sqrtPriceLimitX96: 0n,
-        //   }],
-        // })
-        // dispatch({ type: SwapActionType.SET_SWAP_TX_HASH, payload: hash })
-        // dispatch({ type: SwapActionType.SET_SWAPPING, payload: false })
-
-        dispatch({ type: SwapActionType.SET_SWAPPING, payload: false })
-        return null
-      } catch (error) {
-        const err = error instanceof Error ? error : new Error('Failed to execute swap')
-        dispatch({ type: SwapActionType.SET_SWAP_ERROR, payload: err })
-        return null
-      }
-    },
-    [],
-  )
-
-  // Check allowance - to be implemented with ERC20 contract
-  const checkAllowance = useCallback(async (token: SwapTokenSymbol): Promise<bigint | null> => {
-    if (!UNISWAP_UNIVERSAL_ROUTER_ADDRESS) {
-      return null
-    }
-
-    dispatch({ type: SwapActionType.SET_CHECKING_ALLOWANCE, payload: true })
-
-    try {
-      // TODO: Implement with ERC20 contract
-      // This is a placeholder that should be replaced when token contracts are available
-      // Example implementation:
-      // const tokenAddress = tokens[token].address
-      // const tokenAbi = ERC20Abi
-      // const { address: userAddress } = useAccount()
-      // const allowance = await readContract({
-      //   address: tokenAddress,
-      //   abi: tokenAbi,
-      //   functionName: 'allowance',
-      //   args: [userAddress, UNISWAP_ROUTER_ADDRESS],
-      // })
-      // dispatch({ type: SwapActionType.SET_ALLOWANCE, payload: allowance })
-      // dispatch({ type: SwapActionType.SET_CHECKING_ALLOWANCE, payload: false })
-
-      dispatch({ type: SwapActionType.SET_CHECKING_ALLOWANCE, payload: false })
-      return null
-    } catch (error) {
-      dispatch({ type: SwapActionType.SET_CHECKING_ALLOWANCE, payload: false })
-      return null
     }
   }, [])
 
-  // Approve token - to be implemented with ERC20 contract
-  const approveToken = useCallback(async (token: SwapTokenSymbol, amount: bigint): Promise<string | null> => {
-    if (!UNISWAP_UNIVERSAL_ROUTER_ADDRESS) {
-      return null
-    }
+  const setQuoteError = useCallback((error: Error | null) => {
+    dispatch({ type: SwapActionType.SET_QUOTE_ERROR, payload: error })
+    dispatch({ type: SwapActionType.SET_QUOTING, payload: false })
+  }, [])
 
-    dispatch({ type: SwapActionType.SET_APPROVING, payload: true })
-    dispatch({ type: SwapActionType.SET_APPROVAL_TX_HASH, payload: null })
+  // Swap execution state management functions - contract calls should be in hooks using useWriteContract
+  const setSwapping = useCallback((isSwapping: boolean) => {
+    dispatch({ type: SwapActionType.SET_SWAPPING, payload: isSwapping })
+  }, [])
 
-    try {
-      // TODO: Implement with ERC20 contract
-      // This is a placeholder that should be replaced when token contracts are available
-      // Example implementation:
-      // const tokenAddress = tokens[token].address
-      // const tokenAbi = ERC20Abi
-      // const hash = await writeContract({
-      //   address: tokenAddress,
-      //   abi: tokenAbi,
-      //   functionName: 'approve',
-      //   args: [UNISWAP_ROUTER_ADDRESS, amount],
-      // })
-      // dispatch({ type: SwapActionType.SET_APPROVAL_TX_HASH, payload: hash })
-      // dispatch({ type: SwapActionType.SET_APPROVING, payload: false })
+  const setSwapError = useCallback((error: Error | null) => {
+    dispatch({ type: SwapActionType.SET_SWAP_ERROR, payload: error })
+    dispatch({ type: SwapActionType.SET_SWAPPING, payload: false })
+  }, [])
 
-      dispatch({ type: SwapActionType.SET_APPROVING, payload: false })
-      return null
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error('Failed to approve token')
-      dispatch({ type: SwapActionType.SET_APPROVING, payload: false })
-      return null
-    }
+  const setSwapTxHash = useCallback((txHash: string | null) => {
+    dispatch({ type: SwapActionType.SET_SWAP_TX_HASH, payload: txHash })
+    dispatch({ type: SwapActionType.SET_SWAPPING, payload: false })
+  }, [])
+
+  // Allowance state management functions - contract calls should be in hooks using useReadContract
+  const setCheckingAllowance = useCallback((isChecking: boolean) => {
+    dispatch({ type: SwapActionType.SET_CHECKING_ALLOWANCE, payload: isChecking })
+  }, [])
+
+  const setAllowance = useCallback((allowance: bigint | null) => {
+    dispatch({ type: SwapActionType.SET_ALLOWANCE, payload: allowance })
+    dispatch({ type: SwapActionType.SET_CHECKING_ALLOWANCE, payload: false })
+  }, [])
+
+  // Approval state management functions - contract calls should be in hooks using useContractWrite
+  const setApproving = useCallback((isApproving: boolean) => {
+    dispatch({ type: SwapActionType.SET_APPROVING, payload: isApproving })
+  }, [])
+
+  const setApprovalTxHash = useCallback((txHash: string | null) => {
+    dispatch({ type: SwapActionType.SET_APPROVAL_TX_HASH, payload: txHash })
+    dispatch({ type: SwapActionType.SET_APPROVING, payload: false })
   }, [])
 
   const value: SwappingContextValue = useMemo(
     () => ({
       state,
       tokens,
+      tokenData,
       setTokenIn,
       setTokenOut,
       toggleTokenSelection,
       setAmountIn,
       resetSwap,
-      getQuote,
-      executeSwap,
-      checkAllowance,
-      approveToken,
+      // State management functions for hooks
+      setQuoting,
+      setQuote,
+      setQuoteError,
+      setCheckingAllowance,
+      setAllowance,
+      setApproving,
+      setApprovalTxHash,
+      setSwapping,
+      setSwapError,
+      setSwapTxHash,
     }),
     [
       state,
       tokens,
+      tokenData,
       setTokenIn,
       setTokenOut,
       toggleTokenSelection,
       setAmountIn,
       resetSwap,
-      getQuote,
-      executeSwap,
-      checkAllowance,
-      approveToken,
+      setQuoting,
+      setQuote,
+      setQuoteError,
+      setCheckingAllowance,
+      setAllowance,
+      setApproving,
+      setApprovalTxHash,
+      setSwapping,
+      setSwapError,
+      setSwapTxHash,
     ],
   )
 

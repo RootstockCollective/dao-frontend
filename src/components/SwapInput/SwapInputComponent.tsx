@@ -1,8 +1,6 @@
 import { Input } from '@/components/Input'
 import { TokenImage } from '@/components/TokenImage'
 import { Label, Paragraph } from '@/components/Typography'
-import { Button } from '@/components/Button'
-import { Span } from '@/components/Typography'
 import { variantClasses } from '@/components/Typography/Typography'
 import { formatCurrency } from '@/lib/utils'
 import Big from '@/lib/big'
@@ -17,6 +15,7 @@ import {
   DropdownItem,
   DropdownValue,
 } from '@/components/SingleSelectDropdown/SingleSelectDropdown'
+import { PercentageButtons } from '@/components/PercentageButtons'
 
 /**
  * Token information for swap input
@@ -42,19 +41,6 @@ interface Props {
   labelText?: string
   errorText?: string
 }
-
-interface PercentageOption {
-  value: number
-  label: string
-  testId: string
-}
-
-const PERCENTAGE_OPTIONS: PercentageOption[] = [
-  { value: 0.1, label: '10%', testId: 'swap-percentage-10' },
-  { value: 0.2, label: '20%', testId: 'swap-percentage-20' },
-  { value: 0.5, label: '50%', testId: 'swap-percentage-50' },
-  { value: 1, label: 'Max', testId: 'swap-percentage-max' },
-]
 
 const shimmerVariants: Variants = {
   start: { backgroundPosition: '0% 0%' },
@@ -213,20 +199,9 @@ export const SwapInputComponent = forwardRef<HTMLInputElement, Props>(
                 </Label>
               </div>
             )}
-            {onPercentageClick && balance && (
-              <div className="flex gap-1 self-end" data-testid="swap-percentage-buttons">
-                {PERCENTAGE_OPTIONS.map(({ value, label, testId }) => (
-                  <Button
-                    key={value}
-                    variant="secondary"
-                    onClick={() => onPercentageClick(value)}
-                    className="bg-transparent border border-bg-40 px-2 py-0"
-                    data-testid={testId}
-                    disabled={readonly}
-                  >
-                    <Span variant="body-s">{label}</Span>
-                  </Button>
-                ))}
+            {onPercentageClick && balance && !readonly && (
+              <div className="self-end">
+                <PercentageButtons onPercentageClick={onPercentageClick} testId="swap-percentage-buttons" />
               </div>
             )}
           </div>

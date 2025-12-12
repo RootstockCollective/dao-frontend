@@ -12,7 +12,12 @@ export interface TokenInfo {
 /**
  * These tokens are the ones that are queried - in case more are needed add here
  */
-const tokenAddresses = [tokenContracts.RIF, tokenContracts.stRIF, tokenContracts.USDRIF] as Address[]
+const tokenAddresses = [
+  tokenContracts.RIF,
+  tokenContracts.stRIF,
+  tokenContracts.USDRIF,
+  tokenContracts.USDT0,
+] as Address[]
 
 async function getTokenData() {
   const contractCallsPromises = tokenAddresses.map(tokenAddress => {

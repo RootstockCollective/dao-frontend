@@ -43,9 +43,8 @@ export const VaultUserMetricsContainer = () => {
           />
         )}
       </div>
-      <div className="flex flex-row justify-end w-full mt-2">
-        <VaultActions />
-      </div>
+
+      <VaultActions />
     </div>
   )
 }
