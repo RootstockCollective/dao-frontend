@@ -55,21 +55,24 @@ export const VotingDetails = ({
   const [isModalOpen, setIsModalOpen] = useState(false)
   const isDesktop = useIsDesktop()
 
+  // Voting
   const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId, true)
   const { quorum } = useProposalQuorumAtSnapshot(snapshot)
   const { votingPowerAtSnapshot, doesUserHasEnoughThreshold } = useVotingPowerAtSnapshot(snapshot as bigint)
-
   const { onVote, isProposalActive, proposalState, isVoting, isWaitingVotingReceipt, setVotingTxHash } =
     voteOnProposalData
 
+  // Queueing
   const [isQueueing, setIsQueueing] = useState<boolean>()
   const { onQueueProposal } = useQueueProposal(proposalId)
 
+  // Execution
+  const [isExecuting, setIsExecuting] = useState(false)
   const { onExecuteProposal, canProposalBeExecuted, proposalEta, proposalQueuedTime } =
     useExecuteProposal(proposalId)
-  const [isExecuting, setIsExecuting] = useState(false)
   const { hasEnoughFunds, missingAsset, isLoading: isLoadingFundsCheck } = useCheckTreasuryFunds(proposalId)
 
+  // Popover state
   const [popoverOpen, setPopoverOpen] = useState(false)
   const voteButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -78,33 +81,36 @@ export const VotingDetails = ({
     proposalState !== ProposalState.Queued &&
     (!isProposalActive || !!vote || !doesUserHasEnoughThreshold || isVoting || isWaitingVotingReceipt)
 
-  const handleVoting = async (_vote: Vote) => {
-    try {
-      setIsChoosingVote(false)
-      const txHash = await executeTxFlow({
-        onRequestTx: () => {
-          setVote(_vote)
-          return onVote(_vote)
-        },
-        action: 'voting',
-        onSuccess: () => {
-          setVote(_vote)
-        },
-        onError: () => {
-          setVote(undefined)
-        },
-        onPending: () => setVotingTxIsPending(true),
-        onComplete: () => setVotingTxIsPending(false),
-      })
-      if (txHash) {
-        setVotingTxHash(txHash)
+  const handleVoting = useCallback(
+    async (_vote: Vote) => {
+      try {
+        setIsChoosingVote(false)
+        const txHash = await executeTxFlow({
+          onRequestTx: () => {
+            setVote(_vote)
+            return onVote(_vote)
+          },
+          action: 'voting',
+          onSuccess: () => {
+            setVote(_vote)
+          },
+          onError: () => {
+            setVote(undefined)
+          },
+          onPending: () => setVotingTxIsPending(true),
+          onComplete: () => setVotingTxIsPending(false),
+        })
+        if (txHash) {
+          setVotingTxHash(txHash)
+        }
+      } catch (err) {
+        console.log(err)
       }
-    } catch (err) {
-      console.log(err)
-    }
-  }
+    },
+    [onVote, setVotingTxHash, setIsChoosingVote, setVote, setVotingTxIsPending],
+  )
 
-  const handleQueuingProposal = async () => {
+  const handleQueuingProposal = useCallback(async () => {
     const txHash = await executeTxFlow({
       onRequestTx: () => {
         setIsQueueing(true)
@@ -124,9 +130,9 @@ export const VotingDetails = ({
         hash: txHash,
       })
     }
-  }
+  }, [onQueueProposal])
 
-  const handleExecuteProposal = async () => {
+  const handleExecuteProposal = useCallback(async () => {
     // Check if treasury has enough funds before executing
     if (!isLoadingFundsCheck && !hasEnoughFunds && missingAsset) {
       showToast({
@@ -153,10 +159,15 @@ export const VotingDetails = ({
         hash: txHash,
       })
     }
-  }
+  }, [isLoadingFundsCheck, hasEnoughFunds, missingAsset, onExecuteProposal])
 
   const handleProposalAction = useCallback(
     (action: () => void) => (_: MouseEvent<HTMLButtonElement>) => {
+      if (isQueueing || isExecuting) {
+        setPopoverOpen(true)
+        return
+      }
+
       if (!isConnected) {
         if (!isDesktop) {
           onConnectWalletButtonClick()
@@ -167,66 +178,98 @@ export const VotingDetails = ({
       }
       action()
     },
-    [isConnected, isDesktop, onConnectWalletButtonClick],
+    [isConnected, isDesktop, isQueueing, isExecuting, onConnectWalletButtonClick],
   )
 
-  const getButtonActionForState = (
-    state?: ProposalState,
-    _canProposalBeExecuted?: boolean,
-    _cannotCastVote?: boolean,
-  ): ButtonAction | undefined => {
-    switch (state) {
-      case ProposalState.Active:
-        if (_cannotCastVote) return undefined
-        return {
-          actionName: 'Vote on proposal',
-          onButtonClick: handleProposalAction(() => setIsChoosingVote(true)),
-        }
+  const getButtonActionForState = useCallback(
+    (
+      state?: ProposalState,
+      _canProposalBeExecuted?: boolean,
+      _cannotCastVote?: boolean,
+    ): ButtonAction | undefined => {
+      switch (state) {
+        case ProposalState.Active:
+          if (_cannotCastVote) return undefined
+          return {
+            actionName: 'Vote on proposal',
+            onButtonClick: handleProposalAction(() => setIsChoosingVote(true)),
+          }
 
-      case ProposalState.Succeeded:
-        return {
-          actionName: 'Put on queue',
-          onButtonClick: handleProposalAction(handleQueuingProposal),
-        }
+        case ProposalState.Succeeded:
+          return {
+            actionName: 'Put on queue',
+            onButtonClick: handleProposalAction(handleQueuingProposal),
+          }
 
-      case ProposalState.Queued:
-        if (!_canProposalBeExecuted) return undefined
+        case ProposalState.Queued:
+          if (!_canProposalBeExecuted) return undefined
 
-        return {
-          actionName: 'Execute',
-          onButtonClick: handleProposalAction(handleExecuteProposal),
-        }
-      default:
-        return undefined
+          return {
+            actionName: 'Execute',
+            onButtonClick: handleProposalAction(handleExecuteProposal),
+          }
+        default:
+          return undefined
+      }
+    },
+    [handleProposalAction, handleExecuteProposal, handleQueuingProposal],
+  )
+
+  const getEta = useCallback(
+    (_proposalState?: ProposalState): Eta | undefined => {
+      switch (_proposalState) {
+        case ProposalState.Canceled:
+        case ProposalState.Defeated:
+        case ProposalState.Succeeded:
+          return undefined
+        case ProposalState.Queued:
+          if (!proposalEta) return undefined
+          return {
+            type: 'queue ends in',
+            end: proposalEta,
+            timeSource: 'timestamp',
+            referenceStart: proposalQueuedTime,
+            colorDirection: 'reversed',
+          }
+        case ProposalState.Active:
+          return {
+            type: 'vote end in',
+            end: proposalDeadline,
+            timeSource: 'blocks',
+            referenceStart: voteStart ? Big(voteStart) : undefined,
+          }
+        default:
+          return undefined
+      }
+    },
+    [proposalEta, proposalQueuedTime, proposalDeadline, voteStart],
+  )
+
+  const getPopoverContent = useCallback((options: { isQueueing: boolean; isExecuting: boolean }) => {
+    const { isQueueing, isExecuting } = options
+
+    if (isQueueing) {
+      return <Span className="mb-4 text-left text-bg-100">Please wait for the transaction to complete.</Span>
     }
-  }
 
-  const getEta = (_proposalState?: ProposalState): Eta | undefined => {
-    switch (_proposalState) {
-      case ProposalState.Canceled:
-      case ProposalState.Defeated:
-      case ProposalState.Succeeded:
-        return undefined
-      case ProposalState.Queued:
-        if (!proposalEta) return undefined
-        return {
-          type: 'queue ends in',
-          end: proposalEta,
-          timeSource: 'timestamp',
-          referenceStart: proposalQueuedTime,
-          colorDirection: 'reversed',
-        }
-      case ProposalState.Active:
-        return {
-          type: 'vote end in',
-          end: proposalDeadline,
-          timeSource: 'blocks',
-          referenceStart: voteStart ? Big(voteStart) : undefined,
-        }
-      default:
-        return undefined
+    if (isExecuting) {
+      return (
+        <Span className="mb-4 text-left text-bg-100">The proposal has already passed the voting stage.</Span>
+      )
     }
-  }
+
+    // Default: connect wallet message (disconnected wallet)
+    return (
+      <>
+        <Span className="mb-4 text-left text-bg-100">
+          Connect your wallet to see your available voting power and to vote.
+        </Span>
+        <ConnectWorkflow
+          ConnectComponent={props => <ConnectButtonComponent {...props} textClassName="text-bg-100" />}
+        />
+      </>
+    )
+  }, [])
 
   // Extract the voting details content into a reusable component
   const VotingDetailsContent = () => (
@@ -237,16 +280,7 @@ export const VotingDetails = ({
         anchorRef={voteButtonRef}
         className="bg-text-80 rounded-[4px] border border-text-80 p-6 shadow-lg w-72"
         contentClassName="flex flex-col items-start bg-transparent h-full"
-        content={
-          <>
-            <Span className="mb-4 text-left text-bg-100">
-              Connect your wallet to see your available voting power and to vote.
-            </Span>
-            <ConnectWorkflow
-              ConnectComponent={props => <ConnectButtonComponent {...props} textClassName="text-bg-100" />}
-            />
-          </>
-        }
+        content={getPopoverContent({ isQueueing: !!isQueueing, isExecuting })}
       />
       <VotingDetailsComponent
         votingPower={votingPowerAtSnapshot}
@@ -267,7 +301,6 @@ export const VotingDetails = ({
         isVotingInProgress={isVoting || isWaitingVotingReceipt || votingTxIsPending}
         onCastVote={address && handleVoting}
         onCancelVote={() => setIsChoosingVote(false)}
-        actionDisabled={isQueueing || isExecuting}
         eta={getEta(proposalState)}
       />
       {isDesktop && <ActionDetails parsedActions={parsedActions} />}
@@ -284,7 +317,7 @@ export const VotingDetails = ({
             <VotingDetailsContent />
           </Modal>
         )}
-        <MobileVotingButton onClick={() => setIsModalOpen(true)} disabled={isQueueing || isExecuting} />
+        <MobileVotingButton onClick={() => setIsModalOpen(true)} />
       </>
     )
   }
