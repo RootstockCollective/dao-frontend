@@ -193,7 +193,10 @@ function EditorContent({
             <MDEditor
               value={value}
               onChange={val => {
-                onChange(val || '')
+                const newValue = val || ''
+                // Enforce maxLength if specified
+                const truncated = maxLength ? newValue.slice(0, maxLength) : newValue
+                onChange(truncated)
                 requestAnimationFrame(adjustHeight)
               }}
               preview="edit"
@@ -203,6 +206,7 @@ function EditorContent({
               textareaProps={{
                 onFocus: () => setIsFocused(true),
                 onBlur: () => setIsFocused(false),
+                maxLength,
               }}
             />
           </div>
