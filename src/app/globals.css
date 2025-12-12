@@ -2,6 +2,8 @@
 
 @import 'tailwindcss';
 
+@import '../theme/markdown-editor.css';
+
 @utility container {
   margin-inline: auto;
 }
