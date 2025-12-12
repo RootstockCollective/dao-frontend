@@ -75,9 +75,11 @@ describe('uniswap provider - integration tests', () => {
     it.skipIf(!hasRealAddresses)(
       'should return error when requested fee tier does not exist',
       async () => {
-        // Request fee tier 3000 which doesn't exist for this pool
+        // Request fee tier 200 which is not a valid Uniswap V3 fee tier
+        // Valid Uniswap V3 fee tiers are: 100, 500, 3000, 10000
         // Should return an error (no fallback when specific tier is requested)
         const amountIn = parseUnits('1', tokenInDecimals)
+        const invalidFeeTier = 200
 
         const result = await uniswapProvider.getQuote({
           tokenIn: realTokenIn,
@@ -85,13 +87,13 @@ describe('uniswap provider - integration tests', () => {
           amountIn,
           tokenInDecimals,
           tokenOutDecimals,
-          feeTier: 3000, // This doesn't exist, should return error
+          feeTier: invalidFeeTier, // Invalid fee tier, should return error
         })
 
         // Should return error for non-existent fee tier
         expect(result.provider).toBe('uniswap')
         expect(result.error).toBeDefined()
-        expect(result.error).toContain('Pool does not exist for fee tier 3000')
+        expect(result.error).toContain(`Pool does not exist for fee tier ${invalidFeeTier}`)
         expect(result.amountOut).toBe('0')
         expect(result.amountOutRaw).toBe('0')
       },
