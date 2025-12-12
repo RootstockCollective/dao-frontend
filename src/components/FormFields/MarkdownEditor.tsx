@@ -130,10 +130,13 @@ function EditorContent({
 
     textarea.style.height = 'auto'
     const scrollHeight = textarea.scrollHeight
-    const newHeight = Math.max(minHeight, scrollHeight + TOOLBAR_OFFSET)
+    // Minimum textarea height = total minHeight minus toolbar offset
+    const minTextareaHeight = Math.max(0, minHeight - TOOLBAR_OFFSET)
+    const textareaHeight = Math.max(minTextareaHeight, scrollHeight)
+    const containerHeight = textareaHeight + TOOLBAR_OFFSET
 
-    textarea.style.height = `${scrollHeight}px`
-    editorContainer.style.height = `${newHeight}px`
+    textarea.style.height = `${textareaHeight}px`
+    editorContainer.style.height = `${containerHeight}px`
   }, [minHeight])
 
   // MutationObserver watches for textarea to appear (needed for dynamic import)
