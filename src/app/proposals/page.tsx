@@ -1,4 +1,5 @@
 'use client'
+import { type MouseEvent, useState } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { withFallbackRetry } from '@/app/shared/components/Fallback/FallbackWithRetry'
 import { ProposalsFromChain } from '@/app/proposals/ProposalsFromChain'
@@ -10,10 +11,10 @@ import { useAccount } from 'wagmi'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { ConnectButtonComponentProps } from '@/shared/walletConnection'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
-import { Tooltip } from '@/components/Tooltip'
 import { Paragraph, Span } from '@/components/Typography'
 import { ExternalLink } from '@/components/Link'
 import { ArrowUpRightLightIcon } from '@/components/Icons'
+import { NewPopover } from '@/components/NewPopover'
 
 export default function ProposalsPage() {
   return (
@@ -66,25 +67,33 @@ const CreateProposalFlow = () => {
 
 const CreateProposalButton = ({ onClick, isConnected = false }: ConnectButtonComponentProps) => {
   const { isLoading, canCreateProposal, threshold } = useVotingPower()
+  const [popoverOpen, setPopoverOpen] = useState(false)
+  const [popoverMessage, setPopoverMessage] = useState('')
 
-  if (isConnected && (isLoading || !canCreateProposal)) {
-    const text = isLoading
-      ? 'Loading...'
-      : `You need at least ${threshold} Voting Power to create a proposal. The easiest way to get more Voting Power is to Stake more RIF.`
-    return (
-      <Tooltip text={text} side="right" className="max-w-[200px]">
-        <Button variant="secondary-outline" disabled data-testid="CreateProposalButton">
-          <Span bold className="text-bg-100">
-            Create a proposal
-          </Span>
-        </Button>
-      </Tooltip>
-    )
+  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
+    if (isConnected && (isLoading || !canCreateProposal)) {
+      const message = isLoading
+        ? 'Checking your voting power...'
+        : `You need at least ${threshold} Voting Power to create a proposal.`
+      setPopoverMessage(message)
+      setPopoverOpen(true)
+      return
+    }
+    onClick?.(event)
   }
 
   return (
-    <Button onClick={onClick} data-testid="CreateProposalButton">
-      Create a proposal
-    </Button>
+    <NewPopover
+      open={popoverOpen}
+      onOpenChange={setPopoverOpen}
+      anchor={
+        <Button onClick={handleClick} data-testid="CreateProposalButton">
+          Create a proposal
+        </Button>
+      }
+      className="bg-text-80 rounded-[4px] border border-text-80 p-6 shadow-lg w-72"
+      contentClassName="flex flex-col items-start bg-transparent h-full"
+      content={<Span className="text-left text-bg-100">{popoverMessage}</Span>}
+    />
   )
 }
