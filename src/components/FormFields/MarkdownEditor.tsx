@@ -205,12 +205,12 @@ function EditorContent({
               preview="edit"
               commands={editorCommands}
               extraCommands={[]}
-              data-testid={dataTestId}
               textareaProps={{
                 id, // For label association
                 onFocus: () => setIsFocused(true),
                 onBlur: () => setIsFocused(false),
                 maxLength,
+                ...({ 'data-testid': dataTestId } as Record<string, unknown>),
               }}
             />
           </div>
