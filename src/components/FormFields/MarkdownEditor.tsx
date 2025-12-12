@@ -189,7 +189,7 @@ function EditorContent({
           >
             {label}
           </motion.label>
-          <div className="markdown-editor-wrapper" id={id} ref={wrapperRef}>
+          <div className="markdown-editor-wrapper" ref={wrapperRef}>
             <MDEditor
               value={value}
               onChange={val => {
@@ -204,6 +204,7 @@ function EditorContent({
               extraCommands={[]}
               data-testid={dataTestId}
               textareaProps={{
+                id, // For label association
                 onFocus: () => setIsFocused(true),
                 onBlur: () => setIsFocused(false),
                 maxLength,
