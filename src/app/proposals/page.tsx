@@ -1,5 +1,5 @@
 'use client'
-import { type MouseEvent, useState } from 'react'
+import { type MouseEvent, useCallback, useState } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { withFallbackRetry } from '@/app/shared/components/Fallback/FallbackWithRetry'
 import { ProposalsFromChain } from '@/app/proposals/ProposalsFromChain'
@@ -9,7 +9,7 @@ import { Button } from '@/components/Button'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
-import { ConnectButtonComponentProps } from '@/shared/walletConnection'
+import { ConnectButtonComponent } from '@/shared/walletConnection/components/ConnectButtonComponent'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { Paragraph, Span } from '@/components/Typography'
 import { ExternalLink } from '@/components/Link'
@@ -52,35 +52,43 @@ export default function ProposalsPage() {
 }
 
 /**
- * This will determine whether the user is connected to a wallet or not.
- * @constructor
+ * Entry point for the Create Proposal button flow.
+ * Handles all states: not connected, loading, insufficient VP, and can create.
  */
 const CreateProposalFlow = () => {
   const { isConnected } = useAccount()
   const { push } = useRouter()
-
-  if (!isConnected) {
-    return <ConnectWorkflow ConnectComponent={CreateProposalButton} />
-  }
-  return <CreateProposalButton onClick={() => push('/proposals/new')} isConnected />
-}
-
-const CreateProposalButton = ({ onClick, isConnected = false }: ConnectButtonComponentProps) => {
   const { isLoading, canCreateProposal, threshold } = useVotingPower()
+
   const [popoverOpen, setPopoverOpen] = useState(false)
+  const [popoverContent, setPopoverContent] = useState<'connect' | 'message'>('connect')
   const [popoverMessage, setPopoverMessage] = useState('')
 
-  const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
-    if (isConnected && (isLoading || !canCreateProposal)) {
-      const message = isLoading
-        ? 'Checking your voting power...'
-        : `You need at least ${threshold} Voting Power to create a proposal.`
-      setPopoverMessage(message)
-      setPopoverOpen(true)
-      return
-    }
-    onClick?.(event)
-  }
+  const handleClick = useCallback(
+    (_: MouseEvent<HTMLButtonElement>) => {
+      // Not connected: show connect popover
+      if (!isConnected) {
+        setPopoverContent('connect')
+        setPopoverOpen(true)
+        return
+      }
+
+      // Connected but loading or can't create: show message popover
+      if (isLoading || !canCreateProposal) {
+        const message = isLoading
+          ? 'Checking your voting power...'
+          : `You need at least ${threshold} Voting Power to create a proposal.`
+        setPopoverMessage(message)
+        setPopoverContent('message')
+        setPopoverOpen(true)
+        return
+      }
+
+      // Connected and can create: navigate
+      push('/proposals/new')
+    },
+    [isConnected, isLoading, canCreateProposal, threshold, push],
+  )
 
   return (
     <NewPopover
@@ -93,7 +101,18 @@ const CreateProposalButton = ({ onClick, isConnected = false }: ConnectButtonCom
       }
       className="bg-text-80 rounded-[4px] border border-text-80 p-6 shadow-lg w-72"
       contentClassName="flex flex-col items-start bg-transparent h-full"
-      content={<Span className="text-left text-bg-100">{popoverMessage}</Span>}
+      content={
+        popoverContent === 'connect' ? (
+          <>
+            <Span className="mb-4 text-left text-bg-100">Connect your wallet to create a proposal.</Span>
+            <ConnectWorkflow
+              ConnectComponent={props => <ConnectButtonComponent {...props} textClassName="text-bg-100" />}
+            />
+          </>
+        ) : (
+          <Span className="text-left text-bg-100">{popoverMessage}</Span>
+        )
+      }
     />
   )
 }
