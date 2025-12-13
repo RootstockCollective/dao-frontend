@@ -1,0 +1,61 @@
+/* Markdown Editor (@uiw/react-md-editor) */
+
+/* Container */
+.markdown-editor-wrapper .w-md-editor {
+	position: relative;
+	border-radius: 4px;
+	background-color: var(--background-60);
+	border: none;
+	box-shadow: none;
+}
+/* Extra padding for floating label space */
+.markdown-editor-wrapper .w-md-editor-content {
+	padding-top: 24px;
+}
+/* Toolbar */
+.markdown-editor-wrapper .w-md-editor-toolbar {
+	background-color: var(--background-60);
+	border-bottom: 0.5px solid var(--text-80);
+	padding: 8px;
+}
+/* Toolbar items container */
+.markdown-editor-wrapper .w-md-editor-toolbar ul {
+	display: flex;
+}
+/* biome-ignore lint/correctness/noUnknownFunction: Tailwind syntax */
+@media (min-width: theme("screens.md")) {
+	.markdown-editor-wrapper .w-md-editor-toolbar ul {
+		gap: 2px;
+	}
+}
+/* Vertical button divider */
+.markdown-editor-wrapper .w-md-editor-toolbar-divider {
+	background-color: transparent;
+	height: 0;
+	width: 0.3rem;
+}
+/* Each button */
+.markdown-editor-wrapper .w-md-editor-toolbar button {
+	color: var(--text-80);
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+}
+/* Button hover */
+.markdown-editor-wrapper .w-md-editor-toolbar button:hover {
+	color: var(--text-100);
+	background-color: var(--background-40);
+}
+/* Text area font */
+.markdown-editor-wrapper .w-md-editor-text-input,
+.markdown-editor-wrapper .w-md-editor-text-pre,
+.markdown-editor-wrapper .w-md-editor-text-pre > code {
+	font-family: var(--font-rootstock-sans), sans-serif;
+	color: var(--text-100);
+	line-height: 1.5;
+}
+/* Editor area */
+.markdown-editor-wrapper .w-md-editor-area {
+	padding: 8px;
+	padding-top: 6px;
+}
