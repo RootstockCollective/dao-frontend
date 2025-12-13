@@ -99,9 +99,9 @@ interface EditorContentProps {
   label: string
   value: string
   onChange: (val: string) => void
+  minHeight: number
   error?: string
   maxLength?: number
-  minHeight: number
   dataTestId?: string
 }
 
