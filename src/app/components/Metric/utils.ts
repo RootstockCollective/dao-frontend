@@ -15,6 +15,6 @@ export const createMetricToken = ({
   return {
     symbol,
     value: formatSymbol(value, symbol),
-    fiatValue: fiatValue.toFixed(2),
+    fiatValue: fiatValue.toFixedWithTrailing(2),
   }
 }

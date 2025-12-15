@@ -25,7 +25,7 @@ export function useCanDepositToVault(amount?: string) {
     // Use appropriate limit based on whitelist status
     const applicableLimit = isWhitelisted ? maxWhitelistedDepositLimit : maxDefaultDepositLimit
     const limitInUsdrif = Big(formatEther(applicableLimit))
-    const formattedLimit = limitInUsdrif.toFixedNoTrailing(2)
+    const formattedLimit = limitInUsdrif.toFixedWithTrailing(2)
 
     // If still loading or error, return early
     if (isLoading || error) {

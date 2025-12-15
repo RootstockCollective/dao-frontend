@@ -35,7 +35,7 @@ interface Props {
 
 const KycInfo = () => {
   const { maxDefaultDepositLimit } = useVaultDepositLimiter()
-  const formattedDefaultLimit = Big(formatEther(maxDefaultDepositLimit)).toFixedNoTrailing(2)
+  const formattedDefaultLimit = Big(formatEther(maxDefaultDepositLimit)).toFixedWithTrailing(2)
 
   return (
     <Paragraph variant="body-s" className="text-text-60 px-4 pt-4">

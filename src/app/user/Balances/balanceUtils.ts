@@ -24,8 +24,7 @@ export const formatTokenBalance = (balance: string, symbol: SymbolsEquivalentKey
     case STRIF:
       return formatNumberWithCommas(balanceBig.floor())
     case USDRIF:
-    case USDT0:
-      return formatNumberWithCommas(balanceBig.toFixedNoTrailing(2))
+      return formatNumberWithCommas(balanceBig.toFixedWithTrailing(2))
     case RBTC:
     default:
       return formatNumberWithCommas(balanceBig.toFixedNoTrailing(5))

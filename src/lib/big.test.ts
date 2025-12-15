@@ -247,6 +247,102 @@ describe('.toFixedNoTrailing', () => {
   })
 })
 
+describe('.toFixedWithTrailing', () => {
+  // Basic functionality tests - trailing zeros are preserved
+  it('preserves trailing zeros', () => {
+    const num = new Big('123.10')
+    expect(num.toFixedWithTrailing(2)).toBe('123.10')
+  })
+
+  it('adds trailing zeros when needed', () => {
+    const num = new Big('123.1')
+    expect(num.toFixedWithTrailing(2)).toBe('123.10')
+  })
+
+  it('handles whole numbers by adding decimal zeros', () => {
+    const num = new Big('123')
+    expect(num.toFixedWithTrailing(2)).toBe('123.00')
+  })
+
+  // Decimal places (dp) tests
+  it('handles dp = 0', () => {
+    const num = new Big('123.45')
+    expect(num.toFixedWithTrailing(0)).toBe('123')
+  })
+
+  it('throws error for negative dp', () => {
+    const num = new Big('123.45')
+    expect(() => num.toFixedWithTrailing(-1)).toThrow('Invalid dp argument')
+  })
+
+  it('throws error for non-integer dp', () => {
+    const num = new Big('123.45')
+    expect(() => num.toFixedWithTrailing(1.5)).toThrow('Invalid dp argument')
+  })
+
+  // Rounding mode (rm) tests
+  it('floor (0) always rounds toward zero', () => {
+    expect(new Big('123.456').toFixedWithTrailing(2, 0)).toBe('123.45')
+    expect(new Big('123.999').toFixedWithTrailing(2, 0)).toBe('123.99')
+  })
+
+  it('ceil (3) always rounds away from zero', () => {
+    expect(new Big('123.441').toFixedWithTrailing(2, 3)).toBe('123.45')
+    expect(new Big('123.001').toFixedWithTrailing(2, 3)).toBe('123.01')
+  })
+
+  it('halfExpand (1) vs halfEven (2) - only differ on exact ties where lower candidate is even', () => {
+    // Big.js: mode 1 = roundHalfUp (ties away from zero), mode 2 = roundHalfEven (ties to even)
+
+    // Tie 123.445: candidates 123.44 (even) vs 123.45
+    // halfExpand (1) → 123.45 (away from zero), halfEven (2) → 123.44 (even)
+    expect(new Big('123.445').toFixedWithTrailing(2, 1)).toBe('123.45')
+    expect(new Big('123.445').toFixedWithTrailing(2, 2)).toBe('123.44')
+
+    // Tie 123.425: candidates 123.42 (even) vs 123.43
+    // halfExpand (1) → 123.43 (away from zero), halfEven (2) → 123.42 (even)
+    expect(new Big('123.425').toFixedWithTrailing(2, 1)).toBe('123.43')
+    expect(new Big('123.425').toFixedWithTrailing(2, 2)).toBe('123.42')
+
+    // Non-tie value: both behave identically (round to nearest)
+    expect(new Big('123.456').toFixedWithTrailing(2, 1)).toBe('123.46')
+    expect(new Big('123.456').toFixedWithTrailing(2, 2)).toBe('123.46')
+  })
+
+  it('throws error for invalid rounding mode', () => {
+    const num = new Big('123.45')
+    expect(() => num.toFixedWithTrailing(2, 4 as never)).toThrow('Invalid rm argument')
+    expect(() => num.toFixedWithTrailing(2, -1 as never)).toThrow('Invalid rm argument')
+  })
+
+  // Edge cases
+  it('handles very small numbers', () => {
+    const num = new Big('0.10')
+    expect(num.toFixedWithTrailing(2)).toBe('0.10')
+  })
+
+  it('handles negative numbers with trailing zeros', () => {
+    const num = new Big('-123.10')
+    expect(num.toFixedWithTrailing(2)).toBe('-123.10')
+  })
+
+  it('handles zero', () => {
+    const num = new Big('0')
+    expect(num.toFixedWithTrailing(2)).toBe('0.00')
+  })
+
+  // Stable coin use case: 110.10 should stay as "110.10"
+  it('stable coin formatting - preserves trailing zeros', () => {
+    const num = new Big('110.10')
+    expect(num.toFixedWithTrailing(2)).toBe('110.10')
+  })
+
+  it('stable coin formatting - formats whole numbers correctly', () => {
+    const num = new Big('100')
+    expect(num.toFixedWithTrailing(2)).toBe('100.00')
+  })
+})
+
 describe('round', () => {
   it('should round removing decimal places', () => {
     expect(round(123.456)).toBe('123')

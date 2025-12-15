@@ -9,7 +9,7 @@ import Big from '@/lib/big'
 
 export const VaultDisclaimer: FC<CommonComponentProps> = ({ className = '' }) => {
   const { maxDefaultDepositLimit } = useVaultDepositLimiter()
-  const formattedDefaultLimit = Big(formatEther(maxDefaultDepositLimit)).toFixedNoTrailing(2)
+  const formattedDefaultLimit = Big(formatEther(maxDefaultDepositLimit)).toFixedWithTrailing(2)
   return (
     <div
       className={cn(

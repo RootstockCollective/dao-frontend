@@ -13,7 +13,7 @@ export const VaultDepositKycPopover = ({ className }: VaultDepositKycPopoverProp
   const { maxDefaultDepositLimit } = useVaultDepositLimiter()
 
   // Format the default limit for display
-  const formattedDefaultLimit = Big(formatEther(maxDefaultDepositLimit)).toFixedNoTrailing(2)
+  const formattedDefaultLimit = Big(formatEther(maxDefaultDepositLimit)).toFixedWithTrailing(2)
 
   return (
     <div className={className}>
