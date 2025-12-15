@@ -28,24 +28,6 @@ declare module 'big.js' {
       dp?: number, // Must be integer between 0 and 1e6 inclusive
       rm?: 0 | 1 | 2 | 3, // Literal union type for rounding modes
     ): string
-    /**
-     * Returns a string representing the value in normal notation to a fixed number of decimal places,
-     * WITH trailing zeros preserved (e.g., 110.10 stays as "110.10", not "110.1").
-     * Uses Intl.NumberFormat to ensure trailing zeros are preserved.
-     * Ideal for stable coin / fiat currency display.
-     * @param dp Decimal places (0 to 1e+6 inclusive)
-     * @param rm Rounding mode (0 to 3)
-     *            0 = Rounds towards zero (truncate)
-     *            1 = Rounds towards nearest neighbor, ties toward zero
-     *            2 = Rounds towards nearest neighbor, ties away from zero
-     *            3 = Rounds away from zero
-     * @returns String representation with trailing zeros preserved
-     * @throws If dp or rm is invalid
-     */
-    toFixedWithTrailing(
-      dp?: number, // Must be integer between 0 and 1e6 inclusive
-      rm?: 0 | 1 | 2 | 3, // Literal union type for rounding modes
-    ): string
   }
 }
 
@@ -122,39 +104,6 @@ Big.prototype.toFixedNoTrailing = function (dp?: number, rm?: RoundingMode) {
 
   // Return the number with trimmed decimal part
   return `${parts[0]}.${trimmedDecimal}`
-}
-
-const roundingModeMap: Record<0 | 1 | 2 | 3, 'trunc' | 'halfExpand' | 'halfEven' | 'expand'> = {
-  0: 'trunc', // Round towards zero (Big.roundDown)
-  1: 'halfExpand', // Round to nearest, ties away from zero (Big.roundHalfUp)
-  2: 'halfEven', // Round to nearest, ties to even (Big.roundHalfEven)
-  3: 'expand', // Round away from zero (Big.roundUp)
-}
-
-Big.prototype.toFixedWithTrailing = function (dp?: number, rm?: RoundingMode) {
-  // Validate dp (decimal places)
-  if (dp !== undefined) {
-    if (dp !== ~~dp || dp < 0 || dp > 1e6) {
-      throw new Error('Invalid dp argument for toFixedWithTrailing')
-    }
-  }
-
-  // Validate rm (rounding mode)
-  if (rm !== undefined) {
-    if (rm !== ~~rm || rm < 0 || rm > 3) {
-      throw new Error('Invalid rm argument for toFixedWithTrailing')
-    }
-  }
-
-  const decimalPlaces = dp ?? 0
-  const roundingMode = rm !== undefined ? roundingModeMap[rm as 0 | 1 | 2 | 3] : 'floor'
-
-  return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: decimalPlaces,
-    maximumFractionDigits: decimalPlaces,
-    roundingMode,
-    useGrouping: false,
-  }).format(this.toString() as never)
 }
 
 const round = (value: BigSource, decimalPlaces?: number, rm?: RoundingMode) =>
