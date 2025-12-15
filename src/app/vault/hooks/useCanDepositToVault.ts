@@ -2,6 +2,8 @@ import { useVaultDepositLimiter } from './useVaultDepositLimiter'
 import { useMemo } from 'react'
 import { formatEther } from 'viem'
 import Big from '@/lib/big'
+import { formatSymbol } from '@/app/shared/formatter'
+import { USDRIF } from '@/lib/constants'
 
 /**
  * Hook for validating if a user can deposit to the vault
@@ -25,7 +27,7 @@ export function useCanDepositToVault(amount?: string) {
     // Use appropriate limit based on whitelist status
     const applicableLimit = isWhitelisted ? maxWhitelistedDepositLimit : maxDefaultDepositLimit
     const limitInUsdrif = Big(formatEther(applicableLimit))
-    const formattedLimit = limitInUsdrif.toFixedWithTrailing(2)
+    const formattedLimit = formatSymbol(applicableLimit, USDRIF)
 
     // If still loading or error, return early
     if (isLoading || error) {

@@ -3,7 +3,8 @@ import { Header, Paragraph, Span } from '@/components/Typography'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
 import { TokenImage } from '@/components/TokenImage'
 import Big from '@/lib/big'
-import { formatNumberWithCommas, formatCurrency, cn, shortAddress } from '@/lib/utils'
+import { formatCurrency, cn, shortAddress } from '@/lib/utils'
+import { formatSymbol } from '@/app/shared/formatter'
 import { type Address, formatEther } from 'viem'
 import { type ParsedActionDetails, ProposalType } from '../../[id]/types'
 import type { ClassNameValue } from 'tailwind-merge'
@@ -100,7 +101,7 @@ const renderSingleActionContent = (
               {/* Left column: values, right-aligned */}
               <div className="flex flex-col items-end text-right">
                 <Span className="text-[18px] font-bold" data-testid="Amount">
-                  {formatNumberWithCommas(formatEther(convertAmountToBigint(parsedAction.amount)))}
+                  {formatSymbol(convertAmountToBigint(parsedAction.amount), parsedAction.tokenSymbol || '')}
                 </Span>
                 {parsedAction.price !== undefined && (
                   <Span

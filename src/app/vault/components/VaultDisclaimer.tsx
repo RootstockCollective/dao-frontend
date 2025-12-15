@@ -4,12 +4,12 @@ import { cn } from '@/lib/utils'
 import { FC } from 'react'
 import { CommonComponentProps } from '@/components/commonProps'
 import { useVaultDepositLimiter } from '@/app/vault/hooks/useVaultDepositLimiter'
-import { formatEther } from 'viem'
-import Big from '@/lib/big'
+import { formatSymbol } from '@/app/shared/formatter'
+import { USDRIF } from '@/lib/constants'
 
 export const VaultDisclaimer: FC<CommonComponentProps> = ({ className = '' }) => {
   const { maxDefaultDepositLimit } = useVaultDepositLimiter()
-  const formattedDefaultLimit = Big(formatEther(maxDefaultDepositLimit)).toFixedWithTrailing(2)
+  const formattedDefaultLimit = formatSymbol(maxDefaultDepositLimit, USDRIF)
   return (
     <div
       className={cn(

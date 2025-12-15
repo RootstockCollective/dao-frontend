@@ -1,8 +1,9 @@
 import { Paragraph, Span } from '@/components/Typography'
 import { TokenImage } from '@/components/TokenImage'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
-import { cn, formatNumberWithCommas, shortAddress } from '@/lib/utils'
-import { type Address, formatEther } from 'viem'
+import { cn, shortAddress } from '@/lib/utils'
+import { formatSymbol } from '@/app/shared/formatter'
+import type { Address } from 'viem'
 import {
   convertAmountToBigint,
   DISPLAY_NAME_SEPARATOR,
@@ -111,7 +112,7 @@ export const ProposalDetails = ({
     if (parsedAction.type === ProposalType.WITHDRAW && parsedAction.amount && parsedAction.tokenSymbol) {
       return (
         <>
-          Transfer of {formatNumberWithCommas(formatEther(convertAmountToBigint(parsedAction.amount)))}
+          Transfer of {formatSymbol(convertAmountToBigint(parsedAction.amount), parsedAction.tokenSymbol)}
           <Span className="inline-flex ml-2">
             <TokenImage symbol={parsedAction.tokenSymbol} size={16} />
             <Span className="font-bold ml-1">{parsedAction.tokenSymbol}</Span>
