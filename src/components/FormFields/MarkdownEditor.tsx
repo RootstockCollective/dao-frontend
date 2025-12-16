@@ -13,13 +13,14 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useId, useState, useRef, useEffect, useCallback } from 'react'
+import { useId, useState, useRef } from 'react'
 import type { Control, FieldPath, FieldValues } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
 import { motion } from 'motion/react'
 import { Heading1, Heading2, Heading3, type LucideIcon } from 'lucide-react'
 import { ErrorMessage } from './ErrorMessage'
 import { commands, type ICommand } from '@uiw/react-md-editor'
+import { useAutoHeight } from '@/shared/hooks'
 
 // Dynamic import to avoid SSR issues
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
@@ -58,61 +59,6 @@ const editorCommands: ICommand[] = [
   commands.quote,
   commands.code,
 ]
-/**
- * Encapsulates all DOM manipulation logic required to make the editor auto-grow.
- * This keeps the main component clean and testable.
- */
-const useAutoHeight = (
-  wrapperRef: React.RefObject<HTMLDivElement | null>,
-  value: string,
-  minHeight: number,
-) => {
-  const adjustHeight = useCallback(() => {
-    if (!wrapperRef.current) return
-    const textarea = wrapperRef.current.querySelector('textarea')
-    const editorContainer = wrapperRef.current.querySelector('.w-md-editor') as HTMLElement
-
-    if (!textarea || !editorContainer) return
-
-    textarea.style.height = 'auto'
-    const scrollHeight = textarea.scrollHeight
-
-    // Logic: minTextareaHeight ensures we never shrink below the prop definition
-    const minTextareaHeight = Math.max(0, minHeight - TOOLBAR_OFFSET)
-    const textareaHeight = Math.max(minTextareaHeight, scrollHeight)
-    const containerHeight = textareaHeight + TOOLBAR_OFFSET
-
-    textarea.style.height = `${textareaHeight}px`
-    editorContainer.style.height = `${containerHeight}px`
-  }, [wrapperRef, minHeight])
-
-  // Adjust on value change
-  useEffect(() => {
-    // requestAnimationFrame ensures DOM has updated before we measure
-    requestAnimationFrame(adjustHeight)
-  }, [value, adjustHeight])
-
-  // Adjust on window resize
-  useEffect(() => {
-    window.addEventListener('resize', adjustHeight)
-    return () => window.removeEventListener('resize', adjustHeight)
-  }, [adjustHeight])
-
-  // Observer for initial load (Dynamic import delay)
-  useEffect(() => {
-    if (!wrapperRef.current) return
-    const observer = new MutationObserver(() => {
-      // Only adjust if we detect the textarea has finally been added to DOM
-      if (wrapperRef.current?.querySelector('textarea')) {
-        adjustHeight()
-        observer.disconnect()
-      }
-    })
-    observer.observe(wrapperRef.current, { childList: true, subtree: true })
-    return () => observer.disconnect()
-  }, [wrapperRef, adjustHeight])
-}
-
 interface MarkdownEditorProps<T extends FieldValues> {
   label: string
   name: FieldPath<T>
@@ -143,7 +89,12 @@ function EditorContent({
   const wrapperRef = useRef<HTMLDivElement>(null)
 
   // Use our custom hook to handle the height logic
-  useAutoHeight(wrapperRef, value, minHeight)
+  useAutoHeight(wrapperRef, value, {
+    elementSelector: 'textarea',
+    containerSelector: '.w-md-editor',
+    containerOffset: TOOLBAR_OFFSET,
+    minHeight: minHeight - TOOLBAR_OFFSET,
+  })
 
   const hasValue = value !== undefined && value !== null && value !== ''
   const shouldFloat = isFocused || hasValue
