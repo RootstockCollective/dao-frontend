@@ -249,12 +249,20 @@ export const VotingDetails = ({
     const { isQueueing, isExecuting } = options
 
     if (isQueueing) {
-      return <Span className="mb-4 text-left text-bg-100">Please wait for the transaction to complete.</Span>
+      return (
+        <Span className="mb-4 text-left text-bg-100">
+          The proposal is being placed on the queue, once this is complete you will be able to see the
+          progress of the timelock controller.
+        </Span>
+      )
     }
 
     if (isExecuting) {
       return (
-        <Span className="mb-4 text-left text-bg-100">The proposal has already passed the voting stage.</Span>
+        <Span className="mb-4 text-left text-bg-100">
+          The proposal is being executed. Once this is complete you will be able to confirm the Actions have
+          been executed as expected, thank you.
+        </Span>
       )
     }
 
