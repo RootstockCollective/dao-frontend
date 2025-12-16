@@ -25,7 +25,7 @@ import { commands, type ICommand } from '@uiw/react-md-editor'
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
 
 const ICON_SIZE = 17
-const TOOLBAR_OFFSET = 70
+const TOOLBAR_OFFSET = 69
 
 const createHeadingCommand = (level: 1 | 2 | 3, Icon: LucideIcon): ICommand => {
   const hashes = '#'.repeat(level)
@@ -178,6 +178,7 @@ function EditorContent({
               }}
               preview="edit"
               commands={editorCommands}
+              visibleDragbar={false}
               extraCommands={[]}
               textareaProps={{
                 id, // For label association
