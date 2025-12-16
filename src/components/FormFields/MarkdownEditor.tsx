@@ -13,62 +13,43 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useId, useState, useRef, useCallback, useEffect } from 'react'
+import { useId, useState, useRef, useEffect, useCallback } from 'react'
 import type { Control, FieldPath, FieldValues } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
 import { motion } from 'motion/react'
-import { Heading1, Heading2, Heading3 } from 'lucide-react'
+import { Heading1, Heading2, Heading3, type LucideIcon } from 'lucide-react'
 import { ErrorMessage } from './ErrorMessage'
 import { commands, type ICommand } from '@uiw/react-md-editor'
 
-// Dynamic import to avoid SSR issues (editor uses browser APIs)
+// Dynamic import to avoid SSR issues
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
 
 const ICON_SIZE = 17
+const TOOLBAR_OFFSET = 70
 
-// Custom heading commands with Lucide icons (replacing default text-based ones)
-const heading1Command: ICommand = {
-  name: 'heading1',
-  shortcuts: 'ctrlcmd+alt+1',
-  keyCommand: 'heading1',
-  buttonProps: { 'aria-label': 'Heading 1', title: 'Heading 1' },
-  icon: <Heading1 size={ICON_SIZE} />,
-  execute: (state, api) => {
-    api.replaceSelection(`# ${state.selectedText}`)
-  },
+const createHeadingCommand = (level: 1 | 2 | 3, Icon: LucideIcon): ICommand => {
+  const hashes = '#'.repeat(level)
+  return {
+    name: `heading${level}`,
+    keyCommand: `heading${level}`,
+    shortcuts: `ctrlcmd+alt+${level}`,
+    buttonProps: { 'aria-label': `Heading ${level}`, title: `Heading ${level}` },
+    icon: <Icon size={ICON_SIZE} />,
+    execute: (state, api) => {
+      api.replaceSelection(`${hashes} ${state.selectedText}`)
+    },
+  }
 }
 
-const heading2Command: ICommand = {
-  name: 'heading2',
-  shortcuts: 'ctrlcmd+alt+2',
-  keyCommand: 'heading2',
-  buttonProps: { 'aria-label': 'Heading 2', title: 'Heading 2' },
-  icon: <Heading2 size={ICON_SIZE} />,
-  execute: (state, api) => {
-    api.replaceSelection(`## ${state.selectedText}`)
-  },
-}
-
-const heading3Command: ICommand = {
-  name: 'heading3',
-  shortcuts: 'ctrlcmd+alt+3',
-  keyCommand: 'heading3',
-  buttonProps: { 'aria-label': 'Heading 3', title: 'Heading 3' },
-  icon: <Heading3 size={ICON_SIZE} />,
-  execute: (state, api) => {
-    api.replaceSelection(`### ${state.selectedText}`)
-  },
-}
-
-// Toolbar configuration: formatting, headings, lists, and utilities
+// Configuration
 const editorCommands: ICommand[] = [
   commands.bold,
   commands.italic,
   commands.strikethrough,
   commands.divider,
-  heading1Command,
-  heading2Command,
-  heading3Command,
+  createHeadingCommand(1, Heading1),
+  createHeadingCommand(2, Heading2),
+  createHeadingCommand(3, Heading3),
   commands.divider,
   commands.unorderedListCommand,
   commands.orderedListCommand,
@@ -77,6 +58,60 @@ const editorCommands: ICommand[] = [
   commands.quote,
   commands.code,
 ]
+/**
+ * Encapsulates all DOM manipulation logic required to make the editor auto-grow.
+ * This keeps the main component clean and testable.
+ */
+const useAutoHeight = (
+  wrapperRef: React.RefObject<HTMLDivElement | null>,
+  value: string,
+  minHeight: number,
+) => {
+  const adjustHeight = useCallback(() => {
+    if (!wrapperRef.current) return
+    const textarea = wrapperRef.current.querySelector('textarea')
+    const editorContainer = wrapperRef.current.querySelector('.w-md-editor') as HTMLElement
+
+    if (!textarea || !editorContainer) return
+
+    textarea.style.height = 'auto'
+    const scrollHeight = textarea.scrollHeight
+
+    // Logic: minTextareaHeight ensures we never shrink below the prop definition
+    const minTextareaHeight = Math.max(0, minHeight - TOOLBAR_OFFSET)
+    const textareaHeight = Math.max(minTextareaHeight, scrollHeight)
+    const containerHeight = textareaHeight + TOOLBAR_OFFSET
+
+    textarea.style.height = `${textareaHeight}px`
+    editorContainer.style.height = `${containerHeight}px`
+  }, [wrapperRef, minHeight])
+
+  // Adjust on value change
+  useEffect(() => {
+    // requestAnimationFrame ensures DOM has updated before we measure
+    requestAnimationFrame(adjustHeight)
+  }, [value, adjustHeight])
+
+  // Adjust on window resize
+  useEffect(() => {
+    window.addEventListener('resize', adjustHeight)
+    return () => window.removeEventListener('resize', adjustHeight)
+  }, [adjustHeight])
+
+  // Observer for initial load (Dynamic import delay)
+  useEffect(() => {
+    if (!wrapperRef.current) return
+    const observer = new MutationObserver(() => {
+      // Only adjust if we detect the textarea has finally been added to DOM
+      if (wrapperRef.current?.querySelector('textarea')) {
+        adjustHeight()
+        observer.disconnect()
+      }
+    })
+    observer.observe(wrapperRef.current, { childList: true, subtree: true })
+    return () => observer.disconnect()
+  }, [wrapperRef, adjustHeight])
+}
 
 interface MarkdownEditorProps<T extends FieldValues> {
   label: string
@@ -87,22 +122,11 @@ interface MarkdownEditorProps<T extends FieldValues> {
   'data-testid'?: string
 }
 
-// Height offset: toolbar (~41px) + label padding (~24px) + margins
-const TOOLBAR_OFFSET = 70
-
-/**
- * EditorContent - Inner component that renders the actual editor
- * Separated to allow useEffect hooks that depend on `value` prop
- */
-interface EditorContentProps {
+interface EditorContentProps extends Omit<MarkdownEditorProps<FieldValues>, 'control' | 'name'> {
   id: string
-  label: string
   value: string
   onChange: (val: string) => void
-  minHeight: number
   error?: string
-  maxLength?: number
-  dataTestId?: string
 }
 
 function EditorContent({
@@ -112,60 +136,14 @@ function EditorContent({
   onChange,
   error,
   maxLength,
-  minHeight,
-  dataTestId,
+  minHeight = 150,
+  'data-testid': dataTestId,
 }: EditorContentProps) {
   const [isFocused, setIsFocused] = useState(false)
   const wrapperRef = useRef<HTMLDivElement>(null)
 
-  /**
-   * Adjusts editor height based on content.
-   * Directly manipulates DOM since MDEditor doesn't expose textarea ref.
-   */
-  const adjustHeight = useCallback(() => {
-    if (!wrapperRef.current) return
-    const textarea = wrapperRef.current.querySelector('textarea')
-    const editorContainer = wrapperRef.current.querySelector('.w-md-editor') as HTMLElement
-    if (!textarea || !editorContainer) return
-
-    textarea.style.height = 'auto'
-    const scrollHeight = textarea.scrollHeight
-    // Minimum textarea height = total minHeight minus toolbar offset
-    const minTextareaHeight = Math.max(0, minHeight - TOOLBAR_OFFSET)
-    const textareaHeight = Math.max(minTextareaHeight, scrollHeight)
-    const containerHeight = textareaHeight + TOOLBAR_OFFSET
-
-    textarea.style.height = `${textareaHeight}px`
-    editorContainer.style.height = `${containerHeight}px`
-  }, [minHeight])
-
-  // MutationObserver watches for textarea to appear (needed for dynamic import)
-  useEffect(() => {
-    if (!wrapperRef.current) return
-
-    const textarea = wrapperRef.current.querySelector('textarea')
-    if (textarea) {
-      adjustHeight()
-      return
-    }
-
-    const observer = new MutationObserver(() => {
-      const ta = wrapperRef.current?.querySelector('textarea')
-      if (ta) {
-        adjustHeight()
-        observer.disconnect()
-      }
-    })
-
-    observer.observe(wrapperRef.current, { childList: true, subtree: true })
-    return () => observer.disconnect()
-  }, [adjustHeight])
-
-  // Adjust on window resize
-  useEffect(() => {
-    window.addEventListener('resize', adjustHeight)
-    return () => window.removeEventListener('resize', adjustHeight)
-  }, [adjustHeight])
+  // Use our custom hook to handle the height logic
+  useAutoHeight(wrapperRef, value, minHeight)
 
   const hasValue = value !== undefined && value !== null && value !== ''
   const shouldFloat = isFocused || hasValue
@@ -174,33 +152,29 @@ function EditorContent({
     <ErrorMessage errorMsg={error} dataTestId={dataTestId ? `${dataTestId}Error` : undefined}>
       <div className="flex flex-col gap-2">
         <div className="relative" data-color-mode="dark">
+          {/* Floating Label */}
           <motion.label
             htmlFor={id}
             className="absolute left-4 z-10 pointer-events-none origin-left font-rootstock-sans text-bg-0"
             initial={false}
             animate={{
-              // Toolbar is ~41px
-              // When floating: right under toolbar (~49px)
-              // When not floating: inside content area as placeholder (~75px)
               top: shouldFloat ? 49 : 75,
               scale: shouldFloat ? 0.75 : 1,
             }}
-            transition={{
-              duration: 0.2,
-              ease: 'easeInOut',
-            }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
           >
             {label}
           </motion.label>
+
+          {/* Editor Container */}
           <div className="markdown-editor-wrapper" ref={wrapperRef}>
             <MDEditor
               value={value}
               onChange={val => {
                 const newValue = val || ''
-                // Enforce maxLength if specified
-                const truncated = maxLength ? newValue.slice(0, maxLength) : newValue
-                onChange(truncated)
-                requestAnimationFrame(adjustHeight)
+                // Early return for maxLength prevents state update
+                if (maxLength && newValue.length > maxLength) return
+                onChange(newValue)
               }}
               preview="edit"
               commands={editorCommands}
@@ -215,6 +189,8 @@ function EditorContent({
             />
           </div>
         </div>
+
+        {/* Character Count */}
         {maxLength && (
           <span className="text-xs text-text-60 text-right">
             {value?.length || 0} / {maxLength}
@@ -225,14 +201,7 @@ function EditorContent({
   )
 }
 
-export function MarkdownEditor<T extends FieldValues>({
-  label,
-  name,
-  control,
-  maxLength,
-  minHeight = 150,
-  'data-testid': dataTestId,
-}: MarkdownEditorProps<T>) {
+export function MarkdownEditor<T extends FieldValues>({ name, control, ...props }: MarkdownEditorProps<T>) {
   const id = useId()
 
   return (
@@ -240,16 +209,7 @@ export function MarkdownEditor<T extends FieldValues>({
       control={control}
       name={name}
       render={({ field: { onChange, value }, fieldState: { error } }) => (
-        <EditorContent
-          id={id}
-          label={label}
-          value={value || ''}
-          onChange={onChange}
-          error={error?.message}
-          maxLength={maxLength}
-          minHeight={minHeight}
-          dataTestId={dataTestId}
-        />
+        <EditorContent id={id} value={value || ''} onChange={onChange} error={error?.message} {...props} />
       )}
     />
   )
