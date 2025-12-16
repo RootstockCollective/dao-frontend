@@ -29,7 +29,7 @@ const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
   cycle: 'cycleStart',
   date: 'blockTimestamp',
   type: 'type',
-  total_amount: 'blockTimestamp', // Use timestamp as fallback since total is calculated
+  total_amount: 'totalAmount',
 }
 
 /**
@@ -61,6 +61,10 @@ export default function TransactionHistoryTable() {
   const sortBy = sort?.columnId ? COLUMN_TO_DB_FIELD[sort.columnId] : 'blockTimestamp'
   const sortDirection = sort?.direction || 'desc'
 
+  // This ensures the sum stays consistent and only changes when new rows are loaded
+  const apiSortBy = sort?.columnId === 'total_amount' ? 'blockTimestamp' : sortBy
+  const apiSortDirection = sort?.columnId === 'total_amount' ? 'desc' : sortDirection
+
   // Convert active filters to API format
   const apiFilters = useMemo(() => {
     const filter = (groupId: string) =>
@@ -75,16 +79,39 @@ export default function TransactionHistoryTable() {
   const { data, isLoading, error, count } = useGetTransactionHistory({
     page: 1,
     pageSize: pageEnd,
-    sortBy,
-    sortDirection,
+    sortBy: apiSortBy,
+    sortDirection: apiSortDirection,
     type: apiFilters.type,
     builder: apiFilters.builder,
     rewardToken: apiFilters.rewardToken,
   })
 
   const rowData = useMemo(() => {
-    return convertDataToRowData(data, cycleDuration, prices, getBuilderByAddress)
-  }, [data, cycleDuration, prices, getBuilderByAddress])
+    const rows = convertDataToRowData(data, cycleDuration, prices, getBuilderByAddress)
+
+    // If sorting by total_amount, sort on frontend since backend always returns chronological order
+    if (sort?.columnId === 'total_amount' && sort?.direction) {
+      return [...rows].sort((a, b) => {
+        const getTotal = (usd: string | string[]) => {
+          if (Array.isArray(usd)) {
+            return usd.reduce((sum, val) => {
+              const num = Number(val.replace(/,/g, '').replace(/[<>]/g, ''))
+              return sum + (isNaN(num) ? 0 : num)
+            }, 0)
+          }
+          const num = Number(usd.replace(/,/g, '').replace(/[<>]/g, ''))
+          return isNaN(num) ? 0 : num
+        }
+
+        const aTotal = getTotal(a.data.total_amount.usd)
+        const bTotal = getTotal(b.data.total_amount.usd)
+
+        return sort.direction === 'asc' ? aTotal - bTotal : bTotal - aTotal
+      })
+    }
+
+    return rows
+  }, [data, cycleDuration, prices, getBuilderByAddress, sort])
 
   const handleApplyFilters = (filters: ActiveFilter[]) => {
     setActiveFilters(filters)
@@ -147,8 +174,8 @@ export default function TransactionHistoryTable() {
             type={apiFilters.type}
             builder={apiFilters.builder}
             rewardToken={apiFilters.rewardToken}
-            sortBy={sortBy}
-            sortDirection={sortDirection}
+            sortBy={apiSortBy}
+            sortDirection={apiSortDirection}
             cycleDuration={cycleDuration}
             prices={prices}
             getBuilderByAddress={getBuilderByAddress}
