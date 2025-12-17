@@ -15,6 +15,7 @@ import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { tokenContracts } from '@/lib/contracts'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
 import Big from '@/lib/big'
+import { NewPopover } from '@/components/NewPopover'
 
 interface Props {
   didIDelegateToMyself: boolean
@@ -24,6 +25,7 @@ interface Props {
 
 export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseClick }: Props) => {
   const isDesktop = useIsDesktop()
+  const [popoverOpen, setPopoverOpen] = useState(false)
   const [addressToDelegate, setAddressToDelegate] = useState({
     userInput: '',
     address: '',
@@ -112,9 +114,11 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
   const onValidateAddress = useMemo(() => debounce(validateAddress, 1000), [validateAddress])
 
   const onUpdateDelegate = () => {
-    if (addressToDelegate.status === 'valid') {
-      onDelegate(addressToDelegate.address as Address, addressToDelegate.rns, undefined)
+    if (addressToDelegate.status !== 'valid') {
+      setPopoverOpen(true)
+      return
     }
+    onDelegate(addressToDelegate.address as Address, addressToDelegate.rns, undefined)
   }
 
   useEffect(() => {
@@ -123,6 +127,14 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
       onValidateAddress(addressToDelegate.userInput)
     }
   }, [addressToDelegate.userInput, onValidateAddress])
+
+  // closes the popover when the address is valid
+  // in case kept open while was loading
+  useEffect(() => {
+    if (addressToDelegate.status === 'valid') {
+      setPopoverOpen(false)
+    }
+  }, [addressToDelegate.status])
 
   const isAddressInvalid = addressToDelegate.status === 'invalid'
 
@@ -153,15 +165,29 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
             onChange={onDelegateChangeAddress}
             data-testid="delegateInput"
           />
-          <Button
-            variant="primary"
-            onClick={onUpdateDelegate}
-            className="max-w-md"
-            disabled={!(addressToDelegate.status === 'valid')}
-            data-testid="delegateButton"
-          >
-            {didIDelegateToMyself ? 'Delegate' : 'Update delegate'}
-          </Button>
+          <NewPopover
+            open={popoverOpen}
+            onOpenChange={setPopoverOpen}
+            anchor={
+              <Button
+                variant="primary"
+                onClick={onUpdateDelegate}
+                className="max-w-md"
+                data-testid="delegateButton"
+              >
+                {didIDelegateToMyself ? 'Delegate' : 'Update delegate'}
+              </Button>
+            }
+            className="bg-text-80 rounded-[4px] border border-text-80 p-6 shadow-lg w-72"
+            contentClassName="flex flex-col items-start bg-transparent h-full"
+            content={
+              <Span className="text-left text-bg-100">
+                {addressToDelegate.status === 'pending'
+                  ? 'Please wait while we validate the address...'
+                  : 'Please enter a valid address or RNS domain.'}
+              </Span>
+            }
+          />
           <div className="flex flex-col items-center gap-2">
             {addressToDelegate.status === 'pending' && <Paragraph>Validating...</Paragraph>}
             {isAddressInvalid && <Paragraph>Error: {addressToDelegate.statusMessage}</Paragraph>}
