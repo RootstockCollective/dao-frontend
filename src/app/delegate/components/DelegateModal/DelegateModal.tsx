@@ -43,28 +43,21 @@ export const DelegateModal = ({
     >
       <div className="flex flex-col gap-2 items-center py-4 px-8">
         <Paragraph className="pr-8 text-bg-100 md:mt-4 mt-16">{title}</Paragraph>
-        {name ? (
-          <>
-            <div className="rounded-full bg-text-100 md:mt-4 mt-10">
-              <IpfsAvatar imageIpfs={imageIpfs} address={address} name={name} size={88} />
-            </div>
-            <div className="flex flex-col items-center">
-              <Paragraph className="text-bg-100">{name}</Paragraph>
-              <Paragraph className="text-bg-40" variant="body-xs">
-                {since}
-              </Paragraph>
-            </div>
-          </>
-        ) : (
-          <>
+        <div className="rounded-full bg-text-100 md:mt-4 mt-10">
+          <IpfsAvatar imageIpfs={imageIpfs} address={address} name={name} size={88} />
+        </div>
+        <div className="flex flex-col items-center">
+          {name ? (
+            <Paragraph className="text-bg-100">{name}</Paragraph>
+          ) : (
             <Header className="text-bg-100" variant="h2">
               {shortAddress(address)}
             </Header>
-            <Paragraph className="text-bg-40" variant="body-xs">
-              {since}
-            </Paragraph>
-          </>
-        )}
+          )}
+          <Paragraph className="text-bg-40" variant="body-xs">
+            {since}
+          </Paragraph>
+        </div>
         <div
           className={`flex flex-row gap-3 justify-end md:w-full mt-6 ${!isDesktop ? 'fixed bottom-4 inset-x-4' : ''}`}
         >
