@@ -3,12 +3,25 @@ import { BuilderEstimatedRewards, CompleteBuilder } from '@/app/collective-rewar
 import { filterBuildersByState } from '@/app/collective-rewards/user'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
-import { RBTC, RIF, USD, USDRIF, WeiPerEther } from '@/lib/constants'
+import { WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
 
-export const useGetBuilderEstimatedRewards = (currency = USD) => {
+import { REWARD_TOKEN_KEYS, TOKENS, type RewardTokenKey } from '@/lib/tokens' // adjust import path
+
+type TokenAmount = {
+  amount: {
+    value: bigint
+    price: number
+    symbol: string
+    currency: string
+  }
+}
+
+type RewardsByToken = Record<RewardTokenKey, TokenAmount>
+
+export const useGetBuilderEstimatedRewards = (currency = 'USD') => {
   const { builders } = useBuilderContext()
 
   const {
@@ -46,19 +59,32 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
   const { prices } = usePricesContext()
 
   const estimatedRewards: BuilderEstimatedRewards[] = useMemo(() => {
-    // TODO: this is so unreadable, refactor using REWARD_TOKEN_KEYS
-    const rifAmount = cycleRewards?.rif ?? 0n
-    const usdrifAmount = cycleRewards?.usdrif ?? 0n
-    const rbtcAmount = cycleRewards?.rbtc ?? 0n
-    const rifPrice = prices[RIF]?.price ?? 0
-    const usdrifPrice = prices[USDRIF]?.price ?? 0
-    const rbtcPrice = prices[RBTC]?.price ?? 0
+    if (!cycleRewards) return []
+
+    const buildRewardsForPct = (pct: bigint): RewardsByToken =>
+      REWARD_TOKEN_KEYS.reduce((acc, key) => {
+        const token = TOKENS[key]
+        const totalTokenAmount = cycleRewards[key] ?? 0n
+        const tokenPrice = prices[token.symbol]?.price ?? 0
+
+        acc[key] = {
+          amount: {
+            value: (pct * totalTokenAmount) / WeiPerEther,
+            price: tokenPrice,
+            symbol: token.symbol,
+            currency,
+          },
+        }
+
+        return acc
+      }, {} as RewardsByToken)
 
     return activeBuilders.map((builder, index) => {
       const { backerRewardPct, stateFlags } = builder
       const rewardPercentageToApply = backerRewardPct?.current ?? 0n
       const builderRewardShares = rewardShares?.[index] ?? 0n
       const isRewarded = isBuilderRewardable(stateFlags)
+
       const builderEstimatedRewardsPct =
         totalPotentialRewards && isRewarded
           ? (builderRewardShares * (WeiPerEther - rewardPercentageToApply)) / totalPotentialRewards
@@ -69,70 +95,16 @@ export const useGetBuilderEstimatedRewards = (currency = USD) => {
           ? (builderRewardShares * rewardPercentageToApply) / totalPotentialRewards
           : 0n
 
-      const builderRifEstimatedRewards = (builderEstimatedRewardsPct * rifAmount) / WeiPerEther
-      const builderUsdrifEstimatedRewards = (builderEstimatedRewardsPct * usdrifAmount) / WeiPerEther
-      const builderRbtcEstimatedRewards = (builderEstimatedRewardsPct * rbtcAmount) / WeiPerEther
-      const backerRifEstimatedRewards = (backerEstimatedRewardsPct * rifAmount) / WeiPerEther
-      const backerUsdrifEstimatedRewards = (backerEstimatedRewardsPct * usdrifAmount) / WeiPerEther
-      const backerRbtcEstimatedRewards = (backerEstimatedRewardsPct * rbtcAmount) / WeiPerEther
+      const builderEstimatedRewards = buildRewardsForPct(builderEstimatedRewardsPct)
+      const backerEstimatedRewards = buildRewardsForPct(backerEstimatedRewardsPct)
 
       return {
         ...builder,
         rewardShares: builderRewardShares,
         builderEstimatedRewardsPct,
         backerEstimatedRewardsPct,
-        backerEstimatedRewards: {
-          rif: {
-            amount: {
-              value: backerRifEstimatedRewards,
-              price: rifPrice,
-              symbol: RIF,
-              currency,
-            },
-          },
-          usdrif: {
-            amount: {
-              value: backerUsdrifEstimatedRewards,
-              price: usdrifPrice,
-              symbol: USDRIF,
-              currency,
-            },
-          },
-          rbtc: {
-            amount: {
-              value: backerRbtcEstimatedRewards,
-              price: rbtcPrice,
-              symbol: RBTC,
-              currency,
-            },
-          },
-        },
-        builderEstimatedRewards: {
-          rif: {
-            amount: {
-              value: builderRifEstimatedRewards,
-              price: rifPrice,
-              symbol: RIF,
-              currency,
-            },
-          },
-          usdrif: {
-            amount: {
-              value: builderUsdrifEstimatedRewards,
-              price: usdrifPrice,
-              symbol: USDRIF,
-              currency,
-            },
-          },
-          rbtc: {
-            amount: {
-              value: builderRbtcEstimatedRewards,
-              price: rbtcPrice,
-              symbol: RBTC,
-              currency,
-            },
-          },
-        },
+        builderEstimatedRewards,
+        backerEstimatedRewards,
       }
     })
   }, [activeBuilders, rewardShares, totalPotentialRewards, cycleRewards, prices, currency])

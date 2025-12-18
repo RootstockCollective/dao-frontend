@@ -12,6 +12,7 @@ import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import Big from 'big.js'
+import { createMetricToken } from '@/app/components/Metric/utils'
 
 export const EstimatedRewards = () => {
   const {
@@ -34,20 +35,16 @@ export const EstimatedRewards = () => {
       const amount = cycleRewards[tokenKey] ?? 0n
       const price = prices[symbol]?.price || 0
 
-      const fiatValue = getFiatAmount(amount, price)
-      const value = formatSymbol(amount, symbol).toString()
+      const metricToken = createMetricToken({
+        symbol,
+        value: amount,
+        price,
+      })
 
-      return {
-        combinedRewardsFiat: acc.combinedRewardsFiat.add(fiatValue),
-        rewardPerToken: [
-          ...acc.rewardPerToken,
-          {
-            symbol,
-            value,
-            fiatValue: fiatValue.toFixed(2),
-          },
-        ],
-      }
+      acc.combinedRewardsFiat = acc.combinedRewardsFiat.add(Big(metricToken.fiatValue))
+      acc.rewardPerToken.push(metricToken)
+
+      return acc
     },
     {
       rewardPerToken: [] as MetricToken[],
