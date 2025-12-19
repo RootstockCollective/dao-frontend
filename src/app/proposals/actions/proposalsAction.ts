@@ -7,6 +7,7 @@ import { GovernorAbi } from '@/lib/abis/Governor'
 import { unstable_cache } from 'next/cache'
 import { gql as apolloGQL } from '@apollo/client'
 import { daoClient } from '@/shared/components/ApolloClient'
+import { Address } from 'viem'
 
 const fetchProposalSharedDetails = async () => {
   // Proposal Threshold (from governor)
@@ -77,7 +78,7 @@ export interface ProposalGraphQLResponse {
   id: string
   proposalId: string
   proposer: {
-    id: string
+    id: Address
   }
   targets: string[]
   description: string

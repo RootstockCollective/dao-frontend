@@ -1,6 +1,6 @@
 import Big from '@/lib/big'
 import { Address } from 'viem'
-import { DecodedData, SerializedDecodedData } from '@/app/proposals/shared/utils'
+import { SerializedDecodedData } from '@/app/proposals/shared/utils'
 import { ProposalCategory, ProposalState } from '@/shared/types'
 
 import { type GrantProposal } from '../../new/details/schemas/GrantProposalSchema'
@@ -12,18 +12,18 @@ import { CountdownProps } from '@/components/Countdown'
 export interface BaseProposalInput {
   proposalId: string
   description: string
-  votesFor: string
-  votesAgainst: string
-  votesAbstains: string
+  votesFor: string | null
+  votesAgainst: string | null
+  votesAbstains: string | null
   voteEnd: string
   voteStart: string
   createdAt: string
   createdAtBlock: string
-  state: string
+  state: string | null
   targets: string[]
   values: string[]
   calldatas: string[]
-  proposer: string | { id: string } // Can be string (DB) or object (GraphQL)
+  proposer: Address | { id: Address } // Can be Address (DB) or object (GraphQL)
   quorum?: string | bigint | null
 }
 
@@ -31,7 +31,7 @@ export interface BaseProposalInput {
 export interface ProposalTransformFunctions {
   parseTargets: (targets: string[]) => string[]
   parseCalldatas: (calldatas: string[]) => string[]
-  proposerTransform: (proposer: string | { id: string }) => Address
+  proposerTransform: (proposer: Address | { id: Address }) => Address
 }
 
 export interface Proposal {
@@ -52,7 +52,7 @@ export interface Proposal {
   description: string
   proposalId: string
   Starts: moment.Moment
-  calldatasParsed: DecodedData[]
+  calldatasParsed: SerializedDecodedData[]
   blockNumber: string
   // Fields from GraphQL proposal object (optional for backend API proposals)
   createdAt?: string

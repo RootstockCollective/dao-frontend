@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useBlockNumber, useReadContracts } from 'wagmi'
 import { formatEther } from 'viem'
-import { EventArgumentsParameter, getProposalEventArguments } from '../shared/utils'
+import { EventArgumentsParameter, getProposalEventArguments, serializeBigInts } from '../shared/utils'
 import Big from '@/lib/big'
 import { LatestProposalResponse } from './useFetchLatestProposals'
 import { governor } from '@/lib/contracts'
@@ -58,7 +58,7 @@ export function useProposalListData({ proposals }: Props) {
         const deadlineBlock = Big(proposal.args.voteEnd.toString())
         const creationBlock = Number(proposal.blockNumber)
         const eventArgs = getProposalEventArguments(proposal as unknown as EventArgumentsParameter)
-        const { calldatasParsed } = eventArgs
+        const calldatasParsed = serializeBigInts(eventArgs.calldatasParsed)
         const category = (
           calldatasParsed
             .filter(data => data.type === 'decoded')
@@ -81,6 +81,7 @@ export function useProposalListData({ proposals }: Props) {
           proposalState: Big(state?.[i].result?.toString() ?? 0).toNumber() as ProposalState,
           category,
           ...eventArgs,
+          calldatasParsed,
         }
       }) ?? []
     return {

@@ -6,7 +6,7 @@ function transformGraphQLProposal(proposal: ProposalGraphQLResponse): ProposalAp
   return buildProposal(proposal, {
     parseTargets: targets => targets,
     parseCalldatas: calldatas => calldatas,
-    proposerTransform: proposer => proposer.id,
+    proposerTransform: proposer => (typeof proposer === 'string' ? proposer : proposer.id),
   })
 }
 

@@ -320,6 +320,7 @@ export type SerializedDecodedData =
       type: 'fallback'
       affectedAddress: string
       callData: string
+      value: string
     }
 
 /**
@@ -359,8 +360,13 @@ export function serializeBigInts(calldatasParsed: DecodedData[]): SerializedDeco
         inputs: item.inputs,
       }
     }
-    // Fallback case has no bigints, so no transformation needed
-    return item
+    // Fallback case - serialize the bigint value
+    return {
+      type: 'fallback' as const,
+      affectedAddress: item.affectedAddress,
+      callData: item.callData,
+      value: item.value.toString(),
+    }
   })
 }
 

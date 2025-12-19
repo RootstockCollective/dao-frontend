@@ -48,7 +48,7 @@ export function buildProposal(
       .round(undefined, Big.roundHalfEven)
       .toString(),
     proposalDeadline: deadlineBlock.toString(),
-    proposalState: proposal.state,
+    proposalState: proposal.state ?? undefined,
     category,
     calldatasParsed: serializeBigInts(eventArgs.calldatasParsed),
     name: eventArgs.name,

@@ -1,6 +1,9 @@
 'use client'
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
-import { type DecodedData, getDiscourseLinkFromProposalDescription } from '@/app/proposals/shared/utils'
+import {
+  type SerializedDecodedData,
+  getDiscourseLinkFromProposalDescription,
+} from '@/app/proposals/shared/utils'
 import { Header, Paragraph } from '@/components/Typography'
 import { useParams } from 'next/navigation'
 import { usePricesContext } from '@/shared/context/PricesContext'
@@ -38,7 +41,7 @@ const tokenAddressToSymbol = {
 }
 
 // Parse a single action from decoded data
-const parseSingleAction = (action: DecodedData, prices: GetPricesResult): ParsedActionDetails => {
+const parseSingleAction = (action: SerializedDecodedData, prices: GetPricesResult): ParsedActionDetails => {
   if (action.type !== 'decoded') {
     // Fallback case - simple ETH transfer (no calldata)
     return {
@@ -103,7 +106,7 @@ const parseSingleAction = (action: DecodedData, prices: GetPricesResult): Parsed
 
 // Parse all actions in a proposal
 const parseAllProposalActions = (
-  calldatasParsed: DecodedData[],
+  calldatasParsed: SerializedDecodedData[],
   prices: GetPricesResult,
 ): ParsedActionDetails[] => {
   if (!calldatasParsed || calldatasParsed.length === 0) {
