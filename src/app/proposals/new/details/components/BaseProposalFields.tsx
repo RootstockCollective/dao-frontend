@@ -1,6 +1,6 @@
 'use client'
 
-import { TextInput, TextArea } from '@/components/FormFields'
+import { TextInput, MarkdownEditor } from '@/components/FormFields'
 import type { FieldValues, Control, Path } from 'react-hook-form'
 import { type BaseProposalFormData, BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
@@ -32,14 +32,13 @@ export function BaseProposalFields<T extends BaseProposalFormData & FieldValues>
         maxLength={BASE_PROPOSAL_LIMITS.discourseLink.max}
         spellCheck={false}
       />
-      <TextArea
+      <MarkdownEditor
         name={'description' as Path<T>}
         control={control}
         label="Short description"
         data-testid="InputDescription"
         maxLength={BASE_PROPOSAL_LIMITS.description.max}
-        minRows={isDesktop ? 5 : 1}
-        spellCheck={false}
+        minHeight={isDesktop ? 200 : 120}
       />
     </div>
   )
