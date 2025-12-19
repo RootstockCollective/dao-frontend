@@ -68,7 +68,7 @@ function buildAllocationAmountUsdExpression(prices: PriceParam[]) {
     return db.raw('0::numeric as "amountUsd"')
   }
 
-  const factor = stRifEntry.priceUsd / Math.pow(10, stRifEntry.decimals || 18)
+  const factor = stRifEntry.priceUsd / Math.pow(10, stRifEntry.decimals)
 
   const sql = '(CASE WHEN increased = false THEN -1 ELSE 1 END) * (allocation::numeric * ?::numeric)'
 
