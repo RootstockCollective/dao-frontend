@@ -64,7 +64,7 @@ export const VaultActions = () => {
   }
 
   return (
-    <>
+    <div className="flex flex-col gap-6 w-full">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-start w-full">
         <NewPopover
           open={depositPopoverOpen}
@@ -120,6 +120,6 @@ export const VaultActions = () => {
 
       {depositModal.isModalOpened && <DepositModal onCloseModal={depositModal.closeModal} />}
       {withdrawModal.isModalOpened && <WithdrawModal onCloseModal={withdrawModal.closeModal} />}
-    </>
+    </div>
   )
 }
