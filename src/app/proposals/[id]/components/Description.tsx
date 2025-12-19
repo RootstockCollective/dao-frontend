@@ -29,7 +29,7 @@ interface DescriptionContentProps {
 }
 
 const DesktopDescriptionContent = ({ descriptionText }: DescriptionContentProps) => {
-  return <MD>{descriptionText}</MD>
+  return <MD className="mt-10 [&>*:first-child]:mt-0">{descriptionText}</MD>
 }
 
 const MobileDescriptionContent = ({ descriptionText }: DescriptionContentProps) => {
@@ -39,16 +39,16 @@ const MobileDescriptionContent = ({ descriptionText }: DescriptionContentProps) 
   return (
     <>
       {!isExpanded && (
-        <div className="my-2 relative">
-          <MD className="line-clamp-3">{previewText}</MD>
+        <div className="mt-2 relative">
+          <MD className="line-clamp-3 [&>*:first-child]:mt-0">{previewText}</MD>
         </div>
       )}
       <div
         className={`transition-all duration-300 ease-in-out overflow-hidden ${
-          isExpanded ? 'max-h-[2500px] opacity-100 my-2' : 'max-h-0 opacity-0'
+          isExpanded ? 'max-h-[2500px] opacity-100 mt-2' : 'max-h-0 opacity-0'
         }`}
       >
-        <MD>{descriptionText}</MD>
+        <MD className="[&>*:first-child]:mt-0">{descriptionText}</MD>
       </div>
     </>
   )
@@ -60,7 +60,7 @@ export const Description = ({ description }: DescriptionProps) => {
   const descriptionText = description ? parseProposalDescription(description).description : ''
 
   return (
-    <div className="md:px-6 px-4 py-10 sm:pb-8">
+    <div className="md:px-6 px-4 pt-10">
       {!isDesktop ? (
         <Expandable expanded={false}>
           <ExpandableHeader triggerColor="white">
