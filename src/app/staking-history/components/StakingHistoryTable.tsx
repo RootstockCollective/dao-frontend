@@ -20,6 +20,8 @@ import {
 import { useGetStakingHistory } from '@/app/staking-history/hooks/useGetStakingHistory'
 import { StakingHistoryFilterSideBar } from '@/app/staking-history/StakingHistoryFilterSideBar'
 import { convertDataToRowData } from '@/app/staking-history/components/convertDataToRowData'
+import { StakingHistoryCsvButton } from '@/app/staking-history/components/StakingHistoryCsvButton'
+import { useAccount } from 'wagmi'
 
 const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
   period: 'period',
@@ -33,6 +35,7 @@ function StakingHistoryTable() {
   const { rows, sort } = useTableContext<ColumnId, StakingHistoryCellDataMap>()
   const dispatch = useTableActionsContext<ColumnId, StakingHistoryCellDataMap>()
   const { prices } = usePricesContext()
+  const { address } = useAccount()
 
   // Filter sidebar state
   const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false)
@@ -43,7 +46,7 @@ function StakingHistoryTable() {
   useClickOutside(filterSidebarRef, () => isDesktop && setIsFilterSidebarOpen(false))
 
   // Map sort columnId to database field
-  const sortBy = sort?.columnId ? COLUMN_TO_DB_FIELD[sort.columnId] : 'period'
+  const sortBy = (sort?.columnId ? COLUMN_TO_DB_FIELD[sort.columnId] : undefined) || 'period'
   const sortDirection = sort?.direction || 'desc'
 
   // Convert active filters to API format
@@ -122,12 +125,22 @@ function StakingHistoryTable() {
         <Header variant="h3" className="m-0" data-testid="events-list-header">
           STAKING EVENTS LIST
         </Header>
-        <FilterButton
-          isOpen={isFilterSidebarOpen}
-          setIsOpen={setIsFilterSidebarOpen}
-          isFiltering={hasActiveFilters}
-          data-testid="StakingHistoryFilterButton"
-        />
+        <div className="flex items-center gap-2">
+          <StakingHistoryCsvButton
+            address={address}
+            type={apiFilters.type}
+            sortBy={sortBy}
+            sortDirection={sortDirection}
+            disabled={isLoading || !address}
+            data-testid="StakingHistoryCsvButton"
+          />
+          <FilterButton
+            isOpen={isFilterSidebarOpen}
+            setIsOpen={setIsFilterSidebarOpen}
+            isFiltering={hasActiveFilters}
+            data-testid="StakingHistoryFilterButton"
+          />
+        </div>
       </div>
 
       <div className={cn('flex flex-row-reverse')}>
