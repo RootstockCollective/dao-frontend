@@ -1,12 +1,38 @@
 import Big from '@/lib/big'
 import { Address } from 'viem'
-import { DecodedData } from '@/app/proposals/shared/utils'
+import { SerializedDecodedData } from '@/app/proposals/shared/utils'
 import { ProposalCategory, ProposalState } from '@/shared/types'
 
 import { type GrantProposal } from '../../new/details/schemas/GrantProposalSchema'
 import { type ActivationProposal } from '../../new/details/schemas/ActivationProposalSchema'
 import { type DeactivationProposal } from '../../new/details/schemas/DeactivationProposalSchema'
 import { CountdownProps } from '@/components/Countdown'
+
+// Base proposal input type that covers all sources (GraphQL, DB, Node)
+export interface BaseProposalInput {
+  proposalId: string
+  description: string
+  votesFor: string | null
+  votesAgainst: string | null
+  votesAbstains: string | null
+  voteEnd: string
+  voteStart: string
+  createdAt: string
+  createdAtBlock: string
+  state: string | null
+  targets: string[]
+  values: string[]
+  calldatas: string[]
+  proposer: Address | { id: Address } // Can be Address (DB) or object (GraphQL)
+  quorum?: string | bigint | null
+}
+
+// Transform functions for building proposals from different sources
+export interface ProposalTransformFunctions {
+  parseTargets: (targets: string[]) => string[]
+  parseCalldatas: (calldatas: string[]) => string[]
+  proposerTransform: (proposer: Address | { id: Address }) => Address
+}
 
 export interface Proposal {
   votes: {
@@ -26,7 +52,7 @@ export interface Proposal {
   description: string
   proposalId: string
   Starts: moment.Moment
-  calldatasParsed: DecodedData[]
+  calldatasParsed: SerializedDecodedData[]
   blockNumber: string
   // Fields from GraphQL proposal object (optional for backend API proposals)
   createdAt?: string
@@ -50,7 +76,7 @@ export interface Eta extends Omit<CountdownProps, 'className'> {
 
 export interface ProposalApiResponse {
   blockNumber: string
-  calldatasParsed: DecodedData[]
+  calldatasParsed: SerializedDecodedData[]
   category: ProposalCategory
   description: string
   name: string

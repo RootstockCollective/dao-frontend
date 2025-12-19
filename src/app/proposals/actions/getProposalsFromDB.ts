@@ -1,6 +1,7 @@
 import { db } from '@/lib/db'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { buildProposal } from '@/app/proposals/actions/utils'
+import { Address } from 'viem'
 
 interface ProposalDBRow {
   proposalId: string
@@ -13,7 +14,7 @@ interface ProposalDBRow {
   quorum: string | null
   rawState: number | null
   state: string | null
-  proposer: string
+  proposer: Address
   calldatas: string[]
   values: string[]
   createdAtBlock: string
@@ -27,7 +28,7 @@ function transformProposal(proposal: ProposalDBRow): ProposalApiResponse {
   return buildProposal(proposal, {
     parseTargets: targets => targets.map(parseBytea),
     parseCalldatas: calldatas => calldatas.map(parseBytea),
-    proposerTransform: proposer => proposer,
+    proposerTransform: proposer => (typeof proposer === 'string' ? proposer : proposer.id),
   })
 }
 

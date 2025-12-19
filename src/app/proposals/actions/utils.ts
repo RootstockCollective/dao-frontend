@@ -5,20 +5,13 @@ import {
   serializeBigInts,
 } from '@/app/proposals/shared/utils'
 import { formatEther } from 'viem'
+import { BaseProposalInput, ProposalTransformFunctions } from '@/app/proposals/shared/types'
 
 const ONE_ETHER = Big('1e18')
 
 export function buildProposal(
-  proposal: any,
-  {
-    parseTargets,
-    parseCalldatas,
-    proposerTransform,
-  }: {
-    parseTargets: (targets: any[]) => any[]
-    parseCalldatas: (calldatas: any[]) => any[]
-    proposerTransform: (proposer: any) => `0x${string}`
-  },
+  proposal: BaseProposalInput,
+  { parseTargets, parseCalldatas, proposerTransform }: ProposalTransformFunctions,
 ) {
   const againstVotes = safeBig(proposal.votesAgainst).div(ONE_ETHER).round()
   const forVotes = safeBig(proposal.votesFor).div(ONE_ETHER).round()
@@ -55,7 +48,7 @@ export function buildProposal(
       .round(undefined, Big.roundHalfEven)
       .toString(),
     proposalDeadline: deadlineBlock.toString(),
-    proposalState: proposal.state,
+    proposalState: proposal.state ?? undefined,
     category,
     calldatasParsed: serializeBigInts(eventArgs.calldatasParsed),
     name: eventArgs.name,
@@ -67,11 +60,21 @@ export function buildProposal(
   }
 }
 
-function safeBig(value: any, defaultValue: string | number = '0') {
+function safeBig(
+  value: string | number | bigint | null | undefined,
+  defaultValue: string | number = '0',
+): Big {
   try {
     if (value === null || value === undefined || value === '') return Big(defaultValue)
+    // Convert bigint to string for Big constructor
+    if (typeof value === 'bigint') {
+      return Big(value.toString())
+    }
+    // Big constructor can throw on invalid numeric strings (e.g., "not-a-number", "12.34.56")
+    // The catch block ensures we always return a valid Big instance, falling back to default
     return Big(value)
   } catch {
+    // Fallback to default value if Big constructor fails (invalid input from external sources)
     return Big(defaultValue)
   }
 }
