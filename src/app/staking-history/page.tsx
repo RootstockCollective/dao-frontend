@@ -10,7 +10,7 @@ export default function StakingPage() {
       <Header
         caps
         variant="h1"
-        className="text-3xl leading-10 pb-[2.5rem]"
+        className="text-3xl leading-10 pb-4 md:pb-[2.5rem]"
         data-testid="StakingHistoryHeader"
       >
         {NAME}
