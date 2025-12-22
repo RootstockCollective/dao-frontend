@@ -5,7 +5,7 @@ import { TOKENS, REWARD_TOKEN_KEYS, REWARD_TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
-import { ReactElement, ReactNode, useMemo, useState } from 'react'
+import { ReactElement, ReactNode, useMemo, useState, useEffect } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { useClaimBackerRewards } from '../../rewards/backers/hooks/useClaimBackerRewards'
@@ -25,7 +25,7 @@ const getRewardTokenAddress = (value: ClaimRewardType) => {
 const ClaimBackerRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps, 'isBacker'>): ReactNode => {
   const [selectedRewardType, setSelectedRewardType] = useState<ClaimRewardType>('all')
 
-  const { claimRewards, isClaimable, isLoadingReceipt, isPendingTx } = useClaimBackerRewards(
+  const { claimRewards, isClaimable, isLoadingReceipt, isPendingTx, isSuccess } = useClaimBackerRewards(
     getRewardTokenAddress(selectedRewardType),
   )
 
@@ -33,6 +33,12 @@ const ClaimBackerRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps,
   useHandleErrors({ error, title: 'Error loading rewards' })
 
   const { prices } = usePricesContext()
+
+  useEffect(() => {
+    if (isSuccess) {
+      onClose()
+    }
+  }, [isSuccess, onClose])
 
   const { tokenAmounts, tokenFiatAmounts, totalFiatAmount } = useMemo(() => {
     const tokenAmounts: Record<string, bigint> = {}
@@ -155,6 +161,7 @@ const ClaimBuilderRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps
     isClaimable,
     isLoadingReceipt,
     isPendingTx,
+    isSuccess,
     error: errorClaim,
   } = useClaimBuilderRewards(builderAddress as Address, buildersGauge as Address)
 
@@ -163,6 +170,13 @@ const ClaimBuilderRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps
   useHandleErrors({ error: errorRbtc, title: 'Error fetching builder rewards' })
   useHandleErrors({ error: errorUsdrif, title: 'Error fetching builder rewards' })
   useHandleErrors({ error: errorClaim, title: 'Error claiming rewards' })
+
+  // Close modal when transaction is successful
+  useEffect(() => {
+    if (isSuccess) {
+      onClose()
+    }
+  }, [isSuccess, onClose])
 
   return (
     open && (
