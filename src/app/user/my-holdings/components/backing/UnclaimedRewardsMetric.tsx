@@ -14,10 +14,13 @@ import { Button } from '@/components/Button'
 import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
+import { useModal } from '@/shared/hooks/useModal'
+import ClaimRewardsModal from '@/app/collective-rewards/components/ClaimRewardModal/ClaimRewardsModal'
 import Big from 'big.js'
 import { ReactElement, useMemo } from 'react'
 
 export const UnclaimedRewardsMetric = (): ReactElement => {
+  const { isModalOpened, openModal, closeModal } = useModal()
   const { prices } = usePricesContext()
   const { data: rewardsPerToken, error } = useBackerRewardsContext()
 
@@ -81,11 +84,12 @@ export const UnclaimedRewardsMetric = (): ReactElement => {
           variant="secondary-outline"
           className="font-rootstock-sans w-fit"
           textClassName="text-v3-text-100"
-          onClick={() => claimRewards()}
+          onClick={() => openModal()}
         >
           Claim Rewards
         </Button>
       </ConditionalTooltip>
+      <ClaimRewardsModal open={isModalOpened} onClose={() => closeModal()} isBacker={true} />
     </div>
   )
 }
