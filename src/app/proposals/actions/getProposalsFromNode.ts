@@ -4,7 +4,7 @@ import { fetchProposalCreated } from '@/app/user/Balances/actions'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import {
   EventArgumentsParameter,
-  getProposalCategory,
+  getProposalCategoryFromParsedData,
   getProposalEventArguments,
   serializeBigInts,
 } from '@/app/proposals/shared/utils'
@@ -122,7 +122,7 @@ function convertBackendLogsToViemLogs(logs: BackendEventByTopic0ResponseValue[])
 
 function transformEventLogProposal(proposal: ProposalCreatedEventLogWithTimestamp): ProposalApiResponse {
   const eventArgs = getProposalEventArguments(toEventArgumentsParameter(proposal))
-  const category = getProposalCategory(eventArgs.calldatasParsed)
+  const category = getProposalCategoryFromParsedData(eventArgs.calldatasParsed, proposal.args.description)
 
   return {
     votingPeriod: Big(proposal.args.voteEnd.toString()).minus(Number(proposal.blockNumber)).toString(),
