@@ -30,7 +30,7 @@ export const ProposalCardMobile = ({ proposal }: Props) => {
   return (
     <Expandable onToggleExpanded={setIsExpanded}>
       <ExpandableHeader triggerColor="var(--color-bg-0)">
-        <Paragraph className="text-primary">{name}</Paragraph>
+        <Paragraph className="text-primary break-all overflow-hidden min-w-0 flex-1">{name}</Paragraph>
       </ExpandableHeader>
       <div className="flex flex-row items-center justify-between">
         <div className="flex flex-row items-center">
