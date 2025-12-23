@@ -122,7 +122,7 @@ export const ProposalDetails = ({
     }
 
     if (parsedAction.type === ProposalType.BUILDER_ACTIVATION) {
-      return `Builder activation${additionalActionsText}`
+      return `Builder approval${additionalActionsText}`
     }
 
     if (parsedAction.type === ProposalType.BUILDER_DEACTIVATION) {

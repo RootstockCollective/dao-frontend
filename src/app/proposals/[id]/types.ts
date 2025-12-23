@@ -1,6 +1,6 @@
 // Types for proposal action parsing and details
 export enum ProposalType {
-  BUILDER_ACTIVATION = 'Builder Activation',
+  BUILDER_ACTIVATION = 'Builder approval',
   BUILDER_DEACTIVATION = 'Builder Deactivation',
   WITHDRAW = 'Transfer',
   RAW_TRANSFER = 'Raw',
