@@ -19,7 +19,6 @@ import { ClaimItButton } from '../_components/ClaimItButton'
 import { ArrowUpRightLightIcon } from '@/components/Icons'
 import { BoostedLabelKoto } from '@/app/communities/components'
 import { Divider } from '@/components/Divider'
-import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 
 // Responsive button styles - mobile: sticky bottom with background, desktop: normal positioning
 const mobileButtonSx = 'fixed bottom-0 left-0 right-0 z-20 bg-bg-100 p-4'
@@ -30,7 +29,6 @@ const dividerSx = 'mb-4 md:hidden'
 export function CommunityInfoHeader({ address: nftAddress }: { address: Address }) {
   const { isConnected } = useAccount()
   const { image, tokenId = 0, isMember, isMintable, tokensAvailable } = useCommunityNFT()
-  const { isSidebarOpen } = useLayoutContext()
 
   const { title, specialPower, activation, requirement, detailedDescription, discussionLink } = useMemo(
     () => communitiesMapByContract[nftAddress.toLowerCase()],
@@ -132,7 +130,7 @@ export function CommunityInfoHeader({ address: nftAddress }: { address: Address 
           )}
 
           {/* Responsive buttons - desktop: normal position, mobile: sticky bottom */}
-          {!isMember && isMintable && isConnected && tokensAvailable > 0 && !isSidebarOpen && (
+          {!isMember && isMintable && isConnected && tokensAvailable > 0 && (
             <div className={cn(mobileButtonSx, desktopButtonSx)}>
               {/* Divider only on mobile */}
               <Divider className={dividerSx} />
@@ -140,14 +138,14 @@ export function CommunityInfoHeader({ address: nftAddress }: { address: Address 
             </div>
           )}
 
-          {!isConnected && !isSidebarOpen && (
+          {!isConnected && (
             <div className={cn(mobileButtonSx, desktopButtonSx)}>
               <Divider className={dividerSx} />
               <ConnectWorkflow ConnectComponent={ConnectButton} />
             </div>
           )}
 
-          {isConnected && isMember && !isAddToWalletButtonHidden && !isSidebarOpen && (
+          {isConnected && isMember && !isAddToWalletButtonHidden && (
             <div className={cn(mobileButtonSx, desktopButtonSx)}>
               <Divider className={dividerSx} />
               <Button onClick={() => onAddToWallet()} disabled={isAddToWalletLoading}>
