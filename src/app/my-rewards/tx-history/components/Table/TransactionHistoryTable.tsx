@@ -174,8 +174,8 @@ export default function TransactionHistoryTable() {
             type={apiFilters.type}
             builder={apiFilters.builder}
             rewardToken={apiFilters.rewardToken}
-            sortBy={apiSortBy}
-            sortDirection={apiSortDirection}
+            sortBy={sortBy}
+            sortDirection={sortDirection}
             cycleDuration={cycleDuration}
             prices={prices}
             getBuilderByAddress={getBuilderByAddress}

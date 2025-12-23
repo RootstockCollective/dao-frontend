@@ -163,8 +163,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
 
     const combinedQuery = allocationHistory.union(claimedRewardsHistory).as('base')
 
-    const orderByColumn =
-      sortBy === 'totalAmount' || sortBy === 'totalamount' ? 'totalAmount' : sortBy || 'blockTimestamp'
+    const orderByColumn = sortBy || 'blockTimestamp'
 
     const [data, countResult] = await Promise.all([
       db

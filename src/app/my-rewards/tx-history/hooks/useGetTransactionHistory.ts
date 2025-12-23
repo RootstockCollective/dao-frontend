@@ -60,7 +60,7 @@ export const useGetTransactionHistory = (params?: UseGetTransactionHistoryParams
         const priceInfo = prices[token.symbol]
         if (!priceInfo) return
 
-        const decimals = token.decimals ?? 18
+        const decimals = 18
         searchParams.append('price', `${token.address.toLowerCase()}:${priceInfo.price}:${decimals}`)
       })
 
