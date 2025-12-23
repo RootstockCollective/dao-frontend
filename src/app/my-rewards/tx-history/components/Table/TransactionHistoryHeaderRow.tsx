@@ -20,7 +20,7 @@ import { ArrowUpWFill } from '@/components/Icons/v3design/ArrowUpWFill'
 const OrderIndicatorContainer: FC<{ className?: string; children: React.ReactNode }> = ({
   className,
   children,
-}) => <div className={cn('flex pt-1 justify-center gap-2', className)}>{children}</div>
+}) => <div className={cn('flex justify-center gap-2', className)}>{children}</div>
 
 const OrderIndicator: FC<{ columnId: ColumnId }> = ({ columnId }) => {
   const { sort } = useTableContext<ColumnId, TransactionHistoryCellDataMap>()
@@ -30,7 +30,7 @@ const OrderIndicator: FC<{ columnId: ColumnId }> = ({ columnId }) => {
   if (sort.columnId !== columnId) {
     return (
       <OrderIndicatorContainer>
-        <ArrowsUpDown />
+        <ArrowsUpDown color="white" />
       </OrderIndicatorContainer>
     )
   }
@@ -38,14 +38,14 @@ const OrderIndicator: FC<{ columnId: ColumnId }> = ({ columnId }) => {
   if (sort.direction === 'asc') {
     return (
       <OrderIndicatorContainer>
-        <ArrowUpWFill />
+        <ArrowUpWFill color="white" />
       </OrderIndicatorContainer>
     )
   }
 
   return (
     <OrderIndicatorContainer>
-      <ArrowDownWFill />
+      <ArrowDownWFill color="white" />
     </OrderIndicatorContainer>
   )
 }
@@ -104,7 +104,7 @@ export const HeaderCell = ({
   return (
     <TableHeaderCell
       className={cn('h-full', columnClassNames, className)}
-      contentClassName={isJustifyCenter ? 'justify-center' : ''}
+      contentClassName={cn('items-center', isJustifyCenter ? 'justify-center' : '')}
       onClick={() => isSortable && dispatchSortRoundRobin(dispatch, columnId, sort)}
     >
       {isSortable && <OrderIndicator columnId={columnId} />}

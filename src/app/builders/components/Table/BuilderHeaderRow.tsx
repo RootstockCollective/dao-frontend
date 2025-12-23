@@ -47,7 +47,7 @@ const OrderIndicator: FC<CommonComponentProps & { columnId: BuilderTable['Column
   if (sort.columnId !== columnId) {
     return (
       <OrderIndicatorContainer>
-        <ArrowsUpDown />
+        <ArrowsUpDown color="white" />
       </OrderIndicatorContainer>
     )
   }
@@ -55,14 +55,14 @@ const OrderIndicator: FC<CommonComponentProps & { columnId: BuilderTable['Column
   if (sort.direction === 'asc') {
     return (
       <OrderIndicatorContainer>
-        <ArrowUpWFill />
+        <ArrowUpWFill color="white" />
       </OrderIndicatorContainer>
     )
   }
 
   return (
     <OrderIndicatorContainer>
-      <ArrowDownWFill />
+      <ArrowDownWFill color="white" />
     </OrderIndicatorContainer>
   )
 }
