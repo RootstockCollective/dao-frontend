@@ -88,14 +88,14 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
       primary: {
         label: 'Request allowance',
         onClick: handleRequestAllowance,
-        disabled: !amountIn || !Big(amountIn).gt(0) || isAllowanceEnough,
+        disabled: !amountIn || !Big(amountIn).gt(0) || isAllowanceEnough || isApproving,
         loading: isApproving,
         isTxPending: isApproving,
       },
       secondary: {
         label: 'Back',
         onClick: onGoBack,
-        disabled: false,
+        disabled: isApproving, // Disable back button while approving
         loading: false,
       },
     })

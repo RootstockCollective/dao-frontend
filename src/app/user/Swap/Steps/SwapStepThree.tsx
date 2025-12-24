@@ -107,14 +107,14 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
       primary: {
         label: 'Confirm swap',
         onClick: handleConfirmSwap,
-        disabled: !canExecute || !Big(amountIn).gt(0) || !amountOutMinimum,
+        disabled: !canExecute || !Big(amountIn).gt(0) || !amountOutMinimum || isSwapping,
         loading: isSwapping,
         isTxPending: isSwapping,
       },
       secondary: {
         label: 'Back',
         onClick: () => onGoToStep(0), // Go back to Step One
-        disabled: false,
+        disabled: isSwapping, // Disable back button while swapping
         loading: false,
       },
     })
