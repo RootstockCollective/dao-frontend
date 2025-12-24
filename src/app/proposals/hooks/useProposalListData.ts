@@ -1,11 +1,16 @@
 import { useMemo } from 'react'
 import { useBlockNumber, useReadContracts } from 'wagmi'
 import { formatEther } from 'viem'
-import { EventArgumentsParameter, getProposalEventArguments, serializeBigInts } from '../shared/utils'
+import {
+  EventArgumentsParameter,
+  getProposalEventArguments,
+  getProposalCategoryFromParsedData,
+  serializeBigInts,
+} from '../shared/utils'
 import Big from '@/lib/big'
 import { LatestProposalResponse } from './useFetchLatestProposals'
 import { governor } from '@/lib/contracts'
-import { ProposalCategory, ProposalState } from '@/shared/types'
+import { ProposalState } from '@/shared/types'
 
 interface Props {
   /**
@@ -59,13 +64,10 @@ export function useProposalListData({ proposals }: Props) {
         const creationBlock = Number(proposal.blockNumber)
         const eventArgs = getProposalEventArguments(proposal as unknown as EventArgumentsParameter)
         const calldatasParsed = serializeBigInts(eventArgs.calldatasParsed)
-        const category = (
-          calldatasParsed
-            .filter(data => data.type === 'decoded')
-            .find(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
-            ? ProposalCategory.Grants
-            : ProposalCategory.Activation
-        ) as ProposalCategory
+        const category = getProposalCategoryFromParsedData(
+          eventArgs.calldatasParsed,
+          proposal.args.description,
+        )
         return {
           ...proposal,
           votes: {

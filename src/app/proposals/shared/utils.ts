@@ -239,15 +239,6 @@ export const parseProposalDescription = (description: string): ParsedDescription
   }
 }
 
-// Helper function to determine proposal category
-export function getProposalCategory(calldatasParsed: DecodedData[]): ProposalCategory {
-  const hasWithdrawAction = calldatasParsed
-    .filter((data): data is Extract<DecodedData, { type: 'decoded' }> => data.type === 'decoded')
-    .find(data => ['withdraw', 'withdrawERC20'].includes(data.functionName))
-
-  return hasWithdrawAction ? ProposalCategory.Grants : ProposalCategory.Activation
-}
-
 /**
  * Extracts proposal category from parsed calldata and description
  * @param calldatasParsed - Array of decoded calldata
