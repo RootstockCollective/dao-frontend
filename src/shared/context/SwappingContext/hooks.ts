@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo } from 'react'
 import { formatUnits, parseUnits } from 'viem'
 import { useAccount, useReadContract, useWriteContract } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
+import { useDebounce } from 'use-debounce'
 import { useSwappingContext } from './SwappingContext'
 import { UNISWAP_UNIVERSAL_ROUTER_ADDRESS, PERMIT2_ADDRESS } from '@/lib/constants'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
@@ -19,24 +20,35 @@ import { UniswapUniversalRouterAbi } from '@/lib/abis/UniswapUniversalRouterAbi'
  * - Proper error handling
  * - Comprehensive tests
  */
+const QUOTE_DEBOUNCE_MS = 500 // Wait 500ms after user stops typing before fetching quote
+
 export const useSwapInput = () => {
-  const { state, setAmountIn, tokens, setQuoting, setQuote, setQuoteError } = useSwappingContext()
-  const { amountIn, tokenIn, tokenOut, quote, isQuoting, quoteError, poolFee } = state
+  const { state, setAmountIn, tokens, setQuoting, setQuote } = useSwappingContext()
+  const { amountIn, tokenIn, tokenOut, quote, poolFee } = state
+
+  // Debounce the amount to avoid fetching on every keystroke
+  const [debouncedAmountIn] = useDebounce(amountIn, QUOTE_DEBOUNCE_MS)
 
   // Get quote using the existing uniswapProvider (tested, handles multiple fee tiers)
   const {
     data: swapQuote,
     isLoading: isQuoteLoading,
-    error: quoteErrorData,
+    isFetching: isQuoteFetching,
+    error: quoteError,
   } = useQuery({
-    queryKey: ['swapQuote', tokenIn, tokenOut, amountIn, poolFee],
+    queryKey: ['swapQuote', tokenIn, tokenOut, debouncedAmountIn, poolFee],
     queryFn: async () => {
-      if (!amountIn || amountIn === '' || !tokens[tokenIn].decimals || !tokens[tokenOut].decimals) {
+      if (
+        !debouncedAmountIn ||
+        debouncedAmountIn === '' ||
+        !tokens[tokenIn].decimals ||
+        !tokens[tokenOut].decimals
+      ) {
         return null
       }
 
       try {
-        const amountInBigInt = parseUnits(amountIn, tokens[tokenIn].decimals)
+        const amountInBigInt = parseUnits(debouncedAmountIn, tokens[tokenIn].decimals)
         if (amountInBigInt <= 0n) {
           return null
         }
@@ -65,24 +77,25 @@ export const useSwapInput = () => {
         throw error instanceof Error ? error : new Error('Failed to get quote')
       }
     },
-    enabled: !!amountIn && amountIn !== '' && !!tokens[tokenIn].decimals && !!tokens[tokenOut].decimals,
+    enabled:
+      !!debouncedAmountIn &&
+      debouncedAmountIn !== '' &&
+      !!tokens[tokenIn].decimals &&
+      !!tokens[tokenOut].decimals,
     staleTime: 30_000, // 30 seconds - quotes are time-sensitive
     refetchInterval: 60_000, // Refetch every minute for fresh quotes
+    retry: false, // Don't retry failed quotes - show error immediately
   })
 
-  // Update state when quote result changes
+  // Update state when quote result changes - simplified, using React Query state directly
   useEffect(() => {
-    if (isQuoteLoading) {
-      setQuoting(true)
-      setQuoteError(null)
-    } else if (quoteErrorData) {
-      const err = quoteErrorData instanceof Error ? quoteErrorData : new Error('Failed to get quote')
-      setQuoteError(err)
-      setQuoting(false)
-    } else if (swapQuote) {
+    const isLoading = isQuoteLoading || isQuoteFetching
+    setQuoting(isLoading)
+
+    if (swapQuote && !quoteError) {
       setQuote(swapQuote)
     }
-  }, [swapQuote, isQuoteLoading, quoteErrorData, setQuoting, setQuote, setQuoteError])
+  }, [swapQuote, isQuoteLoading, isQuoteFetching, quoteError, setQuoting, setQuote])
 
   // Format amount out from quote
   const formattedAmountOut = useMemo(() => {
@@ -111,7 +124,7 @@ export const useSwapInput = () => {
     setAmountIn,
     formattedAmountOut,
     quote,
-    isQuoting,
+    isQuoting: isQuoteLoading || isQuoteFetching,
     quoteError,
     isQuoteExpired,
   }

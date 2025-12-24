@@ -8,7 +8,7 @@ import { USDT0, USDRIF } from '@/lib/constants'
 import Big from '@/lib/big'
 
 export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
-  const { amountIn, setAmountIn, formattedAmountOut, isQuoting, isQuoteExpired } = useSwapInput()
+  const { amountIn, setAmountIn, formattedAmountOut, isQuoting, isQuoteExpired, quoteError } = useSwapInput()
   const { tokenInData, tokenOutData } = useTokenSelection()
   const { tokenData } = useSwappingContext()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -138,6 +138,8 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
           balance={formatForDisplay(tokenOutBalance)}
           readonly
           labelText="You will receive"
+          isLoading={isQuoting}
+          errorText={quoteError ? 'Failed to get quote. Pool may have insufficient liquidity.' : ''}
         />
       </div>
     </>
