@@ -3,7 +3,7 @@ import { tokenContracts } from '@/lib/contracts'
 import { formatUnits } from 'viem'
 import Big from '@/lib/big'
 import { RIF, RBTC, STRIF, USDRIF, USDT0 } from '@/lib/constants'
-import { formatSymbol } from '@/app/shared/formatter'
+import { formatSymbol, getSymbolDecimals } from '@/app/shared/formatter'
 
 // Explicitly type the supported token symbols
 type SupportedTokenSymbol = typeof RIF | typeof RBTC | typeof STRIF | typeof USDRIF | typeof USDT0
@@ -22,12 +22,13 @@ const symbolsToGetFromArray = {
 } as const satisfies Record<string, SymbolConfig>
 
 // Token-specific formatting functions
-// Converts human-readable balance to wei and uses formatSymbol for consistent formatting
+// Converts human-readable balance to raw token units and uses formatSymbol for consistent formatting
 export const formatTokenBalance = (balance: string, symbol: SupportedTokenSymbol): string => {
   const balanceBig = Big(balance)
-  // Convert to wei (multiply by 10^18) to use formatSymbol which handles token-specific decimals
-  const weiValue = BigInt(balanceBig.times(Big(10).pow(18)).toFixed(0))
-  return formatSymbol(weiValue, symbol)
+  const decimals = getSymbolDecimals(symbol)
+  // Convert to raw token units using the symbol's actual decimals
+  const rawValue = BigInt(balanceBig.times(Big(10).pow(decimals)).toFixed(0))
+  return formatSymbol(rawValue, symbol)
 }
 
 export const getTokenBalance = (
