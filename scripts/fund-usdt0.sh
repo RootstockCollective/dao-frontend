@@ -19,7 +19,8 @@ USDT0_ADDRESS="0x779Ded0c9e1022225f8E0630b35a9b54bE713736"
 
 # USDT0 has 6 decimals, so multiply by 10^6
 AMOUNT_WEI=$(echo "$AMOUNT * 1000000" | bc)
-AMOUNT_HEX=$(printf "0x%x" $AMOUNT_WEI)
+# Pad to 32 bytes (64 hex chars) for anvil_setStorageAt
+AMOUNT_HEX=$(printf "0x%064x" $AMOUNT_WEI)
 
 echo "💰 Funding wallet $WALLET_ADDRESS with $AMOUNT USDT0..."
 echo ""
@@ -82,29 +83,20 @@ if [ "$METHOD" != "transfer" ]; then
   echo ""
   echo "2️⃣ Using storage manipulation to set balance..."
   
-  # For ERC20, balanceOf mapping storage slot calculation:
-  # slot = keccak256(abi.encode(address, mapping_slot))
-  # where mapping_slot is typically 0 for balances mapping
+  # USDT0 is an upgradeable ERC20 (OpenZeppelin ERC20Upgradeable)
+  # The balances mapping is at storage slot 51
+  BALANCE_SLOT=51
   
-  # Use cast index to calculate the storage slot for the mapping
-  # Format: cast index <KEY_TYPE> <KEY> <SLOT_NUMBER>
-  # For balanceOf(address) mapping at slot 0: cast index address <address> 0
-  STORAGE_KEY=$(cast index address "$WALLET_ADDRESS" 0 2>/dev/null)
+  # Calculate storage key: keccak256(abi.encode(address, slot))
+  ENCODED=$(cast abi-encode "x(address,uint256)" "$WALLET_ADDRESS" $BALANCE_SLOT 2>/dev/null)
+  STORAGE_KEY=$(cast keccak "$ENCODED" 2>/dev/null)
   
-  # Fallback if cast index doesn't work
-  if [ -z "$STORAGE_KEY" ] || [ "$STORAGE_KEY" = "0x" ]; then
-    # Manual calculation: pad address (20 bytes -> 32 bytes) + pad slot (32 bytes), then keccak
-    ADDR_HEX="${WALLET_ADDRESS#0x}"
-    ADDR_PADDED=$(printf "%064s" "$ADDR_HEX" | tr ' ' '0')
-    SLOT_PADDED="0000000000000000000000000000000000000000000000000000000000000000"
-    STORAGE_KEY=$(cast keccak "0x${ADDR_PADDED}${SLOT_PADDED}")
-  fi
-  
-  echo "   Storage slot: $STORAGE_KEY"
+  echo "   Balance slot: $BALANCE_SLOT"
+  echo "   Storage key: $STORAGE_KEY"
   echo "   Amount: $AMOUNT_WEI wei ($AMOUNT USDT0)"
   
   # Set the storage value
-  SET_STORAGE_RESULT=$(cast rpc anvil_setStorage \
+  SET_STORAGE_RESULT=$(cast rpc anvil_setStorageAt \
     "$USDT0_ADDRESS" \
     "$STORAGE_KEY" \
     "$AMOUNT_HEX" \
