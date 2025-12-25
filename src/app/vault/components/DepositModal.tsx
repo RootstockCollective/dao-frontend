@@ -30,6 +30,7 @@ import Image from 'next/image'
 
 interface Props {
   onCloseModal: () => void
+  onTransactionSuccess?: () => void
 }
 
 const KycInfo = () => {
@@ -53,7 +54,7 @@ const KycInfo = () => {
   )
 }
 
-export const DepositModal = ({ onCloseModal }: Props) => {
+export const DepositModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
   const { balances } = useGetAddressBalances()
   const { prices } = usePricesContext()
   const isDesktop = useIsDesktop()
@@ -154,10 +155,13 @@ export const DepositModal = ({ onCloseModal }: Props) => {
   const handleConfirmDeposit = useCallback(() => {
     executeTxFlow({
       onRequestTx: onRequestDeposit,
-      onSuccess: onCloseModal,
+      onSuccess: () => {
+        onTransactionSuccess?.()
+        onCloseModal()
+      },
       action: 'vaultDeposit',
     })
-  }, [onRequestDeposit, onCloseModal])
+  }, [onRequestDeposit, onCloseModal, onTransactionSuccess])
 
   const handleRequestAllowance = useCallback(() => {
     if (!hasAcceptedTerms) {
