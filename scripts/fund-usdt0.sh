@@ -1,16 +1,17 @@
 #!/bin/bash
 
-# Script to fund a wallet with USDT0 tokens on Anvil fork
-# Usage: ./scripts/fund-usdt0.sh <YOUR_WALLET_ADDRESS> [AMOUNT]
-# Example: ./scripts/fund-usdt0.sh 0x1234...abcd 10000
+# Script to fund a wallet with USDT0 tokens and RBTC on Anvil fork
+# Usage: ./scripts/fund-usdt0.sh <YOUR_WALLET_ADDRESS> [USDT0_AMOUNT] [RBTC_AMOUNT]
+# Example: ./scripts/fund-usdt0.sh 0x1234...abcd 1000 10
 
 WALLET_ADDRESS=$1
-AMOUNT=${2:-10000}  # Default 10,000 USDT0
+AMOUNT=${2:-1000}      # Default 1,000 USDT0
+RBTC_AMOUNT=${3:-10}   # Default 10 RBTC
 
 if [ -z "$WALLET_ADDRESS" ]; then
   echo "❌ Error: Wallet address required"
-  echo "Usage: ./scripts/fund-usdt0.sh <WALLET_ADDRESS> [AMOUNT]"
-  echo "Example: ./scripts/fund-usdt0.sh 0x1234...abcd 10000"
+  echo "Usage: ./scripts/fund-usdt0.sh <WALLET_ADDRESS> [USDT0_AMOUNT] [RBTC_AMOUNT]"
+  echo "Example: ./scripts/fund-usdt0.sh 0x1234...abcd 1000 10"
   exit 1
 fi
 
@@ -22,14 +23,30 @@ AMOUNT_WEI=$(echo "$AMOUNT * 1000000" | bc)
 # Pad to 32 bytes (64 hex chars) for anvil_setStorageAt
 AMOUNT_HEX=$(printf "0x%064x" $AMOUNT_WEI)
 
-echo "💰 Funding wallet $WALLET_ADDRESS with $AMOUNT USDT0..."
+echo "💰 Funding wallet $WALLET_ADDRESS with $AMOUNT USDT0 and $RBTC_AMOUNT RBTC..."
+echo ""
+
+# Step 1: Fund wallet with RBTC
+echo "1️⃣ Adding $RBTC_AMOUNT RBTC to wallet..."
+RBTC_WEI=$(cast --to-wei $RBTC_AMOUNT)
+cast rpc anvil_setBalance "$WALLET_ADDRESS" "$RBTC_WEI" --rpc-url "$RPC_URL" > /dev/null 2>&1
+
+if [ $? -eq 0 ]; then
+  echo "   ✅ Successfully added $RBTC_AMOUNT RBTC!"
+else
+  echo "   ❌ Failed to add RBTC"
+fi
+echo ""
+
+# Step 2: Fund wallet with USDT0
+echo "2️⃣ Adding $AMOUNT USDT0 to wallet..."
 echo ""
 
 # Method 1: Try to impersonate a real account with USDT0 and transfer
 # The Uniswap pool typically has tokens
 POOL_ADDRESS="0x134F5409cf7AF4C68bF4A8f59C96CF4925f6Bbb0"
 
-echo "1️⃣ Checking if pool has USDT0 tokens..."
+echo "   Checking if pool has USDT0 tokens..."
 POOL_BALANCE=$(cast call "$USDT0_ADDRESS" \
   "balanceOf(address)(uint256)" \
   "$POOL_ADDRESS" \
@@ -39,13 +56,13 @@ if [ "$POOL_BALANCE" != "0" ] && [ -n "$POOL_BALANCE" ]; then
   POOL_BALANCE_DECIMAL=$(echo "$POOL_BALANCE" | xargs printf "%d" 2>/dev/null || echo "0")
   if [ "$POOL_BALANCE_DECIMAL" -ge "$AMOUNT_WEI" ] 2>/dev/null; then
     echo "   ✅ Pool has sufficient USDT0. Using transfer method..."
-    echo "2️⃣ Funding pool address with rBTC for gas..."
+    echo "   Funding pool address with rBTC for gas..."
     cast rpc anvil_setBalance "$POOL_ADDRESS" $(cast --to-wei 10) --rpc-url "$RPC_URL" > /dev/null 2>&1
     
-    echo "3️⃣ Impersonating pool address: $POOL_ADDRESS"
+    echo "   Impersonating pool address: $POOL_ADDRESS"
     cast rpc anvil_impersonateAccount "$POOL_ADDRESS" --rpc-url "$RPC_URL" > /dev/null 2>&1
     
-    echo "4️⃣ Transferring $AMOUNT USDT0..."
+    echo "   Transferring $AMOUNT USDT0..."
     # Use direct RPC call since cast send has issues with impersonated accounts
     TRANSFER_DATA=$(cast calldata "transfer(address,uint256)" "$WALLET_ADDRESS" "$AMOUNT_WEI")
     TRANSFER_RESULT=$(curl -s -X POST "$RPC_URL" \
@@ -81,7 +98,7 @@ fi
 # Method 2: Use Anvil's setStorage to directly set the ERC20 balance
 if [ "$METHOD" != "transfer" ]; then
   echo ""
-  echo "2️⃣ Using storage manipulation to set balance..."
+  echo "   Using storage manipulation to set balance..."
   
   # USDT0 is an upgradeable ERC20 (OpenZeppelin ERC20Upgradeable)
   # The balances mapping is at storage slot 51
@@ -113,7 +130,7 @@ if [ $? -eq 0 ]; then
   echo ""
   
   # Verify the balance
-  echo "3️⃣ Verifying balance..."
+  echo "3️⃣ Verifying balances..."
   BALANCE_HEX=$(cast call "$USDT0_ADDRESS" \
     "balanceOf(address)(uint256)" \
     "$WALLET_ADDRESS" \
@@ -168,7 +185,15 @@ else
   fi
 fi
 
+# Verify RBTC balance
+RBTC_BALANCE=$(cast balance "$WALLET_ADDRESS" --rpc-url "$RPC_URL" 2>/dev/null)
+if [ -n "$RBTC_BALANCE" ]; then
+  RBTC_BALANCE_ETH=$(cast --from-wei "$RBTC_BALANCE" 2>/dev/null || echo "$RBTC_BALANCE")
+  echo "   RBTC balance: $RBTC_BALANCE_ETH RBTC"
+fi
+
 echo ""
-echo "💡 Check your balance in MetaMask or run:"
+echo "💡 Check your balances in MetaMask or run:"
+echo "   cast balance $WALLET_ADDRESS --rpc-url $RPC_URL"
 echo "   cast call $USDT0_ADDRESS \"balanceOf(address)(uint256)\" $WALLET_ADDRESS --rpc-url $RPC_URL"
 

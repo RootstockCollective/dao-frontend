@@ -76,14 +76,14 @@ npm run fork:anvil
 
 # 3. Get your wallet address from MetaMask (copy it)
 
-# 4. Fund your wallet with USDT0 using the helper script
+# 4. Fund your wallet with USDT0 and RBTC using the helper script
 ./scripts/fund-usdt0.sh YOUR_WALLET_ADDRESS
 
-# Or fund with custom amount (e.g., 50,000 USDT0)
-./scripts/fund-usdt0.sh YOUR_WALLET_ADDRESS 50000
+# Or fund with custom amounts (e.g., 5000 USDT0 and 50 RBTC)
+./scripts/fund-usdt0.sh YOUR_WALLET_ADDRESS 5000 50
 ```
 
-> **Note**: The funding script must be called directly. Replace `YOUR_WALLET_ADDRESS` with your actual MetaMask wallet address.
+> **Note**: The funding script must be called directly. Replace `YOUR_WALLET_ADDRESS` with your actual MetaMask wallet address. The script funds 1,000 USDT0 + 10 RBTC by default.
 
 ## Method 1: Use Anvil's Pre-funded Accounts (Quick Start)
 
@@ -123,25 +123,28 @@ When you start Anvil, it automatically creates 10 pre-funded accounts with rBTC.
 
 This method allows you to fund any wallet address (including your own MetaMask wallet or Anvil's pre-funded accounts) with ERC-20 tokens like USDT0 and USDRIF.
 
-### Option A: Fund with USDT0 Using Helper Script (Easiest)
+### Option A: Fund with USDT0 and RBTC Using Helper Script (Easiest)
 
-The easiest way to fund your wallet with USDT0 is using the provided script:
+The easiest way to fund your wallet with both USDT0 and RBTC is using the provided script:
 
 ```bash
-# Fund with default 10,000 USDT0
+# Fund with defaults: 1,000 USDT0 + 10 RBTC
 ./scripts/fund-usdt0.sh YOUR_WALLET_ADDRESS
 
-# Fund with custom amount (e.g., 50,000 USDT0)
-./scripts/fund-usdt0.sh YOUR_WALLET_ADDRESS 50000
+# Fund with custom USDT0 amount (e.g., 5,000 USDT0 + 10 RBTC)
+./scripts/fund-usdt0.sh YOUR_WALLET_ADDRESS 5000
+
+# Fund with custom amounts (e.g., 5,000 USDT0 + 50 RBTC)
+./scripts/fund-usdt0.sh YOUR_WALLET_ADDRESS 5000 50
 ```
 
 **What the script does:**
 
-1. Checks if the Uniswap pool has USDT0 tokens
-2. Funds the pool address with rBTC for gas
-3. Impersonates the pool address
-4. Transfers USDT0 to your wallet
-5. Verifies the balance
+1. Funds your wallet with RBTC (default 10 RBTC)
+2. Checks if the Uniswap pool has USDT0 tokens
+3. Funds the pool address with rBTC for gas
+4. Impersonates the pool address and transfers USDT0 to your wallet
+5. Verifies both balances
 
 ### Manual Funding with Cast Commands
 
@@ -267,13 +270,17 @@ cast send <token_address> "transfer(address,uint256)" <to_address> <amount_in_we
 ### Helper Script Usage
 
 ```bash
-# Fund with USDT0 (default 10,000)
+# Fund with defaults: 1,000 USDT0 + 10 RBTC
 ./scripts/fund-usdt0.sh YOUR_WALLET_ADDRESS
 
-# Fund with custom amount
-./scripts/fund-usdt0.sh YOUR_WALLET_ADDRESS 50000
+# Fund with custom USDT0 amount: 5,000 USDT0 + 10 RBTC
+./scripts/fund-usdt0.sh YOUR_WALLET_ADDRESS 5000
 
-# Check your balance after funding
+# Fund with custom amounts: 5,000 USDT0 + 50 RBTC
+./scripts/fund-usdt0.sh YOUR_WALLET_ADDRESS 5000 50
+
+# Check your balances after funding
+cast balance YOUR_WALLET_ADDRESS --rpc-url http://127.0.0.1:8545
 cast call 0x779Ded0c9e1022225f8E0630b35a9b54bE713736 \
   "balanceOf(address)(uint256)" \
   YOUR_WALLET_ADDRESS \
@@ -289,16 +296,14 @@ npm run fork:anvil
 # Terminal 2: Fund your wallet
 # Replace 0xYourWalletAddress with your actual MetaMask address
 
-# 1. Fund with rBTC (for gas fees)
-cast rpc anvil_setBalance \
-  0xYourWalletAddress \
-  $(cast --to-wei 100) \
-  --rpc-url http://127.0.0.1:8545
+# 1. Fund with USDT0 and RBTC using the helper script (easiest)
+# This funds 1,000 USDT0 + 10 RBTC by default
+./scripts/fund-usdt0.sh 0xYourWalletAddress
 
-# 2. Fund with USDT0 using the helper script (easiest)
-./scripts/fund-usdt0.sh 0xYourWalletAddress 10000
+# Or fund with custom amounts (e.g., 5000 USDT0 + 100 RBTC for more testing)
+# ./scripts/fund-usdt0.sh 0xYourWalletAddress 5000 100
 
-# 3. (Optional) Fund with USDRIF manually
+# 2. (Optional) Fund with USDRIF manually
 cast rpc anvil_setBalance \
   0x134F5409cf7AF4C68bF4A8f59C96CF4925f6Bbb0 \
   $(cast --to-wei 10) \
@@ -317,19 +322,20 @@ cast send \
   --from 0x134F5409cf7AF4C68bF4A8f59C96CF4925f6Bbb0 \
   --unlocked
 
-# 4. Verify balances in MetaMask or using cast:
+# 3. Verify balances in MetaMask or using cast:
+cast balance 0xYourWalletAddress --rpc-url http://127.0.0.1:8545
 cast call 0x779Ded0c9e1022225f8E0630b35a9b54bE713736 \
   "balanceOf(address)(uint256)" \
   0xYourWalletAddress \
   --rpc-url http://127.0.0.1:8545
 
-# 5. Connect MetaMask to the fork network (see "Add Fork Network to MetaMask" above)
-# 6. You're ready to test swaps!
+# 4. Connect MetaMask to the fork network (see "Add Fork Network to MetaMask" above)
+# 5. You're ready to test swaps!
 ```
 
 ## Tips
 
-1. **Use the helper script** - `./scripts/fund-usdt0.sh` is the easiest way to fund with USDT0
+1. **Use the helper script** - `./scripts/fund-usdt0.sh` is the easiest way to fund with both USDT0 and RBTC
 2. **Pre-funded accounts** - Anvil's pre-funded accounts have rBTC but need ERC-20 tokens funded separately
 3. **Unlimited funding** - Anvil allows unlimited test funds, so don't worry about running out
 4. **Reset fork** - Restart Anvil to reset all balances and state
