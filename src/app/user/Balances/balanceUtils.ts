@@ -1,44 +1,43 @@
 import { GetAddressTokenResult, TokenBalance } from '@/app/user/types'
 import { tokenContracts } from '@/lib/contracts'
 import { formatUnits } from 'viem'
-import { formatNumberWithCommas } from '@/lib/utils'
 import Big from '@/lib/big'
 import { RIF, RBTC, STRIF, USDRIF, USDT0 } from '@/lib/constants'
+import { formatSymbol, getSymbolDecimals } from '@/app/shared/formatter'
+
+// Explicitly type the supported token symbols
+type SupportedTokenSymbol = typeof RIF | typeof RBTC | typeof STRIF | typeof USDRIF | typeof USDT0
+
+interface SymbolConfig {
+  equivalentSymbols: string[]
+  currentContract: string
+}
 
 const symbolsToGetFromArray = {
   [RIF]: { equivalentSymbols: ['tRIF', RIF], currentContract: tokenContracts[RIF] },
-  [RBTC]: { equivalentSymbols: ['rBTC', RBTC, 'tRBTC'], currentContract: tokenContracts[RBTC] },
-  [STRIF]: { equivalentSymbols: ['stRIF', 'FIRts'], currentContract: tokenContracts[STRIF] },
+  [RBTC]: { equivalentSymbols: [RBTC, 'tRBTC'], currentContract: tokenContracts[RBTC] },
+  [STRIF]: { equivalentSymbols: [STRIF, 'FIRts'], currentContract: tokenContracts[STRIF] },
   [USDRIF]: { equivalentSymbols: [USDRIF], currentContract: tokenContracts[USDRIF] },
   [USDT0]: { equivalentSymbols: [USDT0, 'USD₮0'], currentContract: tokenContracts[USDT0] },
-}
-
-type SymbolsEquivalentKeys = keyof typeof symbolsToGetFromArray
+} as const satisfies Record<string, SymbolConfig>
 
 // Token-specific formatting functions
-export const formatTokenBalance = (balance: string, symbol: SymbolsEquivalentKeys): string => {
+// Converts human-readable balance to raw token units and uses formatSymbol for consistent formatting
+export const formatTokenBalance = (balance: string, symbol: SupportedTokenSymbol): string => {
   const balanceBig = Big(balance)
-
-  switch (symbol) {
-    case RIF:
-    case STRIF:
-      return formatNumberWithCommas(balanceBig.floor())
-    case USDRIF:
-    case USDT0:
-      return formatNumberWithCommas(balanceBig.toFixedNoTrailing(2))
-    case RBTC:
-    default:
-      return formatNumberWithCommas(balanceBig.toFixedNoTrailing(5))
-  }
+  const decimals = getSymbolDecimals(symbol)
+  // Convert to raw token units using the symbol's actual decimals
+  const rawValue = BigInt(balanceBig.times(Big(10).pow(decimals)).toFixed(0))
+  return formatSymbol(rawValue, symbol)
 }
 
 export const getTokenBalance = (
-  symbol: SymbolsEquivalentKeys,
+  symbol: SupportedTokenSymbol,
   arrayToSearch?: GetAddressTokenResult,
 ): TokenBalance => {
   const defaultBalance = {
     balance: '0',
-    symbol: symbol as string,
+    symbol,
     formattedBalance: '0',
   }
 

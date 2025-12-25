@@ -1,9 +1,8 @@
 import { Span } from '@/components/Typography'
 import { ExternalLink } from '@/components/Link'
-import { VAULT_KYC_URL } from '@/lib/constants'
+import { VAULT_KYC_URL, USDRIF } from '@/lib/constants'
 import { useVaultDepositLimiter } from '../hooks/useVaultDepositLimiter'
-import { formatEther } from 'viem'
-import Big from '@/lib/big'
+import { formatSymbol } from '@/app/shared/formatter'
 
 interface VaultDepositKycPopoverProps {
   className?: string
@@ -13,7 +12,7 @@ export const VaultDepositKycPopover = ({ className }: VaultDepositKycPopoverProp
   const { maxDefaultDepositLimit } = useVaultDepositLimiter()
 
   // Format the default limit for display
-  const formattedDefaultLimit = Big(formatEther(maxDefaultDepositLimit)).toFixedNoTrailing(2)
+  const formattedDefaultLimit = formatSymbol(maxDefaultDepositLimit, USDRIF)
 
   return (
     <div className={className}>

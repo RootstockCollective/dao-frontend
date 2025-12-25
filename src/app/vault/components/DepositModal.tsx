@@ -3,18 +3,17 @@ import { Modal } from '@/components/Modal'
 import { Header, Label, Paragraph } from '@/components/Typography'
 import Big from '@/lib/big'
 import { cn, handleAmountInput, formatCurrency } from '@/lib/utils'
+import { formatSymbol } from '@/app/shared/formatter'
 import { executeTxFlow } from '@/shared/notification'
 import { useCallback, useMemo, useState, useEffect, useRef } from 'react'
 import { useDepositToVault } from '../hooks/useDepositToVault'
 import { useVaultAllowance } from '../hooks/useVaultAllowance'
 import { useCanDepositToVault } from '../hooks/useCanDepositToVault'
-import { formatEther } from 'viem'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
 import { Divider } from '@/components/Divider'
 import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
 import { Button } from '@/components/Button'
-import { VaultInput } from './VaultInput'
 import { TokenImage } from '@/components/TokenImage'
 import { PercentageButtons } from '@/app/user/Unstake/components/PercentageButtons'
 import { USDRIF } from '@/lib/constants'
@@ -35,7 +34,7 @@ interface Props {
 
 const KycInfo = () => {
   const { maxDefaultDepositLimit } = useVaultDepositLimiter()
-  const formattedDefaultLimit = Big(formatEther(maxDefaultDepositLimit)).toFixedNoTrailing(2)
+  const formattedDefaultLimit = formatSymbol(maxDefaultDepositLimit, USDRIF)
 
   return (
     <Paragraph variant="body-s" className="text-text-60 px-4 pt-4">

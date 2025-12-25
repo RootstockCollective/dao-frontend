@@ -60,6 +60,10 @@ const symbols: { [key: string]: SymbolFormatOptions } = {
   usdt0,
 }
 
+export const getSymbolDecimals = (symbol: string): number => {
+  return symbols[symbol.toLocaleLowerCase()]?.decimals ?? 18
+}
+
 export const formatSymbol = (value: bigint | string, symbol: string) => {
   if (!value || value === '0') {
     return '0'
