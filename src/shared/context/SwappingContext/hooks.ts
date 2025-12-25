@@ -21,9 +21,21 @@ import { UniswapUniversalRouterAbi } from '@/lib/abis/UniswapUniversalRouterAbi'
  * - Comprehensive tests
  */
 const QUOTE_DEBOUNCE_MS = 500 // Wait 500ms after user stops typing before fetching quote
+const QUOTE_TIMEOUT_MS = 10_000 // 10 second timeout for quote fetching
+
+/**
+ * Wraps a promise with a timeout
+ * If the promise doesn't resolve/reject within the timeout, it rejects with a timeout error
+ */
+const withTimeout = <T>(promise: Promise<T>, timeoutMs: number, errorMessage: string): Promise<T> => {
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) => setTimeout(() => reject(new Error(errorMessage)), timeoutMs)),
+  ])
+}
 
 export const useSwapInput = () => {
-  const { state, setAmountIn, tokens, setQuoting, setQuote } = useSwappingContext()
+  const { state, setAmountIn, tokens, setQuoting, setQuote, setQuoteError } = useSwappingContext()
   const { amountIn, tokenIn, tokenOut, quote, poolFee } = state
 
   // Debounce the amount to avoid fetching on every keystroke
@@ -54,14 +66,19 @@ export const useSwapInput = () => {
         }
 
         // Use the existing provider which handles fee tier fallback
-        const result = await uniswapProvider.getQuote({
-          tokenIn: tokens[tokenIn].address,
-          tokenOut: tokens[tokenOut].address,
-          amountIn: amountInBigInt,
-          tokenInDecimals: tokens[tokenIn].decimals,
-          tokenOutDecimals: tokens[tokenOut].decimals,
-          feeTier: poolFee || undefined, // If poolFee is set, use it; otherwise let provider try all tiers
-        })
+        // Wrap with timeout to prevent hanging on RPC issues
+        const result = await withTimeout(
+          uniswapProvider.getQuote({
+            tokenIn: tokens[tokenIn].address,
+            tokenOut: tokens[tokenOut].address,
+            amountIn: amountInBigInt,
+            tokenInDecimals: tokens[tokenIn].decimals,
+            tokenOutDecimals: tokens[tokenOut].decimals,
+            feeTier: poolFee || undefined, // If poolFee is set, use it; otherwise let provider try all tiers
+          }),
+          QUOTE_TIMEOUT_MS,
+          'Quote request timed out. Please try again.',
+        )
 
         // Convert SwapQuote to QuoteResult format
         if (result.error) {
@@ -92,10 +109,12 @@ export const useSwapInput = () => {
     const isLoading = isQuoteLoading || isQuoteFetching
     setQuoting(isLoading)
 
-    if (swapQuote && !quoteError) {
+    if (quoteError) {
+      setQuoteError(quoteError instanceof Error ? quoteError : new Error(String(quoteError)))
+    } else if (swapQuote) {
       setQuote(swapQuote)
     }
-  }, [swapQuote, isQuoteLoading, isQuoteFetching, quoteError, setQuoting, setQuote])
+  }, [swapQuote, isQuoteLoading, isQuoteFetching, quoteError, setQuoting, setQuote, setQuoteError])
 
   // Format amount out from quote
   const formattedAmountOut = useMemo(() => {
