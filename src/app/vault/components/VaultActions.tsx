@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { Button } from '@/components/Button'
 import { NewPopover } from '@/components/NewPopover'
@@ -14,6 +14,8 @@ import { DepositModal } from './DepositModal'
 import { WithdrawModal } from './WithdrawModal'
 import { MoneyIconKoto } from '@/components/Icons'
 import { SwappingFlow } from '@/app/user/Swap'
+import { useVaultBalance } from '../hooks/useVaultBalance'
+import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 
 /**
  * Component providing deposit and withdraw actions for the vault
@@ -32,6 +34,15 @@ export const VaultActions = () => {
   const { isConnected } = useAccount()
   const { onConnectWalletButtonClick } = useAppKitFlow()
   const isDesktop = useIsDesktop()
+
+  // Refetch functions for balance updates after transactions
+  const { refetch: refetchVaultBalance } = useVaultBalance()
+  const { refetchBalances } = useGetAddressBalances()
+
+  const handleRefreshBalances = useCallback(() => {
+    refetchVaultBalance()
+    refetchBalances()
+  }, [refetchVaultBalance, refetchBalances])
 
   // Modal states
   const depositModal = useModal()
@@ -132,8 +143,12 @@ export const VaultActions = () => {
         </Button>
       </div>
 
-      {depositModal.isModalOpened && <DepositModal onCloseModal={depositModal.closeModal} />}
-      {withdrawModal.isModalOpened && <WithdrawModal onCloseModal={withdrawModal.closeModal} />}
+      {depositModal.isModalOpened && (
+        <DepositModal onCloseModal={depositModal.closeModal} onTransactionSuccess={handleRefreshBalances} />
+      )}
+      {withdrawModal.isModalOpened && (
+        <WithdrawModal onCloseModal={withdrawModal.closeModal} onTransactionSuccess={handleRefreshBalances} />
+      )}
       {swapModal.isModalOpened && <SwappingFlow onCloseModal={swapModal.closeModal} />}
     </div>
   )

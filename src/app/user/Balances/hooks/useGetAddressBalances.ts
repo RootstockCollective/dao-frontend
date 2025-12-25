@@ -7,7 +7,11 @@ import { RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
 
 export const useGetAddressBalances = () => {
   const { address, chainId } = useAccount()
-  const { data, isLoading: isBalancesLoading } = useGetAddressTokens(address as Address, chainId as number)
+  const {
+    data,
+    isLoading: isBalancesLoading,
+    refetch: refetchBalances,
+  } = useGetAddressTokens(address as Address, chainId as number)
 
   return useMemo(
     () => ({
@@ -19,7 +23,8 @@ export const useGetAddressBalances = () => {
         [USDRIF]: getTokenBalance(USDRIF, data),
         [USDT0]: getTokenBalance(USDT0, data),
       },
+      refetchBalances,
     }),
-    [data, isBalancesLoading],
+    [data, isBalancesLoading, refetchBalances],
   )
 }

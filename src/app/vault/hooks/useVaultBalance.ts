@@ -1,7 +1,7 @@
 import { useReadContracts, useReadContract, useAccount } from 'wagmi'
 import { formatEther } from 'viem'
 import { vault } from '@/lib/contracts'
-import { useMemo } from 'react'
+import { useMemo, useCallback } from 'react'
 import { WeiPerEther, VAULT_SHARE_MULTIPLIER } from '@/lib/constants'
 import { formatSymbol } from '@/app/shared/formatter'
 
@@ -52,7 +52,12 @@ export function useVaultBalance() {
     return baseContracts
   }, [connectedAddress])
 
-  const { data, isLoading, error } = useReadContracts({
+  const {
+    data,
+    isLoading,
+    error,
+    refetch: refetchVaultData,
+  } = useReadContracts({
     contracts,
     query: {
       refetchInterval: 60_000, // Refetch every minute
@@ -63,7 +68,11 @@ export function useVaultBalance() {
   const userShares = connectedAddress && data?.[4]?.result ? (data[4].result as bigint) : 0n
 
   // Convert user shares to USDRIF assets
-  const { data: userUsdrifBalanceRaw, isLoading: isLoadingUserBalance } = useReadContract({
+  const {
+    data: userUsdrifBalanceRaw,
+    isLoading: isLoadingUserBalance,
+    refetch: refetchUserBalance,
+  } = useReadContract({
     address: vault.address,
     abi: vault.abi,
     functionName: 'convertToAssets',
@@ -73,6 +82,11 @@ export function useVaultBalance() {
       refetchInterval: 60_000, // Refetch every minute
     },
   })
+
+  const refetch = useCallback(() => {
+    refetchVaultData()
+    refetchUserBalance()
+  }, [refetchVaultData, refetchUserBalance])
 
   return useMemo(() => {
     const totalAssets = (data?.[0]?.result as bigint | undefined) ?? 0n
@@ -101,6 +115,7 @@ export function useVaultBalance() {
       formattedUserUsdrifBalance,
       isLoading: isLoading || isLoadingUserBalance,
       error,
+      refetch,
     }
-  }, [data, isLoading, error, userShares, userUsdrifBalanceRaw, isLoadingUserBalance])
+  }, [data, isLoading, error, userShares, userUsdrifBalanceRaw, isLoadingUserBalance, refetch])
 }

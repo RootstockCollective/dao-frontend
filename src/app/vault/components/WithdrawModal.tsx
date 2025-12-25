@@ -11,7 +11,6 @@ import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus
 import { Divider } from '@/components/Divider'
 import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
 import { Button } from '@/components/Button'
-import { VaultInput } from './VaultInput'
 import { TokenImage } from '@/components/TokenImage'
 import { PercentageButtons } from '@/components/PercentageButtons'
 import { formatEther } from 'viem'
@@ -23,9 +22,10 @@ import Image from 'next/image'
 
 interface Props {
   onCloseModal: () => void
+  onTransactionSuccess?: () => void
 }
 
-export const WithdrawModal = ({ onCloseModal }: Props) => {
+export const WithdrawModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
   const { prices } = usePricesContext()
 
   const isDesktop = useIsDesktop()
@@ -85,10 +85,13 @@ export const WithdrawModal = ({ onCloseModal }: Props) => {
   const handleConfirmWithdraw = useCallback(() => {
     executeTxFlow({
       onRequestTx: onRequestWithdraw,
-      onSuccess: onCloseModal,
+      onSuccess: () => {
+        onTransactionSuccess?.()
+        onCloseModal()
+      },
       action: 'vaultWithdraw',
     })
-  }, [onRequestWithdraw, onCloseModal])
+  }, [onRequestWithdraw, onCloseModal, onTransactionSuccess])
 
   useEffect(() => {
     inputRef.current?.focus()
