@@ -200,6 +200,30 @@ export function CsvButton({
         return
       }
 
+      if (sortBy === 'totalAmount') {
+        const parseUsd = (raw: string) => {
+          const sanitized = raw.replace(/,/g, '')
+          const parsed = Number(sanitized)
+          return Number.isFinite(parsed) ? parsed : 0
+        }
+
+        allData.sort((a, b) => {
+          const aUsd = parseUsd(processTransactionAmount(a, prices).usdValue)
+          const bUsd = parseUsd(processTransactionAmount(b, prices).usdValue)
+
+          const byUsd = sortDirection === 'asc' ? aUsd - bUsd : bUsd - aUsd
+          if (byUsd !== 0) return byUsd
+
+          const byTimestamp = Number(b.blockTimestamp) - Number(a.blockTimestamp)
+          if (byTimestamp !== 0) return byTimestamp
+
+          const byTx = a.transactionHash.localeCompare(b.transactionHash)
+          if (byTx !== 0) return byTx
+
+          return a.builder.localeCompare(b.builder)
+        })
+      }
+
       // Limit to MAX_EXPORT_ROWS to avoid freezing the browser
       const dataToExport = allData.slice(0, MAX_EXPORT_ROWS)
       const wasTruncated = allData.length > MAX_EXPORT_ROWS
