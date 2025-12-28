@@ -37,18 +37,11 @@ export const TotalRewardsDistributed = ({ className }: TotalRewardsDistributedMe
   useHandleErrors({ error: errorGauges, title: 'Error loading gauges' })
   useHandleErrors({ error: errorRewards, title: 'Error loading rewards' })
 
-  const totalRewardsPerToken: MetricToken[] = useConvertRewardLogData(rewardsData, {
-    enabled: !!rewardsData,
-  }).filter(({ value }) => value !== '0')
+  const { rewardPerToken, combinedRewardsFiat } = useConvertRewardLogData(rewardsData)
 
   if (isLoadingGauges || isLoadingRewards) {
     return <LoadingSpinner size="small" />
   }
-
-  const combinedRewardsFiat = totalRewardsPerToken.reduce(
-    (sum, { fiatValue }) => sum.add(Big(fiatValue)),
-    Big(0),
-  )
 
   return (
     <Metric
@@ -71,50 +64,49 @@ export const TotalRewardsDistributed = ({ className }: TotalRewardsDistributedMe
         className="text-v3-text-100 overflow-hidden text-ellipsis leading-[125%] tracking-[0.03rem]"
       >
         {formatCurrency(combinedRewardsFiat, { showCurrencySymbol: false })}{' '}
-        <FiatTooltipLabel
-          tooltip={{ side: 'top', text: <MetricTooltipContent tokens={totalRewardsPerToken} /> }}
-        />
+        <FiatTooltipLabel tooltip={{ side: 'top', text: <MetricTooltipContent tokens={rewardPerToken} /> }} />
       </Header>
-      <MetricBar segments={totalRewardsPerToken} />
+      <MetricBar segments={rewardPerToken} />
     </Metric>
   )
 }
 
-function useConvertRewardLogData(
-  rewardsData: UseGetGaugesNotifyRewardReturnType,
-  options?: { enabled: boolean },
-): MetricToken[] {
+function useConvertRewardLogData(rewardsData: UseGetGaugesNotifyRewardReturnType): {
+  rewardPerToken: MetricToken[]
+  combinedRewardsFiat: Big
+} {
   const { prices } = usePricesContext()
-
-  if (!options?.enabled) {
-    return REWARD_TOKENS.map(({ symbol }) => ({
-      symbol,
-      value: '0',
-      fiatValue: '0',
-    }))
-  }
 
   const allRewardEvents = Object.values(rewardsData).map<NotifyRewardEvent[]>(events => events)
 
-  return REWARD_TOKENS.map<MetricToken>(({ address: tokenAddress, symbol }) => {
-    const price = prices[symbol]?.price ?? 0
-    const value = allRewardEvents.reduce(
-      (totalTokenReward, events) =>
-        totalTokenReward +
-        events.reduce(
-          (combinedEventsReward, { args }) =>
-            isAddressEqual(args.rewardToken_, tokenAddress)
-              ? combinedEventsReward + args.backersAmount_ + args.builderAmount_
-              : combinedEventsReward,
-          0n,
-        ),
-      0n,
-    )
+  return REWARD_TOKEN_KEYS.reduce<{ rewardPerToken: MetricToken[]; combinedRewardsFiat: Big }>(
+    (acc, tokenKey) => {
+      const { address: tokenAddress, symbol } = TOKENS[tokenKey]
+      const price = prices[symbol]?.price ?? 0
+      const value = allRewardEvents.reduce(
+        (totalTokenReward, events) =>
+          totalTokenReward +
+          events.reduce(
+            (combinedEventsReward, { args }) =>
+              isAddressEqual(args.rewardToken_, tokenAddress)
+                ? combinedEventsReward + args.backersAmount_ + args.builderAmount_
+                : combinedEventsReward,
+            0n,
+          ),
+        0n,
+      )
 
-    return createMetricToken({
-      symbol,
-      value,
-      price,
-    })
-  })
+      const metricToken = createMetricToken({
+        symbol,
+        value,
+        price,
+      })
+
+      acc.rewardPerToken.push(metricToken)
+      acc.combinedRewardsFiat = acc.combinedRewardsFiat.add(Big(metricToken.fiatValue))
+
+      return acc
+    },
+    { rewardPerToken: [], combinedRewardsFiat: Big(0) },
+  )
 }

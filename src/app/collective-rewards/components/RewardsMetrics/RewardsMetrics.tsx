@@ -1,6 +1,7 @@
 import { FiatTooltipLabel } from '@/app/components'
 import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
 import { MetricToken } from '@/app/components/Metric/types'
+import { createMetricToken } from '@/app/components/Metric/utils'
 import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { Metric } from '@/components/Metric'
 import { Header, Label } from '@/components/Typography'
@@ -27,28 +28,22 @@ export const RewardsMetrics: FC<RewardsMetricsProps> = ({ title, rewardTokens })
     totalEstimatedRewards,
   }: {
     rewardMetricPerToken: MetricToken[]
-    totalEstimatedRewards: string
+    totalEstimatedRewards: Big
   } = rewardTokens.reduce(
-    ({ rewardMetricPerToken, totalEstimatedRewards }, { symbol, value }) => {
-      const tokenPrice = prices[symbol]?.price || '0'
-      const fiatValue = formatCurrencyWithLabel(getFiatAmount(value, tokenPrice), {
-        showCurrencyLabel: false,
-        showCurrencySymbol: false,
+    (acc, { symbol, value }) => {
+      const tokenPrice = prices[symbol]?.price || 0
+      const metricToken = createMetricToken({
+        symbol,
+        value,
+        price: tokenPrice,
       })
 
-      return {
-        rewardMetricPerToken: [
-          ...rewardMetricPerToken,
-          {
-            symbol: symbol,
-            value: `${formatSymbol(value, symbol)}`,
-            fiatValue,
-          },
-        ],
-        totalEstimatedRewards: Big(totalEstimatedRewards).add(getFiatAmount(value, tokenPrice)).toString(),
-      }
+      acc.rewardMetricPerToken.push(metricToken)
+      acc.totalEstimatedRewards = acc.totalEstimatedRewards.add(Big(metricToken.fiatValue))
+
+      return acc
     },
-    { rewardMetricPerToken: [] as MetricToken[], totalEstimatedRewards: '0' },
+    { rewardMetricPerToken: [] as MetricToken[], totalEstimatedRewards: Big(0) },
   )
 
   return (
