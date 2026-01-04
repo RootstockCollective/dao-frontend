@@ -12,7 +12,7 @@ export function HeaderDesktop({ className, ...props }: HTMLAttributes<HTMLDivEle
     <header {...props} className={cn('pt-6 px-7 z-10', className)}>
       <div className="flex flex-row justify-between items-center">
         {/* Left side */}
-        <div className="flex flex-row items-center">
+        <div className="flex flex-row items-center min-w-0">
           <Tooltip text={isSidebarOpen ? 'Close sidebar' : 'Open sidebar'}>
             <button
               type="button"
