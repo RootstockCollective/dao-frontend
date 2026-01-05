@@ -97,7 +97,12 @@ export const StrategiesInfo = () => {
 
         {!error && strategies.length > 0 && (
           <div className="mt-4 overflow-x-auto -mx-6 px-6">
-            <GridTable table={table} className="min-w-[500px]" rowStyles="py-2" data-testid="StrategiesTable" />
+            <GridTable
+              table={table}
+              className="min-w-[500px]"
+              rowStyles="py-2"
+              data-testid="StrategiesTable"
+            />
           </div>
         )}
 
