@@ -65,10 +65,12 @@ function StakingHistoryTable() {
 
   const rowData = useMemo(() => convertDataToRowData(data, prices), [data, prices])
 
-  // Filter handler - receives final filters from FilterSideBar when Apply is clicked
-  const handleApplyFilters = (filters: ActiveFilter[]) => {
+  // Filter handler - reset pagination and update filters atomically to avoid double API calls
+  const handleApplyFilters = useCallback((filters: ActiveFilter[]) => {
+    setPageEnd(PAGE_SIZE)
+    setPagerKey(prev => prev + 1)
     setActiveFilters(filters)
-  }
+  }, [])
 
   const handleCloseFilterSidebar = useCallback(() => {
     setIsFilterSidebarOpen(false)
@@ -79,12 +81,6 @@ function StakingHistoryTable() {
   }, [])
 
   const hasActiveFilters = useMemo(() => activeFilters.length > 0, [activeFilters])
-
-  // Reset pagination when filters change
-  useEffect(() => {
-    setPageEnd(PAGE_SIZE)
-    setPagerKey(prev => prev + 1)
-  }, [activeFilters])
 
   useEffect(() => {
     dispatch({
