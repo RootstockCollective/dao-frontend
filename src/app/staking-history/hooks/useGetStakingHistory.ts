@@ -1,7 +1,12 @@
+import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useAccount } from 'wagmi'
 import { fetchStakingHistory, StakingHistoryResponse } from '../utils/api'
+import { StakingHistoryItem } from '../utils/types'
+
+// Stable empty array to prevent infinite re-renders when no data
+const EMPTY_DATA: StakingHistoryItem[] = []
 
 interface UseGetStakingHistoryParams {
   page?: number
@@ -44,11 +49,14 @@ export const useGetStakingHistory = (params?: UseGetStakingHistoryParams) => {
     enabled: !!address,
   })
 
+  // Memoize data to prevent infinite re-renders
+  const stableData = useMemo(() => data?.data ?? EMPTY_DATA, [data?.data])
+
   return {
-    data: data?.data || [],
-    count: data?.pagination?.total || 0,
-    page: data?.pagination?.page || 1,
-    pageSize: data?.pagination?.limit || 20,
+    data: stableData,
+    count: data?.pagination?.total ?? 0,
+    page: data?.pagination?.page ?? 1,
+    pageSize: data?.pagination?.limit ?? 20,
     isLoading,
     error,
   }

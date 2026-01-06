@@ -126,26 +126,28 @@ export const HeaderCell = ({ className, children, columnId }: HeaderCellProps) =
 export const StakingHistoryHeaderRow = () => {
   return (
     <Suspense fallback={<div>Loading table headers...</div>}>
-      <tr
-        className="flex border-b-1 border-b-v3-text-60 select-none gap-4 pb-4 pl-4"
-        data-testid="StakingHistoryHeaderRow"
-      >
-        <HeaderCell columnId="period">
-          <HeaderTitle>Date</HeaderTitle>
-        </HeaderCell>
-        <HeaderCell columnId="action">
-          <HeaderTitle>Type</HeaderTitle>
-        </HeaderCell>
-        <HeaderCell columnId="amount">
-          <HeaderTitle>Amount</HeaderTitle>
-        </HeaderCell>
-        <HeaderCell columnId="total_amount">
-          <HeaderTitle>Total Amount (USD)</HeaderTitle>
-        </HeaderCell>
-        <HeaderCell columnId="actions">
-          <HeaderTitle>Actions</HeaderTitle>
-        </HeaderCell>
-      </tr>
+      <thead>
+        <tr
+          className="flex border-b-1 border-b-v3-text-60 select-none gap-4 pb-4 pl-4"
+          data-testid="StakingHistoryHeaderRow"
+        >
+          <HeaderCell columnId="period">
+            <HeaderTitle>Date</HeaderTitle>
+          </HeaderCell>
+          <HeaderCell columnId="action">
+            <HeaderTitle>Type</HeaderTitle>
+          </HeaderCell>
+          <HeaderCell columnId="amount">
+            <HeaderTitle>Amount</HeaderTitle>
+          </HeaderCell>
+          <HeaderCell columnId="total_amount">
+            <HeaderTitle>Total Amount (USD)</HeaderTitle>
+          </HeaderCell>
+          <HeaderCell columnId="actions">
+            <HeaderTitle>Actions</HeaderTitle>
+          </HeaderCell>
+        </tr>
+      </thead>
     </Suspense>
   )
 }

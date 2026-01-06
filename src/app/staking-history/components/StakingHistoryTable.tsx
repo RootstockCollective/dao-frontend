@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import { motion } from 'motion/react'
 import { TablePager } from '@/components/TableNew'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import { usePricesContext, useTableActionsContext, useTableContext, withTableContext } from '@/shared/context'
 import { ActiveFilter } from '@/components/FilterSideBar'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
@@ -30,6 +30,8 @@ const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
 function StakingHistoryTable() {
   const isDesktop = useIsDesktop()
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
+  const [pagerKey, setPagerKey] = useState(0)
+
   const { rows, sort } = useTableContext<ColumnId, StakingHistoryCellDataMap>()
   const dispatch = useTableActionsContext<ColumnId, StakingHistoryCellDataMap>()
   const { prices } = usePricesContext()
@@ -63,8 +65,10 @@ function StakingHistoryTable() {
 
   const rowData = useMemo(() => convertDataToRowData(data, prices), [data, prices])
 
-  // Filter handler - receives final filters from FilterSideBar when Apply is clicked
+  // Filter handler - reset pagination and update filters atomically to avoid double API calls
   const handleApplyFilters = useCallback((filters: ActiveFilter[]) => {
+    setPageEnd(PAGE_SIZE)
+    setPagerKey(prev => prev + 1)
     setActiveFilters(filters)
   }, [])
 
@@ -154,6 +158,7 @@ function StakingHistoryTable() {
       </div>
 
       <TablePager
+        key={pagerKey}
         pageSize={PAGE_SIZE}
         totalItems={count}
         onPageChange={handlePageChange}
