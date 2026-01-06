@@ -93,11 +93,11 @@ const renderSingleActionContent = (
             )}
           </div>
 
-          <div>
+          <div className="col-span-2 overflow-x-auto overflow-y-hidden">
             <Span variant="tag-s" className="text-white/70" data-testid="AmountLabel">
               Amount
             </Span>
-            <div className="grid grid-cols-2 gap-x-2 w-max">
+            <div className="flex flex-row gap-2 w-max">
               {/* Left column: values, right-aligned */}
               <div className="flex flex-col items-end text-right">
                 <Span className="text-[18px] font-bold" data-testid="Amount">
@@ -134,7 +134,7 @@ const renderSingleActionContent = (
             </div>
           </div>
           {parsedAction.rns ? (
-            <div>
+            <div className="col-span-2">
               <Span variant="tag-s" className="text-white/70" data-testid="TypeLabel">
                 to RNS
               </Span>
@@ -182,23 +182,6 @@ export const ActionDetails = ({ parsedActions, className, readOnly }: ActionDeta
   const isDesktop = useIsDesktop()
   const totalCount = parsedActions.length
 
-  // For single transaction - render as before (backward compatibility)
-  if (totalCount === 1) {
-    const content = renderSingleActionContent(parsedActions[0], isDesktop, readOnly)
-    return (
-      <div
-        className={cn(
-          'md:p-6 px-4 py-8 bg-bg-80 flex flex-col gap-4 md:w-[376px] md:max-h-[214px] md:mt-2 rounded-sm md:self-start',
-          className,
-        )}
-      >
-        <Header variant="h3">ACTIONS</Header>
-        {content}
-      </div>
-    )
-  }
-
-  // For multiple transactions - render list with separators
   return (
     <div
       className={cn(
@@ -206,16 +189,17 @@ export const ActionDetails = ({ parsedActions, className, readOnly }: ActionDeta
         className,
       )}
     >
-      <Header variant="h3">ACTIONS ({totalCount})</Header>
-      <div className="flex flex-col gap-4">
+      <Header variant="h3">{totalCount > 1 ? <>ACTIONS ({totalCount})</> : <>ACTION</>}</Header>
+      <div className="flex flex-col gap-4 overflow-hidden">
         {parsedActions.map((action, index) => {
           return (
-            // biome-ignore lint/suspicious/noArrayIndexKey: index is stable here, array is not reordered
             <div key={`action-${index}`}>
               {index > 0 && <div className="border-t border-white/10 my-4" />}
-              <Span variant="tag-s" className="text-white/70 mb-2">
-                Action {index + 1}
-              </Span>
+              {totalCount > 1 && (
+                <Span variant="tag-s" className="text-white/70 mb-2">
+                  Action {index + 1}
+                </Span>
+              )}
               {renderSingleActionContent(action, isDesktop, readOnly)}
             </div>
           )
