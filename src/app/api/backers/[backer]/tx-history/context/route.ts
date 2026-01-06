@@ -50,7 +50,7 @@ function buildClaimAmountUsdExpression(prices: PriceParam[]) {
   const bindings: Array<string | number> = []
 
   for (const { token, priceUsd, decimals } of prices) {
-    const factor = priceUsd / Math.pow(10, decimals || 18)
+    const factor = priceUsd / Math.pow(10, decimals)
     sql += ' WHEN ? THEN ?::numeric'
     bindings.push(token, factor)
   }
