@@ -1,9 +1,10 @@
 import React, { ComponentProps } from 'react'
 import { BuilderHeader } from '@/app/backing/components/BuilderHeader/BuilderHeader'
-import { Button } from '@/components/ButtonNew'
-import { cn, truncateRns } from '@/lib/utils'
+import { Button } from '@/components/Button'
+import { cn } from '@/lib/utils'
 import { Address } from 'viem'
-import { Label, Paragraph } from '@/components/TypographyNew'
+import { Label, Paragraph } from '@/components/Typography'
+import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
 
 interface DelegateCardProps {
   address: Address
@@ -12,17 +13,21 @@ interface DelegateCardProps {
   votingWeight: string | number
   totalVotes: string | number
   delegators: string | number
-  onDelegate: (address: Address, rns?: string) => void
+  onDelegate: (address: Address, rns?: string, imageIpfs?: string | null) => void
   name?: string
+  imageIpfs?: string | null
   className?: string
   buttonText?: string
   buttonVariant?: ComponentProps<typeof Button>['variant']
   buttonDisabled?: boolean
+  isDelegationPending?: boolean
+  isReclaimPending?: boolean
 }
 
 export const DelegateCard: React.FC<DelegateCardProps> = ({
   address,
   name,
+  imageIpfs,
   since,
   votingPower,
   votingWeight,
@@ -33,25 +38,41 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
   buttonText = 'Delegate',
   buttonVariant = 'secondary-outline',
   buttonDisabled = false,
+  isDelegationPending = false,
+  isReclaimPending = false,
 }) => {
   return (
     <div
       className={cn(
-        'rounded bg-bg-60 px-2 pb-6 flex flex-col items-center relative min-w-[220px]',
+        'rounded bg-bg-60 px-4 pb-6 flex flex-col items-center relative',
+        'w-full md:min-w-[220px]',
         className,
       )}
       data-testid={`delegateCardContainer-${address}`}
     >
       <BuilderHeader
         address={address}
-        name={name ? truncateRns(name, 15) : undefined}
+        name={name}
+        imageIpfs={imageIpfs}
         className="mt-8"
-        showFullName
+        showFullName={false}
         shouldNotRedirect
+        headerProps={{ variant: 'h2', className: 'text-primary mt-2' }}
       />
-      <Paragraph className="text-text-80" variant="body-xs">
-        delegate since {since}
-      </Paragraph>
+      {isDelegationPending ? (
+        <Paragraph className="text-text-80 flex items-center gap-1" variant="body-xs">
+          delegation pending <HourglassAnimatedIcon />
+        </Paragraph>
+      ) : isReclaimPending ? (
+        <Paragraph className="text-text-80 flex items-center gap-1" variant="body-xs">
+          reclaiming voting power pending <HourglassAnimatedIcon />
+        </Paragraph>
+      ) : (
+        <Paragraph className="text-text-80" variant="body-xs">
+          delegate since {since}
+        </Paragraph>
+      )}
+
       <div className="w-full bg-background-60 rounded-lg p-3 mt-6 border border-bg-40">
         <div className="grid grid-cols-2 gap-y-2 gap-x-4">
           <div>
@@ -82,8 +103,8 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
       </div>
       <Button
         variant={buttonVariant}
-        className="mt-6"
-        onClick={() => onDelegate(address, name)}
+        className="mt-6 w-fit"
+        onClick={() => onDelegate(address, name, imageIpfs)}
         disabled={buttonDisabled}
         data-testid={`${buttonText}Button`}
       >

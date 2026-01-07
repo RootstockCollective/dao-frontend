@@ -31,7 +31,6 @@
 }
 
 html[data-theme='default'] {
-  --color-primary: rgba(229, 107, 26, 1);
   --color-secondary: rgba(45, 45, 45, 1);
 
   --background: rgba(13, 13, 13, 1);
@@ -82,7 +81,7 @@ html[data-theme='default'] {
   --text-10: #25211e;
   --text-0: #171412;
 
-  --primary: #f47a2a;
+  --color-primary: #f47a2a;
 
   /* System Status */
   --status-success: #1bc47d;
@@ -113,5 +112,15 @@ html[data-theme='default'] {
   button:disabled,
   [role='button']:disabled {
     cursor: not-allowed;
+  }
+}
+
+@layer utilities {
+  .scrollbar-none {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
   }
 }

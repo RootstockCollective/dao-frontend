@@ -32,6 +32,7 @@ export const ListSwitch = ({ isGridMode, setIsGridMode }: ListSwitchProps) => {
           duration: 0.3,
         }}
         whileTap={{ scale: 0.95 }}
+        data-testid="SwitchToListButton"
       >
         <motion.span
           animate={{
@@ -63,6 +64,7 @@ export const ListSwitch = ({ isGridMode, setIsGridMode }: ListSwitchProps) => {
           duration: 0.3,
         }}
         whileTap={{ scale: 0.95 }}
+        data-testid="SwitchToGridButton"
       >
         <motion.span
           animate={{

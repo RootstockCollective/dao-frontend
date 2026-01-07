@@ -44,6 +44,7 @@ export function GridTable<T>({ className, table, stackFirstColumn = false, rowSt
                 className="font-medium font-rootstock-sans text-sm leading-normal"
                 key={header.id}
                 onClick={header.column.getCanSort() ? () => header.column.toggleSorting() : undefined}
+                data-testid={`ColumnHeader-${header.id}`}
               >
                 <SortIndicator
                   sortEnabled={header.column.getCanSort()}

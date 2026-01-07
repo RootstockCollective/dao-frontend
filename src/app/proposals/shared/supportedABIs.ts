@@ -1,7 +1,7 @@
 import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
-import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
+import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
 import { HTMLProps, JSX } from 'react'
 import { AbiFunction, AbiParameterToPrimitiveType } from 'viem'
 
@@ -17,6 +17,7 @@ const supportedProposalActions = [
   'withdraw',
   'withdrawERC20',
   'communityApproveBuilder',
+  'communityBanBuilder',
   'dewhitelistBuilder',
   // CR MVP: To keep compatibility with the MVP logs
   'removeWhitelistedBuilder',

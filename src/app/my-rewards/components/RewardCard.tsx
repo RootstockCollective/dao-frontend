@@ -1,8 +1,18 @@
+import { CommonComponentProps } from '@/components/commonProps'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
-import { Paragraph } from '@/components/TypographyNew'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Paragraph } from '@/components/Typography'
+import { BaseTypography } from '@/components/Typography/Typography'
+import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
+
+interface RewardCardProps extends CommonComponentProps {
+  isLoading: boolean
+  title: ReactNode
+  info: ReactNode
+  children: ReactNode
+  'data-testid'?: string
+}
 
 export const RewardCard = ({
   isLoading,
@@ -10,22 +20,18 @@ export const RewardCard = ({
   info,
   children,
   'data-testid': dataTestId,
-}: {
-  isLoading: boolean
-  title: ReactNode
-  info: ReactNode
-  children: ReactNode
-  'data-testid'?: string
-}) => {
+  className,
+}: RewardCardProps) => {
   return (
     <Metric
+      contentClassName="w-full"
       data-testid={dataTestId}
       title={
         <MetricTitle
           title={
-            <Typography variant="body" className="text-v3-bg-accent-0 text-sm">
+            <BaseTypography variant="body" className="text-v3-bg-accent-0 text-sm">
               {title}
-            </Typography>
+            </BaseTypography>
           }
           info={<Paragraph className="text-[14px] font-normal text-left">{info}</Paragraph>}
           infoIconProps={{
@@ -33,13 +39,13 @@ export const RewardCard = ({
           }}
         />
       }
-      className="w-auto"
+      className={cn('w-auto', className)}
       containerClassName="gap-4 h-full"
     >
       {isLoading ? (
         <LoadingSpinner size={'medium'} />
       ) : (
-        <div className="flex flex-col gap-4 text-xl">{children}</div>
+        <div className={cn('flex flex-col justify-between gap-4 text-xl w-full', className)}>{children}</div>
       )}
     </Metric>
   )

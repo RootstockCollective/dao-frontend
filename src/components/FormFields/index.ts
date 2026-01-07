@@ -1,3 +1,5 @@
 export { TextInput } from './TextInput'
 export { TextArea } from './TextArea'
 export { NumberInput } from './NumberInput'
+export { SelectField } from './SelectField'
+export { MarkdownEditor } from './MarkdownEditor'

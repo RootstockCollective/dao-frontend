@@ -20,6 +20,11 @@ export const metadata: Metadata = {
   description: 'RootstockCollective DAO dApp',
 }
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
+
 interface Props {
   children: ReactNode
 }

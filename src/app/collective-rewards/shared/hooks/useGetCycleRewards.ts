@@ -6,22 +6,29 @@ export const useGetCycleRewards = () => {
     data: rifRewards,
     isLoading: rifRewardsLoading,
     error: rifRewardsError,
-  } = useReadRewardDistributor({ functionName: 'defaultRewardTokenAmount' })
+  } = useReadRewardDistributor({ functionName: 'defaultRifAmount' })
   const {
     data: rbtcRewards,
     isLoading: rbtcRewardsLoading,
     error: rbtcRewardsError,
-  } = useReadRewardDistributor({ functionName: 'defaultRewardCoinbaseAmount' })
+  } = useReadRewardDistributor({ functionName: 'defaultNativeAmount' })
+
+  const {
+    data: usdrifRewards,
+    isLoading: usdrifRewardsLoading,
+    error: usdrifRewardsError,
+  } = useReadRewardDistributor({ functionName: 'defaultUsdrifAmount' })
 
   return {
     data: useMemo(
       () => ({
         rif: rifRewards ?? 0n,
         rbtc: rbtcRewards ?? 0n,
+        usdrif: usdrifRewards ?? 0n,
       }),
-      [rifRewards, rbtcRewards],
+      [rifRewards, rbtcRewards, usdrifRewards],
     ),
-    isLoading: rifRewardsLoading || rbtcRewardsLoading,
-    error: rifRewardsError ?? rbtcRewardsError ?? null,
+    isLoading: rifRewardsLoading || rbtcRewardsLoading || usdrifRewardsLoading,
+    error: rifRewardsError ?? rbtcRewardsError ?? usdrifRewardsError,
   }
 }

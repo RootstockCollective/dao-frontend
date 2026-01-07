@@ -1,35 +1,58 @@
-import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
-import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
-import { Typography } from '@/components/TypographyNew/Typography'
-import { Header } from '@/components/TypographyNew'
+import { FiatTooltipLabel } from '@/app/components'
+import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
+import { MetricToken } from '@/app/components/Metric/types'
+import { createMetricToken } from '@/app/components/Metric/utils'
+import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { Metric } from '@/components/Metric'
-import { FC } from 'react'
-import { RBTC, RIF, WeiPerEther } from '@/lib/constants'
+import { Header, Label } from '@/components/Typography'
+import { REWARD_TOKENS } from '@/lib/tokens'
+import { formatCurrency, formatCurrencyWithLabel } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import Big from 'big.js'
-import { formatCurrency } from '@/lib/utils'
+import { FC } from 'react'
 
-interface RewardsMetricsProps {
-  title: string
-  rbtcRewards: bigint
-  rifRewards: bigint
+export type TokenWithValue = (typeof REWARD_TOKENS)[number] & {
+  value: bigint
 }
 
-export const RewardsMetrics: FC<RewardsMetricsProps> = ({ title, rbtcRewards, rifRewards }) => {
+export interface RewardsMetricsProps {
+  title: string
+  rewardTokens: TokenWithValue[]
+}
+
+export const RewardsMetrics: FC<RewardsMetricsProps> = ({ title, rewardTokens }) => {
   const { prices } = usePricesContext()
-  const estimatedRewards = Big(rifRewards.toString())
-    .mul(prices[RIF]?.price ?? 0)
-    .plus(Big(rbtcRewards.toString()).mul(prices[RBTC]?.price ?? 0))
-    .div(WeiPerEther.toString())
-    .toString()
+
+  const {
+    rewardMetricPerToken,
+    totalEstimatedRewards,
+  }: {
+    rewardMetricPerToken: MetricToken[]
+    totalEstimatedRewards: Big
+  } = rewardTokens.reduce(
+    (acc, { symbol, value }) => {
+      const tokenPrice = prices[symbol]?.price || 0
+      const metricToken = createMetricToken({
+        symbol,
+        value,
+        price: tokenPrice,
+      })
+
+      acc.rewardMetricPerToken.push(metricToken)
+      acc.totalEstimatedRewards = acc.totalEstimatedRewards.add(Big(metricToken.fiatValue))
+
+      return acc
+    },
+    { rewardMetricPerToken: [] as MetricToken[], totalEstimatedRewards: Big(0) },
+  )
 
   return (
-    <Metric className="text-v3-text-0" title={<Typography variant="body">{title}</Typography>}>
+    <Metric className="text-v3-text-0" title={<Label className="text-v3-bg-accent-60">{title}</Label>}>
       <div className="flex flex-row items-baseline gap-2 font-rootstock-sans">
-        <Header>{formatCurrency(estimatedRewards)}</Header>
-        <RifRbtcTooltip rbtcValue={rbtcRewards} rifValue={rifRewards}>
-          <DottedUnderlineLabel className="text-lg">USD</DottedUnderlineLabel>
-        </RifRbtcTooltip>
+        <Header>{formatCurrency(totalEstimatedRewards)}</Header>
+        <FiatTooltipLabel
+          tooltip={{ side: 'top', text: <MetricTooltipContent tokens={rewardMetricPerToken} /> }}
+        />
       </div>
     </Metric>
   )

@@ -1,111 +1,58 @@
-import { ButtonVariants } from './types'
 import { cn } from '@/lib/utils'
-import { FC, JSX, MouseEvent, ReactNode } from 'react'
+import { ButtonHTMLAttributes, FC, RefAttributes } from 'react'
 import { Span } from '../Typography'
-import { SpinnerIcon } from '../Icons'
 
-const BUTTON_DEFAULT_CLASSES = 'px-[23px] py-[9px] flex gap-x-1 items-center relative rounded-[6px]'
+type ButtonVariant = 'primary' | 'secondary' | 'secondary-outline' | 'transparent'
 
-const DEFAULT_PAGINATION_CLASSES = 'w-[32px] h-[32px] p-0'
+const DEFAULT_CLASSES =
+  'relative overflow-hidden py-3 px-4 rounded-sm font-bold text-base transition-all duration-150 flex items-center justify-center disabled:cursor-not-allowed w-full md:w-fit'
 
-const DEFAULT_PAGINATION_ACTIVE_CLASSES = [DEFAULT_PAGINATION_CLASSES, 'bg-primary text-black'].join(' ')
-
-interface Props {
-  children: ReactNode
-  onClick?: (e: MouseEvent<HTMLButtonElement>) => void
-  startIcon?: ReactNode
-  variant?: ButtonVariants
-  fullWidth?: boolean
-  centerContent?: boolean
-  disabled?: boolean
-  className?: string
-  textClassName?: string
-  buttonProps?: JSX.IntrinsicElements['button'] & { 'data-testid'?: string }
-  loading?: boolean
-  startIconClasses?: string
+interface Props extends RefAttributes<HTMLButtonElement>, ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: ButtonVariant
   'data-testid'?: string
+  textClassName?: string
 }
-export type ButtonProps = Props
 
-const DEFAULT_DATA_TESTID = 'Button'
-
-/**
- * @deprecated Use `ButtonNew` instead.
- * @param text
- * @param onClick
- * @param startIcon
- * @param variant
- * @param fullWidth
- * @param centerContent
- * @param disabled
- * @param className
- * @param textClassName
- * @param buttonProps
- * @param loading
- * @param startIconClasses
- * @param dataTestId
- * @constructor
- */
 export const Button: FC<Props> = ({
-  children: text,
-  onClick,
-  startIcon,
+  children,
   variant = 'primary',
-  fullWidth = false,
-  centerContent = true,
   disabled = false,
-  className = '',
-  textClassName = '',
-  buttonProps = {},
-  loading = false,
-  startIconClasses,
+  onClick,
+  className,
   'data-testid': dataTestId,
+  textClassName = '',
+  ...props
 }) => {
-  startIcon = loading ? <SpinnerIcon className="animate-spin" /> : startIcon
-  const classes = cn({
-    [BUTTON_DEFAULT_CLASSES]: true,
-    'bg-primary rounded-[6px]': variant === 'primary',
-    'bg-primary rounded-[6px] h-[56px]': variant === 'primary-new',
-    'bg-transparent border-secondary rounded-[6px] border': variant === 'secondary',
-    'bg-secondary border-secondary rounded-[6px] border': variant === 'secondary-full',
-    'bg-white rounded-[6px] border': variant === 'white',
-    'bg-white rounded-[6px] border h-[56px]': variant === 'white-new',
-    'bg-disabled-primary': disabled && variant === 'primary',
-    'rounded-[6px] border-0': disabled,
-    'border-0': variant === 'borderless',
-    'border border-[#2D2D2D] rounded-[6px]': variant === 'outlined',
-    'w-full': fullWidth,
-    'pl-9': startIcon,
-    'justify-start': !centerContent,
-    'justify-center': centerContent,
-    'cursor-not-allowed': disabled,
-    [DEFAULT_PAGINATION_CLASSES]: variant === 'pagination',
-    [DEFAULT_PAGINATION_ACTIVE_CLASSES]: variant === 'pagination-active',
-    [className]: true,
-  })
-
-  const textClasses = cn({
-    'font-rootstock-sans': true,
-    'font-bold relative': true,
-    'text-white': true,
-    'text-secondary': disabled,
-    'font-normal text-[rgba(255,255,255,0.8)]': variant === 'borderless',
-    'text-black': ['white', 'white-new'].includes(variant),
-    [textClassName]: true,
-  })
+  const styles = {
+    primary:
+      'bg-primary text-bg-100 border border-primary disabled:bg-disabled-primary disabled:border-transparent',
+    secondary:
+      'bg-bg-100 text-text-100 border border-bg-100 disabled:opacity-80 disabled:border-disabled-primary disabled:border-opacity-80',
+    'secondary-outline':
+      'bg-transparent text-text-100 border border-bg-0 disabled:opacity-50 disabled:border-disabled-primary disabled:border-opacity-50',
+    transparent:
+      'bg-transparent text-text-100 border-none disabled:opacity-50 disabled:border-disabled-primary disabled:border-opacity-50',
+  }
 
   return (
     <button
       type="button"
-      className={classes}
+      className={cn(DEFAULT_CLASSES, styles[variant], className)}
       onClick={e => !disabled && onClick?.(e)}
-      {...buttonProps}
-      data-testid={`${DEFAULT_DATA_TESTID}${dataTestId || buttonProps['data-testid'] || ''}${buttonProps.id || ''}`}
+      disabled={disabled}
+      data-testid={dataTestId}
+      // All props must be forwarded to the underlying component to ensure that wrapping components (like Tooltip) function correctly.
+      {...props}
     >
-      <span className={textClasses}>
-        <span className={cn('absolute left-[-20px] top-[4px]', startIconClasses)}>{startIcon}</span>
-        <Span className={textClassName}>{text}</Span>
-      </span>
+      {typeof children === 'string' ? (
+        <Span className={textClassName} bold>
+          {children}
+        </Span>
+      ) : (
+        children
+      )}
     </button>
   )
 }
+
+export type ButtonProps = Props

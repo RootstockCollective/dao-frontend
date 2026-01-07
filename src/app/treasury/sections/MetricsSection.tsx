@@ -1,5 +1,5 @@
 import { HeaderTitle } from '@/components/Typography'
-import { Label } from '@/components/TypographyNew'
+import { Label } from '@/components/Typography'
 import { formatCurrencyWithLabel, formatNumberWithCommas } from '@/lib/utils'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { useStRifHoldings } from '../hooks/useStRifHoldings'

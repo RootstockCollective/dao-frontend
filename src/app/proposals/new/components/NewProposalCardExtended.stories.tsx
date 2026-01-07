@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { NewProposalCardExtended } from './NewProposalCardExtended'
-import { newProposalCards, type NewProposalCardExtendedData } from '../newProposalCards.data'
+import { newProposalCards, type NewProposalCardData } from '../newProposalCards.data'
 import { useState } from 'react'
 import { AnimatePresence } from 'motion/react'
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 
 const meta: Meta<typeof NewProposalCardExtended> = {
   title: 'Proposals/NewProposalCardExtended',
@@ -17,7 +17,7 @@ const meta: Meta<typeof NewProposalCardExtended> = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-const Card = ({ card }: { card: NewProposalCardExtendedData }) => {
+const Card = ({ card }: { card: NewProposalCardData }) => {
   const [visible, setVisible] = useState(false)
   return (
     <div>

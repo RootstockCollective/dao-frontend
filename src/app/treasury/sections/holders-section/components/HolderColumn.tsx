@@ -1,5 +1,5 @@
 import { Jdenticon } from '@/components/Header/Jdenticon'
-import { Span } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 import { EXPLORER_URL } from '@/lib/constants'
 
 interface HolderColumnProps {

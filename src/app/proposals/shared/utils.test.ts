@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { getDiscourseLinkFromProposalDescription, DISCOURSE_LINK_SEPARATOR } from './utils' // adjust import path
+import { getDiscourseLinkFromProposalDescription } from './utils' // adjust import path
 
 describe('getDiscourseLinkFromProposalDescription', () => {
   test('should return undefined when description does not contain DiscourseLink:', () => {
@@ -10,13 +10,13 @@ describe('getDiscourseLinkFromProposalDescription', () => {
     expect(result).toBeUndefined()
   })
 
-  test('should extract link when DiscourseLink: is present and followed by text ending with space', () => {
+  test('should extract only the URL when DiscourseLink: is followed by space and more text', () => {
     const description =
       'This is a proposal DiscourseLink:https://discourse.example.com/topic/123 and some more text'
 
     const result = getDiscourseLinkFromProposalDescription(description)
 
-    expect(result).toBe('https://discourse.example.com/topic/123 and some more')
+    expect(result).toBe('https://discourse.example.com/topic/123')
   })
 
   test('should extract link when DiscourseLink: is at the end of description with no trailing space', () => {
@@ -27,13 +27,12 @@ describe('getDiscourseLinkFromProposalDescription', () => {
     expect(result).toBe('https://discourse.example.com/topic/456')
   })
 
-  test('should handle DiscourseLink: with extra whitespace around the link', () => {
-    const description =
-      'Proposal text DiscourseLink:   https://discourse.example.com/topic/789   more text here'
+  test('should extract only the URL when there is extra whitespace before the first space', () => {
+    const description = 'Proposal text DiscourseLink:https://discourse.example.com/topic/789 more text here'
 
     const result = getDiscourseLinkFromProposalDescription(description)
 
-    expect(result).toBe('https://discourse.example.com/topic/789   more text')
+    expect(result).toBe('https://discourse.example.com/topic/789')
   })
 
   test('should return empty string when DiscourseLink: is followed immediately by space', () => {
@@ -41,27 +40,27 @@ describe('getDiscourseLinkFromProposalDescription', () => {
 
     const result = getDiscourseLinkFromProposalDescription(description)
 
-    expect(result).toBe('and then more')
+    expect(result).toBe('')
   })
 
-  test('should extract everything up to the last space in the entire description', () => {
+  test('should extract only URL up to first space, not including subsequent text', () => {
     const description = 'Start DiscourseLink:https://discourse.example.com/some/long/path middle text final'
 
     const result = getDiscourseLinkFromProposalDescription(description)
 
-    expect(result).toBe('https://discourse.example.com/some/long/path middle text')
+    expect(result).toBe('https://discourse.example.com/some/long/path')
   })
 
-  test('should find first occurrence of DiscourseLink: when multiple exist', () => {
+  test('should find first occurrence of DiscourseLink: and extract only that URL', () => {
     const description =
       'First DiscourseLink:https://first.com and second DiscourseLink:https://second.com end'
 
     const result = getDiscourseLinkFromProposalDescription(description)
 
-    expect(result).toBe('https://first.com and second DiscourseLink:https://second.com')
+    expect(result).toBe('https://first.com')
   })
 
-  test('should handle case where DiscourseLink: is immediately followed by the last space', () => {
+  test('should handle case where DiscourseLink: is immediately followed by space at end', () => {
     const description = 'Some text DiscourseLink: '
 
     const result = getDiscourseLinkFromProposalDescription(description)
@@ -69,11 +68,19 @@ describe('getDiscourseLinkFromProposalDescription', () => {
     expect(result).toBe('')
   })
 
-  test('should extract content when there are multiple spaces after DiscourseLink:', () => {
+  test('should extract only URL when link is followed by milestone text', () => {
+    const description = 'Proposal DiscourseLink:https://gov.rootstock.xyz/t/123 Milestone1'
+
+    const result = getDiscourseLinkFromProposalDescription(description)
+
+    expect(result).toBe('https://gov.rootstock.xyz/t/123')
+  })
+
+  test('should extract only the first word after DiscourseLink:', () => {
     const description = 'Proposal DiscourseLink:link-content with multiple words final'
 
     const result = getDiscourseLinkFromProposalDescription(description)
 
-    expect(result).toBe('link-content with multiple words')
+    expect(result).toBe('link-content')
   })
 })

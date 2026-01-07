@@ -23,8 +23,9 @@ const defaultCardsState = {
 export const initialDataState: DelegateDataState = {
   cards: defaultCardsState,
   didIDelegateToMyself: false,
-  delegateeAddress: undefined,
-  delegateeVotingPower: undefined,
+  currentDelegatee: undefined,
+  nextDelegatee: undefined,
+  displayedDelegatee: undefined,
 }
 
 export const initialUIState: DelegateUIState = {
@@ -35,6 +36,7 @@ export const initialUIState: DelegateUIState = {
 const initialActions: DelegateActions = {
   setIsDelegationPending: () => {},
   setIsReclaimPending: () => {},
+  setNextDelegatee: () => {},
   refetch: () => {},
 }
 

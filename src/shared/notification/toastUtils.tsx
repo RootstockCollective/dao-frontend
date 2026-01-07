@@ -1,4 +1,4 @@
-import { Paragraph } from '@/components/Typography'
+import { Paragraph, Span } from '@/components/Typography'
 import { ReactNode } from 'react'
 import { Bounce, Id, toast, ToastOptions } from 'react-toastify'
 import { TxStatus } from '../types'
@@ -89,17 +89,13 @@ const buildToastProps = ({
 const buildToastContent = ({ title, content, txHash, dataTestId }: ToastAlertContent) => (
   <div className="flex items-start gap-2" data-testid={`Alert-${dataTestId}`}>
     <div>
-      <Paragraph
-        variant="bold"
-        className="leading-5 mb-[6px] text-[18px] text-white"
-        data-testid="ToastTitle"
-      >
+      <Paragraph variant="body-l" className="mb-1.5" bold data-testid="ToastTitle">
         {title}
       </Paragraph>
       {typeof content === 'string' ? (
         <Paragraph
-          variant="light"
-          className="font-[600] text-[14px] text-white opacity-80 mb-[12px] max-h-36 overflow-y-auto"
+          variant="body-s"
+          className="mb-3 max-h-36 overflow-y-auto text-text-60"
           data-testid="ToastContent"
         >
           {content}
@@ -114,7 +110,7 @@ const buildToastContent = ({ title, content, txHash, dataTestId }: ToastAlertCon
           className="text-blue-500 underline block"
           data-testid="ToastExplorerLink"
         >
-          View on Explorer
+          <Span variant="body-s">View on Explorer</Span>
         </Link>
       )}
     </div>

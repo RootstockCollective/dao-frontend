@@ -26,6 +26,7 @@ export default function PaginationPageSizeSelector<T>({
         onChange={e => {
           table.setPageSize(Number(e.target.value))
         }}
+        data-testid="PageSizeSelector"
       >
         {pageSizes.map(pageSize => (
           <option key={pageSize} value={pageSize}>

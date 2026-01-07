@@ -1,6 +1,6 @@
 import { CopySvg } from '@/components/CopySvg'
 import { ArrowUpRightLightIcon } from '@/components/Icons'
-import { Span } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 import { EXPLORER_URL } from '@/lib/constants'
 import { cn, shortAddress } from '@/lib/utils'
 import { useEffect, useState } from 'react'
@@ -31,7 +31,9 @@ export function AddressLink({ address, className }: { address: Address; classNam
   }, [copied])
 
   return (
-    <div className={cn('flex flex-col md:flex-row items-center gap-5 w-full', className)}>
+    <div
+      className={cn('flex flex-row items-center justify-between sm:justify-start gap-5 w-full', className)}
+    >
       <button
         onClick={handleCopy}
         className="hover:cursor-pointer transition-colors duration-100 flex flex-row items-center gap-1.5"

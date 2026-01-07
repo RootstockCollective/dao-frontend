@@ -1,8 +1,8 @@
-import { Button } from '@/components/ButtonNew/Button'
-import { Paragraph, Span } from '@/components/TypographyNew'
-import { CommonComponentProps } from '@/components/commonProps'
+import { Button } from '@/components/Button'
+import { Paragraph, Span } from '@/components/Typography'
+import type { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 
 const modes = ['cyclic', 'expandable'] as const
 type Mode = (typeof modes)[number]
@@ -29,7 +29,11 @@ const PagerCount: React.FC<{
   total: number
   itemName: string
 }> = ({ start, end, total, itemName }) => (
-  <Paragraph variant="body-xs" className="text-v3-bg-accent-0 select-none" data-testid="table-pager-count">
+  <Paragraph
+    variant="body-xs"
+    className="text-v3-bg-accent-0 select-none first-letter:uppercase"
+    data-testid="table-pager-count"
+  >
     {itemName} {start} – {end} out of {total}
   </Paragraph>
 )
@@ -63,7 +67,7 @@ const nextPageHandlers: Record<Mode, NextPageHandler> = {
 } as const
 
 const getDefaultRange = (pageSize: number, totalItems: number) => ({
-  start: totalItems && 1,
+  start: totalItems > 0 ? 1 : 0,
   end: Math.min(pageSize, totalItems),
 })
 
@@ -85,16 +89,58 @@ export const TablePager: React.FC<TablePagerProps> = ({
   mode,
   className,
 }) => {
-  const [{ start, end }, setRange] = useState(getDefaultRange(pageSize, totalItems))
-
   if (!isMode(mode)) {
     throw new Error(`Invalid mode: ${mode}`)
   }
 
-  // Reset the range when the mode, pageSize, or totalItems changes
+  const [{ start, end }, setRange] = useState(() => getDefaultRange(pageSize, totalItems))
+
+  // Reset ONLY on mode change (don’t tie to totalItems/pageSize or you'll reset on fetch)
   useEffect(() => {
     setRange(getDefaultRange(pageSize, totalItems))
-  }, [mode, totalItems, pageSize])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode])
+
+  // Clamp to total and initialize when items appear
+  useEffect(() => {
+    setRange(prev => {
+      if (!totalItems) return prev
+
+      // initialize 0→positive
+      if (prev.start === 0 && prev.end === 0) {
+        return getDefaultRange(pageSize, totalItems)
+      }
+
+      // clamp end if total shrank
+      if (prev.end > totalItems) {
+        return { ...prev, end: totalItems }
+      }
+
+      // If totalItems changed and end is less than what we should show,
+      // update end to reflect available items (for expandable mode)
+      if (isExpandable(mode)) {
+        const minEnd = Math.min(pageSize, totalItems)
+        if (prev.end < minEnd && prev.end < totalItems) {
+          return { ...prev, end: minEnd }
+        }
+      }
+
+      return prev
+    })
+  }, [totalItems, pageSize, mode])
+
+  // React to pageSize/mode changes WITHOUT needing the previous value:
+  // - cyclic: force window size == pageSize
+  // - expandable: do nothing (preserve user-grown window)
+  useEffect(() => {
+    if (!totalItems) return
+    if (mode !== 'cyclic') return
+
+    setRange(prev => {
+      const desiredEnd = Math.min(prev.start + pageSize - 1, totalItems)
+      return desiredEnd !== prev.end ? { ...prev, end: desiredEnd } : prev
+    })
+  }, [pageSize, mode, totalItems])
 
   const handleNext = () => {
     if (totalItems) {
@@ -102,36 +148,49 @@ export const TablePager: React.FC<TablePagerProps> = ({
     }
   }
 
-  const isNextExpandableButtonVisible = isExpandable(mode) && totalItems > pageSize
-  const isNextCyclicButtonVisible = isCyclic(mode)
+  const remainingItems = useMemo(() => {
+    if (isExpandable(mode)) {
+      const remainingTotal = Math.max(0, totalItems - end)
+      return Math.min(pageSize, remainingTotal)
+    }
+    if (isCyclic(mode)) {
+      if (end + 1 > totalItems) return Math.min(pageSize, totalItems)
+      return Math.min(pageSize, totalItems - end)
+    }
+    return 0
+  }, [end, mode, pageSize, totalItems])
+
+  const showExpandableNext = isExpandable(mode) && remainingItems > 0
+  const showCyclicNext = isCyclic(mode) && remainingItems > 0
 
   return (
     <div
       className={cn(
-        'w-full flex items-center mt-6',
-        isNextExpandableButtonVisible || isNextCyclicButtonVisible ? 'justify-between' : 'justify-end',
+        'w-full flex items-center mt-0 md:mt-6',
+        showExpandableNext || showCyclicNext ? 'justify-between' : 'justify-end',
         className,
       )}
     >
-      {isNextExpandableButtonVisible && (
+      {showExpandableNext && (
         <Button
           variant="secondary"
           onClick={handleNext}
-          aria-label={`Show next ${pageSize} ${pagedItemName}`}
+          aria-label={`Show next ${remainingItems} ${pagedItemName}`}
           data-testid="table-pager-next"
-          disabled={isExpandable(mode) && end >= totalItems}
-          className="border border-v3-bg-accent-40 px-2 py-1"
+          disabled={end >= totalItems}
+          className="border border-v3-bg-accent-40 px-2 py-1 w-auto"
         >
-          <Span className="text-sm">
-            Show next {pageSize} {pagedItemName}
+          <Span className="text-sm hidden md:inline">
+            Show next {remainingItems} {pagedItemName}
           </Span>
+          <Span className="text-sm inline md:hidden">Show next {remainingItems}</Span>
         </Button>
       )}
-      {isNextCyclicButtonVisible && (
-        <div className="flex items-center gap-2">
-          {/* TODO: Add first, previous, next, and last buttons and remove the warning in the component description */}
-        </div>
+
+      {showCyclicNext && (
+        <div className="flex items-center gap-2">{/* TODO: first/prev/next/last for cyclic mode */}</div>
       )}
+
       <PagerCount start={start} end={end} total={totalItems} itemName={pagedItemName} />
     </div>
   )

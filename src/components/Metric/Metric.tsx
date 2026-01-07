@@ -1,8 +1,8 @@
-import { Typography } from '@/components/TypographyNew/Typography'
 import { cn } from '@/lib/utils'
-import { FC, ReactNode } from 'react'
+import { FC, ReactNode, isValidElement } from 'react'
 import { CommonComponentProps } from '../../components/commonProps'
 import { MetricContent } from './MetricContent'
+import { MetricTitle } from '@/components/Metric/MetricTitle'
 
 type MetricProps = CommonComponentProps & {
   title: ReactNode
@@ -19,18 +19,10 @@ export const Metric: FC<MetricProps> = ({
   contentClassName = '',
   'data-testid': dataTestId = 'Metric',
 }) => {
-  const isTitleTextual = typeof title === 'string'
-
   return (
     <div data-testid={dataTestId} className={cn('flex items-center gap-4 w-full', className)}>
-      <div className={cn('w-full flex flex-col gap-2', containerClassName)}>
-        {isTitleTextual ? (
-          <Typography variant="body" className="text-v3-bg-accent-0">
-            {title}
-          </Typography>
-        ) : (
-          title
-        )}
+      <div className={cn('w-full flex flex-col gap-0.5 md:gap-2', containerClassName)}>
+        {isValidElement(title) ? title : <MetricTitle title={title} />}
         <MetricContent className={contentClassName}>{children}</MetricContent>
       </div>
     </div>

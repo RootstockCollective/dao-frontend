@@ -1,15 +1,49 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { isBuilderRewardable } from '@/app/collective-rewards/utils'
 import { floorToUnit, getBuilderColor } from '@/app/shared/components/utils'
+import { shortAddress } from '@/lib/utils'
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { Address, formatEther, parseEther } from 'viem'
+import { Address, zeroAddress } from 'viem'
 import AllocationBar from '../AllocationBar/AllocationBar'
 import { AllocationBarProps, AllocationChangeData, AllocationItem } from '../AllocationBar/types'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
-const UNALLOCATED_KEY = 'unallocated'
+const UNALLOCATED_LABEL = 'Available backing' as const
+
+function createUnallocatedItem(
+  initialData: {
+    balance: bigint
+    cumulativeAllocation: bigint
+  },
+  cumulativeAllocation: bigint,
+): {
+  key: typeof zeroAddress
+  label: typeof UNALLOCATED_LABEL
+  initialValue: bigint
+  value: bigint
+  displayColor: 'var(--background-40)'
+  isTemporary: boolean
+  isEditable: true
+} {
+  const { balance, cumulativeAllocation: initialCumulativeAllocation } = initialData
+  return {
+    key: zeroAddress,
+    label: UNALLOCATED_LABEL,
+    initialValue: floorToUnit(balance - initialCumulativeAllocation),
+    value: balance > cumulativeAllocation ? floorToUnit(balance - cumulativeAllocation) : 0n,
+    displayColor: 'var(--background-40)',
+    isTemporary: initialData.cumulativeAllocation != cumulativeAllocation,
+    isEditable: true,
+  }
+}
 
 const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<AllocationBarProps> }) => {
+  const isDesktop = useIsDesktop()
   const {
-    initialState: { allocations: initialAllocations },
+    initialState: {
+      allocations: initialAllocations,
+      backer: { balance: initialBalance, cumulativeAllocation: initialCumulativeAllocation },
+    },
     state: {
       resetVersion,
       allocations,
@@ -19,23 +53,23 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
     actions: { updateAllocation },
   } = useContext(AllocationsContext)
 
-  // Local order state, includes 'unallocated'
-  const [orderedKeys, setOrderedKeys] = useState<string[]>([])
+  // Local order state, includes zeroAddress for unallocated
+  const [orderedKeys, setOrderedKeys] = useState<Address[]>([])
 
   useEffect(() => {
-    setOrderedKeys([...Object.keys(initialAllocations), UNALLOCATED_KEY])
+    setOrderedKeys([...(Object.keys(initialAllocations) as Address[]), zeroAddress])
   }, [resetVersion, initialAllocations])
 
-  // Sync keys and add new keys to left of 'unallocated'
+  // Sync keys and add new keys to left of zeroAddress
   useEffect(() => {
-    const allocationKeys = Object.keys(allocations)
+    const allocationKeys = Object.keys(allocations) as Address[]
 
     if (orderedKeys.length === 0) {
-      setOrderedKeys([...allocationKeys, UNALLOCATED_KEY])
+      setOrderedKeys([...allocationKeys, zeroAddress])
       return
     }
 
-    const unallocatedIndex = orderedKeys.indexOf(UNALLOCATED_KEY)
+    const unallocatedIndex = orderedKeys.indexOf(zeroAddress)
     const missingKeys = allocationKeys.filter(k => !orderedKeys.includes(k))
 
     if (missingKeys.length > 0) {
@@ -48,42 +82,54 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
     }
   }, [allocations, initialAllocations, orderedKeys])
 
-  // Calculate unallocated amount
-  const unallocated = useMemo(() => {
-    return balance > cumulativeAllocation ? floorToUnit(balance - cumulativeAllocation) : 0n
-  }, [balance, cumulativeAllocation])
+  const initialData = useMemo(() => {
+    return {
+      balance: initialBalance,
+      cumulativeAllocation: initialCumulativeAllocation,
+      allocations: initialAllocations,
+    }
+  }, [initialCumulativeAllocation, initialBalance, initialAllocations])
 
   // Build itemsData from orderedKeys including unallocated with its dynamic value
   const baseItems: AllocationItem[] = useMemo(() => {
-    return orderedKeys
-      .map(key => {
-        if (key === UNALLOCATED_KEY) {
-          return {
-            key: UNALLOCATED_KEY,
-            label: 'available backing',
-            value: Number(formatEther(unallocated)),
-            displayColor: 'var(--background-40)',
+    return (
+      orderedKeys
+        .map((key: Address) => {
+          if (key === zeroAddress) {
+            return createUnallocatedItem(initialData, cumulativeAllocation)
           }
-        }
-        const addressKey = key as Address
 
-        const allocation = allocations[addressKey]
-        const builder = getBuilder(addressKey)
-        // TODO: Add a check to see if the builder is rewardable and
-        // and change the segment to allow certain actions only (e.g.: reduce but not increase)
+          const allocation = allocations[key]
+          const builder = getBuilder(key)
+          // TODO: Add a check to see if the builder is rewardable and
+          // and change the segment to allow certain actions only (e.g.: reduce but not increase)
 
-        const value = allocation ? Number(formatEther(allocation)) : 0
+          const value = allocation || 0n
+          const initialValue = initialData.allocations[key] || 0n
 
-        return {
-          key,
-          label: builder?.builderName || key,
-          value,
-          displayColor: getBuilderColor(addressKey),
-          isTemporary: initialAllocations[addressKey] !== allocation,
-        }
-      })
-      .filter(item => item !== null)
-  }, [orderedKeys, allocations, unallocated, initialAllocations, getBuilder])
+          return {
+            key,
+            label: builder?.builderName || shortAddress(key),
+            value,
+            initialValue,
+            displayColor: getBuilderColor(key),
+            isTemporary: initialData.allocations[key] !== allocation,
+            isEditable: isBuilderRewardable(builder?.stateFlags),
+          }
+        })
+        // On mobile, exclude items with zero value as interaction handlers are unavailable
+        .filter(item => item !== null && (isDesktop || item.value > 0n))
+        .sort((a, b) => {
+          // Available backing (zeroAddress) always last
+          if (a.key === zeroAddress) return 1
+          if (b.key === zeroAddress) return -1
+          // Non-editable items first, editable items after
+          // This avoids issues with the resize handles not working properly
+          if (a.isEditable === b.isEditable) return 0
+          return a.isEditable ? 1 : -1
+        })
+    )
+  }, [orderedKeys, allocations, getBuilder, initialData, cumulativeAllocation, isDesktop])
 
   // Local state for itemsData so bar updates on interactions
   const [itemsData, setItemsData] = useState<AllocationItem[]>(baseItems)
@@ -99,12 +145,12 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
       if (change.type === 'resize') {
         const { values: newValues, itemsData, increasedIndex, decreasedIndex } = change
 
-        // Update allocations except for 'unallocated'
+        // Update allocations except for zeroAddress
         const changedItems = [itemsData[increasedIndex], itemsData[decreasedIndex]]
         changedItems.forEach(item => {
           const newValue = newValues[itemsData.indexOf(item)]
-          if (item.key !== UNALLOCATED_KEY) {
-            updateAllocation(item.key as Address, newValue > 0 ? parseEther(newValue.toString()) : 0n)
+          if (item.key !== zeroAddress) {
+            updateAllocation(item.key as Address, newValue)
           }
         })
       } else if (change.type === 'reorder') {
@@ -115,48 +161,26 @@ const BuilderAllocationBar = ({ barOverrides }: { barOverrides?: Partial<Allocat
     [updateAllocation],
   )
 
-  const isEmpty = cumulativeAllocation === 0n && Object.keys(allocations).length === 0
-
-  if (balance === 0n && isEmpty) {
-    return (
-      <AllocationBar
-        itemsData={[
-          {
-            key: 'unallocated',
-            label: 'available backing',
-            value: 1,
-            displayColor: 'var(--background-60)',
-            isTemporary: true,
-          },
-        ]}
-        valueDisplay={{
-          showPercent: false,
-        }}
-        isResizable={false}
-        isDraggable={false}
-        height="1rem"
-        onChange={() => {}}
-        className="min-h-52"
-        {...barOverrides}
-      />
-    )
+  if (balance === 0n) {
+    return null
   }
 
+  const isEmpty = cumulativeAllocation === 0n && Object.keys(allocations).length === 0
   return (
     <AllocationBar
       itemsData={itemsData}
       valueDisplay={{
-        showPercent: true,
+        showPercent: isDesktop,
         format: {
           percentDecimals: 2,
         },
       }}
-      isResizable={!isEmpty}
-      isDraggable={!isEmpty}
-      height={isEmpty ? '1rem' : undefined}
+      isResizable={!isEmpty && isDesktop}
+      isDraggable={!isEmpty && isDesktop}
+      showLegend={isDesktop}
+      height={isEmpty || !isDesktop ? '1rem' : undefined}
       onChange={handleAllocationChange}
-      // we want the component to have the same height
-      className={`${isEmpty ? 'min-h-52' : ''}`}
+      withModal={!isDesktop}
       {...barOverrides}
     />
   )

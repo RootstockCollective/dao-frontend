@@ -27,18 +27,24 @@ export const useAllowance = (
     [amount, allowanceBalance],
   )
 
+  // Memoize the config to prevent infinite loops
+  const contractWriteConfig = useMemo(
+    () => ({
+      abi: RIFTokenAbi,
+      address: tokenToSendContract,
+      functionName: 'approve' as const,
+      args: [tokenToReceiveContract, parseEther(amount)] as const,
+    }),
+    [tokenToSendContract, tokenToReceiveContract, amount],
+  )
+
   const {
     onRequestTransaction: onRequestAllowance,
     isRequesting,
     isTxPending,
     isTxFailed,
     txHash: allowanceTxHash,
-  } = useContractWrite({
-    abi: RIFTokenAbi,
-    address: tokenToSendContract,
-    functionName: 'approve',
-    args: [tokenToReceiveContract, parseEther(amount)],
-  })
+  } = useContractWrite(contractWriteConfig)
 
   return {
     isAllowanceEnough,

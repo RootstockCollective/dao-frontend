@@ -1,5 +1,5 @@
 import { Metric, MetricTitle } from '@/components/Metric'
-import { Header, Paragraph } from '@/components/TypographyNew'
+import { Header, Paragraph } from '@/components/Typography'
 import { AnnualBackerIncentivesLoader } from '@/app/shared/components/AnnualBackersIncentivesLoader'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { ABIFormula } from '../ABIFormula'
@@ -36,7 +36,7 @@ export const GlobalAnnualBackersIncentives = () => {
                 }
               />
             }
-            className="pb-6"
+            className="pb-3 md:pb-6"
           >
             <Header variant="h1">{abiPct.toFixed(0)}%</Header>
           </Metric>

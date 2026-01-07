@@ -1,25 +1,42 @@
-import { LabelVariants } from './types'
-import { Typography } from './Typography'
-import { cn } from '@/lib/utils'
-import { FC, ReactNode } from 'react'
+import { FC } from 'react'
+import { BodyVariants, TagVariants } from './types'
+import { BaseTypography, BaseTypographyProps } from './Typography'
 
-const DEFAULT_CLASSES = 'text-[1rem]'
+type LabelVariant = BodyVariants | TagVariants
 
-const classesByVariant: Record<LabelVariants, string> = {
-  normal: 'font-light',
-  light: 'text-text-light',
-  semibold: 'font-[600]',
+interface Props extends Omit<BaseTypographyProps<'label'>, 'as'> {
+  variant?: LabelVariant
 }
 
-interface Props {
-  variant?: LabelVariants
-  className?: string
-  children: ReactNode
-}
-
-/** @deprecated Use TypographyNew/Label instead */
-export const Label: FC<Props> = ({ variant = 'normal', className, children }) => (
-  <Typography tagVariant="label" className={cn(DEFAULT_CLASSES, classesByVariant[variant], className)}>
+/**
+ * Label Component
+ *
+ * Renders a <label> element with consistent styling.
+ *
+ * @example
+ * ```tsx
+ * <Label variant="tag">Username</Label>
+ * <Label variant="body-s" bold>Status</Label>
+ * ```
+ *
+ * Supports the following variants:
+ *
+ * **Tag Variants:**
+ * - tag: font-size: 16px; font-weight: 600; font-family: font-rootstock-sans - **Figma: Tags/T Regular**
+ * - tag-s: font-size: 14px; font-weight: 600; font-family: font-rootstock-sans - **Figma: Tags/TS**
+ *
+ * **Body Variants:**
+ * - body-l: font-size: 18px; font-weight: 400; font-family: font-rootstock-sans - **Figma: Body/BL Regular**
+ * - body (default): font-size: 16px; font-weight: 400; font-family: font-rootstock-sans - **Figma: Body/B Regular**
+ * - body-s: font-size: 14px; font-weight: 400; font-family: font-rootstock-sans - **Figma: Body/BS Regular**
+ * - body-xs: font-size: 12px; font-weight: 400; font-family: font-rootstock-sans - **Figma: Body/BXS Regular**
+ *
+ * All variants support the `bold`, `caps`, and `html` props.
+ */
+export const Label: FC<Props> = ({ children, variant = 'body', 'data-testid': dataTestId = '', ...rest }) => (
+  <BaseTypography as="label" variant={variant} data-testid={dataTestId} {...rest}>
     {children}
-  </Typography>
+  </BaseTypography>
 )
+
+export type LabelProps = Props

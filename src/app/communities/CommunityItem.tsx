@@ -1,4 +1,4 @@
-import { Paragraph, Header } from '@/components/TypographyNew'
+import { Paragraph, Header } from '@/components/Typography'
 import Image from 'next/image'
 import { BoostedBox } from './components/BoostedBox'
 import { BoostedLabel } from '@/app/communities/components/BoostedLabel'
@@ -19,6 +19,7 @@ interface CommunityItemProps {
   enableDebris?: boolean
   specialPower?: string
   boostedPercentage?: string
+  isExternal?: boolean
 }
 
 /**
@@ -32,10 +33,11 @@ export const CommunityItem = ({
   nftAddress,
   description,
   readMoreLink,
-  variant = 'portrait',
+  variant = 'landscape',
   enableDebris = false,
   specialPower,
   boostedPercentage,
+  isExternal,
 }: CommunityItemProps) => {
   const isExternalImage = leftImageSrc.startsWith('http')
   const image = isExternalImage
@@ -44,7 +46,7 @@ export const CommunityItem = ({
   return (
     <BoostedBox nftAddress={nftAddress}>
       <div
-        className={cn('h-full bg-bg-60 flex p-[16px] gap-[8px]', variant === 'portrait' ? 'flex-col' : 'flex-row gap-4')}
+        className={cn('rounded h-full bg-bg-60 flex p-4 gap-2', variant === 'portrait' ? 'flex-col' : 'flex-row gap-4')}
         data-testid={`${title}Card`}
       >
         {/* image */}
@@ -56,16 +58,16 @@ export const CommunityItem = ({
               src={image}
               alt={title}
               fill
-              className={variant === 'portrait' ? 'object-contain' : 'object-cover'}
+              className='object-cover'
             />
-            {enableDebris && <ImageDebris image={image} />}
+            {enableDebris && <ImageDebris image={image} config={variant === 'landscape' ? 'topRightDiagonal' : 'bottomRightDiagonal'} />}
           </div>
         )}
         <div className="flex gap-[20px] flex-col flex-1">
           {/* Title */}
           <div className={cn(variant === 'landscape' ? 'mt-[32px]' : 'mt-[16px]')}>
             <BoostedLabel nftAddress={nftAddress}>
-              <Header variant="h3" className="uppercase break-words pt-[5px]">
+              <Header variant="h3" caps className="break-words pt-[5px]">
                 {title}
               </Header>
             </BoostedLabel>
@@ -78,9 +80,14 @@ export const CommunityItem = ({
           )}
           {boostedPercentage && <BoostedLabelKoto text={`${boostedPercentage}% REWARDS BOOST`} />}
           {/* Description */}
-          <Paragraph>{description}</Paragraph>
+          <Paragraph className="hidden md:block">{description}</Paragraph>
           {/* Learn more */}
-          <CommunityItemButtonHandler nftAddress={nftAddress} readMoreLink={readMoreLink} data-testid={`LearnMoreLink-${title}`} />
+          <CommunityItemButtonHandler
+            nftAddress={nftAddress}
+            readMoreLink={readMoreLink}
+            data-testid={`LearnMoreLink-${title}`}
+            isExternal={isExternal}
+          />
         </div>
       </div>
     </BoostedBox>

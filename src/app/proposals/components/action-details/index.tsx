@@ -1,11 +1,15 @@
 import type { ReactNode } from 'react'
-import { Header, Paragraph, Span } from '@/components/TypographyNew'
+import { Header, Paragraph, Span } from '@/components/Typography'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
 import { TokenImage } from '@/components/TokenImage'
 import Big from '@/lib/big'
-import { formatNumberWithCommas, formatCurrency } from '@/lib/utils'
-import { formatEther } from 'viem'
-import { ProposalType } from '../../[id]/types'
+import { formatCurrency, cn, shortAddress } from '@/lib/utils'
+import { formatSymbol } from '@/app/shared/formatter'
+import { type Address, formatEther } from 'viem'
+import { type ParsedActionDetails, ProposalType } from '../../[id]/types'
+import type { ClassNameValue } from 'tailwind-merge'
+import { convertAmountToBigint } from '../../shared/utils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface InfoGridItem {
   label: string
@@ -13,20 +17,14 @@ interface InfoGridItem {
 }
 
 interface ActionDetailsProps {
-  parsedAction: {
-    type: string
-    amount?: bigint
-    tokenSymbol?: string
-    price?: number
-    toAddress?: string
-    builder?: string
-  }
-  actionType: string
+  parsedActions: ParsedActionDetails[]
+  className?: ClassNameValue
+  readOnly?: boolean
 }
 
 function InfoGrid({ items }: { items: InfoGridItem[] }) {
   return (
-    <div className="grid grid-cols-2 text-sm max-w-[376px]">
+    <div className="grid grid-cols-2 gap-x-4">
       {/* Labels row */}
       {items.map(({ label }) => (
         <div key={label}>
@@ -37,54 +35,81 @@ function InfoGrid({ items }: { items: InfoGridItem[] }) {
       ))}
       {/* Values row */}
       {items.map(({ label, value }) => (
-        <div key={label + '-value'}>{value}</div>
+        <Paragraph variant="body" key={label + '-value'}>
+          {value}
+        </Paragraph>
       ))}
     </div>
   )
 }
 
-export const ActionDetails = ({ parsedAction, actionType }: ActionDetailsProps) => {
-  let content: ReactNode = null
+const makeRightLabel = (proposalType: ProposalType, isDesktop: boolean) => {
+  if (proposalType === ProposalType.BUILDER_ACTIVATION) {
+    return isDesktop ? 'Address to whitelist' : 'Of address'
+  }
+  if (proposalType === ProposalType.BUILDER_DEACTIVATION) {
+    return isDesktop ? 'Address to de-whitelist' : 'To de-whitelist'
+  }
+  return ''
+}
 
+// Render content for a single action
+const renderSingleActionContent = (
+  parsedAction: ParsedActionDetails,
+  isDesktop: boolean,
+  readOnly?: boolean,
+): ReactNode => {
   switch (parsedAction.type) {
+    case ProposalType.RAW_TRANSFER:
     case ProposalType.WITHDRAW: {
-      content = (
-        <>
-          <div className="grid grid-cols-2 text-sm max-w-[376px] mt-4">
-            <div>
-              <Span variant="tag-s" className="text-white/70 mt-0.5">
-                Type
-              </Span>
-              <Paragraph variant="body">{actionType}</Paragraph>
-            </div>
-            <div>
-              <Span variant="tag-s" className="text-white/70 mt-0.5">
-                To address
-              </Span>
-              {parsedAction.toAddress ? (
+      return (
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Span variant="tag-s" className="text-white/70" data-testid="TypeLabel">
+              Type
+            </Span>
+            <Paragraph variant="body" data-testid="Type">
+              {parsedAction.type}
+            </Paragraph>
+          </div>
+          <div className="flex flex-col">
+            <Span variant="tag-s" className="text-white/70" data-testid="ToAddressLabel">
+              To address
+            </Span>
+            {parsedAction.toAddress ? (
+              !readOnly ? (
                 <Span className="text-primary">
-                  <ShortenAndCopy value={parsedAction.toAddress} />
+                  <ShortenAndCopy value={parsedAction.toAddress} data-testid="ToAddress" />
                 </Span>
               ) : (
-                <Span variant="body">—</Span>
-              )}
-            </div>
+                <Span variant="body" data-testid="ToAddress">
+                  {shortAddress(parsedAction.toAddress as Address)}
+                </Span>
+              )
+            ) : (
+              <Span variant="body" data-testid="ToAddress">
+                —
+              </Span>
+            )}
           </div>
-          {/* Amount block full width */}
+
           <div>
-            <Span variant="tag-s" className="text-white/70 mt-0.5">
+            <Span variant="tag-s" className="text-white/70" data-testid="AmountLabel">
               Amount
             </Span>
             <div className="grid grid-cols-2 gap-x-2 w-max">
               {/* Left column: values, right-aligned */}
               <div className="flex flex-col items-end text-right">
-                <Span className="text-[18px] font-bold">
-                  {formatNumberWithCommas(formatEther(parsedAction.amount || 0n))}
+                <Span className="text-[18px] font-bold" data-testid="Amount">
+                  {formatSymbol(convertAmountToBigint(parsedAction.amount), parsedAction.tokenSymbol || '')}
                 </Span>
                 {parsedAction.price !== undefined && (
-                  <Span className="text-xs text-white/50 font-normal leading-none">
+                  <Span
+                    className="text-xs text-white/50 font-normal leading-none"
+                    data-testid="AmountCurrency"
+                  >
                     {formatCurrency(
-                      Big(formatEther(parsedAction.amount || 0n))
+                      Big(formatEther(convertAmountToBigint(parsedAction.amount)))
                         .times(parsedAction.price)
                         .toNumber(),
                     )}
@@ -96,46 +121,106 @@ export const ActionDetails = ({ parsedAction, actionType }: ActionDetailsProps) 
                 {parsedAction.tokenSymbol && (
                   <div className="flex items-center">
                     <TokenImage symbol={parsedAction.tokenSymbol} />
-                    <Span className="ml-1">{parsedAction.tokenSymbol}</Span>
+                    <Span className="ml-1" data-testid="AmountTokenSymbol">
+                      {parsedAction.tokenSymbol}
+                    </Span>
                   </div>
                 )}
                 {/* TODO: make sure USD is perfectly aligned with its value */}
-                <Span className="font-normal text-xs text-white/50">USD</Span>
+                <Span className="font-normal text-xs text-white/50" data-testid="AmountCurrencySymbol">
+                  USD
+                </Span>
               </div>
             </div>
           </div>
-        </>
+          {parsedAction.rns ? (
+            <div>
+              <Span variant="tag-s" className="text-white/70" data-testid="TypeLabel">
+                to RNS
+              </Span>
+              <Paragraph variant="body" data-testid="Type">
+                {parsedAction.rns}
+              </Paragraph>
+            </div>
+          ) : null}
+        </div>
       )
-      break
     }
     case ProposalType.BUILDER_ACTIVATION:
     case ProposalType.BUILDER_DEACTIVATION: {
-      const rightLabel =
-        parsedAction.type === ProposalType.BUILDER_ACTIVATION ? 'Address to whitelist' : 'Builder address'
+      const rightLabel = makeRightLabel(parsedAction.type, isDesktop)
       const items: InfoGridItem[] = [
-        { label: 'Type', value: actionType },
+        { label: 'Type', value: parsedAction.type },
         {
           label: rightLabel,
           value: parsedAction.builder ? (
-            <Span className="text-primary">
-              <ShortenAndCopy value={parsedAction.builder} />
-            </Span>
+            !readOnly ? (
+              <Span className="text-primary">
+                <ShortenAndCopy value={parsedAction.builder} />
+              </Span>
+            ) : (
+              <Span variant="body">{shortAddress(parsedAction.builder as Address) || '—'}</Span>
+            )
           ) : (
             <Span variant="body">—</Span>
           ),
         },
       ]
-      content = <InfoGrid items={items} />
-      break
+      return <InfoGrid items={items} />
     }
+    case ProposalType.UNKNOWN:
     default:
-      content = <Span>Action details not supported for this proposal type</Span>
+      return (
+        <Paragraph className="mt-2 text-text-secondary" variant="body-s">
+          Action details not supported for this proposal type
+        </Paragraph>
+      )
+  }
+}
+
+export const ActionDetails = ({ parsedActions, className, readOnly }: ActionDetailsProps) => {
+  const isDesktop = useIsDesktop()
+  const totalCount = parsedActions.length
+
+  // For single transaction - render as before (backward compatibility)
+  if (totalCount === 1) {
+    const content = renderSingleActionContent(parsedActions[0], isDesktop, readOnly)
+    return (
+      <div
+        className={cn(
+          'md:p-6 px-4 py-8 bg-bg-80 flex flex-col gap-4 md:w-[376px] md:max-h-[214px] md:mt-2 rounded-sm md:self-start',
+          className,
+        )}
+      >
+        <Header variant="h3">ACTIONS</Header>
+        {content}
+      </div>
+    )
   }
 
+  // For multiple transactions - render list with separators
   return (
-    <div className="p-6 bg-bg-80 flex flex-col gap-4 max-w-[376px] mt-2">
-      <Header variant="h3">ACTIONS</Header>
-      {content}
+    <div
+      className={cn(
+        'md:p-6 px-4 py-8 bg-bg-80 flex flex-col gap-4 md:w-[376px] md:mt-2 rounded-sm md:self-start',
+        className,
+      )}
+    >
+      <Header variant="h3">ACTIONS ({totalCount})</Header>
+      <div className="flex flex-col gap-4">
+        {parsedActions.map((action, index) => {
+          return (
+            // biome-ignore lint/suspicious/noArrayIndexKey: index is stable here, array is not reordered
+            <div key={`action-${index}`}>
+              {index > 0 && <div className="border-t border-white/10 my-4" />}
+              <Span variant="tag-s" className="text-white/70 mb-2">
+                Action {index + 1}
+              </Span>
+              {renderSingleActionContent(action, isDesktop, readOnly)}
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }

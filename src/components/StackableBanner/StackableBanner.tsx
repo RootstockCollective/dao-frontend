@@ -2,6 +2,7 @@ import { DecorativeSquares } from '@/app/backing/components/DecorativeSquares'
 import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { CommonComponentProps } from '@/components/commonProps'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface StackableBannerProps extends CommonComponentProps {
   children: ReactNode | ReactNode[]
@@ -19,12 +20,12 @@ export const StackableBanner: FC<StackableBannerProps> = ({
 }) => {
   // Convert children to array if it's not already
   const childrenArray = Array.isArray(children) ? children : [children]
-
+  const isDesktop = useIsDesktop()
   return (
     <div
-      className={cn('relative self-stretch py-6 px-10 text-v3-text-0', className)}
+      className={cn('relative self-stretch py-6 px-10 text-v3-text-0 mt-7 md:mt-0', className)}
       style={{
-        background,
+        background: isDesktop ? background : 'linear-gradient(270deg, #7B83CF 0%, #E3FFEB 52.87%)',
       }}
       data-testid={testId}
     >

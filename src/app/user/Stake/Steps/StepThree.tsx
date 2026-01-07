@@ -1,28 +1,48 @@
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
-import { Divider } from '@/components/Divider'
 import { executeTxFlow } from '@/shared/notification'
-import { useCallback } from 'react'
-import { StepActionButtons } from '../components/StepActionButtons'
+import { useEffect } from 'react'
 import { StakeTokenAmountDisplay } from '../components/StakeTokenAmountDisplay'
 import { TransactionStatus } from '../components/TransactionStatus'
 import { useStakeRIF } from '../hooks/useStakeRIF'
 
 export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
-  const { amount, tokenToReceive, stakePreviewFrom: from, stakePreviewTo: to } = useStakingContext()
-
+  const {
+    amount,
+    tokenToReceive,
+    stakePreviewFrom: from,
+    stakePreviewTo: to,
+    setButtonActions,
+  } = useStakingContext()
   const { onRequestStake, isRequesting, isTxPending, isTxFailed, stakeTxHash } = useStakeRIF(
     amount,
     tokenToReceive.contract,
   )
 
-  const handleConfirmStake = useCallback(() => {
-    executeTxFlow({
-      onRequestTx: onRequestStake,
-      onSuccess: onCloseModal,
-      action: 'staking',
+  // Set button actions directly
+  useEffect(() => {
+    setButtonActions({
+      primary: {
+        label: isRequesting ? 'Requesting...' : 'Confirm stake',
+        onClick: () => {
+          executeTxFlow({
+            onRequestTx: onRequestStake,
+            onSuccess: onCloseModal,
+            action: 'staking',
+          })
+        },
+        disabled: !amount || Number(amount) <= 0,
+        loading: isRequesting,
+        isTxPending: isTxPending,
+      },
+      secondary: {
+        label: 'Back',
+        onClick: () => onGoToStep(0), // Go back to Step One
+        disabled: false,
+        loading: false,
+      },
     })
-  }, [onRequestStake, onCloseModal])
+  }, [amount, isRequesting, isTxPending, onRequestStake, onCloseModal, onGoToStep, setButtonActions])
 
   return (
     <>
@@ -44,22 +64,6 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
       </div>
 
       <TransactionStatus txHash={stakeTxHash} isTxFailed={isTxFailed} failureMessage="Stake TX failed." />
-
-      <Divider />
-
-      <StepActionButtons
-        primaryButton={{
-          label: isRequesting ? 'Requesting...' : 'Confirm stake',
-          onClick: handleConfirmStake,
-          disabled: !amount || Number(amount) <= 0,
-        }}
-        secondaryButton={{
-          label: 'Back',
-          onClick: () => onGoToStep(0),
-        }}
-        isTxPending={isTxPending}
-        isRequesting={isRequesting}
-      />
     </>
   )
 }

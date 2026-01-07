@@ -1,61 +1,152 @@
 'use client'
 import { useMemo, memo, useState, useRef, useCallback, useEffect } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import {
-  createColumnHelper,
-  type SortingState,
-  getCoreRowModel,
-  getSortedRowModel,
-  useReactTable,
-  getPaginationRowModel,
-  PaginationState,
-} from '@tanstack/react-table'
-import Big from '@/lib/big'
-import { GridTable } from '@/components/Table'
-import { ProposalNameColumn, ProposerColumn } from './table-columns/ProposalNameColumn'
-import { QuorumColumn, VotesColumn } from './table-columns/VotesColumn'
-import { TimeColumn } from './table-columns/TimeColumn'
 import { DebounceSearch } from '@/components/DebounceSearch'
-import { useSearchParams } from 'next/navigation'
 import { FilterButton } from './filter/FilterButton'
-import { FilterSideBar } from './filter/FilterSideBar'
+import { ProposalsFilterSideBar } from './filter/ProposalsFilterSideBar'
 import { cn } from '@/lib/utils'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
-import { Status } from '@/components/Status'
 import { SearchButton } from './SearchButton'
-import { CategoryColumn } from './table-columns/CategoryColumn'
-import { Paragraph } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 import { Proposal } from '@/app/proposals/shared/types'
-import { filterOptions } from './filter/filterOptions'
-import { Pagination } from '@/components/Pagination'
+import { useProposalFilters } from './filter/useProposalFilters'
+import { ActiveFiltersDisplay } from './filter/ActiveFiltersDisplay'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { useStickyHeader } from '@/shared/hooks'
+import { FilterType, FilterItem } from './filter/types'
+import { MILESTONE_SEPARATOR } from '../shared/utils'
+import { ProposalState } from '@/shared/types/types'
+import moment from 'moment'
+import { ProposalsTable, ProposalsTableRef } from './ProposalsTableWithPagination'
+
+/**
+ * Filters proposals based on active filters
+ * Handles search, category, status, and time filters
+ */
+const filterProposals = (proposals: Proposal[], activeFilters: FilterItem[]) => {
+  return proposals.filter(proposal => {
+    // Apply search filter
+    const searchFilters = activeFilters.filter(f => f.type === FilterType.SEARCH)
+    if (searchFilters.length > 0) {
+      const searchMatch = searchFilters.some(searchFilter => {
+        const lowered = searchFilter.value.toLowerCase()
+        return [
+          proposal.name,
+          proposal.description,
+          proposal.category,
+          proposal.proposer,
+          proposal.proposalId,
+        ].some(param => param?.toLowerCase()?.includes(lowered))
+      })
+      if (!searchMatch) return false
+    }
+
+    // Apply category filters
+    const categoryFilters = activeFilters.filter(f => f.type === FilterType.CATEGORY && f.value)
+    if (categoryFilters.length > 0) {
+      const categoryMatch = categoryFilters.some(categoryFilter => {
+        const filterValue = categoryFilter.value
+
+        // Special case for milestone-related filters - check description
+        if (filterValue === MILESTONE_SEPARATOR || filterValue.startsWith(MILESTONE_SEPARATOR)) {
+          return proposal.description?.toLowerCase().includes(filterValue.toLowerCase())
+        }
+
+        // For all other category filters, only check the category field
+        return proposal.category?.toLowerCase()?.includes(filterValue.toLowerCase())
+      })
+      if (!categoryMatch) return false
+    }
+
+    // Apply status filters
+    const statusFilters = activeFilters.filter(f => f.type === FilterType.STATUS && f.value)
+    if (statusFilters.length > 0) {
+      const statusMatch = statusFilters.some(statusFilter => {
+        const status = statusFilter.value
+        return (
+          proposal.proposalState !== undefined &&
+          ProposalState[proposal.proposalState]?.toLowerCase() === status.toLowerCase()
+        )
+      })
+      if (!statusMatch) return false
+    }
+
+    // Apply time filters
+    const timeFilters = activeFilters.filter(f => f.type === FilterType.TIME && f.value)
+    if (timeFilters.length > 0) {
+      const timeMatch = timeFilters.some(timeFilter => {
+        const filterValue = timeFilter.value
+
+        // Use proposal.Starts (moment object) for date-based filtering
+        if (!proposal.Starts) return false
+
+        const now = moment()
+        const proposalDate = proposal.Starts
+
+        switch (filterValue) {
+          case 'last-week':
+            return now.diff(proposalDate, 'days') <= 7
+          case 'last-month':
+            return now.diff(proposalDate, 'days') <= 30
+          case 'last-90-days':
+            return now.diff(proposalDate, 'days') <= 90
+          case 'Wave 4':
+          case 'Wave 5':
+          case 'March-25':
+            // For wave filters, check if the proposal name or description contains the wave
+            return (
+              proposal.name?.toLowerCase().includes(filterValue.toLowerCase()) ||
+              proposal.description?.toLowerCase().includes(filterValue.toLowerCase())
+            )
+          default:
+            return true
+        }
+      })
+      if (!timeMatch) return false
+    }
+    return true
+  })
+}
 
 interface LatestProposalsTableProps {
   proposals: Proposal[]
 }
 
 const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
-  // React-table sorting state
-  const [sorting, setSorting] = useState<SortingState>([])
+  const isDesktop = useIsDesktop()
+  const proposalsTableRef = useRef<ProposalsTableRef>(null)
 
-  const searchParams = useSearchParams()
+  // Sticky header hook - only enabled on mobile/tablet
+  const { headerRef } = useStickyHeader({
+    isEnabled: !isDesktop,
+    style: {
+      backgroundColor: 'var(--color-bg-80)',
+      paddingLeft: '1.5rem',
+      paddingRight: '1.5rem',
+      paddingTop: '1rem',
+      paddingBottom: '1rem',
+    },
+    mode: 'position-based',
+  })
 
-  // Convert 1-indexed URL page to 0-indexed internal page
-  const [pagination, setPagination] = useState<PaginationState>(() => ({
-    pageIndex: Math.max(parseInt(searchParams?.get('page') ?? '1') - 1, 0),
-    pageSize: 10,
-  }))
-  const resetPagination = () => setPagination(prev => ({ ...prev, pageIndex: 0 }))
+  // Enhanced filtering system
+  const { activeFilters, searchValue, setFilters, removeFilter, clearAllFilters, updateSearchValue } =
+    useProposalFilters()
 
   // input field filtering
-  const [searchVisible, setSearchVisible] = useState(false)
+  const [searchVisible, setSearchVisible] = useState(isDesktop)
   const searchBoxRef = useRef<HTMLInputElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
-  useClickOutside(searchBoxRef, () => setSearchVisible(false))
-  const [searchValue, setSearchValue] = useState('')
-  const handleSearch = useCallback((value: string) => {
-    setSearchValue(value)
-    resetPagination()
-  }, [])
+  useClickOutside(searchBoxRef, () => !isDesktop && setSearchVisible(false))
+
+  const handleSearch = useCallback(
+    (value: string) => {
+      updateSearchValue(value)
+      proposalsTableRef.current?.resetPagination()
+    },
+    [updateSearchValue],
+  )
+
   // show searchfield focus on SearchButton click
   useEffect(() => {
     if (!searchVisible) return
@@ -65,232 +156,78 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   // filtering by category in sidebar
   const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false)
   const filterSidebarRef = useRef<HTMLDivElement>(null)
-  useClickOutside(filterSidebarRef, () => setIsFilterSidebarOpen(false))
-  const [activeCategory, setActiveCategory] = useState('')
-  const handleFilterToggle = useCallback((cat: string) => {
-    setActiveCategory(cat)
-    resetPagination()
-  }, [])
+  // Only apply click outside on desktop - mobile uses Modal component
+  useClickOutside(filterSidebarRef, () => isDesktop && setIsFilterSidebarOpen(false))
 
-  // filter all proposals
   const filteredProposalList = useMemo(() => {
-    return proposals
-      .filter(proposal =>
-        activeCategory ? proposal.name?.toLowerCase()?.includes(activeCategory.toLowerCase()) : true,
-      )
-      .filter(proposal => {
-        if (!searchValue) return true
-        const lowered = searchValue.toLowerCase()
-        return [
-          proposal.name,
-          proposal.description,
-          proposal.category,
-          proposal.proposer,
-          proposal.proposalId,
-        ].some(param => param.toLowerCase().includes(lowered))
-      })
-  }, [proposals, activeCategory, searchValue])
+    return filterProposals(proposals, activeFilters)
+  }, [proposals, activeFilters])
 
-  // Table data definition helper
-  const { accessor } = createColumnHelper<(typeof proposals)[number]>()
-  // Table columns definition
-  const columns = [
-    accessor('name', {
-      id: 'name',
-      cell: ({ cell, row }) => (
-        <ProposalNameColumn name={cell.getValue()} proposalId={row.original.proposalId} />
-      ),
-    }),
-    accessor('proposer', {
-      id: 'proposer',
-      header: 'Proposal name',
-      sortDescFirst: false,
-      cell: ({ cell }) => <ProposerColumn by={cell.getValue()} />,
-      sortingFn: (a, b) => a.original.name.localeCompare(b.original.name),
-      meta: {
-        width: '1.6fr',
-      },
-    }),
-    accessor('Starts', {
-      id: 'date',
-      header: 'Date',
-      sortDescFirst: false,
-      cell: ({ cell }) => <Paragraph>{cell.getValue().format('MMM DD, YYYY')}</Paragraph>,
-      meta: {
-        width: '1.2fr',
-      },
-    }),
-    accessor('blocksUntilClosure', {
-      id: 'timeRemaining',
-      header: 'Vote ending in',
-      sortDescFirst: false,
-      cell: info => {
-        const { blocksUntilClosure, proposalDeadline, blockNumber } = info.row.original
-        return (
-          <TimeColumn
-            blocksUntilClosure={blocksUntilClosure}
-            proposalDeadline={proposalDeadline}
-            proposalBlockNumber={blockNumber}
-          />
-        )
-      },
-      sortingFn: (a, b) => {
-        return a.original.blocksUntilClosure.cmp(b.original.blocksUntilClosure)
-      },
-      meta: {
-        width: '1.32fr',
-      },
-    }),
-    accessor('votes', {
-      id: 'quorum',
-      sortDescFirst: false,
-      header: () => (
-        <div>
-          <div className="flex items-center-safe gap-1">
-            <p className="mb-1">Quorum</p>
-          </div>
-          <Paragraph variant="body-xs" className="text-text-40">
-            {isFilterSidebarOpen ? 'reached' : 'needed | reached'}
-          </Paragraph>
-        </div>
-      ),
-      cell: ({ row }) => {
-        const quorum = row.original.quorumAtSnapshot
-        const { forVotes, abstainVotes } = row.original.votes
-        return (
-          <QuorumColumn
-            quorumVotes={forVotes.add(abstainVotes)}
-            quorumAtSnapshot={quorum}
-            hideQuorumTarget={isFilterSidebarOpen}
-          />
-        )
-      },
-      sortingFn: (a, b) => {
-        const getQuorumPercent = (quorum: Big, quorumAtSnapshot: Big) =>
-          quorumAtSnapshot.eq(0)
-            ? Big(0)
-            : quorum.div(quorumAtSnapshot).mul(100).round(undefined, Big.roundHalfEven)
-        const percentA = getQuorumPercent(a.original.votes.quorum, a.original.quorumAtSnapshot)
-        const percentB = getQuorumPercent(b.original.votes.quorum, b.original.quorumAtSnapshot)
-        return percentA.cmp(percentB)
-      },
-      meta: {
-        width: '1.4fr',
-      },
-    }),
-    accessor('votes', {
-      id: 'votes',
-      header: 'Votes',
-      sortDescFirst: false,
-      cell: ({ cell }) => {
-        const { forVotes, abstainVotes, againstVotes } = cell.getValue()
-        return (
-          <VotesColumn
-            forVotes={forVotes.toNumber()}
-            againstVotes={againstVotes.toNumber()}
-            abstainVotes={abstainVotes.toNumber()}
-          />
-        )
-      },
-      sortingFn: (a, b) => {
-        const votesA = a.original.votes
-        const votesB = b.original.votes
-        const sumA = votesA.forVotes.add(votesA.againstVotes).add(votesA.abstainVotes)
-        const sumB = votesB.forVotes.add(votesB.againstVotes).add(votesB.abstainVotes)
-        return sumA.cmp(sumB)
-      },
-      meta: {
-        width: '1fr',
-      },
-    }),
-    accessor('category', {
-      id: 'propType',
-      header: 'Type',
-      sortDescFirst: false,
-      meta: {
-        width: '0.62fr',
-      },
-      cell: ({ cell }) => <CategoryColumn category={cell.getValue()} />,
-    }),
-    accessor('proposalState', {
-      id: 'status',
-      header: 'Status',
-      sortDescFirst: false,
-      cell: ({ cell }) => (
-        <div className="w-full flex justify-center">
-          <Status proposalState={cell.getValue()} />
-        </div>
-      ),
-      meta: {
-        width: '0.8fr',
-      },
-    }),
-  ]
-
-  // create table data model which is passed to the Table UI component
-  const table = useReactTable({
-    columns,
-    data: filteredProposalList,
-    state: {
-      sorting,
-      pagination,
-    },
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination, //update the pagination state when internal APIs mutate the pagination state
-    // Prevent pagination reset on data change
-    autoResetPageIndex: false,
-  })
+  const hasSelectedFilters = useMemo(() => {
+    return activeFilters.filter(f => !f.isAll && f.type !== FilterType.SEARCH).length > 0
+  }, [activeFilters])
 
   return (
     <div className="py-4 px-6 rounded-sm bg-bg-80">
-      <div className="mb-8 w-full flex items-center gap-4">
-        <h2 className="font-kk-topo text-xl leading-tight uppercase tracking-wide">Latest Proposals</h2>
-        <div className="grow h-[50px] flex justify-end">
-          <AnimatePresence>
-            {searchVisible && (
+      <div ref={headerRef} className="mb-8 w-full">
+        <div className="flex items-center gap-4">
+          {(isDesktop || !searchVisible) && (
+            <Header variant="h3" className="uppercase">
+              Latest Proposals
+            </Header>
+          )}
+          <div className="grow h-[50px] flex justify-end">
+            <AnimatePresence>
+              {searchVisible && (
+                <motion.div
+                  initial={{ opacity: 0, x: isDesktop ? 100 : 0 }}
+                  animate={{ opacity: searchVisible ? 1 : 0, x: 0 }}
+                  exit={{ opacity: 0, x: isDesktop ? 100 : 0 }}
+                  className="w-full max-w-[650px]"
+                >
+                  <DebounceSearch
+                    placeholder="Search a proposal"
+                    searchValue={searchValue}
+                    onSearchSubmit={handleSearch}
+                    ref={searchBoxRef}
+                    inputRef={inputRef}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          {(isDesktop || !searchVisible) && (
+            <div className="flex items-center justify-end">
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: searchVisible ? 1 : 0, x: 0 }}
-                exit={{ opacity: 0 }}
-                className="w-full max-w-[650px]"
+                initial={{ width: 40, opacity: 1 }}
+                animate={searchVisible ? { width: 0, opacity: 0 } : { width: 40, opacity: 1 }}
+                className="flex items-center"
+                style={{ pointerEvents: searchVisible ? 'none' : 'auto' }}
               >
-                <DebounceSearch
-                  placeholder="Search a proposal"
-                  searchValue={searchValue}
-                  onSearchSubmit={handleSearch}
-                  ref={searchBoxRef}
-                  inputRef={inputRef}
+                <SearchButton
+                  isOpen={searchVisible}
+                  setIsOpen={setSearchVisible}
+                  disabled={searchVisible}
+                  isFiltering={activeFilters.some(f => f.type === FilterType.SEARCH)}
                 />
               </motion.div>
-            )}
-          </AnimatePresence>
+              <FilterButton
+                isOpen={isFilterSidebarOpen}
+                setIsOpen={setIsFilterSidebarOpen}
+                disabled={proposals.length === 0}
+                isFiltering={hasSelectedFilters}
+              />
+            </div>
+          )}
         </div>
-        <div className="flex items-center justify-end">
-          <motion.div
-            initial={{ width: 40, opacity: 1 }}
-            animate={searchVisible ? { width: 0, opacity: 0 } : { width: 40, opacity: 1 }}
-            className="flex items-center"
-            style={{ pointerEvents: searchVisible ? 'none' : 'auto' }}
-          >
-            <SearchButton
-              isOpen={searchVisible}
-              setIsOpen={setSearchVisible}
-              disabled={searchVisible}
-              isFiltering={!!searchValue}
-            />
-          </motion.div>
-          <FilterButton
-            isOpen={isFilterSidebarOpen}
-            setIsOpen={setIsFilterSidebarOpen}
-            disabled={proposals.length === 0}
-            isFiltering={!!activeCategory}
-          />
-        </div>
+        <ActiveFiltersDisplay
+          activeFilters={activeFilters.filter(f => !f.isAll)}
+          onRemoveFilter={removeFilter}
+          onClearAll={clearAllFilters}
+        />
       </div>
-      <div className={cn('flex flex-row-reverse')}>
+
+      <div className={cn('flex flex-row-reverse mt-2')}>
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: isFilterSidebarOpen ? 264 : 0 }}
@@ -298,30 +235,21 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
         >
           {/* container for useClickOutside ref */}
           <div ref={filterSidebarRef} className="pl-2 h-full">
-            <FilterSideBar
-              filterOptions={filterOptions}
-              currentFilter={activeCategory}
-              setCurrentFilter={handleFilterToggle}
+            <ProposalsFilterSideBar
+              isOpen={isFilterSidebarOpen}
+              onClose={() => setIsFilterSidebarOpen(false)}
+              activeFilters={activeFilters}
+              onApplyFilters={setFilters}
             />
           </div>
         </motion.div>
         <div className="grow overflow-y-auto">
           {filteredProposalList.length > 0 ? (
-            <div>
-              <GridTable
-                className="min-w-[600px]"
-                aria-label="Proposal table"
-                stackFirstColumn
-                table={table}
-                data-testid="TableProposals"
-              />
-              <Pagination
-                pagination={pagination}
-                setPagination={setPagination}
-                data={filteredProposalList}
-                table={table}
-              />
-            </div>
+            <ProposalsTable
+              ref={proposalsTableRef}
+              proposals={filteredProposalList}
+              isFilterSidebarOpen={isFilterSidebarOpen}
+            />
           ) : (
             <p data-testid="NoProposals">No proposals found &#x1F622;</p>
           )}

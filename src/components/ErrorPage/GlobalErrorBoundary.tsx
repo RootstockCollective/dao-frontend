@@ -2,10 +2,10 @@ import { ReactNode } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { cn } from '@/lib/utils'
 import { BG_IMG_CLASSES } from '@/shared/utils'
-import { Headline, Paragraph } from '@/components/Typography'
 import { HeaderText } from '@/components/HeaderText/HeaderText'
 import { Button } from '@/components/Button'
 import { checkForCommonErrors } from './commonErrors'
+import { Header, Paragraph } from '../Typography'
 
 interface ErrorFallbackProps {
   error: Error
@@ -20,9 +20,11 @@ function ErrorFallback({ error }: ErrorFallbackProps) {
     >
       <div className="w-1/2 flex flex-col items-center">
         <HeaderText />
-        <Headline>ERROR OCCURRED</Headline>
+        <Header variant="e1" className="text-7xl mb-6">
+          ERROR OCCURRED
+        </Header>
         <Paragraph className="mb-8">{errorString}</Paragraph>
-        <Button variant="white" onClick={() => (window.location.href = '/')}>
+        <Button variant="primary" onClick={() => (window.location.href = '/')}>
           Try again
         </Button>
       </div>

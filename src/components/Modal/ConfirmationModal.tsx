@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'motion/react'
 import { createPortal } from 'react-dom'
 import modalBg from './images/modal-bg.svg'
 import { cn } from '@/lib/utils'
-import { HeaderTitle } from '../Typography'
+import { Header, Span } from '../Typography'
 import { Button } from '../Button'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { useScrollLock } from '@/shared/hooks/useScrollLock'
@@ -75,7 +75,7 @@ export function ConfirmationModal({
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-50" data-testid={dataTestId}>
+        <div className="fixed inset-0 flex items-center justify-center z-[100]" data-testid={dataTestId}>
           {/* Full screen overlay */}
           <motion.div
             key="modal-overlay"
@@ -107,9 +107,9 @@ export function ConfirmationModal({
           >
             {/* Header */}
             {title && (
-              <HeaderTitle className="text-5xl font-normal leading-tight tracking-[-0.96px] uppercase">
+              <Header variant="e2" caps>
                 {title}
-              </HeaderTitle>
+              </Header>
             )}
             {/* Main contents */}
             <div className="max-w-[513px]">{children}</div>
@@ -120,14 +120,16 @@ export function ConfirmationModal({
               <div className="flex flex-row gap-6">
                 <Button
                   onClick={onDecline}
-                  variant="secondary"
+                  variant="secondary-outline"
                   className="bg-foreground"
                   data-testid="Disagree"
                 >
                   I Disagree
                 </Button>
                 <Button onClick={onAccept} variant="primary" data-testid="Agree">
-                  I Agree
+                  <Span className="text-text-100" bold>
+                    I Agree
+                  </Span>
                 </Button>
               </div>
             )}

@@ -7,15 +7,15 @@ const DB_COMMAND_COALESCE = `
     json_agg(
       json_build_object(
       'gauge', convert_from("GaugeStakingHistory".gauge, 'utf8'), 
-      'accumulatedAllocationsTime', "GaugeStakingHistory"."accumulatedAllocationsTime",
-      'allocation', "GaugeStakingHistory"."allocation",
-      'lastBlockTimestamp', "GaugeStakingHistory"."lastBlockTimestamp"
+      'accumulatedAllocationsTime', "GaugeStakingHistory"."accumulatedAllocationsTime"::text,
+      'allocation', "GaugeStakingHistory"."allocation"::text,
+      'lastBlockTimestamp', "GaugeStakingHistory"."lastBlockTimestamp"::text
       )
     ), 
   '[]')
 `
 
-export async function GET(request: NextRequest, { params }: { params: Promise<{ backer: Address }> }) {
+export async function GET(req: Request, { params }: { params: Promise<{ backer: Address }> }) {
   const { backer } = await params
 
   if (!isAddress(backer)) {

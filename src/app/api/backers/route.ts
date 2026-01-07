@@ -19,7 +19,7 @@ export async function GET(req: Request) {
     const baseQuery = db('Backer')
       .select('Backer.id', 'Backer.totalAllocation', 'Backer.isBlacklisted')
       .where('totalAllocation', '>', 0)
-    const { data, count } = await paginateQuery(baseQuery, page, pageSize)
+    const { data, count } = await paginateQuery(baseQuery, { page, pageSize })
 
     return NextResponse.json({ data, count, page, pageSize })
   } catch (err) {

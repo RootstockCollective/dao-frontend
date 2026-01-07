@@ -4,10 +4,10 @@ import {
   useGetMetricsAbiWithStateSync,
 } from '@/app/collective-rewards/shared'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import Big from 'big.js'
-import { useFeatureFlags } from '@/shared/context/FeatureFlag'
-import { FC, ReactNode } from 'react'
 import { withDataFallback } from '@/app/shared/components/Fallback/'
+import { useFeatureFlags } from '@/shared/context/FeatureFlag'
+import Big from 'big.js'
+import { FC, ReactNode } from 'react'
 
 interface AnnualBackerIncentivesLoaderProps {
   render: (props: { data: Big; isLoading: boolean }) => ReactNode
@@ -24,6 +24,7 @@ export const AnnualBackerIncentivesLoader: FC<AnnualBackerIncentivesLoaderProps>
     flags: { use_state_sync },
   } = useFeatureFlags()
 
+  // TODO: remove conditional hooks
   const usePrimary = use_state_sync ? useGetMetricsAbiWithStateSync : useGetMetricsAbiWithGraph
 
   const Loader = withDataFallback<Big>(usePrimary, useFallbackWithErrors)

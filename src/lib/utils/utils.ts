@@ -4,8 +4,8 @@ import { BigSource } from 'big.js'
 import { ClassValue, clsx } from 'clsx'
 import { Duration } from 'luxon'
 import { twMerge } from 'tailwind-merge'
-import { Address, formatEther } from 'viem'
-import { CHAIN_ID, EXPLORER_URL, RIF_WALLET_SERVICES_URL } from '../constants'
+import { Address, formatEther, isAddress } from 'viem'
+import { CHAIN_ID, RIF_WALLET_SERVICES_URL } from '../constants'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
@@ -25,6 +25,11 @@ export const shortAddress = (address: Address | undefined, amount = 4): string =
   if (!address) {
     return ''
   }
+  // if not an address, don't modify
+  if (!isAddress(address)) {
+    return address
+  }
+
   const prefixLength = amount + 2 // 2 for '0x' prefix
   return `${address.slice(0, prefixLength)}…${address.slice(-amount)}`
 }
@@ -101,23 +106,7 @@ export const truncateMiddle = (str: string, start = 10, end = 10): string => {
   return str.slice(0, start) + '…' + str.slice(-end)
 }
 
-/**
- * Truncates a string by keeping the first `length` characters and the last 3 characters
- * @param str - The string to truncate
- * @param length - The amount of characters to keep from the start
- * @returns The truncated string
- * @example truncateRns('testverylongname.rsk', 5) // 'testv…rsk'
- * @example truncateRns('jesse.rsk', 5) // 'jesse.rsk'
- * @example truncateRns('jesse.rsk', 4) // 'jesse.rsk'
- * @example truncateRns('jesse.rsk', 3) // 'jes…rsk'
- */
-export const truncateRns = (str: string, length: number): string => {
-  if (!str) return ''
-  if (str.length <= length + 5) return str
-  return str.slice(0, length) + '…' + str.slice(-3)
-}
-
-type FormatCurrencyProps = {
+interface FormatCurrencyProps {
   currency?: string
   showCurrencyLabel?: boolean
   showCurrencySymbol?: boolean
@@ -301,3 +290,19 @@ export const durationToLabel = (duration: Duration | undefined): string | undefi
 
 // prettier-ignore
 export const formatAmount = (amount: string) => formatNumberWithCommas(formatEther(BigInt(amount)).split('.')[0])
+
+/**
+ * Formats a numeric string to a fixed number of decimal places for display
+ * @param value - The numeric string to format
+ * @param decimals - Number of decimal places (default: 2)
+ * @returns The formatted string, or '0.00' if invalid
+ * @example formatForDisplay('123.456789') // '123.46'
+ * @example formatForDisplay('1642.088864088341129143') // '1642.09'
+ */
+export const formatForDisplay = (value: string, decimals = 2): string => {
+  try {
+    return Big(value).toFixed(decimals)
+  } catch {
+    return '0.00'
+  }
+}

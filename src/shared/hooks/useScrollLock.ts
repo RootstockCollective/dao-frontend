@@ -15,12 +15,21 @@ let scrollLockCount = 0
  */
 export function useScrollLock(lock: boolean) {
   useEffect(() => {
-    if (typeof document === 'undefined') return
+    if (typeof document === 'undefined') return // ✅ SSR safety
+
+    const html = document.documentElement
+    const body = document.body
+    const prevHtmlOverflow = html.style.overflow
+    const prevBodyOverflow = body.style.overflow
+    const prevTouchAction = body.style.touchAction
 
     if (lock) {
       scrollLockCount++
       if (scrollLockCount === 1) {
-        document.body.style.overflow = 'hidden'
+        // First lock → actually apply styles
+        html.style.overflow = 'hidden'
+        body.style.overflow = 'hidden'
+        body.style.touchAction = 'none' // iOS Safari fix
       }
     }
 
@@ -28,8 +37,9 @@ export function useScrollLock(lock: boolean) {
       if (lock) {
         scrollLockCount--
         if (scrollLockCount <= 0) {
-          document.body.style.overflow = ''
-          scrollLockCount = 0
+          html.style.overflow = prevHtmlOverflow
+          body.style.overflow = prevBodyOverflow
+          body.style.touchAction = prevTouchAction
         }
       }
     }

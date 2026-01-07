@@ -1,18 +1,26 @@
-import { InfiniteData, useInfiniteQuery, UseInfiniteQueryResult } from '@tanstack/react-query'
+import {
+  InfiniteData,
+  useInfiniteQuery,
+  UseInfiniteQueryResult,
+  QueryFunctionContext,
+} from '@tanstack/react-query'
 import { useState, useCallback, useMemo, useEffect } from 'react'
 
 interface PaginatedResponse<T> {
   items: T[]
-  [key: string]: any
+  [key: string]: unknown
 }
 
-interface UseInfinitePaginatedQueryOptions<T> {
+interface UseInfinitePaginatedQueryOptions<
+  T,
+  TPageParam = unknown,
+  TResponse extends { items: T[] } = PaginatedResponse<T>,
+> {
   queryKey: string[]
-  queryFn: (pageParam: any) => Promise<PaginatedResponse<T>>
-  getNextPageParam: (lastPage: PaginatedResponse<T>) => any
-  initialPageParam: any
+  queryFn: (context: QueryFunctionContext<string[], TPageParam>) => Promise<TResponse>
+  getNextPageParam: (lastPage: TResponse) => TPageParam | undefined
+  initialPageParam: TPageParam
   resultsPerTablePage: number
-  hasMorePagesProperty: keyof PaginatedResponse<T>
 }
 
 interface UseInfinitePaginatedQueryResult<T>
@@ -27,20 +35,26 @@ interface UseInfinitePaginatedQueryResult<T>
   hasMorePages: boolean
 }
 
-export function useInfinitePagination<T>({
+export function useInfinitePagination<
+  T,
+  TPageParam = unknown,
+  TResponse extends { items: T[] } = PaginatedResponse<T>,
+>({
   queryKey,
   queryFn,
   getNextPageParam,
   initialPageParam,
   resultsPerTablePage,
-  hasMorePagesProperty,
-}: UseInfinitePaginatedQueryOptions<T>): UseInfinitePaginatedQueryResult<T> {
+}: UseInfinitePaginatedQueryOptions<T, TPageParam, TResponse>): UseInfinitePaginatedQueryResult<T> {
   const [tablePage, setTablePage] = useState(0)
   const [isFirstFetch, setIsFirstFetch] = useState(true)
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, ...restQueryResult } = useInfiniteQuery<
-    PaginatedResponse<T>,
-    Error
+    TResponse,
+    Error,
+    InfiniteData<TResponse>,
+    string[],
+    TPageParam
   >({
     queryKey,
     queryFn,
@@ -77,10 +91,11 @@ export function useInfinitePagination<T>({
   const goToTablePage = useCallback((pageNumber: number) => setTablePage(pageNumber), [])
 
   const hasMorePages = useMemo(() => {
+    // If no data yet, assume there are more pages (initial fetch)
     if (!data || data.pages.length === 0) return true
-    const lastPage = data.pages[data.pages.length - 1]
-    return lastPage[hasMorePagesProperty] !== null
-  }, [data, hasMorePagesProperty])
+    // Otherwise use TanStack Query's hasNextPage
+    return hasNextPage ?? false
+  }, [data, hasNextPage])
 
   useEffect(() => {
     // Check if we need to fetch the next page

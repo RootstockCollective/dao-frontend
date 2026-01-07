@@ -1,8 +1,9 @@
 import { Circle } from '@/components/Circle'
 import { cn, truncate } from '@/lib/utils'
+import { Address } from 'viem'
 
-interface LegendItem {
-  key: string
+export interface LegendItem {
+  key: Address
   label: string
   displayColor: string
 }
@@ -17,7 +18,7 @@ export const Legend = ({ title, className, items }: LegendProps) => {
   return (
     <div
       className={cn(
-        'flex items-center justify-center gap-x-4 text-sm font-normal leading-5 text-v3-bg-accent-0 font-rootstock-sans',
+        'flex items-center justify-center flex-wrap gap-x-4 gap-y-2 text-sm font-normal leading-5 text-v3-bg-accent-0 font-rootstock-sans',
         className,
       )}
     >
@@ -25,7 +26,7 @@ export const Legend = ({ title, className, items }: LegendProps) => {
       {items.map(({ key, label, displayColor }) => (
         <span key={key} className="flex items-center space-x-2">
           <Circle color={displayColor} />
-          <span>{truncate(label, 17)}</span>
+          <span className="whitespace-nowrap">{truncate(label, 17)}</span>
         </span>
       ))}
     </div>

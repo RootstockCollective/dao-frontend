@@ -3,7 +3,7 @@
 import { Fragment } from 'react'
 import { ProgressBar } from '@/components/ProgressBarNew'
 import { useProposalStepper, ProposalStep } from './StepperProvider'
-import { Paragraph } from '@/components/TypographyNew'
+import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { ChevronIcon } from './ChevronIcon'
 
@@ -17,7 +17,7 @@ const progressMap = {
 export function ProposalStepper() {
   const { currentStep } = useProposalStepper()
   return (
-    <div className="mb-12 w-full">
+    <div className="w-full">
       <div className="mb-3 flex justify-between items-center">
         {Object.keys(ProposalStep)
           .filter(step => step !== ProposalStep.None)
@@ -35,7 +35,7 @@ export function ProposalStepper() {
             </Fragment>
           ))}
       </div>
-      <ProgressBar progress={progressMap[currentStep]} color={['transparent', ['#4B5CF0', '#F47A2A']]} />
+      <ProgressBar progress={progressMap[currentStep]} color={['#4B5CF0', '#F47A2A', '#1BC47D']} />
     </div>
   )
 }

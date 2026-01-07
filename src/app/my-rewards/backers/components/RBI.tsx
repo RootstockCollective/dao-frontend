@@ -1,13 +1,15 @@
-import { FC } from 'react'
 import {
-  useGetBackerRBI,
   Token,
-  useGetBackerStakingHistoryWithStateSync,
+  useGetBackerRBI,
   useGetBackerStakingHistoryWithGraph,
+  useGetBackerStakingHistoryWithStateSync,
 } from '@/app/collective-rewards/rewards'
+import { useStateSyncHealthCheck } from '@/app/collective-rewards/shared/hooks/useStateSyncHealthCheck'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { Address } from 'viem'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useFeatureFlags } from '@/shared/context/FeatureFlag'
+import { FC } from 'react'
+import { Address } from 'viem'
 import { RewardCard } from '../../components/RewardCard'
 
 interface RBIContentProps {
@@ -100,5 +102,22 @@ export const RBI: FC<RBIProps> = props => {
   const {
     flags: { use_state_sync },
   } = useFeatureFlags()
-  return use_state_sync ? <RBIWStateSync {...props} /> : <RBIWTheGraph {...props} />
+
+  const {
+    data: stateSyncIsHealthy,
+    isLoading: healthCheckIsLoading,
+    error: healthCheckError,
+  } = useStateSyncHealthCheck()
+
+  useHandleErrors({ error: healthCheckError, title: 'State sync health check error' })
+
+  if (healthCheckIsLoading) {
+    return <LoadingSpinner />
+  }
+
+  if (use_state_sync && stateSyncIsHealthy) {
+    return <RBIWStateSync {...props} />
+  }
+
+  return <RBIWTheGraph {...props} />
 }

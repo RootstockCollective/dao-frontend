@@ -1,11 +1,13 @@
-import { Button } from '@/components/ButtonNew/Button'
-import { Span } from '@/components/TypographyNew'
+import { Button } from '@/components/Button'
+import { Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { ConnectButtonComponentProps } from '../types'
 
 /**
  * New button that shows Connect Wallet
  * @param onClick
+ * @param className
+ * @param textClassName
  * @constructor
  */
 export const ConnectButtonComponent = ({
@@ -17,7 +19,7 @@ export const ConnectButtonComponent = ({
     onClick={onClick}
     data-testid="ConnectWallet"
     variant="secondary-outline"
-    className={cn('px-2 py-1 border-bg-40', className)}
+    className={cn('px-2 py-1.5 border-bg-40 w-auto', className)}
   >
     <Span variant="body-s" className={textClassName}>
       Connect Wallet
@@ -30,7 +32,7 @@ export const ConnectButtonOrangeComponent = ({ onClick, className }: ConnectButt
     onClick={onClick}
     data-testid="ConnectWallet"
     variant="primary"
-    className={cn('px-2 py-1 border-bg-40', className)}
+    className={cn('px-2 py-1.5 border-bg-40', className)}
   >
     Connect Wallet
   </Button>
@@ -41,7 +43,7 @@ export const ConnectButtonComponentSecondary = ({ onClick }: ConnectButtonCompon
     onClick={onClick}
     data-testid="ConnectWallet"
     variant="secondary-outline"
-    className="flex h-[1.75rem] p-[0.25rem_0.5rem] items-center gap-[0.5rem] rounded-sm border border-bg-40 px-2 py-1"
+    className="flex h-[1.75rem] p-[0.25rem_0.5rem] items-center gap-[0.5rem] rounded-sm border border-bg-40 px-2 py-1.5"
   >
     <Span className="text-v3-bg-accent-100 font-rootstock-sans not-italic text-sm font-normal leading-[145%]">
       Connect Wallet

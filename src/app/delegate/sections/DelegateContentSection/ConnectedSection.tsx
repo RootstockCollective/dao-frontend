@@ -1,30 +1,27 @@
 'use client'
 import { DelegatesContainer } from '@/app/delegate/sections/DelegateContentSection/DelegatesContainer'
 import { useDelegateContext } from '@/app/delegate/contexts/DelegateContext'
-import { DelegateCard } from '@/app/delegate/components/DelegateCard'
-import { Header, Paragraph, Span } from '@/components/TypographyNew'
-import { Button } from '@/components/ButtonNew'
+import { DelegationDetailsSection } from '@/app/delegate/sections/DelegateContentSection/DelegationDetailsSection'
 import { Address } from 'viem'
-import { useCallback, useState } from 'react'
-import Image from 'next/image'
+import { useCallback, useRef, useState } from 'react'
 import { DelegateModal } from '@/app/delegate/components/DelegateModal'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 import { executeTxFlow } from '@/shared/notification/executeTxFlow'
 import { useAccount } from 'wagmi'
-import { formatNumberWithCommas } from '@/lib/utils'
-import { EditIconKoto } from '@/components/Icons'
+import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
+import { cn, formatNumberWithCommas } from '@/lib/utils'
+import { DelegateeState } from '../../lib/types'
 
 export const ConnectedSection = () => {
   const {
     didIDelegateToMyself,
-    delegateeAddress,
     cards,
     isDelegationPending,
     isReclaimPending,
+    displayedDelegatee,
     setIsDelegationPending,
     setIsReclaimPending,
-    delegateeVotingPower,
-    delegateeRns,
+    setNextDelegatee,
     refetch,
   } = useDelegateContext()
 
@@ -34,41 +31,72 @@ export const ConnectedSection = () => {
   const [shouldShowDelegates, setShouldShowDelegates] = useState(false)
   const [isDelegateModalOpened, setIsDelegateModalOpened] = useState(false)
   const [isReclaimModalOpened, setIsReclaimModalOpened] = useState(false)
-  const [addressToDelegate, setAddressToDelegate] = useState<Address | null>(null)
-  const [rnsToDelegate, setRnsToDelegate] = useState<string | undefined>(undefined)
+
+  const [isRequestingDelegate, setIsRequestingDelegate] = useState(false) // opening metamask
+  const [isRequestingReclaim, setIsRequestingReclaim] = useState(false) // opening metamask
+  const delegatesContainerRef = useRef<HTMLDivElement>(null)
 
   const handleDelegate = useCallback(
     (address: Address) => {
-      setIsDelegationPending(true)
+      setIsRequestingDelegate(true)
       executeTxFlow({
         onRequestTx: () => onDelegate(address),
-        onPending: () => setIsDelegateModalOpened(false),
-        onSuccess: refetch,
-        onComplete: () => setIsDelegationPending(false),
+        onPending: () => {
+          setIsDelegationPending(true)
+          setIsDelegateModalOpened(false)
+        },
+        onSuccess: () => {
+          refetch()
+          onHideDelegates()
+        },
+        onComplete: () => {
+          setIsDelegationPending(false)
+          setIsRequestingDelegate(false)
+          setNextDelegatee(undefined)
+        },
         action: 'delegation',
       })
     },
-    [onDelegate, setIsDelegationPending, setIsDelegateModalOpened, refetch],
+    [onDelegate, setIsDelegationPending, setIsDelegateModalOpened, refetch, setNextDelegatee],
   )
 
   const handleReclaim = useCallback(() => {
-    setIsReclaimPending(true)
+    setIsRequestingReclaim(true)
     executeTxFlow({
       onRequestTx: () => onDelegate(ownAddress as Address),
-      onPending: () => setIsReclaimModalOpened(false),
+      onPending: () => {
+        setIsReclaimPending(true)
+        setIsReclaimModalOpened(false)
+      },
       onSuccess: refetch,
-      onComplete: () => setIsReclaimPending(false),
+      onComplete: () => {
+        setIsReclaimPending(false)
+        setIsRequestingReclaim(false)
+        setNextDelegatee(undefined)
+      },
       action: 'reclaiming',
     })
-  }, [onDelegate, ownAddress, setIsReclaimPending, setIsReclaimModalOpened, refetch])
+  }, [onDelegate, ownAddress, setIsReclaimPending, setIsReclaimModalOpened, refetch, setNextDelegatee])
 
-  const onShowDelegates = () => setShouldShowDelegates(true)
-  const onHideDelegates = () => setShouldShowDelegates(false)
+  const onShowDelegates = () => {
+    setShouldShowDelegates(true)
+    setTimeout(() => {
+      delegatesContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 1)
+  }
 
-  const onShowDelegate = (address: Address, rns?: string) => {
+  const onHideDelegates = () => {
+    setShouldShowDelegates(false)
+  }
+
+  const onNextDelegate = (address: Address, rns = '', imageIpfs?: string | null) => {
     setIsDelegateModalOpened(true)
-    setAddressToDelegate(address)
-    setRnsToDelegate(rns)
+    setNextDelegatee({ address, rns, imageIpfs } as DelegateeState)
+  }
+
+  const onCloseDelegateModal = () => {
+    setIsDelegateModalOpened(false)
+    setNextDelegatee(undefined)
   }
 
   const onShowReclaim = () => {
@@ -77,107 +105,55 @@ export const ConnectedSection = () => {
 
   const votingPower = formatNumberWithCommas(Number(cards.own.contentValue))
 
-  const shouldDisableButtons = isDelegationPending || isReclaimPending
+  const isPendingTx = isDelegationPending || isReclaimPending
+
+  // Prevent double clicking by disabling action button while opening metamask
+  const isPendingDelegate = isDelegationPending || isRequestingDelegate
+  const isPendingReclaim = isReclaimPending || isRequestingReclaim
 
   return (
     <>
-      {!didIDelegateToMyself && delegateeAddress && (
-        <div className="flex flex-row bg-bg-80 p-[24px]">
-          <DelegateCard
-            address={delegateeAddress}
-            name={delegateeRns}
-            // @TODO fetch since
-            since=" - "
-            votingPower={delegateeVotingPower ? Number(delegateeVotingPower).toFixed(0) : ' - '}
-            // @TODO fetch voting weight
-            votingWeight=" - "
-            // @TODO fetch total votes
-            totalVotes=" - "
-            // @TODO fetch delegators
-            delegators=" - "
-            onDelegate={onShowReclaim}
-            buttonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
-            buttonVariant="primary"
-            data-testid={`delegateCard-${delegateeAddress}`}
-            buttonDisabled={shouldDisableButtons}
+      <DelegationDetailsSection onShowReclaim={onShowReclaim} onShowDelegates={onShowDelegates} />
+      {!isPendingTx && (
+        <div
+          ref={delegatesContainerRef}
+          className={cn(
+            'transition-all duration-300 overflow-hidden',
+            shouldShowDelegates || didIDelegateToMyself ? 'max-h-[100%] opacity-100' : 'max-h-0 opacity-0',
+          )}
+          data-testid="DelegatesContainer"
+        >
+          <DelegatesContainer
+            didIDelegateToMyself={didIDelegateToMyself}
+            onDelegate={onNextDelegate}
+            onCloseClick={onHideDelegates}
           />
-          <div className="flex flex-col ml-[32px] w-full">
-            {/* Banner here with delegation perks */}
-            <div className="text-bg-100 p-[24px] relative mb-[110px] bg-gradient-to-r from-[#E3FFEB] via-[#66CD8E] to-[#00031E]">
-              <Image
-                src="/images/hero/delegation-perks-pixels.svg"
-                alt="Pixels Divider"
-                width={50}
-                height={40}
-                className="absolute left-[0px] -bottom-[30px] z-10 hidden md:block"
-              />
-              <Header variant="e3" className="text-bg-100 leading-[40px] text-[20px]">
-                DELEGATION PERKS
-              </Header>
-              <ul className="list-[circle] list-inside">
-                <li>
-                  <Span>your tokens stay in your wallet</Span>
-                </li>
-                <li>
-                  <Span>you save on gas cost while being represented</Span>
-                </li>
-                <li>
-                  <Span>your Rewards will keep accumulating as usual</Span>
-                </li>
-              </ul>
-            </div>
-            <Paragraph data-testid="DelegateeAddress">
-              You have chosen <span className="text-primary">{delegateeAddress}</span> to take part in
-              governance decisions on your behalf.
-            </Paragraph>
-            <Paragraph>You only delegated your own voting power, not your tokens 😅</Paragraph>
-            {/* Update delegate button here */}
-            <Button
-              variant="secondary-outline"
-              onClick={onShowDelegates}
-              className="w-[fit-content] mt-[24px] font-normal gap-1 py-[8px] rounded border-bg-40 hover:border-primary"
-              data-testid="updateDelegateButton"
-            >
-              <EditIconKoto size={20} />
-              <span>Update delegate</span>
-            </Button>
-          </div>
         </div>
       )}
-      <div
-        className={`transition-all duration-300 overflow-hidden ${
-          shouldShowDelegates || didIDelegateToMyself ? 'max-h-[100%] opacity-100' : 'max-h-0 opacity-0'
-        }`}
-      >
-        <DelegatesContainer
-          didIDelegateToMyself={didIDelegateToMyself}
-          onDelegate={onShowDelegate}
-          onCloseClick={onHideDelegates}
-          shouldDisableButtons={shouldDisableButtons}
-        />
-      </div>
-      {isDelegateModalOpened && addressToDelegate && (
+      {isDelegateModalOpened && displayedDelegatee && (
         <DelegateModal
           onDelegate={handleDelegate}
-          onClose={() => setIsDelegateModalOpened(false)}
-          isLoading={isDelegationPending}
+          onClose={onCloseDelegateModal}
+          isLoading={isPendingDelegate}
           title={`You are about to delegate your own voting power of ${votingPower} to`}
-          address={addressToDelegate}
-          name={rnsToDelegate}
-          actionButtonText={isDelegationPending ? 'Delegating...' : 'Delegate'}
+          address={displayedDelegatee.address}
+          name={displayedDelegatee.rns}
+          imageIpfs={displayedDelegatee.imageIpfs}
+          actionButtonText={isPendingDelegate ? 'Delegating...' : 'Delegate'}
           data-testid="delegateModal"
         />
       )}
-      {isReclaimModalOpened && (
+      {isReclaimModalOpened && displayedDelegatee && (
         <DelegateModal
           onDelegate={handleReclaim}
           onClose={() => setIsReclaimModalOpened(false)}
-          isLoading={isReclaimPending}
+          isLoading={isPendingReclaim}
           title={`You are about to reclaim your own voting power of ${votingPower} from`}
-          address={delegateeAddress as Address}
-          // @TODO fetch since
-          since=""
-          actionButtonText={isReclaimPending ? 'Reclaiming...' : 'Reclaim'}
+          name={displayedDelegatee.rns}
+          address={displayedDelegatee.address}
+          since={formatTimestampToMonthYear(displayedDelegatee.delegatedSince) || ''}
+          imageIpfs={displayedDelegatee.imageIpfs}
+          actionButtonText={isPendingReclaim ? 'Reclaiming...' : 'Reclaim'}
           data-testid="reclaimModal"
         />
       )}

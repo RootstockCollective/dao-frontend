@@ -86,7 +86,7 @@ const useContractData = (nftAddress?: Address) => {
       // NFT name from predefined communities list or from NFT metadata if not listed
       nftName: communitiesMapByContract[nftAddress as string]?.title ?? splitWords(nftName),
       nftSymbol: symbol,
-      nftUri: URI?.[0].result,
+      nftUri: URI?.[0].result as string | undefined,
       stRifThreshold: stRifThreshold ? BigInt(stRifThreshold) : undefined,
       isLoading,
     }

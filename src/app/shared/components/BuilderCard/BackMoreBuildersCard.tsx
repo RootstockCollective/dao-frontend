@@ -1,7 +1,7 @@
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { BuildingBrick, CloseIconKoto } from '@/components/Icons'
-import { Paragraph } from '@/components/TypographyNew'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Paragraph } from '@/components/Typography'
+import { BaseTypography } from '@/components/Typography/Typography'
 import { cn } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { FC, useState } from 'react'
@@ -28,7 +28,7 @@ export const BackMoreBuildersCard: FC<BackMoreBuildersCardProps> = ({
   return (
     <div
       className={cn(
-        'rounded bg-v3-bg-accent-60 px-2 pb-6 flex flex-col items-center justify-center relative min-w-[200px] min-h-[554px]',
+        'rounded bg-v3-bg-accent-60 px-2 pb-6 flex flex-col items-center justify-center relative min-w-[268px] max-lg:w-[268px]',
         className,
       )}
       data-testid={`builderCardContainer${dataTestId}`}
@@ -45,9 +45,9 @@ export const BackMoreBuildersCard: FC<BackMoreBuildersCardProps> = ({
         <div className="">
           <BuildingBrick color="none" />
         </div>
-        <Typography variant="h3" className="text-v3-text-100">
+        <BaseTypography variant="h3" className="text-v3-text-100">
           Grow your impact
-        </Typography>
+        </BaseTypography>
         <Paragraph className="pb-2 text-center">
           Backing more Builders helps diversify your support across the ecosystem.
         </Paragraph>

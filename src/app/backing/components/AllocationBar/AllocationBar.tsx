@@ -1,8 +1,16 @@
-import React, { useRef, useState, useEffect } from 'react'
-import { DndContext, PointerSensor, useSensor, useSensors, DragEndEvent, pointerWithin } from '@dnd-kit/core'
-import { SortableContext, horizontalListSortingStrategy, arrayMove } from '@dnd-kit/sortable'
+import { DndContext, DragEndEvent, PointerSensor, pointerWithin, useSensor, useSensors } from '@dnd-kit/core'
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
+import { SortableContext, arrayMove, horizontalListSortingStrategy } from '@dnd-kit/sortable'
+import { AllocationBarTooltip, AllocationBarTooltipProps } from './AllocationBarTooltip'
+import { Tooltip } from '@/components/Tooltip'
+import React, { Fragment, useEffect, useRef, useState } from 'react'
+import { useModal } from '@/shared/hooks/useModal'
 
+import { Legend } from '@/components/Legend'
+import { cn } from '@/lib/utils'
+import { AllocationBarSegment } from './AllocationBarSegment'
+import { ResizeHandle } from './ResizeHandle'
+import { AllocationBarProps, AllocationItem } from './types'
 import {
   calculateMinSegmentValue,
   calculateNewSegmentValues,
@@ -10,12 +18,9 @@ import {
   clamp,
   valueToPercentage,
 } from './utils'
-import { AllocationBarProps } from './types'
-import { AllocationBarSegment } from './AllocationBarSegment'
-import { Legend } from '@/components/Legend'
-import { cn } from '@/lib/utils'
+import { BackingDetailsModal } from './BackingDetailsModal'
 
-const getSegmentsToShowDots = (values: number[], totalValue: number): boolean[] => {
+const getSegmentsCollapsedState = (values: bigint[], totalValue: bigint): boolean[] => {
   const NEIGHBOR_SUM_THRESHOLD = 8 // 8%
   const segmentsToShowDots = new Array(values.length).fill(false)
 
@@ -46,23 +51,22 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   showLegend = true,
   className = '',
   onChange,
+  withModal = false,
 }) => {
   const isControlled = typeof onChange === 'function'
   const [localItemsData, setLocalItemsData] = useState(itemsData)
   const [localValues, setLocalValues] = useState(itemsData.map(item => item.value))
+  const { isModalOpened, openModal, closeModal } = useModal()
 
   // Reactive current state
   const currentItems = isControlled ? itemsData : localItemsData
   const currentValues = isControlled ? itemsData.map(item => item.value) : localValues
 
-  const totalValue = currentValues.reduce((sum, v) => sum + v, 0)
-  const minSegmentValue = calculateMinSegmentValue(totalValue)
-
-  // Calculate which segments should show dots
-  const segmentsToShowDots = getSegmentsToShowDots(currentValues, totalValue)
+  const totalBacking = currentValues.reduce((sum, v) => sum + v, 0n)
+  const minSegmentValue = calculateMinSegmentValue(totalBacking)
 
   const barRef = useRef<HTMLDivElement>(null)
-  const [dragIndex, setDragIndex] = useState<number | null>(null)
+  const [dragTargetIndex, setDragTarget] = useState<number | null>(null)
 
   // dnd-kit sensors
   const sensors = useSensors(
@@ -72,34 +76,46 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
   )
 
   // Start drag handler
-  const onHandleMouseDown = (idx: number) => (e: React.MouseEvent) => {
-    setDragIndex(idx)
-    e.preventDefault()
+  const onHandleMouseDown = (idx: number) => {
+    return (e: React.MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      setDragTarget(idx)
+    }
   }
 
   // Handle resize logic
   const handleResize = ({ clientX }: MouseEvent) => {
-    if (dragIndex === null || !barRef.current) return
+    if (dragTargetIndex === null || !barRef.current) return
+
+    const targetSegment = currentItems.at(dragTargetIndex)
+    const adjacentSegment = currentItems.at(dragTargetIndex + 1)
+
+    // Prevent resizing if either of the involved segments is not editable
+    if (!(adjacentSegment?.isEditable && targetSegment?.isEditable)) {
+      return
+    }
 
     const rect = barRef.current.getBoundingClientRect()
     const x = clamp(clientX - rect.left, 0, rect.width)
 
-    const { leftPx, rightPx } = calculateSegmentPositions(dragIndex, rect, currentValues, totalValue)
-    const { leftValue, rightValue } = calculateNewSegmentValues(
+    const { leftPx, rightPx } = calculateSegmentPositions(dragTargetIndex, rect, currentValues, totalBacking)
+    const { leftValue: targetSegmentValue, rightValue: adjecentSegmentValue } = calculateNewSegmentValues(
       x,
       leftPx,
       rightPx,
-      dragIndex,
+      dragTargetIndex,
       currentValues,
       minSegmentValue,
     )
 
     const newValues = [...currentValues]
-    newValues[dragIndex] = leftValue
-    newValues[dragIndex + 1] = rightValue
+    newValues[dragTargetIndex] = targetSegmentValue
+    newValues[dragTargetIndex + 1] = adjecentSegmentValue
 
-    const increasedIndex = leftValue > currentValues[dragIndex] ? dragIndex : dragIndex + 1
-    const decreasedIndex = increasedIndex === dragIndex ? dragIndex + 1 : dragIndex
+    const increasedIndex =
+      targetSegmentValue > currentValues[dragTargetIndex] ? dragTargetIndex : dragTargetIndex + 1
+    const decreasedIndex = increasedIndex === dragTargetIndex ? dragTargetIndex + 1 : dragTargetIndex
 
     if (isControlled) {
       onChange?.({
@@ -114,10 +130,10 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
     }
   }
 
-  const onMouseUp = () => setDragIndex(null)
+  const onMouseUp = () => setDragTarget(null)
 
   useEffect(() => {
-    if (dragIndex !== null) {
+    if (dragTargetIndex !== null) {
       window.addEventListener('mousemove', handleResize)
       window.addEventListener('mouseup', onMouseUp)
     } else {
@@ -129,7 +145,7 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
       window.removeEventListener('mouseup', onMouseUp)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dragIndex, currentValues])
+  }, [dragTargetIndex, currentValues])
 
   // dnd-kit reorder logic
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
@@ -155,8 +171,10 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
     }
   }
 
+  const collapsedSegments: boolean[] = getSegmentsCollapsedState(currentValues, totalBacking)
+
   return (
-    <div className={cn('w-full p-8 flex flex-col gap-6', className)}>
+    <div className={cn('w-full p-0 mb-4 md:p-8 md:mb-0 flex flex-col gap-6', className)}>
       <DndContext
         sensors={sensors}
         collisionDetection={pointerWithin}
@@ -171,27 +189,67 @@ const AllocationBar: React.FC<AllocationBarProps> = ({
             style={{ height }}
           >
             {currentItems.map((item, i) => (
-              <AllocationBarSegment
-                key={item.key}
-                value={currentValues[i]}
-                totalValue={totalValue}
-                item={item}
-                index={i}
-                isLast={i === currentItems.length - 1}
-                valueDisplay={valueDisplay}
-                onHandleMouseDown={onHandleMouseDown}
-                dragIndex={dragIndex}
-                isDraggable={isDraggable}
-                isResizable={isResizable}
-                showDots={segmentsToShowDots[i]}
-              />
+              <Fragment key={item.key}>
+                <AllocationBarSegment
+                  key={item.key}
+                  pendingValue={currentValues[i]}
+                  onchainValue={item.initialValue ?? 0n}
+                  totalBacking={totalBacking}
+                  item={item}
+                  valueDisplay={valueDisplay}
+                  isCollapsed={collapsedSegments[i]}
+                  tooltipContentProps={getTooltipProps(dragTargetIndex, item, currentItems)}
+                  dragIndex={dragTargetIndex}
+                  isDraggable={isDraggable}
+                  withModal={withModal}
+                  onModalOpen={openModal}
+                />
+                {i < currentItems.length - 1 && isResizable && (
+                  <Tooltip
+                    text={<AllocationBarTooltip {...getTooltipProps(dragTargetIndex, item, currentItems)} />}
+                    // reduce layout jumps/jitters when numbers change
+                    className="whitespace-nowrap [font-variant-numeric:tabular-nums]"
+                    side="top"
+                    align="center"
+                  >
+                    <ResizeHandle
+                      onMouseDown={onHandleMouseDown(i)}
+                      isEditable={item.isEditable && currentItems[i + 1].isEditable}
+                      isHighlighted={dragTargetIndex === i}
+                    />
+                  </Tooltip>
+                )}
+              </Fragment>
             ))}
           </div>
         </SortableContext>
       </DndContext>
       {showLegend && <Legend title="Total:" items={currentItems} />}
+
+      {withModal && (
+        <BackingDetailsModal
+          isOpen={isModalOpened}
+          onClose={closeModal}
+          itemsData={currentItems}
+          totalBacking={totalBacking}
+        />
+      )}
     </div>
   )
+}
+
+const getTooltipProps = (
+  dragTargetIndex: number | null,
+  targetItem: AllocationItem,
+  allItems: AllocationItem[],
+): AllocationBarTooltipProps => {
+  const isDragging = dragTargetIndex !== null
+
+  return {
+    targetItem: isDragging ? allItems[dragTargetIndex] : targetItem,
+    adjacentItem: isDragging ? allItems[dragTargetIndex + 1] : undefined,
+    isResizing: isDragging,
+  }
 }
 
 export default AllocationBar

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, HTMLAttributes, RefObject } from 'react'
+import { useState, useEffect, HTMLAttributes, RefObject, useRef } from 'react'
 import { useDebounce } from 'use-debounce'
 import { CloseIconKoto, SearchIconKoto, SpinnerIcon } from '../Icons'
 import { cn } from '@/lib/utils'
@@ -48,16 +48,27 @@ export function DebounceSearch({
   const [isUserStoppedTyping] = useDebounce(searchText, SPINNER_DEBOUNCE_MS)
   // Second debounce runs after the first one. When it finishes, it stops the spinner and calls on-search function
   const [debouncedSearchText] = useDebounce(isUserStoppedTyping, SEARCH_DEBOUNCE_MS)
-  // shows/hides spinner
+  // Shows/hides spinner
   const [isLoading, setIsLoading] = useState(false)
+  // Ref to track if user has typed, avoiding search on initial mount
+  const hasUserTyped = useRef(false)
+
+  // Show the spinner as soon as the user stops typing
   useEffect(() => {
-    // Show the spinner as soon as the user stops typing
-    setIsLoading(true)
+    if (isUserStoppedTyping) {
+      hasUserTyped.current = true
+    }
+    if (hasUserTyped.current) {
+      setIsLoading(true)
+    }
   }, [isUserStoppedTyping])
+
+  // Hide the spinner and trigger the search function after the second debounce
   useEffect(() => {
-    // Hide the spinner and trigger the search function after the second debounce
-    setIsLoading(false)
-    onSearchSubmit(debouncedSearchText)
+    if (hasUserTyped.current) {
+      setIsLoading(false)
+      onSearchSubmit(debouncedSearchText)
+    }
   }, [debouncedSearchText, onSearchSubmit])
 
   const handleClear = () => {
@@ -80,15 +91,15 @@ export function DebounceSearch({
         className="w-full h-full py-3 px-12 outline-0 text-text-100 font-rootstock-sans placeholder:text-bg-0"
         data-testid="SearchInput"
       />
-      <button
-        onClick={() => {
-          handleClear()
-        }}
-        className="absolute right-3 top-1/2 -translate-y-1/2"
-        data-testid="SearchClearButton"
-      >
-        <CloseIconKoto />
-      </button>
+      {searchText && (
+        <button
+          onClick={handleClear}
+          className="absolute right-3 top-1/2 -translate-y-1/2"
+          data-testid="SearchClearButton"
+        >
+          <CloseIconKoto />
+        </button>
+      )}
     </div>
   )
 }

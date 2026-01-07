@@ -1,13 +1,13 @@
 import { FC, ReactNode } from 'react'
 import { cn } from '@/lib/utils'
-import { Button } from '@/components/ButtonNew/Button'
-import { Typography } from '@/components/TypographyNew/Typography'
+import { Button } from '@/components/Button'
+import { BaseTypography } from '@/components/Typography/Typography'
 
 export interface BannerContentProps {
   title: ReactNode
   description: ReactNode
-  buttonText?: string
   buttonOnClick: () => void
+  buttonText?: string
   rightContent?: ReactNode
   className?: string
 }
@@ -21,17 +21,25 @@ export const BannerContent: FC<BannerContentProps> = ({
   className = '',
 }) => {
   return (
-    <div className={cn('text-v3-text-0 w-full flex flex-row gap-2 items-center justify-between', className)}>
-      <div className="flex flex-col gap-2 w-1/2">
-        <Typography variant="h3">{title}</Typography>
-        <Typography>{description}</Typography>
+    <div
+      className={cn(
+        'text-v3-text-0 w-full flex flex-col md:flex-row gap-2 md:items-center md:justify-between',
+        className,
+      )}
+      data-testid="BannerContent"
+    >
+      <div className="flex flex-col gap-2 md:w-1/2">
+        <BaseTypography variant="h3">{title}</BaseTypography>
+        <BaseTypography>{description}</BaseTypography>
         {buttonText && (
-          <Button variant="primary" onClick={buttonOnClick} className="w-fit">
+          <Button variant="primary" onClick={buttonOnClick}>
             {buttonText}
           </Button>
         )}
       </div>
-      {rightContent && <div className="flex-shrink-0 w-1/2 text-right">{rightContent}</div>}
+      {rightContent && (
+        <div className="flex-shrink-0 w-full md:w-1/2 text-left md:text-right">{rightContent}</div>
+      )}
     </div>
   )
 }

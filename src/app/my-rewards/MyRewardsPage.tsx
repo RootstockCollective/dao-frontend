@@ -5,7 +5,7 @@ import { useIsBacker } from '@/app/collective-rewards/rewards'
 import { withBuilderSettingsProvider } from '@/app/collective-rewards/settings'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { Header, Paragraph, Span } from '@/components/TypographyNew'
+import { Header, Paragraph, Span } from '@/components/Typography'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { useRouter } from 'next/navigation'
 import { ReactNode, useEffect } from 'react'
@@ -16,14 +16,7 @@ import { BackerRewards } from './backers/components/BackerRewards'
 import { BackerRewardsNotConnected } from './backers/components/BackerRewardsNotConnected'
 import { BuilderRewards } from './builder/components/BuilderRewards'
 import { NonBacker } from './components'
-
-const Section = ({ children }: { children: ReactNode }) => {
-  return (
-    <div className="flex flex-col w-full items-start gap-3 self-stretch pt-10 pb-10 pl-6 pr-6 bg-v3-bg-accent-80 rounded">
-      {children}
-    </div>
-  )
-}
+import { Section } from './components/Section'
 
 const NAME = 'My Rewards'
 const MyRewardsPage = () => {

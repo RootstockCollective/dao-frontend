@@ -1,16 +1,16 @@
 // FIXME: move to @/app/builders/components/Table folder
 import { Builder } from '@/app/collective-rewards/types'
 import { isBuilderActive } from '@/app/collective-rewards/utils'
-import { Button } from '@/components/ButtonNew/Button'
+import { Button } from '@/components/Button'
 import { CogIcon, HandshakeIcon, TrashIcon } from '@/components/Icons/v3design'
 import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
 
 const ACTION_CONFIG = {
-  removeBacking: { text: 'Remove Backing', icon: <TrashIcon size={16} /> },
-  adjustBacking: { text: 'Adjust Backing', icon: <CogIcon size={16} /> },
-  backBuilder: { text: 'Back Builder', icon: <HandshakeIcon size={16} /> },
+  removeBacking: { text: 'Remove Backing', icon: <TrashIcon size={20} /> },
+  adjustBacking: { text: 'Adjust Backing', icon: <CogIcon size={20} /> },
+  backBuilder: { text: 'Back Builder', icon: <HandshakeIcon size={20} /> },
 } as const
 
 export type Action = keyof typeof ACTION_CONFIG

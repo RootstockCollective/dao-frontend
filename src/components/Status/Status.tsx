@@ -1,4 +1,4 @@
-import { Paragraph } from '../TypographyNew'
+import { Paragraph } from '../Typography'
 import { cn } from '@/lib/utils'
 import { FC, JSX } from 'react'
 import { ProposalState } from '@/shared/types'
@@ -40,12 +40,21 @@ const VARIANTS = {
     label: 'Pending',
     classes: 'bg-bg-40',
   },
+  [ProposalState.None]: {
+    label: 'Unknown',
+    classes: 'bg-bg-40 text-text-100',
+  },
 } satisfies Record<ProposalState, { label: string; classes: string }>
 
+/**
+ *  This logic returns the variant based on the proposal state
+ *  Proposal State can be 0, be careful.
+ * @param proposalState
+ */
 const getVariants = (proposalState?: ProposalState): (typeof VARIANTS)[keyof typeof VARIANTS] => {
-  return proposalState === undefined
-    ? { label: 'Unknown', classes: 'bg-bg-40 text-text-100' }
-    : VARIANTS[proposalState]
+  if (proposalState !== undefined && proposalState in VARIANTS) return VARIANTS[proposalState]
+
+  return VARIANTS[ProposalState.None]
 }
 
 export const Status: FC<Props> = ({ proposalState, className, ...rest }) => {
@@ -59,9 +68,10 @@ export const Status: FC<Props> = ({ proposalState, className, ...rest }) => {
         'rounded-full text-text-100 overflow-hidden',
         classes,
       )}
+      data-testid="ProposalStatus"
       {...rest}
     >
-      <Paragraph className="whitespace-nowrap text-[clamp(8px,1.1vw,12px)]">{label}</Paragraph>
+      <Paragraph className="whitespace-nowrap text-[clamp(10px,1.1vw,12px)]">{label}</Paragraph>
     </div>
   )
 }

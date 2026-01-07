@@ -1,11 +1,12 @@
-import { Paragraph } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 import Link from 'next/link'
-import { ArrowRightIconKoto } from '@/components/Icons'
+import { ArrowRightIconKoto, ArrowUpRightLightIcon } from '@/components/Icons'
 
 interface CommunityItemButtonHandlerProps {
   nftAddress?: string
   readMoreLink?: string
   color?: string
+  isExternal?: boolean
   'data-testid'?: string
 }
 
@@ -21,6 +22,7 @@ export const CommunityItemButtonHandler = ({
   nftAddress,
   readMoreLink,
   color = 'white',
+  isExternal = false,
   'data-testid': dataTestId,
 }: CommunityItemButtonHandlerProps) => {
   let href = nftAddress ? `/communities/nft/${nftAddress}` : '/communities'
@@ -29,11 +31,14 @@ export const CommunityItemButtonHandler = ({
     href = readMoreLink
     target = '_blank'
   }
+  const textClassColor = color === 'black' ? 'text-bg-100' : 'text-text-100'
   return (
     <Link href={href} target={target} data-testid={dataTestId}>
       <div className={'flex flex-row gap-1 items-center'} style={{ color }}>
-        <Paragraph>Learn more</Paragraph>
-        <ArrowRightIconKoto color={color} />
+        <Span variant="body-s" bold className={textClassColor}>
+          Learn more
+        </Span>
+        {isExternal ? <ArrowUpRightLightIcon color={color} /> : <ArrowRightIconKoto color={color} />}
       </div>
     </Link>
   )

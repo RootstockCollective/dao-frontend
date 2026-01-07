@@ -1,7 +1,7 @@
 'use client'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { SolidTabs } from '@/components/Tabs'
-import { Label, Paragraph } from '@/components/TypographyNew'
+import { Label, Paragraph } from '@/components/Typography'
 import { cn, formatCurrencyWithLabel } from '@/lib/utils'
 import { AddressLink } from '../components/AddressLink'
 import { useTreasuryTabs } from '../hooks/useTreasuryTabs'
@@ -35,7 +35,7 @@ export function TabsSection() {
           {description}
         </Paragraph>
 
-        <div className="flex flex-row gap-8">
+        <div className="flex flex-col sm:flex-row gap-8">
           {Object.keys(categories).map(categoryName => {
             const { buckets, address } = categories[categoryName]
             const onlyOneCategory = Object.keys(categories).length === 1
@@ -45,7 +45,7 @@ export function TabsSection() {
                 <div className="flex flex-col gap-6 mt-4">
                   <div
                     className={cn('flex flex-col gap-4', {
-                      'flex-row gap-6': onlyOneCategory,
+                      'flex-col sm:flex-row gap-6': onlyOneCategory,
                     })}
                   >
                     {buckets.map(({ title: symbol, bucket }) => (
@@ -58,7 +58,10 @@ export function TabsSection() {
                       </div>
                     ))}
                   </div>
-                  <AddressLink address={address} className={cn({ 'justify-center': onlyOneCategory })} />
+                  <AddressLink
+                    address={address}
+                    className={cn({ 'justify-between sm:justify-center ': onlyOneCategory })}
+                  />
                 </div>
               </div>
             )

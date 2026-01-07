@@ -1,12 +1,17 @@
 'use client'
-import { communitiesMapByContract, CommunityItem } from '@/app/communities/communityUtils'
+import {
+  communitiesMapByContract,
+  CommunityItem,
+  AdditionalCheck,
+  ContractReadResult,
+} from '@/app/communities/communityUtils'
 import { nftAlertMessages } from '@/app/communities/nft/[address]/constants'
-import { useAlertContext } from '@/app/providers'
 import { NoContextProviderError } from '@/lib/errors/ContextError'
 import { applyPinataImageOptions } from '@/lib/ipfs'
 import { useCommunity } from '@/shared/hooks/useCommunity'
 import { useStRif } from '@/shared/hooks/useStRIf'
 import { showToast } from '@/shared/notification'
+import { NftMeta } from '@/shared/types'
 import { useRouter } from 'next/navigation'
 import { createContext, ReactNode, useContext, useState } from 'react'
 import { Address } from 'viem'
@@ -14,7 +19,7 @@ import { useAccount } from 'wagmi'
 
 interface CommunityNFTContextProps {
   // NFT Information Management
-  nftInfo: CommunityItem
+  nftInfo: CommunityItem | undefined
   isNFTRegistered: boolean
 
   // Community info
@@ -22,18 +27,12 @@ interface CommunityNFTContextProps {
   name: string
   image: string
   description: string
-  nftAddress: string
+  nftAddress: Address
 
   // Minting and Claim Logic
   isChecking: boolean
   handleMinting: () => Promise<void>
-  doAdditionalChecks: (
-    additionalChecks: Array<{
-      name: string
-      check: (data: any) => boolean // @TODO refine data
-      alertMessage: string
-    }>,
-  ) => Promise<boolean>
+  doAdditionalChecks: (additionalChecks: AdditionalCheck[]) => Promise<boolean>
   isClaiming: boolean
 
   // Membership state
@@ -43,8 +42,8 @@ interface CommunityNFTContextProps {
 
   // Community Data
   tokensAvailable: number
-  onReadFunctions: (functions: Array<{ functionName: string; args: string[] }>) => Promise<any>
-  nftMeta: any | null // @TODO refine
+  onReadFunctions: (functions: Array<{ functionName: string; args: string[] }>) => Promise<ContractReadResult>
+  nftMeta: NftMeta | undefined
   tokenId?: number
   nftName?: string
   nftSymbol?: string
@@ -94,18 +93,16 @@ export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProvi
   // Minting and Claim Logic
   const [isChecking, setIsChecking] = useState(false)
 
-  const doAdditionalChecks = async (
-    additionalChecks: Array<{
-      name: string
-      check: (data: any) => boolean
-      alertMessage: string
-    }>,
-  ): Promise<boolean> => {
+  const doAdditionalChecks = async (additionalChecks: AdditionalCheck[]): Promise<boolean> => {
     for (const { name, check, alertMessage } of additionalChecks) {
       setIsChecking(true)
       let functions: { functionName: string; args: string[] }[] | undefined
       if (name === 'hasVoted') {
-        functions = [{ functionName: 'hasVoted', args: [address as string] }]
+        if (!address) {
+          setIsChecking(false)
+          return false
+        }
+        functions = [{ functionName: 'hasVoted', args: [address] }]
       } else if (name === 'mintLimitReached') {
         functions = [
           { functionName: 'mintLimit', args: [] },
@@ -122,7 +119,9 @@ export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProvi
           return false
         }
       } catch (err) {
-        console.warn(err)
+        console.warn('Error during additional checks:', err)
+        setIsChecking(false)
+        return false
       }
     }
     setIsChecking(false)
@@ -130,10 +129,15 @@ export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProvi
   }
 
   const handleMinting = async () => {
+    if (!nftInfo) {
+      console.error('Cannot mint: NFT info not found')
+      return
+    }
+
     // check if user's stRIF Balance is more than required threshold to get a reward NFT
     if (stRifBalance < (stRifThreshold ?? 0n)) {
       showToast(
-        nftAlertMessages.NFT_BALANCE_ALERT(nftInfo?.title, stRifThreshold as bigint, () =>
+        nftAlertMessages.NFT_BALANCE_ALERT(nftInfo.title, stRifThreshold ?? 0n, () =>
           router.push('/user?action=stake'),
         ),
       )
@@ -149,8 +153,15 @@ export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProvi
       .then(() => {
         showToast(nftAlertMessages.REQUESTED_TX_SENT())
       })
-      .catch(err => {
-        if (err.cause?.name !== 'UserRejectedRequestError') {
+      .catch((err: unknown) => {
+        // Only show error if user didn't explicitly reject the request
+        const isUserRejection =
+          err &&
+          typeof err === 'object' &&
+          'cause' in err &&
+          (err.cause as { name?: string } | null)?.name === 'UserRejectedRequestError'
+
+        if (!isUserRejection) {
           console.error('ERROR', err)
           showToast(nftAlertMessages.ERROR_CLAIMING_REWARD())
         }

@@ -1,7 +1,7 @@
-import { NextRequest } from 'next/server'
+import type { NextRequest } from 'next/server'
 import './utils.css'
-import { AxiosResponse } from 'axios'
-import { EIP1193Provider, WatchAssetParams } from 'viem'
+import type { AxiosResponse } from 'axios'
+import type { EIP1193Provider, WatchAssetParams } from 'viem'
 // Had to be done this way because tailwind css is not dynamically rendering the image on build
 export const BG_IMG_CLASSES = 'background-logo'
 
@@ -79,12 +79,9 @@ const fetchFunction = (
     .catch(err => {
       cachedData.error = err.toString()
     })
-    .finally(() => (cachedData.isFetching = false))
-}
-
-export const capitalizeFirstLetter = (string: string): string => {
-  if (!string) return '' // Handle empty or null strings
-  return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase()
+    .finally(() => {
+      cachedData.isFetching = false
+    })
 }
 
 interface WalletWatchAssetOptions {

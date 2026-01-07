@@ -1,0 +1,156 @@
+import { Modal } from '@/components/Modal/Modal'
+import { Button } from '@/components/Button'
+import { Paragraph } from '@/components/Typography'
+import { SelectableItem } from '@/components/SelectableItem'
+import { BuilderFilterOption, BuilderFilterOptionId } from './BuilderFilterDropdown'
+import { ColumnId, SORT_OPTIONS } from './BuilderTable.config'
+import { FC, useState, useEffect } from 'react'
+import { TrashIcon } from '@/components/Icons'
+import { SORT_DIRECTION_ASC, SORT_DIRECTION_DESC } from '@/shared/context/TableContext/constants'
+import { SortDirection } from '@/shared/context/TableContext/types'
+
+interface MobileFilterModalProps {
+  isOpen: boolean
+  filterOptions: BuilderFilterOption[]
+  currentFilter: BuilderFilterOptionId
+  currentSort: ColumnId | null
+  currentSortDirection: SortDirection | null
+  onClose: () => void
+  onApply: (filter: BuilderFilterOptionId, sort: ColumnId | null, sortDirection: SortDirection | null) => void
+  onReset: () => void
+}
+
+export const MobileFilterModal: FC<MobileFilterModalProps> = ({
+  isOpen,
+  filterOptions,
+  currentFilter,
+  currentSort,
+  currentSortDirection,
+  onClose,
+  onApply,
+  onReset,
+}) => {
+  // Internal state for temporary selections
+  const [tempFilter, setTempFilter] = useState<BuilderFilterOptionId>(currentFilter)
+  const [tempSort, setTempSort] = useState<ColumnId | null>(currentSort)
+  const [tempSortDirection, setTempSortDirection] = useState<SortDirection | null>(currentSortDirection)
+
+  useEffect(() => {
+    if (isOpen) {
+      setTempFilter(currentFilter)
+      setTempSort(currentSort)
+      setTempSortDirection(currentSortDirection)
+    }
+  }, [isOpen, currentFilter, currentSort, currentSortDirection])
+
+  if (!isOpen) return null
+
+  const handleClose = () => {
+    setTempFilter(currentFilter)
+    setTempSort(currentSort)
+    setTempSortDirection(currentSortDirection)
+    onClose()
+  }
+
+  const handleApply = () => {
+    onApply(tempFilter, tempSort, tempSortDirection)
+  }
+
+  const handleReset = () => {
+    setTempFilter('all')
+    setTempSort(null)
+    setTempSortDirection(null)
+    onReset()
+  }
+
+  // Map sort options to FilterOption format
+  const sortRadioOptions = SORT_OPTIONS.map(option => ({
+    label: option.label,
+    value: option.id,
+  }))
+
+  // Sort direction options
+  const sortDirectionOptions = [
+    { label: 'Ascending', value: SORT_DIRECTION_ASC },
+    { label: 'Descending', value: SORT_DIRECTION_DESC },
+  ]
+
+  return (
+    <Modal onClose={handleClose} fullscreen data-testid="mobile-builders-filter-modal">
+      <div className="flex flex-col h-full bg-v3-bg-accent-80 rounded-lg">
+        <div className="flex-1 p-4 pt-16 overflow-y-auto">
+          {/* Sort builders Section */}
+          <div className="mb-8">
+            <Paragraph className="text-v3-bg-accent-40 text-xs font-bold uppercase tracking-wider mb-4">
+              SORT BY
+            </Paragraph>
+            <div className="space-y-3">
+              {sortRadioOptions.map(option => (
+                <SelectableItem
+                  key={option.value}
+                  option={option}
+                  selected={tempSort === option.value}
+                  onClick={value => setTempSort(value as ColumnId)}
+                  variant="round"
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Sort Direction Section */}
+          <div className="mb-8">
+            <Paragraph className="text-v3-bg-accent-40 text-xs font-bold uppercase tracking-wider mb-4">
+              SORT DIRECTION
+            </Paragraph>
+            <div className="space-y-3">
+              {sortDirectionOptions.map(option => (
+                <SelectableItem
+                  key={option.value}
+                  option={option}
+                  selected={tempSortDirection === option.value}
+                  onClick={value => setTempSortDirection(value as SortDirection)}
+                  variant="round"
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Filter Builders Section */}
+          <div>
+            <Paragraph className="text-v3-bg-accent-40 text-xs font-bold uppercase tracking-wider mb-4">
+              FILTER BUILDERS
+            </Paragraph>
+            {filterOptions.length <= 1 ? (
+              <Paragraph>
+                No filter options available, all the Collective Builders are currently active.
+              </Paragraph>
+            ) : (
+              <div className="space-y-3">
+                {filterOptions.map(option => (
+                  <SelectableItem
+                    key={option.id}
+                    option={{ label: option.label, value: option.id }}
+                    selected={tempFilter === option.id}
+                    onClick={value => setTempFilter(value as BuilderFilterOptionId)}
+                    variant="round"
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="p-4 border-t border-v3-text-100/20 flex gap-4">
+          <Button variant="secondary-outline" onClick={handleReset} data-testid="reset-filter-button">
+            <TrashIcon size={24} className="mr-1" />
+            Reset
+          </Button>
+          <Button variant="primary" onClick={handleApply} data-testid="apply-filter-button">
+            Apply
+          </Button>
+        </div>
+      </div>
+    </Modal>
+  )
+}

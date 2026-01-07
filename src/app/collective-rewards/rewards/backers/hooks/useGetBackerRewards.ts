@@ -33,7 +33,7 @@ const tokenRewardsMetrics = (tokenRewards: TokenBackerRewards, gauge: Address) =
 
 export const useGetBackerRewards = (
   backer: Address,
-  { rif, rbtc }: { [token: string]: Token },
+  { rif, rbtc, usdrif }: { [token: string]: Token },
   currency = 'USD',
 ) => {
   const { builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
@@ -55,6 +55,7 @@ export const useGetBackerRewards = (
   const { prices } = usePricesContext()
   const rifPrice = prices[rif.symbol]?.price ?? 0
   const rbtcPrice = prices[rbtc.symbol]?.price ?? 0
+  const usdrifPrice = prices[usdrif.symbol]?.price ?? 0
 
   const data = useMemo(() => {
     return activeBuilders.reduce<BackerRewards[]>((acc, builder, i) => {
@@ -63,14 +64,16 @@ export const useGetBackerRewards = (
 
       const rifRewards = tokenRewardsMetrics(tokenRewards[rif.address], gauge)
       const rbtcRewards = tokenRewardsMetrics(tokenRewards[rbtc.address], gauge)
-
+      const usdrifRewards = tokenRewardsMetrics(tokenRewards[usdrif.address], gauge)
       // If backer allocated for the builder or if they have rewards (estimated or claimable)
       if (
         backerAllocationOf > 0n ||
         rifRewards.estimatedRewards > 0 ||
         rbtcRewards.estimatedRewards > 0 ||
         rifRewards.claimableRewards > 0 ||
-        rbtcRewards.claimableRewards > 0
+        rbtcRewards.claimableRewards > 0 ||
+        usdrifRewards.estimatedRewards > 0 ||
+        usdrifRewards.claimableRewards > 0
       ) {
         return [
           ...acc,
@@ -104,6 +107,14 @@ export const useGetBackerRewards = (
                   currency,
                 },
               },
+              usdrif: {
+                amount: {
+                  value: usdrifRewards.estimatedRewards,
+                  symbol: usdrif.symbol,
+                  price: usdrifPrice,
+                  currency,
+                },
+              },
             },
             claimableRewards: {
               rif: {
@@ -119,6 +130,14 @@ export const useGetBackerRewards = (
                   value: rbtcRewards.claimableRewards,
                   symbol: rbtc.symbol,
                   price: rbtcPrice,
+                  currency,
+                },
+              },
+              usdrif: {
+                amount: {
+                  value: usdrifRewards.claimableRewards,
+                  symbol: usdrif.symbol,
+                  price: usdrifPrice,
                   currency,
                 },
               },
@@ -140,13 +159,32 @@ export const useGetBackerRewards = (
                   currency,
                 },
               },
+              usdrif: {
+                amount: {
+                  value: usdrifRewards.allTimeRewards,
+                  symbol: usdrif.symbol,
+                  price: usdrifPrice,
+                  currency,
+                },
+              },
             },
           },
         ]
       }
       return acc
     }, [])
-  }, [activeBuilders, allocationOf, tokenRewards, rif, rbtc, rifPrice, rbtcPrice, currency])
+  }, [
+    activeBuilders,
+    allocationOf,
+    tokenRewards,
+    rif,
+    rbtc,
+    usdrif,
+    rifPrice,
+    rbtcPrice,
+    usdrifPrice,
+    currency,
+  ])
 
   return {
     data,

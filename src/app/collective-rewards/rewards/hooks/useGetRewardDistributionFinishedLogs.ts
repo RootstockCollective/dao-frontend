@@ -1,5 +1,5 @@
 import { fetchRewardDistributionFinished } from '@/app/collective-rewards/actions'
-import { type BackersManagerAbi, getAbi } from '@/lib/abis/v2'
+import { type BackersManagerAbi, getAbi } from '@/lib/abis/tok'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BackersManagerAddress } from '@/lib/contracts'
 import { useQuery } from '@tanstack/react-query'

@@ -1,5 +1,5 @@
-import { getAddress } from 'viem'
-import { COINBASE_ADDRESS, RBTC, RIF } from './constants'
+import { Address, getAddress, isAddressEqual } from 'viem'
+import { COINBASE_ADDRESS, RBTC, RIF, STRIF, USDRIF } from './constants'
 import { tokenContracts } from './contracts'
 
 export const TOKENS = {
@@ -8,7 +8,29 @@ export const TOKENS = {
     symbol: RIF,
   },
   rbtc: {
-    address: COINBASE_ADDRESS,
+    address: getAddress(COINBASE_ADDRESS),
     symbol: RBTC,
   },
-}
+  usdrif: {
+    address: getAddress(tokenContracts.USDRIF),
+    symbol: USDRIF,
+  },
+  strif: {
+    address: getAddress(tokenContracts.stRIF),
+    symbol: STRIF,
+  },
+} as const
+
+export const REWARD_TOKEN_KEYS = ['rif', 'rbtc', 'usdrif'] as Array<keyof Omit<typeof TOKENS, 'strif'>>
+export type RewardTokenKey = (typeof REWARD_TOKEN_KEYS)[number]
+export const REWARD_TOKENS = REWARD_TOKEN_KEYS.map(tokenKey => TOKENS[tokenKey])
+
+export type RewardToken = (typeof TOKENS)[RewardTokenKey]
+
+export const TOKENS_BY_ADDRESS = Object.values(TOKENS).reduce(
+  (acc, token) => {
+    acc[token.address] = token
+    return acc
+  },
+  {} as Record<Address, (typeof TOKENS)[keyof typeof TOKENS]>,
+)

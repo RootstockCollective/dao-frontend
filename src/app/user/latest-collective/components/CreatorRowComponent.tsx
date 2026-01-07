@@ -1,9 +1,8 @@
-import { CategoryColumn } from '@/app/proposals/components/table-columns/CategoryColumn'
-import { CopyButton } from '@/components/CopyButton'
+import { Category } from '@/app/proposals/components/category'
+import { ProposerColumn } from '@/app/proposals/components/table-columns/ProposalNameColumn'
 import { SmallLineSeparator } from '@/components/Separators/SmallLineSeparator'
-import { Tooltip } from '@/components/Tooltip'
-import { Paragraph, Span } from '@/components/TypographyNew'
-import { cn, shortAddress } from '@/lib/utils'
+import { Paragraph } from '@/components/Typography'
+import { cn } from '@/lib/utils'
 import { ProposalCategory } from '@/shared/types'
 import { Moment } from 'moment'
 import { ClassNameValue } from 'tailwind-merge'
@@ -17,18 +16,11 @@ interface CreatorRowComponentProps {
 }
 
 export const CreatorRowComponent = ({ proposer, Starts, category, className }: CreatorRowComponentProps) => (
-  <div className={cn('flex flex-row mt-2 items-center', className)}>
-    <Tooltip text="Copy address">
-      <Span>
-        <CopyButton icon={null} className="inline" copyText={proposer}>
-          <Span className="text-primary">by</Span>&nbsp;
-          <Span>{shortAddress(proposer)}</Span>
-        </CopyButton>
-      </Span>
-    </Tooltip>
+  <div className={cn('flex flex-row items-center whitespace-nowrap flex-shrink-0', className)}>
+    <ProposerColumn by={proposer} />
     <SmallLineSeparator />
     <Paragraph>{Starts.format('MMM DD, YYYY')}</Paragraph>
     <SmallLineSeparator />
-    <CategoryColumn category={category} className="w-auto" />
+    <Category category={category} className="w-auto" />
   </div>
 )

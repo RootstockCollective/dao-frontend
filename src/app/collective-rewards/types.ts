@@ -1,8 +1,26 @@
+import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
 import { ProposalState } from '@/shared/types'
-import { AbiFunction, Address } from 'viem'
-import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
 import { Dispatch, SetStateAction } from 'react'
+import { AbiFunction, Address } from 'viem'
 import { TokenRewards } from './rewards'
+
+// API Response Types
+export interface DailyAllocationItem {
+  id: string
+  day: number
+  totalAllocation: string
+}
+
+export interface CycleRewardsItem {
+  id: string
+  currentCycleStart: string
+  currentCycleDuration: string
+  previousCycleStart: string
+  previousCycleDuration: string
+  distributionDuration: string
+  onDistributionPeriod: boolean
+  rewardPerToken: Record<string, string>
+}
 
 export type Builder = {
   proposal: BuilderProposal
@@ -13,10 +31,18 @@ export type Builder = {
   backerRewardPct?: BackerRewardPercentage
 }
 
-export interface BuilderEstimatedRewards extends Builder {
+export interface BuilderWithRewardShares extends Required<Builder> {
+  rewardShares: bigint
+}
+
+export interface BuilderEstimatedRewards extends BuilderWithRewardShares {
   builderEstimatedRewardsPct: bigint
   backerEstimatedRewardsPct: bigint
   builderEstimatedRewards: TokenRewards
+  backerEstimatedRewards: TokenRewards
+}
+
+export interface BackerEstimatedRewards extends Required<Builder> {
   backerEstimatedRewards: TokenRewards
 }
 
@@ -60,4 +86,43 @@ export type CompleteBuilder = Required<Builder>
 export type StateWithUpdate<T> = {
   value: T
   onChange: Dispatch<SetStateAction<T>>
+}
+
+export type BackingPoint = {
+  day: Date | number | string
+  backing: bigint
+  backingWei?: bigint
+}
+
+export type RewardsPoint = {
+  day: Date | number | string
+  rewards: {
+    rif: number | bigint
+    rbtc: number | bigint
+    usd?: number
+  }
+}
+
+export type CycleWindow = {
+  label: string
+  start: Date
+  end: Date
+  cycleDuration: number
+  cycleNumber?: number
+}
+
+interface ChartDataPoint extends BackingPoint {
+  rewardsUSD?: bigint
+  rewardsRif?: bigint
+  rewardsRbtc?: bigint
+  cycle?: number | null
+  dayInCycle?: string | null
+}
+
+export interface TooltipPayload {
+  payload: ChartDataPoint
+  value: number
+  name: string
+  color: string
+  dataKey: string
 }

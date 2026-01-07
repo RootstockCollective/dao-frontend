@@ -1,26 +1,29 @@
 'use client'
 
 import { useReviewProposal } from '@/app/providers'
-import { NumberInput, TextInput } from '@/components/FormFields'
-import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
-import { Header } from '@/components/TypographyNew'
+import { NumberInput, SelectField } from '@/components/FormFields'
+import { Header } from '@/components/Typography'
 import { ProposalCategory } from '@/shared/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
-import { Address } from 'viem'
-import { Subfooter } from '../../components/Subfooter'
+import { FormProvider, useForm } from 'react-hook-form'
+import type { Address } from 'viem'
+import { ProposalSubfooter } from '../../components/ProposalSubfooter'
 import { BaseProposalFields, ProposalInfoSidebar, TokenRadioGroup } from '../components'
-import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
-import { GrantProposal, GrantProposalSchema } from '../schemas/GrantProposalSchema'
+import { type GrantProposal, GrantProposalSchema } from '../schemas/GrantProposalSchema'
 import { TOKEN_FIELD_LIMITS } from '../schemas/TokenSchema'
+import { labeledMilestones } from '@/app/proposals/shared/utils'
+import { MilestoneInfoSidebar } from '../components/MilestoneInfoSidebar'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { RnsAddressInput } from './RnsAddressInput'
 
 export default function GrantsProposalForm() {
+  const isDesktop = useIsDesktop()
   const { record, setRecord } = useReviewProposal()
   const router = useRouter()
 
-  const { handleSubmit, control, setFocus, formState } = useForm<GrantProposal>({
+  const form = useForm<GrantProposal>({
     mode: 'onTouched',
     reValidateMode: 'onChange',
     resolver: zodResolver(GrantProposalSchema),
@@ -31,66 +34,91 @@ export default function GrantsProposalForm() {
             proposalName: '',
             description: '',
             discourseLink: '',
+            targetAddressInput: '',
             targetAddress: '' as Address,
-            token: 'RIF',
+            targetAddressError: '',
+            token: 'USDRIF',
             transferAmount: '',
+            milestone: undefined,
           },
   })
+  const { handleSubmit, control, setFocus, formState } = form
+
+  // Check if form has any errors (more reliable than isValid for async validation)
+  const hasErrors = Object.keys(formState.errors).length > 0
+
   const onSubmit = useCallback(
     () =>
       handleSubmit(data => {
         setRecord({ form: data, category: ProposalCategory.Grants })
-        router.push('/proposals/new/review/grants')
+        router.push('/proposals/new/review')
       })(),
-    // eslint-disable-next-line
-    [handleSubmit, router],
+    [handleSubmit, router, setRecord],
   )
-
-  // inject sticky drawer with submit button to the footer layout
-  const { setSubfooter } = useLayoutContext()
-  useEffect(() => {
-    setSubfooter(
-      <Subfooter submitForm={onSubmit} buttonText="Review proposal" nextDisabled={!formState.isValid} />,
-    )
-    return () => setSubfooter(null)
-  }, [formState.isValid, onSubmit, setSubfooter])
-
   // set focus on proposal name field
   // eslint-disable-next-line
-  useEffect(() => setFocus('proposalName'), [])
+  useEffect(() => {
+    if (isDesktop) {
+      setFocus('proposalName')
+    }
+  }, [setFocus, isDesktop])
 
   return (
-    <div className="flex gap-6">
-      <form className="w-2/3 px-6 pt-6 pb-8 flex flex-col gap-10 bg-bg-80 rounded-sm">
-        <BaseProposalFields control={control} />
-        <div className="flex flex-col gap-4">
-          <Header caps variant="h2" className="leading-loose tracking-wide">
-            Proposal Action
-          </Header>
-          <TextInput
-            name="targetAddress"
-            control={control}
-            label="Address to transfer funds to"
-            data-testid="InputAddress"
-            maxLength={BASE_PROPOSAL_LIMITS.address.max}
-          />
-          <div className="flex items-center justify-start gap-6">
-            <div className="basis-1/2">
-              <NumberInput
-                name="transferAmount"
-                control={control}
-                label="Amount to be transferred"
-                data-testid="InputAmount"
-                maxLength={TOKEN_FIELD_LIMITS.transferAmount.maxLength}
-              />
-            </div>
-            <TokenRadioGroup name="token" control={control} />
+    <div className="flex flex-col lg:flex-row gap-6 mt-10">
+      <FormProvider {...form}>
+        <form className="p-6 pb-8 flex flex-col gap-6 md:gap-10 basis-3/4 bg-bg-80 rounded-sm">
+          <BaseProposalFields control={control} />
+          <div className="flex flex-col gap-4">
+            <Header caps variant="h2" className="leading-loose tracking-wide">
+              Milestone Selection
+            </Header>
+            {!isDesktop && <MilestoneInfoSidebar />}
+            <SelectField
+              name="milestone"
+              control={control}
+              options={labeledMilestones}
+              placeholder="Proposal milestone"
+              className="max-w-[336px]"
+              data-testid="MilestoneSelect"
+            />
           </div>
-        </div>
-      </form>
-      <div className="w-1/3 flex flex-row gap-2 items-start">
-        <ProposalInfoSidebar kycLink="https://gov.rootstockcollective.xyz/t/general-guidelines-for-grant-applications/94/7" />
+          <div className="flex flex-col gap-4">
+            <Header caps variant="h2" className="leading-loose tracking-wide">
+              Proposal Action
+            </Header>
+
+            <RnsAddressInput />
+
+            <div className="flex flex-col md:flex-row items-center justify-start gap-6 @container">
+              <div className="w-full md:basis-1/2">
+                <NumberInput
+                  name="transferAmount"
+                  control={control}
+                  label="Amount to be transferred"
+                  data-testid="InputAmount"
+                  maxLength={TOKEN_FIELD_LIMITS.transferAmount.maxLength}
+                />
+              </div>
+              <div className="w-full md:basis-1/2">
+                <TokenRadioGroup name="token" control={control} />
+              </div>
+            </div>
+          </div>
+        </form>
+      </FormProvider>
+      <div className="flex flex-col gap-10 basis-1/4 justify-between">
+        <ProposalInfoSidebar kycLink="https://docs.google.com/forms/d/e/1FAIpQLSd4HklyTFPFAo2I0l_N5fy_di01WZ27e4uFDG1KVy8ZIOSiow/viewform" />
+        {isDesktop && (
+          <div className="mb-40">
+            <MilestoneInfoSidebar />
+          </div>
+        )}
       </div>
+      <ProposalSubfooter
+        submitForm={onSubmit}
+        buttonText="Review proposal"
+        nextDisabled={!formState.isValid || hasErrors}
+      />
     </div>
   )
 }

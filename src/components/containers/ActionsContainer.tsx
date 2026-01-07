@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { CommonComponentProps } from '../commonProps'
 
-type ActionsContainerProps = CommonComponentProps & {
+interface ActionsContainerProps extends CommonComponentProps {
   title?: ReactNode
   containerClassName?: string
 }
@@ -16,7 +16,7 @@ export const ActionsContainer: FC<ActionsContainerProps> = ({
   return (
     <div
       data-testid="ActionsContainer"
-      className={cn('flex flex-col w-full gap-10 p-6 rounded-sm', className)}
+      className={cn('flex flex-col w-full gap-4 md:gap-10 p-4 md:p-6 rounded-sm', className)}
     >
       {title && (
         <div data-testid="title" className="flex w-full justify-between items-center">

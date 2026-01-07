@@ -11,8 +11,8 @@ const CycleDayContent = ({ cycleStart, duration }: { cycleStart: DateTime; durat
   const displayDays = totalDays === 0 ? 0 : (daysElapsed % totalDays) + 1
 
   return (
-    <Metric title="Day" className="w-auto" containerClassName="gap-4">
-      <div className="font-kk-topo text-lg font-normal tracking-tight">
+    <Metric title="Day" className="w-auto" containerClassName="gap-0 md:gap-4">
+      <div className="font-kk-topo text-xl font-normal tracking-tight">
         {displayDays}/{totalDays}
       </div>
     </Metric>

@@ -1,7 +1,7 @@
 import { CompleteBuilder } from '@/app/collective-rewards/types'
 import { filterBuildersByState, useBuilderContext } from '@/app/collective-rewards/user'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { Span } from '@/components/TypographyNew/'
+import { Span } from '@/components/Typography'
 import { TOKENS } from '@/lib/tokens'
 import { Address } from 'viem'
 import { useGetBuilderAllTimeShare } from '@/app/my-rewards/builder/hooks/useGetBuilderAllTimeShare'
@@ -14,17 +14,17 @@ interface RewardCardAllTimeShareProps {
 
 export const AllTimeShare = ({ gauge }: { gauge: Address }) => {
   const { builders, isLoading: isBuildersLoading, error: buildersError } = useBuilderContext()
-  const activatedBuilders = filterBuildersByState<CompleteBuilder>(builders, {
-    activated: true,
+  const initializedBuilders = filterBuildersByState<CompleteBuilder>(builders, {
+    initialized: true,
   })
 
-  const activatedGauges = activatedBuilders?.map(({ gauge }) => gauge) ?? []
+  const initializedGauges = initializedBuilders?.map(({ gauge }) => gauge) ?? []
 
   const rifAddress = TOKENS.rif.address
 
   const { amount, isLoading, error } = useGetBuilderAllTimeShare({
     gauge: gauge!,
-    gauges: activatedGauges,
+    gauges: initializedGauges,
     rifAddress,
   })
 

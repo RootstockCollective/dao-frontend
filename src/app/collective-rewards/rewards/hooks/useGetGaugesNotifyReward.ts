@@ -1,43 +1,53 @@
-import { Address, isAddressEqual } from 'viem'
-import { useMemo } from 'react'
 import { GaugeNotifyRewardEventLog, useGetGaugesEvents } from '@/app/collective-rewards/rewards'
+import { useMemo } from 'react'
+import { Address, isAddressEqual } from 'viem'
 
-export const useGetGaugesNotifyReward = (
-  gauges: Address[],
-  rewardToken?: Address,
-  fromTimestamp?: number,
-  toTimestamp?: number,
-) => {
-  const { data: eventsData, isLoading, error } = useGetGaugesEvents(gauges, 'NotifyReward')
+export type NotifyRewardEvent = GaugeNotifyRewardEventLog[number] & { timeStamp: number }
+export type UseGetGaugesNotifyRewardReturnType = Record<Address, NotifyRewardEvent[]>
 
-  type Log = GaugeNotifyRewardEventLog[number]
-  const data = useMemo(() => {
-    if (!eventsData) {
-      return {}
-    }
+export type UseGetGaugesNotifyRewardParams = {
+  gauges: Address[]
+  rewardTokens?: Address[]
+  fromTimestamp?: number
+  toTimestamp?: number
+}
 
-    return Object.keys(eventsData).reduce((acc: { [key: string]: (typeof eventsData)[Address] }, key) => {
-      let events = eventsData[key as Address] as (Log & { timeStamp: number })[]
-      if (rewardToken) {
-        events = events.filter(event => isAddressEqual(event.args.rewardToken_, rewardToken))
-      }
-      if (fromTimestamp) {
-        events = events.filter(event => {
-          return event.timeStamp >= fromTimestamp
-        })
-      }
-      if (toTimestamp) {
-        events = events.filter(event => {
-          return event.timeStamp <= toTimestamp
-        })
-      }
+export const useGetGaugesNotifyReward = ({
+  gauges,
+  rewardTokens,
+  fromTimestamp,
+  toTimestamp,
+}: UseGetGaugesNotifyRewardParams) => {
+  const { data: eventsPerGauge, isLoading, error } = useGetGaugesEvents(gauges, 'NotifyReward')
 
-      if (events.length > 0) {
-        acc[key] = events
+  const data: UseGetGaugesNotifyRewardReturnType = useMemo(() => {
+    return gauges.reduce<UseGetGaugesNotifyRewardReturnType>((acc, gauge) => {
+      if (!eventsPerGauge) {
+        return {
+          ...acc,
+          [gauge]: [],
+        }
       }
-      return acc
+      let events = eventsPerGauge[gauge] as NotifyRewardEvent[]
+
+      return {
+        ...acc,
+        [gauge]: events.filter(event => {
+          if (rewardTokens && !rewardTokens.some(token => isAddressEqual(event.args.rewardToken_, token))) {
+            return false
+          }
+          if (fromTimestamp && event.timeStamp < fromTimestamp) {
+            return false
+          }
+          if (toTimestamp && event.timeStamp > toTimestamp) {
+            return false
+          }
+
+          return true
+        }),
+      }
     }, {})
-  }, [eventsData, rewardToken, fromTimestamp, toTimestamp])
+  }, [eventsPerGauge, rewardTokens, fromTimestamp, toTimestamp, gauges])
 
   return {
     data,

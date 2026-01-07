@@ -31,6 +31,7 @@ export default function PaginationPageNumbers({
             aria-label={`Go to page ${page + 1}`}
             tabIndex={0}
             className="w-7 h-7 p-[3px] rounded-sm border border-bg-40"
+            data-testid={`PaginationPage-${page + 1}`}
           >
             <div
               className={cn(

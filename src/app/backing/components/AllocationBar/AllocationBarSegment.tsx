@@ -1,30 +1,35 @@
+import { CommonComponentProps } from '@/components/commonProps'
+import { MoreIcon } from '@/components/Icons/MoreIcon'
+import { Tooltip } from '@/components/Tooltip'
+import { cn } from '@/lib/utils'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { AllocationBarDragHandle } from './AllocationBarDragHandle'
-import { AllocationBarResizeHandle } from './AllocationBarResizeHandle'
+import { AllocationBarSegmentVisual } from './AllocationBarSegmentVisual'
+import { AllocationBarTooltip, AllocationBarTooltipProps } from './AllocationBarTooltip'
 import { AllocationBarValueDisplay, AllocationItem } from './types'
-import { checkerboardStyle, valueToPercentage } from './utils'
-import { Tooltip } from '@/components/Tooltip'
-import { MoreIcon } from '@/components/Icons/MoreIcon'
+import { valueToPercentage } from './utils'
+
+type AllocationBarSegmentPercentProps = {
+  pendingValue: bigint
+  totalBacking: bigint
+  valueDisplay: AllocationBarValueDisplay
+  item: AllocationItem
+  onchainValue: bigint
+}
 
 const AllocationBarSegmentPercent = ({
-  value,
-  totalValue,
+  pendingValue,
+  totalBacking,
   valueDisplay,
-  showDots = false,
-}: {
-  value: number
-  totalValue: number
-  valueDisplay: AllocationBarValueDisplay
-  showDots?: boolean
-}) => {
+}: AllocationBarSegmentPercentProps) => {
   const { percentDecimals, valueDecimals } = valueDisplay.format ?? {}
 
-  const percent = valueToPercentage(value, totalValue).toLocaleString(undefined, {
+  const percent = valueToPercentage(pendingValue, totalBacking).toLocaleString(undefined, {
     maximumFractionDigits: percentDecimals ?? 2,
   })
 
-  const formattedValue = value.toLocaleString(undefined, {
+  const formattedValue = pendingValue.toLocaleString(undefined, {
     maximumFractionDigits: valueDecimals ?? 2,
   })
 
@@ -34,14 +39,6 @@ const AllocationBarSegmentPercent = ({
   if (showValue) displayValue += formattedValue
   if (showPercent) displayValue += showValue ? ` (${percent}%)` : `${percent}%`
 
-  if (showDots) {
-    return (
-      <Tooltip text={displayValue} side="top" align="center" className="p-4 z-10 text-lg">
-        <MoreIcon size={16} className="absolute -top-7 left-1/2 -translate-x-1/2  cursor-pointer z-10" />
-      </Tooltip>
-    )
-  }
-
   return (
     <span className="absolute -top-7 left-1/2 -translate-x-1/2 pointer-events-none whitespace-nowrap font-normal leading-5 text-v3-bg-accent-0 font-rootstock-sans">
       {displayValue}
@@ -49,88 +46,97 @@ const AllocationBarSegmentPercent = ({
   )
 }
 
-interface AllocationBarSegmentProps {
-  value: number
-  totalValue: number
+interface AllocationBarSegmentProps extends CommonComponentProps {
+  pendingValue: bigint
+  onchainValue: bigint
+  totalBacking: bigint
   item: AllocationItem
-  index: number
-  isLast: boolean
   valueDisplay: AllocationBarValueDisplay
-  onHandleMouseDown: (idx: number) => (e: React.MouseEvent) => void
+  tooltipContentProps: AllocationBarTooltipProps
+  isCollapsed: boolean
   dragIndex: number | null
   isDraggable: boolean
-  isResizable: boolean
-  showDots?: boolean
+  withModal?: boolean
+  onModalOpen?: () => void
 }
 
 export const AllocationBarSegment = ({
-  value,
-  totalValue,
+  pendingValue,
+  onchainValue,
+  totalBacking,
   item,
-  index,
-  isLast,
   valueDisplay,
-  onHandleMouseDown,
+  tooltipContentProps,
+  isCollapsed,
   dragIndex,
   isDraggable,
-  isResizable,
-  showDots,
+  className,
+  withModal = false,
+  onModalOpen,
 }: AllocationBarSegmentProps) => {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({ id: item.key })
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useSortable({
+    id: item.key,
+  })
 
-  // Calculate the percentage width based on the actual value and total value
-  const percentageWidth = valueToPercentage(value, totalValue)
-
-  // For segments with very small values, ensure they have a minimum visible width
-  // but only if the value is actually greater than 0
-  const effectiveWidth = value > 0 && percentageWidth < 0.5 ? 0.5 : percentageWidth
-
-  const style: React.CSSProperties = {
-    ...(item.isTemporary ? checkerboardStyle() : {}),
-    width: `${effectiveWidth}%`,
-    transform: CSS.Translate.toString(transform),
-    backgroundColor: item.displayColor,
-  }
-
-  const baseClasses = 'h-full relative overflow-visible flex items-stretch p-0'
+  const baseClasses = 'relative overflow-visible flex items-stretch p-0 group'
   const transitionClasses =
     dragIndex !== null ? 'transition-none' : 'transition-transform duration-200 ease-out'
-  const dragStateClasses = isDragging ? 'opacity-60 z-[99]' : 'opacity-100 z-1'
-  const borderClasses = `${index === 0 ? 'rounded-l-sm' : ''} ${isLast ? 'rounded-r-sm' : ''}`
-  const positionClasses = !isLast ? 'mr-2' : ''
+  const dragStateClasses = isDragging ? 'opacity-60 z-[99]' : 'opacity-100'
 
-  return (
-    <div
+  const handleSegmentClick = () => {
+    if (withModal) {
+      onModalOpen?.()
+    }
+  }
+
+  const segmentContent = (
+    <AllocationBarSegmentVisual
       ref={setNodeRef}
-      style={style}
-      className={`
-        ${baseClasses}
-        ${transitionClasses}
-        ${dragStateClasses}
-        ${borderClasses}
-        ${positionClasses}
-      `.trim()}
+      item={item}
+      totalValue={totalBacking}
+      value={pendingValue}
+      style={{ transform: CSS.Translate.toString(transform) }}
+      className={cn(baseClasses, transitionClasses, dragStateClasses, className)}
+      onClick={withModal ? handleSegmentClick : undefined}
     >
       {/* DRAG HANDLE of the size of the segment */}
       {isDraggable && <AllocationBarDragHandle attributes={attributes} listeners={listeners} />}
 
-      {
-        <AllocationBarSegmentPercent
-          value={value}
-          totalValue={totalValue}
-          valueDisplay={valueDisplay}
-          showDots={showDots}
-        />
-      }
+      <div className="flex-1 flex items-center justify-center">
+        {isCollapsed && !withModal && (
+          <Tooltip text={<AllocationBarTooltip {...tooltipContentProps} />} side="top" align="center">
+            <MoreIcon size={16} className="absolute -top-7 left-1/2 -translate-x-1/2  cursor-pointer z-10" />
+          </Tooltip>
+        )}
+        {isCollapsed && withModal && (
+          <MoreIcon size={16} className="absolute -top-7 left-1/2 -translate-x-1/2  cursor-pointer z-10" />
+        )}
+        {!isCollapsed && (
+          <AllocationBarSegmentPercent
+            pendingValue={pendingValue}
+            totalBacking={totalBacking}
+            valueDisplay={valueDisplay}
+            item={item}
+            onchainValue={onchainValue}
+          />
+        )}
+      </div>
+    </AllocationBarSegmentVisual>
+  )
 
-      {/* RESIZE HANDLE (far right, not overlapping drag handle) */}
-      {!isLast && isResizable && (
-        <AllocationBarResizeHandle
-          onHandleMouseDown={onHandleMouseDown}
-          dragIndex={dragIndex}
-          index={index}
-        />
-      )}
-    </div>
+  // If using modal, don't wrap with tooltip
+  if (withModal) {
+    return segmentContent
+  }
+
+  return (
+    <Tooltip
+      hidden={isCollapsed}
+      text={!isCollapsed && <AllocationBarTooltip {...tooltipContentProps} />}
+      side="top"
+      align="center"
+    >
+      {segmentContent}
+    </Tooltip>
   )
 }

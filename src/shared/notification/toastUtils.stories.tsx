@@ -8,6 +8,13 @@ export default {
   parameters: {
     layout: 'centered',
   },
+  decorators: [
+    Story => (
+      <div className="bg-bg-80 p-4">
+        <Story />
+      </div>
+    ),
+  ],
 } as Meta
 
 const buttonProps = {

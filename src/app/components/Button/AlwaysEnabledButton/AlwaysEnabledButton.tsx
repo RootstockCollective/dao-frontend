@@ -1,5 +1,5 @@
 import { ConditionalTooltip, TooltipConditionPair } from '@/app/components/Tooltip/ConditionalTooltip'
-import { Button, ButtonProps } from '@/components/ButtonNew'
+import { Button, ButtonProps } from '@/components/Button'
 import { TooltipProps } from '@/components/Tooltip'
 
 type ButtonWithTipProps = ButtonProps & {

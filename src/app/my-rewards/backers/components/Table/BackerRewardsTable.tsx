@@ -1,20 +1,38 @@
 'use client'
 
-import { Action, ActionCellProps } from '@/app/builders/components/Table/Cell/ActionCell'
+import { Action } from '@/app/builders/components/Table/Cell/ActionCell'
 import { Token } from '@/app/collective-rewards/rewards'
 import { BackerRewards, useGetBackerRewards } from '@/app/collective-rewards/rewards/backers/hooks'
+import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
 import { TablePager } from '@/components/TableNew'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
-import { Suspense, useEffect, useMemo, useState } from 'react'
+import { Row, Sort } from '@/shared/context/TableContext/types'
+import { SORT_DIRECTION_ASC } from '@/shared/context/TableContext/constants'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { Big } from 'big.js'
+import { useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-import { BackerRewardsDataRow, convertDataToRowData } from './BackerRewardsDataRow'
-import { BackerRewardsHeaderRow } from './BackerRewardsHeaderRow'
-import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BackerRewardsTable.config'
-import { Sort } from '@/shared/context/TableContext/types'
-import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
-import { Big } from 'big.js'
+import { convertDataToRowData } from './BackerRewardsDataRow'
+import { BackerRewardsCellDataMap, ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BackerRewardsTable.config'
+import { DesktopRewardsDetails } from './DesktopRewardsDetails'
+import { MobileRewardsDetails } from './MobileRewardsDetails'
+
+const RewardsDetails = ({
+  rows,
+  actions,
+}: {
+  rows: Row<ColumnId, Row['id'], BackerRewardsCellDataMap>[]
+  actions: Action[]
+}) => {
+  const isDesktop = useIsDesktop()
+  return isDesktop ? (
+    <DesktopRewardsDetails rows={rows} actions={actions} />
+  ) : (
+    <MobileRewardsDetails rows={rows} />
+  )
+}
 
 type PagedFilter = {
   backer: Address
@@ -37,7 +55,8 @@ const usePagedFilteredBackerRewards = ({
     const { columnId, direction } = sort
 
     const comparators: Partial<Record<ColumnId, (a: BackerRewards, b: BackerRewards) => number>> = {
-      builder: (a, b) => a.builderName.localeCompare(b.builderName),
+      builder: ({ builderName: a }, { builderName: b }) =>
+        a.trim().toLowerCase().localeCompare(b.trim().toLowerCase()),
 
       backer_rewards: (a, b) => Number(a.backerRewardPct.current - b.backerRewardPct.current),
 
@@ -47,18 +66,42 @@ const usePagedFilteredBackerRewards = ({
         return Big(aValue).sub(bValue).toNumber()
       },
       estimated: (a, b) => {
-        const aValue = getCombinedFiatAmount([a.estimatedRewards.rif.amount, a.estimatedRewards.rbtc.amount])
-        const bValue = getCombinedFiatAmount([b.estimatedRewards.rif.amount, b.estimatedRewards.rbtc.amount])
+        const aValue = getCombinedFiatAmount([
+          a.estimatedRewards.rif.amount,
+          a.estimatedRewards.rbtc.amount,
+          a.estimatedRewards.usdrif.amount,
+        ])
+        const bValue = getCombinedFiatAmount([
+          b.estimatedRewards.rif.amount,
+          b.estimatedRewards.rbtc.amount,
+          b.estimatedRewards.usdrif.amount,
+        ])
         return Big(aValue).sub(bValue).toNumber()
       },
       unclaimed: (a, b) => {
-        const aValue = getCombinedFiatAmount([a.claimableRewards.rif.amount, a.claimableRewards.rbtc.amount])
-        const bValue = getCombinedFiatAmount([b.claimableRewards.rif.amount, b.claimableRewards.rbtc.amount])
+        const aValue = getCombinedFiatAmount([
+          a.claimableRewards.rif.amount,
+          a.claimableRewards.rbtc.amount,
+          a.claimableRewards.usdrif.amount,
+        ])
+        const bValue = getCombinedFiatAmount([
+          b.claimableRewards.rif.amount,
+          b.claimableRewards.rbtc.amount,
+          b.claimableRewards.usdrif.amount,
+        ])
         return Big(aValue).sub(bValue).toNumber()
       },
       total: (a, b) => {
-        const aValue = getCombinedFiatAmount([a.allTimeRewards.rif.amount, a.allTimeRewards.rbtc.amount])
-        const bValue = getCombinedFiatAmount([b.allTimeRewards.rif.amount, b.allTimeRewards.rbtc.amount])
+        const aValue = getCombinedFiatAmount([
+          a.allTimeRewards.rif.amount,
+          a.allTimeRewards.rbtc.amount,
+          a.allTimeRewards.usdrif.amount,
+        ])
+        const bValue = getCombinedFiatAmount([
+          b.allTimeRewards.rif.amount,
+          b.allTimeRewards.rbtc.amount,
+          b.allTimeRewards.usdrif.amount,
+        ])
         return Big(aValue).sub(bValue).toNumber()
       },
     }
@@ -78,16 +121,15 @@ const usePagedFilteredBackerRewards = ({
   return { data, isLoading, error }
 }
 
-// ---------------- Table ----------------
-
 export const BackerRewardsTable = () => {
+  const isDesktop = useIsDesktop()
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
 
   const { address: userAddress } = useAccount()
 
-  const { rows, columns, selectedRows, sort } = useTableContext<ColumnId>()
+  const { rows, columns, selectedRows, sort } = useTableContext<ColumnId, BackerRewardsCellDataMap>()
   const [actions, setActions] = useState<Action[]>([])
-  const dispatch = useTableActionsContext<ColumnId>()
+  const dispatch = useTableActionsContext<ColumnId, BackerRewardsCellDataMap>()
 
   const pageOptions = useMemo(() => ({ start: 0, end: pageEnd }), [pageEnd])
   const {
@@ -107,6 +149,12 @@ export const BackerRewardsTable = () => {
     dispatch({
       type: 'SET_COLUMNS',
       payload: DEFAULT_HEADERS,
+    })
+
+    // Set default sort to unclaimed ascending
+    dispatch({
+      type: 'SET_DEFAULT_SORT',
+      payload: { columnId: 'unclaimed', direction: SORT_DIRECTION_ASC },
     })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -137,7 +185,7 @@ export const BackerRewardsTable = () => {
   useEffect(() => {
     const actions = Object.entries(selectedRows)
       .filter(([_, value]) => value)
-      .map(([rowId]) => (rows.find(row => row.id === rowId)?.data.actions as ActionCellProps).actionType)
+      .map(([rowId]) => rows.find(({ id }) => id === rowId)?.data.actions?.actionType)
       .filter(action => action !== undefined)
     setActions(actions)
   }, [selectedRows, rows])
@@ -154,8 +202,8 @@ export const BackerRewardsTable = () => {
    * FIXME: see if we can do this better to avoid re-rendering the table.
   //  */
   useEffect(() => {
-    const isBackingHidden = columns.find(col => col.id == 'backing')?.hidden ?? true
-    const isActionsHidden = columns.find(col => col.id == 'actions')?.hidden ?? true
+    const isBackingHidden = columns.find(({ id }) => id == 'backing')?.hidden ?? true
+    const isActionsHidden = columns.find(({ id }) => id == 'actions')?.hidden ?? true
     if (isBackingHidden === isActionsHidden) {
       dispatch({
         type: 'SET_COLUMN_VISIBILITY',
@@ -169,27 +217,14 @@ export const BackerRewardsTable = () => {
 
   return (
     <>
-      <div className="w-full overflow-x-auto bg-v3-bg-accent-80">
-        <table className="w-full min-w-[700px]">
-          <thead>
-            <BackerRewardsHeaderRow actions={actions} />
-          </thead>
-          <Suspense fallback={<div>Loading table data...</div>}>
-            <tbody>
-              {rows.map(row => (
-                <BackerRewardsDataRow key={row.id} row={row} />
-              ))}
-            </tbody>
-          </Suspense>
-        </table>
-      </div>
+      <RewardsDetails rows={rows} actions={actions} />
       <TablePager
         pageSize={PAGE_SIZE}
         totalItems={totalRewards}
         onPageChange={({ end }) => {
           setPageEnd(end)
         }}
-        pagedItemName="builders"
+        pagedItemName={isDesktop ? 'Builders' : ''}
         mode="expandable"
       />
     </>

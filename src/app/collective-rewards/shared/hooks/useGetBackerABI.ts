@@ -1,31 +1,18 @@
-import { RBTC, RIF, WeiPerEther } from '@/lib/constants'
+import { RBTC, RIF, USDRIF, WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { useReadGauges, useReadBackersManager } from '@/shared/hooks/contracts'
+import { useReadBackersManager } from '@/shared/hooks/contracts'
 import Big from 'big.js'
-import { Address } from 'viem'
+import { Address, parseEther } from 'viem'
 import { useMemo } from 'react'
 import { calculateAbi } from './useGetABI'
-import { useGetCycleRewards } from './useGetCycleRewards'
-import { getCyclePayout } from './getCyclePayout'
-import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
+import { useBackingContext } from '@/app/shared/context/BackingContext'
 
 export const useGetBackerABI = (backer: Address) => {
   const {
-    data: builderEstimatedRewards,
-    isLoading: estimatedRewardsLoading,
-    error: estimatedRewardsError,
-  } = useGetBuilderEstimatedRewards()
-  const gauges = builderEstimatedRewards.map(({ gauge }) => gauge)
-  const {
-    data: allocationOf,
-    isLoading: allocationOfLoading,
-    error: allocationOfError,
-  } = useReadGauges({ addresses: gauges, functionName: 'allocationOf', args: [backer] })
-  const {
-    data: totalAllocation,
-    isLoading: totalAllocationLoading,
-    error: totalAllocationError,
-  } = useReadGauges({ addresses: gauges, functionName: 'totalAllocation' })
+    data: backingData,
+    isLoading: isBackingDataLoading,
+    error: isBackingDataError,
+  } = useBackingContext()
   const {
     data: backerTotalAllocation,
     isLoading: backerTotalAllocationLoading,
@@ -34,30 +21,26 @@ export const useGetBackerABI = (backer: Address) => {
     functionName: 'backerTotalAllocation',
     args: [backer],
   })
-  const {
-    data: cycleRewards,
-    isLoading: cycleRewardsLoading,
-    error: cycleRewardsError,
-  } = useGetCycleRewards()
   const { prices } = usePricesContext()
 
   const abi = useMemo(() => {
     const rifPrice = prices[RIF]?.price ?? 0
+    const rbtcPrice = prices[RBTC]?.price ?? 0
+    const usdrifPrice = prices[USDRIF]?.price ?? 0
+    const rifPriceInWei = parseEther(rifPrice.toString())
+    const rbtcPriceInWei = parseEther(rbtcPrice.toString())
+    const usdrifPriceInWei = parseEther(usdrifPrice.toString())
 
-    const backerRewards = builderEstimatedRewards.reduce((acc, { backerEstimatedRewardsPct }, i) => {
-      const builderTotalAllocation = totalAllocation[i] ?? 0n
-      const backerAllocationOf = allocationOf[i] ?? 0n
+    const backerRewards = backingData.reduce((acc, { backerEstimatedRewards }) => {
+      const { rif, rbtc, usdrif } = backerEstimatedRewards
 
-      const rbtcPrice = prices[RBTC]?.price ?? 0
-
-      const cyclePayout = getCyclePayout(rifPrice, rbtcPrice, cycleRewards?.rif, cycleRewards?.rbtc)
-
-      const backersRewardsAmount = (backerEstimatedRewardsPct * cyclePayout) / WeiPerEther
-      const backerReward = builderTotalAllocation
-        ? (backersRewardsAmount * backerAllocationOf) / builderTotalAllocation
-        : 0n
-
-      return acc + backerReward
+      return (
+        acc +
+        (rif.amount.value * rifPriceInWei +
+          rbtc.amount.value * rbtcPriceInWei +
+          usdrif.amount.value * usdrifPriceInWei) /
+          WeiPerEther
+      )
     }, 0n)
 
     if (!backerTotalAllocation) {
@@ -67,21 +50,11 @@ export const useGetBackerABI = (backer: Address) => {
     const rewardsPerStRif = (backerRewards * WeiPerEther) / backerTotalAllocation
 
     return calculateAbi(Big(rewardsPerStRif.toString()), rifPrice)
-  }, [allocationOf, backerTotalAllocation, builderEstimatedRewards, cycleRewards, prices, totalAllocation])
+  }, [backingData, backerTotalAllocation, prices])
 
-  const isLoading =
-    estimatedRewardsLoading ||
-    allocationOfLoading ||
-    totalAllocationLoading ||
-    backerTotalAllocationLoading ||
-    cycleRewardsLoading
+  const isLoading = isBackingDataLoading || backerTotalAllocationLoading
 
-  const error =
-    estimatedRewardsError ??
-    allocationOfError ??
-    totalAllocationError ??
-    backerTotalAllocationError ??
-    cycleRewardsError
+  const error = isBackingDataError ?? backerTotalAllocationError
 
   return {
     data: abi,

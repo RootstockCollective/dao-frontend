@@ -1,50 +1,53 @@
 'use client'
 
-import { Span } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 
-import {
-  getFiatAmount,
-  useBackerRewardsContext,
-  useClaimBackerRewards,
-} from '@/app/collective-rewards/rewards'
+import { useBackerRewardsContext, useClaimBackerRewards } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { ConditionalTooltip } from '@/app/components'
-import { Button } from '@/components/ButtonNew'
-import { DottedUnderlineLabel } from '@/components/DottedUnderlineLabel/DottedUnderlineLabel'
-import { RifRbtcTooltip } from '@/components/RifRbtcTooltip/RifRbtcTooltip'
-import { USD } from '@/lib/constants'
-import { TOKENS } from '@/lib/tokens'
+import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
+import { MetricToken } from '@/app/components/Metric/types'
+import { createMetricToken } from '@/app/components/Metric/utils'
+import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/FiatTooltipLabel'
+import { getFiatAmount } from '@/app/shared/formatter'
+import { Button } from '@/components/Button'
+import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
+import Big from 'big.js'
 import { ReactElement, useMemo } from 'react'
 
 export const UnclaimedRewardsMetric = (): ReactElement => {
   const { prices } = usePricesContext()
-  const { data, error } = useBackerRewardsContext()
-  const unclaimedRewardsPerToken = useMemo(
-    () =>
-      Object.values(TOKENS).map(token => {
-        const { address, symbol } = token
-        const { earned: tokenEarnings } = data && data[address] ? data[address] : { earned: 0n }
-        const earnedRewards = Object.values(tokenEarnings).reduce((acc, earned) => acc + earned, 0n)
-        const tokenPrice = prices[symbol]?.price ?? 0
-        const fiatAmount = getFiatAmount(earnedRewards, tokenPrice).toNumber()
+  const { data: rewardsPerToken, error } = useBackerRewardsContext()
 
-        return {
-          token,
-          amount: earnedRewards,
-          fiatAmount,
-        }
-      }),
-    [data, prices],
-  )
-  const rifEarnings = unclaimedRewardsPerToken.find(reward => reward.token.symbol === 'RIF')?.amount ?? 0n
-  const rbtcEarnings = unclaimedRewardsPerToken.find(reward => reward.token.symbol === 'RBTC')?.amount ?? 0n
-
-  const usdValue = unclaimedRewardsPerToken.reduce((acc, reward) => acc + reward.fiatAmount, 0)
   useHandleErrors({ error, title: 'Error loading rewards' })
 
   const { claimRewards, isClaimable } = useClaimBackerRewards()
+
+  const { metricTokens, total } = useMemo(
+    () =>
+      REWARD_TOKEN_KEYS.reduce<{ metricTokens: MetricToken[]; total: Big }>(
+        ({ metricTokens, total }, tokenKey) => {
+          const { symbol, address } = TOKENS[tokenKey]
+          const price = prices[symbol]?.price ?? 0
+          const value = Object.values((rewardsPerToken?.[address] ?? { earned: 0n }).earned).reduce(
+            (acc, earned) => acc + earned,
+            0n,
+          )
+
+          return {
+            metricTokens: [...metricTokens, createMetricToken({ symbol, value, price })],
+            total: total.add(getFiatAmount(value, prices[symbol]?.price ?? 0)),
+          }
+        },
+        {
+          metricTokens: [],
+          total: Big(0),
+        },
+      ),
+    [rewardsPerToken, prices],
+  )
 
   return (
     <div className="flex flex-col w-64 gap-4 items-start ">
@@ -54,19 +57,16 @@ export const UnclaimedRewardsMetric = (): ReactElement => {
         </Span>
         <div className="flex items-center gap-2">
           <span className="overflow-hidden text-v3-text-100 text-ellipsis font-kk-topo text-[2rem] not-italic font-normal leading-[2.5rem] uppercase">
-            {formatCurrency(usdValue)}
+            {formatCurrency(total)}
           </span>
-          <RifRbtcTooltip rbtcValue={rbtcEarnings} rifValue={rifEarnings}>
-            <DottedUnderlineLabel
-              className="text-v3-text-100 text-right font-rootstock-sans text-lg not-italic font-bold leading-6 decoration-[8%] pt-3"
-              style={{
-                textDecorationSkipInk: 'auto',
-                textUnderlinePosition: 'from-font',
-              }}
-            >
-              {USD}
-            </DottedUnderlineLabel>
-          </RifRbtcTooltip>
+          <FiatTooltipLabel
+            tooltip={{ text: <MetricTooltipContent tokens={metricTokens} />, side: 'top' }}
+            className="text-v3-text-100 text-right font-rootstock-sans text-lg not-italic font-bold leading-6 decoration-[8%] pt-3"
+            style={{
+              textDecorationSkipInk: 'auto',
+              textUnderlinePosition: 'from-font',
+            }}
+          />
         </div>
       </div>
       <ConditionalTooltip

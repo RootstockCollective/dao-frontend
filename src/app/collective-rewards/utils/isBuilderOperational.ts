@@ -2,7 +2,10 @@ import { Builder, BuilderStateFlags } from '../types'
 
 export const isBuilderOperational = (stateFlags?: BuilderStateFlags) => {
   return Boolean(
-    stateFlags?.activated && stateFlags?.communityApproved && stateFlags?.kycApproved && !stateFlags?.paused,
+    stateFlags?.initialized &&
+      stateFlags?.communityApproved &&
+      stateFlags?.kycApproved &&
+      !stateFlags?.kycPaused,
   )
 }
 
@@ -10,15 +13,18 @@ export const isBuilderDeactivated = ({ gauge, stateFlags }: Builder) =>
   Boolean(gauge && !stateFlags?.communityApproved)
 
 export const isBuilderKycRevoked = (stateFlags?: BuilderStateFlags) =>
-  Boolean(stateFlags?.activated && !stateFlags.kycApproved)
+  Boolean(stateFlags?.initialized && !stateFlags.kycApproved)
 
-export const isBuilderPaused = (stateFlags?: BuilderStateFlags) => Boolean(stateFlags?.paused)
+export const isBuilderPaused = (stateFlags?: BuilderStateFlags) => Boolean(stateFlags?.kycPaused)
 
-export const isBuilderSelfPaused = (stateFlags?: BuilderStateFlags) => Boolean(stateFlags?.revoked)
+export const isBuilderSelfPaused = (stateFlags?: BuilderStateFlags) => Boolean(stateFlags?.selfPaused)
 
 export const isBuilderActive = (stateFlags?: BuilderStateFlags) => {
   return Boolean(
-    stateFlags?.communityApproved && stateFlags?.kycApproved && !stateFlags?.paused && !stateFlags?.revoked,
+    stateFlags?.communityApproved &&
+      stateFlags?.kycApproved &&
+      !stateFlags?.kycPaused &&
+      !stateFlags?.selfPaused,
   )
 }
 
@@ -26,12 +32,16 @@ export const isBuilderInProgress = (builder: Builder) => {
   const builderFlags = builder.stateFlags
   if (!builderFlags) return true
   if (isBuilderDeactivated(builder) || isBuilderKycRevoked(builderFlags)) return false
-  return !builderFlags.activated || !builderFlags.communityApproved
+  return !builderFlags.initialized || !builderFlags.communityApproved
 }
 
 export const isBuilderRewardable = (stateFlags?: BuilderStateFlags) => {
   return Boolean(
-    stateFlags?.activated && stateFlags?.communityApproved && stateFlags?.kycApproved && !stateFlags?.revoked,
+    stateFlags?.initialized &&
+      stateFlags?.communityApproved &&
+      stateFlags?.kycApproved &&
+      !stateFlags?.kycPaused &&
+      !stateFlags?.selfPaused,
   )
 }
 
@@ -40,7 +50,7 @@ export const BUILDER_ACTIVE = 'active'
 export const BUILDER_DEACTIVATED = 'deactivated'
 export const BUILDER_KYC_REVOKED = 'kycRevoked'
 export const BUILDER_PAUSED = 'paused'
-const BUILDER_SELF_PAUSED = 'selfPaused'
+export const BUILDER_SELF_PAUSED = 'selfPaused'
 
 export const builderInactiveStates = [
   BUILDER_DEACTIVATED,
@@ -58,8 +68,8 @@ export const getBuilderInactiveState = (builder: Builder): BuilderInactiveState 
 }
 
 export const builderInactiveStateMessage: Record<BuilderInactiveState, string> = {
-  [BUILDER_DEACTIVATED]: 'The Builder was voted out by the community.',
-  [BUILDER_KYC_REVOKED]: 'The Builder was removed by the Foundation.',
-  [BUILDER_PAUSED]: 'The Builder’s KYC has been paused by the Foundation.',
-  [BUILDER_SELF_PAUSED]: 'The Builder has paused their participation.',
+  [BUILDER_DEACTIVATED]: 'The Builder was voted out by the community',
+  [BUILDER_KYC_REVOKED]: 'The Builder was removed by the Foundation',
+  [BUILDER_PAUSED]: 'The Builder’s KYC has been paused by the Foundation',
+  [BUILDER_SELF_PAUSED]: 'The Builder has paused their participation',
 } as const

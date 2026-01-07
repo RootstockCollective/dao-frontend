@@ -1,5 +1,5 @@
 import { flexRender, type Table as ReactTable, type SortDirection } from '@tanstack/react-table'
-import { type TableHTMLAttributes, type PropsWithChildren } from 'react'
+import type { TableHTMLAttributes, PropsWithChildren } from 'react'
 import { DoubleArrowIcon } from '@/components/Table/components/icons/DoubleArrowIcon'
 import { ArrowIcon } from '@/components/Table/components/icons/ArrowIcon'
 import { cn } from '@/lib/utils'
@@ -34,7 +34,7 @@ interface Props<T> extends TableHTMLAttributes<HTMLTableElement> {
 export function NftHoldersTable<T>({ table, ...props }: Props<T>) {
   return (
     <table className="w-full border-collapse" {...props}>
-      <thead>
+      <thead className="hidden md:table-header-group">
         <tr>
           {table.getHeaderGroups().map(headerGroup =>
             headerGroup.headers.map(header => (
@@ -62,7 +62,10 @@ export function NftHoldersTable<T>({ table, ...props }: Props<T>) {
         {table.getRowModel().rows.map(row => (
           <tr key={row.id}>
             {row.getVisibleCells().map(cell => (
-              <td key={cell.id} className={cn('py-3 pl-4 border-b border-bg-60 first:w-2/5 last:w-3/5')}>
+              <td
+                key={cell.id}
+                className={cn('py-5 md:py-3 pl-0 pr-2 md:pl-4 border-b border-bg-60 first:w-2/5 last:w-3/5')}
+              >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </td>
             ))}

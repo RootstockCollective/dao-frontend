@@ -3,7 +3,6 @@ import { db } from '@/lib/db'
 import { paginateQuery } from '@/app/api/utils/paginateQuery'
 import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
 
-// TODO: Update flags after migration
 export async function GET(req: Request) {
   try {
     const paginationResult = parsePaginationParams(req.url || '')
@@ -34,11 +33,11 @@ export async function GET(req: Request) {
         stateFlags: db.raw(`
           COALESCE(
             json_build_object(
-              'activated', "BuilderState"."initialized",
+              'initialized', "BuilderState"."initialized",
               'kycApproved', "BuilderState"."kycApproved",
               'communityApproved', "BuilderState"."communityApproved",
-              'paused', "BuilderState"."kycPaused",
-              'revoked', "BuilderState"."selfPaused"
+              'kycPaused', "BuilderState"."kycPaused",
+              'selfPaused', "BuilderState"."selfPaused"
             ),
             '{}'
           )
@@ -51,7 +50,7 @@ export async function GET(req: Request) {
         'BuilderState.selfPaused': false,
       })
 
-    const { data, count } = await paginateQuery(baseQuery, page, pageSize)
+    const { data, count } = await paginateQuery(baseQuery, { page, pageSize })
 
     return NextResponse.json({ data, count, page, pageSize })
   } catch (err) {

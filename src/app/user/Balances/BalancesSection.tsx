@@ -3,13 +3,15 @@ import { StakingFlow } from '@/app/user/Stake'
 import { UnstakeModal } from '@/app/user/Unstake'
 import { useModal } from '@/shared/hooks/useModal'
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { Button } from '@/components/ButtonNew'
-import { MoneyIconKoto } from '@/components/Icons'
+import { Button } from '@/components/Button'
+import { HistoryIcon, MoneyIconKoto } from '@/components/Icons'
 import { useRef } from 'react'
-import { Span } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 import { RBTC, RIF, STRIF, USDRIF } from '@/lib/constants'
+import Big from '@/lib/big'
+import { useGetAddressBalances } from './hooks/useGetAddressBalances'
 
 export const BalancesSection = () => {
   const stakeModal = useModal()
@@ -19,6 +21,7 @@ export const BalancesSection = () => {
   const shouldReopen = searchParams.get('reopen') // ID number
   const [hasOpenedStakeModal, setHasOpenedStakeModal] = useState(false)
   const reopenId = useRef('0')
+  const { balances } = useGetAddressBalances()
 
   useEffect(() => {
     if (action === 'stake' && !hasOpenedStakeModal && !shouldReopen) {
@@ -32,19 +35,24 @@ export const BalancesSection = () => {
     }
   }, [action, hasOpenedStakeModal, shouldReopen, stakeModal])
 
+  const balanceStyle = 'mt-6 min-w-[268px]'
+
   return (
     <>
-      <div className="flex flex-row justify-between mb-6">
-        <div className="flex flex-col gap-4">
-          <BalanceInfoForUser symbol={RIF} />
-          <StakeButton onClick={stakeModal.openModal} />
+      <div className="flex flex-row justify-between mb-6 flex-wrap">
+        <div className="flex flex-col gap-4 md:mt-6">
+          <BalanceInfoForUser symbol={RIF} className="min-w-[268px]" />
+          {Big(balances[RIF].balance).gt(0) && <StakeButton onClick={stakeModal.openModal} />}
+        </div>
+        <div className="flex flex-col gap-4 mt-6">
+          <BalanceInfoForUser symbol={STRIF} className="min-w-[268px]" />
+          {Big(balances[STRIF].balance).gt(0) && <UnstakeButton onClick={unstakeModal.openModal} />}
         </div>
         <div className="flex flex-col gap-4">
-          <BalanceInfoForUser symbol={STRIF} />
-          <UnstakeButton onClick={unstakeModal.openModal} />
+          <BalanceInfoForUser symbol={USDRIF} className={balanceStyle} />
+          <StakingHistoryButton />
         </div>
-        <BalanceInfoForUser symbol={USDRIF} />
-        <BalanceInfoForUser symbol={RBTC} />
+        <BalanceInfoForUser symbol={RBTC} className={balanceStyle} />
       </div>
       <div>
         {stakeModal.isModalOpened && <StakingFlow onCloseModal={stakeModal.closeModal} />}
@@ -64,6 +72,7 @@ const StakeButton = ({ onClick }: { onClick: () => void }) => {
       disabled={!hasEnoughBalance}
       data-testid="StakeRIF"
       variant="secondary-outline"
+      className="max-w-[103px] text-nowrap"
     >
       Stake RIF{/* TODO dynamic symbol here */}
     </Button>
@@ -79,11 +88,25 @@ const UnstakeButton = ({ onClick }: { onClick: () => void }) => {
       onClick={hasEnoughBalance ? onClick : undefined}
       disabled={!hasEnoughBalance}
       data-testid="UnstakeRIF"
-      className="flex flex-row gap-2 pl-0"
+      className="flex flex-row gap-2 pl-0 max-w-[154px] justify-start"
       variant="transparent"
     >
-      <Span>Unstake stRIF</Span>
+      <Span className="flex-shrink-0">Unstake stRIF</Span>
       <MoneyIconKoto />
+    </Button>
+  )
+}
+
+const StakingHistoryButton = () => {
+  const router = useRouter()
+  return (
+    <Button
+      variant="transparent"
+      className="flex flex-row gap-2 pl-0 max-w-[200px] justify-start font-medium text-sm font-rootstock-sans"
+      onClick={() => router.push(`/staking-history`)}
+    >
+      <HistoryIcon />
+      <Span className="flex-shrink-0">See Staking History</Span>
     </Button>
   )
 }

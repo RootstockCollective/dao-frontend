@@ -1,13 +1,16 @@
 import { cn } from '@/lib/utils'
-import { useId, useState, type InputHTMLAttributes } from 'react'
+import { type ReactNode, useId, useState, type InputHTMLAttributes } from 'react'
 import { FloatingLabel } from './FloatingLabel'
 import { ErrorMessage } from './ErrorMessage'
-import { Controller, Control, FieldPath, FieldValues } from 'react-hook-form'
+import type { Control, FieldPath, FieldValues } from 'react-hook-form'
+import { Controller } from 'react-hook-form'
 
 interface Props<T extends FieldValues> extends InputHTMLAttributes<HTMLInputElement> {
   label: string
   name: FieldPath<T>
   control: Control<T>
+  infoMessage?: ReactNode
+  'data-testid'?: string
 }
 
 export function TextInput<T extends FieldValues>({
@@ -16,7 +19,9 @@ export function TextInput<T extends FieldValues>({
   className,
   name,
   control,
+  infoMessage,
   onFocus,
+  'data-testid': dataTestId,
   ...props
 }: Props<T>) {
   const ownId = useId()
@@ -35,7 +40,10 @@ export function TextInput<T extends FieldValues>({
         const shouldFloat = isFocused || hasValue
 
         return (
-          <ErrorMessage errorMsg={error?.message}>
+          <ErrorMessage
+            errorMsg={error?.message}
+            {...(dataTestId ? { dataTestId: dataTestId + 'Error' } : {})}
+          >
             <FloatingLabel htmlFor={newId} isFloating={shouldFloat} label={label}>
               <input
                 id={newId}
@@ -52,15 +60,19 @@ export function TextInput<T extends FieldValues>({
                   setIsFocused(true)
                   onFocus?.(e)
                 }}
-                onBlur={e => {
+                onBlur={() => {
                   setIsFocused(false)
                   onBlur()
                 }}
                 onChange={onChange}
                 autoComplete="off"
+                {...(dataTestId ? { ['data-testid']: dataTestId } : {})}
                 {...props}
               />
             </FloatingLabel>
+            {!error && infoMessage && (
+              <p className="font-rootstock-sans text-xs text-success/60">{infoMessage}</p>
+            )}
           </ErrorMessage>
         )
       }}

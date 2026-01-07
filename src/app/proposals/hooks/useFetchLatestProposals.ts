@@ -5,7 +5,7 @@ import { useQuery, UseQueryResult } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { getAddress, parseEventLogs, prepareEncodeFunctionData } from 'viem'
 import { ADDRESS_PADDING_LENGTH, RELAY_PARAMETER_PADDING_LENGTH } from '@/app/proposals/shared/utils'
-import { BuilderRegistryAbi } from '@/lib/abis/v2/BuilderRegistryAbi'
+import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 const useFetchLatestProposals = () => {

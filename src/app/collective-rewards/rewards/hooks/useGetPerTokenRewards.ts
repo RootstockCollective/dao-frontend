@@ -1,11 +1,15 @@
-import { type BackersManagerAbi } from '@/lib/abis/v2'
+import { type RewardDistributorAbi } from '@/lib/abis/tok'
 import { useReadRewardDistributor } from '@/shared/hooks/contracts'
 import { UseReadContractReturnType } from 'wagmi'
 
 export const useGetPerTokenRewards = (): Record<
-  'rif' | 'rbtc',
-  UseReadContractReturnType<BackersManagerAbi, 'rewardsERC20' | 'rewardsCoinbase'>
+  'rif' | 'rbtc' | 'usdrif',
+  UseReadContractReturnType<
+    RewardDistributorAbi,
+    'defaultRifAmount' | 'defaultNativeAmount' | 'defaultUsdrifAmount'
+  >
 > => ({
-  rif: useReadRewardDistributor({ functionName: 'defaultRewardTokenAmount' }),
-  rbtc: useReadRewardDistributor({ functionName: 'defaultRewardCoinbaseAmount' }),
+  rif: useReadRewardDistributor({ functionName: 'defaultRifAmount' }),
+  rbtc: useReadRewardDistributor({ functionName: 'defaultNativeAmount' }),
+  usdrif: useReadRewardDistributor({ functionName: 'defaultUsdrifAmount' }),
 })

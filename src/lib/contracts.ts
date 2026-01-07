@@ -1,8 +1,13 @@
 import { zeroAddress } from 'viem'
 import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'
-import { VotingVanguardsNftAbi } from './abis/VotingVanguardsNFTAbi'
+import { GovernorAbi } from './abis/Governor'
+import { RootlingsS1ABI } from './abis/RootlingsS1'
 import { StRIFTokenAbi } from './abis/StRIFTokenAbi'
+import { VotingVanguardsNftAbi } from './abis/VotingVanguardsNFTAbi'
 import {
+  BACKERS_MANAGER_ADDRESS,
+  BB_NFT_ADDRESS,
+  BUILDER_REGISTRY_ADDRESS,
   EA_NFT_ADDRESS,
   GENERAL_BUCKET_ADDRESS,
   GOVERNOR_ADDRESS,
@@ -10,30 +15,37 @@ import {
   GRANTS_BUCKET_ADDRESS,
   GROWTH_BUCKET_ADDRESS,
   MULTICALL_ADDRESS,
-  RIF_ADDRESS,
-  STRIF_ADDRESS,
+  OG_CONTRIBUTORS_NFT_ADDRESS,
   OG_FOUNDERS_NFT_ADDRESS,
   OG_PARTNERS_NFT_ADDRESS,
-  OG_CONTRIBUTORS_NFT_ADDRESS,
-  BACKERS_MANAGER_ADDRESS,
-  BUILDER_REGISTRY_ADDRESS,
-  REWARD_DISTRIBUTOR_ADDRESS,
-  VANGUARD_NFT_ADDRESS,
-  BB_NFT_ADDRESS,
-  USDRIF_ADDRESS,
-  RIF,
-  STRIF,
   RBTC,
+  REWARD_DISTRIBUTOR_ADDRESS,
+  RIF,
+  RIF_ADDRESS,
+  ROOTLINGS_S1_NFT_ADDRESS,
+  STRIF,
+  STRIF_ADDRESS,
   USDRIF,
+  USDRIF_ADDRESS,
+  USDRIF_VAULT_ADDRESS,
+  USDT0,
+  USDT0_ADDRESS,
+  VANGUARD_NFT_ADDRESS,
 } from './constants'
-import { GovernorAbi } from './abis/Governor'
+import { VaultAbi } from '@/lib/abis/VaultAbi'
 
 const tokenContracts = {
   [RIF]: RIF_ADDRESS,
   [STRIF]: STRIF_ADDRESS,
   [RBTC]: zeroAddress,
   [USDRIF]: USDRIF_ADDRESS,
+  [USDT0]: USDT0_ADDRESS,
 }
+// Needed when creating proposal - uppercase [avoid case sensitive search]
+export const uppercasedTokenContracts = Object.fromEntries(
+  Object.entries(tokenContracts).map(([key, value]) => [key.toUpperCase(), value]),
+)
+
 export type SupportedTokens = keyof typeof tokenContracts
 
 const nftContracts = {
@@ -43,6 +55,7 @@ const nftContracts = {
   OG_CONTRIBUTORS: OG_CONTRIBUTORS_NFT_ADDRESS,
   VANGUARD: VANGUARD_NFT_ADDRESS,
   BB: BB_NFT_ADDRESS, // Beta Builders
+  ROOTLINGS_S1: ROOTLINGS_S1_NFT_ADDRESS,
 }
 
 export const DEFAULT_NFT_CONTRACT_ABI = EarlyAdoptersNFTAbi
@@ -54,6 +67,7 @@ const abiContractsMap = {
   [nftContracts.OG_PARTNERS]: EarlyAdoptersNFTAbi,
   [nftContracts.VANGUARD]: VotingVanguardsNftAbi,
   [nftContracts.BB]: EarlyAdoptersNFTAbi,
+  [nftContracts.ROOTLINGS_S1]: RootlingsS1ABI as any, // Type assertion to avoid TS deep instantiation error
 }
 
 const treasuryContracts = {
@@ -74,15 +88,15 @@ const RewardDistributorAddress = REWARD_DISTRIBUTOR_ADDRESS || zeroAddress
 
 export {
   abiContractsMap,
+  BackersManagerAddress,
+  BuilderRegistryAddress,
   GovernorAddress,
   MulticallAddress,
   nftContracts,
+  RewardDistributorAddress,
   tokenContracts,
   TreasuryAddress,
   treasuryContracts,
-  BackersManagerAddress,
-  BuilderRegistryAddress,
-  RewardDistributorAddress,
 }
 
 export const governor = {
@@ -93,4 +107,9 @@ export const governor = {
 export const stRif = {
   address: STRIF_ADDRESS,
   abi: StRIFTokenAbi,
+} as const
+
+export const vault = {
+  address: USDRIF_VAULT_ADDRESS,
+  abi: VaultAbi,
 } as const

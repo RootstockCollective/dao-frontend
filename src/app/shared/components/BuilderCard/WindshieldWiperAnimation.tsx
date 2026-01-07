@@ -37,7 +37,9 @@ export const WindshieldWiperAnimation = ({
   }, [showAnimation, index])
 
   return (
-    <div className={cn('relative overflow-hidden rounded-inherit', backgroundColor, className)}>
+    <div
+      className={cn('relative overflow-hidden rounded-inherit w-full rounded', backgroundColor, className)}
+    >
       {showAnimation && show && (
         <>
           {/* First Sweep */}

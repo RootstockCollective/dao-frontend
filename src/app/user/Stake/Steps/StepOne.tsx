@@ -1,8 +1,7 @@
-import { StakeInput } from '@/app/user/Stake/StakeInputNew'
-import { Button } from '@/components/ButtonNew/Button'
-import { Divider } from '@/components/Divider'
+import { StakeInput } from '@/app/user/Stake/StakeInput'
+import { Button } from '@/components/Button'
 import { TokenImage } from '@/components/TokenImage'
-import { Label, Span } from '@/components/TypographyNew'
+import { Label, Span } from '@/components/Typography'
 import Big from '@/lib/big'
 import { formatCurrency, handleAmountInput } from '@/lib/utils'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
@@ -10,7 +9,7 @@ import { useStakingContext } from '../StakingContext'
 import { StepProps } from '../types'
 
 export const StepOne = ({ onGoNext }: StepProps) => {
-  const { amount, onAmountChange, tokenToSend } = useStakingContext()
+  const { amount, onAmountChange, tokenToSend, setButtonActions } = useStakingContext()
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
@@ -29,9 +28,17 @@ export const StepOne = ({ onGoNext }: StepProps) => {
     return rawAmount.gt(rawBalance)
   }, [amount, tokenToSend.balance])
 
-  const canGoNext = useMemo(() => {
-    return amount && Number(amount) > 0 && !isAmountOverBalance
-  }, [amount, isAmountOverBalance])
+  // Set button actions directly
+  useEffect(() => {
+    setButtonActions({
+      primary: {
+        label: 'Continue',
+        onClick: onGoNext,
+        disabled: !amount || Number(amount) <= 0 || isAmountOverBalance,
+        loading: false,
+      },
+    })
+  }, [amount, isAmountOverBalance, onGoNext, setButtonActions])
 
   const totalBalance = useMemo(() => tokenToSend.balance || '0', [tokenToSend.balance])
 
@@ -70,24 +77,10 @@ export const StepOne = ({ onGoNext }: StepProps) => {
         <Button
           variant="secondary"
           onClick={() => handleAmountChange(totalBalance)}
-          className="bg-transparent border border-bg-40 px-2 py-0"
+          className="bg-transparent border border-bg-40 px-2 py-0 w-fit"
           data-testid="maxButton"
         >
           <Span variant="body-s">Max</Span>
-        </Button>
-      </div>
-
-      <Divider className="mt-8" />
-
-      <div className="flex md:justify-end">
-        <Button
-          variant="primary"
-          onClick={onGoNext}
-          disabled={!canGoNext}
-          data-testid="ContinueButton"
-          className="w-full md:w-auto"
-        >
-          Continue
         </Button>
       </div>
     </>

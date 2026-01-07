@@ -18,7 +18,7 @@ export function TopPageHeader() {
   const forceRender = isCollectiveRewards || (isMyCollective && isBoosted)
 
   return (
-    <div className="grid grid-cols-[1fr_auto] gap-x-3 mb-4">
+    <div className="grid grid-cols-[1fr_auto] gap-x-3">
       <div className="flex justify-start items-center">
         <TopPageHeaderLeftSlotStrategy />
       </div>

@@ -1,13 +1,18 @@
-import { MouseEvent, Ref } from 'react'
+'use client'
+
+import type { MouseEvent, Ref } from 'react'
 import { formatEther } from 'viem'
-import { Button } from '@/components/ButtonNew/Button'
-import { capitalizeFirstLetter } from '@/shared/utils'
-import { Header, Paragraph } from '@/components/TypographyNew'
-import { formatNumberWithCommas } from '@/lib/utils'
-import { Vote } from '@/shared/types'
+import { Button } from '@/components/Button'
+import { Header, Paragraph } from '@/components/Typography'
+import { cn, formatNumberWithCommas } from '@/lib/utils'
+import type { Vote } from '@/shared/types'
 import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
 import Big from '@/lib/big'
 import { BalanceInfo } from '@/components/BalanceInfo'
+import type { Eta } from '@/app/proposals/shared/types'
+import { Countdown } from '@/components/Countdown'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { Divider } from '@/components/Divider'
 
 interface VoteCounterProps {
   title: string
@@ -20,13 +25,21 @@ interface VoteCounterProps {
 const VoteCounter = ({ title, value, color, disabled, isVotingInProgress }: VoteCounterProps) => {
   return (
     <div
-      className={`bg-[#37322F] pl-4 pb-3 rounded-[4px] flex flex-col items-start justify-center w-40 border-t-4 border-${!disabled ? color : 'disabled-border'}`}
+      className={cn(
+        'bg-bg-60 pl-4 pb-3 rounded-[4px] flex flex-col items-start justify-center md:w-40 border-t-4',
+        disabled ? 'border-disabled-border' : `border-${color}`,
+      )}
     >
-      <Paragraph variant="body" className={`text-white text-sm mt-6 text-${disabled && 'disabled-border'}`}>
+      <Paragraph
+        variant="body"
+        className={cn('text-text-100 text-sm mt-6 capitalize', {
+          'text-disabled-border': disabled,
+        })}
+      >
         {title}
       </Paragraph>
-      <div className="flex flex-row items-center">
-        <Paragraph variant="body" className={`text-lg text-${!disabled ? color : 'text-primary'}`}>
+      <div className="flex items-center">
+        <Paragraph variant="body" className={cn('text-lg', disabled ? 'text-primary' : `text-${color}`)}>
           {formatNumberWithCommas(Big(formatEther(value)).round(0))}
         </Paragraph>
         {isVotingInProgress && (
@@ -60,16 +73,15 @@ interface VoteDetailsProps {
   voteButtonRef?: Ref<HTMLButtonElement>
   onCastVote?: (vote: 'for' | 'against' | 'abstain') => void
   onCancelVote?: () => void
-  isConnected?: boolean
+  eta?: Eta
 }
 
-const colorMap = new Map([
-  ['for', 'st-success'],
-  ['abstain', 'st-warning'],
-  ['against', 'st-error'],
-])
-
-const VOTE_TYPES = ['for', 'against', 'abstain'] as const
+const COLOR_MAP = {
+  for: 'st-success',
+  abstain: 'st-warning',
+  against: 'st-error',
+} as const satisfies Record<Vote, string>
+const VOTE_TYPES = Object.keys(COLOR_MAP) as Vote[]
 
 export const VotingDetails = ({
   voteData,
@@ -82,22 +94,24 @@ export const VotingDetails = ({
   onCancelVote,
   isVotingInProgress,
   isChoosingVote,
+  eta,
 }: VoteDetailsProps) => {
+  const isDesktop = useIsDesktop()
   return (
-    <div className="bg-[#25211E] p-6 rounded-[4px] w-full max-w-[376px]">
-      <Header variant="h3" className="font-normal">
+    <div className="w-full p-4 pt-20 rounded-sm bg-bg-80 md:p-6 md:max-w-[376px] md:pt-6">
+      <Header variant={!isDesktop ? 'h1' : 'h3'} className="font-normal">
         {isChoosingVote ? 'CAST YOUR VOTE' : 'VOTE DETAILS'}
       </Header>
 
       {/* Vote counters or voting buttons */}
       {!isChoosingVote ? (
-        <div className="grid grid-cols-2 gap-2 mt-4">
+        <div className="grid grid-cols-2 gap-2 md:mt-4 mt-6">
           {Object.entries(voteData).map(([key, value]) => (
             <VoteCounter
               key={key}
-              title={capitalizeFirstLetter(key)}
+              title={key}
               value={value}
-              color={colorMap.get(key)!}
+              color={COLOR_MAP[key as Vote]}
               disabled={vote && vote !== key}
               isVotingInProgress={isVotingInProgress && vote === key}
             />
@@ -108,50 +122,63 @@ export const VotingDetails = ({
           {VOTE_TYPES.map(voteType => (
             <Button
               key={voteType}
-              onClick={() => onCastVote && onCastVote(voteType)}
-              className={'px-4 py-3 w-[104px] border-0'}
+              onClick={() => onCastVote?.(voteType)}
+              className="px-4 py-3 flex-1 border-0"
               style={{
-                background: `var(--${colorMap.get(voteType)})`,
+                background: `var(--${COLOR_MAP[voteType]})`,
               }}
-              textClassName="text-black"
+              textClassName="text-black capitalize"
               disabled={actionDisabled}
             >
-              {capitalizeFirstLetter(voteType)}
+              {voteType}
             </Button>
           ))}
         </div>
       )}
 
-      {/* Voting power block (always rendered once) */}
+      {/* Voting power block */}
       <div className="mt-6">
         {!vote ? (
           <BalanceInfo
-            title={'Your available voting power'}
-            tooltipContent={'How much power is available for this proposal'}
+            title="Your available voting power"
+            tooltipContent="How much power is available for this proposal"
             amount={formatNumberWithCommas(Big(formatEther(votingPower)).round(0))}
           />
         ) : (
-          <Paragraph variant="body">{`You voted ${vote.toUpperCase()} this proposal. ${!buttonAction ? '' : ' Take the next step now.'}`}</Paragraph>
+          <Paragraph variant="body">{`You voted ${vote.toUpperCase()} this proposal. ${buttonAction ? ' Take the next step now.' : ''}`}</Paragraph>
         )}
       </div>
-
       {/* Action button (Vote on proposal, custom, or Cancel) always rendered here */}
-      <div>
+      <div className="md:relative absolute bottom-4 inset-x-4 md:inset-auto">
+        {!isDesktop && <Divider />}
         {isChoosingVote ? (
-          <Button variant="secondary-outline" className="mt-6" onClick={onCancelVote}>
+          <Button variant="secondary-outline" className="md:mt-6 mt-4" onClick={onCancelVote}>
             Cancel
           </Button>
+        ) : buttonAction ? (
+          <Button
+            onClick={buttonAction.onButtonClick}
+            className="md:mt-6 mt-4"
+            textClassName="text-foreground"
+            disabled={actionDisabled}
+            ref={voteButtonRef}
+          >
+            {buttonAction.actionName}
+          </Button>
         ) : (
-          buttonAction && (
-            <Button
-              onClick={buttonAction.onButtonClick}
-              className="mt-6"
-              textClassName="text-foreground"
-              disabled={actionDisabled}
-              ref={voteButtonRef}
-            >
-              {buttonAction.actionName}
-            </Button>
+          eta && (
+            <div className="flex md:mt-6 mt-4 items-center">
+              <Paragraph variant="body-s" className="first-letter:uppercase">
+                {eta.type}
+              </Paragraph>
+              <Countdown
+                end={eta.end}
+                timeSource={eta.timeSource}
+                referenceStart={eta.referenceStart}
+                colorDirection={eta.colorDirection}
+                className="w-auto ml-4"
+              />
+            </div>
           )
         )}
       </div>

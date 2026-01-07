@@ -5,6 +5,6 @@ interface Props {
   className?: ClassNameValue
 }
 
-export const SmallLineSeparator = ({ className }: Props) => {
-  return <div className={cn('w-[2px] h-1.5 bg-v3-text-40 mx-4 rounded-[10px]', className)} />
-}
+export const SmallLineSeparator = ({ className }: Props) => (
+  <div className={cn('w-0.5 h-1.5 md:mx-4 mx-3 rounded-full bg-v3-text-40', className)} />
+)

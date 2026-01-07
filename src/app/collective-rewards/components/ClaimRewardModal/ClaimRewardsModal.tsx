@@ -1,7 +1,7 @@
 import { useBackerRewardsContext } from '@/app/collective-rewards/rewards/backers'
-import { getFiatAmount } from '@/app/collective-rewards/rewards/utils'
+import { getFiatAmount } from '@/app/shared/formatter'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { TOKENS } from '@/lib/tokens'
+import { TOKENS, REWARD_TOKEN_KEYS, REWARD_TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
@@ -30,6 +30,8 @@ const ClaimBackerRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps,
   )
 
   const { data: backerRewards, isLoading, error } = useBackerRewardsContext()
+  useHandleErrors({ error, title: 'Error loading rewards' })
+
   const { prices } = usePricesContext()
 
   const { tokenAmounts, tokenFiatAmounts, totalFiatAmount } = useMemo(() => {
@@ -38,7 +40,8 @@ const ClaimBackerRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps,
     let totalFiatAmount = 0
 
     // Calculate amounts and fiat values for each token
-    Object.entries(TOKENS).forEach(([tokenKey, tokenInfo]) => {
+    REWARD_TOKEN_KEYS.forEach(tokenKey => {
+      const tokenInfo = TOKENS[tokenKey as keyof typeof TOKENS]
       const earned = backerRewards[tokenInfo.address]?.earned || {}
       const amount = Object.values(earned).reduce((acc, earned) => acc + earned, 0n)
       const price = prices[tokenInfo.symbol]?.price ?? 0
@@ -56,8 +59,6 @@ const ClaimBackerRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps,
     }
   }, [backerRewards, prices])
 
-  useHandleErrors({ error, title: 'Error loading rewards' })
-
   return (
     open && (
       <ClaimRewardsModalView
@@ -71,7 +72,6 @@ const ClaimBackerRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps,
         isClaimable={isClaimable}
         isLoading={isLoading}
         isTxPending={isPendingTx || isLoadingReceipt}
-        tokens={TOKENS}
       />
     )
   )
@@ -118,23 +118,37 @@ const ClaimBuilderRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps
     },
   )
 
+  const {
+    data: usdrifRewards,
+    isLoading: isLoadingUsdrif,
+    error: errorUsdrif,
+  } = useReadGauge(
+    { address: buildersGauge as Address, functionName: 'builderRewards', args: [TOKENS.usdrif.address] },
+    {
+      enabled: !!buildersGauge,
+      initialData: 0n,
+    },
+  )
+
   const { tokenAmounts, tokenFiatAmounts, totalFiatAmount } = useMemo(() => {
     const tokenAmounts: Record<string, bigint> = {
       rif: rifRewards ?? 0n,
       rbtc: rbtcRewards ?? 0n,
+      usdrif: usdrifRewards ?? 0n,
     }
     const tokenFiatAmounts: Record<string, number> = {
       rif: getFiatAmount(rifRewards ?? 0n, prices[TOKENS.rif.symbol]?.price ?? 0).toNumber(),
       rbtc: getFiatAmount(rbtcRewards ?? 0n, prices[TOKENS.rbtc.symbol]?.price ?? 0).toNumber(),
+      usdrif: getFiatAmount(usdrifRewards ?? 0n, prices[TOKENS.usdrif.symbol]?.price ?? 0).toNumber(),
     }
-    const totalFiatAmount = tokenFiatAmounts.rif + tokenFiatAmounts.rbtc
+    const totalFiatAmount = tokenFiatAmounts.rif + tokenFiatAmounts.rbtc + tokenFiatAmounts.usdrif
 
     return {
       tokenAmounts,
       tokenFiatAmounts,
       totalFiatAmount,
     }
-  }, [rifRewards, rbtcRewards, prices])
+  }, [rifRewards, rbtcRewards, usdrifRewards, prices])
 
   const {
     claimRewards,
@@ -142,14 +156,12 @@ const ClaimBuilderRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps
     isLoadingReceipt,
     isPendingTx,
     error: errorClaim,
-  } = useClaimBuilderRewards(builderAddress as Address, buildersGauge as Address, {
-    rif: TOKENS.rif.address,
-    rbtc: TOKENS.rbtc.address,
-  })
+  } = useClaimBuilderRewards(builderAddress as Address, buildersGauge as Address)
 
   useHandleErrors({ error: errorGauge, title: 'Error fetching builder gauge' })
   useHandleErrors({ error: errorRif, title: 'Error fetching builder rewards' })
   useHandleErrors({ error: errorRbtc, title: 'Error fetching builder rewards' })
+  useHandleErrors({ error: errorUsdrif, title: 'Error fetching builder rewards' })
   useHandleErrors({ error: errorClaim, title: 'Error claiming rewards' })
 
   return (
@@ -163,9 +175,8 @@ const ClaimBuilderRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps
         totalFiatAmount={totalFiatAmount}
         onClaim={claimRewards}
         isClaimable={isClaimable}
-        isLoading={isLoadingRif || isLoadingRbtc || isLoadingGauge}
+        isLoading={isLoadingRif || isLoadingRbtc || isLoadingUsdrif || isLoadingGauge}
         isTxPending={isPendingTx || isLoadingReceipt}
-        tokens={TOKENS}
       />
     )
   )

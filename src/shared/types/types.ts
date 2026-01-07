@@ -1,5 +1,5 @@
 import { Address } from 'viem'
-import { TX_MESSAGES } from '../txMessages'
+import { ContractReadResult } from '@/app/communities/communityUtils'
 
 /**
  * NFT metadata properties from JSON metadata files
@@ -67,7 +67,7 @@ export interface CommunityData {
   /**
    * Call function to read data from the smart contract
    */
-  onReadFunctions: (functions: { functionName: string; args: string[] }[]) => Promise<any>
+  onReadFunctions: (functions: { functionName: string; args: string[] }[]) => Promise<ContractReadResult>
   /**
    * NFT Metadata
    */
@@ -88,10 +88,8 @@ export enum ProposalState {
   Queued,
   Expired,
   Executed,
+  None,
 }
-
-type TxMessage =
-  (typeof TX_MESSAGES)[keyof typeof TX_MESSAGES][keyof (typeof TX_MESSAGES)[keyof typeof TX_MESSAGES]]
 
 export type TxStatus = 'info' | 'success' | 'error'
 
@@ -99,4 +97,7 @@ export enum ProposalCategory {
   Grants = 'Grants',
   Activation = 'Builder',
   Deactivation = 'Deactivation',
+  Milestone1 = 'Milestone 1',
+  Milestone2 = 'Milestone 2',
+  Milestone3 = 'Milestone 3',
 }

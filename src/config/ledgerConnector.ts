@@ -1,6 +1,6 @@
 import { createConnector } from 'wagmi'
-import { Chain, Address, UserRejectedRequestError, SwitchChainError } from 'viem'
-import { showToast, ToastAlertOptions } from '@/shared/notification'
+import { type Address, UserRejectedRequestError, SwitchChainError } from 'viem'
+import { showToast, type ToastAlertOptions } from '@/shared/notification'
 
 interface LedgerConnectorOptions {
   chainId?: number
@@ -111,7 +111,7 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
       name: 'Ledger',
       type: 'hardware',
 
-      async connect() {
+      async connect<withCapabilities extends boolean = false>() {
         if (state.isConnecting) {
           throw new Error('Connection already in progress')
         }
@@ -151,7 +151,7 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
           const accounts = (await state.provider.request({
             method: 'eth_accounts',
             params: [],
-          })) as `0x${string}`[]
+          })) as Address[]
 
           if (!accounts || accounts.length === 0) {
             throw new Error('No accounts found on Ledger device')
@@ -171,7 +171,9 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
 
           // Always return the correct object, never undefined, and ensure type matches wagmi's expectations
           return {
-            accounts: [address] as readonly `0x${string}`[],
+            accounts: [address] as unknown as withCapabilities extends true
+              ? readonly { address: Address; capabilities: Record<string, unknown> }[]
+              : readonly Address[],
             chainId,
           }
         } catch (error) {

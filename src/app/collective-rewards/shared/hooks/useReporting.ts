@@ -1,5 +1,5 @@
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { useAlertContext } from '@/app/providers'
+import { showToast } from '@/shared/notification'
 import { Merge, Rename } from '@/shared/utility'
 import { useEffect } from 'react'
 import { UseWaitForTransactionReceiptReturnType, UseWriteContractReturnType } from 'wagmi'
@@ -39,36 +39,35 @@ export const useAwaitedTxReporting = ({
   title,
   errorContent,
 }: UseAwaitedTxReportingProps) => {
-  const { setMessage } = useAlertContext()
   useHandleErrors({ error, title, content: errorContent })
 
   useEffect(() => {
     if (isPendingTx) {
-      setMessage({
-        severity: 'info',
-        content: 'Confirm transaction execution in your wallet',
+      showToast({
         title,
+        content: 'Confirm transaction execution in your wallet',
+        severity: 'info',
       })
     }
-  }, [isPendingTx, setMessage, title])
+  }, [isPendingTx, title])
 
   useEffect(() => {
     if (isLoadingReceipt) {
-      setMessage({
-        severity: 'info',
-        content: `Waiting for transaction  ${hash} confirmation. See status details in your wallet.`,
+      showToast({
         title,
+        content: `Waiting for transaction ${hash} confirmation. See status details in your wallet.`,
+        severity: 'info',
       })
     }
-  }, [isLoadingReceipt, setMessage, title, hash])
+  }, [isLoadingReceipt, title, hash])
 
   useEffect(() => {
     if (isSuccess && receipt) {
-      setMessage({
+      showToast({
         severity: 'success',
         title,
         content: `Transaction ${receipt.transactionHash} was successful`,
       })
     }
-  }, [isSuccess, receipt, setMessage, title])
+  }, [isSuccess, receipt, title])
 }

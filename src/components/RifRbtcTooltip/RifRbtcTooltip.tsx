@@ -1,11 +1,11 @@
-import { ReactNode } from 'react'
-import { Typography } from '@/components/TypographyNew/Typography'
-import { TokenImage } from '@/components/TokenImage'
-import { RBTC, RIF } from '@/lib/constants'
-import { formatSymbol } from '@/app/collective-rewards/rewards/utils/formatter'
-import { Tooltip } from '@/components/Tooltip/Tooltip'
-import { cn } from '@/lib/utils'
+import { formatSymbol } from '@/app/shared/formatter'
 import { CommonComponentProps } from '@/components/commonProps'
+import { TokenImage } from '@/components/TokenImage'
+import { Tooltip } from '@/components/Tooltip/Tooltip'
+import { BaseTypography } from '@/components/Typography/Typography'
+import { RBTC, RIF } from '@/lib/constants'
+import { cn } from '@/lib/utils'
+import { ReactNode } from 'react'
 
 interface RifRbtcTooltipProps extends CommonComponentProps {
   rbtcValue: bigint
@@ -30,13 +30,13 @@ const TokenDisplay = ({
   return (
     <div className="flex flex-row items-start w-14">
       <TokenImage symbol={symbol} size={size} className={className} />
-      <Typography className="text-sm">{displayText}</Typography>
+      <BaseTypography className="text-sm">{displayText}</BaseTypography>
     </div>
   )
 }
 
 const FormattedValue = ({ value, symbol }: { value: bigint; symbol: string }) => {
-  return <Typography className="text-lg">{formatSymbol(value, symbol)}</Typography>
+  return <BaseTypography className="text-lg">{formatSymbol(value, symbol)}</BaseTypography>
 }
 
 export const RifRbtcTooltip = ({ children, rbtcValue, rifValue, className }: RifRbtcTooltipProps) => (

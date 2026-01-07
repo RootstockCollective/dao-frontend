@@ -1,4 +1,5 @@
-import { formatMetrics, Token } from '@/app/collective-rewards/rewards'
+import { Token } from '@/app/collective-rewards/rewards'
+import { formatMetrics } from '@/app/shared/formatter'
 import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context'

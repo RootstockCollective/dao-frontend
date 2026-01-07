@@ -3,7 +3,7 @@
 import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
 import { createPortal } from 'react-dom'
-import { CloseIcon } from '../Icons'
+import { CloseIconKoto } from '../Icons'
 
 export interface ModalProps {
   children: ReactNode
@@ -12,6 +12,8 @@ export interface ModalProps {
   width?: number
   height?: number | 'auto'
   closeButtonColor?: 'white' | 'black'
+  /** When true, modal takes full viewport width and height, bypassing width/height constraints */
+  fullscreen?: boolean
   'data-testid'?: string
 }
 
@@ -22,38 +24,43 @@ export const Modal: FC<ModalProps> = ({
   width,
   height = 'auto',
   closeButtonColor = 'white',
+  fullscreen,
   'data-testid': dataTestId,
 }) => {
+  const containerStyle: React.CSSProperties = {}
+
+  if (!fullscreen && width) {
+    containerStyle.width = `${width}px`
+    containerStyle.maxWidth = '95vw'
+  }
+
+  if (!fullscreen && height !== 'auto' && typeof height === 'number') {
+    containerStyle.height = `${height}px`
+  }
+
   return createPortal(
     <div
-      className="fixed inset-0 flex items-center justify-center align-center z-50"
+      className={cn(
+        'fixed inset-0 flex items-center justify-center z-100 max-w-screen max-h-screen overflow-hidden',
+        fullscreen ? '' : 'p-4',
+      )}
       data-testid={dataTestId}
     >
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-bg-100/50 backdrop-blur-xs"></div>
+      <div className="fixed inset-0 bg-bg-100/50 backdrop-blur-xs max-w-screen max-h-screen overflow-hidden" />
 
       {/* Modal Container */}
       <div
-        style={{
-          width: width ? `${width}px` : undefined,
-          height: height !== 'auto' ? `${height}px` : undefined,
-        }}
         className={cn(
-          'relative',
-          width ? 'w-full' : 'w-[380px] md:w-[600px]', // Default responsive width
-          height === 'auto'
-            ? 'h-full md:h-auto' // Auto on desktop, full on mobile when no height specified
-            : 'h-full', // Full height when specific height provided
-          'md:max-w-[97vw]',
-          'bg-bg-80',
-          'rounded-[4px]',
-          'overflow-hidden',
+          'relative overflow-x-hidden bg-bg-80 rounded overflow-y-auto min-w-0',
+          fullscreen ? 'w-screen h-screen' : 'w-[95vw] max-w-[380px] md:w-[688px] md:max-w-[97vw]',
+          height === 'auto' && !fullscreen ? 'h-full md:h-auto' : '',
           className,
         )}
+        style={containerStyle}
       >
-        {/* Close Button */}
         <button onClick={onClose} className="absolute top-4 right-4 z-10" data-testid="CloseButton">
-          <CloseIcon size={24} aria-label="Close" color={closeButtonColor} />
+          <CloseIconKoto size={24} aria-label="Close" color={closeButtonColor} />
         </button>
 
         {children}

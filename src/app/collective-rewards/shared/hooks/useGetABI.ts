@@ -1,5 +1,5 @@
 import Big from '@/lib/big'
-import { RBTC, RIF, WeiPerEther } from '@/lib/constants'
+import { RBTC, RIF, USDRIF, WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useMemo } from 'react'
 import { Address } from 'viem'
@@ -7,11 +7,11 @@ import { getBackerRewardPercentage } from '@/app/collective-rewards/rewards'
 import { getCyclePayout } from './getCyclePayout'
 import { isBuilderRewardable } from '../../utils'
 import { BuilderStateFlags } from '../../types'
+import { TOKENS } from '@/lib/tokens'
 
 type CycleData = {
   id: string
-  rewardsERC20: string
-  rewardsRBTC: string
+  rewardPerToken: Record<string, string>
 }
 
 type BackerRewardPercentageData = {
@@ -49,13 +49,21 @@ export const useGetABI = (abiData: AbiData | undefined) => {
     }
 
     const { builders, cycles } = abiData
-    const [{ rewardsERC20, rewardsRBTC }] = cycles
+    const [{ rewardPerToken }] = cycles
 
     const rifPrice = prices[RIF]?.price ?? 0
     const rbtcPrice = prices[RBTC]?.price ?? 0
+    const usdrifPrice = prices[USDRIF]?.price ?? 0
 
     const cyclePayout = Big(
-      getCyclePayout(rifPrice, rbtcPrice, BigInt(rewardsERC20), BigInt(rewardsRBTC)).toString(),
+      getCyclePayout(
+        rifPrice,
+        rbtcPrice,
+        usdrifPrice,
+        BigInt(rewardPerToken[TOKENS.rif.address.toLowerCase()] ?? 0n),
+        BigInt(rewardPerToken[TOKENS.rbtc.address.toLowerCase()] ?? 0n),
+        BigInt(rewardPerToken[TOKENS.usdrif.address.toLowerCase()] ?? 0n),
+      ).toString(),
     )
 
     const sumTotalAllocation = builders.reduce<Big>(

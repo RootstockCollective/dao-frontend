@@ -1,46 +1,39 @@
 'use client'
 
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 import { Builder, BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
-import {
-  isBuilderActive,
-  isBuilderDeactivated,
-  isBuilderInProgress,
-  isBuilderKycRevoked,
-  isBuilderPaused,
-  isBuilderSelfPaused,
-} from '@/app/collective-rewards/utils'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils/getCombinedFiatAmount'
 import { TablePager } from '@/components/TableNew'
 import { usePricesContext, useTableActionsContext, useTableContext } from '@/shared/context'
 import { Sort } from '@/shared/context/TableContext/types'
 import { Big } from 'big.js'
-import { Suspense, useEffect, useMemo, useState } from 'react'
+import { FC, Suspense, useContext, useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 import { useGetBuilderRewardsSummary } from '../../hooks/useGetBuilderRewardsSummary'
-import { BuilderDataRow, convertDataToRowData } from './BuilderDataRow'
+import { convertDataToRowData } from './utils/builderRowUtils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { CommonComponentProps } from '@/components/commonProps'
+import { DesktopBuilderRow } from './DesktopBuilderRow'
+import { MobileBuilderRow } from './MobileBuilderRow'
 import { BuilderFilterOptionId } from './BuilderFilterDropdown'
 import { BuilderHeaderRow } from './BuilderHeaderRow'
-import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE } from './BuilderTable.config'
+import {
+  BuilderCellDataMap,
+  BuilderRowLogic,
+  BuilderTable,
+  ColumnId,
+  DEFAULT_HEADERS,
+  PAGE_SIZE,
+} from './BuilderTable.config'
 import { Action, ActionCellProps } from './Cell/ActionCell'
+import { builderFilterMap } from './utils/builderFilters'
+import { MobileStickyActionBarContent } from './MobileStickyActionBar'
+import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
+import { getBuilderInactiveState, isBuilderInProgress } from '@/app/collective-rewards/utils'
 
-// --- Filter builders by state ---
-const filterActive = (builder: Builder) => isBuilderActive(builder.stateFlags)
-const filterDeactivated = (builder: Builder) => isBuilderDeactivated(builder)
-const filterKycRevoked = (builder: Builder) => isBuilderKycRevoked(builder.stateFlags)
-const filterPaused = (builder: Builder) =>
-  isBuilderPaused(builder.stateFlags) || isBuilderSelfPaused(builder.stateFlags)
-const filterInProgress = (builder: Builder) => isBuilderInProgress(builder)
-
-const filterMap: Record<BuilderFilterOptionId, (builder: Builder) => boolean> = {
-  active: filterActive,
-  deactivated: filterDeactivated,
-  kycRevoked: filterKycRevoked,
-  paused: filterPaused,
-  inProgress: filterInProgress,
-  all: () => true,
-}
+// Filter logic is now centralized in builderFilters.ts
 
 // TODO: this is a temporary solution to filter builders by state.
 type PagedFilter = {
@@ -78,7 +71,7 @@ const usePagedFilteredBuildersRewards = ({
   const data = useMemo(() => {
     const { columnId, direction } = sort
 
-    const filtered = allBuilders.filter(filterMap[filterOption])
+    const filtered = allBuilders.filter(builderFilterMap[filterOption])
 
     // Comparator map
     const comparators: Partial<
@@ -91,10 +84,18 @@ const usePagedFilteredBuildersRewards = ({
 
       rewards_past_cycle: (a, b) => {
         const aValue = a.lastCycleRewards
-          ? getCombinedFiatAmount([a.lastCycleRewards.rif.amount, a.lastCycleRewards.rbtc.amount]).toNumber()
+          ? getCombinedFiatAmount([
+              a.lastCycleRewards.rif.amount,
+              a.lastCycleRewards.rbtc.amount,
+              a.lastCycleRewards.usdrif.amount,
+            ]).toNumber()
           : 0
         const bValue = b.lastCycleRewards
-          ? getCombinedFiatAmount([b.lastCycleRewards.rif.amount, b.lastCycleRewards.rbtc.amount]).toNumber()
+          ? getCombinedFiatAmount([
+              b.lastCycleRewards.rif.amount,
+              b.lastCycleRewards.rbtc.amount,
+              b.lastCycleRewards.usdrif.amount,
+            ]).toNumber()
           : 0
         return Big(aValue).sub(bValue).toNumber()
       },
@@ -104,12 +105,14 @@ const usePagedFilteredBuildersRewards = ({
           ? getCombinedFiatAmount([
               a.backerEstimatedRewards.rif.amount,
               a.backerEstimatedRewards.rbtc.amount,
+              a.backerEstimatedRewards.usdrif.amount,
             ]).toNumber()
           : 0
         const bValue = b.backerEstimatedRewards
           ? getCombinedFiatAmount([
               b.backerEstimatedRewards.rif.amount,
               b.backerEstimatedRewards.rbtc.amount,
+              b.backerEstimatedRewards.usdrif.amount,
             ]).toNumber()
           : 0
         return Big(aValue).sub(bValue).toNumber()
@@ -136,16 +139,73 @@ const usePagedFilteredBuildersRewards = ({
   return { data, isLoading, error }
 }
 
+interface BuilderDataRowProps extends CommonComponentProps<HTMLTableRowElement> {
+  row: BuilderTable['Row']
+  userBacking: bigint
+  logic: BuilderRowLogic
+  actionCount: number
+}
+
+const BuilderDataRow: FC<BuilderDataRowProps> = ({ ...props }) => {
+  const isDesktop = useIsDesktop()
+  return isDesktop ? <DesktopBuilderRow {...props} /> : <MobileBuilderRow {...props} />
+}
+
 // ---------------- Table ----------------
 
 export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOptionId }) => {
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
 
   const { isConnected } = useAccount()
+  const { openDrawer, closeDrawer } = useLayoutContext()
+  const isDesktop = useIsDesktop()
 
-  const { rows, columns, selectedRows, sort } = useTableContext<ColumnId>()
+  const { rows, columns, selectedRows, sort } = useTableContext<ColumnId, BuilderCellDataMap>()
   const [actions, setActions] = useState<Action[]>([])
-  const dispatch = useTableActionsContext<ColumnId>()
+  const dispatch = useTableActionsContext<ColumnId, BuilderCellDataMap>()
+
+  // Helper function to create simplified builder row logic (only shared state)
+  const createBuilderRowLogic = (row: BuilderTable['Row'], userBacking: bigint): BuilderRowLogic => {
+    const { id: rowId, data } = row
+    const { builder } = data as BuilderCellDataMap
+
+    // Computed values (shared across table)
+    const hasSelections = Object.values(selectedRows).some(Boolean)
+    const isInProgress = isBuilderInProgress(builder.builder)
+    const inactiveState = getBuilderInactiveState(builder.builder)
+    const hasInactiveState = inactiveState !== null
+    const hasBacking = userBacking > 0n
+    const canBack = !isInProgress && (!hasInactiveState || hasBacking)
+    const isRowSelected = selectedRows[rowId]
+
+    // Event handlers that require table dispatch
+    const handleToggleSelection = () => {
+      if (!isConnected || !canBack) {
+        return
+      }
+
+      dispatch({
+        type: 'TOGGLE_ROW_SELECTION',
+        payload: rowId,
+      })
+    }
+
+    return {
+      // Row data
+      data,
+
+      // Computed values (derived from table context)
+      hasSelections,
+      isInProgress,
+      hasInactiveState,
+      hasBacking,
+      canBack,
+      isRowSelected,
+
+      // Shared event handlers (require table dispatch)
+      handleToggleSelection,
+    }
+  }
 
   const pageOptions = useMemo(() => ({ start: 0, end: pageEnd }), [pageEnd])
   const {
@@ -156,26 +216,36 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
 
   const { prices } = usePricesContext()
 
+  const {
+    initialState: { allocations },
+    state: { isContextLoading },
+  } = useContext(AllocationsContext)
+
   useEffect(() => {
     dispatch({
       type: 'SET_COLUMNS',
       payload: DEFAULT_HEADERS,
+    })
+    // Set default sorting to backer_rewards (descending)
+    dispatch({
+      type: 'SET_DEFAULT_SORT',
+      payload: { columnId: 'backer_rewards', direction: 'desc' },
     })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     dispatch({
       type: 'SET_ROWS',
-      payload: convertDataToRowData(buildersRewardsData, prices),
+      payload: convertDataToRowData(buildersRewardsData, prices, allocations),
     })
-  }, [buildersRewardsData, prices, dispatch])
+  }, [buildersRewardsData, prices, allocations, dispatch])
 
   useEffect(() => {
     dispatch({
       type: 'SET_LOADING',
-      payload: isLoading,
+      payload: isLoading || isContextLoading,
     })
-  }, [isLoading, dispatch])
+  }, [isLoading, isContextLoading, dispatch])
 
   useEffect(() => {
     if (!error) return
@@ -208,7 +278,11 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
   useEffect(() => {
     const actions = Object.entries(selectedRows)
       .filter(([_, value]) => value)
-      .map(([rowId]) => (rows.find(row => row.id === rowId)?.data.actions as ActionCellProps).actionType)
+      .map(([rowId]) => {
+        const row = rows.find(row => row.id === rowId)
+        const actionCell = row?.data?.actions as ActionCellProps
+        return actionCell?.actionType
+      })
       .filter(action => action !== undefined)
     setActions(actions)
   }, [selectedRows, rows])
@@ -232,18 +306,59 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
     })
   }, [isConnected, dispatch])
 
+  // Handle mobile action bar with BottomDrawer
+  useEffect(() => {
+    // Only show mobile action bar on mobile devices
+    if (isDesktop) {
+      closeDrawer()
+      return
+    }
+
+    const selectedBuilderIds = Object.keys(selectedRows).filter(id => selectedRows[id])
+    const selectedCount = selectedBuilderIds.length
+
+    if (selectedCount > 0 && actions.length > 0) {
+      const handleDeselectAll = () => {
+        dispatch({ type: 'SET_SELECTED_ROWS', payload: {} })
+      }
+
+      openDrawer(
+        <MobileStickyActionBarContent
+          actions={actions}
+          selectedCount={selectedCount}
+          selectedBuilderIds={selectedBuilderIds}
+          onDeselectAll={handleDeselectAll}
+          onClose={closeDrawer}
+        />,
+        true, // closeOnRouteChange
+      )
+    } else {
+      closeDrawer()
+    }
+  }, [selectedRows, actions, openDrawer, closeDrawer, dispatch, isDesktop])
+
   return (
     <>
-      <div className="w-full overflow-x-auto bg-v3-bg-accent-80">
-        <table className="w-full min-w-[700px]">
-          <thead>
+      <div className="w-full min-w-full bg-v3-bg-accent-80 md:overflow-x-auto">
+        <table className="w-full min-w-full table-fixed md:min-w-[700px] md:table-auto">
+          <thead className="hidden md:table-header-group">
             <BuilderHeaderRow actions={actions} />
           </thead>
           <Suspense fallback={<div>Loading table data...</div>}>
             <tbody>
-              {rows.map(row => (
-                <BuilderDataRow key={row.id} row={row} />
-              ))}
+              {rows.map(row => {
+                const userBacking = allocations[row.id as Address] ?? 0n
+                const logic = createBuilderRowLogic(row, userBacking)
+                return (
+                  <BuilderDataRow
+                    key={row.id}
+                    row={row}
+                    userBacking={userBacking}
+                    logic={logic}
+                    actionCount={actions.length}
+                  />
+                )
+              })}
             </tbody>
           </Suspense>
         </table>
@@ -256,6 +371,7 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
         }}
         pagedItemName="builders"
         mode="expandable"
+        className="px-4 md:px-0"
       />
     </>
   )

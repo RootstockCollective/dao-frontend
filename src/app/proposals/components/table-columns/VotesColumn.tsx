@@ -1,18 +1,19 @@
 import { cn, formatNumberWithCommas } from '@/lib/utils'
 import Big from '@/lib/big'
 import { PizzaChart } from '@/components/PizzaChart'
-import { Paragraph } from '@/components/TypographyNew'
-import { ClassNameValue } from 'tailwind-merge'
+import { Paragraph } from '@/components/Typography'
+import type { ClassNameValue } from 'tailwind-merge'
+import { SmallLineSeparator } from '@/components/Separators/SmallLineSeparator'
 
 interface QuorumColumnProps {
-  quorumVotes: Big
+  quorumReached: Big
   quorumAtSnapshot: Big
   className?: ClassNameValue
   hideQuorumTarget?: boolean
 }
 
 export const QuorumColumn = ({
-  quorumVotes,
+  quorumReached,
   quorumAtSnapshot,
   className,
   hideQuorumTarget,
@@ -21,7 +22,7 @@ export const QuorumColumn = ({
   // If quorumAtSnapshot is 0, percentage defaults to 0
   const percentage = quorumAtSnapshot.eq(0)
     ? Big(0)
-    : quorumVotes.div(quorumAtSnapshot).mul(100).round(undefined, Big.roundHalfEven)
+    : quorumReached.div(quorumAtSnapshot).mul(100).round(undefined, Big.roundHalfEven)
 
   // Determine the color class based on the percentage
   const colorClass = percentage.gte(100)
@@ -31,18 +32,17 @@ export const QuorumColumn = ({
       : 'text-st-error' // Red for less than 50%
 
   return (
-    <>
-      <Paragraph className={cn(colorClass, 'w-full text-center', className)}>
-        {quorumAtSnapshot.eq(0) ? (
-          '-'
-        ) : (
-          <>
-            {!hideQuorumTarget && formatNumberWithCommas(quorumAtSnapshot) + ' | '}
-            {formatNumberWithCommas(percentage)}%
-          </>
-        )}
-      </Paragraph>
-    </>
+    <div className={cn(colorClass, className)} data-testid="ProposalQuorumPercentage">
+      {quorumAtSnapshot.eq(0) ? (
+        <Paragraph>-</Paragraph>
+      ) : (
+        <div className="flex flex-row items-center">
+          <Paragraph>{!hideQuorumTarget && formatNumberWithCommas(quorumAtSnapshot)}</Paragraph>
+          <SmallLineSeparator />
+          <Paragraph>{formatNumberWithCommas(percentage)}%</Paragraph>
+        </div>
+      )}
+    </div>
   )
 }
 interface VotesColumnProps {
@@ -52,6 +52,7 @@ interface VotesColumnProps {
   className?: ClassNameValue
   textClassName?: ClassNameValue
   chartClassName?: ClassNameValue
+  showChart?: boolean
 }
 export const VotesColumn = ({
   forVotes,
@@ -60,16 +61,22 @@ export const VotesColumn = ({
   className,
   textClassName,
   chartClassName,
+  showChart = true,
 }: VotesColumnProps) => (
-  <div className={cn('w-full flex flex-wrap items-center justify-end gap-x-3', className)}>
-    <Paragraph className={cn(textClassName)}>{forVotes + againstVotes + abstainVotes}</Paragraph>
-    <PizzaChart
-      className={cn(chartClassName)}
-      segments={[
-        { name: 'For', value: forVotes },
-        { name: 'Abstain', value: abstainVotes },
-        { name: 'Against', value: againstVotes },
-      ]}
-    />
+  <div className={cn('w-full flex flex-wrap items-center gap-x-3', className)} data-testid="ProposalVotes">
+    <Paragraph className={cn(textClassName)} data-testid="ProposalVotesCount">
+      {forVotes + againstVotes + abstainVotes}
+    </Paragraph>
+    {showChart && (
+      <PizzaChart
+        className={cn(chartClassName)}
+        segments={[
+          { name: 'For', value: forVotes },
+          { name: 'Abstain', value: abstainVotes },
+          { name: 'Against', value: againstVotes },
+        ]}
+        data-testid="ProposalVotesChart"
+      />
+    )}
   </div>
 )

@@ -3,8 +3,14 @@ import {
   BUILDER_IN_PROGRESS,
   builderInactiveStates,
 } from '@/app/collective-rewards/utils/isBuilderOperational'
-import { BaseColumnId, Column } from '@/shared/context'
+import { BaseColumnId, Column, TypedTable } from '@/shared/context'
 import { HtmlHTMLAttributes } from 'react'
+import { ActionCellProps } from './Cell/ActionCell'
+import { BackersPercentageProps } from './Cell/BackersPercentageCell'
+import { BackingCellProps } from './Cell/BackingCell'
+import { BackingShareCellProps } from './Cell/BackingShareCell'
+import { BuilderNameCellProps } from './Cell/BuilderNameCell'
+import { RewardsCellProps } from './Cell/RewardsCell'
 import { TableColumnDropdownLabels } from './TableColumnDropdown/TableColumnDropdown'
 
 const COLUMN_IDS = [
@@ -19,6 +25,15 @@ const COLUMN_IDS = [
 export type ColumnId = (typeof COLUMN_IDS)[number]
 
 export const PAGE_SIZE = 20
+
+export const SORT_OPTIONS: { id: ColumnId; label: string }[] = [
+  { id: 'builder', label: 'Builder name' },
+  { id: 'backer_rewards', label: 'Backer Rewards %' },
+  { id: 'rewards_past_cycle', label: 'Rewards - past cycle' },
+  { id: 'rewards_upcoming', label: 'Rewards - upcoming cycle' },
+  { id: 'backing', label: 'Backing amount' },
+  { id: 'backingShare', label: 'Backing share %' },
+]
 
 export const LABELS: TableColumnDropdownLabels<Exclude<ColumnId, 'builder' | 'actions'>> = {
   backer_rewards: {
@@ -95,3 +110,28 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
 
 const builderStates = [BUILDER_IN_PROGRESS, BUILDER_ACTIVE, ...builderInactiveStates] as const
 export type BuilderState = (typeof builderStates)[number]
+
+// Typed table configuration for BuildersTable
+export type BuilderCellDataMap = {
+  builder: BuilderNameCellProps
+  backing: BackingCellProps
+  backer_rewards: BackersPercentageProps
+  rewards_past_cycle: RewardsCellProps
+  rewards_upcoming: RewardsCellProps
+  backingShare: BackingShareCellProps
+  actions: ActionCellProps
+}
+
+export type BuilderTable = TypedTable<ColumnId, BuilderCellDataMap>
+
+// Builder row logic interface - only shared table state
+export interface BuilderRowLogic {
+  data: BuilderCellDataMap
+  hasSelections: boolean
+  isInProgress: boolean
+  hasInactiveState: boolean
+  hasBacking: boolean
+  canBack: boolean
+  isRowSelected: boolean
+  handleToggleSelection: () => void
+}

@@ -1,7 +1,7 @@
-import { Button } from '@/components/ButtonNew'
+import { Button } from '@/components/Button'
 import { ArrowRightIcon, ArrowUpRightLightIcon } from '@/components/Icons'
 import { Modal } from '@/components/Modal'
-import { Header, Label, Paragraph, Span } from '@/components/TypographyNew'
+import { Header, Label, Paragraph, Span } from '@/components/Typography'
 import Big from '@/lib/big'
 import { cn, formatNumberWithCommas } from '@/lib/utils'
 import Image from 'next/image'
@@ -13,10 +13,10 @@ const GLASS_STYLE =
 interface Props {
   tokenStatus: IntroModalStatus
   isDesktop: boolean
-  rbtcBalance?: string
-  rifBalance?: string
   onClose: () => void
   onContinue: (url: string, external: boolean) => void
+  rbtcBalance?: string
+  rifBalance?: string
 }
 
 export const IntroModalContent = ({
@@ -41,7 +41,7 @@ export const IntroModalContent = ({
       className="bg-text-80 overflow-y-auto"
       data-testid={isDesktop ? 'intro-modal-desktop' : 'intro-modal-mobile'}
     >
-      <div className="flex flex-col md:flex-row p-4 md:gap-6 relative justify-center">
+      <div className="flex flex-col md:flex-row p-4 md:gap-6 relative justify-center h-full">
         {isDesktop ? (
           <>
             <Image
@@ -72,22 +72,24 @@ export const IntroModalContent = ({
             </div>
           </>
         ) : (
-          <div className="mt-12 flex flex-col gap-4">
-            <div className="relative h-40">
-              <Image src={`${currentConfig.mobile.bg}`} alt="Intro Modal" fill className="object-cover" />
-              <Image
-                src={`${currentConfig.mobile.pixels}`}
-                alt="Floating Pixels"
-                width={30}
-                height={20}
-                className="absolute bottom-[-30px] right-0"
-              />
+          <div className="mt-12 flex flex-col flex-1 justify-between">
+            <div className="flex flex-col gap-4">
+              <div className="relative h-40">
+                <Image src={`${currentConfig.mobile.bg}`} alt="Intro Modal" fill className="object-cover" />
+                <Image
+                  src={`${currentConfig.mobile.pixels}`}
+                  alt="Floating Pixels"
+                  width={30}
+                  height={20}
+                  className="absolute bottom-[-30px] right-0"
+                />
+              </div>
+              <StakeDescription content={currentContent} />
             </div>
-            <StakeDescription content={currentContent} />
             {currentContent.action.external ? (
-              <ContinueButton className="mt-12" onClick={handleContinue} />
+              <ContinueButton onClick={handleContinue} />
             ) : (
-              <ContinueToStakingButton className="mt-12" onClick={handleContinue} />
+              <ContinueToStakingButton onClick={handleContinue} />
             )}
           </div>
         )}

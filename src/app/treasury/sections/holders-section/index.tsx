@@ -1,11 +1,11 @@
 import { GridTable } from '@/components/Table'
-import { Header } from '@/components/TypographyNew'
+import { Header } from '@/components/Typography'
 import { RIF, STRIF_ADDRESS } from '@/lib/constants'
 import { useFetchTokenHolders } from '@/app/treasury/hooks/useFetchTokenHolders'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
 import { formatAmount } from '@/lib/utils'
-import { Span } from '@/components/TypographyNew'
+import { Span } from '@/components/Typography'
 import {
   createColumnHelper,
   getCoreRowModel,
@@ -19,8 +19,9 @@ import { useSearchParams } from 'next/navigation'
 import { getPaginationRowModel } from '@tanstack/react-table'
 import { TokenImage } from '@/components/TokenImage'
 import Big from '@/lib/big'
-import { HolderCard, HolderColumn, ListSwitch } from './components'
+import { HolderCard, HolderColumn, ListSwitch, MobileHolderContainer } from './components'
 import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface HolderData {
   holder: {
@@ -32,6 +33,7 @@ interface HolderData {
 
 export const HoldersSection = () => {
   const prices = useGetSpecificPrices()
+  const isDesktop = useIsDesktop()
   // Fetch st rif holders
   const { currentResults, isLoading, isError, paginationElement } = useFetchTokenHolders(STRIF_ADDRESS)
 
@@ -117,10 +119,12 @@ export const HoldersSection = () => {
       )}
       {!isError && holders?.length > 0 && (
         <>
-          {!isGridMode ? (
-            <GridTable table={table} className="mt-8" rowStyles="py-2" />
+          {!isDesktop && !isGridMode ? (
+            <MobileHolderContainer holders={holders} paginationElement={paginationElement} />
+          ) : !isGridMode ? (
+            <GridTable table={table} className="mt-8" rowStyles="py-2" data-testid="HoldersTable" />
           ) : (
-            <div className="grid gap-2 grid-cols-4 mt-8">
+            <div className="grid gap-2 grid-cols-1 md:grid-cols-4 mt-8" data-testid="HoldersGrid">
               {holders.map(h => (
                 <HolderCard
                   key={h.holder.address}
@@ -132,7 +136,7 @@ export const HoldersSection = () => {
               ))}
             </div>
           )}
-          {paginationElement}
+          {(isDesktop || isGridMode) && paginationElement}
         </>
       )}
       {isLoading && <LoadingSpinner />}

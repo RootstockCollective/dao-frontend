@@ -8,7 +8,7 @@ interface BackingInfoContainerProps extends CommonComponentProps {
 
 export const BackingInfoContainer: FC<BackingInfoContainerProps> = ({ className = '', title, children }) => {
   return (
-    <div className={cn('relative w-full bg-v3-bg-accent-80 rounded p-6', className)}>
+    <div className={cn('relative w-full bg-v3-bg-accent-80 rounded p-4 md:p-6', className)}>
       <div className="flex flex-col gap-[56px]">
         {title}
         {children}

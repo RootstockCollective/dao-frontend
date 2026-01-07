@@ -8,9 +8,12 @@ export const ActionMetricsContainer: FC<ActionMetricsContainerProps> = ({ classN
   return (
     <div
       data-testid={'ActionsMetrics'}
-      className={cn('flex flex-col w-full items-start gap-2 rounded-sm p-6', className)}
+      className={cn(
+        'flex flex-col w-full items-start gap-2 rounded-sm px-4 py-8 md:px-6 md:py-10',
+        className,
+      )}
     >
-      <div className="flex items-start gap-14 w-full">{children}</div>
+      <div className="flex flex-col md:flex-row items-start gap-8 md:gap-14 w-full">{children}</div>
     </div>
   )
 }

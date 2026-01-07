@@ -48,7 +48,7 @@ type BackerRewardsProviderProps = {
 
 function mapToRecord(rewardsAmount: (bigint | undefined)[], gauges: `0x${string}`[]) {
   return rewardsAmount.reduce<Record<Address, bigint>>((acc, value, i) => {
-    acc[gauges[i]] = value as bigint
+    acc[gauges[i]] = value ?? 0n
     return acc
   }, {})
 }
@@ -94,7 +94,7 @@ const getEarnedAddresses = (rewards: Record<Address, bigint>) =>
 export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({
   children,
   backer,
-  tokens: { rif, rbtc },
+  tokens: { rif, rbtc, usdrif },
 }) => {
   const { builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
   const gauges = useMemo(() => {
@@ -108,14 +108,20 @@ export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({
     isLoading: rbtcLoading,
     error: rbtcError,
   } = useGetTokenRewards(backer, rbtc, gauges)
+  const {
+    data: usdrifRewards,
+    isLoading: usdrifLoading,
+    error: usdrifError,
+  } = useGetTokenRewards(backer, usdrif, gauges)
   const [isDetailedView, setIsDetailedView] = useState(false)
 
-  const isLoading = buildersLoading || rifLoading || rbtcLoading
-  const error = buildersError ?? rifError ?? rbtcError
+  const isLoading = buildersLoading || rifLoading || rbtcLoading || usdrifLoading
+  const error = buildersError ?? rifError ?? rbtcError ?? usdrifError
 
   const data: { [token: string]: TokenBackerRewards } = {
     [rif.address]: rifRewards,
     [rbtc.address]: rbtcRewards,
+    [usdrif.address]: usdrifRewards,
   }
 
   const gaugesWithEarns = (rewardToken?: Address) => {

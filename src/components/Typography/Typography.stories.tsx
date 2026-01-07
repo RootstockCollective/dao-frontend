@@ -1,73 +1,205 @@
-import type { Meta, StoryObj } from '@storybook/nextjs'
-import { Span, Typography } from '@/components/Typography'
-import { Paragraph } from '@/components/Typography/Paragraph'
-import { Header } from '@/components/Typography/Header'
+import { Header } from './Header'
 import { Label } from './Label'
+import { Paragraph } from './Paragraph'
+import { BaseTypography } from './Typography'
+import type { Meta, StoryObj } from '@storybook/nextjs'
 
 const meta = {
   title: 'Components/Typography',
-  component: Typography,
+  component: BaseTypography,
+  parameters: {
+    layout: 'padded',
+  },
   argTypes: {
-    tagVariant: {
-      control: { type: 'select', options: ['h1', 'h2', 'p', 'span', 'label'] },
-    },
-    fontWeight: {
-      control: { type: 'text' },
-    },
-    color: {
-      control: { type: 'color' },
+    as: {
+      control: 'select',
+      options: ['p', 'span', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'label'],
+      description: 'The HTML element to render',
     },
   },
-} satisfies Meta<typeof Typography>
+  decorators: [
+    Story => (
+      <div className="bg-[#222] p-4">
+        <Story />
+      </div>
+    ),
+  ],
+} satisfies Meta<typeof BaseTypography>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const H1: Omit<Story, 'args'> = {
-  render: () => <Header variant="h1">TREASURY</Header>,
+// Generic Typography Story
+export const TypographyStory: Story = {
+  args: {
+    children: 'Pack my box with five dozen liquor jugs',
+    as: 'span',
+    variant: 'body',
+    caps: false,
+  },
 }
 
-export const H2: Omit<Story, 'args'> = {
-  render: () => <Header variant="h2">Heading 2</Header>,
+export const EmphaseVariations: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <div className="space-y-8">
+      <Header variant="e1">Emphase Level 1</Header>
+      <Header variant="e2">Emphase Level 2</Header>
+      <Header variant="e3">Emphase Level 3</Header>
+    </div>
+  ),
 }
 
-export const ParagraphNormal: Omit<Story, 'args'> = {
-  render: () => <Paragraph>This is a normal paragraph.</Paragraph>,
+export const HeaderVariations: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <div className="space-y-8">
+      <Header variant="h1">Header Level 1</Header>
+      <Header variant="h2">Header Level 2</Header>
+      <Header variant="h3">Header Level 3</Header>
+      <Header variant="h4">Header Level 4</Header>
+      <Header variant="h5">Header Level 5</Header>
+    </div>
+  ),
 }
 
-export const ParagraphLight: Omit<Story, 'args'> = {
-  render: () => <Paragraph variant="light">This is a light paragraph.</Paragraph>,
+export const HeaderVariationsWithCaps: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <div className="space-y-8">
+      <Header variant="h1" caps>
+        Header Level 1 With Caps
+      </Header>
+      <Header variant="h2" caps>
+        Header Level 2 With Caps
+      </Header>
+      <Header variant="h3" caps>
+        Heading Level 3 With Caps
+      </Header>
+      <Header variant="h4" caps>
+        Heading Level 4 With Caps
+      </Header>
+      <Header variant="h5" caps>
+        Heading Level 5 With Caps
+      </Header>
+    </div>
+  ),
 }
 
-export const ParagraphSemibold: Omit<Story, 'args'> = {
-  render: () => <Paragraph variant="semibold">This is a semi bold paragraph.</Paragraph>,
+export const ParagraphVariations: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <div className="space-y-6">
+      <Paragraph variant="body-l">
+        This is a Body Large variant (body-l) with longer text to demonstrate how it handles content that
+        flows across multiple lines. The quick brown fox jumps over the lazy dog.
+      </Paragraph>
+      <Paragraph variant="body-l" bold>
+        This is a Body Large Bold variant that shows how bold text looks in longer paragraphs. Pack my box
+        with five dozen liquor jugs.
+      </Paragraph>
+      <Paragraph variant="body">
+        This is a Body variant that represents the default body text style. How vexingly quick daft zebras
+        jump.
+      </Paragraph>
+      <Paragraph variant="body" bold>
+        This is a Body Bold variant for emphasizing body text. The five boxing wizards jump quickly.
+      </Paragraph>
+      <Paragraph variant="body-s">
+        This is a Body Small variant (body-s) for less prominent text content. Sphinx of black quartz, judge
+        my vow.
+      </Paragraph>
+      <Paragraph variant="body-s" bold>
+        This is a Body Small Bold variant for emphasized smaller text. Quick wafting zephyrs vex bold Jim.
+      </Paragraph>
+      <Paragraph variant="body-xs">
+        This is a Body Extra Small variant (body-xs) for the smallest body text needs. The jay, pig, fox,
+        zebra and my wolves quack.
+      </Paragraph>
+      <Paragraph variant="body-xs" bold>
+        This is a Body Extra Small Bold variant for the smallest emphasized text. Watch Jeopardy!, Alex
+        Trebek`s fun TV quiz game.
+      </Paragraph>
+    </div>
+  ),
 }
 
-export const ParagraphError: Omit<Story, 'args'> = {
-  render: () => <Paragraph variant="error">This is a text with error</Paragraph>,
+export const ParagraphVariationsWithCaps: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <div className="space-y-6">
+      <Paragraph variant="body-l" caps>
+        This is a Body Large variant with caps demonstrating capitalized text
+      </Paragraph>
+      <Paragraph variant="body-l" bold caps>
+        This is a Body Large Bold variant with caps
+      </Paragraph>
+      <Paragraph variant="body" caps>
+        This is a Body variant with caps
+      </Paragraph>
+      <Paragraph variant="body" bold caps>
+        This is a Body Bold variant with caps
+      </Paragraph>
+      <Paragraph variant="body-s" caps>
+        This is a Body Small variant with caps
+      </Paragraph>
+      <Paragraph variant="body-s" bold caps>
+        This is a Body Small Bold variant with caps
+      </Paragraph>
+      <Paragraph variant="body-xs" caps>
+        This is a Body Extra Small variant with caps
+      </Paragraph>
+      <Paragraph variant="body-xs" bold caps>
+        This is a Body Extra Small Bold variant with caps
+      </Paragraph>
+    </div>
+  ),
 }
 
-export const LabelNormal: Omit<Story, 'args'> = {
-  render: () => <Label>This is a label</Label>,
+export const LabelVariations: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <Label variant="tag">
+          This is a Tag variant (t) with longer text to show the difference in size and how it handles longer
+          content in a single line
+        </Label>
+        <br />
+        <Label variant="tag-s">This is a Tag Small variant (ts)</Label>
+      </div>
+    </div>
+  ),
 }
 
-export const SemiboldLabel: Omit<Story, 'args'> = {
-  render: () => <Label variant="semibold">This is a semibold label.</Label>,
-}
-
-export const LightLabel: Omit<Story, 'args'> = {
-  render: () => <Label variant="light">This is a light label.</Label>,
-}
-
-export const SpanDefault: Omit<Story, 'args'> = {
-  render: () => <Span>Test</Span>,
-}
-
-export const SpanLight: Omit<Story, 'args'> = {
-  render: () => <Span variant="light">Light</Span>,
-}
-
-export const SpanSmall: Omit<Story, 'args'> = {
-  render: () => <Span size="small">Small</Span>,
+export const LabelVariationsWithCaps: Story = {
+  args: {
+    children: '',
+  },
+  render: () => (
+    <div className="space-y-6">
+      <div className="space-y-2">
+        <Label variant="tag" caps>
+          This is a Tag variant (t) with caps and longer text to show the difference
+        </Label>
+        <br />
+        <Label variant="tag-s" caps>
+          This is a Tag Small variant (ts) with caps
+        </Label>
+      </div>
+    </div>
+  ),
 }
