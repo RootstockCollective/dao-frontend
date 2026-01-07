@@ -50,7 +50,7 @@
     "big.js": "^6.2.2",
     "clsx": "^2.1.1",
     "dompurify": "3.3.0",
-    "dotenv": "^16.6.1",
+    "dotenv": "^17.2.3",
     "html-react-parser": "5.2.7",
     "immer": "^10.1.1",
     "jdenticon": "^3.3.0",
