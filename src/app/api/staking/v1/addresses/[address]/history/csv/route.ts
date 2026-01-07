@@ -24,7 +24,7 @@ const formatSymbolForCsv = (value: bigint | string, symbol: string): string => {
   }
   const { decimals, displayDecimals } = {
     strif: { decimals: 18, displayDecimals: 6 },
-  }[symbol.toLocaleLowerCase()] ?? {
+  }[symbol.toLowerCase()] ?? {
     decimals: 18,
     displayDecimals: 6,
   }
@@ -55,7 +55,7 @@ const formatPeriod = (period: string): string => {
 
 const formatDateForCsv = (timestamp: string | number): string => {
   const date = new Date(Number(timestamp) * 1000)
-  return date.toLocaleDateString('en-US', {
+  return date.toLocaleString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
