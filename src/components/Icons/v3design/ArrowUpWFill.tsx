@@ -1,6 +1,10 @@
 import { IconProps } from '../types'
 
-export const ArrowUpWFill = ({ 'aria-label': ariaLabel = 'Arrows Up Down', size = 16 }: IconProps) => {
+export const ArrowUpWFill = ({
+  'aria-label': ariaLabel = 'Arrows Up Down',
+  size = 16,
+  color = '#ACA39D',
+}: IconProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -10,7 +14,7 @@ export const ArrowUpWFill = ({ 'aria-label': ariaLabel = 'Arrows Up Down', size 
       fill="none"
       aria-label={ariaLabel}
     >
-      <rect width="16" height="16" rx="2" fill="#ACA39D" />
+      <rect width="16" height="16" rx="2" fill={color} />
       <path d="M8 13L8 3" stroke="#171412" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
       <path
         d="M12 7L8 3L4 7"
