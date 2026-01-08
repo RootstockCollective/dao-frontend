@@ -11,6 +11,7 @@ import { usePricesContext, useTableActionsContext, useTableContext, withTableCon
 import { ActiveFilter } from '@/components/FilterSideBar'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { DesktopStakingHistory } from '@/app/staking-history/components/DesktopStakingHistory'
+import { MobileStakingHistory } from '@/app/staking-history/components/MobileStakingHistory'
 import {
   ColumnId,
   DEFAULT_HEADERS,
@@ -121,9 +122,9 @@ function StakingHistoryTable() {
   }, [error])
 
   return (
-    <div className="w-full flex flex-col gap-10">
+    <div className="w-full flex flex-col gap-6 md:gap-10">
       <div className="flex items-center justify-between">
-        <Header variant="h3" className="m-0" data-testid="events-list-header">
+        <Header variant="h3" className="m-0 text-lg md:text-xl" data-testid="events-list-header">
           STAKING EVENTS LIST
         </Header>
         <FilterButton
@@ -135,27 +136,43 @@ function StakingHistoryTable() {
       </div>
 
       <div className={cn('flex flex-row-reverse')}>
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: isFilterSidebarOpen ? 264 : 0 }}
-          className="overflow-hidden shrink-0"
-        >
-          {/* container for useClickOutside ref */}
-          <div
-            ref={filterSidebarRef}
-            className="pl-2 h-full"
-            data-testid="StakingHistoryFilterSidebarContainer"
+        {isDesktop && (
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: isFilterSidebarOpen ? 264 : 0 }}
+            className="overflow-hidden shrink-0"
           >
-            <StakingHistoryFilterSideBar
-              isOpen={isFilterSidebarOpen}
-              onClose={handleCloseFilterSidebar}
-              activeFilters={activeFilters}
-              onApply={handleApplyFilters}
-            />
-          </div>
-        </motion.div>
-        <DesktopStakingHistory rows={rows} data-testid="StakingHistoryDesktopTable" />
+            {/* container for useClickOutside ref */}
+            <div
+              ref={filterSidebarRef}
+              className="pl-2 h-full"
+              data-testid="StakingHistoryFilterSidebarContainer"
+            >
+              <StakingHistoryFilterSideBar
+                isOpen={isFilterSidebarOpen}
+                onClose={handleCloseFilterSidebar}
+                activeFilters={activeFilters}
+                onApply={handleApplyFilters}
+              />
+            </div>
+          </motion.div>
+        )}
+        {isDesktop ? (
+          <DesktopStakingHistory rows={rows} data-testid="StakingHistoryDesktopTable" />
+        ) : (
+          <MobileStakingHistory rows={rows} data-testid="StakingHistoryMobileTable" />
+        )}
       </div>
+
+      {/* Filter sidebar for mobile - rendered separately as Modal */}
+      {!isDesktop && (
+        <StakingHistoryFilterSideBar
+          isOpen={isFilterSidebarOpen}
+          onClose={handleCloseFilterSidebar}
+          activeFilters={activeFilters}
+          onApply={handleApplyFilters}
+        />
+      )}
 
       <TablePager
         key={pagerKey}
