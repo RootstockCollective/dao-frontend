@@ -63,6 +63,7 @@ export type GroupedTransactionDetail = {
   builder?: Builder
   builderAddress?: string
   blockTimestamp: string
+  transactionHash: string
   amounts: Array<{ address: string; value: string; symbol: string }>
   usdValue: string | string[]
   increased?: boolean
@@ -70,7 +71,7 @@ export type GroupedTransactionDetail = {
 
 export type TransactionHistoryCellDataMap = {
   cycle: { cycle: string | null }
-  date: { timestamp: string; formatted: string }
+  date: { timestamp: string; formatted: string; transactionHash: string }
   from_to: {
     builder?: Builder
     builderAddress?: string
