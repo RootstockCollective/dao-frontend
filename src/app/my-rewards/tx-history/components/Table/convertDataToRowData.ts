@@ -77,6 +77,7 @@ export const convertDataToRowData = (
           date: {
             timestamp: item.blockTimestamp,
             formatted: dateRange,
+            transactionHash: item.transactionHash,
           },
           from_to: {
             builder,
@@ -161,6 +162,7 @@ export const convertDataToRowData = (
           date: {
             timestamp: firstItem.blockTimestamp,
             formatted: dateRange,
+            transactionHash: blockHash,
           },
           from_to: {
             builder,
@@ -276,6 +278,7 @@ export const convertDataToRowData = (
           builder,
           builderAddress,
           blockTimestamp: builderItems[0].blockTimestamp,
+          transactionHash: blockHash,
           amounts: builderAmounts,
           usdValue: builderUsdValues.length > 1 ? builderUsdValues : builderUsdValues[0],
           increased: builderIncreased,
@@ -296,6 +299,7 @@ export const convertDataToRowData = (
           date: {
             timestamp: firstItem.blockTimestamp,
             formatted: dateRange,
+            transactionHash: blockHash,
           },
           from_to: {
             type: transactionType,
