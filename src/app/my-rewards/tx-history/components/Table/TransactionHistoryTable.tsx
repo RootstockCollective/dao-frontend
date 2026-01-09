@@ -61,10 +61,6 @@ export default function TransactionHistoryTable() {
   const sortBy = sort?.columnId ? COLUMN_TO_DB_FIELD[sort.columnId] : 'blockTimestamp'
   const sortDirection = sort?.direction || 'desc'
 
-  // This ensures the sum stays consistent and only changes when new rows are loaded
-  const apiSortBy = sort?.columnId === 'total_amount' ? 'blockTimestamp' : sortBy
-  const apiSortDirection = sort?.columnId === 'total_amount' ? 'desc' : sortDirection
-
   // Convert active filters to API format
   const apiFilters = useMemo(() => {
     const filter = (groupId: string) =>
@@ -79,8 +75,8 @@ export default function TransactionHistoryTable() {
   const { data, isLoading, error, count } = useGetTransactionHistory({
     page: 1,
     pageSize: pageEnd,
-    sortBy: apiSortBy,
-    sortDirection: apiSortDirection,
+    sortBy: sortBy,
+    sortDirection: sortDirection,
     type: apiFilters.type,
     builder: apiFilters.builder,
     rewardToken: apiFilters.rewardToken,
@@ -89,29 +85,8 @@ export default function TransactionHistoryTable() {
   const rowData = useMemo(() => {
     const rows = convertDataToRowData(data, cycleDuration, prices, getBuilderByAddress)
 
-    // If sorting by total_amount, sort on frontend since backend always returns chronological order
-    if (sort?.columnId === 'total_amount' && sort?.direction) {
-      return [...rows].sort((a, b) => {
-        const getTotal = (usd: string | string[]) => {
-          if (Array.isArray(usd)) {
-            return usd.reduce((sum, val) => {
-              const num = Number(val.replace(/,/g, '').replace(/[<>]/g, ''))
-              return sum + (isNaN(num) ? 0 : num)
-            }, 0)
-          }
-          const num = Number(usd.replace(/,/g, '').replace(/[<>]/g, ''))
-          return isNaN(num) ? 0 : num
-        }
-
-        const aTotal = getTotal(a.data.total_amount.usd)
-        const bTotal = getTotal(b.data.total_amount.usd)
-
-        return sort.direction === 'asc' ? aTotal - bTotal : bTotal - aTotal
-      })
-    }
-
     return rows
-  }, [data, cycleDuration, prices, getBuilderByAddress, sort])
+  }, [data, cycleDuration, prices, getBuilderByAddress])
 
   const handleApplyFilters = (filters: ActiveFilter[]) => {
     setActiveFilters(filters)

@@ -12,6 +12,7 @@ import {
   formatDateForCsv,
   processTransactionAmount,
 } from '@/app/my-rewards/tx-history/utils/utils'
+import { TOKENS } from '@/lib/tokens'
 
 const MAX_EXPORT_ROWS = 50000
 
@@ -92,6 +93,7 @@ const fetchAllTransactionHistory = async (
   type: string[],
   builder: string[],
   rewardToken: string[],
+  prices: GetPricesResult,
 ): Promise<TransactionHistoryItem[]> => {
   const pageSize = 1000
   const allData: TransactionHistoryItem[] = []
@@ -109,6 +111,14 @@ const fetchAllTransactionHistory = async (
     type.forEach(t => searchParams.append('type', t))
     builder.forEach(b => searchParams.append('builder', b))
     rewardToken.forEach(rt => searchParams.append('rewardToken', rt))
+
+    Object.values(TOKENS).forEach(token => {
+      const priceInfo = prices[token.symbol]
+      if (!priceInfo) return
+
+      const decimals = 18
+      searchParams.append('price', `${token.address.toLowerCase()}:${priceInfo.price}:${decimals}`)
+    })
 
     return searchParams
   }
@@ -189,6 +199,7 @@ export function CsvButton({
         type,
         builder,
         rewardToken,
+        prices,
       )
 
       if (allData.length === 0) {
@@ -198,30 +209,6 @@ export function CsvButton({
           content: 'No transaction history data to export',
         })
         return
-      }
-
-      if (sortBy === 'totalAmount') {
-        const parseUsd = (raw: string) => {
-          const sanitized = raw.replace(/,/g, '')
-          const parsed = Number(sanitized)
-          return Number.isFinite(parsed) ? parsed : 0
-        }
-
-        allData.sort((a, b) => {
-          const aUsd = parseUsd(processTransactionAmount(a, prices).usdValue)
-          const bUsd = parseUsd(processTransactionAmount(b, prices).usdValue)
-
-          const byUsd = sortDirection === 'asc' ? aUsd - bUsd : bUsd - aUsd
-          if (byUsd !== 0) return byUsd
-
-          const byTimestamp = Number(b.blockTimestamp) - Number(a.blockTimestamp)
-          if (byTimestamp !== 0) return byTimestamp
-
-          const byTx = a.transactionHash.localeCompare(b.transactionHash)
-          if (byTx !== 0) return byTx
-
-          return a.builder.localeCompare(b.builder)
-        })
       }
 
       // Limit to MAX_EXPORT_ROWS to avoid freezing the browser
