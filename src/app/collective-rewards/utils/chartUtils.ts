@@ -14,7 +14,11 @@ export const formatShort = (n: number) => {
   if (abs >= 1_000_000_000) return `${Math.round(n / 1_000_000_000)} B`
   if (abs >= 1_000_000) return `${Math.round(n / 1_000_000)} M`
   if (abs >= 1_000) return `${Math.round(n / 1_000)} K`
-  return `${n.toLocaleString()}`
+
+  if (abs >= 100) return `${Math.round(n)}`
+  if (abs >= 10) return `${n.toFixed(1)}`
+  if (abs >= 1) return `${n.toFixed(2)}`
+  return `${n.toFixed(2)}`
 }
 
 /**
