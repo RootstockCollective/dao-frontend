@@ -165,16 +165,22 @@ const PageWithProposal = (proposal: Proposal) => {
       <div className="flex md:flex-row flex-col gap-2 w-full max-w-full mt-6">
         <div className="flex-1 flex flex-col min-w-0">
           <div className="bg-bg-80 flex flex-col overflow-hidden">
-            <ProposalProggressBar proposalState={voteOnProposalData.proposalState} />
-            <ProposalDetails
-              name={name}
-              description={description}
-              proposer={proposer}
-              startsAt={Starts}
-              parsedActions={parsedActions}
-            />
-            <Description description={description} />
-            <VideoPlayer url={videoUrl} className="p-4 md:p-6" />
+            <VideoPlayer url={videoUrl} className="p-4 md:p-6 order-1 md:order-4" />
+            <div className="order-2 md:order-1">
+              <ProposalProggressBar proposalState={voteOnProposalData.proposalState} />
+            </div>
+            <div className="order-3 md:order-2">
+              <ProposalDetails
+                name={name}
+                description={description}
+                proposer={proposer}
+                startsAt={Starts}
+                parsedActions={parsedActions}
+              />
+            </div>
+            <div className="order-4 md:order-3">
+              <Description description={description} />
+            </div>
           </div>
           <TechnicalDetails proposalId={proposalId} snapshot={snapshot} />
         </div>
