@@ -36,6 +36,7 @@ const TX_HISTORY_AMOUNT = 'amount'
 const TX_HISTORY_BLOCK_TIMESTAMP = 'blockTimestamp'
 const TX_HISTORY_INCREASED = 'increased'
 const TX_HISTORY_REWARD_TOKEN = 'rewardToken'
+const TX_HISTORY_TOTAL_AMOUNT = 'totalAmount'
 const TX_HISTORY_TRANSACTION_HASH = 'transactionHash'
 
 export const TX_HISTORY_COLUMNS = [
@@ -51,6 +52,7 @@ export const TX_HISTORY_COLUMNS = [
   TX_HISTORY_ALLOCATION,
   TX_HISTORY_INCREASED,
   TX_HISTORY_REWARD_TOKEN,
+  TX_HISTORY_TOTAL_AMOUNT,
 ]
 
 const BACKER_TO_BUILDER_BACKER = 'backer'
