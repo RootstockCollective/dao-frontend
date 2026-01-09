@@ -1,6 +1,6 @@
 import Big from '@/lib/big'
 import { parseEventLogs, Log, Address, Hash, getAddress, isAddress, isHex } from 'viem'
-import { fetchProposalCreated } from '@/app/user/Balances/actions'
+import { unstable_cache } from 'next/cache'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import {
   EventArgumentsParameter,
@@ -10,6 +10,8 @@ import {
 } from '@/app/proposals/shared/utils'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
+import { BLOCKSCOUT_URL, GOVERNOR_ADDRESS } from '@/lib/constants'
+import { PROPOSAL_CREATED_EVENT } from '@/lib/endpoints'
 
 type ElementType<T> = T extends (infer U)[] ? U : never
 
@@ -44,25 +46,11 @@ function toEventArgumentsParameter(proposal: ProposalCreatedEventLogWithTimestam
 }
 
 /**
- * Validates and converts a string to Address type
- * Throws if the string is not a valid address
+ * Normalizes address to checksummed format
+ * Blockscout returns valid addresses, so we just need to normalize them
  */
 function toAddress(value: string): Address {
-  if (!isAddress(value, { strict: false })) {
-    throw new Error(`Invalid address: ${value}`)
-  }
   return getAddress(value)
-}
-
-/**
- * Validates and converts a string to Hash type
- * Throws if the string is not a valid hex string
- */
-function toHash(value: string): Hash {
-  if (!isHex(value)) {
-    throw new Error(`Invalid hash: ${value}`)
-  }
-  return value as Hash
 }
 
 /**
@@ -95,6 +83,77 @@ function toTopics(topics: Array<null | string>): [] | [Address, ...Address[]] {
 }
 
 /**
+ * Blockscout API response structure for getLogs
+ */
+interface BlockscoutLogResponse {
+  message: string
+  status: string
+  result: BackendEventByTopic0ResponseValue[]
+  next_page_params?: Record<string, string | number>
+}
+
+/**
+ * Fetches all ProposalCreated event logs from Blockscout API with pagination
+ */
+async function fetchProposalLogsFromBlockscout(): Promise<BackendEventByTopic0ResponseValue[]> {
+  const allLogs: BackendEventByTopic0ResponseValue[] = []
+  let params: Record<string, string> = {
+    module: 'logs',
+    action: 'getLogs',
+    address: GOVERNOR_ADDRESS.toLowerCase(),
+    topic0: PROPOSAL_CREATED_EVENT,
+    toBlock: 'latest',
+    fromBlock: '0',
+  }
+
+  while (true) {
+    try {
+      const url = new URL(`${BLOCKSCOUT_URL}/api`)
+      Object.entries(params).forEach(([key, value]) => {
+        url.searchParams.append(key, value)
+      })
+
+      const response = await fetch(url.toString())
+      if (!response.ok) {
+        throw new Error(`Blockscout API error: ${response.status} ${response.statusText}`)
+      }
+
+      const data: BlockscoutLogResponse = await response.json()
+
+      if (data.status !== '1' || !data.result) {
+        console.error(`Blockscout API returned error: ${data.message || 'Unknown error'}`)
+        break
+      }
+
+      if (data.result.length > 0) {
+        allLogs.push(...data.result)
+      }
+
+      // Check for next page
+      if (data.next_page_params && Object.keys(data.next_page_params).length > 0) {
+        // Merge next_page_params with existing params for next iteration
+        params = {
+          ...params,
+          ...Object.fromEntries(
+            Object.entries(data.next_page_params).map(([key, value]) => [key, String(value)]),
+          ),
+        }
+      } else {
+        // No more pages, break the loop
+        break
+      }
+    } catch (error) {
+      console.error(
+        `Failed to fetch logs from Blockscout: ${error instanceof Error ? error.message : String(error)}`,
+      )
+      break
+    }
+  }
+
+  return allLogs
+}
+
+/**
  * Converts BackendEventByTopic0ResponseValue logs to viem Log format
  * This makes the conversion explicit and type-safe with proper validation
  */
@@ -105,9 +164,9 @@ function convertBackendLogsToViemLogs(logs: BackendEventByTopic0ResponseValue[])
         address: toAddress(log.address),
         blockHash: null,
         blockNumber: BigInt(log.blockNumber),
-        data: toHash(log.data),
+        data: log.data as Hash,
         logIndex: Number(log.logIndex),
-        transactionHash: toHash(log.transactionHash),
+        transactionHash: log.transactionHash as Hash,
         transactionIndex: Number(log.transactionIndex),
         removed: false,
         topics: toTopics(log.topics),
@@ -140,10 +199,10 @@ function transformEventLogProposal(proposal: ProposalCreatedEventLogWithTimestam
   }
 }
 
-export async function getProposalsFromNode(): Promise<ProposalApiResponse[]> {
-  const data = await fetchProposalCreated(0)
+async function getProposalsFromBlockscoutUncached(): Promise<ProposalApiResponse[]> {
+  const logs = await fetchProposalLogsFromBlockscout()
 
-  const viemLogs = convertBackendLogsToViemLogs(data.data)
+  const viemLogs = convertBackendLogsToViemLogs(logs)
   const parsedProposals = parseEventLogs({
     abi: GovernorAbi,
     logs: viemLogs,
@@ -153,8 +212,8 @@ export async function getProposalsFromNode(): Promise<ProposalApiResponse[]> {
   // Add timestamp and blockNumber from original data
   let proposals: ProposalCreatedEventLogWithTimestamp[] = parsedProposals.map((proposal, index) => ({
     ...proposal,
-    timeStamp: data.data[index]?.timeStamp ?? '0',
-    blockNumber: data.data[index]?.blockNumber ?? '0',
+    timeStamp: logs[index]?.timeStamp ?? '0',
+    blockNumber: logs[index]?.blockNumber ?? '0',
   })) as ProposalCreatedEventLogWithTimestamp[]
 
   proposals = proposals
@@ -166,3 +225,12 @@ export async function getProposalsFromNode(): Promise<ProposalApiResponse[]> {
 
   return proposals.map(transformEventLogProposal)
 }
+
+export const getProposalsFromBlockscout = unstable_cache(
+  getProposalsFromBlockscoutUncached,
+  ['cached_proposals_blockscout'],
+  {
+    revalidate: 60, // 60 seconds
+    tags: ['cached_proposals_blockscout'],
+  },
+)

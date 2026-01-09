@@ -1,11 +1,11 @@
-import { getProposalsFromNode } from '@/app/proposals/actions/getProposalsFromNode'
+import { getProposalsFromBlockscout } from '@/app/proposals/actions/getProposalsFromBlockscout'
 import { getProposalsFromTheGraph } from '@/app/proposals/actions/getProposalsFromTheGraph'
 import { getProposalsFromDB } from '@/app/proposals/actions/getProposalsFromDB'
 
 export const revalidate = 60
 
 export async function GET() {
-  const proposalsSources = [getProposalsFromDB, getProposalsFromTheGraph, getProposalsFromNode]
+  const proposalsSources = [getProposalsFromDB, getProposalsFromTheGraph, getProposalsFromBlockscout]
   let index = -1
   for (const source of proposalsSources) {
     index++
