@@ -47,17 +47,15 @@ const AllocationDrawerContent = () => {
         <Button variant="secondary-outline" onClick={onCancelAllocations} className="flex-1 md:flex-none">
           Cancel
         </Button>
-        {isAllocationTxPending ? (
-          <TransactionInProgressButton />
-        ) : (
-          <Button
-            variant="primary"
-            onClick={saveAllocations}
-            className="whitespace-nowrap flex-4 md:flex-none"
-          >
-            Save new backing amounts
-          </Button>
-        )}
+        <div className="flex-4 md:flex-none">
+          {isAllocationTxPending ? (
+            <TransactionInProgressButton />
+          ) : (
+            <Button variant="primary" onClick={saveAllocations} className="whitespace-nowrap w-full">
+              Save new backing amounts
+            </Button>
+          )}
+        </div>
       </div>
     </ActionsContainer>
   )
