@@ -77,7 +77,7 @@ export const NewPopover: React.FC<NewPopoverProps> = ({
           align={align}
           sideOffset={sideOffset}
           alignOffset={offsetWidth ? offsetWidth + alignOffset : -alignOffset}
-          className={`shadow-lg rounded-[4px] p-4 z-50 ${className}`}
+          className={`shadow-lg rounded-[4px] p-4 z-1000 ${className}`}
           style={style}
         >
           <div className={contentClassName} style={contentStyle}>

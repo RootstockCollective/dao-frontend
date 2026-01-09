@@ -100,9 +100,9 @@ const HelpPopover = ({ open, onOpenChange }: HelpPopoverProps) => {
       }
       content={<HelpPopoverContent />}
       className="rounded-none bg-transparent shadow-none"
-      // same as tooltip z-index (z-50)
-      style={{ zIndex: 50 }}
-      contentStyle={{ zIndex: 50 }}
+      // same as tooltip z-index (z-1000)
+      style={{ zIndex: 1000 }}
+      contentStyle={{ zIndex: 1000 }}
       // Mobile: full width, Desktop: constrained width
       side={isDesktop ? 'top' : 'bottom'}
       align={isDesktop ? 'start' : 'center'}
