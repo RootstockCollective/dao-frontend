@@ -54,6 +54,9 @@ export const formatDateRange = (cycleStart: string, cycleDuration: Duration): st
   const endYear = endParts[1]
 
   if (startMonth === endMonth && startYear === endYear) {
+    if (startDay === endDay) {
+      return `${startMonth} ${startDay}, ${startYear}`
+    }
     return `${startMonth} ${startDay} - ${endDay}, ${startYear}`
   }
 
