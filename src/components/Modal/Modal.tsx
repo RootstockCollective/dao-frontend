@@ -41,7 +41,7 @@ export const Modal: FC<ModalProps> = ({
   return createPortal(
     <div
       className={cn(
-        'fixed inset-0 flex items-center justify-center z-100 max-w-screen max-h-screen overflow-hidden',
+        'fixed inset-0 flex items-center justify-center z-1000 max-w-screen max-h-screen overflow-hidden',
         fullscreen ? '' : 'p-4',
       )}
       data-testid={dataTestId}
@@ -59,7 +59,7 @@ export const Modal: FC<ModalProps> = ({
         )}
         style={containerStyle}
       >
-        <button onClick={onClose} className="absolute top-4 right-4 z-10" data-testid="CloseButton">
+        <button onClick={onClose} className="absolute top-4 right-4 z-20" data-testid="CloseButton">
           <CloseIconKoto size={24} aria-label="Close" color={closeButtonColor} />
         </button>
 

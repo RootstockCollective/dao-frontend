@@ -51,7 +51,6 @@ export const RewardsInfo: FC<RewardsInfoProps> = ({ backerRewardPercentage, esti
             <FiatTooltipLabel
               tooltip={{
                 side: 'top',
-                className: 'z-10', // why the change of z index?
                 text: <MetricTooltipContent tokens={metricTokens} />,
               }}
             />
