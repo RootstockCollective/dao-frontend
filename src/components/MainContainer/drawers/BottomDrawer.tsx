@@ -35,7 +35,7 @@ export const BottomDrawer: FC<BottomActionBarBaseProps> = ({ className = '', por
   const sidebarWidth = getSidebarWidth()
 
   return createPortal(
-    <div className="fixed bottom-0 left-0 right-0 z-30">
+    <div className="fixed bottom-0 left-0 right-0 z-20">
       <motion.div
         className={cn('mx-auto', className)}
         style={{ maxWidth: MAIN_CONTAINER_MAX_WIDTH }}

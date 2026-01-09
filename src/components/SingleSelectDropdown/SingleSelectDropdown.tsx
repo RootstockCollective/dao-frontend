@@ -46,7 +46,7 @@ const DropdownContent = forwardRef<
   <SelectPrimitive.Portal>
     <SelectPrimitive.Content
       ref={ref}
-      className={cn('z-50 font-rootstock-sans rounded-b-md overflow-hidden bg-v3-bg-accent-60', className)}
+      className={cn('z-100 font-rootstock-sans rounded-b-md overflow-hidden bg-v3-bg-accent-60', className)}
       position={position}
       sideOffset={8}
       data-testid="dropdown-content"

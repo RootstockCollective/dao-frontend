@@ -81,7 +81,7 @@ export const AllocationBarSegment = ({
   const baseClasses = 'relative overflow-visible flex items-stretch p-0 group'
   const transitionClasses =
     dragIndex !== null ? 'transition-none' : 'transition-transform duration-200 ease-out'
-  const dragStateClasses = isDragging ? 'opacity-60 z-[99]' : 'opacity-100'
+  const dragStateClasses = isDragging ? 'opacity-60 z-20' : 'opacity-100'
 
   const handleSegmentClick = () => {
     if (withModal) {

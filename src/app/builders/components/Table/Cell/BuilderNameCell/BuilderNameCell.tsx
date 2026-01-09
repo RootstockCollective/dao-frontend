@@ -106,7 +106,7 @@ const BuilderDecoration: FC<BuilderDecorationProps & { showTooltip?: boolean }> 
     <Tooltip
       side="top"
       align="center"
-      className={cn('rounded-sm z-50 bg-v3-text-80 text-v3-bg-accent-60 p-6 text-sm', className)}
+      className={cn('rounded-sm bg-v3-text-80 text-v3-bg-accent-60 p-6 text-sm', className)}
       text={stateTooltips[decorationId]}
     >
       {icon}
