@@ -94,20 +94,24 @@ interface BlockscoutLogResponse {
 
 /**
  * Fetches all ProposalCreated event logs from Blockscout API with pagination
+ * Uses fromBlock-based pagination: fetches until the last block number equals the fromBlock used
+ * This is because endpoint does not return a cursor to know if there is a next page
  */
 async function fetchProposalLogsFromBlockscout(): Promise<BackendEventByTopic0ResponseValue[]> {
   const allLogs: BackendEventByTopic0ResponseValue[] = []
-  let params: Record<string, string> = {
-    module: 'logs',
-    action: 'getLogs',
-    address: GOVERNOR_ADDRESS.toLowerCase(),
-    topic0: PROPOSAL_CREATED_EVENT,
-    toBlock: 'latest',
-    fromBlock: '0',
-  }
+  let fromBlock = '0'
 
   while (true) {
     try {
+      const params: Record<string, string> = {
+        module: 'logs',
+        action: 'getLogs',
+        address: GOVERNOR_ADDRESS.toLowerCase(),
+        topic0: PROPOSAL_CREATED_EVENT,
+        toBlock: 'latest',
+        fromBlock,
+      }
+
       const url = new URL(`${BLOCKSCOUT_URL}/api`)
       Object.entries(params).forEach(([key, value]) => {
         url.searchParams.append(key, value)
@@ -125,23 +129,24 @@ async function fetchProposalLogsFromBlockscout(): Promise<BackendEventByTopic0Re
         break
       }
 
-      if (data.result.length > 0) {
-        allLogs.push(...data.result)
-      }
-
-      // Check for next page
-      if (data.next_page_params && Object.keys(data.next_page_params).length > 0) {
-        // Merge next_page_params with existing params for next iteration
-        params = {
-          ...params,
-          ...Object.fromEntries(
-            Object.entries(data.next_page_params).map(([key, value]) => [key, String(value)]),
-          ),
-        }
-      } else {
-        // No more pages, break the loop
+      if (data.result.length === 0) {
+        // No more logs to fetch
         break
       }
+
+      // Assume the last item has the highest block number (logs are typically ordered)
+      const lastBlockNumber = data.result[data.result.length - 1].blockNumber
+
+      // If the last block number equals the fromBlock we used, we've reached the end
+      if (lastBlockNumber === fromBlock) {
+        allLogs.push(...data.result)
+        break
+      }
+
+      allLogs.push(...data.result)
+
+      // Set fromBlock to the last block number for the next iteration
+      fromBlock = lastBlockNumber
     } catch (error) {
       console.error(
         `Failed to fetch logs from Blockscout: ${error instanceof Error ? error.message : String(error)}`,
@@ -209,19 +214,34 @@ async function getProposalsFromBlockscoutUncached(): Promise<ProposalApiResponse
     eventName: 'ProposalCreated',
   })
 
-  // Add timestamp and blockNumber from original data
-  let proposals: ProposalCreatedEventLogWithTimestamp[] = parsedProposals.map((proposal, index) => ({
-    ...proposal,
-    timeStamp: logs[index]?.timeStamp ?? '0',
-    blockNumber: logs[index]?.blockNumber ?? '0',
-  })) as ProposalCreatedEventLogWithTimestamp[]
+  // Create a map of proposalId to original index before deduplication
+  // parseEventLogs returns proposals in the same order as logs, so indices align
+  const proposalIdToIndex = new Map<bigint, number>()
+  parsedProposals.forEach((proposal, index) => {
+    // Only keep the first occurrence (lowest index) for each proposalId
+    if (!proposalIdToIndex.has(proposal.args.proposalId)) {
+      proposalIdToIndex.set(proposal.args.proposalId, index)
+    }
+  })
 
-  proposals = proposals
-    .filter(
-      (proposal, index, self) =>
-        self.findIndex(p => p.args.proposalId === proposal.args.proposalId) === index,
-    )
-    .sort((a, b) => Number(b.timeStamp) - Number(a.timeStamp))
+  // Remove duplicates based on proposalId before adding timestamp/blockNumber
+  // Keep only the first occurrence of each proposalId
+  const uniqueProposals = parsedProposals.filter(
+    (proposal, index) => proposalIdToIndex.get(proposal.args.proposalId) === index,
+  )
+
+  // Add timestamp and blockNumber from original data
+  // Since parseEventLogs maintains order with logs, we can use the original index directly
+  let proposals: ProposalCreatedEventLogWithTimestamp[] = uniqueProposals.map(proposal => {
+    const originalIndex = proposalIdToIndex.get(proposal.args.proposalId)!
+    return {
+      ...proposal,
+      timeStamp: logs[originalIndex]?.timeStamp ?? '0',
+      blockNumber: logs[originalIndex]?.blockNumber ?? '0',
+    }
+  }) as ProposalCreatedEventLogWithTimestamp[]
+
+  proposals = proposals.sort((a, b) => Number(b.timeStamp) - Number(a.timeStamp))
 
   return proposals.map(transformEventLogProposal)
 }
