@@ -8,7 +8,7 @@ interface TechnicalDetailsProps {
 
 export const TechnicalDetails = ({ snapshot, proposalId }: TechnicalDetailsProps) => {
   return (
-    <div className="w-full mt-2 bg-bg-80 p-6">
+    <div className="w-full mt-2 bg-bg-80 p-6 overflow-hidden">
       <Header variant="h3" className="text-lg mb-2">
         TECHNICAL DETAILS
       </Header>

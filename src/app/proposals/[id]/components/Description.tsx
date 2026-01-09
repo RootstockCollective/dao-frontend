@@ -60,7 +60,7 @@ export const Description = ({ description }: DescriptionProps) => {
   const descriptionText = description ? parseProposalDescription(description).description : ''
 
   return (
-    <div className="md:px-6 px-4 pt-10">
+    <div className="md:px-6 px-4 py-10">
       {!isDesktop ? (
         <Expandable expanded={false}>
           <ExpandableHeader triggerColor="white">
