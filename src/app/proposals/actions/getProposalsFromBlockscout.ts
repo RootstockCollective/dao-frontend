@@ -135,8 +135,9 @@ async function fetchProposalLogsFromBlockscout(): Promise<BackendEventByTopic0Re
       }
 
       // Assume the last item has the highest block number (logs are typically ordered)
-      const lastBlockNumber = data.result[data.result.length - 1].blockNumber
-
+      // Blockscout returns blockNumber as hex string (e.g., '0x69b1e9'), convert to decimal number string
+      const lastBlockNumberHex = data.result[data.result.length - 1].blockNumber
+      const lastBlockNumber = parseInt(lastBlockNumberHex, 16).toString()
       // If the last block number equals the fromBlock we used, we've reached the end
       if (lastBlockNumber === fromBlock) {
         allLogs.push(...data.result)
@@ -145,7 +146,7 @@ async function fetchProposalLogsFromBlockscout(): Promise<BackendEventByTopic0Re
 
       allLogs.push(...data.result)
 
-      // Set fromBlock to the last block number for the next iteration
+      // Set fromBlock to the last block number (as decimal string) for the next iteration
       fromBlock = lastBlockNumber
     } catch (error) {
       console.error(
