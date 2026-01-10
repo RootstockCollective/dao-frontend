@@ -12,6 +12,7 @@ import { TokenImage } from '@/components/TokenImage'
 import Link from 'next/link'
 import { Builder } from '@/app/collective-rewards/types'
 import { Address } from 'viem'
+import { EXPLORER_URL } from '@/lib/constants'
 
 const TableCellBase = ({
   children,
@@ -75,15 +76,28 @@ export const CycleCell: FC<CycleCellProps> = ({ cycle, isHovered, isDetailRow })
 interface DateCellProps {
   timestamp: string
   formatted: string
+  transactionHash: string
   isExpanded?: boolean
   isHovered?: boolean
   isDetailRow?: boolean
 }
 
-export const DateCell: FC<DateCellProps> = ({ formatted, isHovered }): ReactElement => {
+export const DateCell: FC<DateCellProps> = ({ formatted, transactionHash, isHovered }): ReactElement => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    window.open(`${EXPLORER_URL}/tx/${transactionHash}`, '_blank', 'noopener,noreferrer')
+  }
+
   return (
     <TableCell columnId="date">
-      <Paragraph variant="body-s" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
+      <Paragraph
+        variant="body-s"
+        className={cn(
+          'hover:underline hover:underline-offset-2 cursor-pointer',
+          isHovered ? 'text-black' : 'text-v3-text-100',
+        )}
+        onClick={handleClick}
+      >
         {formatted}
       </Paragraph>
     </TableCell>
