@@ -33,8 +33,13 @@ interface Props {
 }
 
 const KycInfo = () => {
-  const { maxDefaultDepositLimit } = useVaultDepositLimiter()
+  const { maxDefaultDepositLimit, isWhitelisted } = useVaultDepositLimiter()
   const formattedDefaultLimit = formatSymbol(maxDefaultDepositLimit, USDRIF)
+
+  // Don't show KYC info for whitelisted users
+  if (isWhitelisted) {
+    return null
+  }
 
   return (
     <Paragraph variant="body-s" className="text-text-60 px-4 pt-4">
