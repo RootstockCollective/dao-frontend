@@ -8,6 +8,7 @@ import { Modal } from '@/components/Modal/Modal'
 import { Tooltip } from '@/components/Tooltip'
 import { BaseTypography } from '@/components/Typography/Typography'
 import { cn, durationToLabel } from '@/lib/utils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { Duration } from 'luxon'
 
 interface UpdateBackerRewardViewModalProps {
@@ -39,6 +40,8 @@ const UpdateBackerRewardViewModal = ({
   isLoading,
   isOperational,
 }: UpdateBackerRewardViewModalProps) => {
+  const isDesktop = useIsDesktop()
+
   const handleSave = () => {
     onSave(updatedReward.toString())
   }
@@ -53,8 +56,9 @@ const UpdateBackerRewardViewModal = ({
       closeButtonColor="white"
       data-testid="UpdateBackerRewardViewModal"
       className={cn('font-rootstock-sans shadow-[0px_0px_40px_0px_rgba(255,255,255,0.10)]', className)}
+      fullscreen={!isDesktop}
     >
-      <div className="relative flex flex-col gap-8 min-w-[500px] p-6">
+      <div className={cn('relative flex flex-col gap-8', isDesktop ? 'p-6' : 'p-4 mt-12')}>
         <BaseTypography variant="h1">MY BACKERS&apos; REWARDS</BaseTypography>
         {isLoading ? (
           <LoadingSpinner />
@@ -64,15 +68,15 @@ const UpdateBackerRewardViewModal = ({
               Any updates to the Rewards % will take effect after the {cooldownDuration?.days} days cooling
               period.
             </BaseTypography>
-            <div className="flex gap-6 justify-between">
+            <div className="flex flex-col md:flex-row gap-6 md:justify-between">
               <div className="flex flex-col items-start gap-2">
                 <BaseTypography variant="body" className="text-bg-0">
                   Current Rewards %
                 </BaseTypography>
                 <BaseTypography variant="h1">{currentReward}%</BaseTypography>
               </div>
-              <div className="flex flex-col items-center gap-2 w-[60%]">
-                <div className="flex flex-row items-center justify-between px-4 py-3 bg-input-bg w-full">
+              <div className="flex flex-col items-center gap-2 w-full md:w-[60%]">
+                <div className="flex flex-col md:flex-row md:items-center justify-between px-4 py-3 bg-input-bg w-full gap-2">
                   <div className="flex flex-col">
                     <BaseTypography variant="body-xs" className="text-bg-0">
                       Updated Rewards %
@@ -87,7 +91,7 @@ const UpdateBackerRewardViewModal = ({
                     />
                   </div>
                   {timeRemaining && (
-                    <BaseTypography variant="body" className="text-brand-rootstock-lime text-sm self-end">
+                    <BaseTypography variant="body" className="text-brand-rootstock-lime text-sm md:self-end">
                       Effective in {timeRemaining}
                     </BaseTypography>
                   )}
@@ -111,8 +115,13 @@ const UpdateBackerRewardViewModal = ({
             </div>
           </>
         )}
-        <div className="flex gap-4 justify-end">
-          <Button variant="secondary-outline" onClick={onClose}>
+        <div
+          className={cn(
+            'flex gap-4 md:justify-end',
+            isDesktop ? '' : 'fixed bottom-0 left-0 right-0 p-4 bg-bg-80',
+          )}
+        >
+          <Button variant="secondary-outline" onClick={onClose} className="w-full md:w-auto">
             Cancel
           </Button>
           {isTxPending ? (
@@ -120,7 +129,7 @@ const UpdateBackerRewardViewModal = ({
           ) : (
             <AlwaysEnabledButton
               onClick={handleSave}
-              className="z-999"
+              className="z-999 w-full md:w-auto"
               conditionPairs={[
                 {
                   condition: () => !isOperational,
