@@ -30,7 +30,7 @@ export function SidebarMobile() {
       variants={variants}
       initial="drawer"
       animate="drawer"
-      className={cn('h-screen w-full pl-10 py-12', 'fixed inset-0 z-200 bg-l-black')}
+      className={cn('h-screen w-full pl-10 py-12', 'fixed inset-0 z-sticky bg-l-black')}
       transition={{ duration: 0.3, ease: 'circOut' }}
       onClick={closeSidebar}
     >

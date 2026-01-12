@@ -21,7 +21,7 @@ export const VaultDisclaimer: FC<CommonComponentProps> = ({ className = '' }) =>
       }}
       data-testid="VaultDisclaimer"
     >
-      <DecorativeSquares className="absolute left-0 top-[-30px] z-20" color="#d2fbf6" />
+      <DecorativeSquares className="absolute left-0 top-[-30px] z-base" color="#d2fbf6" />
       <Header variant="h3">SANDBOX NOTICE</Header>
       <div className="flex flex-col gap-3">
         <Paragraph>

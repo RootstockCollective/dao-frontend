@@ -4,6 +4,13 @@
   --font-kk-topo: KK-Topo;
   --font-rootstock-sans: Rootstock-Sans;
 
+  /* Semantic z-index scale */
+  --z-index-base: 1; /* above root (0) layer */
+  --z-index-dropdown: 100; /* dropdowns */
+  --z-index-sticky: 200; /* header, sidebar, etc. */
+  --z-index-modal: 500; /* modals */
+  --z-index-tooltip: 1000; /* tooltips, popovers, etc. */
+
   --color-primary: var(--color-primary);
   --color-secondary: var(--color-secondary);
   --color-background: var(--background);

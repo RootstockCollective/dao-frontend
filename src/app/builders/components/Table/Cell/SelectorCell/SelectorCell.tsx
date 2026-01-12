@@ -32,7 +32,7 @@ export function SelectorCell({
       {/* Show Ellipse icon on hover or when selected */}
       <EllipseIcon
         className={cn(
-          'absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 text-v3-bg-accent-100 z-10',
+          'absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 text-v3-bg-accent-100 z-base',
           'transition-opacity duration-300 ease-in-out',
           isHovered || isSelected ? 'opacity-100' : 'opacity-0',
         )}
@@ -46,7 +46,7 @@ export function SelectorCell({
       {/* Show CheckIcon icon on top when selected */}
       <CheckIcon
         className={cn(
-          'absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 text-v3-bg-accent-100 z-20',
+          'absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 text-v3-bg-accent-100 z-base',
           'transition-all duration-200 ease-in-out',
           isSelected ? 'rotate-y-180 opacity-100 delay-250' : 'opacity-0 delay-0 duration-100',
         )}

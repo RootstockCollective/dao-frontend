@@ -13,7 +13,7 @@ export const ResizeHandle = ({
 
   return (
     <div
-      className={cn('w-2 h-full flex items-center justify-center bg-v3-bg-accent-100 z-10', cursorClass)}
+      className={cn('w-2 h-full flex items-center justify-center bg-v3-bg-accent-100 z-base', cursorClass)}
       {...props}
     >
       <div

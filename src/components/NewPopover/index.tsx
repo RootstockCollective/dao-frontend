@@ -1,5 +1,6 @@
 import * as Popover from '@radix-ui/react-popover'
 import React, { CSSProperties, ReactElement, ReactNode, RefObject, useEffect, useRef } from 'react'
+import { cn } from '@/lib/utils'
 
 interface NewPopoverProps {
   open: boolean
@@ -77,7 +78,7 @@ export const NewPopover: React.FC<NewPopoverProps> = ({
           align={align}
           sideOffset={sideOffset}
           alignOffset={offsetWidth ? offsetWidth + alignOffset : -alignOffset}
-          className={`shadow-lg rounded-[4px] p-4 z-1000 ${className}`}
+          className={cn('shadow-lg rounded-[4px] p-4 z-tooltip', className)}
           style={style}
         >
           <div className={contentClassName} style={contentStyle}>

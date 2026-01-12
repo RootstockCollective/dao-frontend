@@ -56,9 +56,9 @@ export const StepWrapper = ({ onCloseModal }: StepWrapperProps) => {
         {/* Footer with buttons */}
         <div className="mt-8">
           {/* Help Popover - above divider on mobile, left of buttons on desktop */}
-          {!isDesktop && step === 1 && (
+          {/* {!isDesktop && step === 1 && ( */}
             <HelpPopover open={helpPopoverOpen} onOpenChange={setHelpPopoverOpen} />
-          )}
+          {/* )} */}
           <Divider />
           <StepActionButtons
             buttonActions={buttonActions}
@@ -100,9 +100,6 @@ const HelpPopover = ({ open, onOpenChange }: HelpPopoverProps) => {
       }
       content={<HelpPopoverContent />}
       className="rounded-none bg-transparent shadow-none"
-      // same as tooltip z-index (z-1000)
-      style={{ zIndex: 1000 }}
-      contentStyle={{ zIndex: 1000 }}
       // Mobile: full width, Desktop: constrained width
       side={isDesktop ? 'top' : 'bottom'}
       align={isDesktop ? 'start' : 'center'}

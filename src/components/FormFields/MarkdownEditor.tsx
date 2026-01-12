@@ -106,7 +106,7 @@ function EditorContent({
           {/* Floating Label */}
           <motion.label
             htmlFor={id}
-            className="absolute left-4 z-10 pointer-events-none origin-left font-rootstock-sans text-bg-0"
+            className="absolute left-4 z-base pointer-events-none origin-left font-rootstock-sans text-bg-0"
             initial={false}
             animate={{
               top: shouldFloat ? 49 : 75,

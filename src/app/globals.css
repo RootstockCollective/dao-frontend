@@ -30,6 +30,27 @@
   text-decoration-thickness: 0.5px;
 }
 
+/* Semantic z-index utilities */
+@utility z-base {
+  z-index: var(--z-index-base);
+}
+
+@utility z-dropdown {
+  z-index: var(--z-index-dropdown);
+}
+
+@utility z-sticky {
+  z-index: var(--z-index-sticky);
+}
+
+@utility z-modal {
+  z-index: var(--z-index-modal);
+}
+
+@utility z-tooltip {
+  z-index: var(--z-index-tooltip);
+}
+
 * {
   box-sizing: border-box;
 }

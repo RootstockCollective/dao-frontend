@@ -55,7 +55,7 @@ export const MultipleSelectDropdown = <ColumnId extends BaseColumnId = BaseColum
       <DropdownMenuPrimitive.Portal>
         <DropdownMenuPrimitive.Content
           asChild
-          className={cn('z-100 min-w-[220px] rounded p-1 shadow-md')}
+          className={cn('z-dropdown min-w-[220px] rounded p-1 shadow-md')}
           sideOffset={5}
           align={align}
           role="listbox"

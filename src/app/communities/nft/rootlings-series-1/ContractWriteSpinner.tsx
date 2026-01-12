@@ -9,7 +9,7 @@ export function ContractWriteSpinner() {
 
   if (!pending) return null
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-50">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-base">
       <LoadingSpinner />
     </div>
   )

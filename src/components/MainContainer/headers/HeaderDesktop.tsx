@@ -9,7 +9,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs'
 export function HeaderDesktop({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { isSidebarOpen, toggleSidebar } = useLayoutContext()
   return (
-    <header {...props} className={cn('pt-6 px-7 z-10', className)}>
+    <header {...props} className={cn('pt-6 px-7 z-base', className)}>
       <div className="flex flex-row justify-between items-center">
         {/* Left side */}
         <div className="flex flex-row items-center">
