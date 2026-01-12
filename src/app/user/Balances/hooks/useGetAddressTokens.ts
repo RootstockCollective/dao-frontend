@@ -34,11 +34,17 @@ const buildTokenBalanceObject = (
 })
 
 export const useGetAddressTokens = (address: Address, chainId?: number) => {
-  const { data: rbtc, isLoading: rbtcLoading, error: rbtcError } = useBalance({ address, chainId })
+  const {
+    data: rbtc,
+    isLoading: rbtcLoading,
+    error: rbtcError,
+    refetch: refetchRbtc,
+  } = useBalance({ address, chainId })
   const {
     data: contracts,
     isLoading: contractsLoading,
     error: contractsError,
+    refetch: refetchContracts,
   } = useReadContracts({
     contracts: [
       getTokenFunction(tokenContracts.RIF, address, 'balanceOf'),
@@ -79,6 +85,11 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
     tokenData &&
     ([contracts[3], { result: tokenData[tokenContracts.USDT0]?.symbol }] as TokenData)
 
+  const refetch = () => {
+    refetchRbtc()
+    refetchContracts()
+  }
+
   return {
     data: [
       buildTokenBalanceObject(
@@ -106,5 +117,6 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
     ] as AddressToken[],
     isLoading: rbtcLoading || contractsLoading || IsTokenDataLoading,
     error: rbtcError ?? contractsError ?? tokenDataError,
+    refetch,
   }
 }
