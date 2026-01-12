@@ -1,6 +1,6 @@
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { Modal } from '@/components/Modal'
-import { Header, Label, Paragraph } from '@/components/Typography'
+import { Header, Label, Paragraph, Span } from '@/components/Typography'
 import Big from '@/lib/big'
 import { cn, handleAmountInput, formatCurrency } from '@/lib/utils'
 import { formatSymbol } from '@/app/shared/formatter'
@@ -52,7 +52,7 @@ const KycInfo = () => {
         className="underline cursor-pointer"
         data-testid="KycLink"
       >
-        Talk to the team
+        <Span variant="body-s">talk to the team</Span>
       </ExternalLink>{' '}
       and register your interest in joining the invited, whitelisted testing group.
     </Paragraph>
@@ -239,11 +239,13 @@ export const DepositModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
               )}
 
               {/* Slippage field below the input */}
-              <SlippageInput
-                value={slippagePercentage}
-                onChange={setSlippagePercentage}
-                name="slippage-deposit-input"
-              />
+              {isAllowanceEnough && !isAllowancePending && (
+                <SlippageInput
+                  value={slippagePercentage}
+                  onChange={setSlippagePercentage}
+                  name="slippage-deposit-input"
+                />
+              )}
 
               {errorMessage && (
                 <div className="flex items-start gap-2 mt-2 max-w-full">
