@@ -164,29 +164,43 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
     const combinedQuery = allocationHistory.union(claimedRewardsHistory).as('base')
 
     const orderByColumn = sortBy || 'blockTimestamp'
+    const sortDir = sortDirection || 'desc'
+
+    const query = db
+      .from(combinedQuery)
+      .select(
+        'id',
+        'type',
+        'backer',
+        'builder',
+        'blockHash',
+        'blockTimestamp',
+        'transactionHash',
+        'cycleStart',
+        'allocation',
+        'increased',
+        'amount',
+        'rewardToken',
+        'amountUsd',
+        db.raw('SUM("amountUsd") OVER (PARTITION BY "blockHash", "type") as "totalAmount"'),
+      )
+      .orderBy(orderByColumn, sortDir)
+
+    /**
+     * Deterministic ordering:
+     *  - Keep the user's primary sort
+     *  - Then add stable tie-breakers
+     *  - Always end with a union-unique tail (type,id)
+     */
+    if (orderByColumn !== 'blockTimestamp') query.orderBy('blockTimestamp', 'desc')
+    if (orderByColumn !== 'transactionHash') query.orderBy('transactionHash', 'asc')
+
+    // Final tie-breakers (make the union ordering fully deterministic)
+    if (orderByColumn !== 'type') query.orderBy('type', 'asc')
+    if (orderByColumn !== 'id') query.orderBy('id', 'asc')
 
     const [data, countResult] = await Promise.all([
-      db
-        .from(combinedQuery)
-        .select(
-          'id',
-          'type',
-          'backer',
-          'builder',
-          'blockHash',
-          'blockTimestamp',
-          'transactionHash',
-          'cycleStart',
-          'allocation',
-          'increased',
-          'amount',
-          'rewardToken',
-          'amountUsd',
-          db.raw('SUM("amountUsd") OVER (PARTITION BY "blockHash", "type") as "totalAmount"'),
-        )
-        .orderBy(orderByColumn, sortDirection || 'desc')
-        .limit(pageSize)
-        .offset((page - 1) * pageSize),
+      query.limit(pageSize).offset((page - 1) * pageSize),
       db.from(combinedQuery).count<{ count: string }[]>('* as count').first(),
     ])
 
