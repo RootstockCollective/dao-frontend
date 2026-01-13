@@ -291,7 +291,7 @@ export function CsvButton({
       data-testid="CsvButton"
       {...props}
     >
-      <CsvIcon />
+      <CsvIcon size={22} />
     </button>
   )
 }
