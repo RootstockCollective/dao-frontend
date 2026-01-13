@@ -57,17 +57,14 @@ export function Breadcrumbs() {
   }, [pathname])
 
   return (
-    <nav aria-label="breadcrumb" className="ml-5" data-testid="Breadcrumbs">
+    <nav aria-label="breadcrumb" className="ml-5 min-w-0" data-testid="Breadcrumbs">
       <ol className="flex gap-2">
         {breadcrumbs.map(({ title, href }, idx) => {
           const isLast = idx === breadcrumbs.length - 1
           return (
-            <li key={href} className="flex items-center gap-2">
+            <li key={href} className={isLast ? 'min-w-0 truncate' : 'flex items-center gap-2 shrink-0'}>
               {isLast ? (
-                <span
-                  className="text-sm text-text-100 truncate inline-block max-w-[150px]"
-                  data-testid="BreadcrumbCurrent"
-                >
+                <span className="text-sm text-text-100" data-testid="BreadcrumbCurrent">
                   {title}
                 </span>
               ) : (
