@@ -4,6 +4,7 @@ import UpdateBackerRewardViewModal from './UpdateBackerRewardViewModal'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { DateTime, Duration } from 'luxon'
 import { useState, useEffect, useMemo } from 'react'
+import { useScrollLock } from '@/shared/hooks/useScrollLock'
 
 interface UpdateBackerRewardModalProps {
   isOpen: boolean
@@ -17,6 +18,8 @@ function formatDuration(duration: bigint | undefined) {
 }
 
 export const UpdateBackerRewardModal = ({ isOpen, onClose, className }: UpdateBackerRewardModalProps) => {
+  useScrollLock(isOpen)
+
   const {
     current: { data: rewardData, isLoading: isRewardsLoading, refetch: refetchRewards },
     update: { setNewReward, isPending: isTxPending, isSuccess: isTxSuccess },
