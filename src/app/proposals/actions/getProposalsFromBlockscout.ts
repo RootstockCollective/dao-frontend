@@ -19,7 +19,7 @@ type ProposalCreatedEventLog = ElementType<
   ReturnType<typeof parseEventLogs<typeof GovernorAbi, true, 'ProposalCreated'>>
 >
 
-type ProposalCreatedEventLogWithTimestamp = ProposalCreatedEventLog & {
+interface ProposalCreatedEventLogWithTimestamp extends Omit<ProposalCreatedEventLog, 'blockNumber'> {
   timeStamp: string
   blockNumber: string
 }
