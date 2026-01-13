@@ -56,9 +56,9 @@ export const StepWrapper = ({ onCloseModal }: StepWrapperProps) => {
         {/* Footer with buttons */}
         <div className="mt-8">
           {/* Help Popover - above divider on mobile, left of buttons on desktop */}
-          {/* {!isDesktop && step === 1 && ( */}
+          {!isDesktop && step === 1 && (
             <HelpPopover open={helpPopoverOpen} onOpenChange={setHelpPopoverOpen} />
-          {/* )} */}
+          )}
           <Divider />
           <StepActionButtons
             buttonActions={buttonActions}
