@@ -1,4 +1,5 @@
 import { MILESTONE_SEPARATOR } from '@/app/proposals/shared/utils'
+import { Milestones } from '@/app/proposals/shared/types'
 import { FilterItem, FilterType } from './types'
 
 export interface FilterOption {
@@ -11,9 +12,9 @@ export const categoryFilterOptions: FilterOption[] = [
   { label: 'Grants', value: 'Grants' },
   { label: 'Builder', value: 'Builder' },
   { label: 'Grant - all milestones', value: MILESTONE_SEPARATOR },
-  { label: 'Grants - milestone 1', value: `${MILESTONE_SEPARATOR}1` },
-  { label: 'Grants - milestone 2', value: `${MILESTONE_SEPARATOR}2` },
-  { label: 'Grants - milestone 3', value: `${MILESTONE_SEPARATOR}3` },
+  { label: 'Grants - milestone 1', value: `${MILESTONE_SEPARATOR}${Milestones.MILESTONE_1}` },
+  { label: 'Grants - milestone 2', value: `${MILESTONE_SEPARATOR}${Milestones.MILESTONE_2}` },
+  { label: 'Grants - milestone 3', value: `${MILESTONE_SEPARATOR}${Milestones.MILESTONE_3}` },
 ]
 
 export const statusFilterOptions: FilterOption[] = [

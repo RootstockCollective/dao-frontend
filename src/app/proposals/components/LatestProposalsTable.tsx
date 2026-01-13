@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { SearchButton } from './SearchButton'
 import { Header } from '@/components/Typography'
-import { Proposal } from '@/app/proposals/shared/types'
+import { Proposal, Milestones } from '@/app/proposals/shared/types'
 import { useProposalFilters } from './filter/useProposalFilters'
 import { ActiveFiltersDisplay } from './filter/ActiveFiltersDisplay'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
@@ -47,9 +47,17 @@ const filterProposals = (proposals: Proposal[], activeFilters: FilterItem[]) => 
       const categoryMatch = categoryFilters.some(categoryFilter => {
         const filterValue = categoryFilter.value
 
-        // Special case for milestone-related filters - check description
-        if (filterValue === MILESTONE_SEPARATOR || filterValue.startsWith(MILESTONE_SEPARATOR)) {
-          return proposal.description?.toLowerCase().includes(filterValue.toLowerCase())
+        // Special case for milestone-related filters - use exact pattern matching
+        // consistent with category detection in getProposalCategoryFromParsedData
+        if (filterValue.startsWith(MILESTONE_SEPARATOR)) {
+          const isAllMilestonesFilter = filterValue === MILESTONE_SEPARATOR
+          // "All milestones" matches M1lestone: followed immediately by valid milestone numbers
+          // Specific milestone filters match exact pattern followed by whitespace or end
+          const validMilestones = [Milestones.MILESTONE_1, Milestones.MILESTONE_2, Milestones.MILESTONE_3]
+          const pattern = isAllMilestonesFilter
+            ? `${MILESTONE_SEPARATOR}[${validMilestones.join('')}]`
+            : `${filterValue}(?:\\s|$)`
+          return new RegExp(pattern, 'i').test(proposal.description ?? '')
         }
 
         // For all other category filters, only check the category field
