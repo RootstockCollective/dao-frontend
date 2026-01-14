@@ -4,7 +4,7 @@ import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { ReactElement, ReactNode, Suspense, useMemo } from 'react'
 import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
 import { Label, Paragraph } from '@/components/Typography'
-import { cn } from '@/lib/utils'
+import { cn, formatCurrencyWithLabel } from '@/lib/utils'
 import { SORT_DIRECTION_ASC, SORT_DIRECTIONS } from '@/shared/context/TableContext/constants'
 import { Dispatch, FC } from 'react'
 import {
@@ -123,7 +123,7 @@ export const TransactionHistoryHeaderRow = (): ReactElement => {
 
     const sanitize = (raw: string | null | undefined) => {
       if (!raw) return 0
-      if (raw.startsWith('<')) return 0
+      if (raw.startsWith('<')) return 0.0001
       const sanitized = raw.replace(/,/g, '')
       const parsed = Number(sanitized)
       return Number.isNaN(parsed) ? 0 : parsed
@@ -135,11 +135,7 @@ export const TransactionHistoryHeaderRow = (): ReactElement => {
       return acc + values.reduce((subtotal, val) => subtotal + sanitize(val), 0)
     }, 0)
 
-    return new Intl.NumberFormat('en-US', {
-      style: 'decimal',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(sum)
+    return formatCurrencyWithLabel(sum, { showCurrencySymbol: false })
   }, [rows])
 
   return (
