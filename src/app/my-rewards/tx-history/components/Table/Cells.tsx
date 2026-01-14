@@ -309,15 +309,11 @@ export const TotalAmountCell: FC<TotalAmountCellProps> = ({
           isMultipleUsd ? (
             <div className="flex flex-col items-center gap-1">
               {usd.map((value, idx) => (
-                <Paragraph key={idx} variant="body" className="text-v3-text-100">
-                  {value}
-                </Paragraph>
+                <Paragraph key={idx}>{value}</Paragraph>
               ))}
             </div>
           ) : (
-            <Paragraph variant="body" className="text-v3-text-100">
-              {usd}
-            </Paragraph>
+            <Paragraph>{usd}</Paragraph>
           )
         ) : null}
       </TableCell>

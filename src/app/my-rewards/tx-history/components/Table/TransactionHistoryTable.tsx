@@ -11,6 +11,7 @@ import {
   TransactionHistoryCellDataMap,
 } from './TransactionHistoryTable.config'
 import { DesktopTransactionHistory } from './DesktopTransactionHistory'
+import { MobileTransactionHistory } from './MobileTransactionHistory'
 import { convertDataToRowData } from './convertDataToRowData'
 import { useCycleContext } from '@/app/collective-rewards/metrics/context'
 import { TablePager } from '@/components/TableNew'
@@ -18,7 +19,6 @@ import { Header } from '@/components/Typography'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { TransactionHistoryFilterSideBar } from '../TransactionHistoryFilterSideBar'
 import { motion } from 'motion/react'
-import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { ActiveFilter } from '@/components/FilterSideBar/types'
@@ -136,7 +136,7 @@ export default function TransactionHistoryTable() {
   }, [error])
 
   return (
-    <div className="w-full flex flex-col gap-10">
+    <div className="w-full flex flex-col gap-8 md:gap-10">
       <div className="flex items-center justify-between">
         <Header variant="h3" className="m-0" data-testid="events-list-header">
           EVENTS LIST
@@ -161,7 +161,7 @@ export default function TransactionHistoryTable() {
         </div>
       </div>
 
-      <div className={cn('flex flex-row-reverse')}>
+      <div className="flex flex-row-reverse">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: isFilterSidebarOpen ? 264 : 0 }}
@@ -178,7 +178,7 @@ export default function TransactionHistoryTable() {
           </div>
         </motion.div>
         <div className="grow overflow-y-auto">
-          <DesktopTransactionHistory rows={rows} />
+          {isDesktop ? <DesktopTransactionHistory rows={rows} /> : <MobileTransactionHistory rows={rows} />}
         </div>
       </div>
 
