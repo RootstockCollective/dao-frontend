@@ -152,7 +152,7 @@ const PageWithProposal = (proposal: Proposal) => {
   return (
     <div className="min-h-screen flex flex-col gap-4 w-full max-w-full">
       <div className="md:flex items-center gap-4">
-        <Header variant="h3" className="text-2xl lg:text-3xl !leading-[0.9]">
+        <Header caps variant="h3" className="text-2xl lg:text-[32px] !tracking-normal !leading-[1.25]">
           {name}
         </Header>
         <div className="flex gap-2 items-end md:mt-0 mt-3">
