@@ -18,14 +18,14 @@ const proposalStateToProgressMap = new Map([
   [undefined, 0],
 ])
 
-const getStatusSteps = (proposalState: ProposalState) => {
+const getStatusSteps = (proposalState?: ProposalState) => {
   if (proposalState === ProposalState.Defeated || proposalState === ProposalState.Canceled) {
     return ['ACTIVE', 'FAILED']
   }
   return ['ACTIVE', 'SUCCEEDED', 'QUEUED', 'EXECUTED']
 }
 
-const getCurrentStepIndex = (proposalState: ProposalState) => {
+const getCurrentStepIndex = (proposalState?: ProposalState) => {
   switch (proposalState) {
     case ProposalState.Active:
       return 0
@@ -43,9 +43,11 @@ const getCurrentStepIndex = (proposalState: ProposalState) => {
   }
 }
 
-const renderStatusPath = (proposalState: ProposalState) => {
+const renderStatusPath = (proposalState?: ProposalState) => {
   const steps = getStatusSteps(proposalState)
   const currentStepIndex = getCurrentStepIndex(proposalState)
+
+  const classname = 'text-base leading-normal tracking-[1.28px] uppercase'
 
   return (
     <>
@@ -53,12 +55,16 @@ const renderStatusPath = (proposalState: ProposalState) => {
         <Fragment key={step}>
           <Span
             variant="body-s"
-            className={cn('flex-shrink-0', index === currentStepIndex ? 'text-white' : 'text-bg-0')}
+            className={cn(
+              classname,
+              'font-medium flex-shrink-0',
+              index === currentStepIndex ? 'text-text-100' : 'text-bg-0',
+            )}
           >
             {step}
           </Span>
           {index < steps.length - 1 && (
-            <Span variant="body-s" className="flex-shrink-0 mx-2 text-bg-0">
+            <Span variant="body-s" className={cn(classname, 'text-xl flex-shrink-0 mx-2 text-bg-0')}>
               {'>'}
             </Span>
           )}
@@ -87,7 +93,7 @@ export const ProposalProggressBar = ({ proposalState }: ProgressBarProps) => {
       return 0
     }
 
-    const currentStepIndex = getCurrentStepIndex(proposalState!)
+    const currentStepIndex = getCurrentStepIndex(proposalState)
 
     // Calculate position of current active step
     // Each step is roughly: label (60px) + arrow (16px) = 76px
@@ -121,13 +127,13 @@ export const ProposalProggressBar = ({ proposalState }: ProgressBarProps) => {
   }, [proposalState, calculateOffset])
 
   return (
-    <div className="flex flex-col w-full md:p-6 p-4" ref={containerRef}>
+    <div className="flex flex-col w-full md:p-6 p-4 md:pb-10" ref={containerRef}>
       <div
         ref={contentRef}
         className="flex flex-row justify-between w-full"
         style={{ transform: offset > 0 ? `translateX(-${offset}px)` : undefined }}
       >
-        {renderStatusPath(proposalState!)}
+        {renderStatusPath(proposalState)}
       </div>
       <ProgressBar
         progress={proposalStateToProgressMap.get(proposalState) ?? 0}

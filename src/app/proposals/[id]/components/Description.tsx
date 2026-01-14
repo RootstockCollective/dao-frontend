@@ -10,7 +10,7 @@ interface DescriptionProps {
 }
 
 const DescriptionHeader = () => (
-  <Header variant="h2" className="text-xl text-white">
+  <Header variant="h2" className="text-xl text-text-100">
     DESCRIPTION
   </Header>
 )
@@ -60,7 +60,7 @@ export const Description = ({ description }: DescriptionProps) => {
   const descriptionText = description ? parseProposalDescription(description).description : ''
 
   return (
-    <div className="md:px-6 px-4 py-10">
+    <div className="md:px-6 px-4 pt-14 pb-10">
       {!isDesktop ? (
         <Expandable expanded={false}>
           <ExpandableHeader triggerColor="white">
