@@ -204,3 +204,43 @@ const WithoutBalanceWrapper = () => {
 export const WithoutBalance: Story = {
   render: () => <WithoutBalanceWrapper />,
 }
+
+const singleToken: SwapInputToken[] = [
+  {
+    symbol: 'USDT0',
+    address: '0x0000000000000000000000000000000000000000',
+    name: 'Tether USD',
+    decimals: 6,
+    price: 1.0,
+  },
+]
+
+const SingleTokenWrapper = () => {
+  const [selectedToken] = useState<SwapInputToken>(singleToken[0])
+  const [amount, setAmount] = useState('')
+
+  const handlePercentageClick = (percentage: number) => {
+    const balance = '1000.0'
+    const newAmount = (parseFloat(balance) * percentage).toString()
+    setAmount(newAmount)
+  }
+
+  return (
+    <div className="w-[500px]">
+      <SwapInputComponent
+        tokens={singleToken}
+        selectedToken={selectedToken}
+        onTokenChange={() => {}}
+        amount={amount}
+        onAmountChange={setAmount}
+        balance="1000.0"
+        onPercentageClick={handlePercentageClick}
+        labelText="Amount to swap"
+      />
+    </div>
+  )
+}
+
+export const SingleToken: Story = {
+  render: () => <SingleTokenWrapper />,
+}
