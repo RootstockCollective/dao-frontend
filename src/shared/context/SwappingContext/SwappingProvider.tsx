@@ -116,6 +116,7 @@ const swapReducer = (state: SwapState, action: SwapAction): SwapState => {
     case SwapActionType.SET_QUOTE_ERROR:
       return {
         ...state,
+        quote: action.payload ? null : state.quote, // Clear quote when error is set
         quoteError: action.payload,
         isQuoting: false,
       }
@@ -318,6 +319,10 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
     dispatch({ type: SwapActionType.SET_APPROVING, payload: false })
   }, [])
 
+  const setPoolFee = useCallback((fee: number) => {
+    dispatch({ type: SwapActionType.SET_POOL_FEE, payload: fee })
+  }, [])
+
   const value: SwappingContextValue = useMemo(
     () => ({
       state,
@@ -339,6 +344,7 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
       setSwapping,
       setSwapError,
       setSwapTxHash,
+      setPoolFee,
     }),
     [
       state,
@@ -359,6 +365,7 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
       setSwapping,
       setSwapError,
       setSwapTxHash,
+      setPoolFee,
     ],
   )
 

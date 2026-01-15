@@ -8,6 +8,7 @@ export interface SwapQuote {
   provider: SwapProviderName
   amountOut: string // Human-readable output amount
   amountOutRaw: string // Raw bigint as string
+  feeTier?: number // The fee tier that produced this quote (100, 500, 3000, 10000)
   priceImpact?: string // Percentage if available (e.g., "0.5" for 0.5%)
   gasEstimate?: string // Gas estimate if available
   error?: string // Error message if quote failed
