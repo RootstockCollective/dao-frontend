@@ -84,73 +84,73 @@ async function getQuoteForFee(
 }
 
 /**
+ * Try to get a quote from a specific fee tier, returning the tier info on success
+ */
+async function tryGetQuoteWithTier(
+  params: QuoteParams,
+  fee: number,
+  providerName: SwapProvider['name'],
+): Promise<SwapQuote | null> {
+  try {
+    const quote = await getQuoteForFee(params, fee, providerName)
+    return { ...quote, feeTier: fee }
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Get the best quote from all available fee tiers
+ * Tries all tiers in parallel and returns the one with highest output
+ */
+async function getBestQuoteFromAllTiers(
+  params: QuoteParams,
+  providerName: SwapProvider['name'],
+): Promise<SwapQuote | null> {
+  const quotePromises = UNISWAP_FEE_TIERS.map(fee => tryGetQuoteWithTier(params, fee, providerName))
+  const quotes = await Promise.all(quotePromises)
+
+  // Filter successful quotes and find the best one (highest amountOut)
+  const validQuotes = quotes.filter((q): q is SwapQuote => q !== null)
+
+  if (validQuotes.length === 0) {
+    return null
+  }
+
+  return validQuotes.reduce((best, current) =>
+    new Big(current.amountOut).gt(best.amountOut) ? current : best,
+  )
+}
+
+/**
  * Get a quote from Uniswap
- * If feeTier is specified, uses that exact tier and returns an error if it doesn't exist (no fallback).
- * If feeTier is not specified, uses the default fee tier (100 = 0.01%).
+ * Strategy: Try default tier first (fast path), fallback to all tiers if it fails.
+ * Always returns the fee tier that produced the quote.
  *
  * Note: Fee tiers are different Uniswap V3 pools (0.01%, 0.05%, 0.3%, 1% fees).
  * This is NOT slippage - slippage tolerance should be handled at swap execution time.
  */
 async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
   const providerName = SWAP_PROVIDERS.UNISWAP
-  const { feeTier } = params
 
-  // If a specific fee tier is requested, use that exact tier (no fallback)
-  if (feeTier !== undefined) {
-    try {
-      return await getQuoteForFee(params, feeTier, providerName)
-    } catch (error) {
-      // Contract call failed - pool doesn't exist for this fee tier
-      return {
-        provider: providerName,
-        amountOut: '0',
-        amountOutRaw: '0',
-        error:
-          error instanceof Error
-            ? `Pool does not exist for fee tier ${feeTier}: ${error.message}`
-            : `Pool does not exist for fee tier ${feeTier}`,
-      }
-    }
+  // Try default tier first (fast path for most common case)
+  const defaultQuote = await tryGetQuoteWithTier(params, DEFAULT_FEE_TIER, providerName)
+  if (defaultQuote) {
+    return defaultQuote
   }
 
-  // No fee tier specified - use default fee tier
-  try {
-    return await getQuoteForFee(params, DEFAULT_FEE_TIER, providerName)
-  } catch (error) {
-    // Default tier failed, try all other tiers as fallback
-    let bestQuote: SwapQuote | null = null
-    const errors: Error[] = []
+  // Default tier failed - try all tiers to find one with liquidity
+  const bestQuote = await getBestQuoteFromAllTiers(params, providerName)
+  if (bestQuote) {
+    return bestQuote
+  }
 
-    // Try all fee tiers in parallel for better performance
-    const quotePromises = UNISWAP_FEE_TIERS.map(fee =>
-      getQuoteForFee(params, fee, providerName).catch((err: unknown) => {
-        errors.push(err instanceof Error ? err : new Error(String(err)))
-        return null
-      }),
-    )
-
-    const quotes = await Promise.all(quotePromises)
-
-    // Find the best quote (highest amountOut)
-    for (const quote of quotes) {
-      if (quote !== null && (!bestQuote || new Big(quote.amountOut).gt(bestQuote.amountOut))) {
-        bestQuote = quote
-      }
-    }
-
-    // If we got at least one quote, return the best one
-    if (bestQuote !== null) {
-      return bestQuote
-    }
-
-    // If all fee tiers failed, return error quote
-    const lastError = errors[errors.length - 1]
-    return {
-      provider: providerName,
-      amountOut: '0',
-      amountOutRaw: '0',
-      error: lastError ? lastError.message : 'Failed to get quote from Uniswap',
-    }
+  // All tiers failed - no liquidity available
+  return {
+    provider: providerName,
+    amountOut: '0',
+    amountOutRaw: '0',
+    error: 'No liquidity available. All pool fee tiers failed to provide a quote.',
   }
 }
 
