@@ -7,6 +7,7 @@ import { Paragraph } from '@/components/Typography'
 import { Row } from '@/shared/context/TableContext/types'
 import { ColumnId, TransactionHistoryCellDataMap } from './TransactionHistoryTable.config'
 import { MobileAmountCell, MobileFromToCell, MobileTotalAmountCell, MobileTypeCell } from './MobileCells'
+import { MobileShowDetails } from './MobileGroupedDetails'
 
 export type TransactionRow = Row<ColumnId, Row['id'], TransactionHistoryCellDataMap>
 
@@ -42,12 +43,7 @@ export const MobileTransactionDetailRow: FC<MobileTransactionDetailRowProps> = (
             <MobileAmountCell amounts={amount.amounts} type={type.type} increased={amount.increased} />
             <MobileTotalAmountCell usd={total_amount.usd} />
           </div>
-          {isGrouped && (
-            <Paragraph variant="body-s" className="text-center">
-              Show details{' '}
-              <span className="text-xl tracking-widest align-middle text-v3-bg-accent-0">···</span>
-            </Paragraph>
-          )}
+          {isGrouped && <MobileShowDetails row={row} />}
         </div>
       </ExpandableContent>
     </Expandable>
