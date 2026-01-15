@@ -63,7 +63,8 @@ export const ExpandableContent: FC<Props> = ({
       <div
         className={cn(
           'transition-all duration-300 ease-in-out overflow-hidden',
-          isExpanded ? 'max-h-[500px] opacity-100 my-2' : 'max-h-0 opacity-0',
+          // Large max height (2000px) ensures most content fits; safe to increase if needed
+          isExpanded ? 'max-h-[2000px] opacity-100 my-2' : 'max-h-0 opacity-0',
           contentClassName,
         )}
       >
