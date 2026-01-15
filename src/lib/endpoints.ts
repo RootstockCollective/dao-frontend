@@ -15,7 +15,7 @@ export const fetchNFTsOwnedByAddressAndNftAddress =
   `/address/{{address}}/nfts/{{nftAddress}}?${CHAIN_ID_PARAM}`
 
 // keccak256('ProposalCreated(uint256,address,address[],uint256[],string[],bytes[],uint256,uint256,string)')
-const PROPOSAL_CREATED_EVENT = '0x7d84a6263ae0d98d3329bd7b46bb4e8d6f98cd35a7adb45c274c8b7fd5ebd5e0'
+export const PROPOSAL_CREATED_EVENT = '0x7d84a6263ae0d98d3329bd7b46bb4e8d6f98cd35a7adb45c274c8b7fd5ebd5e0'
 export const fetchProposalsCreatedByGovernorAddress =
   process.env.NEXT_PUBLIC_API_RWS_EVENTS_PROPOSALS_BY_ADDRESS ||
   `/address/{{address}}/eventsByTopic0?topic0=${PROPOSAL_CREATED_EVENT}&${CHAIN_ID_PARAM}&fromBlock={{fromBlock}}`

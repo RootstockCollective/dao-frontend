@@ -33,26 +33,53 @@ function transformProposal(proposal: ProposalDBRow): ProposalApiResponse {
 }
 
 export async function getProposalsFromDB(): Promise<ProposalApiResponse[]> {
-  const result = await db('Proposal')
-    .select(
-      'proposalId',
-      'description',
-      'votesFor',
-      'votesAgainst',
-      'votesAbstains',
-      'voteEnd',
-      'voteStart',
-      'quorum',
-      'rawState',
-      'state',
-      'proposer',
-      db.raw('array_to_json(calldatas) as calldatas'),
-      'values',
-      'createdAtBlock',
-      db.raw('array_to_json(targets) as targets'),
-      'createdAt',
+  try {
+    const result = await db('Proposal')
+      .select(
+        'proposalId',
+        'description',
+        'votesFor',
+        'votesAgainst',
+        'votesAbstains',
+        'voteEnd',
+        'voteStart',
+        'quorum',
+        'rawState',
+        'state',
+        'proposer',
+        db.raw('array_to_json(calldatas) as calldatas'),
+        'values',
+        'createdAtBlock',
+        db.raw('array_to_json(targets) as targets'),
+        'createdAt',
+      )
+      .orderBy('createdAtBlock', 'DESC')
+      .limit(1000)
+
+    // Validate result structure
+    if (!result) {
+      throw new Error('Database query returned null or undefined result')
+    }
+
+    if (!Array.isArray(result)) {
+      throw new Error(`Database query returned invalid data: expected array, got ${typeof result}`)
+    }
+
+    // Check minimum proposals count
+    if (result.length < 10) {
+      throw new Error(`Insufficient proposals from database: expected at least 10, got ${result.length}`)
+    }
+
+    // Transform proposals
+    return result.map(transformProposal)
+  } catch (error) {
+    // Re-throw with more context if it's already our error
+    if (error instanceof Error && error.message.includes('database')) {
+      throw error
+    }
+    // Wrap database errors (connection errors, query errors, etc.)
+    throw new Error(
+      `Failed to fetch proposals from database: ${error instanceof Error ? error.message : String(error)}`,
     )
-    .orderBy('createdAtBlock', 'DESC')
-    .limit(1000)
-  return result.map(transformProposal)
+  }
 }
