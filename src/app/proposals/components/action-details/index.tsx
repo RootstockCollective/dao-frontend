@@ -65,7 +65,7 @@ const renderSingleActionContent = (
       return (
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Span variant="tag-s" className="text-white/70" data-testid="TypeLabel">
+            <Span variant="tag-s" className="text-bg-0" data-testid="TypeLabel">
               Type
             </Span>
             <Paragraph variant="body" data-testid="Type">
@@ -73,7 +73,7 @@ const renderSingleActionContent = (
             </Paragraph>
           </div>
           <div className="flex flex-col">
-            <Span variant="tag-s" className="text-white/70" data-testid="ToAddressLabel">
+            <Span variant="tag-s" className="text-bg-0" data-testid="ToAddressLabel">
               To address
             </Span>
             {parsedAction.toAddress ? (
@@ -94,20 +94,17 @@ const renderSingleActionContent = (
           </div>
 
           <div className="col-span-2 overflow-x-auto overflow-y-hidden">
-            <Span variant="tag-s" className="text-white/70" data-testid="AmountLabel">
+            <Span variant="tag-s" className="text-bg-0" data-testid="AmountLabel">
               Amount
             </Span>
             <div className="flex flex-row gap-2 w-max">
               {/* Left column: values, right-aligned */}
               <div className="flex flex-col items-end text-right">
-                <Span className="text-[18px] font-bold" data-testid="Amount">
+                <Span data-testid="Amount">
                   {formatSymbol(convertAmountToBigint(parsedAction.amount), parsedAction.tokenSymbol || '')}
                 </Span>
                 {parsedAction.price !== undefined && (
-                  <Span
-                    className="text-xs text-white/50 font-normal leading-none"
-                    data-testid="AmountCurrency"
-                  >
+                  <Span className="text-xs text-bg-0" data-testid="AmountCurrency">
                     {formatCurrency(
                       Big(formatEther(convertAmountToBigint(parsedAction.amount)))
                         .times(parsedAction.price)
@@ -127,7 +124,7 @@ const renderSingleActionContent = (
                   </div>
                 )}
                 {/* TODO: make sure USD is perfectly aligned with its value */}
-                <Span className="font-normal text-xs text-white/50" data-testid="AmountCurrencySymbol">
+                <Span className="font-normal text-xs text-bg-0" data-testid="AmountCurrencySymbol">
                   USD
                 </Span>
               </div>
@@ -135,7 +132,7 @@ const renderSingleActionContent = (
           </div>
           {parsedAction.rns ? (
             <div className="col-span-2">
-              <Span variant="tag-s" className="text-white/70" data-testid="TypeLabel">
+              <Span variant="tag-s" className="text-bg-0" data-testid="TypeLabel">
                 to RNS
               </Span>
               <Paragraph variant="body" data-testid="Type">
@@ -196,7 +193,7 @@ export const ActionDetails = ({ parsedActions, className, readOnly }: ActionDeta
             <div key={`action-${index}`}>
               {index > 0 && <div className="border-t border-white/10 my-4" />}
               {totalCount > 1 && (
-                <Span variant="tag-s" className="text-white/70 mb-2">
+                <Span variant="tag-s" className="text-bg-0 mb-2">
                   Action {index + 1}
                 </Span>
               )}
