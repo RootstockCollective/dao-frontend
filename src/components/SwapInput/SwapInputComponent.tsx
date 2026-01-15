@@ -105,13 +105,14 @@ export const SwapInputComponent = forwardRef<HTMLInputElement, Props>(
 
     return (
       <div data-testid="swap-input-component">
-        <div className="flex flex-col py-3 px-4 rounded-1 w-full bg-bg-60">
-          {labelText && (
-            <Label className="mb-3" data-testid="swap-input-label">
-              {labelText}
-            </Label>
-          )}
-          <div className="flex gap-2">
+        <div className="flex py-3 px-4 rounded-1 w-full bg-bg-60 gap-2">
+          {/* Left side: label + input + currency stacked */}
+          <div className="flex flex-col flex-1">
+            {labelText && (
+              <Label className="mb-3" data-testid="swap-input-label">
+                {labelText}
+              </Label>
+            )}
             {isLoading ? (
               <AmountLoadingShimmer />
             ) : (
@@ -128,7 +129,26 @@ export const SwapInputComponent = forwardRef<HTMLInputElement, Props>(
                 inputProps={{ decimalScale: selectedToken.decimals || 18 }}
               />
             )}
-            <div className="flex items-center shrink-0" data-testid="swap-token-selector">
+            {amountToCurrency && !isLoading && (
+              <Paragraph variant="body-s" className="text-bg-0" data-testid="swap-currency-value">
+                {amountToCurrency}
+              </Paragraph>
+            )}
+            {errorText && (
+              <div className="flex items-center gap-2 mt-2" data-testid="swap-error-text">
+                <Image src="/images/warning-icon.svg" alt="Warning" width={40} height={40} />
+                <Paragraph className="text-error">{errorText}</Paragraph>
+              </div>
+            )}
+          </div>
+          {/* Right side: token centered vertically in full container */}
+          <div className="flex items-center shrink-0" data-testid="swap-token-selector">
+            {tokens.length === 1 ? (
+              <div className="flex items-center gap-2 px-4 py-2 bg-v3-bg-accent-60 rounded min-w-[120px]">
+                <TokenImage symbol={selectedToken.symbol} size={24} />
+                <Paragraph className="font-semibold">{selectedToken.symbol}</Paragraph>
+              </div>
+            ) : (
               <Dropdown value={selectedToken.symbol} onValueChange={handleTokenSelect} disabled={readonly}>
                 <DropdownTrigger className="min-w-[120px]">
                   <div className="flex items-center gap-2">
@@ -147,19 +167,8 @@ export const SwapInputComponent = forwardRef<HTMLInputElement, Props>(
                   ))}
                 </DropdownContent>
               </Dropdown>
-            </div>
+            )}
           </div>
-          {amountToCurrency && !isLoading && (
-            <Paragraph variant="body-s" className="text-bg-0" data-testid="swap-currency-value">
-              {amountToCurrency}
-            </Paragraph>
-          )}
-          {errorText && (
-            <div className="flex items-center gap-2 mt-2" data-testid="swap-error-text">
-              <Image src="/images/warning-icon.svg" alt="Warning" width={40} height={40} />
-              <Paragraph className="text-error">{errorText}</Paragraph>
-            </div>
-          )}
         </div>
 
         {(balance !== undefined || onPercentageClick) && (
