@@ -1,5 +1,5 @@
-import { TransactionHistoryItem } from '../../utils/types'
-import { GroupedTransactionDetail, TransactionHistoryTable } from './TransactionHistoryTable.config'
+import { TransactionHistoryItem } from './types'
+import { GroupedTransactionDetail, TransactionHistoryTable } from '../config'
 import { Duration } from 'luxon'
 import { GetPricesResult } from '@/app/user/types'
 import { tokenContracts } from '@/lib/contracts'
@@ -9,7 +9,7 @@ import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { Address, getAddress } from 'viem'
 import { formatCurrency } from '@/lib/utils'
 import { Builder } from '@/app/collective-rewards/types'
-import { calculateCycleNumber, formatDateRange } from '../../utils/utils'
+import { calculateCycleNumber, formatDateRange } from './utils'
 
 export const convertDataToRowData = (
   data: TransactionHistoryItem[],
