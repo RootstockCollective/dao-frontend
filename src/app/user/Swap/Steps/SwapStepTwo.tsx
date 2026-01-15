@@ -14,13 +14,7 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
   const { amountIn } = useSwapInput()
   const { tokenInData } = useTokenSelection()
   const { state, tokenData } = useSwappingContext()
-  const { allowance, isApproving, hasSufficientAllowance, approve, refetchAllowance } = useTokenAllowance()
-
-  // Calculate amount in currency using price from context
-  const amountInCurrency = useMemo(() => {
-    const priceValue = tokenData.prices[USDT0]
-    return `$${Big(amountIn).times(priceValue).toFixed(2)}`
-  }, [amountIn, tokenData.prices])
+  const { isApproving, hasSufficientAllowance, approve, refetchAllowance } = useTokenAllowance()
 
   // Check if allowance is sufficient
   const requiredAmount = useMemo(() => {
@@ -35,11 +29,25 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
   }, [amountIn, tokenInData.decimals])
 
   const isAllowanceEnough = useMemo(() => {
-    if (!allowance || requiredAmount === 0n) {
+    if (requiredAmount === 0n) {
       return false
     }
     return hasSufficientAllowance(requiredAmount)
-  }, [allowance, requiredAmount, hasSufficientAllowance])
+  }, [requiredAmount, hasSufficientAllowance])
+
+  // Auto-advance if allowance is sufficient
+  // Hook returns false while fetching, so this only triggers with fresh data
+  useEffect(() => {
+    if (isAllowanceEnough && !isApproving) {
+      onGoNext()
+    }
+  }, [isAllowanceEnough, isApproving, onGoNext])
+
+  // Calculate amount in currency using price from context
+  const amountInCurrency = useMemo(() => {
+    const priceValue = tokenData.prices[USDT0]
+    return `$${Big(amountIn).times(priceValue).toFixed(2)}`
+  }, [amountIn, tokenData.prices])
 
   const handleRequestAllowance = useCallback(() => {
     if (!requiredAmount || requiredAmount === 0n) {
@@ -73,14 +81,6 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
       action: 'allowance',
     })
   }, [requiredAmount, approve, refetchAllowance, onGoNext])
-
-  // Auto-advance if allowance is already sufficient (user may have approved in a previous session)
-  // Only auto-advance if not currently approving
-  useEffect(() => {
-    if (isAllowanceEnough && !isApproving) {
-      onGoNext()
-    }
-  }, [isAllowanceEnough, isApproving, onGoNext])
 
   // Set button actions
   useEffect(() => {

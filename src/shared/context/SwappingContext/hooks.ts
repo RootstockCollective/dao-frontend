@@ -239,7 +239,7 @@ export const useTokenAllowance = () => {
       }
       return true
     },
-    [allowance, permit2Expiration],
+    [isAllowanceFetching, permit2Amount, permit2Expiration],
   )
 
   const approve = useCallback(
@@ -339,8 +339,9 @@ export const useTokenAllowance = () => {
   }, [isWritePending, setApproving])
 
   return {
-    allowance,
-    isCheckingAllowance: isCheckingAllowance || isAllowanceLoading,
+    allowance: permit2Amount,
+    isCheckingAllowance: isAllowanceLoading,
+    isFetchingAllowance: isAllowanceFetching,
     isApproving: isApproving || isWritePending,
     hasSufficientAllowance,
     approve,
