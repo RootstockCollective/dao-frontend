@@ -68,21 +68,15 @@ export const formatSymbol = (value: bigint | string, symbol: string) => {
   if (!value || value === '0') {
     return '0'
   }
-  const { decimals, displayDecimals } = symbols[symbol.toLocaleLowerCase()] ?? {
+  const symbolKey = symbol.toLocaleLowerCase()
+  const { decimals, displayDecimals } = symbols[symbolKey] ?? {
     decimals: 18,
     displayDecimals: 2,
   }
+  const minimumFractionDigits = symbolKey === 'rbtc' ? 0 : displayDecimals
 
   const amount = Big(value.toString()).div(Big(10).pow(decimals))
   const minimumAmount = Big(1).div(Big(10).pow(displayDecimals))
-
-  if (amount.lte(0)) {
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: displayDecimals,
-      maximumFractionDigits: displayDecimals,
-      roundingMode: 'floor',
-    }).format(amount.toString() as never)
-  }
 
   if (amount.lt(1) && displayDecimals === 0) {
     return '<1'
@@ -93,7 +87,7 @@ export const formatSymbol = (value: bigint | string, symbol: string) => {
   }
 
   return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: displayDecimals,
+    minimumFractionDigits,
     maximumFractionDigits: displayDecimals,
     roundingMode: 'floor',
   }).format(amount.toString() as never)
