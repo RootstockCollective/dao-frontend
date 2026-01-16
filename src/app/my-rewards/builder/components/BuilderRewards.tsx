@@ -5,7 +5,8 @@ import { Collapsible } from '@/components/Collapsible'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
 import { Header } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import React, { useState } from 'react'
+import { useModal } from '@/shared/hooks/useModal'
+import React from 'react'
 import { Address } from 'viem'
 import { AdjustBackersRewardsButton } from './AdjustBackersRewardButton'
 import { AllTimeShare } from './AllTimeShare'
@@ -34,8 +35,11 @@ const BuilderRewardsContainer = ({
 }
 
 export const BuilderRewards = ({ address, gauge }: { address: Address; gauge: Address }) => {
-  const [isUpdateBackersRewardsModalOpen, setIsUpdateBackersRewardsModalOpen] = useState(false)
-
+  const {
+    isModalOpened: isUpdateBackersRewardsModalOpen,
+    openModal: openUpdateBackersRewardsModal,
+    closeModal: closeUpdateBackersRewardsModal,
+  } = useModal()
   const { getBuilderByAddress } = useBuilderContext()
 
   return (
@@ -94,15 +98,15 @@ export const BuilderRewards = ({ address, gauge }: { address: Address; gauge: Ad
       {isBuilderRewardable(getBuilderByAddress(address)?.stateFlags) && (
         <>
           <AdjustBackersRewardsButton
-            onClick={() => setIsUpdateBackersRewardsModalOpen(true)}
+            onClick={openUpdateBackersRewardsModal}
             data-testid="adjust-backers-rewards-button"
           />
-
-          <UpdateBackerRewardModal
-            isOpen={isUpdateBackersRewardsModalOpen}
-            onClose={() => setIsUpdateBackersRewardsModalOpen(false)}
-            data-testid="update-backer-reward-modal"
-          />
+          {isUpdateBackersRewardsModalOpen && (
+            <UpdateBackerRewardModal
+              onClose={closeUpdateBackersRewardsModal}
+              data-testid="update-backer-reward-modal"
+            />
+          )}
         </>
       )}
     </ActionsContainer>
