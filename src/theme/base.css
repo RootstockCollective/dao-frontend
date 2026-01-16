@@ -5,7 +5,7 @@
   --font-rootstock-sans: Rootstock-Sans;
 
   /* Semantic z-index scale */
-  --z-index-base: 1; /* above root (0) layer */
+  --z-index-base: 50; /* above root (0) layer */
   --z-index-dropdown: 100; /* dropdowns */
   --z-index-sticky: 200; /* header, sidebar, etc. */
   --z-index-modal: 500; /* modals */
