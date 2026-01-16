@@ -1,5 +1,6 @@
-import { DEFAULT_ICON_SIZE } from './constants'
 import { type IconProps } from './types'
+
+const DEFAULT_ICON_SIZE = 20
 
 export function CloseIconKoto({
   'aria-label': ariaLabel = 'Close Icon Koto',
@@ -10,9 +11,9 @@ export function CloseIconKoto({
   ...props
 }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} fill="none" {...props}>
+    <svg width={size} height={size} viewBox="0 0 20 20" fill="none" {...props}>
       <path
-        d="M19 5L5 19M5 5L19 19"
+        d="M15.8332 4.16663L4.1665 15.8333M4.1665 4.16663L15.8332 15.8333"
         stroke={stroke}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
