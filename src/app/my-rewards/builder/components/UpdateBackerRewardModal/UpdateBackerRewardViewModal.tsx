@@ -6,6 +6,7 @@ import { InputNumber } from '@/components/Input/InputNumber'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Modal } from '@/components/Modal/Modal'
 import { Tooltip } from '@/components/Tooltip'
+import { Paragraph, Span } from '@/components/Typography'
 import { BaseTypography } from '@/components/Typography/Typography'
 import { cn, durationToLabel } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
@@ -76,7 +77,7 @@ const UpdateBackerRewardViewModal = ({
                 <BaseTypography variant="h1">{currentReward}%</BaseTypography>
               </div>
               <div className="flex flex-col items-center gap-2 w-full md:w-[60%]">
-                <div className="flex flex-col md:flex-row md:items-center justify-between px-4 py-3 bg-input-bg w-full gap-2">
+                <div className="flex flex-row items-end justify-between px-4 py-3 bg-bg-60 w-full gap-2">
                   <div className="flex flex-col">
                     <BaseTypography variant="body-xs" className="text-bg-0">
                       Updated Rewards %
@@ -91,26 +92,27 @@ const UpdateBackerRewardViewModal = ({
                     />
                   </div>
                   {timeRemaining && (
-                    <BaseTypography variant="body" className="text-brand-rootstock-lime text-sm md:self-end">
+                    <Paragraph variant="body-s" className="text-brand-rootstock-lime md:self-end">
                       Effective in {timeRemaining}
-                    </BaseTypography>
+                    </Paragraph>
                   )}
                 </div>
-                <div className="flex items-center gap-2 w-full justify-end">
-                  {suggestedReward && (
-                    <Button variant="secondary-outline" className="p-2 mr-4 text-sm font-normal gap-1">
-                      {suggestedReward}%
-                      <Tooltip
-                        text="Average Rewards % of all the Collective Builders."
-                        className={cn('rounded-sm bg-v3-text-80 text-v3-bg-accent-60 p-6 text-sm z-999')}
-                        side="top"
-                        align="center"
-                      >
-                        <KotoQuestionMarkIcon className="mt-[-0.3rem]" />
-                      </Tooltip>
-                    </Button>
-                  )}
-                </div>
+                {suggestedReward && (
+                  <div className="flex items-center gap-3 md:gap-2 w-full px-4 py-0 justify-end self-end">
+                    <div className="flex items-center gap-2">
+                      <Button variant="secondary-outline" className="px-2 py-1.5 md:py-1 gap-1">
+                        <Span variant="body-s">{suggestedReward}%</Span>
+                        <Tooltip
+                          text="Average Rewards % of all the Collective Builders."
+                          className={cn('rounded-sm bg-v3-text-80 text-v3-bg-accent-60 p-6 text-sm z-999')}
+                          side="top"
+                          align="center"
+                        ></Tooltip>
+                      </Button>
+                    </div>
+                    <KotoQuestionMarkIcon />
+                  </div>
+                )}
               </div>
             </div>
           </>
