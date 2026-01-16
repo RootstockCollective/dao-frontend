@@ -17,4 +17,5 @@ export interface TransactionHistoryItem {
   // ClaimedRewardsHistory specific
   amount?: string
   rewardToken?: Address
+  totalAmount?: string
 }

@@ -2,6 +2,8 @@ import { useQuery } from '@tanstack/react-query'
 import { TransactionHistoryItem } from '../utils/types'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useAccount } from 'wagmi'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { TOKENS } from '@/lib/tokens'
 
 type TransactionHistoryResponse = {
   data: TransactionHistoryItem[]
@@ -24,6 +26,7 @@ const EMPTY_DATA = [] as TransactionHistoryItem[]
 
 export const useGetTransactionHistory = (params?: UseGetTransactionHistoryParams) => {
   const { address } = useAccount()
+  const { prices } = usePricesContext()
   const {
     page = 1,
     pageSize = 20,
@@ -51,6 +54,15 @@ export const useGetTransactionHistory = (params?: UseGetTransactionHistoryParams
       type.forEach(t => searchParams.append('type', t))
       builder.forEach(b => searchParams.append('builder', b))
       rewardToken.forEach(rt => searchParams.append('rewardToken', rt))
+
+      // Add price parameters so the API can compute USD totals for sorting
+      Object.values(TOKENS).forEach(token => {
+        const priceInfo = prices[token.symbol]
+        if (!priceInfo) return
+
+        const decimals = 18
+        searchParams.append('price', `${token.address.toLowerCase()}:${priceInfo.price}:${decimals}`)
+      })
 
       const response = await fetch(`/api/backers/${address}/tx-history/context?${searchParams}`)
 

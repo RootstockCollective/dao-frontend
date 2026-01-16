@@ -54,7 +54,7 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
   {
     id: 'total_amount',
     hidden: false,
-    sortable: false,
+    sortable: true,
   },
 ]
 
