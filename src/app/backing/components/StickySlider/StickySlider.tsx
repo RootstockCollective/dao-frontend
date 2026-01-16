@@ -88,7 +88,7 @@ export const StickySlider: React.FC<StickySliderProps> = ({
 
         {/* Invisible overlay for tap-to-jump */}
         <div
-          className="absolute inset-0 z-10 cursor-pointer"
+          className="absolute inset-0 z-base cursor-pointer"
           onClick={handleTrackClick}
           style={{ touchAction: 'none' }}
         />

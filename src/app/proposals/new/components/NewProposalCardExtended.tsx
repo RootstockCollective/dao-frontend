@@ -32,7 +32,7 @@ export function NewProposalCardExtended({ card, className, cancelCardSelection, 
         <Image
           src={!isDesktop ? smallImage : bigImage}
           alt={cardTitle}
-          className="md:absolute md:inset-0 md:z-100 md:h-full w-full md:object-right object-cover"
+          className="md:absolute md:inset-0 md:z-base md:h-full w-full md:object-right object-cover"
         />
       </div>
 

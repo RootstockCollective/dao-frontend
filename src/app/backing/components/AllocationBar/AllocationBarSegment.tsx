@@ -81,7 +81,7 @@ export const AllocationBarSegment = ({
   const baseClasses = 'relative overflow-visible flex items-stretch p-0 group'
   const transitionClasses =
     dragIndex !== null ? 'transition-none' : 'transition-transform duration-200 ease-out'
-  const dragStateClasses = isDragging ? 'opacity-60 z-[99]' : 'opacity-100'
+  const dragStateClasses = isDragging ? 'opacity-60 z-base' : 'opacity-100'
 
   const handleSegmentClick = () => {
     if (withModal) {
@@ -105,11 +105,14 @@ export const AllocationBarSegment = ({
       <div className="flex-1 flex items-center justify-center">
         {isCollapsed && !withModal && (
           <Tooltip text={<AllocationBarTooltip {...tooltipContentProps} />} side="top" align="center">
-            <MoreIcon size={16} className="absolute -top-7 left-1/2 -translate-x-1/2  cursor-pointer z-10" />
+            <MoreIcon
+              size={16}
+              className="absolute -top-7 left-1/2 -translate-x-1/2  cursor-pointer z-base"
+            />
           </Tooltip>
         )}
         {isCollapsed && withModal && (
-          <MoreIcon size={16} className="absolute -top-7 left-1/2 -translate-x-1/2  cursor-pointer z-10" />
+          <MoreIcon size={16} className="absolute -top-7 left-1/2 -translate-x-1/2  cursor-pointer z-base" />
         )}
         {!isCollapsed && (
           <AllocationBarSegmentPercent

@@ -103,7 +103,6 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
                     lazyContent: () => 'Current rewards are not claimable',
                   },
                 ]}
-                className="z-50"
                 side="left"
               >
                 <Button

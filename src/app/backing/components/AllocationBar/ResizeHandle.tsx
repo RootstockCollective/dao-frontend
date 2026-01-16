@@ -11,19 +11,9 @@ export const ResizeHandle = ({
 }) => {
   const cursorClass = isEditable ? 'cursor-ew-resize' : 'cursor-not-allowed'
 
-  // FIXME: This is a temporary hack to allow resizing a 0value segment.
-  // It couples it with other parts of the UI, including AllocationBarSegment and Navigation, though,
-  // so it should be removed once we have a better solution.
-  // Has to be less than the navigation z-index, which is [z-40](https://github.com/RootstockCollective/dao-frontend/blob/main/src/components/MainContainer/sidebars/SidebarMobile.tsx#L35)
-  const zIndexHack = 'z-39'
-
   return (
     <div
-      className={cn(
-        'w-2 h-full flex items-center justify-center bg-v3-bg-accent-100',
-        zIndexHack,
-        cursorClass,
-      )}
+      className={cn('w-2 h-full flex items-center justify-center bg-v3-bg-accent-100 z-base', cursorClass)}
       {...props}
     >
       <div

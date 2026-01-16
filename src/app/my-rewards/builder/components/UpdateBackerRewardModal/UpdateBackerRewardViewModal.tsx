@@ -98,7 +98,7 @@ const UpdateBackerRewardViewModal = ({
                       {suggestedReward}%
                       <Tooltip
                         text="Average Rewards % of all the Collective Builders."
-                        className={cn('rounded-sm bg-v3-text-80 text-v3-bg-accent-60 p-6 text-sm z-999')}
+                        className={cn('rounded-sm bg-v3-text-80 text-v3-bg-accent-60 p-6 text-sm')}
                         side="top"
                         align="center"
                       >
@@ -120,7 +120,6 @@ const UpdateBackerRewardViewModal = ({
           ) : (
             <AlwaysEnabledButton
               onClick={handleSave}
-              className="z-999"
               conditionPairs={[
                 {
                   condition: () => !isOperational,

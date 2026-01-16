@@ -17,7 +17,7 @@ export const BackingBanner: FC<CommonComponentProps> = ({ className = '' }) => {
       }}
       data-testid="BackingBanner"
     >
-      <DecorativeSquares className="absolute left-0 top-[-30px] z-20" color="#d2fbf6" />
+      <DecorativeSquares className="absolute left-0 top-[-30px] z-base" color="#d2fbf6" />
       <Header variant="h3">{`WHAT'S IN IT FOR ME?`}</Header>
       <ul className="flex flex-col gap-2 md:gap-0 list-[circle] pl-6">
         <li>

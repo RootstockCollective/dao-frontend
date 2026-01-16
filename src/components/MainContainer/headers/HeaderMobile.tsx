@@ -20,7 +20,7 @@ export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElem
       ref={headerRef}
       {...props}
       className={cn(
-        'px-4 min-h-21 flex items-center relative transition-transform duration-300 ease-in-out z-100',
+        'px-4 min-h-21 flex items-center relative transition-transform duration-300 ease-in-out z-sticky',
         isVisible ? 'translate-y-0' : '-translate-y-full',
         className,
       )}

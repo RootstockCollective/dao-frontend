@@ -16,7 +16,7 @@ export const Banner = ({ imageSrc, altText, DecorativeComponent }: BannerProps) 
       <DecorativeComponent
         width={50}
         height={40}
-        className="absolute bottom-0 right-0 translate-x-[10px] translate-y-[30px] z-20"
+        className="absolute bottom-0 right-0 translate-x-[10px] translate-y-[30px] z-base"
       />
     </div>
   )

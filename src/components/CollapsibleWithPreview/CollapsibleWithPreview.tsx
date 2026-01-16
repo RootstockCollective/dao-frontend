@@ -84,7 +84,7 @@ const CollapsibleWithPreview: React.FC<CollapsibleWithPreviewProps> = ({
         height: containerHeight,
       }}
     >
-      <div className="absolute top-4 right-4 cursor-pointer z-10">
+      <div className="absolute top-4 right-4 cursor-pointer z-base">
         <ChevronDownIcon
           className={cn(
             'w-6 h-6 transition-all duration-300 ease-in-out',
