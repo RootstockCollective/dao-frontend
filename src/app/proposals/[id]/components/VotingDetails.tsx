@@ -73,10 +73,12 @@ export const VotingDetails = ({
   const [popoverOpen, setPopoverOpen] = useState(false)
   const voteButtonRef = useRef<HTMLButtonElement>(null)
 
-  const cannotCastVote =
-    proposalState !== ProposalState.Succeeded &&
-    proposalState !== ProposalState.Queued &&
-    (!isProposalActive || !!vote || !doesUserHasEnoughThreshold || isVoting || isWaitingVotingReceipt)
+  // TODO: TEMPORARILY DISABLED FOR DEBUGGING - restore original logic when done
+  const cannotCastVote = false
+  // const cannotCastVote =
+  //   proposalState !== ProposalState.Succeeded &&
+  //   proposalState !== ProposalState.Queued &&
+  //   (!isProposalActive || !!vote || !doesUserHasEnoughThreshold || isVoting || isWaitingVotingReceipt)
 
   const handleVoting = async (_vote: Vote) => {
     try {
@@ -243,7 +245,16 @@ export const VotingDetails = ({
               Connect your wallet to see your available voting power and to vote.
             </Span>
             <ConnectWorkflow
-              ConnectComponent={props => <ConnectButtonComponent {...props} textClassName="text-bg-100" />}
+              ConnectComponent={props => (
+                <ConnectButtonComponent
+                  {...props}
+                  textClassName="text-bg-100"
+                  onClick={e => {
+                    setPopoverOpen(false)
+                    props.onClick?.(e)
+                  }}
+                />
+              )}
             />
           </>
         }
@@ -259,7 +270,7 @@ export const VotingDetails = ({
         buttonAction={getButtonActionForState(
           proposalState,
           canProposalBeExecuted,
-          !isConnected ? false : cannotCastVote,
+          isConnected && cannotCastVote,
         )}
         voteButtonRef={voteButtonRef}
         vote={vote}
