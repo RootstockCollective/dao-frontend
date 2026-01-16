@@ -121,7 +121,7 @@ describe('formatter', () => {
         symbol,
         currency,
         expected: {
-          amount: '1.00000',
+          amount: '1',
           fiatAmount: formatAmountWithCurrency('10.00', currency, currencySymbol),
         },
       },
@@ -131,7 +131,7 @@ describe('formatter', () => {
         symbol,
         currency,
         expected: {
-          amount: '0.50000',
+          amount: '0.5',
           fiatAmount: formatAmountWithCurrency('5.00', currency, currencySymbol),
         },
       },
@@ -148,7 +148,7 @@ describe('formatter', () => {
         symbol,
         currency,
         expected: {
-          amount: '1.00000',
+          amount: '1',
           fiatAmount: formatAmountWithCurrency('100,000.00', currency, currencySymbol),
         },
       },
@@ -158,7 +158,7 @@ describe('formatter', () => {
         symbol,
         currency,
         expected: {
-          amount: '100.00000',
+          amount: '100',
           fiatAmount: formatAmountWithCurrency('10,000,000.00', currency, currencySymbol),
         },
       },
@@ -168,7 +168,7 @@ describe('formatter', () => {
         symbol,
         currency,
         expected: {
-          amount: '123,456.00000',
+          amount: '123,456',
           fiatAmount: formatAmountWithCurrency('12,345,600,000.00', currency, currencySymbol),
         },
       },
@@ -274,7 +274,7 @@ describe('formatter', () => {
       { symbol: 'RIF', value: 0n, expected: '0' },
       { symbol: 'RIF', value: 1000000000000000n, expected: '<1' },
       { symbol: 'RBTC', value: 0n, expected: '0' },
-      { symbol: 'RBTC', value: 1000000000000000n, expected: '0.00100' },
+      { symbol: 'RBTC', value: 1000000000000000n, expected: '0.001' },
       { symbol: 'RBTC', value: 1000000000000n, expected: '<0.00001' },
       { symbol: 'stRIF', value: 0n, expected: '0' },
     ])('should format $symbol properly with $value', ({ symbol, value, expected }) => {
@@ -284,7 +284,7 @@ describe('formatter', () => {
     test.each([
       { symbol: 'Symbol', value: oneEther, expected: '1.00' },
       { symbol: 'RIF', value: oneEther, expected: '1' },
-      { symbol: 'RBTC', value: oneEther, expected: '1.00000' },
+      { symbol: 'RBTC', value: oneEther, expected: '1' },
       { symbol: 'stRIF', value: oneEther, expected: '1' },
     ])('should format $symbol properly with $value', ({ symbol, value, expected }) => {
       expect(formatSymbol(value, symbol)).toBe(expected)
@@ -293,7 +293,7 @@ describe('formatter', () => {
     test.each([
       { symbol: 'Symbol', value: halfEther, expected: '0.50' },
       { symbol: 'RIF', value: halfEther, expected: '<1' },
-      { symbol: 'RBTC', value: halfEther, expected: '0.50000' },
+      { symbol: 'RBTC', value: halfEther, expected: '0.5' },
       { symbol: 'stRIF', value: halfEther, expected: '<1' },
     ])('should format $symbol properly with $value', ({ symbol, value, expected }) => {
       expect(formatSymbol(value, symbol)).toBe(expected)
