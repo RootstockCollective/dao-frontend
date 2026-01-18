@@ -12,6 +12,8 @@ export interface StakingHistoryTransaction {
   amount: string
   /** Block number at which the transaction occurred */
   blockNumber: string
+  /** Block hash at which the transaction occurred */
+  blockHash: string
   /** Unix timestamp (in seconds) when the transaction occurred */
   timestamp: number | string
   /** Transaction hash identifier */
@@ -84,6 +86,7 @@ export async function getStakingHistoryFromDB(params: {
               'action', action,
               'amount', amount::text,
               'blockNumber', "blockNumber"::text,
+              'blockHash', convert_from("blockHash", 'utf8'),
               'timestamp', timestamp,
               'transactionHash', convert_from("transactionHash", 'utf8')
             ) ORDER BY timestamp ${sort_direction.toUpperCase()}

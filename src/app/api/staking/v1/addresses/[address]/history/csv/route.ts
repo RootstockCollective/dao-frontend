@@ -61,6 +61,7 @@ const formatDateForCsv = (timestamp: string | number): string => {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
+    hour12: false, // Match frontend format (24-hour format)
   })
 }
 
@@ -71,7 +72,7 @@ const escapeCsvValue = (value: string): string => {
   return value
 }
 
-// Fetch RIF price
+// Fetch RIF price (STRIF uses the same price as RIF)
 async function getRifPrice(): Promise<number> {
   try {
     const { tokenContracts } = await import('@/lib/contracts')
@@ -79,6 +80,7 @@ async function getRifPrice(): Promise<number> {
     const rifAddress = tokenContracts[RIF]
 
     if (!rifAddress) {
+      console.error('RIF address not found in token contracts')
       return 0
     }
 
@@ -101,7 +103,15 @@ async function getRifPrice(): Promise<number> {
     if (priceResponse.ok) {
       const priceData = await priceResponse.json()
       // Price API returns data keyed by address
-      return priceData[rifAddress]?.price || 0
+      const price = priceData[rifAddress]?.price
+      if (!price || price === 0) {
+        console.error('RIF price is 0 or missing from API response:', priceData)
+      }
+      // Price is returned as a number (USD per token)
+      // getFiatAmount expects price in USD format (it handles the wei conversion internally)
+      return price ? Number(price) : 0
+    } else {
+      console.error('Failed to fetch RIF price:', priceResponse.status, priceResponse.statusText)
     }
   } catch (error) {
     console.error('Error fetching RIF price:', error)
@@ -142,8 +152,7 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
           'Token',
           'USD Value',
           'Transaction Hash',
-          'Block Number',
-          'User Address',
+          'Block Hash',
         ]
         controller.enqueue(encoder.encode(headers.map(escapeCsvValue).join(',') + '\n'))
 
@@ -185,8 +194,7 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
                 STRIF,
                 usdValue,
                 transaction.transactionHash,
-                transaction.blockNumber,
-                transaction.user,
+                transaction.blockHash || transaction.blockNumber, // Fallback to blockNumber if blockHash is not available
               ]
 
               controller.enqueue(encoder.encode(row.map(escapeCsvValue).join(',') + '\n'))
