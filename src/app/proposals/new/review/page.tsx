@@ -206,7 +206,7 @@ export default function ProposalReview() {
             link={discourseLink}
             readOnly
           />
-          <Description description={description} />
+          <Description description={description} shouldParse={false} />
           <VideoPlayer url={videoUrl} className="p-4 md:p-6" />
         </div>
         <ActionDetails parsedActions={parsedActions} className="md:mt-0" readOnly />
