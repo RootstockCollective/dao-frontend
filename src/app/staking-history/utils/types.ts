@@ -9,6 +9,7 @@ export interface StakingHistoryTransaction {
   action: 'STAKE' | 'UNSTAKE'
   amount: string
   blockNumber: string
+  blockHash: string
   timestamp: number
   transactionHash: string
   user: string
