@@ -120,6 +120,20 @@ export const ProposalProggressBar = ({ proposalState }: ProgressBarProps) => {
     return () => window.removeEventListener('resize', handleResize)
   }, [proposalState, calculateOffset])
 
+  // Determine progress bar color based on proposal state
+  const getProgressBarColor = () => {
+    if (
+      proposalState === ProposalState.Defeated ||
+      proposalState === ProposalState.Canceled
+    ) {
+      // Design spec: linear-gradient from Brand-RIF (blue) -> Primary-100 (orange) -> System-status-Error (red)
+      return ['#4B5CF0', '#F47A2A', '#ff6688']
+    }
+    // Design spec: linear-gradient from Brand-RIF (blue) -> Primary-100 (orange) -> System-status-Success (green)
+    // For successful states: ACTIVE -> SUCCEEDED -> QUEUED -> EXECUTED
+    return ['#4B5CF0', '#F47A2A', '#1BC47D']
+  }
+
   return (
     <div className="flex flex-col w-full md:p-6 p-4" ref={containerRef}>
       <div
@@ -132,7 +146,7 @@ export const ProposalProggressBar = ({ proposalState }: ProgressBarProps) => {
       <ProgressBar
         progress={proposalStateToProgressMap.get(proposalState) ?? 0}
         className="mt-3"
-        color={['#4B5CF0', '#F4722A', '#1BC47D']}
+        color={getProgressBarColor()}
       />
     </div>
   )
