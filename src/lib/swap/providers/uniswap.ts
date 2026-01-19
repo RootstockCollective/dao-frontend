@@ -2,7 +2,7 @@ import { publicClient } from '@/lib/viemPublicClient'
 import { UniswapQuoterV2Abi } from '@/lib/abis/UniswapQuoterV2Abi'
 import { ROUTER_ADDRESSES, SWAP_PROVIDERS } from '../constants'
 import { formatUnits, encodeAbiParameters, Address, Hex } from 'viem'
-import type { SwapProvider, SwapQuote, QuoteParams } from './'
+import type { SwapProvider, SwapQuote, QuoteParams, QuoteExactOutputParams } from './'
 import Big from '@/lib/big'
 
 /**
@@ -84,6 +84,50 @@ async function getQuoteForFee(
 }
 
 /**
+ * Get an exact output quote for a specific fee tier
+ */
+async function getExactOutputQuoteForFee(
+  params: QuoteExactOutputParams,
+  fee: number,
+  providerName: SwapProvider['name'],
+): Promise<SwapQuote> {
+  const { tokenIn, tokenOut, amountOut, tokenOutDecimals } = params
+
+  // Call QuoterV2 quoteExactOutputSingle
+  const rawResult = await publicClient.readContract({
+    address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
+    abi: UniswapQuoterV2Abi,
+    functionName: 'quoteExactOutputSingle',
+    args: [
+      {
+        tokenIn,
+        tokenOut,
+        amountOut,
+        fee,
+        sqrtPriceLimitX96: 0n,
+      },
+    ],
+  })
+
+  if (!isValidQuoteResult(rawResult)) {
+    throw new Error(
+      `Invalid quote result structure: expected tuple [bigint, bigint, number, bigint], got ${typeof rawResult}`,
+    )
+  }
+
+  const [amountIn, , , gasEstimate] = rawResult
+  const amountOutFormatted = formatUnits(amountOut, tokenOutDecimals)
+
+  return {
+    provider: providerName,
+    amountOut: amountOutFormatted,
+    amountOutRaw: amountOut.toString(),
+    amountInRaw: amountIn.toString(),
+    gasEstimate: gasEstimate?.toString(),
+  }
+}
+
+/**
  * Try to get a quote from a specific fee tier, returning the tier info on success
  */
 async function tryGetQuoteWithTier(
@@ -93,6 +137,22 @@ async function tryGetQuoteWithTier(
 ): Promise<SwapQuote | null> {
   try {
     const quote = await getQuoteForFee(params, fee, providerName)
+    return { ...quote, feeTier: fee }
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Try to get an exact output quote from a specific fee tier
+ */
+async function tryGetExactOutputWithTier(
+  params: QuoteExactOutputParams,
+  fee: number,
+  providerName: SwapProvider['name'],
+): Promise<SwapQuote | null> {
+  try {
+    const quote = await getExactOutputQuoteForFee(params, fee, providerName)
     return { ...quote, feeTier: fee }
   } catch {
     return null
@@ -123,6 +183,29 @@ async function getBestQuoteFromAllTiers(
 }
 
 /**
+ * Get the best exact output quote from all available fee tiers
+ */
+async function getBestExactOutputFromAllTiers(
+  params: QuoteExactOutputParams,
+  providerName: SwapProvider['name'],
+): Promise<SwapQuote | null> {
+  const quotePromises = UNISWAP_FEE_TIERS.map(fee => tryGetExactOutputWithTier(params, fee, providerName))
+  const quotes = await Promise.all(quotePromises)
+
+  const validQuotes = quotes.filter((q): q is SwapQuote => q !== null)
+  if (validQuotes.length === 0) {
+    return null
+  }
+
+  return validQuotes.reduce((best, current) => {
+    if (!best.amountInRaw || !current.amountInRaw) {
+      return best
+    }
+    return new Big(current.amountInRaw).lt(best.amountInRaw) ? current : best
+  })
+}
+
+/**
  * Get a quote from Uniswap
  * Strategy: Try default tier first (fast path), fallback to all tiers if it fails.
  * Always returns the fee tier that produced the quote.
@@ -146,6 +229,31 @@ async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
   }
 
   // All tiers failed - no liquidity available
+  return {
+    provider: providerName,
+    amountOut: '0',
+    amountOutRaw: '0',
+    error: 'No liquidity available. All pool fee tiers failed to provide a quote.',
+  }
+}
+
+/**
+ * Get an exact output quote from Uniswap
+ * Strategy: Try default tier first (fast path), fallback to all tiers if it fails.
+ */
+async function getUniswapExactOutputQuote(params: QuoteExactOutputParams): Promise<SwapQuote> {
+  const providerName = SWAP_PROVIDERS.UNISWAP
+
+  const defaultQuote = await tryGetExactOutputWithTier(params, DEFAULT_FEE_TIER, providerName)
+  if (defaultQuote) {
+    return defaultQuote
+  }
+
+  const bestQuote = await getBestExactOutputFromAllTiers(params, providerName)
+  if (bestQuote) {
+    return bestQuote
+  }
+
   return {
     provider: providerName,
     amountOut: '0',
@@ -238,4 +346,5 @@ export function getSwapEncodedData(params: ExecuteSwapParams): {
 export const uniswapProvider: SwapProvider = {
   name: SWAP_PROVIDERS.UNISWAP,
   getQuote: getUniswapQuote,
+  getQuoteExactOutput: getUniswapExactOutputQuote,
 }

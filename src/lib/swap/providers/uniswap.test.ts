@@ -341,4 +341,68 @@ describe('uniswap provider - integration tests', () => {
       10000,
     )
   })
+
+  describe('getQuoteExactOutput - exact output quotes', () => {
+    it.skipIf(!hasRealAddresses)(
+      'should return amountIn for a given amountOut from real contract',
+      async () => {
+        // Use 1 USDRIF (18 decimals) as desired output
+        const amountOut = parseUnits('1', tokenOutDecimals)
+
+        const result = await uniswapProvider.getQuoteExactOutput!({
+          tokenIn: realTokenIn,
+          tokenOut: realTokenOut,
+          amountOut,
+          tokenInDecimals,
+          tokenOutDecimals,
+        })
+
+        // Verify structure and types
+        expect(result).toHaveProperty('provider')
+        expect(result).toHaveProperty('amountOut')
+        expect(result).toHaveProperty('amountInRaw')
+        expect(result.provider).toBe('uniswap')
+
+        // Quote MUST succeed - this is a real pool that exists
+        expect(result.error).toBeUndefined()
+        expect(result.amountInRaw).toBeDefined()
+        const amountInBigInt = BigInt(result.amountInRaw!)
+        expect(amountInBigInt).toBeGreaterThan(0n)
+        // For a stablecoin pair (USDT0 -> USDRIF), 1 USDRIF out should require ~1 USDT0 in
+        // USDT0 has 6 decimals, so 1 USDT0 = 1_000_000
+        // Allow range 0.5 to 2 USDT0 to account for fees and slippage
+        expect(amountInBigInt).toBeGreaterThanOrEqual(500_000n) // >= 0.5 USDT0
+        expect(amountInBigInt).toBeLessThanOrEqual(2_000_000n) // <= 2 USDT0
+        // Fee tier should be returned
+        expect(result.feeTier).toBeDefined()
+        expect(result.feeTier).toBeGreaterThan(0)
+      },
+      10000,
+    )
+
+    it.skipIf(!hasRealAddresses)(
+      'should return error when no liquidity available for exact output',
+      async () => {
+        // Use invalid token addresses to force a contract error
+        const invalidTokenIn = '0x0000000000000000000000000000000000000001' as const
+        const invalidTokenOut = '0x0000000000000000000000000000000000000002' as const
+        const amountOut = 1000000n
+
+        const result = await uniswapProvider.getQuoteExactOutput!({
+          tokenIn: invalidTokenIn,
+          tokenOut: invalidTokenOut,
+          amountOut,
+          tokenInDecimals: 18,
+          tokenOutDecimals: 18,
+        })
+
+        // Should return valid error structure
+        expect(result.provider).toBe('uniswap')
+        expect(result).toHaveProperty('error')
+        expect(typeof result.error).toBe('string')
+        expect(result.error!.length).toBeGreaterThan(0)
+      },
+      10000,
+    )
+  })
 })
