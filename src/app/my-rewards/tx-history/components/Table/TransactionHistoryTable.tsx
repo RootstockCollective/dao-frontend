@@ -83,9 +83,7 @@ export default function TransactionHistoryTable() {
   })
 
   const rowData = useMemo(() => {
-    const rows = convertDataToRowData(data, cycleDuration, prices, getBuilderByAddress)
-
-    return rows
+    return convertDataToRowData(data, cycleDuration, prices, getBuilderByAddress)
   }, [data, cycleDuration, prices, getBuilderByAddress])
 
   const handleApplyFilters = (filters: ActiveFilter[]) => {
