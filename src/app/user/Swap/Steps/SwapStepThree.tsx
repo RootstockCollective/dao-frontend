@@ -22,7 +22,7 @@ const SLIPPAGE_OPTIONS: PercentageButtonItem<number>[] = [
 ]
 
 export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: SwapStepProps) => {
-  const { amountIn, formattedAmountOut, quote } = useSwapInput()
+  const { amountIn, amountOut, quote } = useSwapInput()
   const { tokenInData, tokenOutData } = useTokenSelection()
   const { state, tokenData } = useSwappingContext()
   const { execute, isSwapping, swapError, swapTxHash, canExecute } = useSwapExecution()
@@ -37,9 +37,11 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
   const tokenOutBalance = tokenData.balances[USDRIF]
 
   const from = useMemo(() => {
-    const amountInCurrency = Big(amountIn).times(tokenInPrice).toFixed(2)
+    const amountInCurrency = Big(amountIn || '0')
+      .times(tokenInPrice)
+      .toFixed(2)
     return {
-      amount: formatForDisplay(amountIn),
+      amount: formatForDisplay(amountIn || '0'),
       amountConvertedToCurrency: `$${amountInCurrency}`,
       balance: formatForDisplay(tokenInBalance),
       tokenSymbol: tokenInData.symbol,
@@ -47,15 +49,15 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
   }, [amountIn, tokenInPrice, tokenInBalance, tokenInData.symbol])
 
   const to = useMemo(() => {
-    const amountValue = formattedAmountOut || '0'
-    const amountInCurrency = Big(amountValue).times(tokenOutPrice).toFixed(2)
+    const amountValue = amountOut || '0'
+    const amountOutCurrency = Big(amountValue).times(tokenOutPrice).toFixed(2)
     return {
       amount: formatForDisplay(amountValue),
-      amountConvertedToCurrency: `$${amountInCurrency}`,
+      amountConvertedToCurrency: `$${amountOutCurrency}`,
       balance: formatForDisplay(tokenOutBalance),
       tokenSymbol: tokenOutData.symbol,
     }
-  }, [formattedAmountOut, tokenOutPrice, tokenOutBalance, tokenOutData.symbol])
+  }, [amountOut, tokenOutPrice, tokenOutBalance, tokenOutData.symbol])
 
   // Calculate minimum amount out based on slippage tolerance (local to Step 3)
   const amountOutMinimum = useMemo(() => {
@@ -107,7 +109,7 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
       primary: {
         label: 'Confirm swap',
         onClick: handleConfirmSwap,
-        disabled: !canExecute || !Big(amountIn).gt(0) || !amountOutMinimum || isSwapping,
+        disabled: !canExecute || !amountIn || !Big(amountIn).gt(0) || !amountOutMinimum || isSwapping,
         loading: isSwapping,
         isTxPending: isSwapping,
       },

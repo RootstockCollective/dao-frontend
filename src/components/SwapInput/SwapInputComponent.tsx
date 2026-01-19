@@ -33,10 +33,12 @@ interface Props {
   onTokenChange: (token: SwapInputToken) => void
   amount: string
   onAmountChange: (value: string) => void
+  onFocus?: () => void
   balance?: string
   onPercentageClick?: (percentage: number) => void
   isLoading?: boolean
   readonly?: boolean
+  autoFocus?: boolean
   labelText?: string
   errorText?: string
 }
@@ -49,10 +51,12 @@ export const SwapInputComponent = forwardRef<HTMLInputElement, Props>(
       onTokenChange,
       amount,
       onAmountChange,
+      onFocus,
       balance,
       onPercentageClick,
       isLoading = false,
       readonly = false,
+      autoFocus = true,
       labelText,
       errorText,
     },
@@ -62,10 +66,10 @@ export const SwapInputComponent = forwardRef<HTMLInputElement, Props>(
     const inputRef = (ref as React.RefObject<HTMLInputElement>) || internalRef
 
     useEffect(() => {
-      if (!readonly && inputRef?.current) {
+      if (!readonly && autoFocus && inputRef?.current) {
         inputRef.current.focus()
       }
-    }, [readonly, inputRef])
+    }, [readonly, autoFocus, inputRef])
 
     // Calculate currency value only if we have a valid price and amount
     const amountToCurrency = useMemo(() => {
@@ -108,7 +112,7 @@ export const SwapInputComponent = forwardRef<HTMLInputElement, Props>(
               data-testid="swap-amount-input"
               placeholder="0"
               readonly={readonly || isLoading}
-              inputProps={{ decimalScale: selectedToken.decimals || 18 }}
+              inputProps={{ decimalScale: selectedToken.decimals || 18, onFocus }}
             />
             <Paragraph
               variant="body-s"
