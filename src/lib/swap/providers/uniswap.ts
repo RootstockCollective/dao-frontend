@@ -207,8 +207,9 @@ async function getBestExactOutputFromAllTiers(
 
 /**
  * Get a quote from Uniswap
- * Strategy: Try default tier first (fast path), fallback to all tiers if it fails.
- * Always returns the fee tier that produced the quote.
+ * Strategy:
+ * - If feeTier is specified: use ONLY that tier (no fallback)
+ * - Otherwise: try default tier first, fallback to all tiers
  *
  * Note: Fee tiers are different Uniswap V3 pools (0.01%, 0.05%, 0.3%, 1% fees).
  * This is NOT slippage - slippage tolerance should be handled at swap execution time.
@@ -216,7 +217,21 @@ async function getBestExactOutputFromAllTiers(
 async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
   const providerName = SWAP_PROVIDERS.UNISWAP
 
-  // Try default tier first (fast path for most common case)
+  // If specific fee tier is requested, only try that tier (no fallback)
+  if (params.feeTier !== undefined) {
+    const quote = await tryGetQuoteWithTier(params, params.feeTier, providerName)
+    if (quote) {
+      return quote
+    }
+    return {
+      provider: providerName,
+      amountOut: '0',
+      amountOutRaw: '0',
+      error: `Pool does not exist for fee tier ${params.feeTier}`,
+    }
+  }
+
+  // No specific tier - try default tier first (fast path for most common case)
   const defaultQuote = await tryGetQuoteWithTier(params, DEFAULT_FEE_TIER, providerName)
   if (defaultQuote) {
     return defaultQuote
@@ -239,11 +254,28 @@ async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
 
 /**
  * Get an exact output quote from Uniswap
- * Strategy: Try default tier first (fast path), fallback to all tiers if it fails.
+ * Strategy:
+ * - If feeTier is specified: use ONLY that tier (no fallback)
+ * - Otherwise: try default tier first, fallback to all tiers
  */
 async function getUniswapExactOutputQuote(params: QuoteExactOutputParams): Promise<SwapQuote> {
   const providerName = SWAP_PROVIDERS.UNISWAP
 
+  // If specific fee tier is requested, only try that tier (no fallback)
+  if (params.feeTier !== undefined) {
+    const quote = await tryGetExactOutputWithTier(params, params.feeTier, providerName)
+    if (quote) {
+      return quote
+    }
+    return {
+      provider: providerName,
+      amountOut: '0',
+      amountOutRaw: '0',
+      error: `Pool does not exist for fee tier ${params.feeTier}`,
+    }
+  }
+
+  // No specific tier - try default tier first
   const defaultQuote = await tryGetExactOutputWithTier(params, DEFAULT_FEE_TIER, providerName)
   if (defaultQuote) {
     return defaultQuote

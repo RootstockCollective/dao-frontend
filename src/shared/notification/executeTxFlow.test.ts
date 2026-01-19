@@ -131,6 +131,8 @@ describe('executeTxFlow', () => {
       expect(mockOnRequestTx).toHaveBeenCalledOnce()
       expect(mockShowToast).toHaveBeenCalledWith({
         ...TX_MESSAGES[action].error,
+        // Error content is now the actual error message
+        content: 'Transaction failed',
         dataTestId: 'error-tx',
         txHash: undefined,
         toastId: undefined,
@@ -170,6 +172,8 @@ describe('executeTxFlow', () => {
       })
       expect(mockUpdateToast).toHaveBeenCalledWith(mockTxHash, {
         ...TX_MESSAGES[action].error,
+        // Error content is now the actual error message
+        content: 'Transaction confirmation failed',
         dataTestId: `error-tx-${mockTxHash}`,
         txHash: mockTxHash,
         toastId: mockTxHash,
@@ -298,6 +302,8 @@ describe('executeTxFlow', () => {
       // Assert
       expect(mockUpdateToast).toHaveBeenCalledWith(mockTxHash, {
         ...TX_MESSAGES[action].error,
+        // Error content is now the actual error message
+        content: 'Transaction failed',
         dataTestId: `error-tx-${mockTxHash}`,
         txHash: mockTxHash,
         toastId: mockTxHash,
@@ -320,6 +326,8 @@ describe('executeTxFlow', () => {
       // Assert
       expect(mockShowToast).toHaveBeenCalledWith({
         ...TX_MESSAGES[action].error,
+        // Error content is now the actual error message
+        content: 'Transaction failed',
         dataTestId: 'error-tx',
         txHash: undefined,
         toastId: undefined,
@@ -389,6 +397,8 @@ describe('executeTxFlow', () => {
       // Assert
       expect(mockShowToast).toHaveBeenCalledWith({
         ...TX_MESSAGES[action].error,
+        // Error content is now the actual error message
+        content: 'Transaction failed',
         dataTestId: 'error-tx',
         txHash: undefined,
         toastId: undefined,
@@ -414,6 +424,8 @@ describe('executeTxFlow', () => {
       expect(console.error).toHaveBeenCalledWith('Error requesting staking tx', networkError)
       expect(mockUpdateToast).toHaveBeenCalledWith(mockTxHash, {
         ...TX_MESSAGES[action].error,
+        // Error content is now the actual error message instead of generic message
+        content: 'Network error',
         dataTestId: `error-tx-${mockTxHash}`,
         txHash: mockTxHash,
         toastId: mockTxHash,
