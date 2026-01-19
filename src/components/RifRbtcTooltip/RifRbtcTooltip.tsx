@@ -2,7 +2,7 @@ import { formatSymbol } from '@/app/shared/formatter'
 import { CommonComponentProps } from '@/components/commonProps'
 import { TokenImage } from '@/components/TokenImage'
 import { Tooltip } from '@/components/Tooltip/Tooltip'
-import { BaseTypography } from '@/components/Typography/Typography'
+import { Span } from '@/components/Typography'
 import { RBTC, RIF } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
@@ -30,13 +30,13 @@ const TokenDisplay = ({
   return (
     <div className="flex flex-row items-start w-14">
       <TokenImage symbol={symbol} size={size} className={className} />
-      <BaseTypography className="text-sm">{displayText}</BaseTypography>
+      <Span variant="body-s">{displayText}</Span>
     </div>
   )
 }
 
 const FormattedValue = ({ value, symbol }: { value: bigint; symbol: string }) => {
-  return <BaseTypography className="text-lg">{formatSymbol(value, symbol)}</BaseTypography>
+  return <Span variant="body-l">{formatSymbol(value, symbol)}</Span>
 }
 
 export const RifRbtcTooltip = ({ children, rbtcValue, rifValue, className }: RifRbtcTooltipProps) => (
