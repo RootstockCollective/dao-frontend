@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { formatCurrencyWithLabel } from '@/lib/utils'
+import { formatCurrency, formatCurrencyWithLabel } from '@/lib/utils'
 import { Row } from '@/shared/context/TableContext/types'
 import { ColumnId, TransactionHistoryCellDataMap } from '../config'
 
@@ -41,6 +41,6 @@ export const useTotalAmount = (rows: TransactionRow[]): string => {
     if (!rows.length) return ''
 
     const sum = calculateTotalUsd(rows)
-    return formatCurrencyWithLabel(sum, { showCurrencySymbol: false })
+    return formatCurrency(sum, { showCurrencySymbol: false })
   }, [rows])
 }

@@ -30,13 +30,11 @@ export const UsdValue: FC<UsdValueProps> = ({
   usd,
   variant,
   isHovered = false,
-  showSuffix = true,
   textVariant = 'body',
   className,
 }) => {
   const isDesktop = variant === 'desktop'
   const isMultipleUsd = Array.isArray(usd)
-  const suffix = !isDesktop && showSuffix ? ' USD' : ''
 
   const textColor = useMemo(() => {
     if (isDesktop && isHovered) {
@@ -51,7 +49,6 @@ export const UsdValue: FC<UsdValueProps> = ({
         {usd.map((value, idx) => (
           <Paragraph key={idx} variant={textVariant} className={textColor}>
             {value}
-            {suffix}
           </Paragraph>
         ))}
       </div>
@@ -61,7 +58,6 @@ export const UsdValue: FC<UsdValueProps> = ({
   return (
     <Paragraph variant={textVariant} className={cn(textColor, className)}>
       {usd}
-      {suffix}
     </Paragraph>
   )
 }

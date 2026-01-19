@@ -232,7 +232,7 @@ export const TotalAmountCell: FC<TotalAmountCellProps> = ({
             )}
           </button>
         ) : !isExpanded ? (
-          <UsdValue usd={usd} variant="desktop" showSuffix={false} />
+          <UsdValue usd={usd} variant="desktop" />
         ) : null}
       </TableCell>
     )
@@ -241,7 +241,7 @@ export const TotalAmountCell: FC<TotalAmountCellProps> = ({
   // For normal rows and detail rows: always show USD
   return (
     <TableCell columnId="total_amount" className="justify-center">
-      <UsdValue usd={usd} variant="desktop" isHovered={isHovered} showSuffix={false} />
+      <UsdValue usd={usd} variant="desktop" isHovered={isHovered} />
     </TableCell>
   )
 }
