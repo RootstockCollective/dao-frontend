@@ -122,10 +122,7 @@ export const ProposalProggressBar = ({ proposalState }: ProgressBarProps) => {
 
   // Determine progress bar color based on proposal state
   const getProgressBarColor = () => {
-    if (
-      proposalState === ProposalState.Defeated ||
-      proposalState === ProposalState.Canceled
-    ) {
+    if (proposalState === ProposalState.Defeated || proposalState === ProposalState.Canceled) {
       // Design spec: linear-gradient from Brand-RIF (blue) -> Primary-100 (orange) -> System-status-Error (red)
       return ['#4B5CF0', '#F47A2A', '#ff6688']
     }
