@@ -26,7 +26,7 @@ export function useAddToWallet() {
   // - connector.id: 'io.metamask', 'metaMaskSDK', 'injected' (when MetaMask is the injected provider)
   // - connector.name: contains 'MetaMask' or 'metamask'
   // - window.ethereum.isMetaMask: true (if available)
-  
+
   const didUserAlreadyAddNftToWallet = nftsInWallet?.[nftAddress as Address]?.[tokenId] || false
 
   // Check window.ethereum
