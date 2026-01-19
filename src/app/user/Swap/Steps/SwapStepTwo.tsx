@@ -86,7 +86,7 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
       },
       action: 'allowance',
     })
-  }, [requiredAmount, approve, refetchAllowance, onGoNext])
+  }, [requiredAmount, approve, refetchAllowance, onGoNext, amountIn, tokenInData.decimals])
 
   // Set button actions
   useEffect(() => {
