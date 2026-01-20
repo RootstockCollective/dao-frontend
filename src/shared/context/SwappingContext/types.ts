@@ -31,6 +31,7 @@ export interface SwapDirection {
 export interface QuoteResult {
   amountOut: bigint
   gasEstimate: bigint
+  feeTier: number // The fee tier that produced this quote (100, 500, 3000, 10000)
   timestamp: number // Unix timestamp in milliseconds when quote was fetched
   sqrtPriceX96After?: bigint // Price after swap (not used in our flow)
   initializedTicksCrossed?: bigint // Ticks crossed (not used in our flow)
@@ -157,4 +158,5 @@ export interface SwappingContextValue {
   setAllowance: (allowance: bigint | null) => void
   setApproving: (isApproving: boolean) => void
   setApprovalTxHash: (txHash: string | null) => void
+  setPoolFee: (fee: number) => void
 }

@@ -35,20 +35,20 @@ const withTimeout = <T>(promise: Promise<T>, timeoutMs: number, errorMessage: st
 }
 
 export const useSwapInput = () => {
-  const { state, setAmountIn, tokens, setQuoting, setQuote, setQuoteError } = useSwappingContext()
-  const { amountIn, tokenIn, tokenOut, quote, poolFee } = state
+  const { state, setAmountIn, tokens, setQuoting, setQuote, setQuoteError, setPoolFee } = useSwappingContext()
+  const { amountIn, tokenIn, tokenOut, quote } = state
 
   // Debounce the amount to avoid fetching on every keystroke
   const [debouncedAmountIn] = useDebounce(amountIn, QUOTE_DEBOUNCE_MS)
 
-  // Get quote using the existing uniswapProvider (tested, handles multiple fee tiers)
+  // Get quote using uniswapProvider with automatic fee tier fallback
   const {
     data: swapQuote,
     isLoading: isQuoteLoading,
     isFetching: isQuoteFetching,
     error: quoteError,
   } = useQuery({
-    queryKey: ['swapQuote', tokenIn, tokenOut, debouncedAmountIn, poolFee],
+    queryKey: ['swapQuote', tokenIn, tokenOut, debouncedAmountIn],
     queryFn: async () => {
       if (
         !debouncedAmountIn ||
@@ -59,40 +59,39 @@ export const useSwapInput = () => {
         return null
       }
 
-      try {
-        const amountInBigInt = parseUnits(debouncedAmountIn, tokens[tokenIn].decimals)
-        if (amountInBigInt <= 0n) {
-          return null
-        }
-
-        // Use the existing provider which handles fee tier fallback
-        // Wrap with timeout to prevent hanging on RPC issues
-        const result = await withTimeout(
-          uniswapProvider.getQuote({
-            tokenIn: tokens[tokenIn].address,
-            tokenOut: tokens[tokenOut].address,
-            amountIn: amountInBigInt,
-            tokenInDecimals: tokens[tokenIn].decimals,
-            tokenOutDecimals: tokens[tokenOut].decimals,
-            feeTier: poolFee || undefined, // If poolFee is set, use it; otherwise let provider try all tiers
-          }),
-          QUOTE_TIMEOUT_MS,
-          'Quote request timed out. Please try again.',
-        )
-
-        // Convert SwapQuote to QuoteResult format
-        if (result.error) {
-          throw new Error(result.error)
-        }
-
-        return {
-          amountOut: BigInt(result.amountOutRaw),
-          gasEstimate: result.gasEstimate ? BigInt(result.gasEstimate) : 0n,
-          timestamp: Date.now(), // Track when quote was fetched
-        } as QuoteResult
-      } catch (error) {
-        throw error instanceof Error ? error : new Error('Failed to get quote')
+      const amountInBigInt = parseUnits(debouncedAmountIn, tokens[tokenIn].decimals)
+      if (amountInBigInt <= 0n) {
+        return null
       }
+
+      // Provider automatically tries default tier, then falls back to all tiers
+      const result = await withTimeout(
+        uniswapProvider.getQuote({
+          tokenIn: tokens[tokenIn].address,
+          tokenOut: tokens[tokenOut].address,
+          amountIn: amountInBigInt,
+          tokenInDecimals: tokens[tokenIn].decimals,
+          tokenOutDecimals: tokens[tokenOut].decimals,
+          // No feeTier param - let provider auto-detect the best available tier
+        }),
+        QUOTE_TIMEOUT_MS,
+        'Quote request timed out. Please try again.',
+      )
+
+      if (result.error) {
+        throw new Error(result.error)
+      }
+
+      if (!result.feeTier) {
+        throw new Error('Quote missing fee tier information')
+      }
+
+      return {
+        amountOut: BigInt(result.amountOutRaw),
+        gasEstimate: result.gasEstimate ? BigInt(result.gasEstimate) : 0n,
+        feeTier: result.feeTier,
+        timestamp: Date.now(),
+      } as QuoteResult
     },
     enabled:
       !!debouncedAmountIn &&
@@ -104,7 +103,7 @@ export const useSwapInput = () => {
     retry: false, // Don't retry failed quotes - show error immediately
   })
 
-  // Update state when quote result changes - simplified, using React Query state directly
+  // Sync quote to context and update poolFee when quote succeeds
   useEffect(() => {
     const isLoading = isQuoteLoading || isQuoteFetching
     setQuoting(isLoading)
@@ -113,12 +112,27 @@ export const useSwapInput = () => {
       setQuoteError(quoteError instanceof Error ? quoteError : new Error(String(quoteError)))
     } else if (swapQuote) {
       setQuote(swapQuote)
+      // Update poolFee to the tier that produced this quote
+      // This ensures swap execution uses the same tier
+      setPoolFee(swapQuote.feeTier)
+    } else if (!isLoading) {
+      setQuoteError(null)
     }
-  }, [swapQuote, isQuoteLoading, isQuoteFetching, quoteError, setQuoting, setQuote, setQuoteError])
+  }, [
+    swapQuote,
+    isQuoteLoading,
+    isQuoteFetching,
+    quoteError,
+    setQuoting,
+    setQuote,
+    setQuoteError,
+    setPoolFee,
+  ])
 
   // Format amount out from quote
+  // Return null if there's an error (React Query can have both stale data and new error)
   const formattedAmountOut = useMemo(() => {
-    if (!quote || !quote.amountOut || !tokens[tokenOut].decimals) {
+    if (quoteError || !quote || !quote.amountOut || !tokens[tokenOut].decimals) {
       return null
     }
     try {
@@ -126,7 +140,7 @@ export const useSwapInput = () => {
     } catch {
       return null
     }
-  }, [quote, tokens, tokenOut])
+  }, [quote, quoteError, tokens, tokenOut])
 
   // Check if quote is expired (30 seconds TTL for swap quotes)
   const QUOTE_TTL_MS = 30_000 // 30 seconds
@@ -176,9 +190,8 @@ export const useTokenSelection = () => {
  * Follows the same pattern as useVaultAllowance - uses router address as a constant
  */
 export const useTokenAllowance = () => {
-  const { state, tokens, setCheckingAllowance, setAllowance, setApproving, setApprovalTxHash } =
-    useSwappingContext()
-  const { tokenIn, allowance, isCheckingAllowance, isApproving } = state
+  const { state, tokens, setApproving, setApprovalTxHash } = useSwappingContext()
+  const { tokenIn, isApproving } = state
   const { address } = useAccount()
   const { writeContractAsync, isPending: isWritePending } = useWriteContract()
 
@@ -186,6 +199,7 @@ export const useTokenAllowance = () => {
   const {
     data: permit2AllowanceData,
     isLoading: isAllowanceLoading,
+    isFetching: isAllowanceFetching,
     refetch: refetchAllowance,
   } = useReadContract({
     address: PERMIT2_ADDRESS,
@@ -201,6 +215,11 @@ export const useTokenAllowance = () => {
     },
   })
 
+  // Refetch on mount to ensure fresh data (prevents stale cache issues after swaps)
+  useEffect(() => {
+    refetchAllowance()
+  }, [refetchAllowance])
+
   // Extract Permit2 allowance data (amount, expiration, nonce)
   const permit2Amount = useMemo(() => {
     if (!permit2AllowanceData || !Array.isArray(permit2AllowanceData)) return null
@@ -213,23 +232,19 @@ export const useTokenAllowance = () => {
     return typeof exp === 'bigint' ? exp : typeof exp === 'number' ? BigInt(exp) : null
   }, [permit2AllowanceData])
 
-  // Update state when allowance changes
-  useEffect(() => {
-    if (isAllowanceLoading) {
-      setCheckingAllowance(true)
-    } else if (permit2Amount !== null) {
-      setAllowance(permit2Amount)
-    }
-  }, [permit2Amount, isAllowanceLoading, setCheckingAllowance, setAllowance])
-
   // Check if allowance is sufficient AND not expired
+  // Returns false while fetching to prevent auto-advance with stale data
   const hasSufficientAllowance = useCallback(
     (requiredAmount: bigint) => {
-      if (!allowance || !permit2Expiration) {
+      // Don't return true while fetching - data might be stale
+      if (isAllowanceFetching) {
+        return false
+      }
+      if (permit2Amount === null || !permit2Expiration) {
         return false
       }
       // Check amount is sufficient
-      if (allowance < requiredAmount) {
+      if (permit2Amount < requiredAmount) {
         return false
       }
       // Check expiration (compare with current timestamp in seconds)
@@ -239,7 +254,7 @@ export const useTokenAllowance = () => {
       }
       return true
     },
-    [allowance, permit2Expiration],
+    [isAllowanceFetching, permit2Amount, permit2Expiration],
   )
 
   const approve = useCallback(
@@ -339,8 +354,9 @@ export const useTokenAllowance = () => {
   }, [isWritePending, setApproving])
 
   return {
-    allowance,
-    isCheckingAllowance: isCheckingAllowance || isAllowanceLoading,
+    allowance: permit2Amount,
+    isCheckingAllowance: isAllowanceLoading,
+    isFetchingAllowance: isAllowanceFetching,
     isApproving: isApproving || isWritePending,
     hasSufficientAllowance,
     approve,
