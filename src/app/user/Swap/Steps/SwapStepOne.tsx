@@ -2,9 +2,11 @@ import { SwapInputComponent, SwapInputToken } from '@/components/SwapInput'
 import { handleAmountInput, formatForDisplay } from '@/lib/utils'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { SwapStepProps } from '../types'
-import { useSwapInput, useTokenSelection } from '@/shared/context/SwappingContext/hooks'
+import { useSwapInput, useTokenSelection, useTokenAllowance } from '@/shared/context/SwappingContext/hooks'
 import { useSwappingContext } from '@/shared/context/SwappingContext'
+import { executeTxFlow } from '@/shared/notification'
 import { USDT0, USDRIF } from '@/lib/constants'
+import { parseUnits, Hash } from 'viem'
 import Big from '@/lib/big'
 
 export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
@@ -21,6 +23,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   } = useSwapInput()
   const { tokenInData, tokenOutData } = useTokenSelection()
   const { tokenData } = useSwappingContext()
+  const { allowance, isApproving, hasSufficientAllowance, approve, refetchAllowance } = useTokenAllowance()
   const inputRef = useRef<HTMLInputElement>(null)
   // Track which field the user is actively typing in (prevents loop from programmatic value updates)
   const activeFieldRef = useRef<'in' | 'out' | null>(null)
@@ -57,22 +60,79 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     return Big(amountIn).gt(tokenInBalance)
   }, [amountIn, tokenInBalance])
 
+  // Calculate required amount
+  const requiredAmount = useMemo(() => {
+    if (!amountIn || !tokenInData.decimals) return 0n
+    try {
+      return parseUnits(amountIn, tokenInData.decimals)
+    } catch {
+      return 0n
+    }
+  }, [amountIn, tokenInData.decimals])
+
+  // Check if ERC-20 allowance is sufficient
+  const isAllowanceEnough = useMemo(() => {
+    if (allowance === null || requiredAmount === 0n) return false
+    return hasSufficientAllowance(requiredAmount)
+  }, [allowance, requiredAmount, hasSufficientAllowance])
+
+  // Handle Continue click - approve if needed, then advance
+  const handleContinue = useCallback(() => {
+    if (isAllowanceEnough) {
+      // ERC-20 already approved, just advance
+      onGoNext()
+    } else {
+      // Need ERC-20 approval
+      executeTxFlow({
+        onRequestTx: async () => {
+          const txHash = await approve(requiredAmount)
+          if (!txHash) {
+            throw new Error('Transaction hash is null')
+          }
+          return txHash as Hash
+        },
+        onSuccess: async () => {
+          // Verify allowance after approval
+          const { data: newAllowance } = await refetchAllowance()
+          if (typeof newAllowance !== 'bigint' || newAllowance < requiredAmount) {
+            throw new Error('Allowance verification failed')
+          }
+          onGoNext()
+        },
+        action: 'allowance',
+      })
+    }
+  }, [isAllowanceEnough, requiredAmount, approve, refetchAllowance, onGoNext])
+
   // Set button actions
   useEffect(() => {
     const hasValidAmount = amountIn && Big(amountIn).gt(0)
     const hasQuote = !!quote && amountOut && Big(amountOut).gt(0)
     // Disable if quote is expired, still loading, or invalid
-    const isDisabled = !hasValidAmount || isAmountOverBalance || isQuoting || !hasQuote || isQuoteExpired
+    const isDisabled =
+      !hasValidAmount || isAmountOverBalance || isQuoting || !hasQuote || isQuoteExpired || isApproving
 
     setButtonActions({
       primary: {
-        label: 'Continue',
-        onClick: onGoNext,
+        label: isAllowanceEnough ? 'Continue' : 'Approve & Continue',
+        onClick: handleContinue,
         disabled: isDisabled,
-        loading: isQuoting,
+        loading: isQuoting || isApproving,
+        isTxPending: isApproving,
       },
     })
-  }, [amountIn, isAmountOverBalance, amountOut, isQuoting, isQuoteExpired, onGoNext, setButtonActions, quote])
+  }, [
+    amountIn,
+    isAmountOverBalance,
+    amountOut,
+    isQuoting,
+    isQuoteExpired,
+    isApproving,
+    isAllowanceEnough,
+    handleContinue,
+    setButtonActions,
+    quote,
+  ])
 
   const handleAmountChange = useCallback(
     (value: string) => {
