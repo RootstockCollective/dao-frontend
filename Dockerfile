@@ -35,7 +35,11 @@ ARG NEXT_PUBLIC_BUILD_ID
 # Rename environment files based on PROFILE 
 RUN cp .env.${PROFILE} .env.local
 
-# Export the NEXT_PUBLIC_BUILD_ID as an environment variable
+# Inject the NEXT_PUBLIC_BUILD_ID into .env.local (replacing empty value from profile)
+# This ensures the commit hash is baked into the build and not overwritten by dotenv
+RUN sed -i "s/^NEXT_PUBLIC_BUILD_ID=.*/NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}/" .env.local
+
+# Also export as environment variable for the build step
 ENV NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}
 
 # Build the Next.js application
