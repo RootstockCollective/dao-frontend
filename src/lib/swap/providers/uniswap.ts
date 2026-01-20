@@ -3,6 +3,7 @@ import { UniswapQuoterV2Abi } from '@/lib/abis/UniswapQuoterV2Abi'
 import { ROUTER_ADDRESSES, SWAP_PROVIDERS } from '../constants'
 import { formatUnits, encodeAbiParameters, Address, Hex } from 'viem'
 import type { SwapProvider, SwapQuote, QuoteParams, QuoteExactOutputParams } from './'
+import type { PermitSingle } from '../permit2'
 import Big from '@/lib/big'
 
 /**
@@ -368,6 +369,95 @@ export function getSwapEncodedData(params: ExecuteSwapParams): {
   return {
     commands,
     inputs: [input as Hex],
+  }
+}
+
+// =============================================================================
+// PERMIT2_PERMIT + V3_SWAP_EXACT_IN BUNDLE
+// =============================================================================
+
+/**
+ * Parameters for bundled permit + swap
+ */
+export interface PermitSwapParams extends ExecuteSwapParams {
+  /** PermitSingle struct for Permit2 */
+  permit: PermitSingle
+  /** EIP-712 signature from user */
+  signature: Hex
+}
+
+/**
+ * Get encoded data for PERMIT2_PERMIT + V3_SWAP_EXACT_IN bundle
+ * Commands: 0x0a (PERMIT2_PERMIT) + 0x00 (V3_SWAP_EXACT_IN)
+ *
+ * This bundles the permit signature with the swap in a single transaction.
+ * The permit is executed first, granting the router allowance, then the swap uses that allowance.
+ */
+export function getPermitSwapEncodedData(params: PermitSwapParams): {
+  commands: Hex
+  inputs: [Hex, Hex]
+} {
+  const { tokenIn, tokenOut, amountIn, amountOutMinimum, poolFee, recipient, permit, signature } = params
+
+  // Encode PERMIT2_PERMIT input (command 0x0a)
+  // ABI: (PermitSingle permitSingle, bytes signature)
+  const permitInput = encodeAbiParameters(
+    [
+      {
+        name: 'permitSingle',
+        type: 'tuple',
+        components: [
+          {
+            name: 'details',
+            type: 'tuple',
+            components: [
+              { name: 'token', type: 'address' },
+              { name: 'amount', type: 'uint160' },
+              { name: 'expiration', type: 'uint48' },
+              { name: 'nonce', type: 'uint48' },
+            ],
+          },
+          { name: 'spender', type: 'address' },
+          { name: 'sigDeadline', type: 'uint256' },
+        ],
+      },
+      { name: 'signature', type: 'bytes' },
+    ],
+    [
+      {
+        details: {
+          token: permit.details.token,
+          amount: permit.details.amount,
+          // uint48 values need to be numbers for viem's encodeAbiParameters
+          expiration: Number(permit.details.expiration),
+          nonce: Number(permit.details.nonce),
+        },
+        spender: permit.spender,
+        sigDeadline: permit.sigDeadline,
+      },
+      signature,
+    ],
+  )
+
+  // Encode V3_SWAP_EXACT_IN input (command 0x00)
+  const path = encodeSwapPath(tokenIn, poolFee, tokenOut)
+  const swapInput = encodeAbiParameters(
+    [
+      { name: 'recipient', type: 'address' },
+      { name: 'amountIn', type: 'uint256' },
+      { name: 'amountOutMinimum', type: 'uint256' },
+      { name: 'path', type: 'bytes' },
+      { name: 'payerIsUser', type: 'bool' },
+    ],
+    [recipient, amountIn, amountOutMinimum, path, true],
+  )
+
+  // Commands: 0x0a (PERMIT2_PERMIT) + 0x00 (V3_SWAP_EXACT_IN)
+  const commands = '0x0a00' as Hex
+
+  return {
+    commands,
+    inputs: [permitInput as Hex, swapInput as Hex],
   }
 }
 

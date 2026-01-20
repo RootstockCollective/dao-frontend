@@ -31,22 +31,22 @@ describe('uniswap provider - integration tests', () => {
     }
   })
 
-  describe('getQuote - with specific fee tier', () => {
+  describe('getQuote - with real contract', () => {
     it.skipIf(!hasRealAddresses)(
-      'should return quote for specified fee tier from real contract',
+      'should return quote from real contract',
       async () => {
         // Use 1 USDT0 as input
         // Note: USDT0 has 6 decimals on mainnet, USDRIF has 18 decimals
         const amountIn = parseUnits('1', tokenInDecimals)
 
-        // Use fee tier 100 (0.01%) - this is the actual fee tier for USDT0/USDRIF pool on mainnet
+        // Don't specify fee tier - let the provider find the correct one
+        // The pool fee tier may vary depending on fork state
         const result = await uniswapProvider.getQuote({
           tokenIn: realTokenIn,
           tokenOut: realTokenOut,
           amountIn,
           tokenInDecimals,
           tokenOutDecimals,
-          feeTier: 100, // Actual fee tier for this pool
         })
 
         // Verify structure and types
@@ -168,14 +168,13 @@ describe('uniswap provider - integration tests', () => {
         // Use 1 USDT0 (6 decimals on mainnet)
         const amountIn = parseUnits('1', tokenInDecimals)
 
-        // Use fee tier 100 which exists for this pool
+        // Don't specify fee tier - let provider find the correct one
         const result = await uniswapProvider.getQuote({
           tokenIn: realTokenIn,
           tokenOut: realTokenOut,
           amountIn,
           tokenInDecimals,
           tokenOutDecimals,
-          feeTier: 100, // Use existing pool to verify formatting
         })
 
         // Quote MUST succeed to verify formatting
@@ -216,7 +215,7 @@ describe('uniswap provider - integration tests', () => {
         // Use 1 USDT0 (6 decimals on mainnet)
         const amountIn = parseUnits('1', tokenInDecimals)
 
-        // Use fee tier 100 which exists for this pool
+        // Don't specify fee tier - let provider find the correct one
         // This test verifies ABI correctness, so we use a working pool
         const result = await uniswapProvider.getQuote({
           tokenIn: realTokenIn,
@@ -224,7 +223,6 @@ describe('uniswap provider - integration tests', () => {
           amountIn,
           tokenInDecimals,
           tokenOutDecimals,
-          feeTier: 100, // Use existing pool to verify ABI works
         })
 
         // If this succeeds, it means:
@@ -319,13 +317,13 @@ describe('uniswap provider - integration tests', () => {
         expect(encodedData.startsWith('0x')).toBe(true)
 
         // 6. Make actual call to verify ABI works with real contract
+        // Don't specify fee tier - let provider find the correct one
         const result = await uniswapProvider.getQuote({
           tokenIn: realTokenIn,
           tokenOut: realTokenOut,
           amountIn,
           tokenInDecimals,
           tokenOutDecimals,
-          feeTier: 100, // Use existing pool
         })
 
         // 7. Verify the call succeeded (proves ABI matches contract)
