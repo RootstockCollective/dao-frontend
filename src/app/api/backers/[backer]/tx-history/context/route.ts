@@ -86,6 +86,13 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
     const url = new URL(req.url || '')
     const search = url.searchParams
 
+    // role=backer (default): filters by backer = address
+    // role=builder: filters by builder = address AND backer IS NULL (builder's own claims)
+    let role = search.get('role')
+    if (!role || role !== 'builder') {
+      role = 'backer'
+    }
+
     const typeFiltersRaw = parseMultiParam(search, 'type') // Back | Claim
     const builderFiltersRaw = parseMultiParam(search, 'builder')
     const rewardTokenFiltersRaw = parseMultiParam(search, 'rewardToken')
@@ -112,6 +119,49 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
 
     const { page, pageSize, sortBy, sortDirection } = paginationResult.data
 
+    // Builder role: only query ClaimedRewardsHistory where builder = address AND backer IS NULL
+    if (role === 'builder') {
+      const claimedRewardsHistory = db('ClaimedRewardsHistory')
+        .select(
+          'id',
+          db.raw("'Claim' as type"),
+          'backer',
+          'builder',
+          'blockHash',
+          'blockTimestamp',
+          'transactionHash',
+          'cycleStart',
+          db.raw('NULL as allocation'),
+          db.raw('NULL as increased'),
+          'amount',
+          'rewardToken',
+        )
+        .where('builder', '=', backer.toLowerCase())
+        .whereNull('backer')
+        .modify(qb => {
+          if (rewardTokenFilters.length) qb.whereIn('rewardToken', rewardTokenFilters)
+        })
+
+      const [data, countResult] = await Promise.all([
+        claimedRewardsHistory
+          .clone()
+          .orderBy(sortBy || 'blockTimestamp', sortDirection || 'desc')
+          .limit(pageSize)
+          .offset((page - 1) * pageSize),
+        db.count('* as count').from(claimedRewardsHistory.clone()).first(),
+      ])
+
+      const count = Number(countResult?.count || 0)
+
+      return NextResponse.json({
+        data,
+        count,
+        page,
+        pageSize,
+      })
+    }
+
+    // Backer role (default): original behavior
     const limitToBack = typeFiltersRaw.length > 0 && !typeFiltersRaw.includes('Claim')
     const limitToClaim =
       (typeFiltersRaw.length > 0 && !typeFiltersRaw.includes('Back')) || rewardTokenFilters.length > 0
