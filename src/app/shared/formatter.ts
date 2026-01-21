@@ -1,5 +1,5 @@
 import Big from '@/lib/big'
-import { USD, WeiPerEther, VAULT_BASIS_POINTS } from '@/lib/constants'
+import { USD, WeiPerEther, VAULT_BASIS_POINTS, RBTC_SYMBOLS, RBTC } from '@/lib/constants'
 import { formatCurrencyWithLabel } from '@/lib/utils'
 import { BigSource } from 'big.js'
 
@@ -53,7 +53,7 @@ const usdt0 = {
 }
 const symbols: { [key: string]: SymbolFormatOptions } = {
   rif,
-  rbtc,
+  [RBTC.toLowerCase()]: rbtc, // Maps current env's RBTC symbol (rbtc or trbtc) to rbtc config
   strif,
   usdrif,
   ctokenvault,
@@ -73,7 +73,8 @@ export const formatSymbol = (value: bigint | string, symbol: string) => {
     decimals: 18,
     displayDecimals: 2,
   }
-  const minimumFractionDigits = symbolKey === 'rbtc' ? 0 : displayDecimals
+  const isRbtc = RBTC_SYMBOLS.includes(symbolKey as (typeof RBTC_SYMBOLS)[number])
+  const minimumFractionDigits = isRbtc ? 0 : displayDecimals
 
   const amount = Big(value.toString()).div(Big(10).pow(decimals))
   const minimumAmount = Big(1).div(Big(10).pow(displayDecimals))
