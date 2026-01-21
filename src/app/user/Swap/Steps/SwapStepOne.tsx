@@ -159,6 +159,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
           balance={formatForDisplay(tokenInBalance)}
           onPercentageClick={handlePercentageClick}
           labelText="Amount to swap"
+          isLoading={isQuoting && mode === 'exactOut'}
           errorText={
             isAmountOverBalance
               ? `This is more than the available ${tokenInData.symbol} balance. Please update the amount.`
@@ -176,7 +177,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
           onFocus={handleOutputFocus}
           balance={formatForDisplay(tokenOutBalance)}
           labelText="You will receive"
-          isLoading={isQuoting}
+          isLoading={isQuoting && mode === 'exactIn'}
           errorText={quoteError ? 'Failed to get quote. Pool may have insufficient liquidity.' : ''}
           autoFocus={false}
         />
