@@ -42,12 +42,6 @@ export const DisconnectWorkflowPresentation = ({
         <div className="hidden md:inline">
           <WalletDetailsButton />
         </div>
-        <Tooltip text={onRampDisclaimerText} sideOffset={10} className="px-4 py-3 max-w-[15rem]">
-          {/* this button adds more space to click the question icon */}
-          <button type="button" className="md:hidden shrink-0 w-5 h-5 flex items-center justify-end">
-            <KotoQuestionMarkIcon />
-          </button>
-        </Tooltip>
         <Tooltip
           text={onRampDisclaimerText}
           sideOffset={8}
@@ -64,6 +58,12 @@ export const DisconnectWorkflowPresentation = ({
             </Span>
             <Span className="hidden md:inline">Buy $RIF with Fiat</Span>
           </Button>
+        </Tooltip>
+        <Tooltip text={onRampDisclaimerText} sideOffset={10} className="px-4 py-3 max-w-[15rem]">
+          {/* this button adds more space to click the question icon */}
+          <button type="button" className="md:hidden shrink-0 w-5 h-5 flex items-center justify-end">
+            <KotoQuestionMarkIcon />
+          </button>
         </Tooltip>
       </div>
       <NewPopover
