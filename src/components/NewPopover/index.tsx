@@ -1,6 +1,7 @@
 import * as Popover from '@radix-ui/react-popover'
 import React, { CSSProperties, ReactElement, ReactNode, RefObject, useEffect, useRef } from 'react'
 import { cn } from '@/lib/utils'
+import { usePortalContainer } from '../PortalContainerContext'
 
 interface NewPopoverProps {
   open: boolean
@@ -37,6 +38,7 @@ export const NewPopover: React.FC<NewPopoverProps> = ({
 }) => {
   // If anchorRef is provided, create a hidden span and move it to the anchorRef's position
   const hiddenAnchorRef = useRef<HTMLSpanElement>(null)
+  const portalContainer = usePortalContainer()
 
   useEffect(() => {
     if (anchorRef?.current && hiddenAnchorRef.current) {
@@ -71,7 +73,7 @@ export const NewPopover: React.FC<NewPopoverProps> = ({
       ) : (
         <Popover.Anchor asChild>{anchor}</Popover.Anchor>
       )}
-      <Popover.Portal>
+      <Popover.Portal container={portalContainer}>
         <Popover.Content
           forceMount
           side={side}

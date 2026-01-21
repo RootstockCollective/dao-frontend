@@ -8,8 +8,8 @@
   --z-index-base: 50; /* above root (0) layer */
   --z-index-dropdown: 100; /* dropdowns */
   --z-index-sticky: 200; /* header, sidebar, etc. */
+  --z-index-tooltip: 300; /* tooltips, popovers, etc. */
   --z-index-modal: 500; /* modals */
-  --z-index-tooltip: 1000; /* tooltips, popovers, etc. */
 
   --color-primary: var(--color-primary);
   --color-secondary: var(--color-secondary);

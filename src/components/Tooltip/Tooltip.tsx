@@ -1,7 +1,8 @@
 import React, { ReactNode, useEffect, useState } from 'react'
 import * as RadixTooltip from '@radix-ui/react-tooltip'
 import { cn } from '@/lib/utils'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { Span } from '../Typography'
+import { usePortalContainer } from '../PortalContainerContext'
 
 export interface TooltipProps extends RadixTooltip.TooltipContentProps {
   text: ReactNode
@@ -94,6 +95,7 @@ export function Tooltip({
   const hasHover = useHasHover()
   const isMobile = !hasHover && supportMobileTap
   const pointerDown = usePointerDown()
+  const portalContainer = usePortalContainer()
 
   // Prefer rAF updates while pointer is down to avoid ResizeObserver loop warnings.
   const updatePositionStrategy =
@@ -121,20 +123,18 @@ export function Tooltip({
     <RadixTooltip.Root delayDuration={isMobile ? 0 : delayDuration} onOpenChange={setOpen} open={open}>
       <TooltipTriggerContext.Provider value={{ supportMobileTap, open, setOpen }}>
         <TooltipTrigger asChild>{children}</TooltipTrigger>
-        <RadixTooltip.Portal>
+        <RadixTooltip.Portal container={portalContainer}>
           <RadixTooltip.Content
             side={isMobile ? 'top' : side}
             sideOffset={sideOffset}
             collisionPadding={16}
             {...({ updatePositionStrategy } as { updatePositionStrategy?: 'optimized' | 'always' })}
-            className={cn(
-              'rounded-sm bg-v3-text-80 text-v3-bg-accent-60 px-2 py-1 text-xs font-normal shadow-lg font-rootstock-sans',
-              className,
-            )}
-            style={{ zIndex: 1000 }}
+            className={cn('z-tooltip rounded-sm bg-v3-text-80 px-2 py-1 shadow-lg', className)}
             {...props}
           >
-            <div className="max-w-[calc(100vw-64px)]">{text}</div>
+            <Span variant="body-s" className="max-w-[calc(100vw-64px)] text-v3-bg-accent-60">
+              {text}
+            </Span>
           </RadixTooltip.Content>
         </RadixTooltip.Portal>
       </TooltipTriggerContext.Provider>

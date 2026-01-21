@@ -1,9 +1,10 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { FC, ReactNode } from 'react'
+import { FC, ReactNode, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { CloseIconKoto } from '../Icons'
+import { PortalContainerContext } from '../PortalContainerContext'
 
 export interface ModalProps {
   children: ReactNode
@@ -27,6 +28,7 @@ export const Modal: FC<ModalProps> = ({
   fullscreen,
   'data-testid': dataTestId,
 }) => {
+  const portalContainerRef = useRef<HTMLDivElement>(null)
   const containerStyle: React.CSSProperties = {}
 
   if (!fullscreen && width) {
@@ -40,6 +42,7 @@ export const Modal: FC<ModalProps> = ({
 
   return createPortal(
     <div
+      ref={portalContainerRef}
       className={cn(
         'fixed inset-0 flex items-center justify-center z-modal max-w-screen max-h-screen overflow-hidden',
         fullscreen ? '' : 'p-4',
@@ -63,7 +66,9 @@ export const Modal: FC<ModalProps> = ({
           <CloseIconKoto size={24} aria-label="Close" color={closeButtonColor} />
         </button>
 
-        {children}
+        <PortalContainerContext.Provider value={portalContainerRef}>
+          {children}
+        </PortalContainerContext.Provider>
       </div>
     </div>,
     document.body,
