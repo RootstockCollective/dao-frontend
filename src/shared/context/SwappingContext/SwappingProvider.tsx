@@ -336,6 +336,8 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
 
   const setPoolFee = useCallback((fee: number) => {
     dispatch({ type: SwapActionType.SET_POOL_FEE, payload: fee })
+  }, [])
+
   // Permit signing state management
   const setPermit = useCallback((permit: PermitSingle | null) => {
     dispatch({ type: SwapActionType.SET_PERMIT, payload: permit })
