@@ -70,6 +70,9 @@ export async function getVaultHistoryFromDB(params: {
   const { address, limit, page, sort_field, sort_direction, type } = params
   const offset = (page - 1) * limit
 
+  // Whitelist to prevent SQL injection - only allow known safe values
+  const orderDirection = sort_direction === 'asc' ? 'ASC' : 'DESC'
+
   let query = db('VaultHistory')
     .select(
       db.raw(`
@@ -90,7 +93,7 @@ export async function getVaultHistoryFromDB(params: {
               'blockNumber', "blockNumber"::text,
               'timestamp', timestamp,
               'transactionHash', convert_from("transactionHash", 'utf8')
-            ) ORDER BY timestamp ${sort_direction.toUpperCase()}
+            ) ORDER BY timestamp ${orderDirection}
           ),
           '[]'::json
         )
