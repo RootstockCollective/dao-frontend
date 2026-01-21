@@ -58,11 +58,9 @@ describe('GET /api/vault/v1/addresses/[address]/history', () => {
 
     expect(data.data).toEqual(mockVaultHistory)
     expect(data.pagination).toEqual({
-      limit: 20,
-      offset: 0,
       page: 1,
-      sort_field: 'period',
-      sort_direction: 'desc',
+      limit: 20,
+      totalPages: 1,
       total: 1,
     })
   })
@@ -81,7 +79,7 @@ describe('GET /api/vault/v1/addresses/[address]/history', () => {
     expect(mockGetVaultHistoryFromDB).toHaveBeenCalledWith({
       address,
       limit: 10,
-      offset: 10, // (page 2 - 1) * limit 10
+      page: 2,
       sort_field: 'assets',
       sort_direction: 'asc',
       type: ['deposit'],
@@ -101,6 +99,7 @@ describe('GET /api/vault/v1/addresses/[address]/history', () => {
     expect(response.status).toBe(200)
     expect(mockGetVaultHistoryFromDB).toHaveBeenCalledWith(
       expect.objectContaining({
+        page: 1,
         type: ['deposit', 'withdraw'],
       }),
     )

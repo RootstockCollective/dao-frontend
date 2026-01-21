@@ -8,20 +8,13 @@ import { z } from 'zod'
 const SortFieldEnum = z.enum(['period', 'assets', 'action'])
 const SortDirectionEnum = z.enum(['asc', 'desc'])
 const AddressSchema = z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid address format')
-const QuerySchema = z
-  .object({
-    limit: z.coerce.number().int().min(1).max(200).default(20),
-    offset: z.coerce.number().int().min(0).default(0),
-    page: z.coerce.number().int().min(1).optional(), // optional convenience
-    sort_field: SortFieldEnum.default('period'),
-    sort_direction: SortDirectionEnum.default('desc'),
-    type: z.array(z.enum(['deposit', 'withdraw'])).optional(), // Filter by action type
-  })
-  .transform(q => {
-    // If page is provided, compute offset = (page-1) * limit
-    const offset = q.page ? (q.page - 1) * q.limit : q.offset
-    return { ...q, offset }
-  })
+const QuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(200).default(20),
+  page: z.coerce.number().int().min(1).default(1),
+  sort_field: SortFieldEnum.default('period'),
+  sort_direction: SortDirectionEnum.default('desc'),
+  type: z.array(z.enum(['deposit', 'withdraw'])).optional(),
+})
 
 export const revalidate = 60
 
@@ -40,7 +33,6 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
 
     const parsed = QuerySchema.parse({
       limit: qp('limit'),
-      offset: qp('offset'),
       page: qp('page'),
       sort_field: qp('sort_field'),
       sort_direction: qp('sort_direction'),
@@ -50,20 +42,20 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
     const vaultHistory = await getVaultHistoryFromDB({
       address,
       limit: parsed.limit,
-      offset: parsed.offset,
+      page: parsed.page,
       sort_field: parsed.sort_field,
       sort_direction: parsed.sort_direction,
       type: parsed.type,
     })
     const total = await getVaultHistoryCountFromDB(address, parsed.type)
+    const totalPages = Math.ceil(total / parsed.limit)
+
     return Response.json({
       data: vaultHistory,
       pagination: {
+        page: parsed.page,
         limit: parsed.limit,
-        offset: parsed.offset,
-        page: Math.floor(parsed.offset / parsed.limit) + 1,
-        sort_field: parsed.sort_field,
-        sort_direction: parsed.sort_direction,
+        totalPages,
         total,
       },
     })

@@ -53,7 +53,7 @@ interface VaultHistoryDatabaseRow {
  * @param params - Query parameters
  * @param params.address - User wallet address to filter transactions
  * @param params.limit - Maximum number of records to return
- * @param params.offset - Number of records to skip (for pagination)
+ * @param params.page - Page number (1-indexed)
  * @param params.sort_field - Field to sort by: 'period', 'assets', or 'action'
  * @param params.sort_direction - Sort direction: 'asc' (ascending) or 'desc' (descending)
  * @param params.type - Optional array of action types to filter by: 'deposit' or 'withdraw'
@@ -62,12 +62,13 @@ interface VaultHistoryDatabaseRow {
 export async function getVaultHistoryFromDB(params: {
   address: string
   limit: number
-  offset: number
+  page: number
   sort_field: 'period' | 'assets' | 'action'
   sort_direction: 'asc' | 'desc'
   type?: ('deposit' | 'withdraw')[]
 }): Promise<VaultHistoryByPeriodAndAction[]> {
-  const { address, limit, offset, sort_field, sort_direction, type } = params
+  const { address, limit, page, sort_field, sort_direction, type } = params
+  const offset = (page - 1) * limit
 
   let query = db('VaultHistory')
     .select(
