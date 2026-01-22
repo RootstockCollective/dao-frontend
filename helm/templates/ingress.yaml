@@ -16,6 +16,8 @@ metadata:
     alb.ingress.kubernetes.io/healthcheck-path: /health
     alb.ingress.kubernetes.io/healthcheck-interval-seconds: '10'
     alb.ingress.kubernetes.io/success-codes: '200'
+    # External DNS annotation for automatic DNS record creation
+    external-dns.alpha.kubernetes.io/hostname: {{ (index .Values.ingress.hosts 0).host }}
     {{- with .Values.ingress.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
