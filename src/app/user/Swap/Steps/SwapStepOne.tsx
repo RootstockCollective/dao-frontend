@@ -32,12 +32,15 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   const tokenOutPrice = tokenData.prices[USDRIF]
 
   // Display values: typed field shows raw, derived field shows formatted (2 decimals)
+  // When empty, return '' so the placeholder "0" shows
   const displayAmountIn = useMemo(() => {
+    if (!amountIn) return ''
     if (mode === 'exactIn') return amountIn // User is typing, show raw
     return formatForDisplay(amountIn) // Derived from quote, format it
   }, [mode, amountIn])
 
   const displayAmountOut = useMemo(() => {
+    if (!amountOut) return ''
     if (mode === 'exactOut') return amountOut // User is typing, show raw
     return formatForDisplay(amountOut) // Derived from quote, format it
   }, [mode, amountOut])
