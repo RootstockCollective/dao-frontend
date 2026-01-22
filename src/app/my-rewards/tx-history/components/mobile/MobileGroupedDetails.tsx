@@ -3,18 +3,37 @@
 import { FC } from 'react'
 import { CloseIconKoto } from '@/components/Icons/CloseIconKoto'
 import { Paragraph } from '@/components/Typography'
-import { Builder } from '@/app/collective-rewards/types'
 import { TransactionRow } from './MobileRow'
 import { MobileCellWrapper } from './MobileCells'
 import { Expandable, ExpandableContent } from '@/components/Expandable'
 import { useExpandableContext } from '@/components/Expandable/ExpandableContext'
 import { AmountDisplay, BuilderAvatar, UsdValue } from '../shared'
+import { GroupedTransactionDetail } from '../../config'
+import { TransactionHistoryType } from '../../utils/types'
 
-interface MobileShowDetailsProps {
+interface Props {
   row: TransactionRow
 }
 
-const MobileShowDetailsTrigger: FC = () => {
+export const MobileShowDetails: FC<Props> = ({ row }) => {
+  const { from_to, type } = row.data
+  const groupedDetails = from_to.groupedDetails || []
+
+  if (!from_to.isGrouped || groupedDetails.length === 0) return null
+
+  return (
+    <Expandable className="gap-4">
+      <ExpandableContent className="flex flex-col">
+        {groupedDetails.map(detail => (
+          <MobileGroupedDetailItem key={detail.id} detail={detail} type={type.type} />
+        ))}
+      </ExpandableContent>
+      <MobileShowDetailsToggle />
+    </Expandable>
+  )
+}
+
+const MobileShowDetailsToggle: FC = () => {
   const { isExpanded, toggleExpanded } = useExpandableContext()
 
   return (
@@ -34,35 +53,9 @@ const MobileShowDetailsTrigger: FC = () => {
   )
 }
 
-export const MobileShowDetails: FC<MobileShowDetailsProps> = ({ row }) => {
-  const { from_to, type } = row.data
-  const groupedDetails = from_to.groupedDetails || []
-
-  if (!from_to.isGrouped || groupedDetails.length === 0) return null
-
-  return (
-    <Expandable className="gap-4">
-      <ExpandableContent className="flex flex-col">
-        {groupedDetails.map(detail => (
-          <MobileGroupedDetailItem key={detail.id} detail={detail} type={type.type} />
-        ))}
-      </ExpandableContent>
-      <MobileShowDetailsTrigger />
-    </Expandable>
-  )
-}
-
 interface MobileGroupedDetailItemProps {
-  detail: {
-    id: string
-    builder?: Builder
-    builderAddress?: string
-    blockTimestamp: string
-    amounts: Array<{ address: string; value: string; symbol: string }>
-    usdValue: string | string[]
-    increased?: boolean
-  }
-  type: 'Claim' | 'Back'
+  detail: GroupedTransactionDetail
+  type: TransactionHistoryType
 }
 
 const MobileGroupedDetailItem: FC<MobileGroupedDetailItemProps> = ({ detail, type }) => {

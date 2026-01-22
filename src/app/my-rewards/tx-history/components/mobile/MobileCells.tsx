@@ -5,6 +5,9 @@ import { Label, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { Builder } from '@/app/collective-rewards/types'
 import { AmountDisplay, BuilderAvatar, MultipleBuildersAvatar, UsdValue } from '../shared'
+import { TransactionHistoryType } from '../../utils/types'
+import { TransactionAmount } from '../../config/table.config'
+import { Address } from 'viem'
 
 interface MobileCellWrapperProps {
   label: string
@@ -25,7 +28,7 @@ export const MobileCellWrapper: FC<MobileCellWrapperProps> = ({ label, children,
 
 interface MobileFromToCellProps {
   builder?: Builder
-  builderAddress?: string
+  builderAddress?: Address
   isGrouped?: boolean
 }
 
@@ -46,7 +49,7 @@ export const MobileFromToCell: FC<MobileFromToCellProps> = ({ builder, builderAd
 }
 
 interface MobileTypeCellProps {
-  type: 'Claim' | 'Back'
+  type: TransactionHistoryType
 }
 
 export const MobileTypeCell: FC<MobileTypeCellProps> = ({ type }) => {
@@ -58,8 +61,8 @@ export const MobileTypeCell: FC<MobileTypeCellProps> = ({ type }) => {
 }
 
 interface MobileAmountCellProps {
-  amounts: Array<{ address: string; value: string; symbol: string }>
-  type: 'Claim' | 'Back'
+  amounts: TransactionAmount[]
+  type: TransactionHistoryType
   increased?: boolean
 }
 

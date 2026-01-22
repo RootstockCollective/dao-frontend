@@ -6,9 +6,11 @@ import { Paragraph } from '@/components/Typography'
 import { ChevronDownIcon } from '@/components/Icons/ChevronDownIcon'
 import { ChevronUpIcon } from '@/components/Icons/ChevronUpIcon'
 import { Builder } from '@/app/collective-rewards/types'
-import { Address } from 'viem'
 import { EXPLORER_URL } from '@/lib/constants'
 import { AmountDisplay, BuilderAvatar, MultipleBuildersAvatar, UsdValue } from '../shared'
+import { Address } from 'viem'
+import { TransactionHistoryType } from '../../utils/types'
+import { TransactionAmount } from '../../config/table.config'
 
 const TableCellBase = ({
   children,
@@ -103,7 +105,7 @@ export const DateCell: FC<DateCellProps> = ({ formatted, transactionHash, isHove
 interface FromToCellProps {
   builder?: Builder
   builderAddress?: Address
-  type: 'Claim' | 'Back'
+  type: TransactionHistoryType
   isGrouped?: boolean
   isExpanded?: boolean
   isHovered?: boolean
@@ -142,7 +144,7 @@ export const FromToCell: FC<FromToCellProps> = ({
 }
 
 interface TypeCellProps {
-  type: 'Claim' | 'Back'
+  type: TransactionHistoryType
   isExpanded?: boolean
   isHovered?: boolean
   isDetailRow?: boolean
@@ -163,8 +165,8 @@ export const TypeCell: FC<TypeCellProps> = ({ type, isHovered, isDetailRow }): R
 }
 
 interface AmountCellProps {
-  amounts: Array<{ address: string; value: string; symbol: string }>
-  type: 'Claim' | 'Back'
+  amounts: TransactionAmount[]
+  type: TransactionHistoryType
   increased?: boolean
   isExpanded?: boolean
   isHovered?: boolean
