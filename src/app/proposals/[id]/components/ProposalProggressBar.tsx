@@ -47,18 +47,24 @@ const renderStatusPath = (proposalState: ProposalState) => {
   const steps = getStatusSteps(proposalState)
   const currentStepIndex = getCurrentStepIndex(proposalState)
 
+  const classname = 'text-base leading-normal tracking-[1.28px] uppercase'
+
   return (
     <>
       {steps.map((step, index) => (
         <Fragment key={step}>
           <Span
             variant="body-s"
-            className={cn('flex-shrink-0', index === currentStepIndex ? 'text-white' : 'text-bg-0')}
+            className={cn(
+              classname,
+              'font-medium flex-shrink-0',
+              index === currentStepIndex ? 'text-text-100' : 'text-bg-0',
+            )}
           >
             {step}
           </Span>
           {index < steps.length - 1 && (
-            <Span variant="body-s" className="flex-shrink-0 mx-2 text-bg-0">
+            <Span variant="body-s" className={cn(classname, 'text-xl flex-shrink-0 mx-2 text-bg-0')}>
               {'>'}
             </Span>
           )}
@@ -121,7 +127,7 @@ export const ProposalProggressBar = ({ proposalState }: ProgressBarProps) => {
   }, [proposalState, calculateOffset])
 
   return (
-    <div className="flex flex-col w-full md:p-6 p-4" ref={containerRef}>
+    <div className="flex flex-col w-full md:p-6 p-4 md:pb-10" ref={containerRef}>
       <div
         ref={contentRef}
         className="flex flex-row justify-between w-full"

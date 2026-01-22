@@ -31,12 +31,12 @@ interface DetailItemProps {
   'data-testid'?: string
 }
 
+const detailItemParagraph = 'font-rootstock-sans text-lg font-normal leading-[1.33]'
 const DetailItem = ({ label, children, show = true, 'data-testid': dataTestId }: DetailItemProps) => {
   if (!show) return null
-
   return (
-    <div className="!min-w-1/2 max-w-full flex-shrink-0 flex flex-col md:pl-6 pl-4">
-      <Span variant="tag-s" className="text-white/70" bold data-testid={dataTestId}>
+    <div className="!min-w-1/2 max-w-full flex-shrink-0 flex flex-col md:pl-6 pl-4 gap-2">
+      <Span variant="tag-s" className="text-bg-0 text-base font-medium" data-testid={dataTestId}>
         {label}
       </Span>
       {children}
@@ -54,7 +54,10 @@ const DiscourseLink = ({ link, readOnly, 'data-testid': dataTestId }: DiscourseL
   return (
     <Paragraph
       variant="body"
-      className={!readOnly ? 'text-primary' : 'text-wrap break-words whitespace-normal'}
+      className={cn(
+        detailItemParagraph,
+        !readOnly ? 'text-primary' : 'text-wrap break-words whitespace-normal',
+      )}
       data-testid={dataTestId}
     >
       {!readOnly ? (
@@ -117,7 +120,7 @@ export const ProposalDetails = ({
             <TokenImage symbol={parsedAction.tokenSymbol} size={16} />
             <Span className="font-bold ml-1">{parsedAction.tokenSymbol}</Span>
           </Span>
-          {additionalActionsText && <Span className="text-white/70 ml-1">{additionalActionsText}</Span>}
+          {additionalActionsText && <Span className="text-bg-0 ml-1">{additionalActionsText}</Span>}
         </>
       )
     }
@@ -136,13 +139,17 @@ export const ProposalDetails = ({
   return (
     <div className="flex flex-wrap gap-y-6 md:mt-0 mt-8 md:pr-6 pr-4">
       <DetailItem label="Proposal type" data-testid="ProposalTypeLabel">
-        <Paragraph variant="body" className="flex items-center flex-shrink-0" data-testid="ProposalType">
+        <Paragraph
+          variant="body"
+          className={cn(detailItemParagraph, 'flex items-center flex-shrink-0')}
+          data-testid="ProposalType"
+        >
           {getProposalTypeLabel()}
         </Paragraph>
       </DetailItem>
 
       <DetailItem label="Created on" data-testid="CreatedOnLabel">
-        <Paragraph variant="body" data-testid="CreatedOn">
+        <Paragraph variant="body" data-testid="CreatedOn" className={detailItemParagraph}>
           {startsAt ? startsAt.format('DD MMM YYYY, HH:mm') : '—'}
         </Paragraph>
       </DetailItem>
@@ -154,7 +161,7 @@ export const ProposalDetails = ({
       >
         <Paragraph
           variant="body"
-          className={cn('text-sm font-medium', !readOnly && 'text-primary')}
+          className={cn(detailItemParagraph, !readOnly && 'text-text-100')}
           data-testid="BuilderName"
         >
           {/** TODO: enable later when builder profile feature is implemented */}
@@ -169,35 +176,39 @@ export const ProposalDetails = ({
         show={(isCommunityApproveBuilderAction || isBuilderDeactivationAction) && !!addressToWhitelist}
         data-testid="BuilderAddressLabel"
       >
-        {addressToWhitelist ? (
-          !readOnly ? (
-            <ShortenAndCopy value={addressToWhitelist} data-testid="BuilderAddress" />
+        <div className={cn(detailItemParagraph, 'text-primary')}>
+          {addressToWhitelist ? (
+            !readOnly ? (
+              <ShortenAndCopy value={addressToWhitelist} data-testid="BuilderAddress" />
+            ) : (
+              <Span variant="body" data-testid="BuilderAddress">
+                {shortAddress(addressToWhitelist as Address)}
+              </Span>
+            )
           ) : (
             <Span variant="body" data-testid="BuilderAddress">
-              {shortAddress(addressToWhitelist as Address)}
+              —
             </Span>
-          )
-        ) : (
-          <Span variant="body" data-testid="BuilderAddress">
-            —
-          </Span>
-        )}
+          )}
+        </div>
       </DetailItem>
 
       <DetailItem label="Proposed by" data-testid="ProposedByLabel">
-        {proposer ? (
-          !readOnly ? (
-            <ShortenAndCopy value={proposer} data-testid="ProposedBy" className="text-primary" />
+        <div className={cn(detailItemParagraph, 'text-primary')}>
+          {proposer ? (
+            !readOnly ? (
+              <ShortenAndCopy value={proposer} data-testid="ProposedBy" />
+            ) : (
+              <Span variant="body" data-testid="ProposedBy">
+                {shortAddress(proposer as Address)}
+              </Span>
+            )
           ) : (
             <Span variant="body" data-testid="ProposedBy">
-              {shortAddress(proposer as Address)}
+              —
             </Span>
-          )
-        ) : (
-          <Span variant="body" data-testid="ProposedBy">
-            —
-          </Span>
-        )}
+          )}
+        </div>
       </DetailItem>
 
       <DetailItem label="Community discussion" data-testid="CommunityDiscussionLabel">
