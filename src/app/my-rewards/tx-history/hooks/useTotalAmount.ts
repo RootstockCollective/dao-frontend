@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { formatCurrency, formatCurrencyWithLabel } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 import { Row } from '@/shared/context/TableContext/types'
 import { ColumnId, TransactionHistoryCellDataMap } from '../config'
 
