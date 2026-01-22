@@ -23,7 +23,8 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   } = useSwapInput()
   const { tokenInData, tokenOutData } = useTokenSelection()
   const { tokenData } = useSwappingContext()
-  const { allowance, isApproving, hasSufficientAllowance, approve, refetchAllowance } = useTokenAllowance()
+  const { allowance, isApproving, hasSufficientAllowance, approve, refetchAllowance, isCheckingAllowance } =
+    useTokenAllowance()
   const inputRef = useRef<HTMLInputElement>(null)
   // Track which field the user is actively typing in (prevents loop from programmatic value updates)
   const activeFieldRef = useRef<'in' | 'out' | null>(null)
@@ -108,16 +109,30 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   useEffect(() => {
     const hasValidAmount = amountIn && Big(amountIn).gt(0)
     const hasQuote = !!quote && amountOut && Big(amountOut).gt(0)
-    // Disable if quote is expired, still loading, or invalid
+    // Disable if quote is expired, still loading, checking allowance, or invalid
     const isDisabled =
-      !hasValidAmount || isAmountOverBalance || isQuoting || !hasQuote || isQuoteExpired || isApproving
+      !hasValidAmount ||
+      isAmountOverBalance ||
+      isQuoting ||
+      !hasQuote ||
+      isQuoteExpired ||
+      isApproving ||
+      isCheckingAllowance
+
+    // Show "Continue" as default when:
+    // - No valid amount entered yet (we can't determine if approval is needed)
+    // - Still checking allowance
+    // - Allowance is sufficient
+    // Show "Approve & Continue" only when we have a valid amount AND we're sure allowance is insufficient
+    const needsApproval = hasValidAmount && !isCheckingAllowance && !isAllowanceEnough
+    const buttonLabel = needsApproval ? 'Approve & Continue' : 'Continue'
 
     setButtonActions({
       primary: {
-        label: isAllowanceEnough ? 'Continue' : 'Approve & Continue',
+        label: buttonLabel,
         onClick: handleContinue,
         disabled: isDisabled,
-        loading: isQuoting || isApproving,
+        loading: isQuoting || isApproving || isCheckingAllowance,
         isTxPending: isApproving,
       },
     })
@@ -128,6 +143,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     isQuoting,
     isQuoteExpired,
     isApproving,
+    isCheckingAllowance,
     isAllowanceEnough,
     handleContinue,
     setButtonActions,
