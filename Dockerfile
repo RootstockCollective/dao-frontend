@@ -32,12 +32,12 @@ ENV NEXT_TELEMETRY_DISABLED 1
 ARG PROFILE
 ARG NEXT_PUBLIC_BUILD_ID
 
+# Inject the NEXT_PUBLIC_BUILD_ID into the profile env file BEFORE copying
+# This is critical because next.config.mjs loads from .env.${PROFILE} with override: true
+RUN sed -i "s/^NEXT_PUBLIC_BUILD_ID=.*/NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}/" .env.${PROFILE}
+
 # Rename environment files based on PROFILE 
 RUN cp .env.${PROFILE} .env.local
-
-# Inject the NEXT_PUBLIC_BUILD_ID into .env.local (replacing empty value from profile)
-# This ensures the commit hash is baked into the build and not overwritten by dotenv
-RUN sed -i "s/^NEXT_PUBLIC_BUILD_ID=.*/NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}/" .env.local
 
 # Also export as environment variable for the build step
 ENV NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}
