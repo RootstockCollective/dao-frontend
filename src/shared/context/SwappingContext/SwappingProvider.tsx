@@ -311,7 +311,6 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
 
   const setSwapTxHash = useCallback((txHash: string | null) => {
     dispatch({ type: SwapActionType.SET_SWAP_TX_HASH, payload: txHash })
-    dispatch({ type: SwapActionType.SET_SWAPPING, payload: false })
   }, [])
 
   // Allowance state management functions - contract calls should be in hooks using useReadContract

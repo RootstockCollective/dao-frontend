@@ -24,7 +24,7 @@ const SLIPPAGE_OPTIONS: PercentageButtonItem<number>[] = [
 export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: SwapStepProps) => {
   const { amountIn, amountOut, quote } = useSwapInput()
   const { tokenInData, tokenOutData } = useTokenSelection()
-  const { state, tokenData } = useSwappingContext()
+  const { state, tokenData, setSwapping } = useSwappingContext()
   const { execute, isSwapping, swapError, swapTxHash, canExecute } = useSwapExecution()
 
   // Slippage tolerance is local to Step 3 - only needed for final confirmation
@@ -99,9 +99,13 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
         return txHash as Hash
       },
       onSuccess: onCloseModal,
+      onComplete: () => {
+        // Reset swapping state when transaction flow completes (success or error)
+        setSwapping(false)
+      },
       action: 'swap',
     })
-  }, [canExecute, amountOutMinimum, execute, onCloseModal])
+  }, [canExecute, amountOutMinimum, execute, onCloseModal, setSwapping])
 
   // Set button actions - disabled until slippage is selected and minimum is calculated
   useEffect(() => {
