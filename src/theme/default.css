@@ -44,7 +44,7 @@ html[data-theme='default'] {
   --disabled-secondary: rgba(136, 153, 168, 1);
   --disabled-border: rgba(172, 163, 157, 1);
   /* Statuses */
-  --st-success: #1BC47D;
+  --st-success: rgba(27, 196, 125, 1);
   --st-info: rgba(255, 153, 0, 1);
   --st-error: rgba(255, 102, 136, 1);
   --st-warning: rgba(222, 255, 26, 1);

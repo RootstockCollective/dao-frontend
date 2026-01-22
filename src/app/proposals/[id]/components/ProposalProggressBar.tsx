@@ -18,14 +18,14 @@ const proposalStateToProgressMap = new Map([
   [undefined, 0],
 ])
 
-const getStatusSteps = (proposalState?: ProposalState) => {
+const getStatusSteps = (proposalState: ProposalState) => {
   if (proposalState === ProposalState.Defeated || proposalState === ProposalState.Canceled) {
     return ['ACTIVE', 'FAILED']
   }
   return ['ACTIVE', 'SUCCEEDED', 'QUEUED', 'EXECUTED']
 }
 
-const getCurrentStepIndex = (proposalState?: ProposalState) => {
+const getCurrentStepIndex = (proposalState: ProposalState) => {
   switch (proposalState) {
     case ProposalState.Active:
       return 0
@@ -43,7 +43,7 @@ const getCurrentStepIndex = (proposalState?: ProposalState) => {
   }
 }
 
-const renderStatusPath = (proposalState?: ProposalState) => {
+const renderStatusPath = (proposalState: ProposalState) => {
   const steps = getStatusSteps(proposalState)
   const currentStepIndex = getCurrentStepIndex(proposalState)
 
@@ -93,7 +93,7 @@ export const ProposalProggressBar = ({ proposalState }: ProgressBarProps) => {
       return 0
     }
 
-    const currentStepIndex = getCurrentStepIndex(proposalState)
+    const currentStepIndex = getCurrentStepIndex(proposalState!)
 
     // Calculate position of current active step
     // Each step is roughly: label (60px) + arrow (16px) = 76px
@@ -133,7 +133,7 @@ export const ProposalProggressBar = ({ proposalState }: ProgressBarProps) => {
         className="flex flex-row justify-between w-full"
         style={{ transform: offset > 0 ? `translateX(-${offset}px)` : undefined }}
       >
-        {renderStatusPath(proposalState)}
+        {renderStatusPath(proposalState!)}
       </div>
       <ProgressBar
         progress={proposalStateToProgressMap.get(proposalState) ?? 0}
