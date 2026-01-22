@@ -6,7 +6,15 @@ image:
 namespace: dao-frontend-dev
 
 ingress:
-  enabled: false
+  enabled: true
+  className: alb
+  certificateArn: "arn:aws:acm:us-east-1:886436934082:certificate/aa176147-46df-47b0-9856-84ee57b4fa5d"
+  hosts:
+    - host: dev-eks.app.rootstockcollective.xyz
+      paths:
+        - path: /
+          pathType: Prefix
+  annotations: {}
 
 externalSecrets:
   parameterPaths:
