@@ -32,10 +32,14 @@ ENV NEXT_TELEMETRY_DISABLED 1
 ARG PROFILE
 ARG NEXT_PUBLIC_BUILD_ID
 
+# Inject the NEXT_PUBLIC_BUILD_ID into the profile env file BEFORE copying
+# This is critical because next.config.mjs loads from .env.${PROFILE} with override: true
+RUN sed -i "s/^NEXT_PUBLIC_BUILD_ID=.*/NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}/" .env.${PROFILE}
+
 # Rename environment files based on PROFILE 
 RUN cp .env.${PROFILE} .env.local
 
-# Export the NEXT_PUBLIC_BUILD_ID as an environment variable
+# Also export as environment variable for the build step
 ENV NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}
 
 # Build the Next.js application
