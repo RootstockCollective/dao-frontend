@@ -1,5 +1,6 @@
 import { formatMetrics, formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import Big from '@/lib/big'
+import { RBTC } from '@/lib/constants'
 import { formatCurrency } from '@/lib/utils'
 import { parseEther } from 'viem'
 import { describe, expect, test } from 'vitest'
@@ -111,14 +112,13 @@ describe('formatter', () => {
       },
     )
 
-    symbol = 'RBTC'
     currency = 'USD'
     currencySymbol = '$'
     test.each([
       {
         amount: oneEther,
         price: 10,
-        symbol,
+        symbol: RBTC,
         currency,
         expected: {
           amount: '1',
@@ -128,7 +128,7 @@ describe('formatter', () => {
       {
         amount: halfEther,
         price: 10,
-        symbol,
+        symbol: RBTC,
         currency,
         expected: {
           amount: '0.5',
@@ -138,14 +138,14 @@ describe('formatter', () => {
       {
         amount: oneWei,
         price: 10,
-        symbol,
+        symbol: RBTC,
         currency,
         expected: { amount: '<0.00001', fiatAmount: formatAmountWithCurrency('<$0.01', currency) },
       },
       {
         amount: oneEther,
         price: 100_000,
-        symbol,
+        symbol: RBTC,
         currency,
         expected: {
           amount: '1',
@@ -155,7 +155,7 @@ describe('formatter', () => {
       {
         amount: parseEther('100'),
         price: 100_000,
-        symbol,
+        symbol: RBTC,
         currency,
         expected: {
           amount: '100',
@@ -165,7 +165,7 @@ describe('formatter', () => {
       {
         amount: parseEther('123456'),
         price: 100_000,
-        symbol,
+        symbol: RBTC,
         currency,
         expected: {
           amount: '123,456',
@@ -273,9 +273,9 @@ describe('formatter', () => {
       { symbol: 'Symbol', value: 0n, expected: '0' },
       { symbol: 'RIF', value: 0n, expected: '0' },
       { symbol: 'RIF', value: 1000000000000000n, expected: '<1' },
-      { symbol: 'RBTC', value: 0n, expected: '0' },
-      { symbol: 'RBTC', value: 1000000000000000n, expected: '0.001' },
-      { symbol: 'RBTC', value: 1000000000000n, expected: '<0.00001' },
+      { symbol: RBTC, value: 0n, expected: '0' },
+      { symbol: RBTC, value: 1000000000000000n, expected: '0.001' },
+      { symbol: RBTC, value: 1000000000000n, expected: '<0.00001' },
       { symbol: 'stRIF', value: 0n, expected: '0' },
     ])('should format $symbol properly with $value', ({ symbol, value, expected }) => {
       expect(formatSymbol(value, symbol)).toBe(expected)
@@ -284,7 +284,7 @@ describe('formatter', () => {
     test.each([
       { symbol: 'Symbol', value: oneEther, expected: '1.00' },
       { symbol: 'RIF', value: oneEther, expected: '1' },
-      { symbol: 'RBTC', value: oneEther, expected: '1' },
+      { symbol: RBTC, value: oneEther, expected: '1' },
       { symbol: 'stRIF', value: oneEther, expected: '1' },
     ])('should format $symbol properly with $value', ({ symbol, value, expected }) => {
       expect(formatSymbol(value, symbol)).toBe(expected)
@@ -293,7 +293,7 @@ describe('formatter', () => {
     test.each([
       { symbol: 'Symbol', value: halfEther, expected: '0.50' },
       { symbol: 'RIF', value: halfEther, expected: '<1' },
-      { symbol: 'RBTC', value: halfEther, expected: '0.5' },
+      { symbol: RBTC, value: halfEther, expected: '0.5' },
       { symbol: 'stRIF', value: halfEther, expected: '<1' },
     ])('should format $symbol properly with $value', ({ symbol, value, expected }) => {
       expect(formatSymbol(value, symbol)).toBe(expected)
@@ -302,7 +302,7 @@ describe('formatter', () => {
     test.each([
       { symbol: 'Symbol', value: oneWei, expected: '<0.01' },
       { symbol: 'RIF', value: oneWei, expected: '<1' },
-      { symbol: 'RBTC', value: oneWei, expected: '<0.00001' },
+      { symbol: RBTC, value: oneWei, expected: '<0.00001' },
       { symbol: 'stRIF', value: oneWei, expected: '<1' },
     ])('should format $symbol properly with $value', ({ symbol, value, expected }) => {
       expect(formatSymbol(value, symbol)).toBe(expected)
