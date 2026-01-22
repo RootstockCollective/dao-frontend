@@ -330,7 +330,9 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
 
   const setApprovalTxHash = useCallback((txHash: string | null) => {
     dispatch({ type: SwapActionType.SET_APPROVAL_TX_HASH, payload: txHash })
-    dispatch({ type: SwapActionType.SET_APPROVING, payload: false })
+    // Note: Do NOT set isApproving to false here.
+    // The hash being set means TX is submitted, not confirmed.
+    // The caller (executeTxFlow callbacks) is responsible for resetting state.
   }, [])
 
   const setPoolFee = useCallback((fee: number) => {

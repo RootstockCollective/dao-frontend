@@ -22,7 +22,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     mode,
   } = useSwapInput()
   const { tokenInData, tokenOutData } = useTokenSelection()
-  const { tokenData } = useSwappingContext()
+  const { tokenData, setApproving } = useSwappingContext()
   const { allowance, isApproving, hasSufficientAllowance, approve, refetchAllowance, isCheckingAllowance } =
     useTokenAllowance()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -100,10 +100,14 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
           }
           onGoNext()
         },
+        onComplete: () => {
+          // Reset approving state when transaction flow completes (success or error)
+          setApproving(false)
+        },
         action: 'allowance',
       })
     }
-  }, [isAllowanceEnough, requiredAmount, approve, refetchAllowance, onGoNext])
+  }, [isAllowanceEnough, requiredAmount, approve, refetchAllowance, onGoNext, setApproving])
 
   // Set button actions
   useEffect(() => {
