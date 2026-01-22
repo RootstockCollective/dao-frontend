@@ -3,7 +3,7 @@
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { Header } from '@/components/Typography'
 import { Section } from '../components/Section'
-import TransactionHistoryViewContainer from './components/TransactionHistoryViewContainer'
+import TransactionHistoryTableContainer from './components/TransactionHistoryTableContainer'
 
 const NAME = 'Transactions History'
 export const TransactionHistoryPage = () => {
@@ -18,7 +18,7 @@ export const TransactionHistoryPage = () => {
         </Header>
         <div data-testid="main-container" className="flex flex-col w-full items-start gap-2">
           <Section>
-            <TransactionHistoryViewContainer />
+            <TransactionHistoryTableContainer />
           </Section>
         </div>
       </div>

@@ -5,8 +5,8 @@ import { useTableActionsContext, useTableContext, usePricesContext } from '@/sha
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useAccount } from 'wagmi'
 import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE, TransactionHistoryCellDataMap } from '../config'
-import { DesktopTable } from './desktop'
-import { MobileList } from './mobile'
+import { DesktopTransactionHistory } from './desktop'
+import { MobileTransactionHistory } from './mobile'
 import { convertDataToRowData } from '../utils/convertDataToRowData'
 import { useCycleContext } from '@/app/collective-rewards/metrics/context'
 import { TablePager } from '@/components/TableNew'
@@ -32,7 +32,7 @@ const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
  * Renders a table on desktop and an expandable list on mobile.
  * Includes filter sidebar and pager.
  */
-export default function TransactionHistoryView() {
+export default function TransactionHistoryTable() {
   const isDesktop = useIsDesktop()
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
   const [pagerKey, setPagerKey] = useState(0)
@@ -174,7 +174,7 @@ export default function TransactionHistoryView() {
           </div>
         </motion.div>
         <div className="grow overflow-y-auto">
-          {isDesktop ? <DesktopTable rows={rows} /> : <MobileList rows={rows} />}
+          {isDesktop ? <DesktopTransactionHistory rows={rows} /> : <MobileTransactionHistory rows={rows} />}
         </div>
       </div>
 

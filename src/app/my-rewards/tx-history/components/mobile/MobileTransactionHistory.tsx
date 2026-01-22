@@ -5,11 +5,11 @@ import { Suspense } from 'react'
 import { MobileRow, TransactionRow } from './MobileRow'
 import { useTotalAmount } from '../../hooks/useTotalAmount'
 
-interface MobileListProps {
+interface Props {
   rows: TransactionRow[]
 }
 
-export const MobileList = ({ rows }: MobileListProps) => {
+export const MobileTransactionHistory = ({ rows }: Props) => {
   const visibleTotalAmountUsd = useTotalAmount(rows)
 
   return (

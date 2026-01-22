@@ -4,7 +4,7 @@ import { DesktopHeaderRow } from './DesktopHeaderRow'
 import { DesktopDataRow } from './DesktopDataRow'
 import { Suspense } from 'react'
 
-export const DesktopTable = ({
+export const DesktopTransactionHistory = ({
   rows,
 }: {
   rows: Row<ColumnId, Row['id'], TransactionHistoryCellDataMap>[]

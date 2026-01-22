@@ -1,4 +1,4 @@
-export { MobileList } from './MobileList'
+export { MobileTransactionHistory } from './MobileTransactionHistory'
 export { MobileRow, type TransactionRow } from './MobileRow'
 export { MobileShowDetails } from './MobileGroupedDetails'
 export {

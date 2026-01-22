@@ -1,4 +1,4 @@
-export { DesktopTable } from './DesktopTable'
+export { DesktopTransactionHistory } from './DesktopTransactionHistory'
 export { DesktopHeaderRow, HeaderCell } from './DesktopHeaderRow'
 export { DesktopDataRow } from './DesktopDataRow'
 export { CycleCell, DateCell, FromToCell, TypeCell, AmountCell, TotalAmountCell } from './Cells'
