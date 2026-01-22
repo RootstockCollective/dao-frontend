@@ -10,8 +10,7 @@ import { UNISWAP_UNIVERSAL_ROUTER_ADDRESS, PERMIT2_ADDRESS } from '@/lib/constan
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { Permit2Abi } from '@/lib/abis/Permit2Abi'
 import { QuoteResult } from './types'
-import { uniswapProvider, getSwapEncodedData } from '@/lib/swap/providers/uniswap'
-import { formatForDisplay } from '@/lib/utils'
+import { uniswapProvider, getPermitSwapEncodedData } from '@/lib/swap/providers/uniswap'
 import { UniswapUniversalRouterAbi } from '@/lib/abis/UniswapUniversalRouterAbi'
 import { createSecurePermit } from '@/lib/swap/permit2'
 
@@ -441,7 +440,19 @@ export const usePermitSigning = () => {
  */
 export const useSwapExecution = () => {
   const { state, tokens, setSwapping, setSwapError, setSwapTxHash } = useSwappingContext()
-  const { tokenIn, tokenOut, mode, typedAmount, quote, isSwapping, swapError, swapTxHash, poolFee } = state
+  const {
+    tokenIn,
+    tokenOut,
+    mode,
+    typedAmount,
+    quote,
+    isSwapping,
+    swapError,
+    swapTxHash,
+    poolFee,
+    permit,
+    permitSignature,
+  } = state
   const { address } = useAccount()
   const { writeContractAsync, isPending: isWritePending } = useWriteContract()
 
@@ -456,7 +467,8 @@ export const useSwapExecution = () => {
   }, [mode, typedAmount, quote, tokens, tokenIn])
 
   /**
-   * Execute swap using Permit2 allowance (set in Step 2)
+   * Execute swap using permit signature from Step 2
+   * Bundles PERMIT2_PERMIT + V3_SWAP_EXACT_IN in a single transaction
    * @param amountOutMinimum - Minimum amount to receive (calculated by caller based on slippage)
    */
   const execute = useCallback(
@@ -471,7 +483,9 @@ export const useSwapExecution = () => {
         !tokens[tokenIn].address ||
         !writeContractAsync ||
         !UNISWAP_UNIVERSAL_ROUTER_ADDRESS ||
-        !amountOutMinimum
+        !amountOutMinimum ||
+        !permit ||
+        !permitSignature
       ) {
         return null
       }
@@ -482,66 +496,17 @@ export const useSwapExecution = () => {
       try {
         const amountInBigInt = parseUnits(amountIn, tokens[tokenIn].decimals)
 
-        // Import publicClient once for all operations
-        const { publicClient } = await import('@/lib/viemPublicClient')
-
-        // Verify both ERC-20 allowance (Permit2 -> token) and Permit2 allowance (user -> Universal Router)
-        // With payerIsUser: true, Universal Router uses Permit2, which requires:
-        // 1. ERC-20 approval: user -> Permit2 contract
-        // 2. Permit2 approval: user -> Universal Router
-        const { PERMIT2_ADDRESS: permit2Address } = await import('@/lib/constants')
-        const { Permit2Abi } = await import('@/lib/abis/Permit2Abi')
-        const { RIFTokenAbi } = await import('@/lib/abis/RIFTokenAbi')
-
-        // Check ERC-20 allowance: user -> Permit2
-        const erc20Allowance = await publicClient.readContract({
-          address: tokens[tokenIn].address,
-          abi: RIFTokenAbi,
-          functionName: 'allowance',
-          args: [address, permit2Address],
-        })
-
-        // Check Permit2 allowance: user -> Universal Router
-        const permit2Allowance = await publicClient.readContract({
-          address: permit2Address,
-          abi: Permit2Abi,
-          functionName: 'allowance',
-          args: [address, tokens[tokenIn].address, UNISWAP_UNIVERSAL_ROUTER_ADDRESS],
-        })
-        // Permit2 returns [amount: uint160, expiration: uint48, nonce: uint48]
-        // Viem may return uint48 as number or bigint depending on the value
-        const [permit2Amount, permit2Expiration] = permit2Allowance as [
-          bigint,
-          bigint | number,
-          bigint | number,
-        ]
-        const currentBlock = await publicClient.getBlock()
-        // Convert expiration to bigint for comparison
-        const expirationBigInt =
-          typeof permit2Expiration === 'bigint' ? permit2Expiration : BigInt(permit2Expiration)
-        const isExpired = currentBlock.timestamp > expirationBigInt
-
-        // Check ERC-20 allowance first (Permit2 needs this to transfer tokens)
-        if (erc20Allowance < amountInBigInt) {
-          throw new Error(`Insufficient allowance. Please go back to Step 2 and request allowance again.`)
-        }
-
-        if (isExpired) {
-          throw new Error(`Your allowance has expired. Please go back to Step 2 and request a new allowance.`)
-        }
-
-        if (permit2Amount < amountInBigInt) {
-          throw new Error(`Insufficient allowance. Please go back to Step 2 and request allowance again.`)
-        }
-
-        // Use uniswapProvider's encoding logic with pre-calculated amountOutMinimum
-        const { commands, inputs } = getSwapEncodedData({
+        // Bundle permit signature + swap in a single transaction
+        // The permit is executed first (granting Universal Router allowance), then the swap
+        const { commands, inputs } = getPermitSwapEncodedData({
           tokenIn: tokens[tokenIn].address,
           tokenOut: tokens[tokenOut].address,
           amountIn: amountInBigInt,
           amountOutMinimum,
           poolFee,
           recipient: address,
+          permit,
+          signature: permitSignature,
         })
 
         const hash = await writeContractAsync({
@@ -595,6 +560,8 @@ export const useSwapExecution = () => {
       tokenOut,
       poolFee,
       tokens,
+      permit,
+      permitSignature,
       writeContractAsync,
       setSwapping,
       setSwapError,
@@ -614,6 +581,6 @@ export const useSwapExecution = () => {
     isSwapping: isSwapping || isWritePending,
     swapError,
     swapTxHash,
-    canExecute: !!address && !!amountIn && !!quote && !!poolFee,
+    canExecute: !!address && !!amountIn && !!quote && !!poolFee && !!permit && !!permitSignature,
   }
 }
