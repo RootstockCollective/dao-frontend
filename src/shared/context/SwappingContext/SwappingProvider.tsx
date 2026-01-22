@@ -12,6 +12,7 @@ import {
   SwapTokenSymbol,
   SwappingContextValue,
   SwapTokenData,
+  SwapMode,
 } from './types'
 import { USDRIF, USDRIF_ADDRESS, USDT0, USDT0_ADDRESS, USDT0_USDRIF_POOL_ADDRESS } from '@/lib/constants'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
@@ -53,8 +54,8 @@ const getSwapTokens = (): Record<SwapTokenSymbol, SwapToken> => {
 const initialState: SwapState = {
   tokenIn: USDT0,
   tokenOut: USDRIF,
-  amountIn: '',
-  amountOut: null,
+  mode: 'exactIn',
+  typedAmount: '',
   quote: null,
   isQuoting: false,
   quoteError: null,
@@ -75,8 +76,7 @@ const swapReducer = (state: SwapState, action: SwapAction): SwapState => {
       return {
         ...state,
         tokenIn: action.payload,
-        amountIn: '',
-        amountOut: null,
+        typedAmount: '',
         quote: null,
         quoteError: null,
       }
@@ -84,23 +84,19 @@ const swapReducer = (state: SwapState, action: SwapAction): SwapState => {
       return {
         ...state,
         tokenOut: action.payload,
-        amountIn: '',
-        amountOut: null,
+        typedAmount: '',
         quote: null,
         quoteError: null,
       }
-    case SwapActionType.SET_AMOUNT_IN:
+    case SwapActionType.SET_SWAP_INPUT:
+      // Called when user edits either input field. Clears the existing quote
+      // so useSwapInput will fetch a new one based on the updated values.
       return {
         ...state,
-        amountIn: action.payload,
-        amountOut: null,
+        mode: action.payload.mode,
+        typedAmount: action.payload.typedAmount,
         quote: null,
         quoteError: null,
-      }
-    case SwapActionType.SET_AMOUNT_OUT:
-      return {
-        ...state,
-        amountOut: action.payload,
       }
     case SwapActionType.SET_QUOTE:
       return {
@@ -258,8 +254,8 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
     dispatch({ type: SwapActionType.SET_TOKEN_OUT, payload: state.tokenIn })
   }, [state.tokenIn, state.tokenOut])
 
-  const setAmountIn = useCallback((amount: string) => {
-    dispatch({ type: SwapActionType.SET_AMOUNT_IN, payload: amount })
+  const setSwapInput = useCallback((mode: SwapMode, typedAmount: string) => {
+    dispatch({ type: SwapActionType.SET_SWAP_INPUT, payload: { mode, typedAmount } })
   }, [])
 
   const resetSwap = useCallback(() => {
@@ -331,7 +327,7 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
       setTokenIn,
       setTokenOut,
       toggleTokenSelection,
-      setAmountIn,
+      setSwapInput,
       resetSwap,
       // State management functions for hooks
       setQuoting,
@@ -353,7 +349,7 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
       setTokenIn,
       setTokenOut,
       toggleTokenSelection,
-      setAmountIn,
+      setSwapInput,
       resetSwap,
       setQuoting,
       setQuote,

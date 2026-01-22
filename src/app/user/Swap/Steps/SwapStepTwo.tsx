@@ -9,6 +9,7 @@ import { executeTxFlow } from '@/shared/notification'
 import { parseUnits, Hash } from 'viem'
 import { USDT0 } from '@/lib/constants'
 import Big from '@/lib/big'
+import { formatForDisplay } from '@/lib/utils'
 
 export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepProps) => {
   const { amountIn } = useSwapInput()
@@ -16,7 +17,7 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
   const { state, tokenData } = useSwappingContext()
   const { isApproving, hasSufficientAllowance, approve, refetchAllowance } = useTokenAllowance()
 
-  // Check if allowance is sufficient
+  // Calculate required amount - amountIn is always full precision
   const requiredAmount = useMemo(() => {
     if (!amountIn || !tokenInData.decimals) {
       return 0n
@@ -53,6 +54,11 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
     if (!requiredAmount || requiredAmount === 0n) {
       return
     }
+    console.log('[SwapStepTwo] Requesting allowance for:', {
+      amountIn,
+      requiredAmount: requiredAmount.toString(),
+      tokenDecimals: tokenInData.decimals,
+    })
     executeTxFlow({
       onRequestTx: async () => {
         const txHash = await approve(requiredAmount)
@@ -80,7 +86,7 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
       },
       action: 'allowance',
     })
-  }, [requiredAmount, approve, refetchAllowance, onGoNext])
+  }, [requiredAmount, approve, refetchAllowance, onGoNext, amountIn, tokenInData.decimals])
 
   // Set button actions
   useEffect(() => {
@@ -120,7 +126,7 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
         </div>
         <StakeTokenAmountDisplay
           label="Allowance amount"
-          amount={amountIn}
+          amount={formatForDisplay(amountIn)}
           tokenSymbol={tokenInData.symbol}
           amountInCurrency={amountInCurrency}
           isFlexEnd

@@ -25,29 +25,38 @@ export interface SwapDirection {
 }
 
 /**
- * Quote result from Uniswap Quoter
- * sqrtPriceX96After and initializedTicksCrossed are optional as they're not used in the swap flow
+ * Determines which input field the user is editing and the quote direction.
+ * - exactIn: User specifies input amount, quote returns expected output
+ * - exactOut: User specifies desired output, quote returns required input
+ */
+export type SwapMode = 'exactIn' | 'exactOut'
+
+/**
+ * Quote result from Uniswap QuoterV2 contract.
+ * Contains the amounts and metadata needed to execute a swap.
  */
 export interface QuoteResult {
-  amountOut: bigint
-  gasEstimate: bigint
-  feeTier: number // The fee tier that produced this quote (100, 500, 3000, 10000)
-  timestamp: number // Unix timestamp in milliseconds when quote was fetched
-  sqrtPriceX96After?: bigint // Price after swap (not used in our flow)
-  initializedTicksCrossed?: bigint // Ticks crossed (not used in our flow)
+  amountOut: bigint // Expected output amount (always present)
+  gasEstimate: bigint // Estimated gas for the swap
+  feeTier: number // Pool fee tier: 100 (0.01%), 500 (0.05%), 3000 (0.3%), 10000 (1%)
+  timestamp: number // When quote was fetched (for expiry checks)
+  amountIn?: bigint // Required input amount (only present for exactOut quotes)
+  sqrtPriceX96After?: bigint // Price after swap (optional, for advanced use)
+  initializedTicksCrossed?: bigint // Ticks crossed (optional, for gas estimation)
 }
 
 /**
- * Swap state managed by the context
+ * Central swap state managed by SwappingContext.
+ * Shared across all swap steps (input, allowance, confirmation).
  */
 export interface SwapState {
-  // Token selection
+  // Which tokens are being swapped
   tokenIn: SwapTokenSymbol
   tokenOut: SwapTokenSymbol
 
-  // Amounts
-  amountIn: string
-  amountOut: string | null
+  // Bidirectional input: stores the amount user typed and which field they're editing
+  mode: SwapMode
+  typedAmount: string
 
   // Quote data
   quote: QuoteResult | null
@@ -76,8 +85,7 @@ export interface SwapState {
 export enum SwapActionType {
   SET_TOKEN_IN = 'SET_TOKEN_IN',
   SET_TOKEN_OUT = 'SET_TOKEN_OUT',
-  SET_AMOUNT_IN = 'SET_AMOUNT_IN',
-  SET_AMOUNT_OUT = 'SET_AMOUNT_OUT',
+  SET_SWAP_INPUT = 'SET_SWAP_INPUT',
   SET_QUOTE = 'SET_QUOTE',
   SET_QUOTING = 'SET_QUOTING',
   SET_QUOTE_ERROR = 'SET_QUOTE_ERROR',
@@ -99,8 +107,7 @@ export enum SwapActionType {
 export type SwapAction =
   | { type: SwapActionType.SET_TOKEN_IN; payload: SwapTokenSymbol }
   | { type: SwapActionType.SET_TOKEN_OUT; payload: SwapTokenSymbol }
-  | { type: SwapActionType.SET_AMOUNT_IN; payload: string }
-  | { type: SwapActionType.SET_AMOUNT_OUT; payload: string | null }
+  | { type: SwapActionType.SET_SWAP_INPUT; payload: { mode: SwapMode; typedAmount: string } }
   | { type: SwapActionType.SET_QUOTE; payload: QuoteResult }
   | { type: SwapActionType.SET_QUOTING; payload: boolean }
   | { type: SwapActionType.SET_QUOTE_ERROR; payload: Error | null }
@@ -142,7 +149,7 @@ export interface SwappingContextValue {
   setTokenIn: (token: SwapTokenSymbol) => void
   setTokenOut: (token: SwapTokenSymbol) => void
   toggleTokenSelection: () => void
-  setAmountIn: (amount: string) => void
+  setSwapInput: (mode: SwapMode, typedAmount: string) => void
   resetSwap: () => void
 
   // Swap execution state management - contract calls should be in hooks using useWriteContract

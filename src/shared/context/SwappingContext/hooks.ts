@@ -11,22 +11,12 @@ import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { Permit2Abi } from '@/lib/abis/Permit2Abi'
 import { QuoteResult } from './types'
 import { uniswapProvider, getSwapEncodedData } from '@/lib/swap/providers/uniswap'
+import { formatForDisplay } from '@/lib/utils'
 import { UniswapUniversalRouterAbi } from '@/lib/abis/UniswapUniversalRouterAbi'
 
-/**
- * Hook for managing swap input amount and getting quotes
- * Uses the existing uniswapProvider which has:
- * - Multiple fee tier fallback logic
- * - Proper error handling
- * - Comprehensive tests
- */
-const QUOTE_DEBOUNCE_MS = 500 // Wait 500ms after user stops typing before fetching quote
-const QUOTE_TIMEOUT_MS = 10_000 // 10 second timeout for quote fetching
+const QUOTE_DEBOUNCE_MS = 500
+const QUOTE_TIMEOUT_MS = 10_000
 
-/**
- * Wraps a promise with a timeout
- * If the promise doesn't resolve/reject within the timeout, it rejects with a timeout error
- */
 const withTimeout = <T>(promise: Promise<T>, timeoutMs: number, errorMessage: string): Promise<T> => {
   return Promise.race([
     promise,
@@ -34,57 +24,92 @@ const withTimeout = <T>(promise: Promise<T>, timeoutMs: number, errorMessage: st
   ])
 }
 
+/**
+ * Manages bidirectional swap input with Uniswap quote fetching.
+ *
+ * Supports two modes:
+ * - exactIn: User enters amount to swap, quote returns expected output
+ * - exactOut: User enters desired output, quote returns required input
+ *
+ * Architecture note: Only the user-edited amount (typedAmount) is stored in state.
+ * The opposite amount is computed from the quote on each render. This avoids
+ * circular state updates that would cause infinite re-renders.
+ *
+ * @returns Display values for both fields, setters that switch mode, and quote state
+ */
 export const useSwapInput = () => {
-  const { state, setAmountIn, tokens, setQuoting, setQuote, setQuoteError, setPoolFee } = useSwappingContext()
-  const { amountIn, tokenIn, tokenOut, quote } = state
+  const { state, setSwapInput, tokens, setQuote, setQuoteError, setPoolFee } = useSwappingContext()
+  const { mode, typedAmount, tokenIn, tokenOut, quote } = state
 
-  // Debounce the amount to avoid fetching on every keystroke
-  const [debouncedAmountIn] = useDebounce(amountIn, QUOTE_DEBOUNCE_MS)
+  // Wait for user to stop typing before fetching quote (avoids excessive API calls)
+  const [debouncedTypedAmount] = useDebounce(typedAmount, QUOTE_DEBOUNCE_MS)
 
-  // Get quote using uniswapProvider with automatic fee tier fallback
+  // React Query handles caching, refetching, and loading states
   const {
     data: swapQuote,
     isLoading: isQuoteLoading,
     isFetching: isQuoteFetching,
     error: quoteError,
   } = useQuery({
-    queryKey: ['swapQuote', tokenIn, tokenOut, debouncedAmountIn],
+    queryKey: ['swapQuote', tokenIn, tokenOut, mode, debouncedTypedAmount],
     queryFn: async () => {
-      if (
-        !debouncedAmountIn ||
-        debouncedAmountIn === '' ||
-        !tokens[tokenIn].decimals ||
-        !tokens[tokenOut].decimals
-      ) {
+      const tokenInDecimals = tokens[tokenIn].decimals
+      const tokenOutDecimals = tokens[tokenOut].decimals
+      if (!tokenInDecimals || !tokenOutDecimals || !debouncedTypedAmount) {
         return null
       }
 
-      const amountInBigInt = parseUnits(debouncedAmountIn, tokens[tokenIn].decimals)
-      if (amountInBigInt <= 0n) {
-        return null
+      if (mode === 'exactOut') {
+        // User specified output amount, get required input
+        const amountOutBigInt = parseUnits(debouncedTypedAmount, tokenOutDecimals)
+        if (amountOutBigInt <= 0n) return null
+
+        if (!uniswapProvider.getQuoteExactOutput) {
+          throw new Error('Exact output quotes not supported')
+        }
+
+        const result = await withTimeout(
+          uniswapProvider.getQuoteExactOutput({
+            tokenIn: tokens[tokenIn].address,
+            tokenOut: tokens[tokenOut].address,
+            amountOut: amountOutBigInt,
+            tokenInDecimals,
+            tokenOutDecimals,
+          }),
+          QUOTE_TIMEOUT_MS,
+          'Quote request timed out.',
+        )
+
+        if (result.error) throw new Error(result.error)
+        if (!result.feeTier || !result.amountInRaw) throw new Error('Invalid quote response')
+
+        return {
+          amountOut: amountOutBigInt,
+          amountIn: BigInt(result.amountInRaw),
+          gasEstimate: result.gasEstimate ? BigInt(result.gasEstimate) : 0n,
+          feeTier: result.feeTier,
+          timestamp: Date.now(),
+        } as QuoteResult
       }
 
-      // Provider automatically tries default tier, then falls back to all tiers
+      // exactIn: User specified input amount, get expected output
+      const amountInBigInt = parseUnits(debouncedTypedAmount, tokenInDecimals)
+      if (amountInBigInt <= 0n) return null
+
       const result = await withTimeout(
         uniswapProvider.getQuote({
           tokenIn: tokens[tokenIn].address,
           tokenOut: tokens[tokenOut].address,
           amountIn: amountInBigInt,
-          tokenInDecimals: tokens[tokenIn].decimals,
-          tokenOutDecimals: tokens[tokenOut].decimals,
-          // No feeTier param - let provider auto-detect the best available tier
+          tokenInDecimals,
+          tokenOutDecimals,
         }),
         QUOTE_TIMEOUT_MS,
-        'Quote request timed out. Please try again.',
+        'Quote request timed out.',
       )
 
-      if (result.error) {
-        throw new Error(result.error)
-      }
-
-      if (!result.feeTier) {
-        throw new Error('Quote missing fee tier information')
-      }
+      if (result.error) throw new Error(result.error)
+      if (!result.feeTier) throw new Error('Invalid quote response')
 
       return {
         amountOut: BigInt(result.amountOutRaw),
@@ -93,69 +118,60 @@ export const useSwapInput = () => {
         timestamp: Date.now(),
       } as QuoteResult
     },
-    enabled:
-      !!debouncedAmountIn &&
-      debouncedAmountIn !== '' &&
-      !!tokens[tokenIn].decimals &&
-      !!tokens[tokenOut].decimals,
-    staleTime: 30_000, // 30 seconds - quotes are time-sensitive
-    refetchInterval: 60_000, // Refetch every minute for fresh quotes
-    retry: false, // Don't retry failed quotes - show error immediately
+    enabled: !!debouncedTypedAmount && !!tokens[tokenIn].decimals && !!tokens[tokenOut].decimals,
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+    retry: false,
   })
 
-  // Sync quote to context and update poolFee when quote succeeds
+  // Persist successful quotes to context for use in other swap steps
+  // Note: Loading state (isQuoting) comes directly from React Query, not synced to context
   useEffect(() => {
-    const isLoading = isQuoteLoading || isQuoteFetching
-    setQuoting(isLoading)
-
     if (quoteError) {
       setQuoteError(quoteError instanceof Error ? quoteError : new Error(String(quoteError)))
     } else if (swapQuote) {
       setQuote(swapQuote)
-      // Update poolFee to the tier that produced this quote
-      // This ensures swap execution uses the same tier
       setPoolFee(swapQuote.feeTier)
-    } else if (!isLoading) {
       setQuoteError(null)
     }
-  }, [
-    swapQuote,
-    isQuoteLoading,
-    isQuoteFetching,
-    quoteError,
-    setQuoting,
-    setQuote,
-    setQuoteError,
-    setPoolFee,
-  ])
+  }, [swapQuote, quoteError, setQuote, setQuoteError, setPoolFee])
 
-  // Format amount out from quote
-  // Return null if there's an error (React Query can have both stale data and new error)
-  const formattedAmountOut = useMemo(() => {
-    if (quoteError || !quote || !quote.amountOut || !tokens[tokenOut].decimals) {
-      return null
+  /**
+   * Amount values with full precision.
+   * These are the source of truth - format only at display site.
+   */
+  const amountIn = useMemo(() => {
+    if (mode === 'exactIn') {
+      return typedAmount
     }
-    try {
-      return formatUnits(quote.amountOut, tokens[tokenOut].decimals)
-    } catch {
-      return null
-    }
-  }, [quote, quoteError, tokens, tokenOut])
+    // exactOut: derive from quote
+    if (!quote?.amountIn || !tokens[tokenIn].decimals) return ''
+    return formatUnits(quote.amountIn, tokens[tokenIn].decimals)
+  }, [mode, typedAmount, quote, tokens, tokenIn])
 
-  // Check if quote is expired (30 seconds TTL for swap quotes)
-  const QUOTE_TTL_MS = 30_000 // 30 seconds
+  const amountOut = useMemo(() => {
+    if (mode === 'exactOut') {
+      return typedAmount
+    }
+    // exactIn: derive from quote
+    if (!quote?.amountOut || !tokens[tokenOut].decimals) return ''
+    return formatUnits(quote.amountOut, tokens[tokenOut].decimals)
+  }, [mode, typedAmount, quote, tokens, tokenOut])
+
+  // Quotes become stale after 30 seconds due to price movements
   const isQuoteExpired = useMemo(() => {
-    if (!quote || !quote.timestamp) {
-      return false
-    }
-    const age = Date.now() - quote.timestamp
-    return age > QUOTE_TTL_MS
+    if (!quote?.timestamp) return false
+    return Date.now() - quote.timestamp > 30_000
   }, [quote])
 
   return {
+    // Full precision values - format at display site only
     amountIn,
-    setAmountIn,
-    formattedAmountOut,
+    amountOut,
+    // Editing either field switches mode and updates the stored amount
+    setAmountIn: (value: string) => setSwapInput('exactIn', value),
+    setAmountOut: (value: string) => setSwapInput('exactOut', value),
+    mode,
     quote,
     isQuoting: isQuoteLoading || isQuoteFetching,
     quoteError,
@@ -260,7 +276,7 @@ export const useTokenAllowance = () => {
   const approve = useCallback(
     async (amount: bigint) => {
       if (!address || !writeContractAsync || !UNISWAP_UNIVERSAL_ROUTER_ADDRESS) {
-        throw new Error('Missing required parameters for approval')
+        throw new Error('Wallet not connected. Please connect your wallet and try again.')
       }
 
       if (!tokens[tokenIn]?.address) {
@@ -339,6 +355,15 @@ export const useTokenAllowance = () => {
       } catch (error) {
         setApproving(false)
         setApprovalTxHash(null)
+
+        // Check for wallet connection issues
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        if (errorMessage.includes('getChainId is not a function') || errorMessage.includes('connector')) {
+          throw new Error(
+            'Wallet connection error. Please disconnect and reconnect your wallet, then try again.',
+          )
+        }
+
         // Re-throw the error so executeTxFlow can handle it and show the user the actual error
         throw error
       }
@@ -372,9 +397,19 @@ export const useTokenAllowance = () => {
  */
 export const useSwapExecution = () => {
   const { state, tokens, setSwapping, setSwapError, setSwapTxHash } = useSwappingContext()
-  const { tokenIn, tokenOut, amountIn, quote, isSwapping, swapError, swapTxHash, poolFee } = state
+  const { tokenIn, tokenOut, mode, typedAmount, quote, isSwapping, swapError, swapTxHash, poolFee } = state
   const { address } = useAccount()
   const { writeContractAsync, isPending: isWritePending } = useWriteContract()
+
+  // Compute amountIn: for exactIn it's typedAmount, for exactOut it comes from quote
+  const amountIn = useMemo(() => {
+    if (mode === 'exactIn') {
+      return typedAmount
+    }
+    // exactOut mode: amountIn comes from quote
+    if (!quote?.amountIn || !tokens[tokenIn].decimals) return ''
+    return formatUnits(quote.amountIn, tokens[tokenIn].decimals)
+  }, [mode, typedAmount, quote, tokens, tokenIn])
 
   /**
    * Execute swap with pre-calculated amountOutMinimum
@@ -444,21 +479,15 @@ export const useSwapExecution = () => {
 
         // Check ERC-20 allowance first (Permit2 needs this to transfer tokens)
         if (erc20Allowance < amountInBigInt) {
-          throw new Error(
-            `Insufficient ERC-20 allowance for Permit2. Current: ${erc20Allowance.toString()}, Required: ${amountInBigInt.toString()}. Please approve Permit2 to spend your tokens.`,
-          )
+          throw new Error(`Insufficient allowance. Please go back to Step 2 and request allowance again.`)
         }
 
         if (isExpired) {
-          throw new Error(
-            `Permit2 allowance has expired. Expiration: ${expirationBigInt.toString()}, Current block: ${currentBlock.timestamp.toString()}. Please renew your Permit2 approval.`,
-          )
+          throw new Error(`Your allowance has expired. Please go back to Step 2 and request a new allowance.`)
         }
 
         if (permit2Amount < amountInBigInt) {
-          throw new Error(
-            `Insufficient Permit2 allowance. Current: ${permit2Amount.toString()}, Required: ${amountInBigInt.toString()}. Please approve Permit2 to spend your tokens.`,
-          )
+          throw new Error(`Insufficient allowance. Please go back to Step 2 and request allowance again.`)
         }
 
         // Use uniswapProvider's encoding logic with pre-calculated amountOutMinimum
@@ -485,6 +514,16 @@ export const useSwapExecution = () => {
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error)
         const errorString = String(error)
+
+        // Check for wallet connection issues
+        if (errorMessage.includes('getChainId is not a function') || errorMessage.includes('connector')) {
+          const err = new Error(
+            'Wallet connection error. Please disconnect and reconnect your wallet, then try again.',
+          )
+          setSwapError(err)
+          setSwapping(false)
+          return null
+        }
 
         // Check for AllowanceExpired error (0xd81b2f2e) from Permit2/Universal Router
         if (errorString.includes('0xd81b2f2e') || errorMessage.includes('AllowanceExpired')) {

@@ -8,10 +8,22 @@ import { USDT0, USDRIF } from '@/lib/constants'
 import Big from '@/lib/big'
 
 export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
-  const { amountIn, setAmountIn, formattedAmountOut, isQuoting, isQuoteExpired, quoteError } = useSwapInput()
+  const {
+    amountIn,
+    amountOut,
+    setAmountIn,
+    setAmountOut,
+    isQuoting,
+    isQuoteExpired,
+    quoteError,
+    quote,
+    mode,
+  } = useSwapInput()
   const { tokenInData, tokenOutData } = useTokenSelection()
   const { tokenData } = useSwappingContext()
   const inputRef = useRef<HTMLInputElement>(null)
+  // Track which field the user is actively typing in (prevents loop from programmatic value updates)
+  const activeFieldRef = useRef<'in' | 'out' | null>(null)
 
   // Get balances and prices from context
   const tokenInBalance = tokenData.balances[USDT0]
@@ -19,9 +31,24 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   const tokenInPrice = tokenData.prices[USDT0]
   const tokenOutPrice = tokenData.prices[USDRIF]
 
+  // Display values: typed field shows raw, derived field shows formatted (2 decimals)
+  // When empty, return '' so the placeholder "0" shows
+  const displayAmountIn = useMemo(() => {
+    if (!amountIn) return ''
+    if (mode === 'exactIn') return amountIn // User is typing, show raw
+    return formatForDisplay(amountIn) // Derived from quote, format it
+  }, [mode, amountIn])
+
+  const displayAmountOut = useMemo(() => {
+    if (!amountOut) return ''
+    if (mode === 'exactOut') return amountOut // User is typing, show raw
+    return formatForDisplay(amountOut) // Derived from quote, format it
+  }, [mode, amountOut])
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus()
+      activeFieldRef.current = 'in' // Set active field on initial focus
     }
   }, [])
 
@@ -33,7 +60,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   // Set button actions
   useEffect(() => {
     const hasValidAmount = amountIn && Big(amountIn).gt(0)
-    const hasQuote = formattedAmountOut && Big(formattedAmountOut).gt(0)
+    const hasQuote = !!quote && amountOut && Big(amountOut).gt(0)
     // Disable if quote is expired, still loading, or invalid
     const isDisabled = !hasValidAmount || isAmountOverBalance || isQuoting || !hasQuote || isQuoteExpired
 
@@ -45,22 +72,35 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
         loading: isQuoting,
       },
     })
-  }, [
-    amountIn,
-    isAmountOverBalance,
-    formattedAmountOut,
-    isQuoting,
-    isQuoteExpired,
-    onGoNext,
-    setButtonActions,
-  ])
+  }, [amountIn, isAmountOverBalance, amountOut, isQuoting, isQuoteExpired, onGoNext, setButtonActions, quote])
 
   const handleAmountChange = useCallback(
     (value: string) => {
+      // Only process if user is actively typing in this field
+      // Ignore programmatic changes from NumericFormat when quote updates the value prop
+      if (activeFieldRef.current !== 'in') return
       setAmountIn(handleAmountInput(value))
     },
     [setAmountIn],
   )
+
+  const handleAmountOutChange = useCallback(
+    (value: string) => {
+      // Only process if user is actively typing in this field
+      if (activeFieldRef.current !== 'out') return
+      setAmountOut(handleAmountInput(value))
+    },
+    [setAmountOut],
+  )
+
+  // Track which field user is editing to prevent quote updates from triggering handlers
+  const handleInputFocus = useCallback(() => {
+    activeFieldRef.current = 'in'
+  }, [])
+
+  const handleOutputFocus = useCallback(() => {
+    activeFieldRef.current = 'out'
+  }, [])
 
   const handlePercentageClick = useCallback(
     (percentage: number) => {
@@ -110,17 +150,19 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   return (
     <>
       <div className="flex flex-col gap-4">
-        {/* Input token (editable) */}
+        {/* "Amount to swap" - user can type here to specify exact input */}
         <SwapInputComponent
           ref={inputRef}
           tokens={tokens}
           selectedToken={selectedToken}
-          onTokenChange={() => {}} // Token selection disabled for swap
-          amount={amountIn}
+          onTokenChange={() => {}}
+          amount={displayAmountIn}
           onAmountChange={handleAmountChange}
+          onFocus={handleInputFocus}
           balance={formatForDisplay(tokenInBalance)}
           onPercentageClick={handlePercentageClick}
           labelText="Amount to swap"
+          isLoading={isQuoting && mode === 'exactOut'}
           errorText={
             isAmountOverBalance
               ? `This is more than the available ${tokenInData.symbol} balance. Please update the amount.`
@@ -128,18 +170,19 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
           }
         />
 
-        {/* Output token (readonly) */}
+        {/* "You will receive" - user can also type here to specify exact output */}
         <SwapInputComponent
           tokens={[outputToken]}
           selectedToken={outputToken}
-          onTokenChange={() => {}} // Token selection disabled
-          amount={formatForDisplay(formattedAmountOut || '0')}
-          onAmountChange={() => {}} // Readonly
+          onTokenChange={() => {}}
+          amount={displayAmountOut}
+          onAmountChange={handleAmountOutChange}
+          onFocus={handleOutputFocus}
           balance={formatForDisplay(tokenOutBalance)}
-          readonly
           labelText="You will receive"
-          isLoading={isQuoting}
+          isLoading={isQuoting && mode === 'exactIn'}
           errorText={quoteError ? 'Failed to get quote. Pool may have insufficient liquidity.' : ''}
+          autoFocus={false}
         />
       </div>
     </>

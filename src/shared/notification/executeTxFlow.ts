@@ -113,11 +113,18 @@ export const executeTxFlow = async ({
       onError?.(txHash, err as Error)
       console.error(`Error requesting ${action} tx`, err)
 
+      // Use the actual error message if available, otherwise fall back to generic message
+      const actualErrorMessage = err instanceof Error ? err.message : String(err)
+      const errorConfig = {
+        ...error,
+        content: actualErrorMessage || error.content,
+      }
+
       // Show error toast - update existing toast if we have a hash, otherwise show new toast
       if (txHash) {
-        updateToast(txHash, createToastConfig(error, txHash))
+        updateToast(txHash, createToastConfig(errorConfig, txHash))
       } else {
-        showToast(createToastConfig(error))
+        showToast(createToastConfig(errorConfig))
       }
     } else {
       onError?.(txHash, { name: 'Rejected TX', message: 'User rejected transaction' })
