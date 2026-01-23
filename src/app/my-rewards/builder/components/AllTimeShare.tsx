@@ -7,11 +7,6 @@ import { Address } from 'viem'
 import { useGetBuilderAllTimeShare } from '@/app/my-rewards/builder/hooks/useGetBuilderAllTimeShare'
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 
-interface RewardCardAllTimeShareProps {
-  isLoading: boolean
-  amount: string
-}
-
 export const AllTimeShare = ({ gauge }: { gauge: Address }) => {
   const { builders, isLoading: isBuildersLoading, error: buildersError } = useBuilderContext()
   const initializedBuilders = filterBuildersByState<CompleteBuilder>(builders, {

@@ -12,8 +12,8 @@ import Big from '@/lib/big'
 import { tokenContracts } from '@/lib/contracts'
 import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDelegatedAmount'
 import { produce } from 'immer'
-import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { Address, formatEther } from 'viem'
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react'
+import { formatEther } from 'viem'
 import { useAccount, useReadContract } from 'wagmi'
 
 // Context
