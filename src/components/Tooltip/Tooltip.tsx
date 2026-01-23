@@ -1,7 +1,6 @@
 import React, { ReactNode, useEffect, useState } from 'react'
 import * as RadixTooltip from '@radix-ui/react-tooltip'
 import { cn } from '@/lib/utils'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 export interface TooltipProps extends RadixTooltip.TooltipContentProps {
   text: ReactNode

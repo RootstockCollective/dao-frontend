@@ -67,6 +67,7 @@ export const Status: FC<Props> = ({ proposalState, className, ...rest }) => {
         'inline-flex items-center justify-center',
         'rounded-full text-text-100 overflow-hidden',
         classes,
+        className,
       )}
       data-testid="ProposalStatus"
       {...rest}
