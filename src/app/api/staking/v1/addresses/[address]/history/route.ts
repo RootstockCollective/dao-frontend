@@ -71,7 +71,21 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
     if (err instanceof z.ZodError) {
       return Response.json({ error: 'Validation failed', details: err.flatten() }, { status: 400 })
     }
-    console.error(err)
-    return Response.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error in staking history route:', err)
+
+    // Return detailed error information for debugging
+    const errorMessage = err instanceof Error ? err.message : String(err)
+    const errorStack = err instanceof Error ? err.stack : undefined
+    const errorName = err instanceof Error ? err.name : 'UnknownError'
+
+    return Response.json(
+      {
+        error: 'Internal server error',
+        message: errorMessage,
+        name: errorName,
+        ...(process.env.NODE_ENV === 'development' && { stack: errorStack }),
+      },
+      { status: 500 },
+    )
   }
 }
