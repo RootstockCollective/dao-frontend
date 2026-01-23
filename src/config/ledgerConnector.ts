@@ -84,7 +84,7 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
         info: { ...LEDGER_PROVIDER_INFO },
         provider: {
           isLedger: true,
-          request: async ({ method, params }: { method: string; params?: any[] }) => {
+          request: async (_request: { method: string; params?: unknown[] }) => {
             // This is a placeholder - actual requests go through the connector
             throw new Error('Please connect through the Ledger connector')
           },
@@ -486,7 +486,7 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
             try {
               await this.connect()
               return true
-            } catch (error) {
+            } catch (_error) {
               // Silent fail - user will need to manually reconnect
               clearConnectionState()
               return false
