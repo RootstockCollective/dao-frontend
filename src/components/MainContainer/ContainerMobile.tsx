@@ -10,7 +10,11 @@ import { BottomDrawer } from '@/components/MainContainer/drawers/BottomDrawer'
 import { TopPageHeader } from '@/shared/walletConnection/components/topPageHeader/TopPageHeader'
 import { MAIN_CONTAINER_ID } from '@/lib/constants'
 
-export default function ContainerMobile({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
+export default function ContainerMobile({
+  className: _className,
+  children,
+  ...props
+}: HTMLAttributes<HTMLDivElement>) {
   const { isSidebarOpen } = useLayoutContext()
   return (
     <div
