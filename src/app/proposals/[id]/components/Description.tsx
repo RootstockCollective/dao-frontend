@@ -7,6 +7,7 @@ import { useExpandableContext } from '@/components/Expandable/ExpandableContext'
 
 interface DescriptionProps {
   description?: string
+  shouldParse?: boolean // If false, display description as-is without parsing (useful for review/preview)
 }
 
 const DescriptionHeader = () => (
@@ -54,10 +55,15 @@ const MobileDescriptionContent = ({ descriptionText }: DescriptionContentProps) 
   )
 }
 
-export const Description = ({ description }: DescriptionProps) => {
+export const Description = ({ description, shouldParse = true }: DescriptionProps) => {
   const isDesktop = useIsDesktop()
   // Parse the raw description to extract just the display text (without name/metadata)
-  const descriptionText = description ? parseProposalDescription(description).description : ''
+  // Only parse if shouldParse is true (for published proposals), otherwise use raw description (for review/preview)
+  const descriptionText = description
+    ? shouldParse
+      ? parseProposalDescription(description).description
+      : description
+    : ''
 
   return (
     <div className="md:px-6 px-4 pt-14 pb-10">
