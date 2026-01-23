@@ -1,6 +1,5 @@
 'use client'
 import { VotingPowerCard } from '@/app/delegate/components/VotingPowerContainer/VotingPowerCard'
-import { NotConnectedContent } from '@/app/delegate/sections/VotingPowerSection/NotConnectedVotingPowerContainer'
 import { cn } from '@/lib/utils'
 import { useAccount } from 'wagmi'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'

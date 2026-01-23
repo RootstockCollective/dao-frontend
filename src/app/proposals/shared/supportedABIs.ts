@@ -13,7 +13,7 @@ export const abis = [
   SimplifiedRewardDistributorAbi,
 ] as const
 
-const supportedProposalActions = [
+const _supportedProposalActions = [
   'withdraw',
   'withdrawERC20',
   'communityApproveBuilder',
@@ -40,7 +40,7 @@ type InputParameterName = InputParameter['name']
 
 type FunctionEntryByName<F = FunctionName> = Extract<FunctionEntry, { name: F }>
 
-type SupportedProposalAction = FunctionEntryByName<(typeof supportedProposalActions)[number]>
+type SupportedProposalAction = FunctionEntryByName<(typeof _supportedProposalActions)[number]>
 
 export type SupportedProposalActionName = SupportedProposalAction['name']
 
@@ -58,7 +58,7 @@ type InputNameFormatMap<FN = SupportedProposalActionName, InputName = InputParam
   [I in InputParameterByFnByName<FN, InputName> as I['name']]: string
 }
 
-type ActionInputNameFormatMap<FN = SupportedProposalActionName, InputName = InputParameterName> = {
+type _ActionInputNameFormatMap<FN = SupportedProposalActionName, InputName = InputParameterName> = {
   [F in FunctionEntryByName<FN>['name']]: InputNameFormatMap<F, InputName>
 }
 
@@ -75,6 +75,6 @@ type InputValueComposerMap<F = SupportedProposalActionName, InputName = InputPar
   >
 }
 
-type ActionComposerMap<FN = SupportedProposalActionName, InputName = InputParameterName> = {
+type _ActionComposerMap<FN = SupportedProposalActionName, InputName = InputParameterName> = {
   [F in FunctionEntryByName<FN>['name']]: InputValueComposerMap<F, InputName>
 }
