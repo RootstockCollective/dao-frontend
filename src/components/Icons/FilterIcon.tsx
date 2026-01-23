@@ -1,6 +1,5 @@
 import { type IconProps } from './types'
 import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
-import { cn } from '@/lib/utils'
 
 export function FilterIcon({
   'aria-label': ariaLabel = 'Filter Icon',

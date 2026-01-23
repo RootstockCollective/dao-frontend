@@ -4,7 +4,7 @@ import { IconProps } from './types'
 export function SortDescendingIcon({
   'aria-label': ariaLabel = 'Sort Descending Icon',
   size = 16,
-  fill = 'none',
+  fill: _fill = 'none',
   stroke = DEFAULT_ICON_COLOR,
   strokeWidth = 2,
   ...props
