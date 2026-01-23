@@ -153,7 +153,6 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
             'Token',
             'USD Value',
             'Transaction Hash',
-            'Block Hash',
           ]
           controller.enqueue(encoder.encode(headers.map(escapeCsvValue).join(',') + '\n'))
 
@@ -195,7 +194,6 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
                   STRIF,
                   usdValue,
                   transaction.transactionHash,
-                  transaction.blockHash || transaction.blockNumber, // Fallback to blockNumber if blockHash is not available
                 ]
 
                 controller.enqueue(encoder.encode(row.map(escapeCsvValue).join(',') + '\n'))
