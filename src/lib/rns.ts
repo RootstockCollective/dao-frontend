@@ -6,7 +6,7 @@ export const resolveRnsDomain = async (domain: string) => {
   try {
     const addr = await addrResolver.addr(domain)
     return addr
-  } catch (error) {
+  } catch (_error) {
     throw new Error('Error resolving RNS domain')
   }
 }
