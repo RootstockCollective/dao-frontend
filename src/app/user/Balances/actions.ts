@@ -1,14 +1,11 @@
-import { GetAddressTokenResult, GetPricesResult } from '@/app/user/types'
+import { GetPricesResult } from '@/app/user/types'
 import { axiosInstance } from '@/lib/utils'
 import {
-  fetchAddressTokensEndpoint,
   fetchNewAllocationEventEndpoint,
-  fetchNFTsOwnedByAddressAndNftAddress,
   fetchPricesEndpoint,
   fetchProposalsCreatedByGovernorAddress,
   fetchVoteCastEventEndpoint,
   getNftHolders,
-  getNftInfo,
   getTokenHoldersOfAddress,
 } from '@/lib/endpoints'
 import { tokenContracts, GovernorAddress, BackersManagerAddress } from '@/lib/contracts'
@@ -20,15 +17,6 @@ import {
 } from '@/app/user/Balances/types'
 import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 import { Address, isAddress, padHex } from 'viem'
-
-const fetchAddressTokens = (address: string, chainId = 31) =>
-  axiosInstance
-    .get<GetAddressTokenResult>(
-      fetchAddressTokensEndpoint.replace('{{chainId}}', chainId.toString()).replace('{{address}}', address),
-    )
-    .then(({ data }) => data)
-
-// Prices
 
 export const fetchPrices = () =>
   axiosInstance
@@ -79,8 +67,6 @@ export const fetchNewAllocationEventByAccountAddress = (address: Address) =>
   )
 
 export const fetchProposalsCreatedCached = () => axiosInstance.get('/proposals/api', { baseURL: '/' })
-
-const fetchNftInfo = (address: string) => axiosInstance.get(getNftInfo.replace('{{nftAddress}}', address))
 
 export const fetchNftHoldersOfAddress = async (address: string, nextParams: NextPageParams | null) => {
   const { data } = await axiosInstance.get<ServerResponseV2<NftHolderItem>>(

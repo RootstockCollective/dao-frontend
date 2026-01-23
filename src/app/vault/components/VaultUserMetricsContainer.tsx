@@ -12,7 +12,12 @@ import { VaultActions } from './VaultActions'
  * Shows wallet balance, total deposited, and deposit/withdraw buttons
  */
 export const VaultUserMetricsContainer = () => {
-  const { userShares, isLoading, formattedUserUsdrifBalance, formattedUserShares } = useVaultBalance()
+  const {
+    userShares: _userShares,
+    isLoading,
+    formattedUserUsdrifBalance,
+    formattedUserShares,
+  } = useVaultBalance()
   const { balances, isBalancesLoading } = useGetAddressBalances()
 
   const { isConnected } = useAccount()
