@@ -12,8 +12,29 @@ import {
   formatDateForCsv,
   processTransactionAmount,
 } from '@/app/my-rewards/tx-history/utils/utils'
+import { TOKENS } from '@/lib/tokens'
 
 const MAX_EXPORT_ROWS = 50000
+
+const reorderTableByGrouping = (items: TransactionHistoryItem[]): TransactionHistoryItem[] => {
+  const groupedByTransactionHash = new Map<string, TransactionHistoryItem[]>()
+
+  items.forEach(item => {
+    const existing = groupedByTransactionHash.get(item.transactionHash)
+    if (existing) {
+      existing.push(item)
+    } else {
+      groupedByTransactionHash.set(item.transactionHash, [item])
+    }
+  })
+
+  const reorderedItems: TransactionHistoryItem[] = []
+  groupedByTransactionHash.forEach(groupItems => {
+    reorderedItems.push(...groupItems)
+  })
+
+  return reorderedItems
+}
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
   disabled?: boolean
@@ -92,6 +113,7 @@ const fetchAllTransactionHistory = async (
   type: string[],
   builder: string[],
   rewardToken: string[],
+  prices: GetPricesResult,
 ): Promise<TransactionHistoryItem[]> => {
   const pageSize = 1000
   const allData: TransactionHistoryItem[] = []
@@ -109,6 +131,14 @@ const fetchAllTransactionHistory = async (
     type.forEach(t => searchParams.append('type', t))
     builder.forEach(b => searchParams.append('builder', b))
     rewardToken.forEach(rt => searchParams.append('rewardToken', rt))
+
+    Object.values(TOKENS).forEach(token => {
+      const priceInfo = prices[token.symbol]
+      if (!priceInfo) return
+
+      const decimals = 18
+      searchParams.append('price', `${token.address.toLowerCase()}:${priceInfo.price}:${decimals}`)
+    })
 
     return searchParams
   }
@@ -189,6 +219,7 @@ export function CsvButton({
         type,
         builder,
         rewardToken,
+        prices,
       )
 
       if (allData.length === 0) {
@@ -200,19 +231,21 @@ export function CsvButton({
         return
       }
 
+      const reorderedData = reorderTableByGrouping(allData)
+
       // Limit to MAX_EXPORT_ROWS to avoid freezing the browser
-      const dataToExport = allData.slice(0, MAX_EXPORT_ROWS)
-      const wasTruncated = allData.length > MAX_EXPORT_ROWS
+      const dataToExport = reorderedData.slice(0, MAX_EXPORT_ROWS)
+      const wasTruncated = reorderedData.length > MAX_EXPORT_ROWS
 
       if (wasTruncated) {
         showToast({
           severity: 'warning',
           title: 'Export limited',
-          content: `Export limited to ${MAX_EXPORT_ROWS.toLocaleString()} rows to prevent browser freezing. Total available: ${allData.length.toLocaleString()} rows.`,
+          content: `Export limited to ${MAX_EXPORT_ROWS.toLocaleString()} rows to prevent browser freezing. Total available: ${reorderedData.length.toLocaleString()} rows.`,
         })
       }
 
-      // Convert each item to CSV row (ungrouped)
+      // Convert each item to CSV row
       const csvRows = dataToExport.map(item =>
         convertItemToCsvRow(item, cycleDuration, prices, getBuilderByAddress),
       )

@@ -29,7 +29,7 @@ const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
   cycle: 'cycleStart',
   date: 'blockTimestamp',
   type: 'type',
-  total_amount: 'blockTimestamp', // Use timestamp as fallback since total is calculated
+  total_amount: 'totalAmount',
 }
 
 /**
@@ -75,8 +75,8 @@ export default function TransactionHistoryTable() {
   const { data, isLoading, error, count } = useGetTransactionHistory({
     page: 1,
     pageSize: pageEnd,
-    sortBy,
-    sortDirection,
+    sortBy: sortBy,
+    sortDirection: sortDirection,
     type: apiFilters.type,
     builder: apiFilters.builder,
     rewardToken: apiFilters.rewardToken,
