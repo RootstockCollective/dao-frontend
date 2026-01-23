@@ -1,8 +1,8 @@
 import { getVaultHistoryEndpoint } from '@/lib/endpoints'
-import { VaultHistoryItem } from './types'
+import { VaultHistoryItemAPI } from './types'
 
 export interface VaultHistoryResponse {
-  data: VaultHistoryItem[]
+  data: VaultHistoryItemAPI[]
   pagination: {
     total: number
     limit: number
