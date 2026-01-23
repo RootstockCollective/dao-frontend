@@ -1,4 +1,4 @@
-import { VaultHistoryItem } from '@/app/vault/history/utils/types'
+import { VaultHistoryItemAPI } from '@/app/vault/history/utils/types'
 import { VaultHistoryTable } from '@/app/vault/history/components/VaultHistoryTable.config'
 import { formatSymbol } from '@/app/shared/formatter'
 import { formatExpandedDate } from '@/app/my-rewards/tx-history/utils/utils'
@@ -12,7 +12,11 @@ const formatPeriod = (period: string): string => {
   return date.toLocaleString('en-US', { month: 'long', year: 'numeric' })
 }
 
-export const convertDataToRowData = (data: VaultHistoryItem[]): VaultHistoryTable['Row'][] => {
+/**
+ * Converts raw API data to table row data
+ * Transforms VaultHistoryItemAPI (from API) to table rows with formatted dates
+ */
+export const convertDataToRowData = (data: VaultHistoryItemAPI[]): VaultHistoryTable['Row'][] => {
   if (!data.length) return []
 
   const rows: VaultHistoryTable['Row'][] = new Array(data.length)

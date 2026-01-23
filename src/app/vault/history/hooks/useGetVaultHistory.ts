@@ -3,10 +3,10 @@ import { useQuery } from '@tanstack/react-query'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useAccount } from 'wagmi'
 import { fetchVaultHistory, VaultHistoryResponse } from '../utils/api'
-import { VaultHistoryItem } from '../utils/types'
+import { VaultHistoryItemAPI } from '../utils/types'
 
 // Stable empty array to prevent infinite re-renders when no data
-const EMPTY_DATA: VaultHistoryItem[] = []
+const EMPTY_DATA: VaultHistoryItemAPI[] = []
 
 interface UseGetVaultHistoryParams {
   page?: number
