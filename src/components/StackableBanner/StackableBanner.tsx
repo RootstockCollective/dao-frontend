@@ -29,7 +29,7 @@ export const StackableBanner: FC<StackableBannerProps> = ({
       }}
       data-testid={testId}
     >
-      <DecorativeSquares className="absolute left-0 top-[-30px] z-20" color={decorativeImageColor} />
+      <DecorativeSquares className="absolute left-0 top-[-30px] z-base" color={decorativeImageColor} />
 
       <div
         className={cn(

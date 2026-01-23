@@ -64,7 +64,7 @@ export const DelegationDetailsSection = ({ onShowReclaim, onShowDelegates }: Pro
             width={50}
             height={40}
             className={cn(
-              'absolute left-0 z-10 md:left-0 scale-y-[-1] md:scale-y-100',
+              'absolute left-0 z-base md:left-0 scale-y-[-1] md:scale-y-100',
               isDesktop ? '-bottom-[30px]' : '-top-[30px]',
             )}
           />

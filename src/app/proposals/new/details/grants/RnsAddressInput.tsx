@@ -14,7 +14,7 @@ export function RnsAddressInput() {
   const { isResolving, resolutionMsg } = useFormAddressResolution()
   return (
     <div className="relative h-min">
-      {isResolving && <Loader className="absolute top-5 right-4 z-10 animate-spin" />}
+      {isResolving && <Loader className="absolute top-5 right-4 z-base animate-spin" />}
       <TextInput
         name="targetAddressInput"
         control={control}

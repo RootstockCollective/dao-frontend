@@ -49,7 +49,7 @@ export const IntroModalContent = ({
               alt="Floating Pixels"
               width={40}
               height={30}
-              className="absolute block left-1/2 top-8 -translate-x-[calc(55%)] z-10"
+              className="absolute block left-1/2 top-8 -translate-x-[calc(55%)] z-base"
             />
             <div className="flex-1 relative">
               <Image

@@ -9,6 +9,7 @@ import { Header, Span } from '../Typography'
 import { Button } from '../Button'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { useScrollLock } from '@/shared/hooks/useScrollLock'
+import { PortalContainerContext } from '../PortalContainerContext'
 
 // transition animation duration
 const duration = 0.3
@@ -66,6 +67,7 @@ export function ConfirmationModal({
   isOpen = false,
 }: ConfirmationModalProps) {
   const modalRef = useRef<HTMLDivElement>(null)
+  const portalContainerRef = useRef<HTMLDivElement>(null)
 
   useClickOutside([modalRef], onClose)
 
@@ -75,7 +77,11 @@ export function ConfirmationModal({
   return createPortal(
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 flex items-center justify-center z-[100]" data-testid={dataTestId}>
+        <div
+          ref={portalContainerRef}
+          className="fixed inset-0 flex items-center justify-center z-modal"
+          data-testid={dataTestId}
+        >
           {/* Full screen overlay */}
           <motion.div
             key="modal-overlay"
@@ -105,34 +111,36 @@ export function ConfirmationModal({
               backgroundImage: `url(${modalBg.src})`,
             }}
           >
-            {/* Header */}
-            {title && (
-              <Header variant="e2" caps>
-                {title}
-              </Header>
-            )}
-            {/* Main contents */}
-            <div className="max-w-[513px]">{children}</div>
-            {/* Footer with buttons */}
-            {buttons ? (
-              <div>{buttons}</div>
-            ) : (
-              <div className="flex flex-row gap-6">
-                <Button
-                  onClick={onDecline}
-                  variant="secondary-outline"
-                  className="bg-foreground"
-                  data-testid="Disagree"
-                >
-                  I Disagree
-                </Button>
-                <Button onClick={onAccept} variant="primary" data-testid="Agree">
-                  <Span className="text-text-100" bold>
-                    I Agree
-                  </Span>
-                </Button>
-              </div>
-            )}
+            <PortalContainerContext.Provider value={portalContainerRef}>
+              {/* Header */}
+              {title && (
+                <Header variant="e2" caps>
+                  {title}
+                </Header>
+              )}
+              {/* Main contents */}
+              <div className="max-w-[513px]">{children}</div>
+              {/* Footer with buttons */}
+              {buttons ? (
+                <div>{buttons}</div>
+              ) : (
+                <div className="flex flex-row gap-6">
+                  <Button
+                    onClick={onDecline}
+                    variant="secondary-outline"
+                    className="bg-foreground"
+                    data-testid="Disagree"
+                  >
+                    I Disagree
+                  </Button>
+                  <Button onClick={onAccept} variant="primary" data-testid="Agree">
+                    <Span className="text-text-100" bold>
+                      I Agree
+                    </Span>
+                  </Button>
+                </div>
+              )}
+            </PortalContainerContext.Provider>
           </motion.div>
         </div>
       )}

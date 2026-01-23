@@ -90,7 +90,6 @@ const CustomCursor = (props: CustomCursorProps) => {
             fill={payloadItem.color}
             stroke="var(--background-100)"
             strokeWidth={6}
-            style={{ zIndex: 1000 }}
           />
         )
       })}

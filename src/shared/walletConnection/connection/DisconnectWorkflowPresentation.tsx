@@ -45,7 +45,7 @@ export const DisconnectWorkflowPresentation = ({
         <Tooltip
           text={onRampDisclaimerText}
           sideOffset={8}
-          className="px-4 py-3 max-w-[15rem] hidden md:block z-10"
+          className="px-4 py-3 max-w-[15rem] hidden md:block"
         >
           <Button
             variant="secondary-outline"

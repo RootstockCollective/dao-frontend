@@ -174,6 +174,20 @@ The deployer will launch an instance of storybook in [Localhost Port 6000](http:
 
 Storybook has been configured to use Tailwind CSS.
 
+## Z-Index Convention
+
+This project uses semantic z-index classes instead of arbitrary values. Defined in `src/theme/base.css` and `src/app/globals.css`:
+
+| Class        | Value | Usage                              |
+| ------------ | ----- | ---------------------------------- |
+| `z-base`     | 1     | Local element stacking             |
+| `z-dropdown` | 100   | Dropdown menus                     |
+| `z-sticky`   | 200   | Sticky headers, sidebars, drawers  |
+| `z-modal`    | 500   | Modal dialogs                      |
+| `z-tooltip`  | 1000  | Tooltips, popovers                 |
+
+**Do not use** raw z-index values like `z-10`, `z-50`, or `z-[999]`. Use the semantic classes above.
+
 ## Unit testing
 
 The repository is configured to use [Jest as the Testing Framework](https://jestjs.io/). Please refer to the [Next.js official guide](https://nextjs.org/docs/app/building-your-application/testing/jest) for information on how to integrate Jest.

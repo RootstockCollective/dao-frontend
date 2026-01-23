@@ -21,7 +21,7 @@ import { BoostedLabelKoto } from '@/app/communities/components'
 import { Divider } from '@/components/Divider'
 
 // Responsive button styles - mobile: sticky bottom with background, desktop: normal positioning
-const mobileButtonSx = 'fixed bottom-0 left-0 right-0 z-20 bg-bg-100 p-4'
+const mobileButtonSx = 'fixed bottom-0 left-0 right-0 z-sticky bg-bg-100 p-4'
 const desktopButtonSx =
   'md:relative md:bottom-auto md:left-auto md:right-auto md:z-auto md:bg-transparent md:p-0 md:mt-10'
 const dividerSx = 'mb-4 md:hidden'

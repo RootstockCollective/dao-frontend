@@ -243,7 +243,16 @@ export const VotingDetails = ({
               Connect your wallet to see your available voting power and to vote.
             </Span>
             <ConnectWorkflow
-              ConnectComponent={props => <ConnectButtonComponent {...props} textClassName="text-bg-100" />}
+              ConnectComponent={props => (
+                <ConnectButtonComponent
+                  {...props}
+                  textClassName="text-bg-100"
+                  onClick={e => {
+                    setPopoverOpen(false)
+                    props.onClick?.(e)
+                  }}
+                />
+              )}
             />
           </>
         }
@@ -259,7 +268,7 @@ export const VotingDetails = ({
         buttonAction={getButtonActionForState(
           proposalState,
           canProposalBeExecuted,
-          !isConnected ? false : cannotCastVote,
+          isConnected && cannotCastVote,
         )}
         voteButtonRef={voteButtonRef}
         vote={vote}
