@@ -12,6 +12,7 @@ import {
   clearChunkReloadAttempts,
 } from './commonErrors'
 import { Header, Paragraph } from '../Typography'
+import { sentryClient } from '@/lib/sentry-wrapper'
 
 interface ErrorFallbackProps {
   error: Error
@@ -123,6 +124,13 @@ export const GlobalErrorBoundary = ({ children }: Props) => {
             },
           )
         }
+        sentryClient.captureException(error, {
+          contexts: {
+            react: {
+              componentStack: info.componentStack,
+            },
+          },
+        })
       }}
     >
       {children}
