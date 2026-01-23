@@ -3,7 +3,7 @@ import { PropsWithChildren } from 'react'
 import { getProposalById } from '../actions/getProposalById'
 import { headers } from 'next/headers'
 
-type Props = {
+interface Props {
   params: Promise<{ id: string }>
 }
 
