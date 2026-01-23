@@ -2,12 +2,13 @@ import { db } from '@/lib/db'
 
 /**
  * Represents a single vault transaction from the history
+ * This type matches the structure returned by the database query
  */
 export interface VaultHistoryTransaction {
   /** User address (wallet address) that performed the transaction */
   user: string
   /** Action type: "DEPOSIT" or "WITHDRAW" */
-  action: string
+  action: 'DEPOSIT' | 'WITHDRAW'
   /** Amount of assets involved in the transaction (as string to handle large numbers) */
   assets: string
   /** Amount of shares involved in the transaction (as string to handle large numbers) */
@@ -22,12 +23,13 @@ export interface VaultHistoryTransaction {
 
 /**
  * Represents vault history grouped by period (month) and action type
+ * This type matches the structure returned by the database query
  */
 export interface VaultHistoryByPeriodAndAction {
   /** Period in format "YYYY-MM" (e.g., "2024-01") */
   period: string
   /** Action type: "DEPOSIT" or "WITHDRAW" */
-  action: string
+  action: 'DEPOSIT' | 'WITHDRAW'
   /** Sum of all assets for transactions in this period+action group (as string to handle large numbers) */
   assets: string
   /** Array of individual transactions in this group */
@@ -41,7 +43,7 @@ interface VaultHistoryDatabaseRow {
   /** Period in format "YYYY-MM" (e.g., "2024-01") */
   period: string
   /** Action type: "DEPOSIT" or "WITHDRAW" */
-  action: string
+  action: 'DEPOSIT' | 'WITHDRAW'
   /** Sum of all assets for transactions in this period+action group (may be null if no rows to sum) */
   assets: number | bigint | null
   /** Array of individual transactions in this group (always an array due to COALESCE) */
