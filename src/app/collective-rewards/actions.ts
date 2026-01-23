@@ -6,6 +6,7 @@ import {
   fetchBuilderRewardsClaimedLogsByAddress,
   fetchGaugeNotifyRewardLogsByAddress,
   fetchRewardDistributionFinishedLogsByAddress,
+  fetchRewardDistributionRewardsLogsByAddress,
 } from '@/lib/endpoints'
 
 export const fetchGaugeNotifyRewardLogs = (gaugeAddress: Address, fromBlock = 0) => {
@@ -35,6 +36,14 @@ export const fetchBackerRewardsClaimed = (gaugeAddress: Address, fromBlock = 0) 
 export const fetchRewardDistributionFinished = (fromBlock = 0) => {
   return axiosInstance.get(
     fetchRewardDistributionFinishedLogsByAddress
+      .replace('{{address}}', BackersManagerAddress)
+      .replace('{{fromBlock}}', fromBlock.toString()),
+  )
+}
+
+export const fetchRewardDistributionRewards = (fromBlock = 0) => {
+  return axiosInstance.get(
+    fetchRewardDistributionRewardsLogsByAddress
       .replace('{{address}}', BackersManagerAddress)
       .replace('{{fromBlock}}', fromBlock.toString()),
   )

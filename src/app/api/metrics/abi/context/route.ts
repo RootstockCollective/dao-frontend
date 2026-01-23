@@ -47,8 +47,7 @@ export async function GET() {
         })
         .innerJoin('CycleRewardPerToken', 'Cycle.id', '=', 'CycleRewardPerToken.cycle')
         .orderBy('currentCycleStart', 'desc')
-        .groupBy('Cycle.id')
-        .limit(1),
+        .groupBy('Cycle.id'),
     ])
 
     return NextResponse.json({ builders, cycles })
