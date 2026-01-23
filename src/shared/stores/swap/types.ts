@@ -15,6 +15,20 @@ export type SwapTokenSymbol = typeof USDT0 | typeof USDRIF
 export type SwapMode = 'exactIn' | 'exactOut'
 
 /**
+ * Quote result from Uniswap QuoterV2 contract.
+ * Contains the amounts and metadata needed to execute a swap.
+ */
+export interface QuoteResult {
+  amountOut: bigint
+  gasEstimate: bigint
+  feeTier: number
+  timestamp: number
+  amountIn?: bigint
+  sqrtPriceX96After?: bigint
+  initializedTicksCrossed?: bigint
+}
+
+/**
  * Core swap state managed by Zustand.
  *
  * Note: Quote data and allowance data are managed by React Query hooks,

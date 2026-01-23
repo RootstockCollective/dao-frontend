@@ -135,16 +135,31 @@ create<State>()(
 
 ### 8. Selectors
 
-Use selectors for computed values and to prevent unnecessary re-renders:
+Use selectors to prevent unnecessary re-renders. When selecting multiple values, use `useShallow`:
 
 ```typescript
-// In component
-const isValid = useFeatureStore((state) => state.value.length > 0)
+import { useShallow } from 'zustand/shallow'
 
-// Or create reusable selectors
+// Single value - simple selector
+const isLoading = useFeatureStore(state => state.isLoading)
+
+// Multiple values - use useShallow for shallow comparison
+const { value, isLoading, setValue } = useFeatureStore(
+  useShallow(state => ({
+    value: state.value,
+    isLoading: state.isLoading,
+    setValue: state.setValue,
+  }))
+)
+
+// Computed selectors
 export const selectIsValid = (state: FeatureState) => state.value.length > 0
 const isValid = useFeatureStore(selectIsValid)
 ```
+
+**Why useShallow?**
+- Without it, `const { a, b } = useStore()` re-renders on ANY store change
+- With useShallow, only re-renders when selected values change (shallow equality)
 
 ### 9. Testing
 
