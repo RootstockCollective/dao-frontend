@@ -21,7 +21,7 @@ const SORT_DIRECTIONS = [SORT_DIRECTION_ASC, SORT_DIRECTION_DESC] as const
 type SortDirection = (typeof SORT_DIRECTIONS)[number]
 
 function isSortDirection(value: unknown): value is SortDirection {
-  return value === SORT_DIRECTION_ASC || value === SORT_DIRECTION_DESC
+  return SORT_DIRECTIONS.includes(value as SortDirection)
 }
 
 interface PaginationParams {
