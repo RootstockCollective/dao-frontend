@@ -7,7 +7,7 @@ import { RewardsCellProps } from '@/app/builders/components/Table/Cell/RewardsCe
 import { TableColumnDropdownLabels } from '@/app/builders/components/Table/TableColumnDropdown/TableColumnDropdown'
 import { Column, TypedTable } from '@/shared/context'
 
-const COLUMN_IDS = [
+const _COLUMN_IDS = [
   'builder',
   'backer_rewards',
   'unclaimed',
@@ -16,7 +16,7 @@ const COLUMN_IDS = [
   'backing',
   'actions',
 ] as const
-export type ColumnId = (typeof COLUMN_IDS)[number]
+export type ColumnId = (typeof _COLUMN_IDS)[number]
 
 export const PAGE_SIZE = 3
 
