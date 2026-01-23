@@ -21,7 +21,7 @@ export const useVaultTermsAcceptance = () => {
       const key = getStorageKey(address)
       const accepted = localStorage.getItem(key)
       return accepted === 'true'
-    } catch (error) {
+    } catch (_error) {
       // Ignore localStorage errors and return false
       return false
     }
@@ -33,7 +33,7 @@ export const useVaultTermsAcceptance = () => {
     try {
       const key = getStorageKey(address)
       localStorage.setItem(key, 'true')
-    } catch (error) {
+    } catch (_error) {
       // Ignore localStorage errors
     }
   }, [address, getStorageKey])
@@ -44,7 +44,7 @@ export const useVaultTermsAcceptance = () => {
     try {
       const key = getStorageKey(address)
       localStorage.removeItem(key)
-    } catch (error) {
+    } catch (_error) {
       // Ignore localStorage errors
     }
   }, [address, getStorageKey])

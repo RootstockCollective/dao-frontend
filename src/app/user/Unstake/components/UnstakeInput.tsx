@@ -17,7 +17,7 @@ interface Props {
 }
 
 export const UnstakeInput = forwardRef<HTMLInputElement, Props>(
-  ({ amount, onAmountChange, onPercentageClick, stRifToken, availableToUnstake, errorMessage }, ref) => {
+  ({ amount, onAmountChange, onPercentageClick, stRifToken, availableToUnstake, errorMessage }, _ref) => {
     const inputRef = useRef<HTMLInputElement>(null)
     const amountToCurrency = formatCurrency(Big(stRifToken.price || 0).mul(amount || 0))
 

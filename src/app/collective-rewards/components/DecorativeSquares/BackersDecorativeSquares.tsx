@@ -1,12 +1,9 @@
 import { type IconProps } from '@/components/Icons'
-import { DEFAULT_ICON_COLOR } from '@/components/Icons/constants'
 
 export function BackersDecorativeSquares({
   'aria-label': ariaLabel = 'Backers Decorative Squares Icon',
   width = 50,
   height = 40,
-  color = DEFAULT_ICON_COLOR,
-  fill = color,
   ...props
 }: IconProps) {
   return (
@@ -16,6 +13,7 @@ export function BackersDecorativeSquares({
       height={height}
       viewBox="0 0 30 40"
       fill="none"
+      aria-label={ariaLabel}
       {...props}
     >
       <rect width="10" height="10" transform="matrix(0 1 1 0 10 10)" fill="#413B5B" />

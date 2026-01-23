@@ -1,40 +1,10 @@
 import { useState, useCallback } from 'react'
 import { FilterItem, FilterState, FilterActions, FilterType } from './types'
-import {
-  createAllFilters,
-  createSearchFilter,
-  categoryFilterOptions,
-  statusFilterOptions,
-  timeFilterOptions,
-} from './filterOptions'
-import { MILESTONE_SEPARATOR } from '@/app/proposals/shared/utils'
+import { createAllFilters, createSearchFilter } from './filterOptions'
 
 export const useProposalFilters = (): FilterState & FilterActions => {
   const [activeFilters, setActiveFilters] = useState<FilterItem[]>(createAllFilters())
   const [searchValue, setSearchValue] = useState('')
-
-  // Helper function to get all available filter options for a type
-  const getFilterOptionsForType = (type: FilterType) => {
-    switch (type) {
-      case FilterType.CATEGORY:
-        return categoryFilterOptions
-      case FilterType.STATUS:
-        return statusFilterOptions
-      case FilterType.TIME:
-        return timeFilterOptions
-      default:
-        return []
-    }
-  }
-
-  // Helper function to check if all filters of a type are selected
-  const areAllFiltersOfTypeSelected = (type: FilterType, currentFilters: FilterItem[]) => {
-    const availableOptions = getFilterOptionsForType(type)
-    const selectedFilters = currentFilters.filter(f => f.type === type && !f.isAll)
-
-    // Check if all available options are selected
-    return availableOptions.every(option => selectedFilters.some(filter => filter.value === option.value))
-  }
 
   const removeFilter = useCallback(
     (id: string) => {

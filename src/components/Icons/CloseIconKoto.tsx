@@ -10,7 +10,14 @@ export function CloseIconKoto({
   ...props
 }: IconProps) {
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} fill="none" {...props}>
+    <svg
+      width={size}
+      height={size}
+      viewBox={`0 0 ${size} ${size}`}
+      fill="none"
+      aria-label={ariaLabel}
+      {...props}
+    >
       <path
         d="M19 5L5 19M5 5L19 19"
         stroke={stroke}

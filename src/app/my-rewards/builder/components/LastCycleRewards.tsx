@@ -11,7 +11,11 @@ import { getMetricTokens } from '@/app/shared/utils'
 import { useMemo } from 'react'
 
 export const LastCycleRewards = ({ gauge }: { gauge: Address }) => {
-  const { isLoading, error, ...tokens } = useGetBuilderLastCycleRewards({
+  const {
+    isLoading,
+    error: _error,
+    ...tokens
+  } = useGetBuilderLastCycleRewards({
     gauge,
   })
   const { prices } = usePricesContext()

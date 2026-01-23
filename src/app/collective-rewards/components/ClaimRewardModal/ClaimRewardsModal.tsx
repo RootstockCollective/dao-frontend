@@ -1,7 +1,7 @@
 import { useBackerRewardsContext } from '@/app/collective-rewards/rewards/backers'
 import { getFiatAmount } from '@/app/shared/formatter'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { TOKENS, REWARD_TOKEN_KEYS, REWARD_TOKENS } from '@/lib/tokens'
+import { TOKENS, REWARD_TOKEN_KEYS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'

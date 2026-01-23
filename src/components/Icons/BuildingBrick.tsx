@@ -16,6 +16,7 @@ export function BuildingBrick({
       viewBox="0 0 114 80"
       fill={fill}
       xmlns="http://www.w3.org/2000/svg"
+      aria-label={ariaLabel}
       {...props}
     >
       <path

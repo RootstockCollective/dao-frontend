@@ -13,7 +13,7 @@ import { BuilderNameCellProps } from './Cell/BuilderNameCell'
 import { RewardsCellProps } from './Cell/RewardsCell'
 import { TableColumnDropdownLabels } from './TableColumnDropdown/TableColumnDropdown'
 
-const COLUMN_IDS = [
+const _COLUMN_IDS = [
   'builder',
   'backing',
   'backer_rewards',
@@ -22,7 +22,7 @@ const COLUMN_IDS = [
   'backingShare',
   'actions',
 ] as const
-export type ColumnId = (typeof COLUMN_IDS)[number]
+export type ColumnId = (typeof _COLUMN_IDS)[number]
 
 export const PAGE_SIZE = 20
 
@@ -108,8 +108,8 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
   },
 ]
 
-const builderStates = [BUILDER_IN_PROGRESS, BUILDER_ACTIVE, ...builderInactiveStates] as const
-export type BuilderState = (typeof builderStates)[number]
+const _builderStates = [BUILDER_IN_PROGRESS, BUILDER_ACTIVE, ...builderInactiveStates] as const
+export type BuilderState = (typeof _builderStates)[number]
 
 // Typed table configuration for BuildersTable
 export type BuilderCellDataMap = {

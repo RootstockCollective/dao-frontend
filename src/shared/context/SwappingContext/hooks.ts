@@ -11,7 +11,6 @@ import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { Permit2Abi } from '@/lib/abis/Permit2Abi'
 import { QuoteResult } from './types'
 import { uniswapProvider, getSwapEncodedData } from '@/lib/swap/providers/uniswap'
-import { formatForDisplay } from '@/lib/utils'
 import { UniswapUniversalRouterAbi } from '@/lib/abis/UniswapUniversalRouterAbi'
 
 const QUOTE_DEBOUNCE_MS = 500
