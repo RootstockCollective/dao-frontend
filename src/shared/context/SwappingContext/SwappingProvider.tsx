@@ -16,7 +16,8 @@ import {
 } from './types'
 import { USDRIF, USDRIF_ADDRESS, USDT0, USDT0_ADDRESS, USDT0_USDRIF_POOL_ADDRESS } from '@/lib/constants'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
-import { Address } from 'viem'
+import { Address, Hex } from 'viem'
+import { PermitSingle } from '@/lib/swap/permit2'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 
 // Default pool fee - should be read from pool contract via fee() function when pool ABI is available
@@ -66,6 +67,9 @@ const initialState: SwapState = {
   isCheckingAllowance: false,
   isApproving: false,
   approvalTxHash: null,
+  permit: null,
+  permitSignature: null,
+  isSigning: false,
   poolAddress: USDT0_USDRIF_POOL_ADDRESS,
   poolFee: DEFAULT_POOL_FEE,
 }
@@ -151,6 +155,21 @@ const swapReducer = (state: SwapState, action: SwapAction): SwapState => {
       return {
         ...state,
         approvalTxHash: action.payload,
+      }
+    case SwapActionType.SET_PERMIT:
+      return {
+        ...state,
+        permit: action.payload,
+      }
+    case SwapActionType.SET_PERMIT_SIGNATURE:
+      return {
+        ...state,
+        permitSignature: action.payload,
+      }
+    case SwapActionType.SET_SIGNING:
+      return {
+        ...state,
+        isSigning: action.payload,
       }
     case SwapActionType.SET_POOL_ADDRESS:
       return {
@@ -292,7 +311,6 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
 
   const setSwapTxHash = useCallback((txHash: string | null) => {
     dispatch({ type: SwapActionType.SET_SWAP_TX_HASH, payload: txHash })
-    dispatch({ type: SwapActionType.SET_SWAPPING, payload: false })
   }, [])
 
   // Allowance state management functions - contract calls should be in hooks using useReadContract
@@ -312,11 +330,27 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
 
   const setApprovalTxHash = useCallback((txHash: string | null) => {
     dispatch({ type: SwapActionType.SET_APPROVAL_TX_HASH, payload: txHash })
-    dispatch({ type: SwapActionType.SET_APPROVING, payload: false })
+    // Note: Do NOT set isApproving to false here.
+    // The hash being set means TX is submitted, not confirmed.
+    // The caller (executeTxFlow callbacks) is responsible for resetting state.
   }, [])
 
   const setPoolFee = useCallback((fee: number) => {
     dispatch({ type: SwapActionType.SET_POOL_FEE, payload: fee })
+  }, [])
+
+  // Permit signing state management
+  const setPermit = useCallback((permit: PermitSingle | null) => {
+    dispatch({ type: SwapActionType.SET_PERMIT, payload: permit })
+  }, [])
+
+  const setPermitSignature = useCallback((signature: Hex | null) => {
+    dispatch({ type: SwapActionType.SET_PERMIT_SIGNATURE, payload: signature })
+    dispatch({ type: SwapActionType.SET_SIGNING, payload: false })
+  }, [])
+
+  const setSigning = useCallback((isSigning: boolean) => {
+    dispatch({ type: SwapActionType.SET_SIGNING, payload: isSigning })
   }, [])
 
   const value: SwappingContextValue = useMemo(
@@ -337,6 +371,9 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
       setAllowance,
       setApproving,
       setApprovalTxHash,
+      setPermit,
+      setPermitSignature,
+      setSigning,
       setSwapping,
       setSwapError,
       setSwapTxHash,
@@ -358,6 +395,9 @@ export const SwappingProvider: FC<SwappingProviderProps> = ({ children }) => {
       setAllowance,
       setApproving,
       setApprovalTxHash,
+      setPermit,
+      setPermitSignature,
+      setSigning,
       setSwapping,
       setSwapError,
       setSwapTxHash,

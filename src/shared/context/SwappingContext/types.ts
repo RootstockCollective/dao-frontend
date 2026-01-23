@@ -1,5 +1,6 @@
 import { USDRIF, USDT0 } from '@/lib/constants'
-import { Address } from 'viem'
+import { Address, Hex } from 'viem'
+import { PermitSingle } from '@/lib/swap/permit2'
 
 /**
  * Supported swap tokens
@@ -74,6 +75,11 @@ export interface SwapState {
   isApproving: boolean
   approvalTxHash: string | null
 
+  // Permit2 signing
+  permit: PermitSingle | null
+  permitSignature: Hex | null
+  isSigning: boolean
+
   // Pool data
   poolAddress: Address | null
   poolFee: number | null
@@ -96,6 +102,9 @@ export enum SwapActionType {
   SET_CHECKING_ALLOWANCE = 'SET_CHECKING_ALLOWANCE',
   SET_APPROVING = 'SET_APPROVING',
   SET_APPROVAL_TX_HASH = 'SET_APPROVAL_TX_HASH',
+  SET_PERMIT = 'SET_PERMIT',
+  SET_PERMIT_SIGNATURE = 'SET_PERMIT_SIGNATURE',
+  SET_SIGNING = 'SET_SIGNING',
   SET_POOL_ADDRESS = 'SET_POOL_ADDRESS',
   SET_POOL_FEE = 'SET_POOL_FEE',
   RESET_SWAP = 'RESET_SWAP',
@@ -118,6 +127,9 @@ export type SwapAction =
   | { type: SwapActionType.SET_CHECKING_ALLOWANCE; payload: boolean }
   | { type: SwapActionType.SET_APPROVING; payload: boolean }
   | { type: SwapActionType.SET_APPROVAL_TX_HASH; payload: string | null }
+  | { type: SwapActionType.SET_PERMIT; payload: PermitSingle | null }
+  | { type: SwapActionType.SET_PERMIT_SIGNATURE; payload: Hex | null }
+  | { type: SwapActionType.SET_SIGNING; payload: boolean }
   | { type: SwapActionType.SET_POOL_ADDRESS; payload: Address | null }
   | { type: SwapActionType.SET_POOL_FEE; payload: number | null }
   | { type: SwapActionType.RESET_SWAP }
@@ -166,4 +178,7 @@ export interface SwappingContextValue {
   setApproving: (isApproving: boolean) => void
   setApprovalTxHash: (txHash: string | null) => void
   setPoolFee: (fee: number) => void
+  setPermit: (permit: PermitSingle | null) => void
+  setPermitSignature: (signature: Hex | null) => void
+  setSigning: (isSigning: boolean) => void
 }

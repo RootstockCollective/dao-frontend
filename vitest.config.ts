@@ -93,9 +93,7 @@ export default defineConfig({
             NEXT_PUBLIC_BLOCKSCOUT_URL: 'https://rootstock.blockscout.com',
             // Token addresses (Rootstock mainnet - checksummed)
             // Verified from .env.mainnet and Uniswap V3 pool (https://oku.trade/uniswap/v3/pool/rootstock/0x134f5409cf7af4c68bf4a8f59c96cf4925f6bbb0)
-            // RIF and stRIF not needed for swap tests, but available if needed:
-            // NEXT_PUBLIC_RIF_ADDRESS: '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5',
-            // NEXT_PUBLIC_STRIF_ADDRESS: '0x5db91e24bd32059584bbdb831a901f1199f3d459',
+            NEXT_PUBLIC_RIF_ADDRESS: '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5',
             NEXT_PUBLIC_USDRIF_ADDRESS: '0x3a15461d8ae0f0fb5fa2629e9da7d66a794a6e37', // From .env.mainnet - required for swap tests
             NEXT_PUBLIC_USDT0_ADDRESS: '0x779Ded0c9e1022225f8E0630b35a9b54bE713736', // From Uniswap V3 pool token1 - required for swap tests
             // DEX Router addresses (Rootstock mainnet)
@@ -145,6 +143,7 @@ export default defineConfig({
             NEXT_PUBLIC_NODE_URL: process.env.FORK_RPC_URL || 'http://127.0.0.1:8545',
             NEXT_PUBLIC_BLOCKSCOUT_URL: 'https://rootstock.blockscout.com',
             // Token addresses (Rootstock mainnet - same as mainnet, available on fork)
+            NEXT_PUBLIC_RIF_ADDRESS: '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5',
             NEXT_PUBLIC_USDRIF_ADDRESS: '0x3a15461d8ae0f0fb5fa2629e9da7d66a794a6e37',
             NEXT_PUBLIC_USDT0_ADDRESS: '0x779Ded0c9e1022225f8E0630b35a9b54bE713736',
             // DEX Router addresses (Rootstock mainnet - available on fork)

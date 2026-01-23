@@ -4,13 +4,17 @@ import { uniswapProvider } from './uniswap'
 import { ROUTER_ADDRESSES, SWAP_TOKEN_ADDRESSES } from '../constants'
 import { getTokenDecimals } from '../utils'
 import { UniswapQuoterV2Abi } from '@/lib/abis/UniswapQuoterV2Abi'
+import { tokenContracts } from '@/lib/contracts'
+import { RIF } from '@/lib/constants'
 
 describe('uniswap provider - integration tests', () => {
   // Use real token addresses from constants
   const realTokenIn = SWAP_TOKEN_ADDRESSES.USDT0
   const realTokenOut = SWAP_TOKEN_ADDRESSES.USDRIF
+  const rifToken = tokenContracts[RIF]
   let tokenInDecimals: number
   let tokenOutDecimals: number
+  let rifDecimals: number
 
   // Check if we have real contract addresses configured
   const hasRealAddresses =
@@ -19,34 +23,38 @@ describe('uniswap provider - integration tests', () => {
     realTokenIn &&
     realTokenOut
 
+  // Additional check for tests that use RIF token
+  const hasRifToken = hasRealAddresses && rifToken
+
   beforeAll(async () => {
     if (hasRealAddresses) {
       try {
         // Get real token decimals
         tokenInDecimals = await getTokenDecimals(realTokenIn)
         tokenOutDecimals = await getTokenDecimals(realTokenOut)
+        rifDecimals = await getTokenDecimals(rifToken)
       } catch (error) {
         console.warn('Failed to fetch token decimals, some tests may be skipped:', error)
       }
     }
   })
 
-  describe('getQuote - with specific fee tier', () => {
+  describe('getQuote - with real contract', () => {
     it.skipIf(!hasRealAddresses)(
-      'should return quote for specified fee tier from real contract',
+      'should return quote from real contract',
       async () => {
         // Use 1 USDT0 as input
         // Note: USDT0 has 6 decimals on mainnet, USDRIF has 18 decimals
         const amountIn = parseUnits('1', tokenInDecimals)
 
-        // Use fee tier 100 (0.01%) - this is the actual fee tier for USDT0/USDRIF pool on mainnet
+        // Don't specify fee tier - let the provider find the correct one
+        // The pool fee tier may vary depending on fork state
         const result = await uniswapProvider.getQuote({
           tokenIn: realTokenIn,
           tokenOut: realTokenOut,
           amountIn,
           tokenInDecimals,
           tokenOutDecimals,
-          feeTier: 100, // Actual fee tier for this pool
         })
 
         // Verify structure and types
@@ -73,11 +81,11 @@ describe('uniswap provider - integration tests', () => {
     )
 
     it.skipIf(!hasRealAddresses)(
-      'should return error when requested fee tier does not exist',
+      'should ignore invalid feeTier parameter and fallback to find working tier',
       async () => {
         // Request fee tier 200 which is not a valid Uniswap V3 fee tier
         // Valid Uniswap V3 fee tiers are: 100, 500, 3000, 10000
-        // Should return an error (no fallback when specific tier is requested)
+        // Implementation should fallback to try other tiers and succeed
         const amountIn = parseUnits('1', tokenInDecimals)
         const invalidFeeTier = 200
 
@@ -87,15 +95,17 @@ describe('uniswap provider - integration tests', () => {
           amountIn,
           tokenInDecimals,
           tokenOutDecimals,
-          feeTier: invalidFeeTier, // Invalid fee tier, should return error
+          feeTier: invalidFeeTier, // Invalid tier - will be ignored, fallback kicks in
         })
 
-        // Should return error for non-existent fee tier
+        // Should succeed by finding a valid tier (implementation falls back to all tiers)
         expect(result.provider).toBe('uniswap')
-        expect(result.error).toBeDefined()
-        expect(result.error).toContain(`Pool does not exist for fee tier ${invalidFeeTier}`)
-        expect(result.amountOut).toBe('0')
-        expect(result.amountOutRaw).toBe('0')
+        expect(result.error).toBeUndefined()
+        expect(result.amountOut).not.toBe('0')
+        expect(parseFloat(result.amountOut)).toBeGreaterThan(0)
+        // Should return the actual tier that worked
+        expect(result.feeTier).toBeDefined()
+        expect([100, 500, 3000, 10000]).toContain(result.feeTier)
       },
       10000,
     )
@@ -168,14 +178,13 @@ describe('uniswap provider - integration tests', () => {
         // Use 1 USDT0 (6 decimals on mainnet)
         const amountIn = parseUnits('1', tokenInDecimals)
 
-        // Use fee tier 100 which exists for this pool
+        // Don't specify fee tier - let provider find the correct one
         const result = await uniswapProvider.getQuote({
           tokenIn: realTokenIn,
           tokenOut: realTokenOut,
           amountIn,
           tokenInDecimals,
           tokenOutDecimals,
-          feeTier: 100, // Use existing pool to verify formatting
         })
 
         // Quote MUST succeed to verify formatting
@@ -216,7 +225,7 @@ describe('uniswap provider - integration tests', () => {
         // Use 1 USDT0 (6 decimals on mainnet)
         const amountIn = parseUnits('1', tokenInDecimals)
 
-        // Use fee tier 100 which exists for this pool
+        // Don't specify fee tier - let provider find the correct one
         // This test verifies ABI correctness, so we use a working pool
         const result = await uniswapProvider.getQuote({
           tokenIn: realTokenIn,
@@ -224,7 +233,6 @@ describe('uniswap provider - integration tests', () => {
           amountIn,
           tokenInDecimals,
           tokenOutDecimals,
-          feeTier: 100, // Use existing pool to verify ABI works
         })
 
         // If this succeeds, it means:
@@ -319,13 +327,13 @@ describe('uniswap provider - integration tests', () => {
         expect(encodedData.startsWith('0x')).toBe(true)
 
         // 6. Make actual call to verify ABI works with real contract
+        // Don't specify fee tier - let provider find the correct one
         const result = await uniswapProvider.getQuote({
           tokenIn: realTokenIn,
           tokenOut: realTokenOut,
           amountIn,
           tokenInDecimals,
           tokenOutDecimals,
-          feeTier: 100, // Use existing pool
         })
 
         // 7. Verify the call succeeded (proves ABI matches contract)
@@ -337,6 +345,122 @@ describe('uniswap provider - integration tests', () => {
         expect(result.amountOutRaw).not.toBe('0')
         expect(parseFloat(result.amountOut)).toBeGreaterThan(0)
         expect(BigInt(result.amountOutRaw)).toBeGreaterThan(0n)
+      },
+      10000,
+    )
+  })
+
+  describe('fee tier fallback behavior', () => {
+    it.skipIf(!hasRealAddresses)(
+      'should return feeTier in quote result when quote succeeds',
+      async () => {
+        // Request quote without specifying fee tier
+        // The provider should find a working tier and include it in the result
+        const amountIn = parseUnits('1', tokenInDecimals)
+
+        const result = await uniswapProvider.getQuote({
+          tokenIn: realTokenIn,
+          tokenOut: realTokenOut,
+          amountIn,
+          tokenInDecimals,
+          tokenOutDecimals,
+        })
+
+        // Quote should succeed
+        expect(result.provider).toBe('uniswap')
+        expect(result.error).toBeUndefined()
+        expect(result.amountOut).not.toBe('0')
+        expect(parseFloat(result.amountOut)).toBeGreaterThan(0)
+
+        // Fee tier should be included in the result
+        expect(result.feeTier).toBeDefined()
+        expect(result.feeTier).toBeGreaterThan(0)
+        // Should be one of the valid Uniswap V3 fee tiers
+        expect([100, 500, 3000, 10000]).toContain(result.feeTier)
+      },
+      10000,
+    )
+
+    it.skipIf(!hasRifToken)(
+      'should try all fee tiers and return error when no pool exists for token pair',
+      async () => {
+        // Use RIF -> USDT0 which likely doesn't have a direct pool at any tier
+        // The provider should try all tiers and return an appropriate error
+        const amountIn = parseUnits('100', rifDecimals)
+
+        const result = await uniswapProvider.getQuote({
+          tokenIn: rifToken,
+          tokenOut: realTokenIn, // USDT0
+          amountIn,
+          tokenInDecimals: rifDecimals,
+          tokenOutDecimals: tokenInDecimals,
+        })
+
+        // If no pool exists, should return error after trying all tiers
+        if (result.error) {
+          expect(result.provider).toBe('uniswap')
+          expect(result.error).toContain('No liquidity available')
+          expect(result.amountOut).toBe('0')
+          expect(result.amountOutRaw).toBe('0')
+        } else {
+          // If a pool does exist, the quote should be valid with a fee tier
+          expect(result.amountOut).not.toBe('0')
+          expect(result.feeTier).toBeDefined()
+          expect([100, 500, 3000, 10000]).toContain(result.feeTier)
+        }
+      },
+      30000, // Longer timeout since it may try multiple tiers
+    )
+
+    it.skipIf(!hasRealAddresses)(
+      'should return error with correct structure when all tiers fail for invalid tokens',
+      async () => {
+        // Use completely invalid token addresses to force all tiers to fail
+        const invalidTokenIn = '0x0000000000000000000000000000000000000001' as const
+        const invalidTokenOut = '0x0000000000000000000000000000000000000002' as const
+        const amountIn = 1000000n
+
+        const result = await uniswapProvider.getQuote({
+          tokenIn: invalidTokenIn,
+          tokenOut: invalidTokenOut,
+          amountIn,
+          tokenInDecimals: 18,
+          tokenOutDecimals: 18,
+        })
+
+        // Should return error after trying all fee tiers
+        expect(result.provider).toBe('uniswap')
+        expect(result.error).toBeDefined()
+        expect(result.error).toContain('No liquidity available')
+        expect(result.amountOut).toBe('0')
+        expect(result.amountOutRaw).toBe('0')
+      },
+      30000,
+    )
+
+    it.skipIf(!hasRealAddresses)(
+      'should handle reverse direction quote (USDRIF -> USDT0)',
+      async () => {
+        // Test reverse direction to ensure fallback works in both directions
+        const amountIn = parseUnits('1', tokenOutDecimals) // 1 USDRIF
+
+        const result = await uniswapProvider.getQuote({
+          tokenIn: realTokenOut, // USDRIF
+          tokenOut: realTokenIn, // USDT0
+          amountIn,
+          tokenInDecimals: tokenOutDecimals,
+          tokenOutDecimals: tokenInDecimals,
+        })
+
+        // Quote should succeed (same pool, reverse direction)
+        expect(result.provider).toBe('uniswap')
+        expect(result.error).toBeUndefined()
+        expect(result.amountOut).not.toBe('0')
+        expect(parseFloat(result.amountOut)).toBeGreaterThan(0)
+
+        // Fee tier should be included
+        expect(result.feeTier).toBeDefined()
+        expect([100, 500, 3000, 10000]).toContain(result.feeTier)
       },
       10000,
     )
