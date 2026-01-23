@@ -1,4 +1,3 @@
-import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { useGetCycleRewards } from '@/app/collective-rewards/shared/hooks/useGetCycleRewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { FiatTooltipLabel } from '@/app/components'

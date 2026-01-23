@@ -1,4 +1,4 @@
-import { GaugeNotifyRewardEventLog, Token } from '@/app/collective-rewards/rewards'
+import { GaugeNotifyRewardEventLog } from '@/app/collective-rewards/rewards'
 import { Address, isAddressEqual } from 'viem'
 
 export const getNotifyRewardAmount = (
