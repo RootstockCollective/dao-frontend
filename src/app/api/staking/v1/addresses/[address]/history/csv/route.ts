@@ -35,7 +35,7 @@ const formatSymbolForCsv = (value: bigint | string, symbol: string): string => {
     minimumFractionDigits: displayDecimals,
     maximumFractionDigits: displayDecimals,
     roundingMode: 'floor',
-  }).format(amount.toString() as never)
+  }).format(Number(amount.toString()))
 }
 
 const formatCurrencyForCsv = (amount: bigint | string, price: number): string => {
@@ -44,7 +44,7 @@ const formatCurrencyForCsv = (amount: bigint | string, price: number): string =>
     style: 'decimal',
     minimumFractionDigits: 2,
     maximumFractionDigits: 8,
-  }).format(usdAmount.toString() as never)
+  }).format(Number(usdAmount.toString()))
 }
 
 const formatPeriod = (period: string): string => {
@@ -72,65 +72,11 @@ const escapeCsvValue = (value: string): string => {
   return value
 }
 
-// Fetch RIF price (STRIF uses the same price as RIF)
-// Follows the same pattern as fetchPrices in src/app/user/Balances/actions.ts
+// Fetch RIF price using the same method as the UI
 async function getRifPrice(): Promise<number> {
-  try {
-    const { tokenContracts } = await import('@/lib/contracts')
-    const { fetchPricesEndpoint } = await import('@/lib/endpoints')
-    const { isAddress } = await import('viem')
-    const rifAddress = tokenContracts[RIF]
-
-    if (!rifAddress || !isAddress(rifAddress)) {
-      console.error('RIF address not found in token contracts or invalid')
-      return 0
-    }
-
-    // Build the price API URL - fetchPricesEndpoint already includes chainId
-    const url = fetchPricesEndpoint.replace('{{addresses}}', rifAddress).replace('{{convert}}', 'USD')
-
-    // Use absolute URL if it's a relative path
-    const fullUrl = url.startsWith('http')
-      ? url
-      : `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}${url}`
-
-    const priceResponse = await fetch(fullUrl, {
-      next: { revalidate: 60 }, // Cache for 1 minute
-    })
-
-    if (!priceResponse.ok) {
-      const errorText = await priceResponse.text().catch(() => priceResponse.statusText)
-      console.error('Failed to fetch RIF price:', priceResponse.status, errorText)
-      return 0
-    }
-
-    const priceData = await priceResponse.json()
-
-    // Price API returns data keyed by address (as provided in the request)
-    // The response structure is: { [address]: { price: number, lastUpdated: string } }
-    const priceEntry = priceData[rifAddress]
-
-    if (!priceEntry) {
-      console.error('RIF price not found in API response. Available keys:', Object.keys(priceData))
-      console.error('Looking for address:', rifAddress)
-      return 0
-    }
-
-    // Price object has a 'price' property
-    const price = priceEntry?.price
-
-    if (!price || price === 0) {
-      console.error('RIF price is 0 or missing from API response:', { priceEntry, priceData })
-      return 0
-    }
-
-    // Price is returned as a number (USD per token)
-    // getFiatAmount expects price in USD format (it handles the wei conversion internally)
-    return Number(price)
-  } catch (error) {
-    console.error('Error fetching RIF price:', error)
-    return 0
-  }
+  const { fetchPrices } = await import('@/app/user/Balances/actions')
+  const prices = await fetchPrices()
+  return prices[RIF]?.price ?? 0
 }
 
 export async function GET(req: NextRequest, context: { params: Promise<{ address: string }> }) {
