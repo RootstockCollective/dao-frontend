@@ -67,6 +67,7 @@ export const TransactionHistoryDataRow: FC<TransactionHistoryDataRowProps> = ({ 
             <DateCell
               timestamp={detail.blockTimestamp}
               formatted={formatExpandedDate(detail.blockTimestamp)}
+              transactionHash={detail.transactionHash}
               isDetailRow
               isHovered={isHovered}
             />
