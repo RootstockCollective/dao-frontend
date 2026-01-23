@@ -4,7 +4,7 @@ import { Countdown } from '@/components/Countdown'
 import { Pagination } from '@/components/Pagination'
 import { Status } from '@/components/Status'
 import { GridTable } from '@/components/Table'
-import { Paragraph, Span } from '@/components/Typography'
+import { Paragraph } from '@/components/Typography'
 import Big from '@/lib/big'
 import {
   createColumnHelper,

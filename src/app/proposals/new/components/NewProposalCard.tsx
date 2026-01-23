@@ -1,6 +1,5 @@
 import Image from 'next/image'
 import { type NewProposalCardBaseData } from '../newProposalCards.data'
-import { DotsOverlayVert } from '../images/DotsOverlayVert'
 import { HTMLAttributes } from 'react'
 import { cn } from '@/lib/utils'
 import type { ProposalCategory } from '@/shared/types'
