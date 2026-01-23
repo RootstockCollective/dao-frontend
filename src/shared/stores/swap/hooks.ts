@@ -220,17 +220,14 @@ export const useTokenSelection = () => {
  */
 export const useTokenAllowance = () => {
   const { tokens } = useSwapTokens()
-  const { tokenIn, isApproving, startApproval, completeApproval, clearApproval } = useSwapStore(
+  const { tokenIn, setApprovalTxHash } = useSwapStore(
     useShallow(state => ({
       tokenIn: state.tokenIn,
-      isApproving: state.isApproving,
-      startApproval: state.startApproval,
-      completeApproval: state.completeApproval,
-      clearApproval: state.clearApproval,
+      setApprovalTxHash: state.setApprovalTxHash,
     })),
   )
   const { address } = useAccount()
-  const { writeContractAsync, isPending: isWritePending } = useWriteContract()
+  const { writeContractAsync, isPending: isApproving } = useWriteContract()
 
   // Read ERC-20 allowance to Permit2 contract
   const {
@@ -271,19 +268,16 @@ export const useTokenAllowance = () => {
         throw new Error(`Token address not found for ${tokenIn}`)
       }
 
-      startApproval()
-
       try {
         // Request ERC-20 approval to Permit2
         // Use max uint256 for unlimited approval (common pattern for Permit2)
         const MAX_UINT256 = BigInt(2) ** BigInt(256) - BigInt(1)
-        const approvalAmount = amount > MAX_UINT256 ? MAX_UINT256 : MAX_UINT256 // Always use max for convenience
 
         const txHash = await writeContractAsync({
           address: tokens[tokenIn].address,
           abi: RIFTokenAbi,
           functionName: 'approve',
-          args: [PERMIT2_ADDRESS, approvalAmount],
+          args: [PERMIT2_ADDRESS, MAX_UINT256],
         })
 
         if (!txHash) {
@@ -292,10 +286,10 @@ export const useTokenAllowance = () => {
           throw rejectionError
         }
 
-        completeApproval(txHash)
+        setApprovalTxHash(txHash)
         return txHash
       } catch (error) {
-        clearApproval()
+        setApprovalTxHash(null)
 
         // Check for wallet connection issues
         const errorMessage = error instanceof Error ? error.message : String(error)
@@ -309,14 +303,14 @@ export const useTokenAllowance = () => {
         throw error
       }
     },
-    [address, writeContractAsync, tokenIn, tokens, startApproval, completeApproval, clearApproval],
+    [address, writeContractAsync, tokenIn, tokens, setApprovalTxHash],
   )
 
   return {
     allowance: typeof allowance === 'bigint' ? allowance : null,
     isCheckingAllowance: isAllowanceLoading,
     isFetchingAllowance: isAllowanceFetching,
-    isApproving: isApproving || isWritePending,
+    isApproving,
     hasSufficientAllowance,
     approve,
     refetchAllowance,
@@ -332,31 +326,20 @@ export const useTokenAllowance = () => {
  */
 export const usePermitSigning = () => {
   const { tokens } = useSwapTokens()
-  const {
-    tokenIn,
-    mode,
-    typedAmount,
-    isSigning,
-    permit,
-    permitSignature,
-    startSigning,
-    setPermitData,
-    clearPermitData,
-  } = useSwapStore(
-    useShallow(state => ({
-      tokenIn: state.tokenIn,
-      mode: state.mode,
-      typedAmount: state.typedAmount,
-      isSigning: state.isSigning,
-      permit: state.permit,
-      permitSignature: state.permitSignature,
-      startSigning: state.startSigning,
-      setPermitData: state.setPermitData,
-      clearPermitData: state.clearPermitData,
-    })),
-  )
+  const { tokenIn, mode, typedAmount, permit, permitSignature, setPermitData, clearPermitData } =
+    useSwapStore(
+      useShallow(state => ({
+        tokenIn: state.tokenIn,
+        mode: state.mode,
+        typedAmount: state.typedAmount,
+        permit: state.permit,
+        permitSignature: state.permitSignature,
+        setPermitData: state.setPermitData,
+        clearPermitData: state.clearPermitData,
+      })),
+    )
   const { address, chainId } = useAccount()
-  const { signTypedDataAsync } = useSignTypedData()
+  const { signTypedDataAsync, isPending: isSigning } = useSignTypedData()
 
   // Get quote for exactOut mode
   const { quote } = useSwapInput()
@@ -382,8 +365,6 @@ export const usePermitSigning = () => {
     ) {
       throw new Error('Missing required parameters for permit signing')
     }
-
-    startSigning()
 
     try {
       const amountInBigInt = parseUnits(amountIn, tokens[tokenIn].decimals)
@@ -426,17 +407,7 @@ export const usePermitSigning = () => {
       clearPermitData()
       throw error
     }
-  }, [
-    address,
-    amountIn,
-    tokenIn,
-    tokens,
-    chainId,
-    signTypedDataAsync,
-    startSigning,
-    setPermitData,
-    clearPermitData,
-  ])
+  }, [address, amountIn, tokenIn, tokens, chainId, signTypedDataAsync, setPermitData, clearPermitData])
 
   return {
     signPermit,

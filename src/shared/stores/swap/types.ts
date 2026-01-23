@@ -48,14 +48,12 @@ export interface SwapState {
   swapError: Error | null
   swapTxHash: string | null
 
-  // ERC-20 approval state
-  isApproving: boolean
+  // ERC-20 approval state (isApproving comes from wagmi's isPending)
   approvalTxHash: string | null
 
-  // Permit2 signing state
+  // Permit2 signing state (isSigning comes from wagmi's isPending)
   permit: PermitSingle | null
   permitSignature: Hex | null
-  isSigning: boolean
 
   // Pool configuration
   poolAddress: Address | null
@@ -81,13 +79,10 @@ export interface SwapActions {
   failSwap: (error: Error) => void
   clearSwapError: () => void
 
-  // Approval lifecycle
-  startApproval: () => void
-  completeApproval: (txHash: string) => void
-  clearApproval: () => void
+  // Approval lifecycle (loading state from wagmi's isPending)
+  setApprovalTxHash: (txHash: string | null) => void
 
-  // Permit signing
-  startSigning: () => void
+  // Permit signing (loading state from wagmi's isPending)
   setPermitData: (permit: PermitSingle, signature: Hex) => void
   clearPermitData: () => void
 

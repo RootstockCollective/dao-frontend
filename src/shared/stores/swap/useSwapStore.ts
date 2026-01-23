@@ -22,14 +22,12 @@ const initialState: SwapState = {
   swapError: null,
   swapTxHash: null,
 
-  // Approval state
-  isApproving: false,
+  // Approval state (loading state comes from wagmi's isPending)
   approvalTxHash: null,
 
-  // Permit signing state
+  // Permit signing state (loading state comes from wagmi's isPending)
   permit: null,
   permitSignature: null,
-  isSigning: false,
 
   // Pool configuration
   poolAddress: USDT0_USDRIF_POOL_ADDRESS,
@@ -133,51 +131,21 @@ export const useSwapStore = create<SwapStore>()(
       clearSwapError: () => set({ swapError: null }, false, 'clearSwapError'),
 
       // ─────────────────────────────────────────────────────────────────────
-      // Approval Lifecycle
+      // Approval (loading state comes from wagmi's isPending)
       // ─────────────────────────────────────────────────────────────────────
 
-      startApproval: () =>
-        set(
-          {
-            isApproving: true,
-            approvalTxHash: null,
-          },
-          false,
-          'startApproval',
-        ),
-
-      completeApproval: (txHash: string) =>
-        set(
-          {
-            isApproving: false,
-            approvalTxHash: txHash,
-          },
-          false,
-          'completeApproval',
-        ),
-
-      clearApproval: () =>
-        set(
-          {
-            isApproving: false,
-            approvalTxHash: null,
-          },
-          false,
-          'clearApproval',
-        ),
+      setApprovalTxHash: (txHash: string | null) =>
+        set({ approvalTxHash: txHash }, false, 'setApprovalTxHash'),
 
       // ─────────────────────────────────────────────────────────────────────
-      // Permit Signing
+      // Permit Signing (loading state comes from wagmi's isPending)
       // ─────────────────────────────────────────────────────────────────────
-
-      startSigning: () => set({ isSigning: true }, false, 'startSigning'),
 
       setPermitData: (permit: PermitSingle, signature: Hex) =>
         set(
           {
             permit,
             permitSignature: signature,
-            isSigning: false,
           },
           false,
           'setPermitData',
@@ -188,7 +156,6 @@ export const useSwapStore = create<SwapStore>()(
           {
             permit: null,
             permitSignature: null,
-            isSigning: false,
           },
           false,
           'clearPermitData',
