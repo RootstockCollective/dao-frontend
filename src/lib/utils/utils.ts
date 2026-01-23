@@ -61,7 +61,7 @@ axiosInstance.interceptors.request.use(
         if (config.params) {
           // If chainId exists in both URL and params, remove it from params
           if (existingChainId && 'chainId' in config.params) {
-            const { chainId, ...otherParams } = config.params
+            const { chainId: _chainId, ...otherParams } = config.params
             config.params = otherParams
           }
         }

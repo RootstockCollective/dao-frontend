@@ -1,4 +1,4 @@
-import { Address, getAddress, isAddressEqual } from 'viem'
+import { Address, getAddress } from 'viem'
 import { COINBASE_ADDRESS, RBTC, RIF, STRIF, USDRIF } from './constants'
 import { tokenContracts } from './contracts'
 
