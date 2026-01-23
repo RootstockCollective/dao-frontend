@@ -1,7 +1,7 @@
 'use client'
 
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
-import { Builder, BuilderRewardsSummary } from '@/app/collective-rewards/types'
+import { BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { getCombinedFiatAmount } from '@/app/collective-rewards/utils/getCombinedFiatAmount'
 import { TablePager } from '@/components/TableNew'

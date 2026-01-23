@@ -30,7 +30,7 @@ export const BackingCell = ({
 
   return (
     <div
-      className={cn('flex justify-end gap-2', showUsd ? 'items-end' : 'items-center')}
+      className={cn('flex justify-end gap-2', showUsd ? 'items-end' : 'items-center', className)}
       data-testid="BackingCell"
     >
       <div className="flex flex-col items-end">
