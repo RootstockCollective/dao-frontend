@@ -1,14 +1,14 @@
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { getProposalsFromDB } from './getProposalsFromDB'
 import { getProposalsFromTheGraph } from './getProposalsFromTheGraph'
-import { getProposalsFromNode } from './getProposalsFromNode'
+import { getProposalsFromBlockscout } from './getProposalsFromBlockscout'
 
 /**
  * Fetches a single proposal by ID from available sources
  * Tries DB first, then GraphQL, then Node
  */
 export async function getProposalById(proposalId: string): Promise<ProposalApiResponse | null> {
-  const proposalsSources = [getProposalsFromDB, getProposalsFromTheGraph, getProposalsFromNode]
+  const proposalsSources = [getProposalsFromDB, getProposalsFromTheGraph, getProposalsFromBlockscout]
 
   for (const source of proposalsSources) {
     try {
