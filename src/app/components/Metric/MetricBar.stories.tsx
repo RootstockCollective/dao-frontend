@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from '@storybook/nextjs'
 import { RBTC, RIF, USDRIF } from '@/lib/constants'
 import { MetricBar } from './MetricBar'
 import { TokenSymbol } from './types'
+import Big from 'big.js'
 
 const meta = {
   title: 'Components/MetricBar/MetricBar',
@@ -20,17 +21,17 @@ const sampleTokens = [
   {
     symbol: RIF as TokenSymbol,
     value: '1250.34',
-    fiatValue: '1250.34',
+    fiatValue: Big(1250.34),
   },
   {
     symbol: RBTC as TokenSymbol,
     value: '0.042',
-    fiatValue: '4537.688',
+    fiatValue: Big(4537.688),
   },
   {
     symbol: USDRIF as TokenSymbol,
     value: '980.10',
-    fiatValue: '980.10',
+    fiatValue: Big(980.1),
   },
 ]
 

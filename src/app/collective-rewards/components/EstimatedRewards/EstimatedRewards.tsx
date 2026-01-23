@@ -41,7 +41,7 @@ export const EstimatedRewards = () => {
         price,
       })
 
-      acc.combinedRewardsFiat = acc.combinedRewardsFiat.add(Big(metricToken.fiatValue))
+      acc.combinedRewardsFiat = acc.combinedRewardsFiat.add(metricToken.fiatValue)
       acc.rewardPerToken.push(metricToken)
 
       return acc
