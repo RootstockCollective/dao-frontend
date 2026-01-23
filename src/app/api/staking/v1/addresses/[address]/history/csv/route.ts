@@ -140,81 +140,94 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
     // Create a readable stream for CSV
     const stream = new ReadableStream({
       async start(controller) {
-        const encoder = new TextEncoder()
+        try {
+          const encoder = new TextEncoder()
 
-        // Write CSV headers
-        const headers = [
-          'Period',
-          'Period (YYYY-MM)',
-          'Date',
-          'Action',
-          'Amount',
-          'Token',
-          'USD Value',
-          'Transaction Hash',
-          'Block Hash',
-        ]
-        controller.enqueue(encoder.encode(headers.map(escapeCsvValue).join(',') + '\n'))
+          // Write CSV headers
+          const headers = [
+            'Period',
+            'Period (YYYY-MM)',
+            'Date',
+            'Action',
+            'Amount',
+            'Token',
+            'USD Value',
+            'Transaction Hash',
+            'Block Hash',
+          ]
+          controller.enqueue(encoder.encode(headers.map(escapeCsvValue).join(',') + '\n'))
 
-        // Fetch all data in batches from database
-        const pageSize = 200
-        let offset = 0
-        let hasMoreData = true
+          // Fetch all data in batches from database
+          const pageSize = 200
+          let offset = 0
+          let hasMoreData = true
 
-        while (hasMoreData) {
-          const batch = await getStakingHistoryFromDB({
-            address,
-            limit: pageSize,
-            offset,
-            sort_field: parsed.sort_field,
-            sort_direction: parsed.sort_direction,
-            type: parsed.type,
-          })
+          while (hasMoreData) {
+            const batch = await getStakingHistoryFromDB({
+              address,
+              limit: pageSize,
+              offset,
+              sort_field: parsed.sort_field,
+              sort_direction: parsed.sort_direction,
+              type: parsed.type,
+            })
 
-          if (batch.length === 0) {
-            hasMoreData = false
-            break
-          }
-
-          // Process each item and expand transactions
-          for (const item of batch) {
-            for (const transaction of item.transactions) {
-              const periodFormatted = formatPeriod(item.period)
-              const date = formatDateForCsv(String(transaction.timestamp))
-              const amount = formatSymbolForCsv(transaction.amount, STRIF)
-              const usdValue = formatCurrencyForCsv(transaction.amount, rifPrice)
-              const action = transaction.action
-
-              const row = [
-                periodFormatted,
-                item.period,
-                date,
-                action,
-                amount,
-                STRIF,
-                usdValue,
-                transaction.transactionHash,
-                transaction.blockHash || transaction.blockNumber, // Fallback to blockNumber if blockHash is not available
-              ]
-
-              controller.enqueue(encoder.encode(row.map(escapeCsvValue).join(',') + '\n'))
-            }
-          }
-
-          // Check if we've fetched all data
-          if (batch.length < pageSize) {
-            hasMoreData = false
-          } else {
-            offset += pageSize
-            // Double-check by getting count
-            const totalCount = await getStakingHistoryCountFromDB(address, parsed.type)
-            if (offset >= totalCount) {
+            if (batch.length === 0) {
               hasMoreData = false
+              break
+            }
+
+            // Process each item and expand transactions
+            for (const item of batch) {
+              for (const transaction of item.transactions) {
+                const periodFormatted = formatPeriod(item.period)
+                const date = formatDateForCsv(String(transaction.timestamp))
+                const amount = formatSymbolForCsv(transaction.amount, STRIF)
+                const usdValue = formatCurrencyForCsv(transaction.amount, rifPrice)
+                const action = transaction.action
+
+                const row = [
+                  periodFormatted,
+                  item.period,
+                  date,
+                  action,
+                  amount,
+                  STRIF,
+                  usdValue,
+                  transaction.transactionHash,
+                  transaction.blockHash || transaction.blockNumber, // Fallback to blockNumber if blockHash is not available
+                ]
+
+                controller.enqueue(encoder.encode(row.map(escapeCsvValue).join(',') + '\n'))
+              }
+            }
+
+            // Check if we've fetched all data
+            if (batch.length < pageSize) {
+              hasMoreData = false
+            } else {
+              offset += pageSize
+              // Double-check by getting count
+              const totalCount = await getStakingHistoryCountFromDB(address, parsed.type)
+              if (offset >= totalCount) {
+                hasMoreData = false
+              }
             }
           }
-        }
 
-        controller.close()
+          controller.close()
+        } catch (streamError) {
+          console.error('Error in CSV stream:', streamError)
+          const errorMessage = streamError instanceof Error ? streamError.message : String(streamError)
+          const encoder = new TextEncoder()
+          // Try to send error as CSV row (though this might not work if stream already started)
+          try {
+            controller.enqueue(encoder.encode(`\nERROR: ${errorMessage}`))
+          } catch {
+            // If we can't enqueue, just close
+          }
+          controller.error(streamError)
+        }
       },
     })
 
@@ -230,7 +243,21 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
     if (err instanceof z.ZodError) {
       return Response.json({ error: 'Validation failed', details: err.flatten() }, { status: 400 })
     }
-    console.error(err)
-    return Response.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error in staking history CSV route:', err)
+
+    // Return detailed error information for debugging
+    const errorMessage = err instanceof Error ? err.message : String(err)
+    const errorStack = err instanceof Error ? err.stack : undefined
+    const errorName = err instanceof Error ? err.name : 'UnknownError'
+
+    return Response.json(
+      {
+        error: 'Internal server error',
+        message: errorMessage,
+        name: errorName,
+        ...(process.env.NODE_ENV === 'development' && { stack: errorStack }),
+      },
+      { status: 500 },
+    )
   }
 }
