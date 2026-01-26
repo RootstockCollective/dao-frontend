@@ -28,7 +28,7 @@ const query = apolloGQL`
         selfPaused
       }
     }
-    cycles(first: 1, orderBy: currentCycleStart, orderDirection: desc) {
+    cycles(orderBy: currentCycleStart, orderDirection: desc) {
       id
       rewardPerToken {
         amount
