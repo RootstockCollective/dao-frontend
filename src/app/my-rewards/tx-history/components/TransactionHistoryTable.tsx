@@ -1,29 +1,25 @@
 'use client'
 
-import { useGetTransactionHistory } from '../../hooks/useGetTransactionHistory'
+import { useGetTransactionHistory } from '../hooks/useGetTransactionHistory'
 import { useTableActionsContext, useTableContext, usePricesContext } from '@/shared/context'
-import { useEffect, useMemo, useState, useRef } from 'react'
+import { useEffect, useMemo, useState, useRef, useCallback } from 'react'
 import { useAccount } from 'wagmi'
-import {
-  ColumnId,
-  DEFAULT_HEADERS,
-  PAGE_SIZE,
-  TransactionHistoryCellDataMap,
-} from './TransactionHistoryTable.config'
-import { DesktopTransactionHistory } from './DesktopTransactionHistory'
-import { convertDataToRowData } from './convertDataToRowData'
+import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE, TransactionHistoryCellDataMap } from '../config'
+import { DesktopTransactionHistory } from './desktop'
+import { MobileTransactionHistory } from './mobile'
+import { convertDataToRowData } from '../utils/convertDataToRowData'
 import { useCycleContext } from '@/app/collective-rewards/metrics/context'
 import { TablePager } from '@/components/TableNew'
 import { Header } from '@/components/Typography'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
-import { TransactionHistoryFilterSideBar } from '../TransactionHistoryFilterSideBar'
+import { TransactionHistoryFilterSideBar } from './TransactionHistoryFilterSideBar'
 import { motion } from 'motion/react'
-import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { useModal } from '@/shared/hooks/useModal'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { ActiveFilter } from '@/components/FilterSideBar/types'
 import { FilterButton } from '@/app/proposals/components/filter/FilterButton'
-import { CsvButton } from '../CsvButton'
+import { CsvButton } from './CsvButton'
 
 const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
   cycle: 'cycleStart',
@@ -33,8 +29,9 @@ const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
 }
 
 /**
- * Table component for displaying transaction history.
- * Includes filter sidebar and table pager.
+ * Main component for displaying transaction history.
+ * Renders a table on desktop and an expandable list on mobile.
+ * Includes filter sidebar and pager.
  */
 export default function TransactionHistoryTable() {
   const isDesktop = useIsDesktop()
@@ -50,12 +47,22 @@ export default function TransactionHistoryTable() {
   const { address } = useAccount()
 
   // Filter sidebar state
-  const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false)
+  const {
+    isModalOpened: isFilterSidebarOpen,
+    openModal: openFilterSidebar,
+    closeModal: closeFilterSidebar,
+  } = useModal()
+
+  const setIsFilterSidebarOpen = useCallback(
+    (state: boolean) => (state ? openFilterSidebar() : closeFilterSidebar()),
+    [openFilterSidebar, closeFilterSidebar],
+  )
+
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([])
   const filterSidebarRef = useRef<HTMLDivElement>(null)
 
   // Only apply click outside on desktop - mobile uses Modal component
-  useClickOutside(filterSidebarRef, () => isDesktop && setIsFilterSidebarOpen(false))
+  useClickOutside(filterSidebarRef, () => isDesktop && closeFilterSidebar())
 
   // Map sort columnId to database field
   const sortBy = sort?.columnId ? COLUMN_TO_DB_FIELD[sort.columnId] : 'blockTimestamp'
@@ -136,7 +143,7 @@ export default function TransactionHistoryTable() {
   }, [error])
 
   return (
-    <div className="w-full flex flex-col gap-10">
+    <div className="w-full flex flex-col gap-8 md:gap-10">
       <div className="flex items-center justify-between">
         <Header variant="h3" className="m-0" data-testid="events-list-header">
           EVENTS LIST
@@ -161,7 +168,7 @@ export default function TransactionHistoryTable() {
         </div>
       </div>
 
-      <div className={cn('flex flex-row-reverse')}>
+      <div className="flex flex-row-reverse">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: isFilterSidebarOpen ? 264 : 0 }}
@@ -171,14 +178,14 @@ export default function TransactionHistoryTable() {
           <div ref={filterSidebarRef} className="pl-2 h-full">
             <TransactionHistoryFilterSideBar
               isOpen={isFilterSidebarOpen}
-              onClose={() => setIsFilterSidebarOpen(false)}
+              onClose={closeFilterSidebar}
               activeFilters={activeFilters}
               onApply={handleApplyFilters}
             />
           </div>
         </motion.div>
         <div className="grow overflow-y-auto">
-          <DesktopTransactionHistory rows={rows} />
+          {isDesktop ? <DesktopTransactionHistory rows={rows} /> : <MobileTransactionHistory rows={rows} />}
         </div>
       </div>
 

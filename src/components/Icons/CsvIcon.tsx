@@ -8,10 +8,13 @@ export function CsvIcon({
   fill = color,
   ...props
 }: IconProps) {
+  const ratio = size / 18
+  const width = ratio * 18
+  const height = ratio * 14
   return (
     <svg
-      width={size}
-      height={size}
+      width={width}
+      height={height}
       viewBox="0 0 18 14"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
