@@ -24,7 +24,8 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   const { tokenInData, tokenOutData } = useTokenSelection()
   const { balances, prices } = useBalancesContext()
   const { execute: executeTxFlow, isExecuting: isApproving } = useExecuteTxFlow()
-  const { allowance, hasSufficientAllowance, approve, refetchAllowance, isCheckingAllowance } = useTokenAllowance()
+  const { allowance, hasSufficientAllowance, approve, refetchAllowance, isCheckingAllowance } =
+    useTokenAllowance()
   const inputRef = useRef<HTMLInputElement>(null)
   // Track which field the user is actively typing in (prevents loop from programmatic value updates)
   const activeFieldRef = useRef<'in' | 'out' | null>(null)
