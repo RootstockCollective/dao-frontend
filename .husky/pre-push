@@ -58,5 +58,5 @@ echo "pre-push: running unit tests"
 FORK_RPC_URL="$RPC_URL" npm run test
 
 echo "pre-push: running build"
-NEXT_PUBLIC_BUILD_ID="$(git rev-parse --short HEAD 2>/dev/null || echo local)" PROFILE=testnet.local npm run build
+NEXT_PUBLIC_BUILD_ID="$(git rev-parse --short HEAD 2>/dev/null || echo local)" PROFILE=dev npm run build
 
