@@ -6,7 +6,7 @@ export const revalidate = 60
 export async function GET() {
   try {
     const { contributors } = await fetchContributors()
-    const proposals = contributors.map(({ id, account, createdAt }: Contributor) => {
+    const mappedContributors = contributors.map(({ id, account, createdAt }: Contributor) => {
       return {
         id,
         delegatedVotes: account.delegatedVotes,
@@ -15,9 +15,10 @@ export async function GET() {
         createdAt,
       }
     })
-    return Response.json(proposals)
+    return Response.json(mappedContributors)
   } catch (error) {
     console.error(error)
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return Response.json({ error: `Cannot fetch contributors: ${message}` }, { status: 500 })
   }
-  return Response.json({ error: 'Can not fetch contributors' }, { status: 500 })
 }
