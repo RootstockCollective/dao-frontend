@@ -1,0 +1,23 @@
+# Release Candidate Mainnet environment
+image:
+  repository: 886436934082.dkr.ecr.us-east-1.amazonaws.com/rscoll-dev-dao-rc-mainnet
+  tag: 639c6872f43776d4befd5ddd8fd39825e99d6b39
+
+namespace: dao-frontend-rc-mainnet
+
+ingress:
+  enabled: true
+  className: alb
+  certificateArn: "arn:aws:acm:us-east-1:886436934082:certificate/aa176147-46df-47b0-9856-84ee57b4fa5d"
+  hosts:
+    - host: release-candidate-eks.app.rootstockcollective.xyz
+      paths:
+        - path: /
+          pathType: Prefix
+  annotations: {}
+
+externalSecrets:
+  parameterPaths:
+    theGraphApiKey: /rscoll-dev/rc-mainnet/the-graph-api-key
+    dbConnectionString: /rscoll-dev/dao-rc-mainnet/database-uri
+    daoGraphApiKey: /rscoll-dev/rc-mainnet/dao-graph-api-key
