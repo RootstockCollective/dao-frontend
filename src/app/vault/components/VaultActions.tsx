@@ -23,10 +23,11 @@ import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBa
  * Features:
  * - Deposit button: Opens DepositModal when wallet is connected, or prompts wallet connection
  * - Withdraw button: Opens WithdrawModal when wallet is connected, or prompts wallet connection
+ * - Swap button: Opens SwappingFlow when wallet is connected, or prompts wallet connection
  * - Wallet connection handling:
  *   - On mobile: Directly triggers wallet connection flow
  *   - On desktop: Shows a popover with wallet connection options
- * - Manages modal state for both deposit and withdraw operations
+ * - Manages modal state for deposit, withdraw, and swap operations
  *
  * @returns Deposit and withdraw buttons with associated modals and connection popovers
  */
@@ -51,8 +52,10 @@ export const VaultActions = () => {
 
   const [depositPopoverOpen, setDepositPopoverOpen] = useState(false)
   const [withdrawPopoverOpen, setWithdrawPopoverOpen] = useState(false)
+  const [swapPopoverOpen, setSwapPopoverOpen] = useState(false)
   const depositButtonRef = useRef<HTMLButtonElement>(null)
   const withdrawButtonRef = useRef<HTMLButtonElement>(null)
+  const swapButtonRef = useRef<HTMLButtonElement>(null)
 
   const handleDepositClick = () => {
     if (!isConnected) {
@@ -77,6 +80,18 @@ export const VaultActions = () => {
       return
     }
     withdrawModal.openModal()
+  }
+
+  const handleSwapClick = () => {
+    if (!isConnected) {
+      if (!isDesktop) {
+        onConnectWalletButtonClick()
+        return
+      }
+      setSwapPopoverOpen(true)
+      return
+    }
+    swapModal.openModal()
   }
 
   return (
@@ -133,10 +148,26 @@ export const VaultActions = () => {
           <MoneyIconKoto />
         </Button>
 
+        <NewPopover
+          open={swapPopoverOpen}
+          onOpenChange={setSwapPopoverOpen}
+          anchorRef={swapButtonRef}
+          className="bg-text-80 rounded-[4px] border border-text-80 p-6 shadow-lg w-72"
+          contentClassName="flex flex-col items-start bg-transparent h-full"
+          content={
+            <>
+              <Span className="mb-4 text-left text-bg-100">Connect your wallet to swap tokens.</Span>
+              <ConnectWorkflow
+                ConnectComponent={props => <ConnectButtonComponent {...props} textClassName="text-bg-100" />}
+              />
+            </>
+          }
+        />
         <Button
           variant="secondary-outline"
-          onClick={swapModal.openModal}
+          onClick={handleSwapClick}
           data-testid="vault-swap-button"
+          ref={swapButtonRef}
           className="md:max-w-28 md:max-h-13"
         >
           <Span variant="body-s">{'USDT0 -> USDRIF'}</Span>
