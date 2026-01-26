@@ -3,10 +3,10 @@ import { fetchContributors } from '@/app/delegate/actions/delegateAction'
 
 export const revalidate = 60
 
-function truncateApiKey(key: string | undefined): string {
-  if (!key) return '<not set>'
-  if (key.length <= 8) return '<too short>'
-  return `${key.slice(0, 4)}...${key.slice(-4)}`
+function getApiKeyStatus(key: string | undefined): string {
+  if (!key) return 'API key is not set'
+  if (key.length <= 8) return 'API key appears too short'
+  return ''
 }
 
 export async function GET() {
@@ -25,7 +25,14 @@ export async function GET() {
   } catch (error) {
     console.error(error)
     const message = error instanceof Error ? error.message : 'Unknown error'
-    const debugInfo = `[url: ${process.env.DAO_GRAPH_URL}, key: ${truncateApiKey(process.env.DAO_GRAPH_API_KEY)}, id: ${process.env.DAO_GRAPH_ID}]`
-    return Response.json({ error: `Cannot fetch contributors: ${message} ${debugInfo}` }, { status: 500 })
+    const keyStatus = getApiKeyStatus(process.env.DAO_GRAPH_API_KEY)
+    const debugInfo = `url: ${process.env.DAO_GRAPH_URL}, id: ${process.env.DAO_GRAPH_ID}${keyStatus ? `, ${keyStatus}` : ''}`
+    return Response.json(
+      { error: `Cannot fetch contributors: ${message}` },
+      {
+        status: 500,
+        headers: { 'X-Debug-Info': debugInfo },
+      },
+    )
   }
 }
