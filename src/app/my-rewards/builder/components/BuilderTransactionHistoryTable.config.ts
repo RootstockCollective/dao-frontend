@@ -5,11 +5,11 @@ export {
   SORT_LABELS,
   COLUMN_TRANSFORMS,
   DEFAULT_HEADERS,
-} from '@/app/my-rewards/tx-history/components/Table/TransactionHistoryTable.config'
+} from '@/app/my-rewards/tx-history/config'
 
 export type {
   ColumnId,
   GroupedTransactionDetail,
   TransactionHistoryCellDataMap,
   TransactionHistoryTable,
-} from '@/app/my-rewards/tx-history/components/Table/TransactionHistoryTable.config'
+} from '@/app/my-rewards/tx-history/config'

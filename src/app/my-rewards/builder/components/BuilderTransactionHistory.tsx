@@ -9,7 +9,7 @@ import {
   PAGE_SIZE,
   TransactionHistoryCellDataMap,
 } from './BuilderTransactionHistoryTable.config'
-import { DesktopTransactionHistory } from '@/app/my-rewards/tx-history/components/Table/DesktopTransactionHistory'
+import { DesktopTransactionHistory } from '@/app/my-rewards/tx-history/components/desktop'
 import { convertBuilderDataToRowData } from '../utils/convertBuilderDataToRowData'
 import { useCycleContext } from '@/app/collective-rewards/metrics/context'
 import { TablePager } from '@/components/TableNew'
@@ -25,7 +25,6 @@ import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { ActiveFilter } from '@/components/FilterSideBar/types'
 import { FilterButton } from '@/app/proposals/components/filter/FilterButton'
-import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 
 const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
