@@ -1,6 +1,6 @@
 'use client'
 
-import { useGetTransactionHistory } from '../hooks/useGetTransactionHistory'
+import { useGetBackerTransactionHistory } from '../hooks/useGetTransactionHistory'
 import { useTableActionsContext, useTableContext, usePricesContext } from '@/shared/context'
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useAccount } from 'wagmi'
@@ -71,7 +71,7 @@ export const TransactionHistoryTable = () => {
     }
   }, [activeFilters])
 
-  const { data, isLoading, error, count } = useGetTransactionHistory({
+  const { data, isLoading, error, count } = useGetBackerTransactionHistory({
     page: 1,
     pageSize: pageEnd,
     sortBy: sortBy,
