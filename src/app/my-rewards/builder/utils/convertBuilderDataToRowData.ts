@@ -64,6 +64,7 @@ export const convertBuilderDataToRowData = (
           date: {
             timestamp: item.blockTimestamp,
             formatted: dateRange,
+            transactionHash: item.transactionHash,
           },
           from_to: {
             builder,
@@ -119,6 +120,7 @@ export const convertBuilderDataToRowData = (
           date: {
             timestamp: firstItem.blockTimestamp,
             formatted: dateRange,
+            transactionHash,
           },
           from_to: {
             builder,
