@@ -1,0 +1,62 @@
+#!/usr/bin/env sh
+set -e
+
+RPC_URL="${FORK_RPC_URL:-http://127.0.0.1:8545}"
+ANVIL_FORK_URL="${ANVIL_FORK_URL:-https://public-node.rsk.co}"
+ANVIL_CHAIN_ID="${ANVIL_CHAIN_ID:-31337}"
+
+check_rpc() {
+  curl -sf -X POST "$RPC_URL" \
+    -H "Content-Type: application/json" \
+    -d '{"jsonrpc":"2.0","method":"eth_chainId","params":[],"id":1}' >/dev/null 2>&1
+}
+
+NEED_START=0
+ANVIL_PID=""
+
+cleanup() {
+  if [ "${NEED_START:-0}" -eq 1 ] && [ -n "${ANVIL_PID:-}" ]; then
+    kill "$ANVIL_PID" 2>/dev/null || true
+  fi
+}
+trap cleanup EXIT INT TERM
+
+if check_rpc; then
+  echo "pre-push: using existing Anvil at $RPC_URL"
+else
+  if ! command -v anvil >/dev/null 2>&1; then
+    echo "pre-push: 'anvil' not found (Foundry)."
+    echo "pre-push: install Foundry or start Anvil manually, then retry."
+    echo "pre-push: expected RPC at $RPC_URL"
+    exit 1
+  fi
+
+  echo "pre-push: starting Anvil fork..."
+  anvil --fork-url "$ANVIL_FORK_URL" --chain-id "$ANVIL_CHAIN_ID" > /tmp/anvil-prepush.log 2>&1 &
+  ANVIL_PID="$!"
+  NEED_START=1
+
+  timeout=30
+  counter=0
+  while [ $counter -lt $timeout ]; do
+    if check_rpc; then
+      echo "pre-push: Anvil is ready"
+      break
+    fi
+    sleep 1
+    counter=$((counter + 1))
+  done
+
+  if [ $counter -eq $timeout ]; then
+    echo "pre-push: Anvil failed to start within ${timeout}s"
+    echo "pre-push: log: /tmp/anvil-prepush.log"
+    exit 1
+  fi
+fi
+
+echo "pre-push: running unit tests"
+FORK_RPC_URL="$RPC_URL" npm run test
+
+echo "pre-push: running build"
+NEXT_PUBLIC_BUILD_ID="$(git rev-parse --short HEAD 2>/dev/null || echo local)" PROFILE=testnet.local npm run build
+
