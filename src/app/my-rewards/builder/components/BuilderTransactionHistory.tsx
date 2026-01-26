@@ -1,6 +1,6 @@
 'use client'
 
-import { useGetBuilderTransactionHistory } from '../hooks/useGetBuilderTransactionHistory'
+import { useGetBuilderTransactionHistory } from '@/app/my-rewards/tx-history/hooks/useGetTransactionHistory'
 import { useTableActionsContext, useTableContext, usePricesContext } from '@/shared/context'
 import { useEffect, useMemo, useState, useRef } from 'react'
 import {
