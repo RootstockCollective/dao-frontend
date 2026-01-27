@@ -10,10 +10,7 @@ import { useCycleContext } from '@/app/collective-rewards/metrics/context'
 import { TablePager } from '@/components/TableNew'
 import { Header } from '@/components/Typography'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
-import {
-  BuilderTransactionHistoryFilterSideBar,
-  CLAIM_FILTER_OPTION,
-} from './BuilderTransactionHistoryFilterSideBar'
+import { BuilderTransactionHistoryFilterSideBar } from './BuilderTransactionHistoryFilterSideBar'
 import { motion } from 'motion/react'
 import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
@@ -52,11 +49,9 @@ export const BuilderTransactionHistory = () => {
   // Get builder info
   const builder = useMemo(() => getBuilderByAddress(builderAddress), [getBuilderByAddress, builderAddress])
 
-  // Filter sidebar state - initialize with Claim filter always checked
+  // Filter sidebar state
   const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false)
-  const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([
-    { groupId: 'type', option: CLAIM_FILTER_OPTION },
-  ])
+  const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([])
   const filterSidebarRef = useRef<HTMLDivElement>(null)
 
   // Only apply click outside on desktop - mobile uses Modal component
