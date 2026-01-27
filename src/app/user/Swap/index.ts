@@ -1,8 +1,2 @@
 export { SwappingFlow } from './SwappingFlow'
-export type {
-  SwappingToken,
-  SwapStepProps,
-  ButtonAction,
-  SecondaryButtonAction,
-  ButtonActions,
-} from './types'
+export type { SwapStepProps, ButtonAction, SecondaryButtonAction, ButtonActions } from './types'

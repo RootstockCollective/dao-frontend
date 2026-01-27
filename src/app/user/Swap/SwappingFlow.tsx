@@ -10,7 +10,7 @@ import { Divider } from '@/components/Divider'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { cn } from '@/lib/utils'
 import { ButtonActions } from './types'
-import { SwappingProvider } from '@/shared/context/SwappingContext/SwappingProvider'
+import { useSwapStore } from '@/shared/stores/swap'
 
 interface Props {
   onCloseModal: () => void
@@ -29,6 +29,7 @@ const DEFAULT_BUTTON_ACTIONS: ButtonActions = {
 export const SwappingFlow = ({ onCloseModal }: Props) => {
   const isDesktop = useIsDesktop()
   const [buttonActions, setButtonActions] = useState<ButtonActions>(DEFAULT_BUTTON_ACTIONS)
+  const resetSwapStore = useSwapStore(state => state.reset)
 
   const { step, ...stepFunctions } = useSteps(swapStepConfig.length)
 
@@ -36,42 +37,46 @@ export const SwappingFlow = ({ onCloseModal }: Props) => {
     setButtonActions(actions)
   }, [])
 
+  // Reset store state when modal closes
+  const handleCloseModal = useCallback(() => {
+    resetSwapStore()
+    onCloseModal()
+  }, [resetSwapStore, onCloseModal])
+
   const stepConfigItem = useMemo(() => swapStepConfig[step], [step])
   const StepComponent = useMemo(() => stepConfigItem.component, [stepConfigItem.component])
 
   const { progress, description } = stepConfigItem
 
   return (
-    <SwappingProvider>
-      <Modal onClose={onCloseModal} fullscreen={!isDesktop}>
-        <div className={cn('h-full flex flex-col', !isDesktop ? 'p-4' : 'p-6')}>
-          <Header className="mt-16 mb-4">SWAP</Header>
+    <Modal onClose={handleCloseModal} fullscreen={!isDesktop}>
+      <div className={cn('h-full flex flex-col', !isDesktop ? 'p-4' : 'p-6')}>
+        <Header className="mt-16 mb-4">SWAP</Header>
 
-          <div className="mb-12">
-            <SwapSteps currentStep={step} />
-            <ProgressBar progress={progress} className="mt-3" />
-          </div>
-
-          {description && (
-            <Paragraph variant="body" className="mb-8">
-              {description}
-            </Paragraph>
-          )}
-
-          {/* Content area */}
-          <StepComponent
-            {...stepFunctions}
-            onCloseModal={onCloseModal}
-            setButtonActions={handleSetButtonActions}
-          />
-
-          {/* Footer with buttons */}
-          <div className="mt-8">
-            <Divider />
-            <StepActionButtons buttonActions={buttonActions} />
-          </div>
+        <div className="mb-12">
+          <SwapSteps currentStep={step} />
+          <ProgressBar progress={progress} className="mt-3" />
         </div>
-      </Modal>
-    </SwappingProvider>
+
+        {description && (
+          <Paragraph variant="body" className="mb-8">
+            {description}
+          </Paragraph>
+        )}
+
+        {/* Content area */}
+        <StepComponent
+          {...stepFunctions}
+          onCloseModal={handleCloseModal}
+          setButtonActions={handleSetButtonActions}
+        />
+
+        {/* Footer with buttons */}
+        <div className="mt-8">
+          <Divider />
+          <StepActionButtons buttonActions={buttonActions} />
+        </div>
+      </div>
+    </Modal>
   )
 }

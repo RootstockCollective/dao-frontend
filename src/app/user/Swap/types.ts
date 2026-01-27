@@ -1,12 +1,3 @@
-import { Address } from 'viem'
-
-export interface SwappingToken {
-  balance: string
-  symbol: string
-  price: string | undefined
-  contract: Address
-}
-
 export interface SwapStepProps {
   onGoNext: () => void
   onGoBack: () => void
@@ -34,27 +25,4 @@ export interface SecondaryButtonAction {
 export interface ButtonActions {
   primary: ButtonAction
   secondary?: SecondaryButtonAction
-}
-
-// Expected interface for SwappingContext (to be confirmed when SwappingProvider is merged)
-export interface SwappingContextValue {
-  amount: string
-  onAmountChange: (amount: string) => void
-  tokenToSend: SwappingToken
-  tokenToReceive: SwappingToken
-  amountOut: string // Calculated amount out from swap
-  swapPreviewFrom: {
-    amount: string
-    amountConvertedToCurrency: string
-    balance: string
-    tokenSymbol: string
-  }
-  swapPreviewTo: {
-    amount: string
-    amountConvertedToCurrency: string
-    balance: string
-    tokenSymbol: string
-  }
-  buttonActions: ButtonActions
-  setButtonActions: (actions: ButtonActions) => void
 }
