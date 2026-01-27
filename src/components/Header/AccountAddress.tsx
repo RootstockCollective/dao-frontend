@@ -38,10 +38,10 @@ export const AccountAddress = ({ address, shortAddress, onLogoutClick, withCopy 
         <div className="rounded-full bg-white">{address && <Jdenticon size="24" value={address} />}</div>
         {withCopy ? (
           <CopyButton copyText={address ?? ''} icon={null}>
-            <span className="underline underline-offset-1">{shortAddress}</span>
+            <span className="underline underline-offset-1 whitespace-nowrap">{shortAddress}</span>
           </CopyButton>
         ) : (
-          <span className="underline underline-offset-1 select-none">{shortAddress}</span>
+          <span className="underline underline-offset-1 select-none whitespace-nowrap">{shortAddress}</span>
         )}
         <BuilderStatus address={address as Address} />
         <div className="bg-bg-60 p-1 rounded">
