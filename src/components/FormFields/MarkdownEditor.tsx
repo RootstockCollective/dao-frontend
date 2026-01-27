@@ -102,8 +102,8 @@ function EditorContent({
   const shouldFloat = isFocused || hasValue
 
   return (
-    <ErrorMessage errorMsg={error} dataTestId={dataTestId ? `${dataTestId}Error` : undefined}>
-      <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2">
+      <ErrorMessage errorMsg={error} dataTestId={dataTestId ? `${dataTestId}Error` : undefined}>
         <div className="relative" data-color-mode="dark">
           {/* Floating Label */}
           <motion.label
@@ -146,15 +146,14 @@ function EditorContent({
             />
           </div>
         </div>
-
-        {/* Character Count */}
-        {maxLength && (
-          <span className="text-xs text-text-60 text-right">
-            {value?.length || 0} / {maxLength}
-          </span>
-        )}
-      </div>
-    </ErrorMessage>
+      </ErrorMessage>
+      {/* Character Count */}
+      {!error && maxLength && (
+        <span className="text-xs text-text-60 text-right">
+          {value?.length || 0} / {maxLength}
+        </span>
+      )}
+    </div>
   )
 }
 
