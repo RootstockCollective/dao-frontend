@@ -18,6 +18,10 @@ const UNISWAP_FEE_TIERS: readonly number[] = [3000, 500, 10000, 100]
  */
 const DEFAULT_FEE_TIER = 100
 
+function isValidUniswapFeeTier(fee: number): boolean {
+  return UNISWAP_FEE_TIERS.includes(fee)
+}
+
 /**
  * Type predicate to validate and narrow the quote result type
  * Result should be: [amountOut: bigint, sqrtPriceX96After: bigint, initializedTicksCrossed: number, gasEstimate: bigint]
@@ -209,7 +213,7 @@ async function getBestExactOutputFromAllTiers(
 /**
  * Get a quote from Uniswap
  * Strategy:
- * - If feeTier is specified: use ONLY that tier (no fallback)
+ * - If a valid feeTier is specified: try that tier first, then fallback to all tiers
  * - Otherwise: try default tier first, fallback to all tiers
  *
  * Note: Fee tiers are different Uniswap V3 pools (0.01%, 0.05%, 0.3%, 1% fees).
@@ -218,17 +222,23 @@ async function getBestExactOutputFromAllTiers(
 async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
   const providerName = SWAP_PROVIDERS.UNISWAP
 
-  // If specific fee tier is requested, only try that tier (no fallback)
-  if (params.feeTier !== undefined) {
+  // If a specific, valid fee tier is requested, try it first, then fallback
+  if (params.feeTier !== undefined && isValidUniswapFeeTier(params.feeTier)) {
     const quote = await tryGetQuoteWithTier(params, params.feeTier, providerName)
     if (quote) {
       return quote
     }
+
+    const bestQuote = await getBestQuoteFromAllTiers(params, providerName)
+    if (bestQuote) {
+      return bestQuote
+    }
+
     return {
       provider: providerName,
       amountOut: '0',
       amountOutRaw: '0',
-      error: `Pool does not exist for fee tier ${params.feeTier}`,
+      error: 'No liquidity available. All pool fee tiers failed to provide a quote.',
     }
   }
 
@@ -256,23 +266,29 @@ async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
 /**
  * Get an exact output quote from Uniswap
  * Strategy:
- * - If feeTier is specified: use ONLY that tier (no fallback)
+ * - If a valid feeTier is specified: try that tier first, then fallback to all tiers
  * - Otherwise: try default tier first, fallback to all tiers
  */
 async function getUniswapExactOutputQuote(params: QuoteExactOutputParams): Promise<SwapQuote> {
   const providerName = SWAP_PROVIDERS.UNISWAP
 
-  // If specific fee tier is requested, only try that tier (no fallback)
-  if (params.feeTier !== undefined) {
+  // If a specific, valid fee tier is requested, try it first, then fallback
+  if (params.feeTier !== undefined && isValidUniswapFeeTier(params.feeTier)) {
     const quote = await tryGetExactOutputWithTier(params, params.feeTier, providerName)
     if (quote) {
       return quote
     }
+
+    const bestQuote = await getBestExactOutputFromAllTiers(params, providerName)
+    if (bestQuote) {
+      return bestQuote
+    }
+
     return {
       provider: providerName,
       amountOut: '0',
       amountOutRaw: '0',
-      error: `Pool does not exist for fee tier ${params.feeTier}`,
+      error: 'No liquidity available. All pool fee tiers failed to provide a quote.',
     }
   }
 

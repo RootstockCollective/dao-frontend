@@ -1,0 +1,9 @@
+#!/usr/bin/env sh
+set -e
+
+echo "pre-push: running unit tests"
+npm run test
+
+echo "pre-push: running build"
+NEXT_PUBLIC_BUILD_ID="$(git rev-parse --short HEAD 2>/dev/null || echo local)" PROFILE=dev npm run build
+

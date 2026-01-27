@@ -2,6 +2,7 @@
   "name": "dao-frontend",
   "version": "1.16.0",
   "scripts": {
+    "prepare": "husky",
     "dev": "next dev --turbo",
     "dev:fork": "PROFILE=fork next dev --turbo",
     "dev:webpack": "next dev",
@@ -109,6 +110,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-storybook": "^9.1.1",
     "http-proxy-middleware": "^3.0.5",
+    "husky": "9.1.7",
     "jsdom": "^26.1.0",
     "mock-knex": "^0.4.13",
     "pino-pretty": "^13.1.2",
