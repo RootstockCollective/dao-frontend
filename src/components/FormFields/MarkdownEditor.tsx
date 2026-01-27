@@ -72,6 +72,7 @@ interface EditorContentProps extends Omit<MarkdownEditorProps<FieldValues>, 'con
   id: string
   value: string
   onChange: (val: string) => void
+  onBlur: () => void
   error?: string
 }
 
@@ -80,6 +81,7 @@ function EditorContent({
   label,
   value,
   onChange,
+  onBlur,
   error,
   maxLength,
   minHeight = 150,
@@ -134,7 +136,10 @@ function EditorContent({
               textareaProps={{
                 id, // For label association
                 onFocus: () => setIsFocused(true),
-                onBlur: () => setIsFocused(false),
+                onBlur: () => {
+                  setIsFocused(false)
+                  onBlur()
+                },
                 maxLength,
                 ...({ 'data-testid': dataTestId } as Record<string, unknown>),
               }}
@@ -160,8 +165,15 @@ export function MarkdownEditor<T extends FieldValues>({ name, control, ...props 
     <Controller
       control={control}
       name={name}
-      render={({ field: { onChange, value }, fieldState: { error } }) => (
-        <EditorContent id={id} value={value || ''} onChange={onChange} error={error?.message} {...props} />
+      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+        <EditorContent
+          id={id}
+          value={value || ''}
+          onChange={onChange}
+          onBlur={onBlur}
+          error={error?.message}
+          {...props}
+        />
       )}
     />
   )
