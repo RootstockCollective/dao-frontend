@@ -1,13 +1,34 @@
 'use client'
 
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
+import { useIsBuilder } from '@/app/user/my-holdings/hooks/useIsBuilder'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header } from '@/components/Typography'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { useAccount } from 'wagmi'
 import { Section } from '../../components/Section'
 import BuilderTransactionHistoryContainer from './components/BuilderTransactionHistoryContainer'
 
 const NAME = 'Builder Claiming History'
 
 export const BuilderTransactionHistoryPage = () => {
+  const { isConnected } = useAccount()
+  const { isUserBuilder, isLoading } = useIsBuilder()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!isConnected) {
+      router.push('/')
+    } else if (!isLoading && !isUserBuilder) {
+      router.push('/my-rewards/tx-history/backer')
+    }
+  }, [isConnected, isLoading, isUserBuilder, router])
+
+  if (isLoading) {
+    return <LoadingSpinner size="large" />
+  }
+
   return (
     <CycleContextProvider>
       <div
