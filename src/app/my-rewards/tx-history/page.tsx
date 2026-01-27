@@ -1,7 +1,5 @@
-'use client'
+import { redirect } from 'next/navigation'
 
-import { TransactionHistoryPage } from './TransactionHistoryPage'
-
-export default function TransactionHistory() {
-  return <TransactionHistoryPage />
+export default function TxHistoryRedirect() {
+  redirect('/my-rewards/tx-history/backer')
 }

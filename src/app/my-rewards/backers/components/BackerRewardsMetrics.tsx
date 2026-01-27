@@ -78,7 +78,7 @@ export const BackerRewardsMetrics = ({ backer }: { backer: Address }) => {
                   <Button
                     variant="transparent"
                     className="font-medium px-0 gap-1 text-sm font-rootstock-sans"
-                    onClick={() => router.push(`/my-rewards/tx-history`)}
+                    onClick={() => router.push(`/my-rewards/tx-history/backer`)}
                   >
                     <HistoryIcon className="size-5" />
                     See Rewards History
