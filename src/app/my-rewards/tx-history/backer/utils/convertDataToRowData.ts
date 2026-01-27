@@ -1,5 +1,5 @@
 import { TransactionHistoryItem } from '../../utils/types'
-import { GroupedTransactionDetail, TransactionHistoryTable } from './TransactionHistoryTable.config'
+import { GroupedTransactionDetail, TransactionHistoryTable } from '../../config'
 import { Duration } from 'luxon'
 import { GetPricesResult } from '@/app/user/types'
 import { tokenContracts } from '@/lib/contracts'

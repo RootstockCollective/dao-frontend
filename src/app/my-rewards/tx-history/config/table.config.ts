@@ -1,6 +1,7 @@
+import { Builder } from '@/app/collective-rewards/types'
 import { Column, TypedTable } from '@/shared/context'
 import { Address } from 'viem'
-import { Builder } from '@/app/collective-rewards/types'
+import { TransactionHistoryType } from '../utils/types'
 
 const COLUMN_IDS = ['cycle', 'date', 'from_to', 'type', 'amount', 'total_amount'] as const
 export type ColumnId = (typeof COLUMN_IDS)[number]
@@ -58,13 +59,19 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
   },
 ]
 
-export type GroupedTransactionDetail = {
+export interface TransactionAmount {
+  address: Address
+  value: string
+  symbol: string
+}
+
+export interface GroupedTransactionDetail {
   id: string
   builder?: Builder
-  builderAddress?: string
+  builderAddress?: Address
   blockTimestamp: string
   transactionHash: string
-  amounts: Array<{ address: string; value: string; symbol: string }>
+  amounts: TransactionAmount[]
   usdValue: string | string[]
   increased?: boolean
 }
@@ -74,15 +81,15 @@ export type TransactionHistoryCellDataMap = {
   date: { timestamp: string; formatted: string; transactionHash: string }
   from_to: {
     builder?: Builder
-    builderAddress?: string
-    type: 'Claim' | 'Back'
+    builderAddress?: Address
+    type: TransactionHistoryType
     isGrouped?: boolean
     groupedDetails?: GroupedTransactionDetail[]
   }
-  type: { type: 'Claim' | 'Back'; increased?: boolean }
+  type: { type: TransactionHistoryType; increased?: boolean }
   amount: {
-    amounts: Array<{ address: Address; value: string; symbol: string }>
-    type: 'Claim' | 'Back'
+    amounts: TransactionAmount[]
+    type: TransactionHistoryType
     increased?: boolean
   }
   total_amount: { usd: string | string[] }

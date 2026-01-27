@@ -21,7 +21,8 @@ const breadcrumbsMap = {
   '/proposals/new/review/grants': 'Review Grant Proposal',
   '/proposals/new/review/activation': 'Review Activation Proposal',
   '/proposals/new/review/deactivation': 'Review Deactivation Proposal',
-  '/my-rewards/tx-history': 'Transactions History',
+  '/my-rewards/tx-history/backer': 'Transaction History',
+  '/my-rewards/tx-history/builder': 'Claiming History',
   '/staking-history': 'Staking History',
   // community URLs
   ...Object.fromEntries(
