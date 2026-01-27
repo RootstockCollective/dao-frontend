@@ -5,7 +5,7 @@ import { FilterSideBar } from '@/components/FilterSideBar'
 import { FilterGroup, ActiveFilter } from '@/components/FilterSideBar/types'
 import { TokenImage } from '@/components/TokenImage'
 import { TOKENS } from '@/lib/tokens'
-import { useGetBackedBuilders } from '../hooks/useGetBackedBuilders'
+import { useGetBackedBuilders } from '../../hooks/useGetBackedBuilders'
 import { useAccount } from 'wagmi'
 
 interface Props {

@@ -29,9 +29,7 @@ const EMPTY_DATA = [] as TransactionHistoryItem[]
  * Hook to fetch transaction history for backers.
  * Uses the role=backer parameter to get claims where backer IS NOT NULL.
  */
-export const useGetBackerTransactionHistory = (
-  params?: Omit<UseGetTransactionHistoryParams, 'role' | 'type' | 'builder'>,
-) => {
+export const useGetBackerTransactionHistory = (params?: Omit<UseGetTransactionHistoryParams, 'role'>) => {
   return useGetTransactionHistory({ ...params, role: 'backer' })
 }
 

@@ -2,11 +2,11 @@
 
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { Header } from '@/components/Typography'
-import { Section } from '../components/Section'
+import { Section } from '../../components/Section'
 import TransactionHistoryTableContainer from './components/TransactionHistoryTableContainer'
 
 const NAME = 'Transactions History'
-export const TransactionHistoryPage = () => {
+export const BackerTransactionHistoryPage = () => {
   return (
     <CycleContextProvider>
       <div

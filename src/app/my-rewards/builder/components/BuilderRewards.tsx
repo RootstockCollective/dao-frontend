@@ -75,7 +75,7 @@ export const BuilderRewards = ({ address, gauge }: { address: Address; gauge: Ad
               <Button
                 variant="transparent"
                 className="font-medium px-0 gap-1 text-sm font-rootstock-sans"
-                onClick={() => router.push('/my-rewards/builder-tx-history')}
+                onClick={() => router.push('/my-rewards/tx-history/builder')}
               >
                 <HistoryIcon className="size-5" />
                 See Claiming History
@@ -100,7 +100,7 @@ export const BuilderRewards = ({ address, gauge }: { address: Address; gauge: Ad
                 <Button
                   variant="transparent"
                   className="font-medium px-0 gap-1 text-sm font-rootstock-sans"
-                  onClick={() => router.push('/my-rewards/builder-tx-history')}
+                  onClick={() => router.push('/my-rewards/tx-history/builder')}
                 >
                   <HistoryIcon className="size-5" />
                   See Claiming History

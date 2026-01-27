@@ -1,6 +1,6 @@
 import { withTableContext } from '@/shared/context'
 import { ReactElement } from 'react'
-import { TransactionHistoryCellDataMap, ColumnId } from './BuilderTransactionHistoryTable.config'
+import { TransactionHistoryCellDataMap, ColumnId } from '../../config'
 import { BuilderTransactionHistory } from './BuilderTransactionHistory'
 
 const BuilderTransactionHistoryContainer = (): ReactElement => {

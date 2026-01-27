@@ -2,8 +2,8 @@
 
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { Header } from '@/components/Typography'
-import { Section } from '../components/Section'
-import BuilderTransactionHistoryContainer from '../builder/components/BuilderTransactionHistoryContainer'
+import { Section } from '../../components/Section'
+import BuilderTransactionHistoryContainer from './components/BuilderTransactionHistoryContainer'
 
 const NAME = 'Builder Claiming History'
 

@@ -1,5 +1,5 @@
-import { TransactionHistoryItem } from '@/app/my-rewards/tx-history/utils/types'
-import { TransactionHistoryTable } from '../components/BuilderTransactionHistoryTable.config'
+import { TransactionHistoryItem } from '../../utils/types'
+import { TransactionHistoryTable } from '../../config'
 import { Duration } from 'luxon'
 import { GetPricesResult } from '@/app/user/types'
 import { TOKENS_BY_ADDRESS } from '@/lib/tokens'
@@ -8,7 +8,7 @@ import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { Address, getAddress } from 'viem'
 import { formatCurrency } from '@/lib/utils'
 import { Builder } from '@/app/collective-rewards/types'
-import { calculateCycleNumber, formatDateRange } from '@/app/my-rewards/tx-history/utils/utils'
+import { calculateCycleNumber, formatDateRange } from '../../utils/utils'
 
 /**
  * Converts builder transaction history data to row data format.

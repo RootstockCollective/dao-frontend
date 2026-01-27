@@ -1,48 +1,39 @@
 'use client'
 
-import { useGetBuilderTransactionHistory } from '@/app/my-rewards/tx-history/hooks/useGetTransactionHistory'
+import { useGetBackerTransactionHistory } from '../../hooks/useGetTransactionHistory'
 import { useTableActionsContext, useTableContext, usePricesContext } from '@/shared/context'
 import { useEffect, useMemo, useState, useRef } from 'react'
-import {
-  ColumnId,
-  DEFAULT_HEADERS,
-  PAGE_SIZE,
-  TransactionHistoryCellDataMap,
-} from './BuilderTransactionHistoryTable.config'
-import { DesktopTransactionHistory } from '@/app/my-rewards/tx-history/components/desktop'
-import { convertBuilderDataToRowData } from '../utils/convertBuilderDataToRowData'
+import { useAccount } from 'wagmi'
+import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE, TransactionHistoryCellDataMap } from '../../config'
+import { DesktopTransactionHistory } from '../../components/desktop'
+import { MobileTransactionHistory } from '../../components/mobile'
+import { convertDataToRowData } from '../utils/convertDataToRowData'
 import { useCycleContext } from '@/app/collective-rewards/metrics/context'
 import { TablePager } from '@/components/TableNew'
 import { Header } from '@/components/Typography'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
-import {
-  BuilderTransactionHistoryFilterSideBar,
-  CLAIM_FILTER_OPTION,
-} from './BuilderTransactionHistoryFilterSideBar'
+import { TransactionHistoryFilterSideBar } from './TransactionHistoryFilterSideBar'
 import { motion } from 'motion/react'
-import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
+import { useScrollLock } from '@/shared/hooks/useScrollLock'
 import { ActiveFilter } from '@/components/FilterSideBar/types'
 import { FilterButton } from '@/app/proposals/components/filter/FilterButton'
-import { useAccount } from 'wagmi'
+import { CsvButton } from '../../components/CsvButton'
 
 const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
   cycle: 'cycleStart',
   date: 'blockTimestamp',
   type: 'type',
-  total_amount: 'blockTimestamp',
+  total_amount: 'totalAmount',
 }
 
 /**
- * Transaction history table component for builders.
- * Displays claimed rewards where backer IS NULL (builder's own claims).
- * Includes filter sidebar for reward token filtering and table pagination.
+ * Main component for displaying transaction history.
+ * Renders a table on desktop and an expandable list on mobile.
+ * Includes filter sidebar and pager.
  */
-export const BuilderTransactionHistory = () => {
-  const { address } = useAccount()
-  const builderAddress = address!
-
+export const TransactionHistoryTable = () => {
   const isDesktop = useIsDesktop()
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
   const [pagerKey, setPagerKey] = useState(0)
@@ -53,16 +44,14 @@ export const BuilderTransactionHistory = () => {
     data: { cycleDuration },
   } = useCycleContext()
   const { getBuilderByAddress } = useBuilderContext()
+  const { address } = useAccount()
 
-  // Get builder info
-  const builder = useMemo(() => getBuilderByAddress(builderAddress), [getBuilderByAddress, builderAddress])
-
-  // Filter sidebar state - initialize with Claim filter always checked
   const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false)
-  const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([
-    { groupId: 'type', option: CLAIM_FILTER_OPTION },
-  ])
+  const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([])
   const filterSidebarRef = useRef<HTMLDivElement>(null)
+
+  // Only lock scroll on mobile when filter modal is open
+  useScrollLock(isFilterSidebarOpen && !isDesktop)
 
   // Only apply click outside on desktop - mobile uses Modal component
   useClickOutside(filterSidebarRef, () => isDesktop && setIsFilterSidebarOpen(false))
@@ -76,21 +65,25 @@ export const BuilderTransactionHistory = () => {
     const filter = (groupId: string) =>
       activeFilters.filter(f => f.groupId === groupId).map(f => f.option.value)
     return {
+      type: filter('type'),
+      builder: filter('builder'),
       rewardToken: filter('claim-token'),
     }
   }, [activeFilters])
 
-  const { data, isLoading, error, count } = useGetBuilderTransactionHistory({
+  const { data, isLoading, error, count } = useGetBackerTransactionHistory({
     page: 1,
     pageSize: pageEnd,
-    sortBy,
-    sortDirection,
+    sortBy: sortBy,
+    sortDirection: sortDirection,
+    type: apiFilters.type,
+    builder: apiFilters.builder,
     rewardToken: apiFilters.rewardToken,
   })
 
   const rowData = useMemo(() => {
-    return convertBuilderDataToRowData(data, cycleDuration, prices, builder)
-  }, [data, cycleDuration, prices, builder])
+    return convertDataToRowData(data, cycleDuration, prices, getBuilderByAddress)
+  }, [data, cycleDuration, prices, getBuilderByAddress])
 
   const handleApplyFilters = (filters: ActiveFilter[]) => {
     setActiveFilters(filters)
@@ -142,12 +135,23 @@ export const BuilderTransactionHistory = () => {
   }, [error])
 
   return (
-    <div className="w-full flex flex-col gap-10">
+    <div className="w-full flex flex-col gap-8 md:gap-10">
       <div className="flex items-center justify-between">
-        <Header variant="h3" className="m-0" data-testid="builder-events-list-header">
+        <Header variant="h3" className="m-0" data-testid="events-list-header">
           EVENTS LIST
         </Header>
         <div className="flex items-center gap-3">
+          <CsvButton
+            address={address}
+            type={apiFilters.type}
+            builder={apiFilters.builder}
+            rewardToken={apiFilters.rewardToken}
+            sortBy={sortBy}
+            sortDirection={sortDirection}
+            cycleDuration={cycleDuration}
+            prices={prices}
+            getBuilderByAddress={getBuilderByAddress}
+          />
           <FilterButton
             isOpen={isFilterSidebarOpen}
             setIsOpen={setIsFilterSidebarOpen}
@@ -156,7 +160,7 @@ export const BuilderTransactionHistory = () => {
         </div>
       </div>
 
-      <div className={cn('flex flex-row-reverse')}>
+      <div className="flex flex-row-reverse">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: isFilterSidebarOpen ? 264 : 0 }}
@@ -164,7 +168,7 @@ export const BuilderTransactionHistory = () => {
         >
           {/* container for useClickOutside ref */}
           <div ref={filterSidebarRef} className="pl-2 h-full">
-            <BuilderTransactionHistoryFilterSideBar
+            <TransactionHistoryFilterSideBar
               isOpen={isFilterSidebarOpen}
               onClose={() => setIsFilterSidebarOpen(false)}
               activeFilters={activeFilters}
@@ -173,7 +177,7 @@ export const BuilderTransactionHistory = () => {
           </div>
         </motion.div>
         <div className="grow overflow-y-auto">
-          <DesktopTransactionHistory rows={rows} />
+          {isDesktop ? <DesktopTransactionHistory rows={rows} /> : <MobileTransactionHistory rows={rows} />}
         </div>
       </div>
 

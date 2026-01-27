@@ -3,15 +3,11 @@ import { cn } from '@/lib/utils'
 import { showToast } from '@/shared/notification'
 import { HTMLAttributes, useState } from 'react'
 import { Address, getAddress } from 'viem'
-import { TransactionHistoryItem } from '@/app/my-rewards/tx-history/utils/types'
+import { TransactionHistoryItem } from '../utils/types'
 import { Duration } from 'luxon'
 import { GetPricesResult } from '@/app/user/types'
 import { Builder } from '@/app/collective-rewards/types'
-import {
-  calculateCycleNumber,
-  formatDateForCsv,
-  processTransactionAmount,
-} from '@/app/my-rewards/tx-history/utils/utils'
+import { calculateCycleNumber, formatDateForCsv, processTransactionAmount } from '../utils/utils'
 import { TOKENS } from '@/lib/tokens'
 
 const MAX_EXPORT_ROWS = 50000
