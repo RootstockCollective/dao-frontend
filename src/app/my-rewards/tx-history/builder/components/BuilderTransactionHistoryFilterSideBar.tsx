@@ -13,24 +13,13 @@ interface Props {
   onApply: (filters: ActiveFilter[]) => void
 }
 
-// Claim filter option - exported for use in default filters
-export const CLAIM_FILTER_OPTION = { label: 'Claim', value: 'Claim' }
-
 /**
  * Filter sidebar for builder transaction history
- * Includes type filter (Claim only, always checked) and reward token filter
+ * Provides filter for reward token
  */
 export function BuilderTransactionHistoryFilterSideBar({ isOpen, onClose, activeFilters, onApply }: Props) {
   const filterGroups: FilterGroup[] = useMemo(
     () => [
-      {
-        id: 'type',
-        title: 'FILTER BY TYPE',
-        allLabel: 'All types',
-        allTestId: 'AllTypes',
-        isMultiSelect: false,
-        options: [CLAIM_FILTER_OPTION],
-      },
       {
         id: 'claim-token',
         title: 'FILTER BY REWARD TOKEN',
