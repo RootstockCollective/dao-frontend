@@ -2,7 +2,7 @@
 
 import { useGetTransactionHistory } from '../hooks/useGetTransactionHistory'
 import { useTableActionsContext, useTableContext, usePricesContext } from '@/shared/context'
-import { useEffect, useMemo, useState, useRef, useCallback } from 'react'
+import { useEffect, useMemo, useState, useRef } from 'react'
 import { useAccount } from 'wagmi'
 import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE, TransactionHistoryCellDataMap } from '../config'
 import { DesktopTransactionHistory } from './desktop'
@@ -15,8 +15,8 @@ import { useBuilderContext } from '@/app/collective-rewards/user/context/Builder
 import { TransactionHistoryFilterSideBar } from './TransactionHistoryFilterSideBar'
 import { motion } from 'motion/react'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { useModal } from '@/shared/hooks/useModal'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
+import { useScrollLock } from '@/shared/hooks/useScrollLock'
 import { ActiveFilter } from '@/components/FilterSideBar/types'
 import { FilterButton } from '@/app/proposals/components/filter/FilterButton'
 import { CsvButton } from './CsvButton'
@@ -46,23 +46,15 @@ export default function TransactionHistoryTable() {
   const { getBuilderByAddress } = useBuilderContext()
   const { address } = useAccount()
 
-  // Filter sidebar state
-  const {
-    isModalOpened: isFilterSidebarOpen,
-    openModal: openFilterSidebar,
-    closeModal: closeFilterSidebar,
-  } = useModal()
-
-  const setIsFilterSidebarOpen = useCallback(
-    (state: boolean) => (state ? openFilterSidebar() : closeFilterSidebar()),
-    [openFilterSidebar, closeFilterSidebar],
-  )
-
+  const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false)
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([])
   const filterSidebarRef = useRef<HTMLDivElement>(null)
 
+  // Only lock scroll on mobile when filter modal is open
+  useScrollLock(isFilterSidebarOpen && !isDesktop)
+
   // Only apply click outside on desktop - mobile uses Modal component
-  useClickOutside(filterSidebarRef, () => isDesktop && closeFilterSidebar())
+  useClickOutside(filterSidebarRef, () => isDesktop && setIsFilterSidebarOpen(false))
 
   // Map sort columnId to database field
   const sortBy = sort?.columnId ? COLUMN_TO_DB_FIELD[sort.columnId] : 'blockTimestamp'
@@ -178,7 +170,7 @@ export default function TransactionHistoryTable() {
           <div ref={filterSidebarRef} className="pl-2 h-full">
             <TransactionHistoryFilterSideBar
               isOpen={isFilterSidebarOpen}
-              onClose={closeFilterSidebar}
+              onClose={() => setIsFilterSidebarOpen(false)}
               activeFilters={activeFilters}
               onApply={handleApplyFilters}
             />
