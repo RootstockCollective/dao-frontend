@@ -1,13 +1,12 @@
 'use client'
 
-import { FC } from 'react'
 import { Expandable, ExpandableContent, ExpandableHeader } from '@/components/Expandable'
 import { SmallLineSeparator } from '@/components/Separators/SmallLineSeparator'
 import { Paragraph } from '@/components/Typography'
 import { Row } from '@/shared/context/TableContext/types'
 import { ColumnId, TransactionHistoryCellDataMap } from '../../config'
 import { MobileAmountCell, MobileFromToCell, MobileTotalAmountCell, MobileTypeCell } from './MobileCells'
-import { MobileShowDetails } from './MobileGroupedDetails'
+import { MobileGroupedDetails } from './MobileGroupedDetails'
 
 export type TransactionRow = Row<ColumnId, Row['id'], TransactionHistoryCellDataMap>
 
@@ -15,7 +14,7 @@ interface MobileRowProps {
   row: TransactionRow
 }
 
-export const MobileRow: FC<MobileRowProps> = ({ row }) => {
+export const MobileRow = ({ row }: MobileRowProps) => {
   const { cycle, date, from_to, type, amount, total_amount } = row.data
 
   const isGrouped = from_to.isGrouped || false
@@ -43,7 +42,7 @@ export const MobileRow: FC<MobileRowProps> = ({ row }) => {
             <MobileAmountCell amounts={amount.amounts} type={type.type} increased={amount.increased} />
             <MobileTotalAmountCell usd={total_amount.usd} />
           </div>
-          {isGrouped && <MobileShowDetails row={row} />}
+          {isGrouped && <MobileGroupedDetails row={row} />}
         </div>
       </ExpandableContent>
     </Expandable>

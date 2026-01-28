@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, useState, Fragment } from 'react'
+import { useState, Fragment } from 'react'
 import { cn } from '@/lib/utils'
 import { TransactionHistoryTable } from '../../config'
 import { CycleCell, DateCell, FromToCell, TypeCell, AmountCell, TotalAmountCell } from './Cells'
@@ -10,7 +10,7 @@ interface DesktopDataRowProps {
   row: TransactionHistoryTable['Row']
 }
 
-export const DesktopDataRow: FC<DesktopDataRowProps> = ({ row, ...props }) => {
+export const DesktopDataRow = ({ row, ...props }: DesktopDataRowProps) => {
   const {
     data: { cycle, date, from_to, type, amount, total_amount },
   }: TransactionHistoryTable['Row'] = row

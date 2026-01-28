@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, useMemo } from 'react'
+import { useMemo } from 'react'
 import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
@@ -26,13 +26,13 @@ export interface UsdValueProps {
  * Shared component for displaying USD values.
  * Handles both single values and arrays of values.
  */
-export const UsdValue: FC<UsdValueProps> = ({
+export const UsdValue = ({
   usd,
   variant,
   isHovered = false,
   textVariant = 'body',
   className,
-}) => {
+}: UsdValueProps) => {
   const isDesktop = variant === 'desktop'
   const isMultipleUsd = Array.isArray(usd)
 

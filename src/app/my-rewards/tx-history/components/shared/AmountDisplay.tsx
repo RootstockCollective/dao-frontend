@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, useMemo } from 'react'
+import { useMemo } from 'react'
 import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
 import { ArrowDownIcon } from '@/components/Icons/ArrowDownIcon'
 import { TokenImage } from '@/components/TokenImage'
@@ -23,14 +23,14 @@ export interface AmountDisplayProps {
  * Shared component for displaying token amounts with optional arrow indicators.
  * Used in both desktop and mobile transaction history views.
  */
-export const AmountDisplay: FC<AmountDisplayProps> = ({
+export const AmountDisplay = ({
   amounts,
   type,
   increased,
   variant,
   isHovered = false,
   className,
-}) => {
+}: AmountDisplayProps) => {
   const isBack = type === 'Back'
   const showArrow = isBack && increased !== undefined
   const isDesktop = variant === 'desktop'

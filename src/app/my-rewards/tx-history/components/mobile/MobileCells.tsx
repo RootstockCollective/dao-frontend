@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 import { Label, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { Builder } from '@/app/collective-rewards/types'
@@ -15,7 +15,7 @@ interface MobileCellWrapperProps {
   className?: string
 }
 
-export const MobileCellWrapper: FC<MobileCellWrapperProps> = ({ label, children, className }) => {
+export const MobileCellWrapper = ({ label, children, className }: MobileCellWrapperProps) => {
   return (
     <div className={cn('flex flex-col gap-1 items-start', className)}>
       <Label variant="body-xs" className="text-v3-bg-accent-0">
@@ -32,7 +32,7 @@ interface MobileFromToCellProps {
   isGrouped?: boolean
 }
 
-export const MobileFromToCell: FC<MobileFromToCellProps> = ({ builder, builderAddress, isGrouped }) => {
+export const MobileFromToCell = ({ builder, builderAddress, isGrouped }: MobileFromToCellProps) => {
   if (isGrouped) {
     return (
       <MobileCellWrapper label="From/To">
@@ -52,7 +52,7 @@ interface MobileTypeCellProps {
   type: TransactionHistoryType
 }
 
-export const MobileTypeCell: FC<MobileTypeCellProps> = ({ type }) => {
+export const MobileTypeCell = ({ type }: MobileTypeCellProps) => {
   return (
     <MobileCellWrapper label="Type">
       <Paragraph>{type}</Paragraph>
@@ -66,7 +66,7 @@ interface MobileAmountCellProps {
   increased?: boolean
 }
 
-export const MobileAmountCell: FC<MobileAmountCellProps> = ({ amounts, type, increased }) => {
+export const MobileAmountCell = ({ amounts, type, increased }: MobileAmountCellProps) => {
   return (
     <MobileCellWrapper label="Amount">
       <AmountDisplay amounts={amounts} type={type} increased={increased} variant="mobile" />
@@ -78,7 +78,7 @@ interface MobileTotalAmountCellProps {
   usd: string | string[]
 }
 
-export const MobileTotalAmountCell: FC<MobileTotalAmountCellProps> = ({ usd }) => {
+export const MobileTotalAmountCell = ({ usd }: MobileTotalAmountCellProps) => {
   return (
     <MobileCellWrapper label="Total amount (USD)">
       <UsdValue usd={usd} variant="mobile" />
@@ -90,7 +90,7 @@ interface MobileDateCellProps {
   formatted: string
 }
 
-export const MobileDateCell: FC<MobileDateCellProps> = ({ formatted }) => {
+export const MobileDateCell = ({ formatted }: MobileDateCellProps) => {
   return (
     <MobileCellWrapper label="Date">
       <Paragraph variant="body-s">{formatted}</Paragraph>
