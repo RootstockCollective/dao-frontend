@@ -15,12 +15,14 @@ export const MobileTransactionHistory = ({ rows }: Props) => {
   return (
     <div className="w-full md:hidden">
       <Suspense fallback={<div>Loading data...</div>}>
-        <div className="py-4 gap-5">
-          <Label variant="body-xs" className="text-v3-bg-accent-0">
-            Total amount (USD)
-          </Label>
-          <Paragraph>{visibleTotalAmountUsd}</Paragraph>
-        </div>
+        {rows.length > 0 && (
+          <div className="py-4">
+            <Label variant="body-xs" className="text-v3-bg-accent-0">
+              Total amount (USD)
+            </Label>
+            <Paragraph>{visibleTotalAmountUsd}</Paragraph>
+          </div>
+        )}
         {rows.map(row => (
           <MobileRow key={row.id} row={row} />
         ))}

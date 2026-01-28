@@ -64,7 +64,7 @@ const MobileGroupedDetailItem = ({ detail, type }: MobileGroupedDetailItemProps)
     <div className="bg-v3-bg-accent-100 py-4 px-2">
       <div className="flex flex-col gap-4 items-stretch">
         <MobileCellWrapper label="From/To">
-          <BuilderAvatar builder={builder} builderAddress={builderAddress} variant="mobile" size={24} />
+          <BuilderAvatar builder={builder} builderAddress={builderAddress} variant="mobile" />
         </MobileCellWrapper>
 
         <div className="grid grid-cols-2 gap-x-1 items-start">
@@ -73,7 +73,7 @@ const MobileGroupedDetailItem = ({ detail, type }: MobileGroupedDetailItemProps)
           </MobileCellWrapper>
 
           <MobileCellWrapper label="Total (USD)">
-            <UsdValue usd={usdValue} variant="mobile" textVariant="body-s" />
+            <UsdValue usd={usdValue} variant="mobile" />
           </MobileCellWrapper>
         </div>
       </div>
