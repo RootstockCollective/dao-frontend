@@ -70,8 +70,15 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { message, signature, address } = body
 
-    // Validate required fields
-    if (!message || !signature || !address) {
+    // Validate required fields - ensure they are non-empty strings
+    if (
+      typeof message !== 'string' ||
+      message.trim().length === 0 ||
+      typeof signature !== 'string' ||
+      signature.trim().length === 0 ||
+      typeof address !== 'string' ||
+      address.trim().length === 0
+    ) {
       return NextResponse.json(
         { error: sanitizeError('Missing required fields: message, signature, and address are required') },
         { status: 400 },

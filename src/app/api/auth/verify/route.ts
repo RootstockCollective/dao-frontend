@@ -45,7 +45,11 @@ export async function POST(request: NextRequest) {
     if (contentType?.includes('application/json')) {
       try {
         const body = await request.json()
-        token = body.token ?? null
+        // Validate that token is a non-empty string if provided
+        const bodyToken = body.token
+        if (typeof bodyToken === 'string' && bodyToken.trim().length > 0) {
+          token = bodyToken
+        }
       } catch {
         // No body or invalid JSON
       }
@@ -55,7 +59,8 @@ export async function POST(request: NextRequest) {
       token = extractTokenFromRequest(request)
     }
 
-    if (!token) {
+    // Validate token is a non-empty string before proceeding
+    if (!token || typeof token !== 'string' || token.trim().length === 0) {
       return NextResponse.json(
         {
           valid: false,
