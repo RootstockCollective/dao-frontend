@@ -11,6 +11,7 @@ import { TOKENS } from '@/lib/tokens'
 
 export type CycleData = {
   id: string
+  currentCycleStart: number
   rewardPerToken: Record<string, string>
 }
 

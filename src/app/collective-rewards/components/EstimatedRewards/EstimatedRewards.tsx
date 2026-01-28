@@ -14,6 +14,7 @@ import { createMetricToken } from '@/app/components/Metric/utils'
 import { useGetLastCycleRewardsFromChain, useGetLastCycleRewardsWithStateSync } from '../../shared/hooks'
 import { withDataFallback } from '@/app/shared/components/Fallback'
 import { CycleData } from '../../shared/hooks/useGetABI'
+import { useCycleContext } from '../../metrics/context'
 
 const usePrimaryNormalized = () => {
   const { data, isLoading, error } = useGetLastCycleRewardsWithStateSync()
@@ -34,20 +35,29 @@ const EstimatedRewardsContent = ({
   isLoading: boolean
 }) => {
   const { prices } = usePricesContext()
+  const { data: cycle } = useCycleContext()
 
   if (isLoading) {
     return <LoadingSpinner />
   }
 
+  // Always show all REWARD_TOKEN_KEYS, set token value to 0 if not eligible to show rewards.
+  const lastCycle = lastCycleRewards[0]
+  const shouldDisplayRewards =
+    lastCycle && cycle?.cycleStart.toSeconds() <= Number(lastCycle.currentCycleStart)
+
   const { rewardPerToken, combinedRewardsFiat } = REWARD_TOKEN_KEYS.reduce(
     (acc, tokenKey) => {
       const { symbol, address } = TOKENS[tokenKey]
-      const amount = BigInt(lastCycleRewards[0]?.rewardPerToken?.[address.toLowerCase()] ?? '0')
+      let amount = '0'
+      if (shouldDisplayRewards && lastCycle?.rewardPerToken?.[address.toLowerCase()]) {
+        amount = lastCycle.rewardPerToken[address.toLowerCase()]
+      }
       const price = prices[symbol]?.price || 0
 
       const metricToken = createMetricToken({
         symbol,
-        value: amount,
+        value: BigInt(amount),
         price,
       })
 

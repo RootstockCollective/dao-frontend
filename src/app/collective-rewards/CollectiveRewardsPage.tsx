@@ -40,9 +40,9 @@ export const CollectiveRewardsPage = () => {
             <div className="flex flex-col md:flex-row gap-4 items-start justify-around">
               <CycleContextProvider>
                 <CycleMetrics />
+                <TotalBackingLoader />
+                <EstimatedRewards />
               </CycleContextProvider>
-              <TotalBackingLoader />
-              <EstimatedRewards />
             </div>
             <CollectiveRewardsChartContainer />
           </div>
