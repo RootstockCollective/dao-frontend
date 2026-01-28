@@ -8,7 +8,7 @@ import { parseEventLogs } from 'viem'
 export type RewardDistributionRewardsEventLog = ReturnType<
   typeof parseEventLogs<BackersManagerAbi, true, 'RewardDistributionRewards'>
 >
-
+type Log = RewardDistributionRewardsEventLog[number] & { timeStamp: number }
 export const useGetRewardDistributionRewardsLogs = () => {
   const { data, error, isLoading } = useQuery({
     queryFn: async () => {
@@ -18,7 +18,7 @@ export const useGetRewardDistributionRewardsLogs = () => {
         abi: getAbi('BackersManagerAbi'),
         logs: data,
         eventName: 'RewardDistributionRewards',
-      })
+      }) as Log[]
     },
     queryKey: ['RewardDistributionRewards', BackersManagerAddress],
     refetchInterval: AVERAGE_BLOCKTIME,
