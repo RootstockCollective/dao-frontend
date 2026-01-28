@@ -60,8 +60,8 @@ export const AmountDisplay: FC<AmountDisplayProps> = ({
   return (
     <div className={cn(containerClass, className)}>
       {amounts.map(({ value, symbol }, idx) => (
-        <div key={idx} className="flex items-center gap-1.5">
-          <div className={cn('flex items-center gap-0.5', valueColor)}>
+        <div key={idx} className="grid grid-cols-2 items-center gap-1.5">
+          <div className={cn('flex justify-end', valueColor)}>
             {showArrow && (
               <span className="flex items-center">
                 {increased ? (
