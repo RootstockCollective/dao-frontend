@@ -7,18 +7,7 @@ import { cn } from '@/lib/utils'
 export interface UsdValueProps {
   usd: string | string[]
   variant: 'desktop' | 'mobile'
-  /**
-   * Whether the row is currently hovered (desktop only)
-   */
-  isHovered?: boolean
-  /**
-   * Whether to show the "USD" suffix (mobile only, defaults to true)
-   */
-  showSuffix?: boolean
-  /**
-   * Text variant for the Paragraph component
-   */
-  textVariant?: 'body' | 'body-s'
+  isHovered?: boolean // desktop only
   className?: string
 }
 
@@ -26,13 +15,7 @@ export interface UsdValueProps {
  * Shared component for displaying USD values.
  * Handles both single values and arrays of values.
  */
-export const UsdValue = ({
-  usd,
-  variant,
-  isHovered = false,
-  textVariant = 'body',
-  className,
-}: UsdValueProps) => {
+export const UsdValue = ({ usd, variant, isHovered = false, className }: UsdValueProps) => {
   const isDesktop = variant === 'desktop'
   const isMultipleUsd = Array.isArray(usd)
 
@@ -47,7 +30,7 @@ export const UsdValue = ({
     return (
       <div className={cn('flex flex-col', isDesktop ? 'items-center gap-1' : 'items-start', className)}>
         {usd.map((value, idx) => (
-          <Paragraph key={idx} variant={textVariant} className={textColor}>
+          <Paragraph key={idx} className={textColor}>
             {value}
           </Paragraph>
         ))}
@@ -55,9 +38,5 @@ export const UsdValue = ({
     )
   }
 
-  return (
-    <Paragraph variant={textVariant} className={cn(textColor, className)}>
-      {usd}
-    </Paragraph>
-  )
+  return <Paragraph className={cn(textColor, className)}>{usd}</Paragraph>
 }
