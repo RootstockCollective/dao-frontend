@@ -1,4 +1,4 @@
-import { FC, HtmlHTMLAttributes, ReactElement, ReactNode } from 'react'
+import { HtmlHTMLAttributes, ReactElement, ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import { useTableContext } from '@/shared/context'
 import { ColumnId, COLUMN_TRANSFORMS, TransactionHistoryCellDataMap } from '../../config'
@@ -57,7 +57,7 @@ interface CycleCellProps {
   isDetailRow?: boolean
 }
 
-export const CycleCell: FC<CycleCellProps> = ({ cycle, isHovered, isDetailRow }): ReactElement => {
+export const CycleCell = ({ cycle, isHovered, isDetailRow }: CycleCellProps): ReactElement => {
   const showContent = !isDetailRow
 
   return (
@@ -80,7 +80,7 @@ interface DateCellProps {
   isDetailRow?: boolean
 }
 
-export const DateCell: FC<DateCellProps> = ({ formatted, transactionHash, isHovered }): ReactElement => {
+export const DateCell = ({ formatted, transactionHash, isHovered }: DateCellProps): ReactElement => {
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation()
     window.open(`${EXPLORER_URL}/tx/${transactionHash}`, '_blank', 'noopener,noreferrer')
@@ -112,14 +112,14 @@ interface FromToCellProps {
   isDetailRow?: boolean
 }
 
-export const FromToCell: FC<FromToCellProps> = ({
+export const FromToCell = ({
   builder,
   builderAddress,
   isGrouped,
   isExpanded,
   isHovered,
   isDetailRow,
-}): ReactElement => {
+}: FromToCellProps): ReactElement => {
   // Grouped row - show purple circle and "Multiple Builders"
   if (isGrouped && !isDetailRow) {
     const showContent = !isExpanded
@@ -150,7 +150,7 @@ interface TypeCellProps {
   isDetailRow?: boolean
 }
 
-export const TypeCell: FC<TypeCellProps> = ({ type, isHovered, isDetailRow }): ReactElement => {
+export const TypeCell = ({ type, isHovered, isDetailRow }: TypeCellProps): ReactElement => {
   const showContent = !isDetailRow
 
   return (
@@ -173,14 +173,14 @@ interface AmountCellProps {
   isDetailRow?: boolean
 }
 
-export const AmountCell: FC<AmountCellProps> = ({
+export const AmountCell = ({
   amounts,
   type,
   increased,
   isExpanded,
   isHovered,
   isDetailRow,
-}): ReactElement => {
+}: AmountCellProps): ReactElement => {
   const showContent = !isExpanded || isDetailRow
 
   return (
@@ -207,14 +207,14 @@ interface TotalAmountCellProps {
   onToggle?: () => void
 }
 
-export const TotalAmountCell: FC<TotalAmountCellProps> = ({
+export const TotalAmountCell = ({
   usd,
   isGrouped,
   isExpanded,
   isHovered,
   isDetailRow,
   onToggle,
-}): ReactElement => {
+}: TotalAmountCellProps): ReactElement => {
   // For grouped rows: show USD when not hovered and not expanded
   if (isGrouped && !isDetailRow) {
     return (

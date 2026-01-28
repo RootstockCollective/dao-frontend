@@ -1,6 +1,5 @@
 'use client'
 
-import { FC } from 'react'
 import { CloseIconKoto } from '@/components/Icons/CloseIconKoto'
 import { Paragraph } from '@/components/Typography'
 import { TransactionRow } from './MobileRow'
@@ -15,7 +14,7 @@ interface Props {
   row: TransactionRow
 }
 
-export const MobileShowDetails: FC<Props> = ({ row }) => {
+export const MobileGroupedDetails = ({ row }: Props) => {
   const { from_to, type } = row.data
   const groupedDetails = from_to.groupedDetails || []
 
@@ -33,7 +32,7 @@ export const MobileShowDetails: FC<Props> = ({ row }) => {
   )
 }
 
-const MobileShowDetailsToggle: FC = () => {
+const MobileShowDetailsToggle = () => {
   const { isExpanded, toggleExpanded } = useExpandableContext()
 
   return (
@@ -58,7 +57,7 @@ interface MobileGroupedDetailItemProps {
   type: TransactionHistoryType
 }
 
-const MobileGroupedDetailItem: FC<MobileGroupedDetailItemProps> = ({ detail, type }) => {
+const MobileGroupedDetailItem = ({ detail, type }: MobileGroupedDetailItemProps) => {
   const { builder, builderAddress, amounts, usdValue, increased } = detail
 
   return (

@@ -1,6 +1,5 @@
 'use client'
 
-import { FC } from 'react'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Paragraph } from '@/components/Typography'
 import { cn, shortAddress, truncate } from '@/lib/utils'
@@ -27,14 +26,14 @@ export interface BuilderAvatarProps {
  * Shared component for displaying a builder's avatar with their name/address.
  * Includes an optional link to the builder's proposal page.
  */
-export const BuilderAvatar: FC<BuilderAvatarProps> = ({
+export const BuilderAvatar = ({
   builder,
   builderAddress,
   variant,
   isHovered = false,
   size,
   className,
-}) => {
+}: BuilderAvatarProps) => {
   const isDesktop = variant === 'desktop'
   const avatarSize = size ?? (isDesktop ? 40 : 32)
 
@@ -100,11 +99,11 @@ export interface MultipleBuildersAvatarProps {
 /**
  * Component for displaying the "Multiple Builders" grouped row indicator.
  */
-export const MultipleBuildersAvatar: FC<MultipleBuildersAvatarProps> = ({
+export const MultipleBuildersAvatar = ({
   variant,
   isHovered = false,
   className,
-}) => {
+}: MultipleBuildersAvatarProps) => {
   const isDesktop = variant === 'desktop'
   const textColor = isDesktop && isHovered ? 'text-black' : 'text-v3-primary'
 
