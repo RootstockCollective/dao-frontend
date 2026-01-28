@@ -4,6 +4,50 @@ import { SiweMessage } from 'siwe'
 import { signJWT } from '@/lib/auth/jwt'
 import { validateAndConsumeNonce } from '@/lib/auth/nonceStorage'
 
+const isProduction = process.env.NODE_ENV === 'production'
+
+/**
+ * Sanitizes error messages for production to prevent information leakage
+ * Returns generic error messages in production, detailed messages in development
+ */
+function sanitizeError(message: string): string {
+  if (isProduction) {
+    // Generic error messages for production
+    if (message.includes('Missing required fields')) {
+      return 'Invalid request'
+    }
+    if (message.includes('Invalid address format')) {
+      return 'Invalid request'
+    }
+    if (message.includes('Invalid signature')) {
+      return 'Authentication failed'
+    }
+    if (message.includes('Invalid SIWE message format')) {
+      return 'Invalid request'
+    }
+    if (message.includes('SIWE verification failed')) {
+      return 'Authentication failed'
+    }
+    if (message.includes('Address in message does not match')) {
+      return 'Invalid request'
+    }
+    if (message.includes('Message has expired')) {
+      return 'Authentication failed'
+    }
+    if (message.includes('Missing nonce')) {
+      return 'Invalid request'
+    }
+    if (message.includes('Invalid or expired nonce')) {
+      return 'Authentication failed'
+    }
+    if (message.includes('Missing Host header')) {
+      return 'Invalid request'
+    }
+    return 'Authentication failed'
+  }
+  return message
+}
+
 /**
  * POST /api/auth/login
  *
@@ -29,14 +73,14 @@ export async function POST(request: NextRequest) {
     // Validate required fields
     if (!message || !signature || !address) {
       return NextResponse.json(
-        { error: 'Missing required fields: message, signature, and address are required' },
+        { error: sanitizeError('Missing required fields: message, signature, and address are required') },
         { status: 400 },
       )
     }
 
     // Validate address format
     if (!/^0x[a-fA-F0-9]{40}$/.test(address)) {
-      return NextResponse.json({ error: 'Invalid address format' }, { status: 400 })
+      return NextResponse.json({ error: sanitizeError('Invalid address format') }, { status: 400 })
     }
 
     // Verify the signature using Viem
@@ -47,7 +91,7 @@ export async function POST(request: NextRequest) {
     })
 
     if (!isValid) {
-      return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
+      return NextResponse.json({ error: sanitizeError('Invalid signature') }, { status: 401 })
     }
 
     // Parse the SIWE message
@@ -55,25 +99,29 @@ export async function POST(request: NextRequest) {
     try {
       siweMessage = new SiweMessage(message)
     } catch (error) {
-      return NextResponse.json({ error: 'Invalid SIWE message format' }, { status: 400 })
+      return NextResponse.json({ error: sanitizeError('Invalid SIWE message format') }, { status: 400 })
     }
 
     // Verify the SIWE message with signature
     // Note: We verify with SIWE to check nonce, expiration, domain, etc.
     // We've already verified the signature cryptographically with Viem above
-    // Extract domain from the request host header or use the domain from the message
-    const host = request.headers.get('host') || ''
+    // Extract domain from the request host header - REQUIRED for security
+    const host = request.headers.get('host')
+    if (!host) {
+      return NextResponse.json({ error: sanitizeError('Missing Host header') }, { status: 400 })
+    }
     const domain = host.split(':')[0] // Remove port if present
 
+    // Do NOT fallback to siweMessage.domain - it's user-controlled and could be spoofed
     const verifyResult = await siweMessage.verify({
       signature,
-      domain: domain || siweMessage.domain,
+      domain, // Use only server-validated domain
     })
 
     if (!verifyResult.success) {
       return NextResponse.json(
         {
-          error: `SIWE verification failed: ${verifyResult.error?.type || 'Invalid message'}`,
+          error: sanitizeError(`SIWE verification failed: ${verifyResult.error?.type || 'Invalid message'}`),
         },
         { status: 401 },
       )
@@ -85,7 +133,7 @@ export async function POST(request: NextRequest) {
     // Check that the address in the message matches the provided address
     if (fields.address.toLowerCase() !== address.toLowerCase()) {
       return NextResponse.json(
-        { error: 'Address in message does not match provided address' },
+        { error: sanitizeError('Address in message does not match provided address') },
         { status: 400 },
       )
     }
@@ -95,20 +143,20 @@ export async function POST(request: NextRequest) {
       const expirationDate = new Date(fields.expirationTime)
       const now = new Date()
       if (expirationDate < now) {
-        return NextResponse.json({ error: 'Message has expired' }, { status: 401 })
+        return NextResponse.json({ error: sanitizeError('Message has expired') }, { status: 401 })
       }
     }
 
     // Validate nonce from cookies (must exist and not be expired)
     const nonce = fields.nonce
     if (!nonce) {
-      return NextResponse.json({ error: 'Missing nonce in message' }, { status: 400 })
+      return NextResponse.json({ error: sanitizeError('Missing nonce in message') }, { status: 400 })
     }
 
     const isNonceValid = await validateAndConsumeNonce(nonce)
     if (!isNonceValid) {
       return NextResponse.json(
-        { error: 'Invalid or expired nonce. Please request a new nonce.' },
+        { error: sanitizeError('Invalid or expired nonce. Please request a new nonce.') },
         { status: 401 },
       )
     }

@@ -1,6 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyJWT, extractTokenFromRequest } from '@/lib/auth/jwt'
 
+const isProduction = process.env.NODE_ENV === 'production'
+
+/**
+ * Sanitizes error messages for production to prevent information leakage
+ * Returns generic error messages in production, detailed messages in development
+ */
+function sanitizeError(message: string): string {
+  if (isProduction) {
+    // Generic error messages for production
+    if (message.includes('Missing token')) {
+      return 'Authentication required'
+    }
+    if (message.includes('Invalid or expired token')) {
+      return 'Authentication failed'
+    }
+    return 'Authentication failed'
+  }
+  return message
+}
+
 /**
  * POST /api/auth/verify
  *
@@ -39,8 +59,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           valid: false,
-          error:
+          error: sanitizeError(
             'Missing token. Send token in body { token }, Authorization: Bearer <token>, or auth-token cookie.',
+          ),
         },
         { status: 400 },
       )
@@ -49,7 +70,10 @@ export async function POST(request: NextRequest) {
     const userAddress = await verifyJWT(token)
 
     if (!userAddress) {
-      return NextResponse.json({ valid: false, error: 'Invalid or expired token' }, { status: 401 })
+      return NextResponse.json(
+        { valid: false, error: sanitizeError('Invalid or expired token') },
+        { status: 401 },
+      )
     }
 
     return NextResponse.json({

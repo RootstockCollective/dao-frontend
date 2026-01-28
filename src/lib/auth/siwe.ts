@@ -3,9 +3,8 @@ import { SiweMessage } from 'siwe'
 /**
  * Generates a SIWE (Sign-In With Ethereum) message for authentication
  *
- * The expiration time is fixed at 2 minutes - just enough time for the user to sign
- * the message and receive the JWT token. The nonce expires in 1 minute, so this gives
- * an additional minute buffer for wallet approval and network latency.
+ * The expiration time is fixed at 1 minute to match nonce expiration, preventing
+ * replay attacks where a signed message could be used after the nonce expires.
  *
  * @param address - The Ethereum address that will sign the message
  * @param nonce - A unique nonce to prevent replay attacks (must be generated server-side)
@@ -21,9 +20,9 @@ export function createSiweMessage(
   origin: string,
   chainId: number = 31, // Default to Rootstock Testnet
 ): string {
-  // 2 minutes expiration - enough time for user to sign and receive JWT, but no longer
-  // Nonce expires in 1 minute, so this provides buffer for wallet approval and network latency
-  const expiration = new Date(Date.now() + 2 * 60 * 1000) // Fixed: 2 minutes
+  // 1 minute expiration - matches nonce expiration to prevent replay attacks
+  // This ensures that signed messages cannot be reused after the nonce expires
+  const expiration = new Date(Date.now() + 60 * 1000) // Fixed: 1 minute
 
   const message = new SiweMessage({
     domain,
