@@ -1,5 +1,3 @@
-import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
-import { useGetCycleRewards } from '@/app/collective-rewards/shared/hooks/useGetCycleRewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { FiatTooltipLabel } from '@/app/components'
 import { MetricBar } from '@/app/components/Metric/MetricBar'
@@ -13,26 +11,38 @@ import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import Big from 'big.js'
 import { createMetricToken } from '@/app/components/Metric/utils'
+import { useGetLastCycleRewardsFromChain, useGetLastCycleRewardsWithStateSync } from '../../shared/hooks'
+import { withDataFallback } from '@/app/shared/components/Fallback'
+import { CycleData } from '../../shared/hooks/useGetABI'
 
-export const EstimatedRewards = () => {
-  const {
-    data: cycleRewards,
-    isLoading: cycleRewardsLoading,
-    error: cycleRewardsError,
-  } = useGetCycleRewards()
+const usePrimaryNormalized = () => {
+  const { data, isLoading, error } = useGetLastCycleRewardsWithStateSync()
+  return { data: data ?? [], isLoading, error }
+}
 
+const useFallbackWithErrors = () => {
+  const { data, isLoading, error } = useGetLastCycleRewardsFromChain()
+  useHandleErrors({ error, title: 'Error loading last cycle rewards' })
+  return { data: data ?? [], isLoading, error }
+}
+
+const EstimatedRewardsContent = ({
+  lastCycleRewards,
+  isLoading,
+}: {
+  lastCycleRewards: CycleData[]
+  isLoading: boolean
+}) => {
   const { prices } = usePricesContext()
 
-  useHandleErrors({ error: cycleRewardsError, title: 'Error loading cycle rewards' })
-
-  if (cycleRewardsLoading) {
+  if (isLoading) {
     return <LoadingSpinner />
   }
 
   const { rewardPerToken, combinedRewardsFiat } = REWARD_TOKEN_KEYS.reduce(
     (acc, tokenKey) => {
-      const { symbol } = TOKENS[tokenKey]
-      const amount = cycleRewards[tokenKey] ?? 0n
+      const { symbol, address } = TOKENS[tokenKey]
+      const amount = BigInt(lastCycleRewards[0]?.rewardPerToken?.[address.toLowerCase()] ?? '0')
       const price = prices[symbol]?.price || 0
 
       const metricToken = createMetricToken({
@@ -68,5 +78,17 @@ export const EstimatedRewards = () => {
       </Header>
       <MetricBar segments={rewardPerToken} />
     </Metric>
+  )
+}
+
+export const EstimatedRewards = () => {
+  const Loader = withDataFallback<CycleData[]>(usePrimaryNormalized, useFallbackWithErrors)
+
+  return (
+    <Loader
+      render={({ data, isLoading }) => (
+        <EstimatedRewardsContent lastCycleRewards={data} isLoading={isLoading} />
+      )}
+    />
   )
 }

@@ -9,7 +9,7 @@ import { isBuilderRewardable } from '../../utils'
 import { BuilderStateFlags } from '../../types'
 import { TOKENS } from '@/lib/tokens'
 
-type CycleData = {
+export type CycleData = {
   id: string
   rewardPerToken: Record<string, string>
 }
