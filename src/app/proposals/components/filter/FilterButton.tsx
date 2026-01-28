@@ -10,7 +10,8 @@ interface Props extends HTMLAttributes<HTMLButtonElement> {
 }
 
 /**
- * Toggle button that opens and closes the proposals filter sidebar
+ * Toggle button that opens and closes the filter sidebar.
+ * Used in proposals, staking history, and transaction history tables.
  */
 export function FilterButton({
   isOpen,

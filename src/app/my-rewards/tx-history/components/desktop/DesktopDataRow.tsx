@@ -1,16 +1,16 @@
 'use client'
 
-import { FC, useState, Fragment } from 'react'
+import { useState, Fragment } from 'react'
 import { cn } from '@/lib/utils'
-import { TransactionHistoryTable } from './TransactionHistoryTable.config'
+import { TransactionHistoryTable } from '../../config'
 import { CycleCell, DateCell, FromToCell, TypeCell, AmountCell, TotalAmountCell } from './Cells'
 import { formatExpandedDate } from '@/app/my-rewards/tx-history/utils/utils'
 
-interface TransactionHistoryDataRowProps {
+interface DesktopDataRowProps {
   row: TransactionHistoryTable['Row']
 }
 
-export const TransactionHistoryDataRow: FC<TransactionHistoryDataRowProps> = ({ row, ...props }) => {
+export const DesktopDataRow = ({ row, ...props }: DesktopDataRowProps) => {
   const {
     data: { cycle, date, from_to, type, amount, total_amount },
   }: TransactionHistoryTable['Row'] = row
