@@ -91,9 +91,8 @@ const EstimatedRewardsContent = ({
   )
 }
 
+const Loader = withDataFallback<CycleData[]>(usePrimaryNormalized, useFallbackWithErrors)
 export const EstimatedRewards = () => {
-  const Loader = withDataFallback<CycleData[]>(usePrimaryNormalized, useFallbackWithErrors)
-
   return (
     <Loader
       render={({ data, isLoading }) => (
