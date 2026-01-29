@@ -20,16 +20,16 @@ const getIconSource = (symbol: string | undefined): string | null => {
     return null
   }
   switch (symbol.toUpperCase()) {
-    case RIF:
+    case RIF.toUpperCase():
     case 'TRIF':
-    case STRIF:
+    case STRIF.toUpperCase():
       return '/images/rif-logo.png'
-    case USDRIF:
+    case USDRIF.toUpperCase():
       return '/images/usdrif-logo.png'
-    case RBTC:
+    case RBTC.toUpperCase():
     case 'TRBTC':
       return '/images/rbtc-icon.svg'
-    case USDT0:
+    case USDT0.toUpperCase():
       return '/images/usdt0-logo.png'
     default:
       return null
