@@ -1,4 +1,4 @@
-import { BaseTypography } from '@/components/Typography/Typography'
+import { Header, Span } from '@/components/Typography'
 import { TokenImage } from '@/components/TokenImage'
 import { RBTC, RIF } from '@/lib/constants'
 import { ArrowRight } from 'lucide-react'
@@ -59,15 +59,15 @@ export const startBuildingArgs = {
 export const currentCycleEndingSoonArgs = {
   title: 'CURRENT CYCLE ENDING SOON',
   description: (
-    <BaseTypography size="sm" className="flex items-center gap-1">
+    <Span variant="body-s" className="flex items-center gap-1">
       Learn how cycles work <ArrowRight />
-    </BaseTypography>
+    </Span>
   ),
   buttonOnClick: () => console.log('Learn more clicked!'),
   rightContent: (
-    <BaseTypography variant="h1" className="text-white">
+    <Header variant="h1" className="text-white">
       23h 59m
-    </BaseTypography>
+    </Header>
   ),
 }
 
@@ -82,22 +82,18 @@ export const stepsListArgs = {
   title: 'TITLE ONLY IF NEEDED',
   description: (
     <div>
-      <BaseTypography size="sm" className="mb-3">
+      <Span variant="body-s" className="mb-3">
         Lorem ipsum dolor sit amet consectetur adipiscing elit
-      </BaseTypography>
+      </Span>
       <ul className="space-y-2 list-disc list-inside">
         <li>
-          <BaseTypography size="sm">
-            step 1... lorem ipsum dolor sit amet, consectetur adipiscing elit
-          </BaseTypography>
+          <Span variant="body-s">step 1... lorem ipsum dolor sit amet, consectetur adipiscing elit</Span>
         </li>
         <li>
-          <BaseTypography size="sm">
-            step 2... proin suscipit scelerisque ipsum placerat velit sed quam
-          </BaseTypography>
+          <Span variant="body-s">step 2... proin suscipit scelerisque ipsum placerat velit sed quam</Span>
         </li>
         <li>
-          <BaseTypography size="sm">step 3... venenatis, non commodo risus fringilla</BaseTypography>
+          <Span variant="body-s">step 3... venenatis, non commodo risus fringilla</Span>
         </li>
       </ul>
     </div>

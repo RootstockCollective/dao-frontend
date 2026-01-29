@@ -4,7 +4,7 @@ import { TransactionInProgressButton } from '@/app/user/Stake/components/Transac
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
 import { TokenImage } from '@/components/TokenImage'
-import { BaseTypography } from '@/components/Typography/Typography'
+import { Header, Paragraph } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { cn, formatCurrencyWithLabel } from '@/lib/utils'
 import { Separator } from '@radix-ui/react-select'
@@ -72,20 +72,20 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
       className={cn('font-rootstock-sans shadow-[0px_0px_40px_0px_rgba(255,255,255,0.10)]', className)}
     >
       <div className="p-8 flex flex-col gap-8 h-full justify-start">
-        <BaseTypography variant="h1">CLAIM REWARDS</BaseTypography>
-        <BaseTypography>
+        <Header variant="h1">CLAIM REWARDS</Header>
+        <Paragraph>
           Select the rewards that you want to claim, then confirm the transaction in your wallet.
-        </BaseTypography>
+        </Paragraph>
         <ClaimRewardRadioGroup
           value={selectedRewardType}
           onValueChange={onRewardTypeChange}
           options={radioOptions}
           isLoading={isLoading}
         />
-        <BaseTypography variant="body">
+        <Paragraph variant="body">
           Claim your rewards directly to your wallet. Claimed rewards are transferred immediately, and your
           unclaimed balance resets.
-        </BaseTypography>
+        </Paragraph>
 
         <div className="mt-8 flex flex-col w-full gap-8 justify-end h-full">
           <Separator className="bg-v3-bg-accent-60 h-[1px] w-full" />

@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { Collapsible } from './Collapsible'
 import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
-import { Header, Paragraph } from '@/components/Typography'
-import { BaseTypography } from '@/components/Typography/Typography'
+import { Header, Paragraph, Span } from '@/components/Typography'
 import { MetricsContainer } from '@/components/containers/MetricsContainer'
 
 const meta: Meta<typeof Collapsible.Root> = {
@@ -39,7 +38,7 @@ export const Default: Story = {
 
       <div>
         <MetricsContainer className="px-6 pb-10 pt-0">
-          <BaseTypography className="text-v3-text-0">Default container content</BaseTypography>
+          <Span className="text-v3-text-0">Default container content</Span>
         </MetricsContainer>
       </div>
     </Collapsible.Root>
@@ -61,7 +60,7 @@ export const CustomStyles: Story = {
 
       <div>
         <MetricsContainer className="mx-4">
-          <BaseTypography>Customized container content</BaseTypography>
+          <Span>Customized container content</Span>
         </MetricsContainer>
       </div>
     </Collapsible.Root>

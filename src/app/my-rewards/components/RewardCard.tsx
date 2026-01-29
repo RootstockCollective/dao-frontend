@@ -1,8 +1,7 @@
 import { CommonComponentProps } from '@/components/commonProps'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
-import { Paragraph } from '@/components/Typography'
-import { BaseTypography } from '@/components/Typography/Typography'
+import { Paragraph, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
 
@@ -29,9 +28,9 @@ export const RewardCard = ({
       title={
         <MetricTitle
           title={
-            <BaseTypography variant="body" className="text-v3-bg-accent-0 text-sm">
+            <Span variant="body-s" className="text-v3-bg-accent-0">
               {title}
-            </BaseTypography>
+            </Span>
           }
           info={<Paragraph className="text-[14px] font-normal text-left">{info}</Paragraph>}
           infoIconProps={{
