@@ -103,5 +103,5 @@ jobs:
 
       - name: Verify deployment
         run: |
-          kubectl rollout status deployment/${{ env.HELM_RELEASE }} -n ${{ env.NAMESPACE }}
+          kubectl rollout status deployment/dao-frontend -n ${{ env.NAMESPACE }}
           kubectl get pods -n ${{ env.NAMESPACE }}
