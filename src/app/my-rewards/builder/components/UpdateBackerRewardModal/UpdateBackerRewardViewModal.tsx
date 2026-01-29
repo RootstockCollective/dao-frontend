@@ -101,15 +101,16 @@ const UpdateBackerRewardViewModal = ({
                     <div className="flex items-center gap-2">
                       <Button variant="secondary-outline" className="px-2 py-1.5 md:py-1 gap-1">
                         <Span variant="body-s">{suggestedReward}%</Span>
-                        <Tooltip
-                          text="Average Rewards % of all the Collective Builders."
-                          className={cn('rounded-sm bg-v3-text-80 text-v3-bg-accent-60 p-6 text-sm')}
-                          side="top"
-                          align="center"
-                        ></Tooltip>
                       </Button>
                     </div>
-                    <KotoQuestionMarkIcon />
+                    <Tooltip
+                      text="Average Rewards % of all the Collective Builders."
+                      className={cn('rounded-sm bg-v3-text-80 text-v3-bg-accent-60 p-6 text-sm')}
+                      side="top"
+                      align="center"
+                    >
+                      <KotoQuestionMarkIcon />
+                    </Tooltip>
                   </div>
                 )}
               </div>
