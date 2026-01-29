@@ -27,6 +27,8 @@ jobs:
   build:
     name: Build and Push Image
     runs-on: ubuntu-latest
+    environment:
+      name: DAO-QA
 
     permissions:
       id-token: write
