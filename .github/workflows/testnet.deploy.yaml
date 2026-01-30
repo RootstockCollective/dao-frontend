@@ -7,9 +7,6 @@ on:
   release:
     types: [released]
   workflow_dispatch:
-  push:
-    branches:
-      - DEVOPS-2428/add-testnet-workflow
 
 # Declare default permissions as read only.
 permissions: read-all
