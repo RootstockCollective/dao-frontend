@@ -1,9 +1,8 @@
 import { withTableContext } from '@/shared/context'
-import { ReactElement } from 'react'
-import { TransactionHistoryCellDataMap, ColumnId } from '../config'
-import TransactionHistoryTable from './TransactionHistoryTable'
+import { ColumnId, TransactionHistoryCellDataMap } from '../config'
+import { TransactionHistoryTable } from './TransactionHistoryTable'
 
-const TransactionHistoryTableContainer = (): ReactElement => {
+export const TransactionHistoryTableContainer = () => {
   return <TransactionHistoryTable />
 }
 

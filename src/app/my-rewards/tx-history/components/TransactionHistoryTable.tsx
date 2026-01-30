@@ -33,7 +33,7 @@ const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
  * Renders a table on desktop and an expandable list on mobile.
  * Includes filter sidebar and pager.
  */
-export default function TransactionHistoryTable() {
+export const TransactionHistoryTable = () => {
   const isDesktop = useIsDesktop()
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
   const [pagerKey, setPagerKey] = useState(0)

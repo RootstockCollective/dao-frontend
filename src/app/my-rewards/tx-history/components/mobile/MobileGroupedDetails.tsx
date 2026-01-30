@@ -6,7 +6,7 @@ import { TransactionRow } from './MobileRow'
 import { MobileCellWrapper } from './MobileCells'
 import { Expandable, ExpandableContent } from '@/components/Expandable'
 import { useExpandableContext } from '@/components/Expandable/ExpandableContext'
-import { AmountDisplay, BuilderAvatar, UsdValue } from '../shared'
+import { AmountDisplay, BuilderAvatar, UsdValue } from '..'
 import { GroupedTransactionDetail } from '../../config'
 import { TransactionHistoryType } from '../../utils/types'
 
