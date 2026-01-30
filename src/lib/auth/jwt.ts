@@ -1,7 +1,15 @@
 import { SignJWT, jwtVerify } from 'jose'
-import { JWT_SECRET } from '@/lib/constants'
+
 const JWT_ALGORITHM = 'HS256'
 const JWT_EXPIRATION = '24h' // 24 hours session
+
+if (!process.env.JWT_SECRET) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('JWT_SECRET environment variable is not configured')
+  }
+  console.warn('⚠️  JWT_SECRET environment variable is not configured')
+}
+const JWT_SECRET = process.env.JWT_SECRET || ''
 
 interface JWTPayload {
   userAddress: string
