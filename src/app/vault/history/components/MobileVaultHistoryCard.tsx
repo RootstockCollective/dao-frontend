@@ -135,7 +135,7 @@ export const MobileVaultHistoryCard = ({ row }: MobileVaultHistoryCardProps) => 
 
                   {/* Detail Row 4: Total Amount (USD) */}
                   <Paragraph variant="body" className="text-v3-text-100">
-                    ${(Number(detail.assets.replace(/[^0-9.]/g, '')) || 0).toFixed(2)}
+                    ${detail.total_usd}
                   </Paragraph>
                 </div>
               )

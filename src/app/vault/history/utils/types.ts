@@ -26,10 +26,12 @@ export interface VaultHistoryTransactionAPI {
 
 /**
  * Transaction data after client-side transformation
- * Includes the formatted date field added by convertDataToRowData
+ * Includes formatted fields added by convertDataToRowData
  */
 export interface VaultHistoryTransaction extends VaultHistoryTransactionAPI {
   date: string
+  /** Pre-calculated USD value for display (avoids regex parsing in components) */
+  total_usd: string
 }
 
 /**
