@@ -26,6 +26,8 @@ export const convertDataToRowData = (data: VaultHistoryItemAPI[]): VaultHistoryT
     const assetsFormatted = formatSymbol(item.assets, TOKEN_SYMBOL)
     // USDRIF is pegged to USD, so 1 USDRIF ≈ 1 USD
     const usdAmount = Number(item.assets) / 10 ** TOKEN_DECIMALS
+    // Withdrawals should be shown as negative amounts
+    const signedUsdAmount = item.action === 'WITHDRAW' ? -usdAmount : usdAmount
 
     rows[i] = {
       id: `${item.period}-${item.action}-${i}`,
@@ -33,7 +35,7 @@ export const convertDataToRowData = (data: VaultHistoryItemAPI[]): VaultHistoryT
         period: formatPeriod(item.period),
         action: item.action,
         assets: assetsFormatted,
-        total_usd: usdAmount.toFixed(2),
+        total_usd: signedUsdAmount.toFixed(2),
         transactions: item.transactions.map(tx => ({
           ...tx,
           date: formatExpandedDate(String(tx.timestamp)),
