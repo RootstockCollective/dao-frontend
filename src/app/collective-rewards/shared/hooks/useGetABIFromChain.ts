@@ -3,8 +3,8 @@ import { useReadGauges } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
 import { CompleteBuilder } from '../../types'
 import { BuilderData, useGetABI } from './useGetABI'
-import { useGetCycleRewards } from './useGetCycleRewards'
 import { TOKENS } from '@/lib/tokens'
+import { useGetRewardDistributionRewardsLogs } from './useGetRewardsDistributionRewards'
 
 export const useGetABIFromChain = () => {
   const { builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
@@ -19,10 +19,21 @@ export const useGetABIFromChain = () => {
   } = useReadGauges({ addresses: gauges, functionName: 'totalAllocation' })
 
   const {
-    data: cycleRewards,
-    isLoading: cycleRewardsLoading,
-    error: cycleRewardsError,
-  } = useGetCycleRewards()
+    data: rewardDistributionRewardsLogs,
+    isLoading: rewardDistributionRewardsLogsLoading,
+    error: rewardDistributionRewardsLogsError,
+  } = useGetRewardDistributionRewardsLogs()
+
+  const cycles = rewardDistributionRewardsLogs
+    .sort((a, b) => Number(b.blockNumber) - Number(a.blockNumber))
+    .map(log => ({
+      id: log.blockNumber.toString(),
+      rewardPerToken: {
+        [TOKENS.rif.address.toLowerCase()]: log.args.rifAmount_.toString(),
+        [TOKENS.rbtc.address.toLowerCase()]: log.args.nativeAmount_.toString(),
+        [TOKENS.usdrif.address.toLowerCase()]: log.args.usdrifAmount_.toString(),
+      },
+    }))
 
   const buildersData = useMemo(() => {
     return activeBuilders
@@ -49,22 +60,13 @@ export const useGetABIFromChain = () => {
       .sort((a, b) => (BigInt(b.totalAllocation) > BigInt(a.totalAllocation) ? 1 : -1))
   }, [activeBuilders, totalAllocation])
 
-  const isLoading = buildersLoading || cycleRewardsLoading || totalAllocationLoading
+  const isLoading = buildersLoading || rewardDistributionRewardsLogsLoading || totalAllocationLoading
 
-  const error = buildersError ?? cycleRewardsError ?? totalAllocationError
+  const error = buildersError ?? rewardDistributionRewardsLogsError ?? totalAllocationError
 
   const abi = useGetABI({
     builders: buildersData,
-    cycles: [
-      {
-        id: '0',
-        rewardPerToken: {
-          [TOKENS.rif.address.toLowerCase()]: cycleRewards.rif.toString(),
-          [TOKENS.rbtc.address.toLowerCase()]: cycleRewards.rbtc.toString(),
-          [TOKENS.usdrif.address.toLowerCase()]: cycleRewards.usdrif.toString(),
-        },
-      },
-    ],
+    cycles,
   })
 
   return {
