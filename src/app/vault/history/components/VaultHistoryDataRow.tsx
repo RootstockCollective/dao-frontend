@@ -73,11 +73,7 @@ export const VaultHistoryDataRow: FC<VaultHistoryDataRowProps> = memo(({ row, ..
             <PeriodCell period={detail.date} isDetailRow isHovered={isHovered} />
             <ActionCell action={detail.action} isDetailRow isHovered={isHovered} />
             <AssetsCell assets={detail.assets} action={detail.action} isDetailRow isHovered={isHovered} />
-            <TotalUsdCell
-              usd={(Number(detail.assets.replace(/[^0-9.]/g, '')) || 0).toFixed(2)}
-              isDetailRow
-              isHovered={isHovered}
-            />
+            <TotalUsdCell usd={detail.total_usd} isDetailRow isHovered={isHovered} />
             <ActionsCell isDetailRow isHovered={isHovered} usd={''} />
           </tr>
         ))}

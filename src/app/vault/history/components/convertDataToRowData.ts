@@ -36,11 +36,15 @@ export const convertDataToRowData = (data: VaultHistoryItemAPI[]): VaultHistoryT
         action: item.action,
         assets: assetsFormatted,
         total_usd: signedUsdAmount.toFixed(2),
-        transactions: item.transactions.map(tx => ({
-          ...tx,
-          date: formatExpandedDate(String(tx.timestamp)),
-          assets: formatSymbol(tx.assets, TOKEN_SYMBOL),
-        })),
+        transactions: item.transactions.map(tx => {
+          const txUsdAmount = Number(tx.assets) / 10 ** TOKEN_DECIMALS
+          return {
+            ...tx,
+            date: formatExpandedDate(String(tx.timestamp)),
+            assets: formatSymbol(tx.assets, TOKEN_SYMBOL),
+            total_usd: txUsdAmount.toFixed(2),
+          }
+        }),
         actions: '',
       },
     }
