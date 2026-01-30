@@ -1,12 +1,7 @@
-import { useAccount, useSignMessage, useChainId } from 'wagmi'
+import { useAccount, useSignMessage } from 'wagmi'
 import { useEffect } from 'react'
-import { createSiweMessage } from '@/lib/auth/siwe'
-import { generateNonce } from '@/lib/auth/actions'
+import { requestChallenge, verifySignature } from '@/lib/auth/actions'
 import { useSiweStore, selectIsAuthenticated } from '@/lib/auth/siweStore'
-
-interface SignInResult {
-  token: string
-}
 
 interface UseSignInReturn {
   signIn: () => Promise<string | null>
@@ -18,6 +13,10 @@ interface UseSignInReturn {
 
 /**
  * Hook for SIWE (Sign-In With Ethereum) authentication
+ *
+ * Uses server-controlled challenge generation for enhanced security.
+ * The SIWE message is created entirely on the server, eliminating
+ * any possibility of client-side manipulation.
  *
  * @example
  * ```tsx
@@ -33,7 +32,6 @@ interface UseSignInReturn {
  */
 export function useSignIn(): UseSignInReturn {
   const { address, isConnected } = useAccount()
-  const chainId = useChainId()
   const { signMessageAsync, isPending } = useSignMessage()
 
   // Get state and actions from Zustand store
@@ -60,39 +58,16 @@ export function useSignIn(): UseSignInReturn {
       setError(null)
       setLoading(true)
 
-      // Request nonce from server (stored in SQLite with 1 minute expiration)
-      const nonce = await generateNonce()
-      const domain = window.location.hostname
-      const origin = window.location.origin
+      // Request challenge from server (creates SIWE message server-side)
+      const { challengeId, message } = await requestChallenge(address)
 
-      // Build SIWE message with server-generated nonce
-      const message = createSiweMessage(address, nonce, domain, origin, chainId)
-
-      // Sign the message with the wallet
+      // Sign the server-provided message with the wallet
       const signature = await signMessageAsync({
         message,
       })
 
-      // Send to backend for verification and get JWT token
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message,
-          signature,
-          address,
-        }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Login failed' }))
-        throw new Error(errorData.error || `HTTP error! status: ${response.status}`)
-      }
-
-      const data: SignInResult = await response.json()
-      const jwtToken = data.token
+      // Verify signature with server and get JWT token
+      const { token: jwtToken } = await verifySignature(challengeId, signature)
 
       // Store jwtToken in Zustand store (which also updates localStorage)
       setToken(jwtToken)
