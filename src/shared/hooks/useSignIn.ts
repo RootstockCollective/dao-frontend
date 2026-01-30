@@ -1,5 +1,4 @@
 import { useAccount, useSignMessage } from 'wagmi'
-import { useEffect } from 'react'
 import { requestChallenge, verifySignature } from '@/lib/auth/actions'
 import { useSiweStore, selectIsAuthenticated } from '@/lib/auth/siweStore'
 
@@ -42,7 +41,6 @@ export function useSignIn(): UseSignInReturn {
     setLoading,
     setError,
     signOut: storeSignOut,
-    initialize,
   } = useSiweStore()
 
   // Derive isAuthenticated from jwtToken
@@ -85,11 +83,6 @@ export function useSignIn(): UseSignInReturn {
   const signOut = () => {
     storeSignOut()
   }
-
-  // Initialize store from localStorage on mount
-  useEffect(() => {
-    initialize()
-  }, [initialize])
 
   // Combine wagmi's isPending with store's loading state
   const isLoading = isPending || storeLoading

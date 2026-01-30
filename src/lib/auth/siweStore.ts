@@ -1,7 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
-import { getToken, storeToken, clearToken } from './tokenStorage'
 import { extractUserAddressFromToken, isTokenExpired } from './jwt'
 
 interface SiweState {
@@ -15,7 +14,6 @@ interface SiweState {
   setLoading: (isLoading: boolean) => void
   setError: (error: Error | null) => void
   signOut: () => void
-  initialize: () => void
 }
 
 /**
@@ -54,7 +52,7 @@ interface SiweState {
  */
 export const useSiweStore = create<SiweState>()(
   persist(
-    immer((set, get) => ({
+    immer(set => ({
       // Initial state
       jwtToken: null,
       isLoading: false,
@@ -62,14 +60,11 @@ export const useSiweStore = create<SiweState>()(
 
       /**
        * Sets the JWT token and updates state
-       * Also stores the jwtToken in localStorage for persistence
        * The JWT token contains userAddress in its payload (see jwt.ts)
        * Authentication status should be derived using selectIsAuthenticated selector
+       * Note: Zustand persist middleware handles localStorage automatically
        */
       setToken: (jwtToken: string) => {
-        // Store in localStorage
-        storeToken(jwtToken)
-
         set(state => {
           state.jwtToken = jwtToken
           state.error = null
@@ -96,36 +91,14 @@ export const useSiweStore = create<SiweState>()(
 
       /**
        * Signs out the user by clearing all authentication state
+       * Note: Zustand persist middleware handles localStorage cleanup automatically
        */
       signOut: () => {
-        clearToken()
         set(state => {
           state.jwtToken = null
           state.error = null
           state.isLoading = false
         })
-      },
-
-      /**
-       * Initializes the store from localStorage on mount
-       * Should be called once when the app starts
-       * Checks if token exists and is not expired
-       */
-      initialize: () => {
-        const jwtToken = getToken()
-        if (jwtToken && !isTokenExpired(jwtToken)) {
-          // Token exists and is valid
-          get().setToken(jwtToken)
-        } else {
-          // No token or token expired - clear state
-          if (jwtToken && isTokenExpired(jwtToken)) {
-            // Clear expired token from localStorage
-            clearToken()
-          }
-          set(state => {
-            state.jwtToken = null
-          })
-        }
       },
     })),
     {
@@ -134,6 +107,12 @@ export const useSiweStore = create<SiweState>()(
       partialize: state => ({
         jwtToken: state.jwtToken,
       }),
+      // Clear expired tokens on rehydration
+      onRehydrateStorage: () => state => {
+        if (state?.jwtToken && isTokenExpired(state.jwtToken)) {
+          state.jwtToken = null
+        }
+      },
     },
   ),
 )
