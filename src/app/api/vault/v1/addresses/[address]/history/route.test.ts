@@ -6,12 +6,16 @@ vi.mock('@/app/api/vault/v1/addresses/[address]/history/action', () => ({
   getVaultHistoryCountFromDB: vi.fn(),
 }))
 
-import { getVaultHistoryFromDB, getVaultHistoryCountFromDB } from './action'
+import {
+  getVaultHistoryFromDB,
+  getVaultHistoryCountFromDB,
+  type VaultHistoryByPeriodAndAction,
+} from './action'
 
 const mockGetVaultHistoryFromDB = vi.mocked(getVaultHistoryFromDB)
 const mockGetVaultHistoryCountFromDB = vi.mocked(getVaultHistoryCountFromDB)
 
-const mockVaultHistory = [
+const mockVaultHistory: VaultHistoryByPeriodAndAction[] = [
   {
     period: '2025-12',
     action: 'DEPOSIT',
