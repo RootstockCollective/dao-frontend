@@ -124,3 +124,10 @@ export const STATE_SYNC_BLOCK_STALENESS_THRESHOLD = Number(
 )
 
 export const ABI_CYCLES_LIMIT = 12
+
+// Auth
+const jwtSecret = process.env.JWT_SECRET
+if (!jwtSecret) {
+  throw new Error('JWT_SECRET environment variable is not configured')
+}
+export const JWT_SECRET = jwtSecret

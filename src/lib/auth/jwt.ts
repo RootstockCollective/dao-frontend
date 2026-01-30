@@ -1,6 +1,5 @@
 import { SignJWT, jwtVerify } from 'jose'
-
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production'
+import { JWT_SECRET } from '@/lib/constants'
 const JWT_ALGORITHM = 'HS256'
 const JWT_EXPIRATION = '24h' // 24 hours session
 
