@@ -37,6 +37,7 @@ export default defineConfig({
           ],
           env: {
             // Testnet configuration
+            JWT_SECRET: 'test-jwt',
             NEXT_PUBLIC_ENV: 'testnet',
             NEXT_PUBLIC_CHAIN_ID: '31',
             NEXT_PUBLIC_NODE_URL: 'https://public-node.testnet.rsk.co',
@@ -87,6 +88,7 @@ export default defineConfig({
           env: {
             // Mainnet configuration for quote tests
             // Quoting is read-only (view function), so it's safe to test on mainnet - no transactions or gas costs
+            JWT_SECRET: 'test-jwt',
             NEXT_PUBLIC_ENV: 'mainnet',
             NEXT_PUBLIC_CHAIN_ID: '30', // Rootstock mainnet chain ID
             NEXT_PUBLIC_NODE_URL: 'https://public-node.rsk.co', // Mainnet RPC
@@ -137,6 +139,7 @@ export default defineConfig({
           env: {
             // Fork configuration for swap tests
             // Uses local fork of Rootstock Mainnet - allows testing swap execution without real funds
+            JWT_SECRET: 'test-jwt',
             NEXT_PUBLIC_ENV: 'fork',
             NEXT_PUBLIC_CHAIN_ID: '31337', // Local fork chain ID (Anvil default, avoids MetaMask conflicts)
             // Fork RPC URL - should be set via FORK_RPC_URL env var or defaults to local Anvil
