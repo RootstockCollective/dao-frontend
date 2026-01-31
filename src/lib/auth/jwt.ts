@@ -1,4 +1,5 @@
 import { SignJWT, jwtVerify } from 'jose'
+import { NextRequest } from 'next/server'
 
 const JWT_ALGORITHM = 'HS256'
 const JWT_EXPIRATION = '24h' // 24 hours session
@@ -104,27 +105,14 @@ export function isTokenExpired(jwtToken: string | null): boolean {
 /**
  * Extracts JWT token from Authorization header or cookie
  */
-export function extractTokenFromRequest(request: Request): string | null {
+export function extractTokenFromRequest(request: NextRequest): string | null {
   // Try Authorization header first (Bearer token)
   const authHeader = request.headers.get('authorization')
   if (authHeader?.startsWith('Bearer ')) {
     return authHeader.substring(7)
   }
 
-  // Try cookie
-  const cookieHeader = request.headers.get('cookie')
-  if (cookieHeader) {
-    const cookies = cookieHeader.split(';').reduce(
-      (acc, cookie) => {
-        const [key, value] = cookie.trim().split('=')
-        acc[key] = value
-        return acc
-      },
-      {} as Record<string, string>,
-    )
-
-    return cookies['auth-token'] || null
-  }
-
-  return null
+  // Try cookie (using Next.js built-in cookie API)
+  const authCookie = request.cookies.get('auth-token')
+  return authCookie?.value || null
 }
