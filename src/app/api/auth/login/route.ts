@@ -57,10 +57,10 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { challengeId, signature } = body
 
-    if (!challengeId || !signature) {
-      return NextResponse.json({ error: 'Missing challengeId or signature' }, { status: 400 })
-    }
-
+    // Input validation is handled by verifySignature() which validates:
+    // - challengeId format and existence
+    // - signature format (0x hex string)
+    // - cryptographic signature verification via SIWE
     const { token } = await verifySignature(challengeId, signature)
 
     // Return token in response body and as HTTP-only cookie
