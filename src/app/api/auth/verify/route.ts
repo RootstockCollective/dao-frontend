@@ -1,25 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyJWT, extractTokenFromRequest } from '@/lib/auth/jwt'
-
-const isProduction = process.env.NODE_ENV === 'production'
-
-/**
- * Sanitizes error messages for production to prevent information leakage
- * Returns generic error messages in production, detailed messages in development
- */
-function sanitizeError(message: string): string {
-  if (isProduction) {
-    // Generic error messages for production
-    if (message.includes('Missing token')) {
-      return 'Authentication required'
-    }
-    if (message.includes('Invalid or expired token')) {
-      return 'Authentication failed'
-    }
-    return 'Authentication failed'
-  }
-  return message
-}
+import { sanitizeError } from '@/lib/auth/utils'
 
 /**
  * POST /api/auth/verify

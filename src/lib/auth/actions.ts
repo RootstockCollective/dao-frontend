@@ -5,25 +5,8 @@ import { SiweMessage } from 'siwe'
 import { randomBytes } from 'crypto'
 import { storeChallenge, getAndConsumeChallenge } from './challengeStore'
 import { signJWT } from './jwt'
+import { sanitizeError, isProduction } from './utils'
 import { currentEnvChain } from '@/config/config'
-
-const isProduction = process.env.NODE_ENV === 'production'
-
-/**
- * Sanitizes error messages for production to prevent information leakage
- */
-function sanitizeError(message: string): string {
-  if (isProduction) {
-    if (message.includes('Invalid address')) return 'Invalid request'
-    if (message.includes('Missing host')) return 'Invalid request'
-    if (message.includes('Invalid challenge')) return 'Authentication failed'
-    if (message.includes('Invalid signature')) return 'Authentication failed'
-    if (message.includes('expired')) return 'Authentication failed'
-    if (message.includes('verification failed')) return 'Authentication failed'
-    return 'Authentication failed'
-  }
-  return message
-}
 
 interface RequestChallengeResult {
   challengeId: string
