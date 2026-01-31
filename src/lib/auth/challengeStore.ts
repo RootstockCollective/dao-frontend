@@ -70,11 +70,3 @@ export function getAndConsumeChallenge(id: string): StoredChallenge | null {
 
   return challenge
 }
-
-/**
- * Get the current number of active challenges (for debugging/monitoring)
- */
-export function getChallengeCount(): number {
-  cleanup()
-  return challenges.size
-}
