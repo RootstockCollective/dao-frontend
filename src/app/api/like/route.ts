@@ -88,72 +88,7 @@ export const POST = withAuth(async (_request, session: JWTPayload) => {
     success: true,
     userAddress,
     body,
-  })
-})
-
-/**
- * GET /api/like
- *
- * Alternative GET endpoint for checking like status (same validation logic)
- *
- * Query parameters:
- * - proposalId: string (or other identifier)
- */
-export const GET = withAuth(async (request, session: JWTPayload) => {
-  const { userAddress } = session
-
-  // Get query parameters
-  const searchParams = request.nextUrl.searchParams
-  const proposalId = searchParams.get('proposalId')
-
-  // ============================================
-  // PLACEHOLDER: Add your like check logic here
-  // ============================================
-  //
-  // At this point, you have:
-  // - A validated session with userAddress (and future fields)
-  // - Query parameters (e.g., proposalId)
-  //
-  // You can now:
-  // - Check if user has liked the item
-  // - Get like count for the item
-  // - Return like status
-  // - etc.
-  //
-  // Example:
-  // if (!proposalId) {
-  //   return NextResponse.json(
-  //     { success: false, error: 'proposalId is required' },
-  //     { status: 400 },
-  //   )
-  // }
-  //
-  // const isLiked = await db('ProposalLike')
-  //   .where({
-  //     proposalId,
-  //     userAddress: userAddress.toLowerCase()
-  //   })
-  //   .first()
-  //
-  // const likeCount = await db('ProposalLike')
-  //   .where({ proposalId })
-  //   .count('* as count')
-  //   .first()
-  //
-  // return NextResponse.json({
-  //   success: true,
-  //   userAddress,
-  //   liked: !!isLiked,
-  //   likeCount: likeCount?.count || 0,
-  // })
-  //
-  // ============================================
-
-  // Return success response
-  // Modify this response to include your custom data
-  return NextResponse.json({
-    success: true,
-    userAddress,
-    proposalId,
+    tester: 1,
+    session,
   })
 })
