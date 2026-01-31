@@ -36,21 +36,21 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (!token) {
+    if (token) {
+      // Already validated as non-empty string from body (line 31)
+    } else {
       token = extractTokenFromRequest(request)
-    }
-
-    // Validate token is a non-empty string before proceeding
-    if (!token || typeof token !== 'string' || token.trim().length === 0) {
-      return NextResponse.json(
-        {
-          valid: false,
-          error: sanitizeError(
-            'Missing token. Send token in body { token }, Authorization: Bearer <token>, or auth-token cookie.',
-          ),
-        },
-        { status: 400 },
-      )
+      if (!token) {
+        return NextResponse.json(
+          {
+            valid: false,
+            error: sanitizeError(
+              'Missing token. Send token in body { token }, Authorization: Bearer <token>, or auth-token cookie.',
+            ),
+          },
+          { status: 400 },
+        )
+      }
     }
 
     const userAddress = await verifyJWT(token)
