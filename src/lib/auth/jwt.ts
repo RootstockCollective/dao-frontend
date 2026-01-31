@@ -12,7 +12,7 @@ if (!process.env.JWT_SECRET) {
 }
 const JWT_SECRET = process.env.JWT_SECRET || ''
 
-interface JWTPayload {
+export interface JWTPayload {
   userAddress: string
   iat?: number
   exp?: number
@@ -34,18 +34,20 @@ export async function signJWT(userAddress: string): Promise<string> {
 }
 
 /**
- * Verifies and decodes a JWT token, returning the user address
+ * Verifies and decodes a JWT token, returning the full payload
  */
-export async function verifyJWT(token: string): Promise<string | null> {
+export async function verifyJWT(token: string): Promise<JWTPayload | null> {
   try {
     const secret = new TextEncoder().encode(JWT_SECRET)
-    // Use generic type parameter to properly type the payload
     const { payload } = await jwtVerify<JWTPayload>(token, secret, {
       algorithms: [JWT_ALGORITHM],
     })
 
-    // Payload is now properly typed as JWTPayload
-    return payload.userAddress || null
+    if (!payload.userAddress) {
+      return null
+    }
+
+    return payload
   } catch (error) {
     console.error('JWT verification failed:', error)
     return null

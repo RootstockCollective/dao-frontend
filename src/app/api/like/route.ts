@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { extractTokenFromRequest, verifyJWT } from '@/lib/auth/jwt'
+import { NextResponse } from 'next/server'
+import { JWTPayload } from '@/lib/auth/jwt'
+import { withAuth } from '@/lib/auth/withAuth'
 
 /**
  * POST /api/like
@@ -31,81 +32,64 @@ import { extractTokenFromRequest, verifyJWT } from '@/lib/auth/jwt'
  *   error: string
  * }
  */
-export async function POST(request: NextRequest) {
-  try {
-    // Step 1: Extract token from request (header or cookie)
-    const token = extractTokenFromRequest(request)
+export const POST = withAuth(async (_request, session: JWTPayload) => {
+  const { userAddress } = session
 
-    if (!token) {
-      return NextResponse.json({ success: false, error: 'No authentication token provided' }, { status: 401 })
-    }
+  // Parse request body
+  const body = await _request.json().catch(() => ({}))
 
-    // Step 2: Verify JWT token and get user address
-    const userAddress = await verifyJWT(token)
+  // ============================================
+  // PLACEHOLDER: Add your like logic here
+  // ============================================
+  //
+  // At this point, you have:
+  // - A validated session with userAddress (and future fields)
+  // - Request body data (e.g., proposalId, itemId, etc.)
+  //
+  // You can now:
+  // - Check if user already liked the item
+  // - Insert/update like in database
+  // - Return like count or status
+  // - etc.
+  //
+  // Example:
+  // const { proposalId } = body
+  // if (!proposalId) {
+  //   return NextResponse.json(
+  //     { success: false, error: 'proposalId is required' },
+  //     { status: 400 },
+  //   )
+  // }
+  //
+  // // Check if already liked
+  // const existingLike = await db('ProposalLike')
+  //   .where({ proposalId, userAddress: userAddress.toLowerCase() })
+  //   .first()
+  //
+  // if (existingLike) {
+  //   // Unlike: delete the like
+  //   await db('ProposalLike').where({ id: existingLike.id }).delete()
+  //   return NextResponse.json({ success: true, liked: false, userAddress })
+  // } else {
+  //   // Like: insert new like
+  //   await db('ProposalLike').insert({
+  //     proposalId,
+  //     userAddress: userAddress.toLowerCase(),
+  //     createdAt: new Date(),
+  //   })
+  //   return NextResponse.json({ success: true, liked: true, userAddress })
+  // }
+  //
+  // ============================================
 
-    if (!userAddress) {
-      return NextResponse.json({ success: false, error: 'Invalid or expired token' }, { status: 401 })
-    }
-
-    // Step 3: Parse request body
-    const body = await request.json().catch(() => ({}))
-
-    // ============================================
-    // PLACEHOLDER: Add your like logic here
-    // ============================================
-    //
-    // At this point, you have:
-    // - A validated userAddress (from JWT)
-    // - Request body data (e.g., proposalId, itemId, etc.)
-    //
-    // You can now:
-    // - Check if user already liked the item
-    // - Insert/update like in database
-    // - Return like count or status
-    // - etc.
-    //
-    // Example:
-    // const { proposalId } = body
-    // if (!proposalId) {
-    //   return NextResponse.json(
-    //     { success: false, error: 'proposalId is required' },
-    //     { status: 400 },
-    //   )
-    // }
-    //
-    // // Check if already liked
-    // const existingLike = await db('ProposalLike')
-    //   .where({ proposalId, userAddress: userAddress.toLowerCase() })
-    //   .first()
-    //
-    // if (existingLike) {
-    //   // Unlike: delete the like
-    //   await db('ProposalLike').where({ id: existingLike.id }).delete()
-    //   return NextResponse.json({ success: true, liked: false, userAddress })
-    // } else {
-    //   // Like: insert new like
-    //   await db('ProposalLike').insert({
-    //     proposalId,
-    //     userAddress: userAddress.toLowerCase(),
-    //     createdAt: new Date(),
-    //   })
-    //   return NextResponse.json({ success: true, liked: true, userAddress })
-    // }
-    //
-    // ============================================
-
-    // Step 4: Return success response
-    // Modify this response to include your custom data
-    return NextResponse.json({
-      success: true,
-      userAddress,
-      // Add your custom response fields here
-    })
-  } catch (error) {
-    console.error('Like error:', error)
-    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 })
-  }
-}
+  // Return success response
+  // Modify this response to include your custom data
+  return NextResponse.json({
+    success: true,
+    userAddress,
+    body,
+  })
+})
 
 /**
  * GET /api/like
@@ -115,78 +99,61 @@ export async function POST(request: NextRequest) {
  * Query parameters:
  * - proposalId: string (or other identifier)
  */
-export async function GET(request: NextRequest) {
-  try {
-    // Step 1: Extract token from request (header or cookie)
-    const token = extractTokenFromRequest(request)
+export const GET = withAuth(async (request, session: JWTPayload) => {
+  const { userAddress } = session
 
-    if (!token) {
-      return NextResponse.json({ success: false, error: 'No authentication token provided' }, { status: 401 })
-    }
+  // Get query parameters
+  const searchParams = request.nextUrl.searchParams
+  const proposalId = searchParams.get('proposalId')
 
-    // Step 2: Verify JWT token and get user address
-    const userAddress = await verifyJWT(token)
+  // ============================================
+  // PLACEHOLDER: Add your like check logic here
+  // ============================================
+  //
+  // At this point, you have:
+  // - A validated session with userAddress (and future fields)
+  // - Query parameters (e.g., proposalId)
+  //
+  // You can now:
+  // - Check if user has liked the item
+  // - Get like count for the item
+  // - Return like status
+  // - etc.
+  //
+  // Example:
+  // if (!proposalId) {
+  //   return NextResponse.json(
+  //     { success: false, error: 'proposalId is required' },
+  //     { status: 400 },
+  //   )
+  // }
+  //
+  // const isLiked = await db('ProposalLike')
+  //   .where({
+  //     proposalId,
+  //     userAddress: userAddress.toLowerCase()
+  //   })
+  //   .first()
+  //
+  // const likeCount = await db('ProposalLike')
+  //   .where({ proposalId })
+  //   .count('* as count')
+  //   .first()
+  //
+  // return NextResponse.json({
+  //   success: true,
+  //   userAddress,
+  //   liked: !!isLiked,
+  //   likeCount: likeCount?.count || 0,
+  // })
+  //
+  // ============================================
 
-    if (!userAddress) {
-      return NextResponse.json({ success: false, error: 'Invalid or expired token' }, { status: 401 })
-    }
-
-    // Step 3: Get query parameters
-    const searchParams = request.nextUrl.searchParams
-    const proposalId = searchParams.get('proposalId')
-
-    // ============================================
-    // PLACEHOLDER: Add your like check logic here
-    // ============================================
-    //
-    // At this point, you have:
-    // - A validated userAddress (from JWT)
-    // - Query parameters (e.g., proposalId)
-    //
-    // You can now:
-    // - Check if user has liked the item
-    // - Get like count for the item
-    // - Return like status
-    // - etc.
-    //
-    // Example:
-    // if (!proposalId) {
-    //   return NextResponse.json(
-    //     { success: false, error: 'proposalId is required' },
-    //     { status: 400 },
-    //   )
-    // }
-    //
-    // const isLiked = await db('ProposalLike')
-    //   .where({
-    //     proposalId,
-    //     userAddress: userAddress.toLowerCase()
-    //   })
-    //   .first()
-    //
-    // const likeCount = await db('ProposalLike')
-    //   .where({ proposalId })
-    //   .count('* as count')
-    //   .first()
-    //
-    // return NextResponse.json({
-    //   success: true,
-    //   userAddress,
-    //   liked: !!isLiked,
-    //   likeCount: likeCount?.count || 0,
-    // })
-    //
-    // ============================================
-
-    // Step 4: Return success response
-    // Modify this response to include your custom data
-    return NextResponse.json({
-      success: true,
-      userAddress,
-      // Add your custom response fields here
-    })
-  } catch (error) {
-    console.error('Like check error:', error)
-    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 })
-  }
-}
+  // Return success response
+  // Modify this response to include your custom data
+  return NextResponse.json({
+    success: true,
+    userAddress,
+    proposalId,
+  })
+})
