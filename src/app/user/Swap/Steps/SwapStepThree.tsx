@@ -9,7 +9,8 @@ import { USDT0, USDRIF } from '@/lib/constants'
 import { formatForDisplay } from '@/lib/utils'
 import { Hash, formatUnits } from 'viem'
 import Big from '@/lib/big'
-import { Label } from '@/components/Typography'
+import { Label, Paragraph } from '@/components/Typography'
+import Image from 'next/image'
 import { SwapInputComponent, SwapInputToken } from '@/components/SwapInput'
 import { PercentageButtons, PercentageButtonItem } from '@/components/PercentageButtons'
 
@@ -163,6 +164,14 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
           onPercentageClick={setSlippageTolerance}
           testId="slippage-buttons"
         />
+        {slippageTolerance === null && (
+          <div className="flex items-center gap-2 mt-2 py-3 bg-st-info/20 rounded-sm">
+            <Image src="/images/warning-icon.svg" alt="Warning" width={24} height={24} />
+            <Paragraph variant="body-s" className="text-st-info">
+              Select a slippage option to swap
+            </Paragraph>
+          </div>
+        )}
       </div>
 
       {/* Minimum Received - shown after slippage is selected */}
