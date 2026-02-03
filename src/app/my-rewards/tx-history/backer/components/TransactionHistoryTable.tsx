@@ -5,8 +5,8 @@ import { useTableActionsContext, useTableContext, usePricesContext } from '@/sha
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useAccount } from 'wagmi'
 import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE, TransactionHistoryCellDataMap } from '../../config'
-import { DesktopTransactionHistory } from '../../components/desktop'
-import { MobileTransactionHistory } from '../../components/mobile'
+import { DesktopTransactionHistory } from '@/app/my-rewards/tx-history/components/desktop'
+import { MobileTransactionHistory } from '@/app/my-rewards/tx-history/components/mobile'
 import { convertDataToRowData } from '../utils/convertDataToRowData'
 import { useCycleContext } from '@/app/collective-rewards/metrics/context'
 import { TablePager } from '@/components/TableNew'
@@ -19,7 +19,7 @@ import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { useScrollLock } from '@/shared/hooks/useScrollLock'
 import { ActiveFilter } from '@/components/FilterSideBar/types'
 import { FilterButton } from '@/app/proposals/components/filter/FilterButton'
-import { CsvButton } from '../../components/CsvButton'
+import { CsvButton } from '@/app/my-rewards/tx-history/components/CsvButton'
 
 const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
   cycle: 'cycleStart',

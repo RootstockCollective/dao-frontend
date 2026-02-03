@@ -5,7 +5,7 @@ import { Header } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useAccount } from 'wagmi'
-import { Section } from '../../components/Section'
+import { Section } from '@/app/my-rewards/components/Section'
 import TransactionHistoryTableContainer from './components/TransactionHistoryTableContainer'
 
 const NAME = 'Transactions History'

@@ -1,5 +1,4 @@
-import { Paragraph } from '@/components/Typography'
-import { BaseTypography } from '@/components/Typography/Typography'
+import { Header, Paragraph } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import Image from 'next/image'
 import CollapsibleWithPreview from '@/components/CollapsibleWithPreview/CollapsibleWithPreview'
@@ -23,15 +22,14 @@ const ExpandedContent = () => {
       {/* Center: Main Content */}
       <div className="flex flex-col text-base justify-center gap-4 basis-1/2 md:basis-1/2 md:mt-10">
         <div>
-          <BaseTypography variant="h1" className="text-v3-text-0">
-            BECOME A <br className="md:hidden" /> COLLECTIVE BUILDER.
-          </BaseTypography>
-          <br />
-          <BaseTypography variant="h1" className="text-v3-bg-accent-20 mt-2">
+          <Header variant="h1" className="text-v3-text-0">
+            BECOME A <br className="md:hidden" /> COLLECTIVE BUILDER. <br className="hidden md:block" />
+          </Header>
+          <Header variant="h1" className="text-v3-bg-accent-20">
             SECURE FUNDING.
             <br className="md:hidden" /> EARN
             <br className="md:hidden" /> CONTINUOUSLY.
-          </BaseTypography>
+          </Header>
         </div>
         <Paragraph className="text-v3-text-0">
           Join a growing network of innovators building the future of decentralised infrastructure. Get
@@ -57,9 +55,9 @@ const ExpandedContent = () => {
       </div>
       {/* Right: Why Become a Builder */}
       <div className="flex flex-col justify-center bg-transparent basis-1/4 md:basis-1/2 lg:basis-1/4 w-full lg:pl-8 mt-8 llg:mt-10">
-        <BaseTypography variant="h3" className="text-v3-text-0 mb-4">
+        <Header variant="h3" className="text-v3-text-0 mb-4">
           WHY BECOME A BUILDER?
-        </BaseTypography>
+        </Header>
         <ul className="list-[circle] pl-5 text-v3-text-0">
           <li>
             <Paragraph>Join a mission-aligned network</Paragraph>
@@ -95,16 +93,16 @@ const CollapsedContent = () => {
   return (
     <div className="flex flex-col text-base justify-center gap-4 basis-1/2 md:basis-1/2">
       <div>
-        <BaseTypography variant="h1" className="text-v3-text-0">
+        <Header variant="h1" className="text-v3-text-0">
           BECOME A <br className="md:hidden" /> COLLECTIVE BUILDER.
-        </BaseTypography>
+        </Header>
         <br />
-        <BaseTypography variant="h1" className="text-v3-bg-accent-20 mt-2">
+        <Header variant="h1" className="text-v3-bg-accent-20 mt-2">
           SECURE FUNDING.
           <br className="md:hidden" /> EARN
           <br />
           CONTINUOUSLY.
-        </BaseTypography>
+        </Header>
       </div>
       <div className="flex gap-4 mt-2">
         <Button variant="primary" onClick={() => router.push('/proposals/new?type=Builder')} className="py-3">
