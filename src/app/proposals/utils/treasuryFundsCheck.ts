@@ -63,7 +63,7 @@ export const decodeTreasuryTransfer = (calldata: string): TreasuryTransferInfo |
 
     // Use the shared extractTreasuryTransferInfo function
     return extractTreasuryTransferInfo(decodedData)
-  } catch (_error) {
+  } catch {
     // If decoding fails, it's not a treasury function we recognize
     return null
   }

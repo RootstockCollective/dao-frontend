@@ -26,7 +26,7 @@ export const UnclaimedRewardsMetric = (): ReactElement => {
 
   useHandleErrors({ error, title: 'Error loading rewards' })
 
-  const { claimRewards: _claimRewards, isClaimable } = useClaimBackerRewards()
+  const { isClaimable } = useClaimBackerRewards()
 
   const { metricTokens, total } = useMemo(
     () =>

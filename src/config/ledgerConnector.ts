@@ -486,7 +486,7 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
             try {
               await this.connect()
               return true
-            } catch (_error) {
+            } catch {
               // Silent fail - user will need to manually reconnect
               clearConnectionState()
               return false

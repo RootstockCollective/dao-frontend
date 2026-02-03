@@ -115,7 +115,7 @@ export const usePixelExtractor = () => {
       if (cached) {
         return JSON.parse(cached)
       }
-    } catch (_error) {
+    } catch {
       // Ignore cache errors and continue with extraction
     }
 
@@ -138,7 +138,7 @@ export const usePixelExtractor = () => {
     // Store results in cache
     try {
       localStorage.setItem(cacheKey, JSON.stringify(results))
-    } catch (_error) {
+    } catch {
       // Ignore cache storage errors
     }
 
