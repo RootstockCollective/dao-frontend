@@ -3,6 +3,8 @@ import { NextRequest } from 'next/server'
 
 const JWT_ALGORITHM = 'HS256'
 const JWT_EXPIRATION = '24h' // 24 hours session
+const JWT_ISSUER = 'rootstock-collective'
+const JWT_AUDIENCE = 'rootstock-collective-dapp'
 
 if (!process.env.JWT_SECRET) {
   if (process.env.NODE_ENV === 'production') {
@@ -11,6 +13,9 @@ if (!process.env.JWT_SECRET) {
   console.warn('⚠️  JWT_SECRET environment variable is not configured')
 }
 const JWT_SECRET = process.env.JWT_SECRET || ''
+
+// Encode the JWT secret once at module initialization
+const encodedSecret = new TextEncoder().encode(JWT_SECRET)
 
 export interface JWTPayload {
   userAddress: string
@@ -22,8 +27,6 @@ export interface JWTPayload {
  * Signs a JWT token with the user's address
  */
 export async function signJWT(userAddress: string): Promise<string> {
-  const secret = new TextEncoder().encode(JWT_SECRET)
-
   // Normalize address to lowercase for consistency
   const normalizedAddress = userAddress.toLowerCase()
 
@@ -31,7 +34,9 @@ export async function signJWT(userAddress: string): Promise<string> {
     .setProtectedHeader({ alg: JWT_ALGORITHM })
     .setIssuedAt()
     .setExpirationTime(JWT_EXPIRATION)
-    .sign(secret)
+    .setIssuer(JWT_ISSUER)
+    .setAudience(JWT_AUDIENCE)
+    .sign(encodedSecret)
 
   return token
 }
@@ -41,9 +46,10 @@ export async function signJWT(userAddress: string): Promise<string> {
  */
 export async function verifyJWT(token: string): Promise<JWTPayload | null> {
   try {
-    const secret = new TextEncoder().encode(JWT_SECRET)
-    const { payload } = await jwtVerify<JWTPayload>(token, secret, {
+    const { payload } = await jwtVerify<JWTPayload>(token, encodedSecret, {
       algorithms: [JWT_ALGORITHM],
+      issuer: JWT_ISSUER,
+      audience: JWT_AUDIENCE,
     })
 
     if (!payload.userAddress) {
@@ -97,8 +103,7 @@ export function isTokenExpired(jwtToken: string | null): boolean {
     const exp = payload.exp
 
     if (!exp) {
-      // No expiration claim means token doesn't expire (unlikely but possible)
-      return false
+      return true
     }
 
     // exp is in seconds, Date.now() is in milliseconds
