@@ -1,14 +1,9 @@
-import { Row } from '@/shared/context'
 import { memo } from 'react'
-import { ColumnId, VaultHistoryCellDataMap } from './VaultHistoryTable.config'
+import { VaultHistoryRowsProps } from './VaultHistoryTable.config'
 import { MobileVaultHistoryCard } from './MobileVaultHistoryCard'
 import { Paragraph } from '@/components/Typography'
 
-interface MobileVaultHistoryComponentProps {
-  rows: Row<ColumnId, Row['id'], VaultHistoryCellDataMap>[]
-}
-
-export const MobileVaultHistory = memo(({ rows }: MobileVaultHistoryComponentProps) => {
+export const MobileVaultHistory = memo(({ rows }: VaultHistoryRowsProps) => {
   if (rows.length === 0) {
     return (
       <div
