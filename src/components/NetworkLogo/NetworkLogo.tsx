@@ -28,7 +28,7 @@ export const NetworkLogo = ({ compact = false, className, ...props }: NetworkLog
   return (
     <div
       className={cn(
-        'flex items-center rounded-full bg-brand-rootstock-green text-black w-fit',
+        'flex items-center rounded-full bg-st-success text-black w-fit',
         compact ? 'size-11 justify-center' : 'gap-2 px-3 py-2',
         className,
       )}
