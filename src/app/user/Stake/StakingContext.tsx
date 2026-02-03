@@ -131,7 +131,16 @@ export const StakingProvider: FC<Props> = ({ tokenToSend, tokenToReceive, childr
       buttonActions,
       setButtonActions,
     }),
-    [stakeData.amount, tokenToSend, tokenToReceive, stakePreviewFrom, stakePreviewTo, buttonActions],
+    [
+      stakeData.amount,
+      onAmountChange,
+      tokenToSend,
+      tokenToReceive,
+      stakePreviewFrom,
+      stakePreviewTo,
+      buttonActions,
+      setButtonActions,
+    ],
   )
 
   return <StakingContext.Provider value={data}>{children}</StakingContext.Provider>
