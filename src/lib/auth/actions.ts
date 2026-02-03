@@ -3,6 +3,7 @@
 import { headers } from 'next/headers'
 import { SiweMessage } from 'siwe'
 import { randomBytes } from 'crypto'
+import { isAddress } from 'viem'
 import { storeChallenge, getAndConsumeChallenge } from './challengeStore'
 import { signJWT } from './jwt'
 import { sanitizeError, isProduction } from './utils'
@@ -24,7 +25,7 @@ interface RequestChallengeResult {
  */
 export async function requestChallenge(address: string): Promise<RequestChallengeResult> {
   // Validate address format
-  if (!/^0x[a-fA-F0-9]{40}$/.test(address)) {
+  if (!isAddress(address)) {
     throw new Error(sanitizeError('Invalid address format'))
   }
 

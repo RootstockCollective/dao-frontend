@@ -1,40 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { requestChallenge, verifySignature } from '@/lib/auth/actions'
+import { verifySignature } from '@/lib/auth/actions'
 
 const isProduction = process.env.NODE_ENV === 'production'
-
-/**
- * GET /api/auth/login
- *
- * Request a SIWE challenge for authentication.
- * The server creates the full SIWE message - the client only provides their address.
- *
- * Query params:
- * - address: The Ethereum address requesting authentication
- *
- * Response:
- * {
- *   challengeId: string,  // ID to reference the challenge when verifying
- *   message: string       // The SIWE message to sign
- * }
- */
-export async function GET(request: NextRequest) {
-  try {
-    const address = request.nextUrl.searchParams.get('address')
-
-    if (!address) {
-      return NextResponse.json({ error: 'Missing address parameter' }, { status: 400 })
-    }
-
-    const result = await requestChallenge(address)
-    return NextResponse.json(result)
-  } catch (error) {
-    console.error('Challenge request error:', error)
-    const message = error instanceof Error ? error.message : 'Internal server error'
-    const status = message.includes('Invalid') ? 400 : 500
-    return NextResponse.json({ error: message }, { status })
-  }
-}
 
 /**
  * POST /api/auth/login
@@ -43,7 +10,7 @@ export async function GET(request: NextRequest) {
  *
  * Request body:
  * {
- *   challengeId: string,  // The challenge ID from GET /api/auth/login
+ *   challengeId: string,  // The challenge ID from requestChallenge server action
  *   signature: string     // The signature of the SIWE message
  * }
  *

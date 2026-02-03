@@ -24,7 +24,10 @@ export interface JWTPayload {
 export async function signJWT(userAddress: string): Promise<string> {
   const secret = new TextEncoder().encode(JWT_SECRET)
 
-  const token = await new SignJWT({ userAddress })
+  // Normalize address to lowercase for consistency
+  const normalizedAddress = userAddress.toLowerCase()
+
+  const token = await new SignJWT({ userAddress: normalizedAddress })
     .setProtectedHeader({ alg: JWT_ALGORITHM })
     .setIssuedAt()
     .setExpirationTime(JWT_EXPIRATION)
@@ -47,7 +50,11 @@ export async function verifyJWT(token: string): Promise<JWTPayload | null> {
       return null
     }
 
-    return payload
+    // Normalize address to lowercase for consistency
+    return {
+      ...payload,
+      userAddress: payload.userAddress.toLowerCase(),
+    }
   } catch (error) {
     console.error('JWT verification failed:', error)
     return null
@@ -67,7 +74,8 @@ export function extractUserAddressFromToken(jwtToken: string | null): string | n
 
   try {
     const payload = JSON.parse(atob(jwtToken.split('.')[1]))
-    return payload.userAddress || null
+    const address = payload.userAddress
+    return address ? address.toLowerCase() : null
   } catch {
     return null
   }
@@ -111,10 +119,14 @@ export function extractTokenFromRequest(request: NextRequest): string | null {
   // Try Authorization header first (Bearer token)
   const authHeader = request.headers.get('authorization')
   if (authHeader?.startsWith('Bearer ')) {
-    return authHeader.substring(7)
+    const token = authHeader.substring(7).trim()
+    if (token.length > 0) {
+      return token
+    }
   }
 
   // Try cookie (using Next.js built-in cookie API)
   const authCookie = request.cookies.get('auth-token')
-  return authCookie?.value || null
+  const cookieValue = authCookie?.value?.trim()
+  return cookieValue && cookieValue.length > 0 ? cookieValue : null
 }
