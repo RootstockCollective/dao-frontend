@@ -101,10 +101,8 @@ export const AllocationInput = ({
       : 0
 
   const onSliderChange = (value: number[]) => {
-    const [rawPercent] = value
-    // Clamp percent to valid 0-100 range (defensive against slider component edge cases)
-    const percent = Math.max(0, Math.min(100, rawPercent ?? 0))
-    const newBacking = onchainBacking + (BigInt(percent) * totalAvailableBalance) / 100n
+    const [percent] = value
+    const newBacking = onchainBacking + (BigInt(percent ?? 0) * totalAvailableBalance) / 100n
     if (isNegativeBacking) {
       return
     }
