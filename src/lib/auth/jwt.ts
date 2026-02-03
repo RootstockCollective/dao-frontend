@@ -1,4 +1,4 @@
-import { SignJWT, jwtVerify } from 'jose'
+import { SignJWT, jwtVerify, decodeJwt } from 'jose'
 import { NextRequest } from 'next/server'
 
 const JWT_ALGORITHM = 'HS256'
@@ -73,7 +73,7 @@ export function extractUserAddressFromToken(jwtToken: string | null): string | n
   if (!jwtToken) return null
 
   try {
-    const payload = JSON.parse(atob(jwtToken.split('.')[1]))
+    const payload = decodeJwt(jwtToken) as JWTPayload
     const address = payload.userAddress
     return address ? address.toLowerCase() : null
   } catch {
@@ -93,7 +93,7 @@ export function isTokenExpired(jwtToken: string | null): boolean {
   if (!jwtToken) return true
 
   try {
-    const payload = JSON.parse(atob(jwtToken.split('.')[1]))
+    const payload = decodeJwt(jwtToken)
     const exp = payload.exp
 
     if (!exp) {

@@ -23,8 +23,25 @@ const challenges = new Map<string, StoredChallenge>()
 export const CHALLENGE_TTL_MS = 4 * 60 * 1000 // 4 minutes
 
 /**
+ * Maximum number of challenges to store in memory
+ * Estimated memory usage: ~4 MB (386 bytes per challenge)
+ * With 4-minute TTL, would need 2,500 login attempts/minute to hit this limit
+ */
+const MAX_CHALLENGES = 10000
+
+/**
+ * Counter for challenges created since last cleanup
+ */
+let challengesSinceCleanup = 0
+
+/**
+ * Run cleanup every N challenges
+ */
+const CLEANUP_INTERVAL = 20
+
+/**
  * Cleanup expired challenges from the store
- * Called automatically on store operations
+ * Called automatically every CLEANUP_INTERVAL challenges
  */
 function cleanup(): void {
   const now = Date.now()
@@ -36,12 +53,39 @@ function cleanup(): void {
 }
 
 /**
+ * Enforce max challenges limit by removing oldest entries (FIFO)
+ * Called when the map size exceeds MAX_CHALLENGES
+ */
+function enforceMaxLimit(): void {
+  if (challenges.size >= MAX_CHALLENGES) {
+    // Remove oldest entries (first entries in the Map)
+    const entriesToRemove = challenges.size - MAX_CHALLENGES + 1
+    let removed = 0
+    for (const [id] of challenges) {
+      challenges.delete(id)
+      removed++
+      if (removed >= entriesToRemove) {
+        break
+      }
+    }
+  }
+}
+
+/**
  * Store a challenge and return its unique ID
  * @param challenge - The challenge data to store
  * @returns The unique challenge ID
  */
 export function storeChallenge(challenge: Omit<StoredChallenge, 'expiresAt'>): string {
-  cleanup() // Clean up expired challenges on write
+  // Clean up expired challenges every CLEANUP_INTERVAL challenges
+  challengesSinceCleanup++
+  if (challengesSinceCleanup >= CLEANUP_INTERVAL) {
+    cleanup()
+    challengesSinceCleanup = 0
+  }
+
+  // Enforce maximum challenges limit to prevent memory exhaustion
+  enforceMaxLimit()
 
   const id = crypto.randomUUID()
   challenges.set(id, {

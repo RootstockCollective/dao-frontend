@@ -3,7 +3,7 @@
 import { headers } from 'next/headers'
 import { SiweMessage } from 'siwe'
 import { randomBytes } from 'crypto'
-import { isAddress } from 'viem'
+import { isAddress, isHex } from 'viem'
 import { storeChallenge, getAndConsumeChallenge, CHALLENGE_TTL_MS } from './challengeStore'
 import { signJWT } from './jwt'
 import { isProduction, sanitizeError } from './utils'
@@ -132,7 +132,7 @@ async function verifySignatureInternal(
   }
 
   // Validate signature format (0x followed by hex characters)
-  if (!signature || typeof signature !== 'string' || !/^0x[a-fA-F0-9]+$/.test(signature)) {
+  if (!isHex(signature)) {
     throw new Error('Invalid signature format')
   }
 
