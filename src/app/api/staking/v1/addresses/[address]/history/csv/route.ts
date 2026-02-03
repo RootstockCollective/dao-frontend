@@ -4,13 +4,13 @@ import {
   getStakingHistoryFromDB,
   getStakingHistoryCountFromDB,
 } from '@/app/api/staking/v1/addresses/[address]/history/action'
+import { queryParam } from '@/app/api/utils/helpers'
+import { AddressSchema, SortDirectionEnum } from '@/app/api/utils/validators'
 import { RIF, STRIF } from '@/lib/constants'
 import { getFiatAmount } from '@/app/shared/formatter'
 import Big from 'big.js'
 
 const SortFieldEnum = z.enum(['period', 'amount', 'action'])
-const SortDirectionEnum = z.enum(['asc', 'desc'])
-const AddressSchema = z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid address format')
 const QuerySchema = z.object({
   sort_field: SortFieldEnum.default('period'),
   sort_direction: SortDirectionEnum.default('desc'),
@@ -84,13 +84,14 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
     const { address: addressParam } = await context.params
     const address = AddressSchema.parse(addressParam)
     const searchParams = new URL(req.url).searchParams
+    const qp = queryParam(searchParams)
 
     // Handle multiple 'type' query params
     const typeParams = searchParams.getAll('type').filter(v => v !== '')
 
     const parsed = QuerySchema.parse({
-      sort_field: searchParams.get('sort_field') || undefined,
-      sort_direction: searchParams.get('sort_direction') || undefined,
+      sort_field: qp('sort_field'),
+      sort_direction: qp('sort_direction'),
       type: typeParams.length > 0 ? typeParams : undefined,
     })
 
