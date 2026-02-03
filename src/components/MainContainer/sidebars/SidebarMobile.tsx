@@ -30,12 +30,15 @@ export function SidebarMobile() {
       variants={variants}
       initial="drawer"
       animate="drawer"
-      className={cn('h-screen w-full pl-10 py-12', 'fixed inset-0 z-sticky bg-l-black')}
+      className={cn(
+        'w-full pl-10 py-12',
+        'fixed left-0 right-0 bottom-0 top-[var(--header-height)] z-sticky bg-l-black',
+      )}
       transition={{ duration: 0.3, ease: 'circOut' }}
       onClick={closeSidebar}
     >
       <div className="h-full flex flex-col justify-start overflow-y-auto">
-        <ul className="w-fit mt-12">
+        <ul className="w-fit">
           {menuDataToUse.map(data => (
             <Fragment key={data.buttonProps.id}>
               {'type' in data && data.type === 'category' ? (
