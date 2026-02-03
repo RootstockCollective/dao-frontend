@@ -52,7 +52,7 @@ export function NumberInput<T extends FieldValues>({
                 disabled={disabled}
                 prefix={prefix}
                 onValueChange={({ value }) => onChange(value)}
-                onBlur={_e => {
+                onBlur={() => {
                   setIsFocused(false)
                   onBlur()
                 }}

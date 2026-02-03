@@ -120,7 +120,7 @@ export function TextArea<T extends FieldValues>({
                     setIsFocused(true)
                     onFocus?.(e)
                   }}
-                  onBlur={_e => {
+                  onBlur={() => {
                     setIsFocused(false)
                     onBlur()
                   }}

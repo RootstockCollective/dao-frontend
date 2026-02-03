@@ -4,8 +4,6 @@ export function RocketIconKoto({
   'aria-label': ariaLabel = 'Rocket Icon',
   size = 16,
   color = 'var(--color-text-100)',
-  stroke: _stroke = color,
-  strokeWidth: _strokeWidth = '1.25',
   ...props
 }: IconProps) {
   return (

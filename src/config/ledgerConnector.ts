@@ -84,7 +84,7 @@ export function ledgerConnector(options: LedgerConnectorOptions = {}) {
         info: { ...LEDGER_PROVIDER_INFO },
         provider: {
           isLedger: true,
-          request: async (_request: { method: string; params?: unknown[] }) => {
+          request: async () => {
             // This is a placeholder - actual requests go through the connector
             throw new Error('Please connect through the Ledger connector')
           },

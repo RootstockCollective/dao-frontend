@@ -4,8 +4,6 @@ export function ArrowRightIconKoto({
   'aria-label': ariaLabel = 'Arrow Right Icon',
   size = 20,
   color = 'var(--color-text-100)',
-  stroke: _stroke = color,
-  strokeWidth: _strokeWidth = '1.25',
   ...props
 }: IconProps) {
   return (

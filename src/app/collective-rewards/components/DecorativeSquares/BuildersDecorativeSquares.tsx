@@ -1,12 +1,9 @@
 import { type IconProps } from '@/components/Icons'
-import { DEFAULT_ICON_COLOR } from '@/components/Icons/constants'
 
 export function BuildersDecorativeSquares({
   'aria-label': ariaLabel = 'Builders Decorative Squares Icon',
   width = 50,
   height = 40,
-  color = DEFAULT_ICON_COLOR,
-  fill: _fill = color,
   ...props
 }: IconProps) {
   return (

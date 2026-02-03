@@ -5,7 +5,6 @@ export function KotoChevronDownIcon({
   'aria-label': ariaLabel = 'Chevron Up Icon',
   size = DEFAULT_ICON_SIZE,
   color,
-  fill: _fill = color,
   className,
   ...props
 }: IconProps) {

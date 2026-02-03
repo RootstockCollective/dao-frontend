@@ -4,8 +4,6 @@ export function MoneyIconKoto({
   'aria-label': ariaLabel = 'Export Icon',
   size = 24,
   color = 'var(--color-text-100)',
-  stroke: _stroke = color,
-  strokeWidth: _strokeWidth = '1.25',
   ...props
 }: IconProps) {
   return (

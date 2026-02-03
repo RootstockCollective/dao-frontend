@@ -5,7 +5,6 @@ export function ArrowUpIcon({
   'aria-label': ariaLabel = 'Arrow Up Icon',
   size = 16,
   color = DEFAULT_ICON_COLOR,
-  fill: _fill = color,
   ...props
 }: IconProps) {
   return (
