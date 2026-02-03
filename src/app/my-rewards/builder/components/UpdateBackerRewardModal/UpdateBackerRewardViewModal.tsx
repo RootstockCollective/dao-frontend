@@ -8,6 +8,7 @@ import { Modal } from '@/components/Modal/Modal'
 import { Tooltip } from '@/components/Tooltip'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import { cn, durationToLabel } from '@/lib/utils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { Duration } from 'luxon'
 
 interface UpdateBackerRewardViewModalProps {
@@ -39,6 +40,8 @@ const UpdateBackerRewardViewModal = ({
   isLoading,
   isOperational,
 }: UpdateBackerRewardViewModalProps) => {
+  const isDesktop = useIsDesktop()
+
   const handleSave = () => {
     onSave(updatedReward.toString())
   }
@@ -53,8 +56,9 @@ const UpdateBackerRewardViewModal = ({
       closeButtonColor="white"
       data-testid="UpdateBackerRewardViewModal"
       className={cn('font-rootstock-sans shadow-[0px_0px_40px_0px_rgba(255,255,255,0.10)]', className)}
+      fullscreen={!isDesktop}
     >
-      <div className="relative flex flex-col gap-8 min-w-[500px] p-6">
+      <div className={cn('relative flex flex-col gap-8', isDesktop ? 'p-6' : 'p-4 mt-12')}>
         <Header variant="h1">MY BACKERS&apos; REWARDS</Header>
         {isLoading ? (
           <LoadingSpinner />
@@ -64,15 +68,15 @@ const UpdateBackerRewardViewModal = ({
               Any updates to the Rewards % will take effect after the {cooldownDuration?.days} days cooling
               period.
             </Paragraph>
-            <div className="flex gap-6 justify-between">
+            <div className="flex flex-col md:flex-row gap-6 md:justify-between">
               <div className="flex flex-col items-start gap-2">
                 <Span variant="body" className="text-bg-0">
                   Current Rewards %
                 </Span>
                 <Header variant="h1">{currentReward}%</Header>
               </div>
-              <div className="flex flex-col items-center gap-2 w-[60%]">
-                <div className="flex flex-row items-center justify-between px-4 py-3 bg-input-bg w-full">
+              <div className="flex flex-col items-center gap-2 w-full md:w-[60%]">
+                <div className="flex flex-row items-end justify-between px-4 py-3 bg-bg-60 w-full gap-2">
                   <div className="flex flex-col">
                     <Span variant="body-xs" className="text-bg-0">
                       Updated Rewards %
@@ -87,32 +91,39 @@ const UpdateBackerRewardViewModal = ({
                     />
                   </div>
                   {timeRemaining && (
-                    <Span variant="body-s" className="text-brand-rootstock-lime self-end">
+                    <Paragraph variant="body-s" className="text-brand-rootstock-lime md:self-end">
                       Effective in {timeRemaining}
-                    </Span>
+                    </Paragraph>
                   )}
                 </div>
-                <div className="flex items-center gap-2 w-full justify-end">
-                  {suggestedReward && (
-                    <Button variant="secondary-outline" className="p-2 mr-4 text-sm font-normal gap-1">
-                      {suggestedReward}%
-                      <Tooltip
-                        text="Average Rewards % of all the Collective Builders."
-                        className={cn('rounded-sm bg-v3-text-80 text-v3-bg-accent-60 p-6 text-sm')}
-                        side="top"
-                        align="center"
-                      >
-                        <KotoQuestionMarkIcon className="mt-[-0.3rem]" />
-                      </Tooltip>
-                    </Button>
-                  )}
-                </div>
+                {suggestedReward && (
+                  <div className="flex items-center gap-3 md:gap-2 w-full px-4 py-0 justify-end self-end">
+                    <div className="flex items-center gap-2">
+                      <Button variant="secondary-outline" className="px-2 py-1.5 md:py-1 gap-1">
+                        <Span variant="body-s">{suggestedReward}%</Span>
+                      </Button>
+                    </div>
+                    <Tooltip
+                      text="Average Rewards % of all the Collective Builders."
+                      className={cn('rounded-sm bg-v3-text-80 text-v3-bg-accent-60 p-6 text-sm')}
+                      side="top"
+                      align="center"
+                    >
+                      <KotoQuestionMarkIcon />
+                    </Tooltip>
+                  </div>
+                )}
               </div>
             </div>
           </>
         )}
-        <div className="flex gap-4 justify-end">
-          <Button variant="secondary-outline" onClick={onClose}>
+        <div
+          className={cn(
+            'flex gap-4 md:justify-end',
+            isDesktop ? '' : 'fixed bottom-0 left-0 right-0 p-4 bg-bg-80',
+          )}
+        >
+          <Button variant="secondary-outline" onClick={onClose} className="w-full md:w-auto">
             Cancel
           </Button>
           {isTxPending ? (
@@ -120,6 +131,7 @@ const UpdateBackerRewardViewModal = ({
           ) : (
             <AlwaysEnabledButton
               onClick={handleSave}
+              className="w-full md:w-auto"
               conditionPairs={[
                 {
                   condition: () => !isOperational,
