@@ -23,7 +23,18 @@ export const useGetVaultHistory = (params?: UseGetVaultHistoryParams) => {
   const { data, isLoading, error } = useQuery<VaultHistoryResponse, Error>({
     queryFn: async (): Promise<VaultHistoryResponse> => {
       if (!address) {
-        return { data: [], pagination: { total: 0, page: 1, limit: 20, totalPages: 0 } }
+        return {
+          data: [],
+          pagination: {
+            total: 0,
+            page: 1,
+            limit: 20,
+            offset: 0,
+            totalPages: 0,
+            sort_field: sortBy,
+            sort_direction: sortDirection,
+          },
+        }
       }
 
       return fetchVaultHistory({

@@ -55,13 +55,7 @@ export const VaultHistoryDataRow: FC<VaultHistoryDataRowProps> = memo(({ row, ..
         <ActionCell action={action} isExpanded={isExpanded} isHovered={isHovered} />
         <AssetsCell assets={assets} action={action} isExpanded={isExpanded} isHovered={isHovered} />
         <TotalUsdCell usd={total_usd} isExpanded={isExpanded} isHovered={isHovered} />
-        <ActionsCell
-          isHovered={isHovered}
-          isGrouped
-          isExpanded={isExpanded}
-          onToggle={handleToggleExpand}
-          usd={''}
-        />
+        <ActionsCell isHovered={isHovered} isGrouped isExpanded={isExpanded} onToggle={handleToggleExpand} />
       </tr>
       {isExpanded &&
         transactions.map((detail, idx) => (
@@ -74,7 +68,7 @@ export const VaultHistoryDataRow: FC<VaultHistoryDataRowProps> = memo(({ row, ..
             <ActionCell action={detail.action} isDetailRow isHovered={isHovered} />
             <AssetsCell assets={detail.assets} action={detail.action} isDetailRow isHovered={isHovered} />
             <TotalUsdCell usd={detail.total_usd} isDetailRow isHovered={isHovered} />
-            <ActionsCell isDetailRow isHovered={isHovered} usd={''} />
+            <ActionsCell isDetailRow isHovered={isHovered} />
           </tr>
         ))}
     </Fragment>
