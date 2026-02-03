@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { verifySignature } from '@/lib/auth/actions'
+import { sanitizeError } from '@/lib/auth/utils'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -45,7 +46,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Login error:', error)
     const message = error instanceof Error ? error.message : 'Internal server error'
+    const sanitizedMessage = sanitizeError(message)
     const status = message.includes('Authentication failed') || message.includes('expired') ? 401 : 400
-    return NextResponse.json({ error: message }, { status })
+    return NextResponse.json({ error: sanitizedMessage }, { status })
   }
 }

@@ -6,7 +6,7 @@ import { randomBytes } from 'crypto'
 import { isAddress } from 'viem'
 import { storeChallenge, getAndConsumeChallenge } from './challengeStore'
 import { signJWT } from './jwt'
-import { sanitizeError, isProduction } from './utils'
+import { isProduction, sanitizeError } from './utils'
 import { currentEnvChain } from '@/config/config'
 
 interface RequestChallengeResult {
@@ -24,16 +24,31 @@ interface RequestChallengeResult {
  * @returns The challenge ID and the SIWE message to be signed
  */
 export async function requestChallenge(address: string): Promise<RequestChallengeResult> {
+  try {
+    return await requestChallengeInternal(address)
+  } catch (error) {
+    // Log the detailed error server-side
+    console.error('requestChallenge error:', error)
+    // Throw sanitized error to client
+    const message = error instanceof Error ? error.message : 'Challenge request failed'
+    throw new Error(sanitizeError(message))
+  }
+}
+
+/**
+ * Internal implementation of requestChallenge with detailed error messages
+ */
+async function requestChallengeInternal(address: string): Promise<RequestChallengeResult> {
   // Validate address format
   if (!isAddress(address)) {
-    throw new Error(sanitizeError('Invalid address format'))
+    throw new Error('Invalid address format')
   }
 
   const headersList = await headers()
   const host = headersList.get('host')
 
   if (!host) {
-    throw new Error(sanitizeError('Missing host header'))
+    throw new Error('Missing host header')
   }
 
   // Extract domain (without port) from host header
@@ -93,21 +108,39 @@ export async function verifySignature(
   challengeId: string,
   signature: string,
 ): Promise<VerifySignatureResult> {
+  try {
+    return await verifySignatureInternal(challengeId, signature)
+  } catch (error) {
+    // Log the detailed error server-side
+    console.error('verifySignature error:', error)
+    // Throw sanitized error to client
+    const message = error instanceof Error ? error.message : 'Signature verification failed'
+    throw new Error(sanitizeError(message))
+  }
+}
+
+/**
+ * Internal implementation of verifySignature with detailed error messages
+ */
+async function verifySignatureInternal(
+  challengeId: string,
+  signature: string,
+): Promise<VerifySignatureResult> {
   // Validate challengeId format
   if (!challengeId || typeof challengeId !== 'string') {
-    throw new Error(sanitizeError('Invalid challenge ID'))
+    throw new Error('Invalid challenge ID')
   }
 
   // Validate signature format (0x followed by hex characters)
   if (!signature || typeof signature !== 'string' || !/^0x[a-fA-F0-9]+$/.test(signature)) {
-    throw new Error(sanitizeError('Invalid signature format'))
+    throw new Error('Invalid signature format')
   }
 
   // Retrieve and consume challenge (single-use)
   const challenge = getAndConsumeChallenge(challengeId)
 
   if (!challenge) {
-    throw new Error(sanitizeError('Invalid or expired challenge'))
+    throw new Error('Invalid or expired challenge')
   }
 
   // Parse the stored SIWE message
@@ -118,18 +151,16 @@ export async function verifySignature(
   try {
     verifyResult = await siweMessage.verify({ signature })
   } catch {
-    throw new Error(sanitizeError('Signature verification failed'))
+    throw new Error('Signature verification failed')
   }
 
   if (!verifyResult.success) {
-    throw new Error(
-      sanitizeError(`Signature verification failed: ${verifyResult.error?.type || 'Unknown error'}`),
-    )
+    throw new Error(`Signature verification failed: ${verifyResult.error?.type || 'Unknown error'}`)
   }
 
   // Verify address matches (extra security check)
   if (verifyResult.data.address.toLowerCase() !== challenge.address) {
-    throw new Error(sanitizeError('Address mismatch'))
+    throw new Error('Address mismatch')
   }
 
   // All validations passed - issue JWT token
