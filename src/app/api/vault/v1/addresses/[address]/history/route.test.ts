@@ -64,8 +64,11 @@ describe('GET /api/vault/v1/addresses/[address]/history', () => {
     expect(data.pagination).toEqual({
       page: 1,
       limit: 20,
-      totalPages: 1,
+      offset: 0,
       total: 1,
+      totalPages: 1,
+      sort_field: 'period',
+      sort_direction: 'desc',
     })
   })
 
@@ -107,5 +110,34 @@ describe('GET /api/vault/v1/addresses/[address]/history', () => {
         type: ['deposit', 'withdraw'],
       }),
     )
+  })
+
+  it('should return 400 for invalid sort_field value', async () => {
+    const address = '0xa18f4fbee88592bee3d51d90ba791e769a9b902f'
+    const req = new Request(`http://localhost/api/vault/v1/addresses/${address}/history?sort_field=invalid`)
+    const response = await GET(req as never, { params: Promise.resolve({ address }) })
+
+    expect(response.status).toBe(400)
+    const data = await response.json()
+    expect(data.error).toBe('Validation failed')
+  })
+
+  it('should return 400 for limit exceeding max', async () => {
+    const address = '0xa18f4fbee88592bee3d51d90ba791e769a9b902f'
+    const req = new Request(`http://localhost/api/vault/v1/addresses/${address}/history?limit=999`)
+    const response = await GET(req as never, { params: Promise.resolve({ address }) })
+
+    expect(response.status).toBe(400)
+    const data = await response.json()
+    expect(data.error).toBe('Validation failed')
+  })
+
+  it('should return 400 for empty address (0x)', async () => {
+    const req = new Request('http://localhost/api/vault/v1/addresses/0x/history')
+    const response = await GET(req as never, { params: Promise.resolve({ address: '0x' }) })
+
+    expect(response.status).toBe(400)
+    const data = await response.json()
+    expect(data.error).toBe('Validation failed')
   })
 })

@@ -1,3 +1,4 @@
+import { applyActionTypeFilter } from '@/app/api/utils/helpers'
 import { db } from '@/lib/db'
 
 /**
@@ -103,12 +104,7 @@ export async function getVaultHistoryFromDB(params: {
     })
     .where(`user`, address)
 
-  // Apply type filter if provided
-  if (type && type.length > 0) {
-    // Convert 'deposit'/'withdraw' to 'DEPOSIT'/'WITHDRAW' (uppercase) to match DB values
-    const upperCaseTypes = type.map(t => t.toUpperCase())
-    query = query.whereIn('action', upperCaseTypes)
-  }
+  query = applyActionTypeFilter(query, type)
 
   const result = await query
     .groupByRaw(`DATE_TRUNC('month', to_timestamp(timestamp)), "action"`)
@@ -138,12 +134,7 @@ export async function getVaultHistoryCountFromDB(
     .count({ count: db.raw(`DISTINCT (DATE_TRUNC('month', to_timestamp(timestamp)), "action")`) })
     .where(`user`, address)
 
-  // Apply type filter if provided
-  if (type && type.length > 0) {
-    // Convert 'deposit'/'withdraw' to 'DEPOSIT'/'WITHDRAW' (uppercase) to match DB values
-    const upperCaseTypes = type.map(t => t.toUpperCase())
-    query = query.whereIn('action', upperCaseTypes)
-  }
+  query = applyActionTypeFilter(query, type)
 
   const result = await query.first()
 
