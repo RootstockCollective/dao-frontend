@@ -1,14 +1,10 @@
+import { PaginationResponse } from '@/app/api/utils/types'
 import { getVaultHistoryEndpoint } from '@/lib/endpoints'
 import { VaultHistoryItemAPI } from './types'
 
 export interface VaultHistoryResponse {
   data: VaultHistoryItemAPI[]
-  pagination: {
-    total: number
-    limit: number
-    page: number
-    totalPages: number
-  }
+  pagination: PaginationResponse & { totalPages: number }
 }
 
 export interface FetchVaultHistoryParams {

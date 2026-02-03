@@ -1,10 +1,9 @@
 import { VaultHistoryItemAPI } from '@/app/vault/history/utils/types'
-import { VaultHistoryTable } from '@/app/vault/history/components/VaultHistoryTable.config'
+import { VaultHistoryTable, TOKEN_SYMBOL } from '@/app/vault/history/components/VaultHistoryTable.config'
 import { formatSymbol } from '@/app/shared/formatter'
 import { formatExpandedDate } from '@/app/my-rewards/tx-history/utils/utils'
 import Big from '@/lib/big'
 
-const TOKEN_SYMBOL = 'USDRIF'
 const TOKEN_DECIMALS = 18
 
 /** Safely converts wei string to USD string using Big.js arithmetic */

@@ -8,9 +8,7 @@ import { ArrowDownIcon } from '@/components/Icons/ArrowDownIcon'
 import { ChevronDownIcon } from '@/components/Icons/ChevronDownIcon'
 import { ChevronUpIcon } from '@/components/Icons/ChevronUpIcon'
 import { TokenImage } from '@/components/TokenImage'
-import { VaultHistoryTable } from './VaultHistoryTable.config'
-
-const TOKEN_SYMBOL = 'USDRIF'
+import { VaultHistoryTable, TOKEN_SYMBOL, formatActionLabel } from './VaultHistoryTable.config'
 
 interface MobileVaultHistoryCardProps {
   row: VaultHistoryTable['Row']
@@ -27,7 +25,6 @@ export const MobileVaultHistoryCard = ({ row }: MobileVaultHistoryCardProps) => 
     setIsExpanded(prev => !prev)
   }, [])
 
-  const formattedAction = action.charAt(0).toUpperCase() + action.slice(1).toLowerCase()
   const isDeposit = action === 'DEPOSIT'
   const hasTransactions = transactions && transactions.length > 0
 
@@ -61,7 +58,7 @@ export const MobileVaultHistoryCard = ({ row }: MobileVaultHistoryCardProps) => 
         {/* Row 2: Action Type */}
         <div className="flex items-center">
           <Paragraph variant="body" className="text-v3-text-100">
-            {formattedAction}
+            {formatActionLabel(action)}
           </Paragraph>
         </div>
 
@@ -109,7 +106,7 @@ export const MobileVaultHistoryCard = ({ row }: MobileVaultHistoryCardProps) => 
 
                   {/* Detail Row 2: Action Type */}
                   <Paragraph variant="body" className="text-v3-text-100">
-                    {detail.action.charAt(0).toUpperCase() + detail.action.slice(1).toLowerCase()}
+                    {formatActionLabel(detail.action)}
                   </Paragraph>
 
                   {/* Detail Row 3: Amount */}

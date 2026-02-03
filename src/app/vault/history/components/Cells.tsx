@@ -1,7 +1,13 @@
 import { FC, HtmlHTMLAttributes, ReactElement, ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import { useTableContext } from '@/shared/context'
-import { ColumnId, COLUMN_TRANSFORMS, VaultHistoryCellDataMap } from './VaultHistoryTable.config'
+import {
+  ColumnId,
+  COLUMN_TRANSFORMS,
+  VaultHistoryCellDataMap,
+  TOKEN_SYMBOL,
+  formatActionLabel,
+} from './VaultHistoryTable.config'
 import { Paragraph } from '@/components/Typography'
 import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
 import { ArrowDownIcon } from '@/components/Icons/ArrowDownIcon'
@@ -9,18 +15,20 @@ import { ChevronDownIcon } from '@/components/Icons/ChevronDownIcon'
 import { ChevronUpIcon } from '@/components/Icons/ChevronUpIcon'
 import { TokenImage } from '@/components/TokenImage'
 
-const TOKEN_SYMBOL = 'USDRIF'
-
-const TableCellBase = ({
-  children,
-  className,
-  onClick,
-  columnId,
-  forceShow,
-}: HtmlHTMLAttributes<HTMLTableCellElement> & {
+/** Base props for TableCell component */
+interface TableCellProps extends HtmlHTMLAttributes<HTMLTableCellElement> {
   columnId: ColumnId
   forceShow?: boolean
-}): ReactNode => {
+}
+
+/** Common state props shared by all cell components */
+interface CellStateProps {
+  isExpanded?: boolean
+  isHovered?: boolean
+  isDetailRow?: boolean
+}
+
+const TableCell = ({ children, className, onClick, columnId, forceShow }: TableCellProps): ReactNode => {
   const { columns } = useTableContext<ColumnId, VaultHistoryCellDataMap>()
   if (forceShow || !columns.find(col => col.id === columnId)?.hidden) {
     return (
@@ -36,25 +44,8 @@ const TableCellBase = ({
   return null
 }
 
-const TableCell = ({
-  children,
-  className,
-  onClick,
-  columnId,
-  forceShow,
-}: HtmlHTMLAttributes<HTMLTableCellElement> & { columnId: ColumnId; forceShow?: boolean }): ReactNode => {
-  return (
-    <TableCellBase className={className} onClick={onClick} columnId={columnId} forceShow={forceShow}>
-      {children}
-    </TableCellBase>
-  )
-}
-
-interface PeriodCellProps {
+interface PeriodCellProps extends CellStateProps {
   period: string
-  isExpanded?: boolean
-  isHovered?: boolean
-  isDetailRow?: boolean
 }
 
 export const PeriodCell: FC<PeriodCellProps> = ({ period, isHovered }): ReactElement => {
@@ -67,34 +58,27 @@ export const PeriodCell: FC<PeriodCellProps> = ({ period, isHovered }): ReactEle
   )
 }
 
-interface ActionCellProps {
+interface ActionCellProps extends CellStateProps {
   action: 'DEPOSIT' | 'WITHDRAW'
-  isExpanded?: boolean
-  isHovered?: boolean
-  isDetailRow?: boolean
 }
 
 export const ActionCell: FC<ActionCellProps> = ({ action, isHovered, isDetailRow }): ReactElement => {
   const showContent = !isDetailRow
-  const formattedAction = action.charAt(0).toUpperCase() + action.slice(1).toLowerCase()
 
   return (
     <TableCell columnId="action" className="justify-center gap-2">
       {showContent && (
         <Paragraph variant="body" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
-          {formattedAction}
+          {formatActionLabel(action)}
         </Paragraph>
       )}
     </TableCell>
   )
 }
 
-interface AssetsCellProps {
+interface AssetsCellProps extends CellStateProps {
   assets: string
   action: 'DEPOSIT' | 'WITHDRAW'
-  isExpanded?: boolean
-  isHovered?: boolean
-  isDetailRow?: boolean
 }
 
 export const AssetsCell: FC<AssetsCellProps> = ({
@@ -126,12 +110,12 @@ export const AssetsCell: FC<AssetsCellProps> = ({
   )
 }
 
-interface TotalUsdCellProps {
+interface TotalUsdCellProps extends CellStateProps {
   usd: string
+}
+
+interface ActionsCellProps extends CellStateProps {
   isGrouped?: boolean
-  isExpanded?: boolean
-  isHovered?: boolean
-  isDetailRow?: boolean
   onToggle?: () => void
 }
 
@@ -145,7 +129,7 @@ export const TotalUsdCell: FC<TotalUsdCellProps> = ({ usd, isHovered }): ReactEl
   )
 }
 
-export const ActionsCell: FC<TotalUsdCellProps> = ({
+export const ActionsCell: FC<ActionsCellProps> = ({
   isGrouped,
   isExpanded,
   isHovered,

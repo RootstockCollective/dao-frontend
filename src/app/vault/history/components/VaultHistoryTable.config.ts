@@ -1,5 +1,11 @@
-import { Column, TypedTable } from '@/shared/context'
+import { Column, Row, TypedTable } from '@/shared/context'
 import { VaultHistoryTransaction } from '@/app/vault/history/utils/types'
+
+export const TOKEN_SYMBOL = 'USDRIF'
+
+/** Formats action type for display: "DEPOSIT" -> "Deposit" */
+export const formatActionLabel = (action: string): string =>
+  action.charAt(0).toUpperCase() + action.slice(1).toLowerCase()
 
 const COLUMN_IDS = ['period', 'action', 'assets', 'total_usd', 'transactions', 'actions'] as const
 export type ColumnId = (typeof COLUMN_IDS)[number]
@@ -62,3 +68,8 @@ export type VaultHistoryCellDataMap = {
 }
 
 export type VaultHistoryTable = TypedTable<ColumnId, VaultHistoryCellDataMap>
+
+/** Common props for components that render vault history rows */
+export interface VaultHistoryRowsProps {
+  rows: Row<ColumnId, Row['id'], VaultHistoryCellDataMap>[]
+}
