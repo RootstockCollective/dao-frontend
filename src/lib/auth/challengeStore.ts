@@ -100,6 +100,9 @@ export function storeChallenge(challenge: Omit<StoredChallenge, 'expiresAt'>): s
  * Retrieve and consume a challenge (single-use)
  * @param id - The challenge ID to retrieve
  * @returns The stored challenge, or null if not found or expired
+ *
+ * IMPORTANT: This function uses a check-and-delete pattern to prevent race conditions.
+ * The Map.delete() returns false if the key doesn't exist, ensuring atomicity.
  */
 export function getAndConsumeChallenge(id: string): StoredChallenge | null {
   const challenge = challenges.get(id)
@@ -114,8 +117,11 @@ export function getAndConsumeChallenge(id: string): StoredChallenge | null {
     return null
   }
 
-  // Delete the challenge (single-use)
-  challenges.delete(id)
+  // Delete the challenge (single-use) and verify it wasn't already consumed
+  // If delete returns false, the challenge was already consumed by another request
+  if (!challenges.delete(id)) {
+    return null // Already consumed or doesn't exist
+  }
 
   return challenge
 }
