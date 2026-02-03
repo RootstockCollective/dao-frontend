@@ -2,7 +2,7 @@
  * Server-side challenge store for SIWE authentication
  *
  * Stores SIWE challenges in memory with automatic TTL cleanup.
- * Challenges are single-use and expire after 1 minute.
+ * Challenges are single-use and expire after 4 minutes.
  *
  * Note: This is an in-memory store, so challenges are lost on server restart.
  * For production horizontal scaling, consider using Redis or similar.
@@ -15,7 +15,12 @@ interface StoredChallenge {
 }
 
 const challenges = new Map<string, StoredChallenge>()
-const CHALLENGE_TTL_MS = 60 * 1000 // 1 minute
+
+/**
+ * Challenge time-to-live in milliseconds
+ * Used for both SIWE message expiration and challenge storage TTL
+ */
+export const CHALLENGE_TTL_MS = 4 * 60 * 1000 // 4 minutes
 
 /**
  * Cleanup expired challenges from the store

@@ -4,7 +4,7 @@ import { headers } from 'next/headers'
 import { SiweMessage } from 'siwe'
 import { randomBytes } from 'crypto'
 import { isAddress } from 'viem'
-import { storeChallenge, getAndConsumeChallenge } from './challengeStore'
+import { storeChallenge, getAndConsumeChallenge, CHALLENGE_TTL_MS } from './challengeStore'
 import { signJWT } from './jwt'
 import { isProduction, sanitizeError } from './utils'
 import { currentEnvChain } from '@/config/config'
@@ -64,8 +64,8 @@ async function requestChallengeInternal(address: string): Promise<RequestChallen
   // Generate cryptographically secure nonce
   const nonce = randomBytes(16).toString('hex')
 
-  // Set expiration to 1 minute
-  const expirationTime = new Date(Date.now() + 60 * 1000).toISOString()
+  // Set expiration time using shared constant
+  const expirationTime = new Date(Date.now() + CHALLENGE_TTL_MS).toISOString()
 
   // Create SIWE message with all server-controlled values
   const siweMessage = new SiweMessage({
@@ -81,7 +81,7 @@ async function requestChallengeInternal(address: string): Promise<RequestChallen
 
   const message = siweMessage.prepareMessage()
 
-  // Store challenge in server-side memory (single-use, 1-minute expiration)
+  // Store challenge in server-side memory (single-use, 4-minute expiration)
   const challengeId = storeChallenge({
     message,
     address: address.toLowerCase(),
