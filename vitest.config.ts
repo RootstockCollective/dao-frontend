@@ -5,10 +5,63 @@ import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
+// Check if fork is available - only run fork project when FORK_RPC_URL is set
+const hasForkRpc = Boolean(process.env.FORK_RPC_URL)
+
+// Fork project configuration - only included when FORK_RPC_URL is set
+const forkProject = {
+  // Fork project: for swap/quote tests with local fork
+  // Use this project when you want to test swap execution (not just quotes) without spending real funds
+  plugins: [react({ jsxRuntime: 'automatic' })],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+  test: {
+    environment: 'jsdom' as const,
+    setupFiles: './vitest.setup.ts',
+    // Use node environment for API route tests
+    environmentMatchGlobs: [
+      ['**/api/**/*.test.ts', 'node'],
+      ['**/api/**/*.test.tsx', 'node'],
+      ['**/providers/**/*.test.ts', 'node'],
+    ] as [string, 'node'][],
+    // Only include swap/quote tests in fork project
+    // Note: Fork is required for testing swap execution (write operations) without spending real funds
+    include: [
+      '**/swap/**/*.test.ts',
+      '**/swap/**/*.test.tsx',
+      '**/providers/uniswap.test.ts',
+      '**/api/swap/**/*.test.ts',
+    ],
+    exclude: ['**/node_modules/**'],
+    env: {
+      // Fork configuration for swap tests
+      // Uses local fork of Rootstock Mainnet - allows testing swap execution without real funds
+      NEXT_PUBLIC_ENV: 'fork',
+      NEXT_PUBLIC_CHAIN_ID: '31337', // Local fork chain ID (Anvil default, avoids MetaMask conflicts)
+      NEXT_PUBLIC_NODE_URL: process.env.FORK_RPC_URL!,
+      NEXT_PUBLIC_BLOCKSCOUT_URL: 'https://rootstock.blockscout.com',
+      // Token addresses (Rootstock mainnet - same as mainnet, available on fork)
+      NEXT_PUBLIC_RIF_ADDRESS: '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5',
+      NEXT_PUBLIC_USDRIF_ADDRESS: '0x3a15461d8ae0f0fb5fa2629e9da7d66a794a6e37',
+      NEXT_PUBLIC_USDT0_ADDRESS: '0x779Ded0c9e1022225f8E0630b35a9b54bE713736',
+      // DEX Router addresses (Rootstock mainnet - available on fork)
+      NEXT_PUBLIC_UNISWAP_QUOTER_V2_ADDRESS: '0xb51727c996C68E60F598A923a5006853cd2fEB31',
+      NEXT_PUBLIC_UNISWAP_UNIVERSAL_ROUTER_ADDRESS: '0x244f68e77357f86a8522323eBF80b5FC2F814d3E',
+      NEXT_PUBLIC_ICECREAMSWAP_ROUTER_ADDRESS: '0x63d3C7Ab37ca36A2A0A338076C163fF60c72527c',
+      // Pool addresses (Rootstock mainnet - available on fork)
+      NEXT_PUBLIC_USDT0_USDRIF_POOL_ADDRESS: '0x134F5409cf7AF4C68bF4A8f59C96CF4925f6Bbb0',
+    },
+  },
+}
+
 export default defineConfig({
   plugins: [react({ jsxRuntime: 'automatic' })],
   test: {
     // Use projects to define different configurations for different test files
+    // Fork project is only included when FORK_RPC_URL is set to avoid localhost:8545 timeout in CI
     projects: [
       {
         // Default project: testnet configuration for most tests
@@ -106,55 +159,8 @@ export default defineConfig({
           },
         },
       },
-      {
-        // Fork project: for swap/quote tests with local fork
-        // Use this project when you want to test swap execution (not just quotes) without spending real funds
-        plugins: [react({ jsxRuntime: 'automatic' })],
-        resolve: {
-          alias: {
-            '@': path.resolve(__dirname, './src'),
-          },
-        },
-        test: {
-          environment: 'jsdom',
-          setupFiles: './vitest.setup.ts',
-          // Use node environment for API route tests
-          environmentMatchGlobs: [
-            ['**/api/**/*.test.ts', 'node'],
-            ['**/api/**/*.test.tsx', 'node'],
-            ['**/providers/**/*.test.ts', 'node'],
-          ],
-          // Only include swap/quote tests in fork project
-          // Note: Fork is required for testing swap execution (write operations) without spending real funds
-          // These tests will run when FORK_RPC_URL is set (CI and local development)
-          include: [
-            '**/swap/**/*.test.ts',
-            '**/swap/**/*.test.tsx',
-            '**/providers/uniswap.test.ts',
-            '**/api/swap/**/*.test.ts',
-          ],
-          exclude: ['**/node_modules/**'],
-          env: {
-            // Fork configuration for swap tests
-            // Uses local fork of Rootstock Mainnet - allows testing swap execution without real funds
-            NEXT_PUBLIC_ENV: 'fork',
-            NEXT_PUBLIC_CHAIN_ID: '31337', // Local fork chain ID (Anvil default, avoids MetaMask conflicts)
-            // Fork RPC URL - should be set via FORK_RPC_URL env var or defaults to local Anvil
-            NEXT_PUBLIC_NODE_URL: process.env.FORK_RPC_URL || 'http://127.0.0.1:8545',
-            NEXT_PUBLIC_BLOCKSCOUT_URL: 'https://rootstock.blockscout.com',
-            // Token addresses (Rootstock mainnet - same as mainnet, available on fork)
-            NEXT_PUBLIC_RIF_ADDRESS: '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5',
-            NEXT_PUBLIC_USDRIF_ADDRESS: '0x3a15461d8ae0f0fb5fa2629e9da7d66a794a6e37',
-            NEXT_PUBLIC_USDT0_ADDRESS: '0x779Ded0c9e1022225f8E0630b35a9b54bE713736',
-            // DEX Router addresses (Rootstock mainnet - available on fork)
-            NEXT_PUBLIC_UNISWAP_QUOTER_V2_ADDRESS: '0xb51727c996C68E60F598A923a5006853cd2fEB31',
-            NEXT_PUBLIC_UNISWAP_UNIVERSAL_ROUTER_ADDRESS: '0x244f68e77357f86a8522323eBF80b5FC2F814d3E',
-            NEXT_PUBLIC_ICECREAMSWAP_ROUTER_ADDRESS: '0x63d3C7Ab37ca36A2A0A338076C163fF60c72527c',
-            // Pool addresses (Rootstock mainnet - available on fork)
-            NEXT_PUBLIC_USDT0_USDRIF_POOL_ADDRESS: '0x134F5409cf7AF4C68bF4A8f59C96CF4925f6Bbb0',
-          },
-        },
-      },
+      // Fork project only runs when FORK_RPC_URL is set (avoids localhost:8545 timeout in CI)
+      ...(hasForkRpc ? [forkProject] : []),
     ],
   },
 })
