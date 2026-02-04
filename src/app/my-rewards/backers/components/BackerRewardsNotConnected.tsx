@@ -1,8 +1,8 @@
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { AnnualBackersIncentives } from '@/app/shared/components/AnnualBackersIncentives'
 import { TokenAmount } from '@/components/TokenAmount'
-import { TokenSymbol } from '@/components/TokenImage'
 import { Header } from '@/components/Typography'
+import { RBTC, RIF } from '@/lib/constants'
 import { RewardCard } from '../../components/RewardCard'
 import { useBackersEstimatedRewards } from '../hooks/useBackersEstimatedRewards'
 
@@ -46,16 +46,8 @@ export const BackerRewardsNotConnected = () => {
             }
             className="flex-row sm:flex-col justify-between w-full sm:w-auto"
           >
-            <TokenAmount
-              amount={rifData.amount}
-              tokenSymbol={TokenSymbol.RIF}
-              amountInFiat={rifData.fiatAmount}
-            />
-            <TokenAmount
-              amount={rbtcData.amount}
-              tokenSymbol={TokenSymbol.RBTC}
-              amountInFiat={rbtcData.fiatAmount}
-            />
+            <TokenAmount amount={rifData.amount} tokenSymbol={RIF} amountInFiat={rifData.fiatAmount} />
+            <TokenAmount amount={rbtcData.amount} tokenSymbol={RBTC} amountInFiat={rbtcData.fiatAmount} />
           </RewardCard>
         </div>
       </div>
