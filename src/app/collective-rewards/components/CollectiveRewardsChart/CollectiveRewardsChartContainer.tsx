@@ -2,9 +2,11 @@ import { useGetChartBackingData } from '@/app/collective-rewards/rewards/hooks/u
 import { CycleRewardsItem, DailyAllocationItem } from '@/app/collective-rewards/types'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { transformApiDataToChartData } from '@/app/collective-rewards/utils/chartUtils'
+import { FOUR_MONTHS_IN_MS, FIVE_MONTHS_IN_MS } from '@/app/collective-rewards/constants/chartConstants'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useMemo } from 'react'
 import { useGetChartRewardsData } from '../../rewards/hooks/useGetChartRewardsData'
 import { CollectiveRewardsDualAxisChart } from './CollectiveRewardsChart'
@@ -59,9 +61,12 @@ const CollectiveRewardsChartContent = ({
   rbtcPrice,
   usdrifPrice,
 }: CollectiveRewardsChartContentProps) => {
+  const isDesktop = useIsDesktop()
+  const windowInMs = isDesktop ? FIVE_MONTHS_IN_MS : FOUR_MONTHS_IN_MS
+
   const { backingSeries, rewardsSeries, cycles } = useMemo(
-    () => transformApiDataToChartData(backingData, rewardsData, rifPrice, rbtcPrice, usdrifPrice),
-    [backingData, rewardsData, rifPrice, rbtcPrice, usdrifPrice],
+    () => transformApiDataToChartData(backingData, rewardsData, rifPrice, rbtcPrice, usdrifPrice, windowInMs),
+    [backingData, rewardsData, rifPrice, rbtcPrice, usdrifPrice, windowInMs],
   )
 
   return (
