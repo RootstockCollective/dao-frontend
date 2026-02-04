@@ -1,7 +1,7 @@
 import { Button } from '@/components/Button'
 import { IpfsAvatar } from '@/components/IpfsAvatar'
 import { Modal } from '@/components/Modal'
-import { Header, Paragraph, Span } from '@/components/Typography'
+import { Header, Paragraph } from '@/components/Typography'
 import { shortAddress } from '@/lib/utils'
 import { Address } from 'viem'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
@@ -39,7 +39,6 @@ export const DelegateModal = ({
       className="bg-text-80"
       closeButtonColor="black"
       data-testid={dataTestId}
-      fullscreen={!isDesktop}
     >
       <div className="flex flex-col gap-2 items-center py-4 px-8">
         <Paragraph className="pr-8 text-bg-100 md:mt-4 mt-16">{title}</Paragraph>

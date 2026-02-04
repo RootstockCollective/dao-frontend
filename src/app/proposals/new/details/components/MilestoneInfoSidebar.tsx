@@ -2,12 +2,11 @@ import { ArrowRightIcon } from '@/components/Icons/ArrowRightIcon'
 import { ExternalLink } from '@/components/Link'
 import { Modal } from '@/components/Modal'
 import { Label, Paragraph, Span } from '@/components/Typography'
-import { useState } from 'react'
 import InfoIcon from '../../review/components/InfoIcon'
+import { useModal } from '@/shared/hooks/useModal'
 
 export const MilestoneInfoSidebar = () => {
-  const [showModal, setShowModal] = useState(false)
-
+  const { isModalOpened, openModal, closeModal } = useModal()
   return (
     <div className="flex flex-row gap-2">
       <InfoIcon className="w-5 h-5 text-bg-0" />
@@ -20,14 +19,14 @@ export const MilestoneInfoSidebar = () => {
 
         <Paragraph
           className="flex flex-row gap-2 items-center cursor-pointer"
-          onClick={() => setShowModal(true)}
+          onClick={openModal}
           data-testid="LearnMoreLink"
         >
           Learn more <ArrowRightIcon className="w-5 h-5" />
         </Paragraph>
       </div>
 
-      {showModal && <MilestoneModal onClose={() => setShowModal(false)} />}
+      {isModalOpened && <MilestoneModal onClose={closeModal} />}
     </div>
   )
 }
@@ -80,7 +79,7 @@ const MilestoneModal = ({ onClose }: { onClose: () => void }) => {
   ]
 
   return (
-    <Modal onClose={onClose}>
+    <Modal onClose={onClose} data-testid="MilestoneModal">
       <div className="flex flex-col gap-2 p-6">
         <div className="flex flex-col gap-10 mt-6">
           {milestones.map(milestone => (

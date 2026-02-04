@@ -84,12 +84,12 @@ export const UnclaimedRewardsMetric = (): ReactElement => {
           variant="secondary-outline"
           className="font-rootstock-sans w-fit"
           textClassName="text-v3-text-100"
-          onClick={() => openModal()}
+          onClick={openModal}
         >
           Claim Rewards
         </Button>
       </ConditionalTooltip>
-      <ClaimRewardsModal open={isModalOpened} onClose={() => closeModal()} isBacker={true} />
+      {isModalOpened && <ClaimRewardsModal onClose={closeModal} isBacker={true} />}
     </div>
   )
 }

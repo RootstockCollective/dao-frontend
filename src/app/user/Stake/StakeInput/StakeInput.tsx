@@ -49,9 +49,15 @@ export const StakeInput = forwardRef<HTMLInputElement, Props>(
           </Paragraph>
         )}
         {errorText && (
-          <div className="flex items-center gap-2 mt-2">
-            <Image src="/images/warning-icon.svg" alt="Warning" width={40} height={40} />
-            <Paragraph className="text-error" data-testid="ErrorText">
+          <div className="flex items-start gap-2 mt-2 max-w-full">
+            <Image
+              src="/images/warning-icon.svg"
+              alt="Warning"
+              width={24}
+              height={24}
+              className="shrink-0 mt-1"
+            />
+            <Paragraph className="text-error break-words" data-testid="ErrorText">
               {errorText}
             </Paragraph>
           </div>

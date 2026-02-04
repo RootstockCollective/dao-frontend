@@ -20,10 +20,6 @@ const meta: Meta<typeof Modal> = {
     className: {
       control: { type: 'text' },
     },
-    fullscreen: {
-      control: { type: 'boolean' },
-      description: 'When true, modal takes full viewport width and height',
-    },
   },
 }
 
@@ -100,20 +96,6 @@ export const DesktopTest: Story = {
   parameters: {
     viewport: {
       defaultViewport: 'desktop',
-    },
-  },
-}
-
-export const Fullscreen: Story = {
-  render: args => <ModalWrapper {...args} fullscreen />,
-  args: {
-    fullscreen: true,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: 'Fullscreen modal that takes the entire viewport width and height.',
-      },
     },
   },
 }

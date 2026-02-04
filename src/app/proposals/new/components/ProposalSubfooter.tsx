@@ -9,6 +9,7 @@ import { Button } from '@/components/Button'
 import { Divider } from '@/components/Divider'
 import { useNavigationGuard } from 'next-navigation-guard'
 import { cn } from '@/lib/utils'
+import { useModal } from '@/shared/hooks/useModal'
 
 interface Props {
   submitForm: () => void
@@ -30,7 +31,7 @@ export const ProposalSubfooter = ({
   const { isSidebarOpen } = useLayoutContext()
   const isDesktop = useIsDesktop()
 
-  const [showModal, setShowModal] = useState(false)
+  const { isModalOpened, openModal, closeModal } = useModal()
   const [isBackPressed, setIsBackPressed] = useState(false)
 
   const { active, accept, reject } = useNavigationGuard({
@@ -39,9 +40,9 @@ export const ProposalSubfooter = ({
 
   useEffect(() => {
     if (active) {
-      setShowModal(true)
+      openModal()
     }
-  }, [active])
+  }, [active, openModal])
 
   useEffect(() => {
     const handlePopState = () => {
@@ -54,14 +55,14 @@ export const ProposalSubfooter = ({
   // --- Modal Button Handlers ---
 
   const handleProceedWithExit = useCallback(() => {
-    setShowModal(false)
+    closeModal()
     accept()
-  }, [accept])
+  }, [accept, closeModal])
 
   const handleStayOnPage = useCallback(() => {
-    setShowModal(false)
+    closeModal()
     reject()
-  }, [reject])
+  }, [reject, closeModal])
 
   const handleBack = useCallback(() => {
     setIsBackPressed(true)
@@ -109,7 +110,7 @@ export const ProposalSubfooter = ({
         </div>
       </div>
 
-      {showModal && (
+      {isModalOpened && (
         <LeavingProposalModal onStay={handleStayOnPage} onProceedWithExit={handleProceedWithExit} />
       )}
     </>
