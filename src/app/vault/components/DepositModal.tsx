@@ -204,8 +204,8 @@ export const DepositModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
 
   return (
     <>
-      <Modal width={688} onClose={onCloseModal} fullscreen={!isDesktop}>
-        <div className={cn('h-full flex flex-col', !isDesktop ? 'p-4' : 'p-6')}>
+      <Modal onClose={onCloseModal} data-testid="DepositModal">
+        <div className="h-full flex flex-col p-4 md:p-6">
           <Header className="mt-16 mb-4">DEPOSIT USDRIF</Header>
 
           <div className="flex-1">

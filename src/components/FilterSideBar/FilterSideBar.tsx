@@ -160,7 +160,7 @@ export function FilterSideBar({
   if (isOpen) {
     // Mobile: Show as modal using standard Modal component
     return (
-      <Modal onClose={onClose} className="bg-bg-80 p-4 pt-14" closeButtonColor="white" fullscreen>
+      <Modal onClose={onClose} className="p-4 pt-14" data-testid="FilterSideBarModal">
         {sidebarContent}
       </Modal>
     )

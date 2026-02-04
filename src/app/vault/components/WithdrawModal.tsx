@@ -19,6 +19,7 @@ import { DEFAULT_SLIPPAGE_PERCENTAGE } from '../utils/slippage'
 import { Input } from '@/components/Input'
 import { SlippageInput } from './SlippageInput'
 import Image from 'next/image'
+import { variantClasses } from '@/components/Typography/Typography'
 
 interface Props {
   onCloseModal: () => void
@@ -101,8 +102,8 @@ export const WithdrawModal = ({ onCloseModal, onTransactionSuccess }: Props) => 
   const amountToCurrency = formatCurrency(Big(prices['USDRIF']?.price || 0).mul(amount || 0))
 
   return (
-    <Modal width={688} onClose={onCloseModal} fullscreen={!isDesktop}>
-      <div className={cn('h-full flex flex-col', !isDesktop ? 'p-4' : 'p-6')}>
+    <Modal onClose={onCloseModal} data-testid="WithdrawModal">
+      <div className="h-full flex flex-col p-4 md:p-6">
         <Header className="mt-16 mb-4">WITHDRAW USDRIF</Header>
 
         <div className="flex-1">
@@ -117,7 +118,7 @@ export const WithdrawModal = ({ onCloseModal, onTransactionSuccess }: Props) => 
                 type="number"
                 value={amount}
                 onChange={handleAmountChange}
-                className={cn('grow', 'text-2xl font-bold', errorMessage ? 'text-error' : '')}
+                className={cn('grow', variantClasses.h1, errorMessage ? 'text-error' : '')}
                 data-testid="AmountInput"
                 placeholder="0"
                 inputProps={{ decimalScale: 18 }}
@@ -130,7 +131,7 @@ export const WithdrawModal = ({ onCloseModal, onTransactionSuccess }: Props) => 
               </div>
             </div>
             {amountToCurrency && (
-              <Label variant="body-s" className="text-bg-0 mt-2" data-testid="CurrencyValue">
+              <Label variant="body-s" className="text-bg-0" data-testid="CurrencyValue">
                 {amountToCurrency}
               </Label>
             )}

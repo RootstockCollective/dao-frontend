@@ -44,7 +44,7 @@ const RewardDetailsItem = ({
           </div>
           <div className="flex align-start align-self-stretch gap-6">
             <RewardDetailsMetric>
-              <Span variant="h5" className="text-v3-text-40">
+              <Span variant="body-xs" className="text-v3-text-40">
                 Unclaimed
               </Span>
               <RewardsCell className="justify-start" {...unclaimed} emptyPlaceholder={<EmptyPlaceholder />} />

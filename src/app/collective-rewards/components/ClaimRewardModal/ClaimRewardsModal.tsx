@@ -22,7 +22,7 @@ const getRewardTokenAddress = (value: ClaimRewardType) => {
   }
 }
 
-const ClaimBackerRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps, 'isBacker'>): ReactNode => {
+const ClaimBackerRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isBacker'>) => {
   const [selectedRewardType, setSelectedRewardType] = useState<ClaimRewardType>('all')
 
   const { claimRewards, isClaimable, isLoadingReceipt, isPendingTx, isSuccess } = useClaimBackerRewards(
@@ -66,24 +66,22 @@ const ClaimBackerRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps,
   }, [backerRewards, prices])
 
   return (
-    open && (
-      <ClaimRewardsModalView
-        onClose={onClose}
-        selectedRewardType={selectedRewardType}
-        onRewardTypeChange={setSelectedRewardType}
-        tokenAmounts={tokenAmounts}
-        tokenFiatAmounts={tokenFiatAmounts}
-        totalFiatAmount={totalFiatAmount}
-        onClaim={claimRewards}
-        isClaimable={isClaimable}
-        isLoading={isLoading}
-        isTxPending={isPendingTx || isLoadingReceipt}
-      />
-    )
+    <ClaimRewardsModalView
+      onClose={onClose}
+      selectedRewardType={selectedRewardType}
+      onRewardTypeChange={setSelectedRewardType}
+      tokenAmounts={tokenAmounts}
+      tokenFiatAmounts={tokenFiatAmounts}
+      totalFiatAmount={totalFiatAmount}
+      onClaim={claimRewards}
+      isClaimable={isClaimable}
+      isLoading={isLoading}
+      isTxPending={isPendingTx || isLoadingReceipt}
+    />
   )
 }
 
-const ClaimBuilderRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps, 'isBacker'>): ReactNode => {
+const ClaimBuilderRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isBacker'>) => {
   const { address: builderAddress } = useAccount()
   const { prices } = usePricesContext()
   const {
@@ -179,33 +177,30 @@ const ClaimBuilderRewardsModal = ({ open, onClose }: Omit<ClaimRewardsModalProps
   }, [isSuccess, onClose])
 
   return (
-    open && (
-      <ClaimRewardsModalView
-        onClose={onClose}
-        selectedRewardType={selectedRewardType}
-        onRewardTypeChange={setSelectedRewardType}
-        tokenAmounts={tokenAmounts}
-        tokenFiatAmounts={tokenFiatAmounts}
-        totalFiatAmount={totalFiatAmount}
-        onClaim={claimRewards}
-        isClaimable={isClaimable}
-        isLoading={isLoadingRif || isLoadingRbtc || isLoadingUsdrif || isLoadingGauge}
-        isTxPending={isPendingTx || isLoadingReceipt}
-      />
-    )
+    <ClaimRewardsModalView
+      onClose={onClose}
+      selectedRewardType={selectedRewardType}
+      onRewardTypeChange={setSelectedRewardType}
+      tokenAmounts={tokenAmounts}
+      tokenFiatAmounts={tokenFiatAmounts}
+      totalFiatAmount={totalFiatAmount}
+      onClaim={claimRewards}
+      isClaimable={isClaimable}
+      isLoading={isLoadingRif || isLoadingRbtc || isLoadingUsdrif || isLoadingGauge}
+      isTxPending={isPendingTx || isLoadingReceipt}
+    />
   )
 }
 
 interface ClaimRewardsModalProps {
-  open: boolean
   onClose: () => void
   isBacker: boolean
 }
 
-export default function ClaimRewardsModal({ open, onClose, isBacker }: ClaimRewardsModalProps): ReactElement {
+export default function ClaimRewardsModal({ onClose, isBacker }: ClaimRewardsModalProps) {
   if (isBacker) {
-    return <ClaimBackerRewardsModal open={open} onClose={onClose} />
+    return <ClaimBackerRewardsModal onClose={onClose} />
   }
 
-  return <ClaimBuilderRewardsModal open={open} onClose={onClose} />
+  return <ClaimBuilderRewardsModal onClose={onClose} />
 }

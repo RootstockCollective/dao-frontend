@@ -56,7 +56,6 @@ const UpdateBackerRewardViewModal = ({
       closeButtonColor="white"
       data-testid="UpdateBackerRewardViewModal"
       className={cn('font-rootstock-sans shadow-[0px_0px_40px_0px_rgba(255,255,255,0.10)]', className)}
-      fullscreen={!isDesktop}
     >
       <div className={cn('relative flex flex-col gap-8', isDesktop ? 'p-6' : 'p-4 mt-12')}>
         <Header variant="h1">MY BACKERS&apos; REWARDS</Header>

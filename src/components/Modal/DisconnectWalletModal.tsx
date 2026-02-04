@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const DisconnectWalletModal: FC<Props> = ({ onClose, onConfirm, onCancel }) => (
-  <Modal onClose={onClose} width={756}>
+  <Modal onClose={onClose} data-testid="DisconnectWalletModal">
     <div className="px-[50px] pt-[42px] pb-[84px] flex justify-center flex-col items-center">
       <Header variant="h2">DISCONNECT WALLET</Header>
       <Paragraph className="mt-3 text-center">

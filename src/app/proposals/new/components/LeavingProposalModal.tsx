@@ -1,19 +1,17 @@
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
-import type { ModalProps } from '@/components/Modal/Modal'
 import { Paragraph } from '@/components/Typography'
-import { cn } from '@/lib/utils'
 import { Separator } from '@radix-ui/react-select'
 
-interface Props extends Omit<ModalProps, 'children' | 'onClose'> {
+interface Props {
   onStay: () => void // Function to call when user wants to STAY on the current page ("Take me back")
   onProceedWithExit: () => void // Function to call when user wants to PROCEED with the exit ("Cancel proposal")
 }
 
-export const LeavingProposalModal = ({ className, onStay, onProceedWithExit }: Props) => {
+export const LeavingProposalModal = ({ onStay, onProceedWithExit }: Props) => {
   return (
-    <Modal onClose={onStay} className="w-full max-w-lg">
-      <div className={cn('h-full p-6 flex flex-col !w-full', className)}>
+    <Modal onClose={onStay} data-testid="LeavingProposalModal">
+      <div className="h-full p-6 flex flex-col !w-full">
         <div className="grow">
           <Paragraph variant="body-l" className="mt-10">
             Moving away from the proposal creation process will cancel it
