@@ -7,7 +7,7 @@ services:
         PROFILE: dev
     ports:
       - '3010:3000'
-    command: npm start
+    command: sh -c "node src/db/migrate.js && npm start"
     environment:
       - DAO_DATA_DB_CONNECTION_STRING=postgresql://dao_data:dao_data@dao-data-db:5432/dao_data
     depends_on:
