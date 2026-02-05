@@ -18,7 +18,8 @@
     "test": "vitest",
     "build:start": "next build && next start",
     "fork:stop": "pkill -f anvil || true",
-    "fork:anvil": "anvil --fork-url https://public-node.rsk.co --chain-id 31337"
+    "fork:anvil": "anvil --fork-url https://public-node.rsk.co --chain-id 31337",
+    "db:migrate": "node src/db/migrations/initProposalLikes.js"
   },
   "dependencies": {
     "@apollo/client": "^3.13.9",
