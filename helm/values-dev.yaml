@@ -1,0 +1,23 @@
+# Development environment
+image:
+  repository: 886436934082.dkr.ecr.us-east-1.amazonaws.com/rscoll-dev-dao-dev
+  tag: 930eac49828502453196eb19cb032ae441c4b8a5
+
+namespace: dao-frontend-dev
+
+ingress:
+  enabled: true
+  className: alb
+  certificateArn: "arn:aws:acm:us-east-1:886436934082:certificate/aa176147-46df-47b0-9856-84ee57b4fa5d"
+  hosts:
+    - host: dev-eks.app.rootstockcollective.xyz
+      paths:
+        - path: /
+          pathType: Prefix
+  annotations: {}
+
+externalSecrets:
+  parameterPaths:
+    theGraphApiKey: /rscoll-dev/dev/the-graph-api-key
+    dbConnectionString: /rscoll-dev/dao-dev/database-uri
+    daoGraphApiKey: /rscoll-dev/dev/dao-graph-api-key

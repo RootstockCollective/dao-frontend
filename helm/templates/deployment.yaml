@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dao-frontend.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "dao-frontend.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "dao-frontend.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "dao-frontend.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - name: {{ .Chart.Name }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.service.targetPort }}
+          protocol: TCP
+        env:
+        - name: THE_GRAPH_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "dao-frontend.fullname" . }}-secrets
+              key: the-graph-api-key
+        - name: DB_CONNECTION_STRING
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "dao-frontend.fullname" . }}-secrets
+              key: db-connection-string
+        - name: DAO_GRAPH_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "dao-frontend.fullname" . }}-secrets
+              key: dao-graph-api-key
+        livenessProbe:
+          {{- toYaml .Values.livenessProbe | nindent 10 }}
+        readinessProbe:
+          {{- toYaml .Values.readinessProbe | nindent 10 }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}

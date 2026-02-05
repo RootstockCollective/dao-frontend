@@ -1,0 +1,107 @@
+name: Deploy to Amazon EKS (rc-mainnet)
+# Deploys to: https://rc-mainnet-eks.app.rootstockcollective.xyz/
+# Triggers when a branch is merged into main
+# Uses the `.env.rc-mainnet` env file
+
+on:
+  push:
+    branches:
+      - feat/add-helm-chart-k8s-deployment
+
+# Declare default permissions as read only.
+permissions: read-all
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: rscoll-dev-dao-rc-mainnet
+  EKS_CLUSTER: rscoll-dev
+  HELM_RELEASE: dao-frontend-rc-mainnet
+  NAMESPACE: dao-frontend-rc-mainnet
+
+  # The .env file that is used to build the docker image
+  # is retrieved using PROFILE, so be sure there is a `.env.<PROFILE>` file
+  # that matches with the profile set
+  # Example: PROFILE=testnet => .env.testnet
+  PROFILE: release-candidate-mainnet
+
+jobs:
+  build:
+    name: Build and Push Image
+    runs-on: ubuntu-latest
+    environment:
+      name: release-candidate-mainnet
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a #v4.3.1
+        with:
+          role-to-assume: ${{ secrets.AWS_LOGIN_STAGING_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@062b18b96a7aff071d4dc91bc00c4c1a7945b076 #v2.0.1
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg PROFILE="$PROFILE" --build-arg NEXT_PUBLIC_BUILD_ID=${{ github.sha }} --no-cache .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+  deploy:
+    name: Deploy to EKS
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: release-candidate-mainnet
+      url: https://rc-mainnet-eks.app.rootstockcollective.xyz
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a #v4.3.1
+        with:
+          role-to-assume: ${{ secrets.AWS_LOGIN_STAGING_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Update kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig --name ${{ env.EKS_CLUSTER }} --region ${{ env.AWS_REGION }}
+
+      - name: Install Helm
+        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 #v4.3.1
+        with:
+          version: 'v3.14.0'
+
+      - name: Deploy to EKS using Helm
+        env:
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          helm upgrade --install ${{ env.HELM_RELEASE }} ./helm \
+            --namespace ${{ env.NAMESPACE }} \
+            --values ./helm/values-rc-mainnet.yaml \
+            --set image.tag=$IMAGE_TAG \
+            --wait \
+            --timeout 5m
+
+      - name: Verify deployment
+        run: |
+          kubectl rollout status deployment/dao-frontend -n ${{ env.NAMESPACE }}
+          kubectl get pods -n ${{ env.NAMESPACE }}
