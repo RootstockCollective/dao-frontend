@@ -6,6 +6,7 @@ import { HeaderText } from '@/components/HeaderText/HeaderText'
 import { Button } from '@/components/Button'
 import { checkForCommonErrors } from './commonErrors'
 import { Header, Paragraph } from '../Typography'
+import { sentryClient } from '@/lib/sentry-wrapper'
 
 interface ErrorFallbackProps {
   error: Error
@@ -42,6 +43,13 @@ export const GlobalErrorBoundary = ({ children }: Props) => {
       FallbackComponent={ErrorFallback}
       onError={(error, info) => {
         console.error('Error caught by Custom Error Boundary:', error, info)
+        sentryClient.captureException(error, {
+          contexts: {
+            react: {
+              componentStack: info.componentStack,
+            },
+          },
+        })
       }}
     >
       {children}
