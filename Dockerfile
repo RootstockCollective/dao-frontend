@@ -61,7 +61,7 @@ COPY --from=builder /app/.env.local ./.env.local
 COPY --from=builder /app/node_modules ./node_modules
 
 # Copy database migration scripts
-COPY --from=builder /app/src/db/migrations ./src/db/migrations
+COPY --from=builder /app/src/db ./src/db
 
 
 # Download AWS RDS CA certificate
@@ -74,4 +74,4 @@ EXPOSE 3000
 
 # Run database migrations and start the Next.js application
 # Migration errors are logged but won't fail the startup (as per requirements)
-CMD ["sh", "-c", "node src/db/migrations/initProposalLikes.js && npm start"]
+CMD ["sh", "-c", "node src/db/migrate.js && npm start"]

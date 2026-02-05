@@ -3,11 +3,19 @@
  * Creates dao_data schema and ProposalLikes table with indexes
  *
  * This script is safe for multiple executions - all DDL operations use IF NOT EXISTS
+ *
+ * IMPORTANT: This uses a SEPARATE database from state-sync to avoid data loss
+ * during reorg operations. Requires DAO_DATA_DB_CONNECTION_STRING env variable.
  */
 
 const knex = require('knex')
 const fs = require('fs')
 const pg = require('pg')
+const path = require('path')
+
+// Load environment variables from .env.testnet.local for local development
+// In production, env vars are set by ECS task definition
+require('dotenv').config({ path: path.resolve(process.cwd(), '.env.testnet.local') })
 
 // Configure pg type parser for bytea
 pg.types.setTypeParser(17, val => Buffer.from(val.slice(2), 'hex').toString())
@@ -21,10 +29,19 @@ const sslConfig = fs.existsSync(certPath)
     }
   : false
 
+// Use separate database for user-generated data (likes, reactions)
+// This is intentionally different from DB_CONNECTION_STRING used by state-sync
+const connectionString = process.env.DAO_DATA_DB_CONNECTION_STRING
+
+if (!connectionString) {
+  console.warn('[Migration] DAO_DATA_DB_CONNECTION_STRING not set, skipping migration')
+  process.exit(0)
+}
+
 const db = knex({
   client: 'pg',
   connection: {
-    connectionString: process.env.DB_CONNECTION_STRING,
+    connectionString,
     ssl: sslConfig,
   },
 })
@@ -79,14 +96,16 @@ async function runMigration() {
 }
 
 // Run migration when script is executed directly
-runMigration()
-  .then(() => {
-    console.log('[Migration] Script finished')
-    process.exit(0)
-  })
-  .catch(error => {
-    console.error('[Migration] Unexpected error:', error)
-    process.exit(1)
-  })
+if (require.main === module) {
+  runMigration()
+    .then(() => {
+      console.log('[Migration] Script finished')
+      process.exit(0)
+    })
+    .catch(error => {
+      console.error('[Migration] Unexpected error:', error)
+      process.exit(1)
+    })
+}
 
 module.exports = { runMigration, SCHEMA_NAME, TABLE_NAME, FULL_TABLE_NAME }

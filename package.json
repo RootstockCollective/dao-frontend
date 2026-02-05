@@ -19,7 +19,9 @@
     "build:start": "next build && next start",
     "fork:stop": "pkill -f anvil || true",
     "fork:anvil": "anvil --fork-url https://public-node.rsk.co --chain-id 31337",
-    "db:migrate": "node src/db/migrations/initProposalLikes.js"
+    "db:migrate": "node src/db/migrate.js",
+    "db:up": "docker compose up dao-data-db -d",
+    "db:down": "docker compose down dao-data-db"
   },
   "dependencies": {
     "@apollo/client": "^3.13.9",
