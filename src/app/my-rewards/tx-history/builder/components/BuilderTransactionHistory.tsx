@@ -132,7 +132,7 @@ export const BuilderTransactionHistory = () => {
   }, [error])
 
   return (
-    <div className="w-full flex flex-col gap-10">
+    <div className="w-full flex flex-col gap-8 md:gap-10">
       <div className="flex items-center justify-between">
         <Header variant="h3" className="m-0" data-testid="builder-events-list-header">
           EVENTS LIST
