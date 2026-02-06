@@ -31,6 +31,7 @@ export function useAddToWallet() {
 
   // Check window.ethereum
   const hasWindowEthereum = typeof window !== 'undefined' && !!window.ethereum
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const isWindowEthereumMetaMask = hasWindowEthereum && (window.ethereum as any).isMetaMask === true
 
   const isMetaMask =
