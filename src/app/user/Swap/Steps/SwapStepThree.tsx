@@ -27,7 +27,7 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
   const { tokenInData, tokenOutData } = useTokenSelection()
   const { balances, prices } = useBalancesContext()
   const { execute: executeTxFlow, isExecuting: isSwapTxPending } = useExecuteTxFlow()
-  const { execute, isSwapping, swapError, swapTxHash, canExecute } = useSwapExecution()
+  const { execute, swapError, swapTxHash, canExecute } = useSwapExecution()
 
   // Slippage tolerance is local to Step 3 - only needed for final confirmation
   const [slippageTolerance, setSlippageTolerance] = useState<number | null>(null)
