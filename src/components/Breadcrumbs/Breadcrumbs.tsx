@@ -32,7 +32,12 @@ const breadcrumbsMap = {
 }
 
 // Segments that should be skipped in breadcrumbs (no clickable links)
-const skipSegments = ['/proposals/new/review', '/proposals/new/details', '/communities/nft']
+const skipSegments = [
+  '/proposals/new/review',
+  '/proposals/new/details',
+  '/communities/nft',
+  '/my-rewards/tx-history',
+]
 
 /**
  * Simple breadcrumbs component used in desktop header
