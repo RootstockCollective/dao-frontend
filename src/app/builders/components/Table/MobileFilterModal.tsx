@@ -76,7 +76,7 @@ export const MobileFilterModal: FC<MobileFilterModalProps> = ({
   ]
 
   return (
-    <Modal onClose={handleClose} fullscreen data-testid="mobile-builders-filter-modal">
+    <Modal onClose={handleClose} data-testid="mobile-builders-filter-modal">
       <div className="flex flex-col h-full bg-v3-bg-accent-80 rounded-lg">
         <div className="flex-1 p-4 pt-16 overflow-y-auto">
           {/* Sort builders Section */}
