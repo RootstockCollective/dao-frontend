@@ -25,17 +25,22 @@ export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElem
         className,
       )}
     >
-      <div className="basis-1/2">
-        <Hamburger
-          isOpen={isSidebarOpen}
-          onClick={toggleSidebar}
-          ariaLabel={isSidebarOpen ? 'Close menu' : 'Open menu'}
-        />
-      </div>
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <NetworkLogo compact={!isSidebarOpen} />
-      </div>
-      <div className="basis-1/2 flex justify-end gap-2">{!isSidebarOpen && <UserConnectionManager />}</div>
+      <Hamburger
+        isOpen={isSidebarOpen}
+        onClick={toggleSidebar}
+        ariaLabel={isSidebarOpen ? 'Close menu' : 'Open menu'}
+      />
+
+      {!isSidebarOpen ? (
+        <div className="flex-1 flex justify-end items-center gap-2">
+          <NetworkLogo compact />
+          <UserConnectionManager />
+        </div>
+      ) : (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <NetworkLogo />
+        </div>
+      )}
     </header>
   )
 }
