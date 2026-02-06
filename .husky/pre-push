@@ -1,8 +1,9 @@
 #!/usr/bin/env sh
 set -e
 
-echo "pre-push: running unit tests"
-npm run test
+echo "pre-push: running unit tests (excluding swap integration tests)"
+# Exclude swap tests that require mainnet RPC - CI will run those with proper infrastructure
+npx vitest run --exclude '**/swap/**/*.test.ts' --exclude '**/providers/uniswap.test.ts'
 
 echo "pre-push: running build"
 NEXT_PUBLIC_BUILD_ID="$(git rev-parse --short HEAD 2>/dev/null || echo local)" PROFILE=dev npm run build

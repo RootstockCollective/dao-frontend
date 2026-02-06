@@ -97,6 +97,7 @@ export const VaultActions = () => {
   return (
     <div className="flex flex-col gap-6 w-full">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-start w-full">
+        {/* Primary action: Deposit */}
         <NewPopover
           open={depositPopoverOpen}
           onOpenChange={setDepositPopoverOpen}
@@ -113,15 +114,40 @@ export const VaultActions = () => {
           }
         />
         <Button
-          variant="secondary-outline"
+          variant="primary"
           onClick={handleDepositClick}
           data-testid="deposit-button"
           ref={depositButtonRef}
-          className="flex flex-row gap-2 justify-center"
         >
-          <Span className="flex-shrink-0">Deposit</Span>
-          <MoneyIconKoto style={{ transform: 'rotate(180deg)' }} />
+          Deposit
         </Button>
+
+        {/* Secondary action: Swap */}
+        <NewPopover
+          open={swapPopoverOpen}
+          onOpenChange={setSwapPopoverOpen}
+          anchorRef={swapButtonRef}
+          className="bg-text-80 rounded-[4px] border border-text-80 p-6 shadow-lg w-72"
+          contentClassName="flex flex-col items-start bg-transparent h-full"
+          content={
+            <>
+              <Span className="mb-4 text-left text-bg-100">Connect your wallet to swap tokens.</Span>
+              <ConnectWorkflow
+                ConnectComponent={props => <ConnectButtonComponent {...props} textClassName="text-bg-100" />}
+              />
+            </>
+          }
+        />
+        <Button
+          variant="secondary-outline"
+          onClick={handleSwapClick}
+          data-testid="vault-swap-button"
+          ref={swapButtonRef}
+        >
+          USDT0 to USDRIF
+        </Button>
+
+        {/* Tertiary action: Withdraw (ghost) */}
         <NewPopover
           open={withdrawPopoverOpen}
           onOpenChange={setWithdrawPopoverOpen}
@@ -146,31 +172,6 @@ export const VaultActions = () => {
         >
           <Span className="flex-shrink-0">Withdraw</Span>
           <MoneyIconKoto />
-        </Button>
-
-        <NewPopover
-          open={swapPopoverOpen}
-          onOpenChange={setSwapPopoverOpen}
-          anchorRef={swapButtonRef}
-          className="bg-text-80 rounded-[4px] border border-text-80 p-6 shadow-lg w-72"
-          contentClassName="flex flex-col items-start bg-transparent h-full"
-          content={
-            <>
-              <Span className="mb-4 text-left text-bg-100">Connect your wallet to swap tokens.</Span>
-              <ConnectWorkflow
-                ConnectComponent={props => <ConnectButtonComponent {...props} textClassName="text-bg-100" />}
-              />
-            </>
-          }
-        />
-        <Button
-          variant="secondary-outline"
-          onClick={handleSwapClick}
-          data-testid="vault-swap-button"
-          ref={swapButtonRef}
-          className="md:max-w-28 md:max-h-13"
-        >
-          <Span variant="body-s">{'USDT0 -> USDRIF'}</Span>
         </Button>
       </div>
 

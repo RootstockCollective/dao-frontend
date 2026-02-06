@@ -1,10 +1,11 @@
 'use client'
 
 import { useTableActionsContext, useTableContext } from '@/shared/context'
-import { ReactElement, ReactNode, Suspense, useMemo } from 'react'
+import { ReactElement, ReactNode, Suspense } from 'react'
 import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
 import { Label, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
+import { useTotalAmount } from '../../hooks/useTotalAmount'
 import { SORT_DIRECTION_ASC, SORT_DIRECTIONS } from '@/shared/context/TableContext/constants'
 import { Dispatch, FC } from 'react'
 import {
@@ -12,7 +13,7 @@ import {
   TransactionHistoryTable,
   COLUMN_TRANSFORMS,
   ColumnId,
-} from './TransactionHistoryTable.config'
+} from '../../config'
 import { ArrowsUpDown } from '@/components/Icons/v3design/ArrowsUpDown'
 import { ArrowDownWFill } from '@/components/Icons/v3design/ArrowDownWFill'
 import { ArrowUpWFill } from '@/components/Icons/v3design/ArrowUpWFill'
@@ -115,32 +116,9 @@ export const HeaderCell = ({
   )
 }
 
-export const TransactionHistoryHeaderRow = (): ReactElement => {
+export const DesktopHeaderRow = (): ReactElement => {
   const { rows } = useTableContext<ColumnId, TransactionHistoryCellDataMap>()
-
-  const visibleTotalAmountUsd = useMemo(() => {
-    if (!rows.length) return ''
-
-    const sanitize = (raw: string | null | undefined) => {
-      if (!raw) return 0
-      if (raw.startsWith('<')) return 0
-      const sanitized = raw.replace(/,/g, '')
-      const parsed = Number(sanitized)
-      return Number.isNaN(parsed) ? 0 : parsed
-    }
-
-    const sum = rows.reduce((acc, row) => {
-      const usd = row.data.total_amount.usd
-      const values = Array.isArray(usd) ? usd : [usd]
-      return acc + values.reduce((subtotal, val) => subtotal + sanitize(val), 0)
-    }, 0)
-
-    return new Intl.NumberFormat('en-US', {
-      style: 'decimal',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(sum)
-  }, [rows])
+  const visibleTotalAmountUsd = useTotalAmount(rows)
 
   return (
     <Suspense fallback={<div>Loading table headers...</div>}>

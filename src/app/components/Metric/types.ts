@@ -1,8 +1,7 @@
-import { RBTC, RIF, USDRIF } from '@/lib/constants'
+import type { TokenSymbol } from '@/components/TokenImage'
 import Big from 'big.js'
 
-// Not this again...
-export type TokenSymbol = typeof RIF | typeof RBTC | typeof USDRIF
+export type { TokenSymbol } from '@/components/TokenImage'
 
 export type MetricToken = {
   symbol: TokenSymbol

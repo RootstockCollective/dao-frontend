@@ -6,7 +6,6 @@ import { DateTime, Duration } from 'luxon'
 import { useState, useEffect, useMemo } from 'react'
 
 interface UpdateBackerRewardModalProps {
-  isOpen: boolean
   onClose: () => void
   className?: string
 }
@@ -16,7 +15,7 @@ function formatDuration(duration: bigint | undefined) {
   return Duration.fromObject({ seconds: Number(duration) }).shiftTo('days', 'hours', 'minutes')
 }
 
-export const UpdateBackerRewardModal = ({ isOpen, onClose, className }: UpdateBackerRewardModalProps) => {
+export const UpdateBackerRewardModal = ({ onClose, className }: UpdateBackerRewardModalProps) => {
   const {
     current: { data: rewardData, isLoading: isRewardsLoading, refetch: refetchRewards },
     update: { setNewReward, isPending: isTxPending, isSuccess: isTxSuccess },
@@ -60,22 +59,20 @@ export const UpdateBackerRewardModal = ({ isOpen, onClose, className }: UpdateBa
   }
 
   return (
-    isOpen && (
-      <UpdateBackerRewardViewModal
-        className={className}
-        currentReward={currentReward}
-        updatedReward={updatedReward}
-        alreadySubmitted={alreadySubmitted}
-        // TODO: suggested reward out of scope atm.
-        suggestedReward={undefined}
-        onSave={handleSave}
-        onRewardChange={handleRewardChange}
-        cooldownDuration={cooldownDuration}
-        isTxPending={isTxPending}
-        isLoading={isRewardsLoading || isCooldownPending}
-        isOperational={isBuilderOperational}
-        onClose={onClose}
-      />
-    )
+    <UpdateBackerRewardViewModal
+      className={className}
+      currentReward={currentReward}
+      updatedReward={updatedReward}
+      alreadySubmitted={alreadySubmitted}
+      // TODO: suggested reward out of scope atm.
+      suggestedReward={undefined}
+      onSave={handleSave}
+      onRewardChange={handleRewardChange}
+      cooldownDuration={cooldownDuration}
+      isTxPending={isTxPending}
+      isLoading={isRewardsLoading || isCooldownPending}
+      isOperational={isBuilderOperational}
+      onClose={onClose}
+    />
   )
 }

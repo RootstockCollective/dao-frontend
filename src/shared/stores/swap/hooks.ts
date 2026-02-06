@@ -5,14 +5,16 @@ import { formatUnits, parseUnits, Hex } from 'viem'
 import { useAccount, useReadContract, useWriteContract, useSignTypedData } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
 import { useDebounce } from 'use-debounce'
-import { useSwappingContext } from './SwappingContext'
+import { useShallow } from 'zustand/shallow'
+import { useSwapStore } from './useSwapStore'
+import { useSwapTokens } from './useSwapTokens'
 import { UNISWAP_UNIVERSAL_ROUTER_ADDRESS, PERMIT2_ADDRESS } from '@/lib/constants'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { Permit2Abi } from '@/lib/abis/Permit2Abi'
-import { QuoteResult } from './types'
 import { uniswapProvider, getPermitSwapEncodedData } from '@/lib/swap/providers/uniswap'
 import { UniswapUniversalRouterAbi } from '@/lib/abis/UniswapUniversalRouterAbi'
 import { createSecurePermit } from '@/lib/swap/permit2'
+import type { QuoteResult } from './types'
 
 const QUOTE_DEBOUNCE_MS = 500
 const QUOTE_TIMEOUT_MS = 10_000
@@ -38,15 +40,24 @@ const withTimeout = <T>(promise: Promise<T>, timeoutMs: number, errorMessage: st
  * @returns Display values for both fields, setters that switch mode, and quote state
  */
 export const useSwapInput = () => {
-  const { state, setSwapInput, tokens, setQuote, setQuoteError, setPoolFee } = useSwappingContext()
-  const { mode, typedAmount, tokenIn, tokenOut, quote } = state
+  const { tokens } = useSwapTokens()
+  const { mode, typedAmount, tokenIn, tokenOut, setSwapInput, setPoolFee } = useSwapStore(
+    useShallow(state => ({
+      mode: state.mode,
+      typedAmount: state.typedAmount,
+      tokenIn: state.tokenIn,
+      tokenOut: state.tokenOut,
+      setSwapInput: state.setSwapInput,
+      setPoolFee: state.setPoolFee,
+    })),
+  )
 
   // Wait for user to stop typing before fetching quote (avoids excessive API calls)
   const [debouncedTypedAmount] = useDebounce(typedAmount, QUOTE_DEBOUNCE_MS)
 
   // React Query handles caching, refetching, and loading states
   const {
-    data: swapQuote,
+    data: quote,
     isLoading: isQuoteLoading,
     isFetching: isQuoteFetching,
     error: quoteError,
@@ -124,17 +135,12 @@ export const useSwapInput = () => {
     retry: false,
   })
 
-  // Persist successful quotes to context for use in other swap steps
-  // Note: Loading state (isQuoting) comes directly from React Query, not synced to context
+  // Update pool fee in store when quote arrives
   useEffect(() => {
-    if (quoteError) {
-      setQuoteError(quoteError instanceof Error ? quoteError : new Error(String(quoteError)))
-    } else if (swapQuote) {
-      setQuote(swapQuote)
-      setPoolFee(swapQuote.feeTier)
-      setQuoteError(null)
+    if (quote?.feeTier) {
+      setPoolFee(quote.feeTier)
     }
-  }, [swapQuote, quoteError, setQuote, setQuoteError, setPoolFee])
+  }, [quote?.feeTier, setPoolFee])
 
   /**
    * Amount values with full precision.
@@ -183,12 +189,16 @@ export const useSwapInput = () => {
  * Hook for token selection and swapping
  */
 export const useTokenSelection = () => {
-  const { state, setTokenIn, setTokenOut, toggleTokenSelection, tokens } = useSwappingContext()
-  const { tokenIn, tokenOut } = state
-
-  const handleToggleTokenSelection = useCallback(() => {
-    toggleTokenSelection()
-  }, [toggleTokenSelection])
+  const { tokens } = useSwapTokens()
+  const { tokenIn, tokenOut, setTokenIn, setTokenOut, toggleTokens } = useSwapStore(
+    useShallow(state => ({
+      tokenIn: state.tokenIn,
+      tokenOut: state.tokenOut,
+      setTokenIn: state.setTokenIn,
+      setTokenOut: state.setTokenOut,
+      toggleTokens: state.toggleTokens,
+    })),
+  )
 
   return {
     tokenIn,
@@ -197,7 +207,7 @@ export const useTokenSelection = () => {
     tokenOutData: tokens[tokenOut],
     setTokenIn,
     setTokenOut,
-    toggleTokenSelection: handleToggleTokenSelection,
+    toggleTokenSelection: toggleTokens,
   }
 }
 
@@ -209,15 +219,19 @@ export const useTokenSelection = () => {
  * - Permit2 → Universal Router is handled via signatures at swap time
  */
 export const useTokenAllowance = () => {
-  const { state, tokens, setApproving, setApprovalTxHash, setCheckingAllowance, setAllowance } =
-    useSwappingContext()
-  const { tokenIn, isApproving, allowance } = state
+  const { tokens } = useSwapTokens()
+  const { tokenIn, setApprovalTxHash } = useSwapStore(
+    useShallow(state => ({
+      tokenIn: state.tokenIn,
+      setApprovalTxHash: state.setApprovalTxHash,
+    })),
+  )
   const { address } = useAccount()
-  const { writeContractAsync, isPending: isWritePending } = useWriteContract()
+  const { writeContractAsync, isPending: isApproving } = useWriteContract()
 
   // Read ERC-20 allowance to Permit2 contract
   const {
-    data: erc20AllowanceData,
+    data: allowance,
     isLoading: isAllowanceLoading,
     isFetching: isAllowanceFetching,
     refetch: refetchAllowance,
@@ -232,28 +246,10 @@ export const useTokenAllowance = () => {
     },
   })
 
-  // Extract ERC-20 allowance
-  const erc20Allowance = useMemo(() => {
-    if (typeof erc20AllowanceData !== 'bigint') return null
-    return erc20AllowanceData
-  }, [erc20AllowanceData])
-
-  // Update state when allowance changes
-  useEffect(() => {
-    if (isAllowanceLoading) {
-      setCheckingAllowance(true)
-    } else {
-      setCheckingAllowance(false)
-      if (erc20Allowance !== null) {
-        setAllowance(erc20Allowance)
-      }
-    }
-  }, [erc20Allowance, isAllowanceLoading, setCheckingAllowance, setAllowance])
-
   // Check if ERC-20 allowance to Permit2 is sufficient
   const hasSufficientAllowance = useCallback(
     (requiredAmount: bigint) => {
-      if (allowance === null) {
+      if (typeof allowance !== 'bigint') {
         return false
       }
       return allowance >= requiredAmount
@@ -272,20 +268,16 @@ export const useTokenAllowance = () => {
         throw new Error(`Token address not found for ${tokenIn}`)
       }
 
-      setApproving(true)
-      setApprovalTxHash(null)
-
       try {
         // Request ERC-20 approval to Permit2
         // Use max uint256 for unlimited approval (common pattern for Permit2)
         const MAX_UINT256 = BigInt(2) ** BigInt(256) - BigInt(1)
-        const approvalAmount = amount > MAX_UINT256 ? MAX_UINT256 : MAX_UINT256 // Always use max for convenience
 
         const txHash = await writeContractAsync({
           address: tokens[tokenIn].address,
           abi: RIFTokenAbi,
           functionName: 'approve',
-          args: [PERMIT2_ADDRESS, approvalAmount],
+          args: [PERMIT2_ADDRESS, MAX_UINT256],
         })
 
         if (!txHash) {
@@ -297,7 +289,6 @@ export const useTokenAllowance = () => {
         setApprovalTxHash(txHash)
         return txHash
       } catch (error) {
-        setApproving(false)
         setApprovalTxHash(null)
 
         // Check for wallet connection issues
@@ -312,25 +303,18 @@ export const useTokenAllowance = () => {
         throw error
       }
     },
-    [address, writeContractAsync, tokenIn, tokens, setApproving, setApprovalTxHash],
+    [address, writeContractAsync, tokenIn, tokens, setApprovalTxHash],
   )
 
-  // Update approving state based on write contract status
-  useEffect(() => {
-    if (isWritePending) {
-      setApproving(true)
-    }
-  }, [isWritePending, setApproving])
-
   return {
-    allowance,
+    allowance: typeof allowance === 'bigint' ? allowance : null,
     isCheckingAllowance: isAllowanceLoading,
     isFetchingAllowance: isAllowanceFetching,
-    isApproving: isApproving || isWritePending,
+    isApproving,
     hasSufficientAllowance,
     approve,
     refetchAllowance,
-    tokenAddress: tokens[tokenIn].address,
+    tokenAddress: tokens[tokenIn]?.address,
   }
 }
 
@@ -341,10 +325,24 @@ export const useTokenAllowance = () => {
  * The signature is stored in state to be used by useSwapExecution.
  */
 export const usePermitSigning = () => {
-  const { state, tokens, setPermit, setPermitSignature, setSigning } = useSwappingContext()
-  const { tokenIn, mode, typedAmount, quote, isSigning, permit, permitSignature } = state
+  const { tokens } = useSwapTokens()
+  const { tokenIn, mode, typedAmount, permit, permitSignature, setPermitData, clearPermitData } =
+    useSwapStore(
+      useShallow(state => ({
+        tokenIn: state.tokenIn,
+        mode: state.mode,
+        typedAmount: state.typedAmount,
+        permit: state.permit,
+        permitSignature: state.permitSignature,
+        setPermitData: state.setPermitData,
+        clearPermitData: state.clearPermitData,
+      })),
+    )
   const { address, chainId } = useAccount()
-  const { signTypedDataAsync } = useSignTypedData()
+  const { signTypedDataAsync, isPending: isSigning } = useSignTypedData()
+
+  // Get quote for exactOut mode
+  const { quote } = useSwapInput()
 
   // Compute amountIn from mode and typedAmount/quote
   const amountIn = useMemo(() => {
@@ -367,8 +365,6 @@ export const usePermitSigning = () => {
     ) {
       throw new Error('Missing required parameters for permit signing')
     }
-
-    setSigning(true)
 
     try {
       const amountInBigInt = parseUnits(amountIn, tokens[tokenIn].decimals)
@@ -404,25 +400,14 @@ export const usePermitSigning = () => {
       })
 
       // Store both permit and signature in state
-      setPermit(newPermit)
-      setPermitSignature(signature as Hex)
+      setPermitData(newPermit, signature as Hex)
 
       return { signature: signature as Hex, permit: newPermit }
     } catch (error) {
-      setSigning(false)
+      clearPermitData()
       throw error
     }
-  }, [
-    address,
-    amountIn,
-    tokenIn,
-    tokens,
-    chainId,
-    signTypedDataAsync,
-    setSigning,
-    setPermit,
-    setPermitSignature,
-  ])
+  }, [address, amountIn, tokenIn, tokens, chainId, signTypedDataAsync, setPermitData, clearPermitData])
 
   return {
     signPermit,
@@ -439,22 +424,43 @@ export const usePermitSigning = () => {
  * Only executes the swap transaction (1 confirmation).
  */
 export const useSwapExecution = () => {
-  const { state, tokens, setSwapping, setSwapError, setSwapTxHash } = useSwappingContext()
+  const { tokens } = useSwapTokens()
   const {
     tokenIn,
     tokenOut,
     mode,
     typedAmount,
-    quote,
-    isSwapping,
-    swapError,
-    swapTxHash,
     poolFee,
     permit,
     permitSignature,
-  } = state
+    isSwapping,
+    swapError,
+    swapTxHash,
+    startSwap,
+    completeSwap,
+    failSwap,
+  } = useSwapStore(
+    useShallow(state => ({
+      tokenIn: state.tokenIn,
+      tokenOut: state.tokenOut,
+      mode: state.mode,
+      typedAmount: state.typedAmount,
+      poolFee: state.poolFee,
+      permit: state.permit,
+      permitSignature: state.permitSignature,
+      isSwapping: state.isSwapping,
+      swapError: state.swapError,
+      swapTxHash: state.swapTxHash,
+      startSwap: state.startSwap,
+      completeSwap: state.completeSwap,
+      failSwap: state.failSwap,
+    })),
+  )
   const { address } = useAccount()
   const { writeContractAsync, isPending: isWritePending } = useWriteContract()
+
+  // Get quote for calculations
+  const { quote } = useSwapInput()
 
   // Compute amountIn: for exactIn it's typedAmount, for exactOut it comes from quote
   const amountIn = useMemo(() => {
@@ -490,8 +496,7 @@ export const useSwapExecution = () => {
         return null
       }
 
-      setSwapping(true)
-      setSwapError(null)
+      startSwap()
 
       try {
         const amountInBigInt = parseUnits(amountIn, tokens[tokenIn].decimals)
@@ -516,7 +521,7 @@ export const useSwapExecution = () => {
           args: [commands, inputs],
         })
 
-        setSwapTxHash(hash)
+        completeSwap(hash)
         return hash
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : String(error)
@@ -524,31 +529,30 @@ export const useSwapExecution = () => {
 
         // Check for wallet connection issues
         if (errorMessage.includes('getChainId is not a function') || errorMessage.includes('connector')) {
-          const err = new Error(
-            'Wallet connection error. Please disconnect and reconnect your wallet, then try again.',
+          failSwap(
+            new Error(
+              'Wallet connection error. Please disconnect and reconnect your wallet, then try again.',
+            ),
           )
-          setSwapError(err)
-          setSwapping(false)
           return null
         }
 
         // Check for AllowanceExpired error (0xd81b2f2e) from Permit2/Universal Router
         if (errorString.includes('0xd81b2f2e') || errorMessage.includes('AllowanceExpired')) {
-          const err = new Error(
-            'Allowance error detected. Please go back to Step 2 and click "Request allowance" again.',
+          failSwap(
+            new Error(
+              'Allowance error detected. Please go back to Step 2 and click "Request allowance" again.',
+            ),
           )
-          setSwapError(err)
-          setSwapping(false)
           return null
         }
 
         // User rejected transaction
         if (errorMessage.includes('rejected') || errorMessage.includes('denied')) {
-          setSwapError(new Error('Transaction cancelled by user'))
+          failSwap(new Error('Transaction cancelled by user'))
         } else {
-          setSwapError(error instanceof Error ? error : new Error(`Swap failed: ${errorMessage}`))
+          failSwap(error instanceof Error ? error : new Error(`Swap failed: ${errorMessage}`))
         }
-        setSwapping(false)
         return null
       }
     },
@@ -563,18 +567,11 @@ export const useSwapExecution = () => {
       permit,
       permitSignature,
       writeContractAsync,
-      setSwapping,
-      setSwapError,
-      setSwapTxHash,
+      startSwap,
+      completeSwap,
+      failSwap,
     ],
   )
-
-  // Update swapping state based on write contract status
-  useEffect(() => {
-    if (isWritePending) {
-      setSwapping(true)
-    }
-  }, [isWritePending, setSwapping])
 
   return {
     execute,

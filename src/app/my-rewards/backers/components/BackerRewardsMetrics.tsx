@@ -1,4 +1,4 @@
-import { Header } from '@/components/Typography'
+import { Header, Span } from '@/components/Typography'
 import { ReactNode } from 'react'
 import { useBackerRewardsContext } from '@/app/collective-rewards/rewards/backers/context/BackerRewardsContext'
 import { UnclaimedRewards } from './UnclaimedRewards'
@@ -7,7 +7,6 @@ import { BackerABI } from './BackerABI'
 import { TotalEarned } from './TotalEarned'
 import { RBI } from './RBI'
 import { Switch, SwitchThumb } from '@/components/Switch'
-import { BaseTypography } from '@/components/Typography/Typography'
 import { Address } from 'viem'
 import { TOKENS } from '@/lib/tokens'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
@@ -50,7 +49,7 @@ export const BackerRewardsMetrics = ({ backer }: { backer: Address }) => {
             <Switch checked={isDetailedView} onCheckedChange={() => setIsDetailedView(!isDetailedView)}>
               <SwitchThumb />
             </Switch>
-            <BaseTypography variant="body-s">Detailed View</BaseTypography>
+            <Span variant="body-s">Detailed View</Span>
           </div>
         )}
       </div>

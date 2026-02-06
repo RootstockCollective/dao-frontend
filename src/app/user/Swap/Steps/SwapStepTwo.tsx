@@ -2,8 +2,8 @@ import { Header, Label } from '@/components/Typography'
 import { useEffect, useCallback, useMemo } from 'react'
 import { SwapStepProps } from '../types'
 import { StakeTokenAmountDisplay } from '@/app/user/Stake/components/StakeTokenAmountDisplay'
-import { useSwapInput, useTokenSelection, usePermitSigning } from '@/shared/context/SwappingContext/hooks'
-import { useSwappingContext } from '@/shared/context/SwappingContext'
+import { useSwapInput, useTokenSelection, usePermitSigning } from '@/shared/stores/swap'
+import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { USDT0 } from '@/lib/constants'
 import Big from '@/lib/big'
 import { parseUnits } from 'viem'
@@ -11,14 +11,14 @@ import { parseUnits } from 'viem'
 export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepProps) => {
   const { amountIn } = useSwapInput()
   const { tokenInData } = useTokenSelection()
-  const { tokenData } = useSwappingContext()
+  const { prices } = useBalancesContext()
   const { signPermit, isSigning, permitSignature, permit } = usePermitSigning()
 
   // Calculate amount in currency using price from context
   const amountInCurrency = useMemo(() => {
-    const priceValue = tokenData.prices[USDT0]
+    const priceValue = prices[USDT0]?.price ?? 0
     return `$${Big(amountIn).times(priceValue).toFixed(2)}`
-  }, [amountIn, tokenData.prices])
+  }, [amountIn, prices])
 
   // Calculate current required amount in bigint
   const requiredAmount = useMemo(() => {

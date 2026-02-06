@@ -28,6 +28,7 @@ export const useGetABIFromChain = () => {
     .sort((a, b) => Number(b.blockNumber) - Number(a.blockNumber))
     .map(log => ({
       id: log.blockNumber.toString(),
+      currentCycleStart: Number(log.timeStamp),
       rewardPerToken: {
         [TOKENS.rif.address.toLowerCase()]: log.args.rifAmount_.toString(),
         [TOKENS.rbtc.address.toLowerCase()]: log.args.nativeAmount_.toString(),
