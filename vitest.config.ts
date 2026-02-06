@@ -90,6 +90,7 @@ export default defineConfig({
           ],
           env: {
             // Testnet configuration
+            JWT_SECRET: 'test-jwt',
             NEXT_PUBLIC_ENV: 'testnet',
             NEXT_PUBLIC_CHAIN_ID: '31',
             NEXT_PUBLIC_NODE_URL: 'https://public-node.testnet.rsk.co',
@@ -140,6 +141,7 @@ export default defineConfig({
           env: {
             // Mainnet configuration for quote tests
             // Quoting is read-only (view function), so it's safe to test on mainnet - no transactions or gas costs
+            JWT_SECRET: 'test-jwt',
             NEXT_PUBLIC_ENV: 'mainnet',
             NEXT_PUBLIC_CHAIN_ID: '30', // Rootstock mainnet chain ID
             NEXT_PUBLIC_NODE_URL: 'https://public-node.rsk.co', // Mainnet RPC
