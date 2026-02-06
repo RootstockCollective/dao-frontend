@@ -1,5 +1,5 @@
 import { withTableContext } from '@/shared/context'
-import { ColumnId, TransactionHistoryCellDataMap } from '../config'
+import { ColumnId, TransactionHistoryCellDataMap } from '../../config'
 import { TransactionHistoryTable } from './TransactionHistoryTable'
 
 export const TransactionHistoryTableContainer = () => {

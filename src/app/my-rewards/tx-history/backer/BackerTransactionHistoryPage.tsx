@@ -2,11 +2,23 @@
 
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { Header } from '@/components/Typography'
-import { Section } from '../components/Section'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { useAccount } from 'wagmi'
+import { Section } from '@/app/my-rewards/components/Section'
 import TransactionHistoryTableContainer from './components/TransactionHistoryTableContainer'
 
 const NAME = 'Transactions History'
-export const TransactionHistoryPage = () => {
+export const BackerTransactionHistoryPage = () => {
+  const { isConnected } = useAccount()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!isConnected) {
+      router.push('/')
+    }
+  }, [isConnected, router])
+
   return (
     <CycleContextProvider>
       <div

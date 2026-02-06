@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { Address, isAddress } from 'viem'
 import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
+import { paginateQuery } from '@/app/api/utils/paginateQuery'
 import { TX_HISTORY_COLUMNS } from '@/app/api/db/constants'
 
 type PriceParam = {
@@ -86,6 +87,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
     const url = new URL(req.url || '')
     const search = url.searchParams
 
+    // role=backer (default): filters by backer = address
+    // role=builder: filters by builder = address AND backer IS NULL (builder's own claims)
+    const role = search.get('role') === 'builder' ? 'builder' : 'backer'
+
     const typeFiltersRaw = parseMultiParam(search, 'type') // Back | Claim
     const builderFiltersRaw = parseMultiParam(search, 'builder')
     const rewardTokenFiltersRaw = parseMultiParam(search, 'rewardToken')
@@ -112,6 +117,40 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
 
     const { page, pageSize, sortBy, sortDirection } = paginationResult.data
 
+    // Builder role
+    if (role === 'builder') {
+      const claimedRewardsHistory = db('ClaimedRewardsHistory')
+        .select(
+          'id',
+          db.raw("'Claim' as type"),
+          'backer',
+          'builder',
+          'blockHash',
+          'blockTimestamp',
+          'transactionHash',
+          'cycleStart',
+          db.raw('NULL as allocation'),
+          db.raw('NULL as increased'),
+          'amount',
+          'rewardToken',
+        )
+        .where('builder', '=', backer.toLowerCase())
+        .whereNull('backer')
+        .modify(qb => {
+          if (rewardTokenFilters.length) qb.whereIn('rewardToken', rewardTokenFilters)
+        })
+
+      const { data, count } = await paginateQuery(claimedRewardsHistory, {
+        page,
+        pageSize,
+        sortBy: sortBy || 'blockTimestamp',
+        sortDirection: sortDirection || 'desc',
+      })
+
+      return NextResponse.json({ data, count, page, pageSize })
+    }
+
+    // Backer role
     const limitToBack = typeFiltersRaw.length > 0 && !typeFiltersRaw.includes('Claim')
     const limitToClaim =
       (typeFiltersRaw.length > 0 && !typeFiltersRaw.includes('Back')) || rewardTokenFilters.length > 0
@@ -206,12 +245,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
 
     const count = Number(countResult?.count || 0)
 
-    return NextResponse.json({
-      data,
-      count,
-      page,
-      pageSize,
-    })
+    return NextResponse.json({ data, count, page, pageSize })
   } catch (error) {
     console.error('Error fetching transaction history:', error)
     return NextResponse.json({ error: 'Database error' }, { status: 500 })
