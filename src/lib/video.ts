@@ -1,4 +1,4 @@
-import type { DiscourseDetails, DiscoursePostData, DiscoursePost } from '@/shared/types/discourse'
+import type { DiscourseDetails, DiscoursePostData } from '@/shared/types/discourse'
 
 /**
  * Utilities to extract video URLs from various platforms

@@ -6,7 +6,6 @@ export function DecorativeSquares({
   width = 50,
   height = 40,
   color = DEFAULT_ICON_COLOR,
-  fill = color,
   ...props
 }: IconProps) {
   return (
@@ -16,6 +15,7 @@ export function DecorativeSquares({
       viewBox="0 0 50 40"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      aria-label={ariaLabel}
       {...props}
     >
       <rect width="50" height="40" />

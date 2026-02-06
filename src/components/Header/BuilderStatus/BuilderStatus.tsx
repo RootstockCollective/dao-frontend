@@ -1,5 +1,5 @@
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
-import { Builder, BuilderState } from '@/app/collective-rewards/types'
+import { Builder } from '@/app/collective-rewards/types'
 import { Address } from 'viem'
 import { BuilderStatusView } from './BuilderStatusView'
 import { isBuilderDeactivated, isBuilderKycRevoked, useHandleErrors } from '@/app/collective-rewards/utils'

@@ -1,4 +1,4 @@
-import { FC, HtmlHTMLAttributes, ReactElement, ReactNode } from 'react'
+import { HtmlHTMLAttributes, ReactElement, ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import { useTableContext } from '@/shared/context'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'

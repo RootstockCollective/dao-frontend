@@ -31,7 +31,7 @@ declare module 'big.js' {
   }
 }
 
-Big.max = function (...args: Big[]) {
+Big.max = function (..._args: Big[]) {
   let x = arguments[0]
   for (let i = 1; i < arguments.length; i++) {
     const y = arguments[i]
