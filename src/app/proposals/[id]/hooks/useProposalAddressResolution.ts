@@ -36,7 +36,7 @@ export function useProposalAddressResolution(parsedAction: ParsedActionDetails):
         } else {
           setRns(undefined)
         }
-      } catch (_error) {
+      } catch {
         // Silently fail - RNS resolution is optional
         setRns(undefined)
       }

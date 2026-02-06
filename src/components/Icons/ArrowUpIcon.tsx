@@ -5,7 +5,6 @@ export function ArrowUpIcon({
   'aria-label': ariaLabel = 'Arrow Up Icon',
   size = 16,
   color = DEFAULT_ICON_COLOR,
-  fill = color,
   ...props
 }: IconProps) {
   return (
@@ -15,6 +14,7 @@ export function ArrowUpIcon({
       viewBox="0 0 16 16"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      aria-label={ariaLabel}
       {...props}
     >
       <path d="M8 13.5V2.5" stroke={color} strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />

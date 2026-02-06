@@ -6,8 +6,8 @@ import { useMemo } from 'react'
 import { AbiFunction, Address } from 'viem'
 import { useReadContracts } from 'wagmi'
 
-const gaugeTypeOptions = ['active', 'halted'] as const
-type GaugeType = (typeof gaugeTypeOptions)[number]
+const _gaugeTypeOptions = ['active', 'halted'] as const
+type GaugeType = (typeof _gaugeTypeOptions)[number]
 
 type FunctionEntry = Extract<(typeof BuilderRegistryAbi)[number], AbiFunction>
 type GetAtFunctionName = Extract<FunctionEntry['name'], 'getGaugeAt' | 'getHaltedGaugeAt'>

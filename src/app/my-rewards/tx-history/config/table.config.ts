@@ -3,8 +3,8 @@ import { Column, TypedTable } from '@/shared/context'
 import { Address } from 'viem'
 import { TransactionHistoryType } from '../utils/types'
 
-const COLUMN_IDS = ['cycle', 'date', 'from_to', 'type', 'amount', 'total_amount'] as const
-export type ColumnId = (typeof COLUMN_IDS)[number]
+const _COLUMN_IDS = ['cycle', 'date', 'from_to', 'type', 'amount', 'total_amount'] as const
+export type ColumnId = (typeof _COLUMN_IDS)[number]
 
 export const PAGE_SIZE = 20
 
