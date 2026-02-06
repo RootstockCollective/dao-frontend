@@ -7,7 +7,7 @@ import styles from './styles.module.css'
 import { cn } from '@/lib/utils'
 import { NavIcon } from '../icons/NavIcon'
 import { MenuData, menuData, menuDataNotConnected } from './menuData'
-import { RootstockLogoIcon } from '@/components/Icons'
+import { NetworkLogo } from '@/components/NetworkLogo'
 import { useLayoutContext } from '../LayoutProvider'
 import { Tooltip } from '@/components/Tooltip'
 import { Span } from '@/components/Typography'
@@ -48,10 +48,11 @@ export const SidebarDesktop = () => {
     >
       <div className={cn('h-full', 'flex flex-col justify-between whitespace-nowrap', '')}>
         <div>
-          {/* Logo link */}
-          <div className="m-6 w-fit">
-            <RootstockLogoIcon />
-          </div>
+          {/* Logo / Testnet indicator */}
+          <NetworkLogo
+            compact={!isSidebarOpen}
+            className={cn('my-6', isSidebarOpen ? 'ml-6 max-w-28' : 'mx-auto')}
+          />
           {/* Menu */}
           <ul className="px-3">
             {menuDataToUse.map(data => (
