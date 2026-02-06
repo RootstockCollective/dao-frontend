@@ -5,7 +5,7 @@ import { SiweMessage } from 'siwe'
 import { randomBytes } from 'crypto'
 import { isAddress, isHex } from 'viem'
 import { storeChallenge, getAndConsumeChallenge, CHALLENGE_TTL_MS } from './challengeStore'
-import { signJWT } from './jwt'
+import { signJWT } from './jwt.server'
 import { isProduction, sanitizeError } from './utils'
 import { currentEnvChain } from '@/config/config'
 

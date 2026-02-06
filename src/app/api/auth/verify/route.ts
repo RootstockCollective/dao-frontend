@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { verifyJWT, extractTokenFromRequest } from '@/lib/auth/jwt'
+import { verifyJWT, extractTokenFromRequest } from '@/lib/auth/jwt.server'
 import { sanitizeError } from '@/lib/auth/utils'
 
 /**

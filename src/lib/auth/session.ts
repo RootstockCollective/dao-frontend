@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
-import { verifyJWT, extractTokenFromRequest, JWTPayload } from './jwt'
+import { verifyJWT, extractTokenFromRequest } from './jwt.server'
+import { JWTPayload } from './jwt'
 
 /**
  * Extracts and verifies the session payload from the JWT

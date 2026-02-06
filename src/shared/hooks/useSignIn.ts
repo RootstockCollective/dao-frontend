@@ -34,14 +34,7 @@ export function useSignIn(): UseSignInReturn {
   const { signMessageAsync, isPending } = useSignMessage()
 
   // Get state and actions from Zustand store
-  const {
-    error,
-    isLoading: storeLoading,
-    setToken,
-    setLoading,
-    setError,
-    signOut: storeSignOut,
-  } = useSiweStore()
+  const { error, isLoading: storeLoading, setToken, setLoading, setError, signOut } = useSiweStore()
 
   // Derive isAuthenticated from jwtToken
   const isAuthenticated = useSiweStore(selectIsAuthenticated)
@@ -78,10 +71,6 @@ export function useSignIn(): UseSignInReturn {
     } finally {
       setLoading(false)
     }
-  }
-
-  const signOut = () => {
-    storeSignOut()
   }
 
   // Combine wagmi's isPending with store's loading state
