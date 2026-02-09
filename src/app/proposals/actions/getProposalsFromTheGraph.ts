@@ -1,6 +1,7 @@
 import { fetchProposals, ProposalGraphQLResponse } from '@/app/proposals/actions/proposalsAction'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { buildProposal } from '@/app/proposals/actions/utils'
+import { sentryServer } from '@/lib/sentry/sentry-server'
 
 function transformGraphQLProposal(proposal: ProposalGraphQLResponse): ProposalApiResponse {
   return buildProposal(proposal, {
@@ -62,6 +63,12 @@ export async function getProposalsFromTheGraph(): Promise<ProposalApiResponse[]>
     // Transform proposals
     return response.proposals.map(transformGraphQLProposal)
   } catch (error) {
+    const errorObj = error instanceof Error ? error : new Error(String(error))
+    sentryServer.captureException(errorObj, {
+      tags: {
+        errorType: 'PROPOSALS_THE_GRAPH_ERROR',
+      },
+    })
     // Re-throw with more context if it's already our error
     if (error instanceof Error && error.message.includes('The Graph')) {
       throw error
