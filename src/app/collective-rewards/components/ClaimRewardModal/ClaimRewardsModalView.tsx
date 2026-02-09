@@ -63,7 +63,9 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
   return (
     <Modal onClose={onClose} data-testid="ClaimRewardsModalView">
       <div className="h-full flex flex-col p-4 md:p-6">
-        <Header variant="h1">CLAIM REWARDS</Header>
+        <Header variant="h1" className="mt-16 mb-4">
+          CLAIM REWARDS
+        </Header>
         <Paragraph>
           Select the rewards that you want to claim, then confirm the transaction in your wallet.
         </Paragraph>

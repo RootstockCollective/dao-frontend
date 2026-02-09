@@ -5,9 +5,8 @@ import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { DateTime, Duration } from 'luxon'
 import { useState, useEffect, useMemo } from 'react'
 
-interface UpdateBackerRewardModalProps {
+interface Props {
   onClose: () => void
-  className?: string
 }
 
 function formatDuration(duration: bigint | undefined) {
@@ -15,7 +14,7 @@ function formatDuration(duration: bigint | undefined) {
   return Duration.fromObject({ seconds: Number(duration) }).shiftTo('days', 'hours', 'minutes')
 }
 
-export const UpdateBackerRewardModal = ({ onClose, className }: UpdateBackerRewardModalProps) => {
+export const UpdateBackerRewardModal = ({ onClose }: Props) => {
   const {
     current: { data: rewardData, isLoading: isRewardsLoading, refetch: refetchRewards },
     update: { setNewReward, isPending: isTxPending, isSuccess: isTxSuccess },
@@ -60,7 +59,6 @@ export const UpdateBackerRewardModal = ({ onClose, className }: UpdateBackerRewa
 
   return (
     <UpdateBackerRewardViewModal
-      className={className}
       currentReward={currentReward}
       updatedReward={updatedReward}
       alreadySubmitted={alreadySubmitted}
