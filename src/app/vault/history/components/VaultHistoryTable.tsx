@@ -33,7 +33,7 @@ function VaultHistoryTable() {
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
   const [pagerKey, setPagerKey] = useState(0)
 
-  const { rows, sort } = useTableContext<ColumnId, VaultHistoryCellDataMap>()
+  const { sort } = useTableContext<ColumnId, VaultHistoryCellDataMap>()
   const dispatch = useTableActionsContext<ColumnId, VaultHistoryCellDataMap>()
 
   // Filter sidebar state
@@ -157,9 +157,9 @@ function VaultHistoryTable() {
           </motion.div>
         )}
         {isDesktop ? (
-          <DesktopVaultHistory rows={rows} data-testid="VaultHistoryDesktopTable" />
+          <DesktopVaultHistory data-testid="VaultHistoryDesktopTable" />
         ) : (
-          <MobileVaultHistory rows={rows} data-testid="VaultHistoryMobileTable" />
+          <MobileVaultHistory data-testid="VaultHistoryMobileTable" />
         )}
       </div>
 

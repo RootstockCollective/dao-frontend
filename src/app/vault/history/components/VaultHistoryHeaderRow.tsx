@@ -3,7 +3,7 @@
 import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { ReactNode, Suspense } from 'react'
 import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
-import { Label } from '@/components/Typography'
+import { Label, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { SORT_DIRECTION_ASC, SORT_DIRECTIONS } from '@/shared/context/TableContext/constants'
 import { Dispatch } from 'react'
@@ -11,7 +11,9 @@ import {
   VaultHistoryCellDataMap,
   VaultHistoryTable,
   COLUMN_TRANSFORMS,
+  COLUMN_CONTENT_ALIGN,
   ColumnId,
+  useVaultHistoryTable,
 } from './VaultHistoryTable.config'
 import { ArrowsUpDown } from '@/components/Icons/v3design/ArrowsUpDown'
 import { ArrowDownWFill } from '@/components/Icons/v3design/ArrowDownWFill'
@@ -106,12 +108,12 @@ export const HeaderCell = ({ className, children, columnId }: HeaderCellProps) =
 
   const isSortable = column.sortable
   const columnClassNames = COLUMN_TRANSFORMS[columnId]
-  const isJustifyCenter = columnClassNames?.match('justify-center')?.length ?? false
+  const contentAlign = COLUMN_CONTENT_ALIGN[columnId]
 
   return (
     <TableHeaderCell
-      className={cn('h-full', columnClassNames, className)}
-      contentClassName={isJustifyCenter ? 'justify-center' : ''}
+      className={cn('h-full', columnClassNames, contentAlign, className)}
+      contentClassName={contentAlign ?? ''}
       onClick={() => isSortable && dispatchSortRoundRobin(dispatch, columnId, sort)}
       data-testid={`VaultHistoryHeaderCell${columnId}`}
     >
@@ -124,11 +126,16 @@ export const HeaderCell = ({ className, children, columnId }: HeaderCellProps) =
 }
 
 export const VaultHistoryHeaderRow = () => {
+  const { totalAmount } = useVaultHistoryTable()
+
   return (
     <Suspense fallback={<div>Loading table headers...</div>}>
       <thead>
         <tr
-          className="flex border-b-1 border-b-v3-text-60 select-none gap-4 pb-4 pl-4"
+          className={cn(
+            'flex select-none gap-4 pb-2 pl-4',
+            totalAmount === null && 'border-b-1 border-b-v3-text-60',
+          )}
           data-testid="VaultHistoryHeaderRow"
         >
           <HeaderCell columnId="period">
@@ -141,12 +148,34 @@ export const VaultHistoryHeaderRow = () => {
             <HeaderTitle>Amount</HeaderTitle>
           </HeaderCell>
           <HeaderCell columnId="total_usd">
-            <HeaderTitle>Total (USD)</HeaderTitle>
+            <HeaderTitle>Total amount (USD)</HeaderTitle>
           </HeaderCell>
           <HeaderCell columnId="actions">
             <HeaderTitle>Actions</HeaderTitle>
           </HeaderCell>
         </tr>
+        {totalAmount !== null && (
+          <tr
+            className="flex gap-4 pl-4 pb-2 border-b-1 border-b-v3-text-60"
+            data-testid="VaultHistoryTotalSummaryRow"
+          >
+            <th className={COLUMN_TRANSFORMS.period} />
+            <th className={COLUMN_TRANSFORMS.action} />
+            <th className={COLUMN_TRANSFORMS.assets} />
+            <th
+              className={cn(COLUMN_TRANSFORMS.total_usd, COLUMN_CONTENT_ALIGN.total_usd, 'flex items-center')}
+            >
+              <Paragraph
+                variant="body"
+                className="text-v3-text-100 font-bold"
+                data-testid="VaultHistoryTotalAmount"
+              >
+                {totalAmount}
+              </Paragraph>
+            </th>
+            <th className={COLUMN_TRANSFORMS.actions} />
+          </tr>
+        )}
       </thead>
     </Suspense>
   )

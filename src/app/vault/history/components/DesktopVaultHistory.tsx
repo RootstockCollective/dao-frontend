@@ -1,10 +1,12 @@
 import { Suspense, memo } from 'react'
 import { VaultHistoryHeaderRow } from '@/app/vault/history/components/VaultHistoryHeaderRow'
-import { VaultHistoryRowsProps } from '@/app/vault/history/components/VaultHistoryTable.config'
+import { useVaultHistoryTable } from '@/app/vault/history/components/VaultHistoryTable.config'
 import { VaultHistoryDataRow } from '@/app/vault/history/components/VaultHistoryDataRow'
 import { Paragraph } from '@/components/Typography'
 
-export const DesktopVaultHistory = memo(({ rows }: VaultHistoryRowsProps) => {
+export const DesktopVaultHistory = memo(() => {
+  const { rows } = useVaultHistoryTable()
+
   if (rows.length === 0) {
     return (
       <div className="w-full bg-v3-bg-accent-80 hidden md:flex grow p-8 items-center justify-center">

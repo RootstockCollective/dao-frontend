@@ -4,6 +4,7 @@ import { useTableContext } from '@/shared/context'
 import {
   ColumnId,
   COLUMN_TRANSFORMS,
+  COLUMN_CONTENT_ALIGN,
   VaultHistoryCellDataMap,
   TOKEN_SYMBOL,
   formatActionLabel,
@@ -33,7 +34,12 @@ const TableCell = ({ children, className, onClick, columnId, forceShow }: TableC
   if (forceShow || !columns.find(col => col.id === columnId)?.hidden) {
     return (
       <td
-        className={cn('flex self-stretch items-center select-none', COLUMN_TRANSFORMS[columnId], className)}
+        className={cn(
+          'flex self-stretch items-center select-none',
+          COLUMN_TRANSFORMS[columnId],
+          COLUMN_CONTENT_ALIGN[columnId],
+          className,
+        )}
         onClick={onClick}
         data-testid={`VaultHistoryCell${columnId}`}
       >
@@ -66,7 +72,7 @@ export const ActionCell: FC<ActionCellProps> = ({ action, isHovered, isDetailRow
   const showContent = !isDetailRow
 
   return (
-    <TableCell columnId="action" className="justify-center gap-2">
+    <TableCell columnId="action" className="gap-2">
       {showContent && (
         <Paragraph variant="body" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
           {formatActionLabel(action)}
@@ -121,7 +127,7 @@ interface ActionsCellProps extends CellStateProps {
 
 export const TotalUsdCell: FC<TotalUsdCellProps> = ({ usd, isHovered }): ReactElement => {
   return (
-    <TableCell columnId="total_usd" className="justify-center">
+    <TableCell columnId="total_usd">
       <Paragraph variant="body" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
         {usd}
       </Paragraph>
