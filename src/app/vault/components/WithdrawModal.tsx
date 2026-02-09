@@ -6,7 +6,6 @@ import { executeTxFlow } from '@/shared/notification'
 import { useCallback, useMemo, useState, useEffect, useRef } from 'react'
 import { useWithdrawFromVault } from '../hooks/useWithdrawFromVault'
 import { useVaultBalance } from '../hooks/useVaultBalance'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
 import { Divider } from '@/components/Divider'
 import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
@@ -29,7 +28,6 @@ interface Props {
 export const WithdrawModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
   const { prices } = usePricesContext()
 
-  const isDesktop = useIsDesktop()
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [amount, setAmount] = useState('')

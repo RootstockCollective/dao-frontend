@@ -4,7 +4,7 @@ import { Modal } from '@/components/Modal'
 import { Header } from '@/components/Typography'
 import Big from '@/lib/big'
 import { tokenContracts } from '@/lib/contracts'
-import { cn, handleAmountInput } from '@/lib/utils'
+import { handleAmountInput } from '@/lib/utils'
 import { useReadBackersManager } from '@/shared/hooks/contracts'
 import { executeTxFlow } from '@/shared/notification'
 import { useCallback, useMemo, useState } from 'react'
@@ -13,7 +13,6 @@ import { useAccount } from 'wagmi'
 import { useUnstakeStRIF } from '../Stake/hooks/useUnstakeStRIF'
 import { AllocationWarning } from './components/AllocationWarning'
 import { UnstakeInput } from './components/UnstakeInput'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { TransactionStatus } from '../Stake/components/TransactionStatus'
 import { Divider } from '@/components/Divider'
 import { TransactionInProgressButton } from '../Stake/components/TransactionInProgressButton'
@@ -26,7 +25,6 @@ interface Props {
 export const UnstakeModal = ({ onCloseModal }: Props) => {
   const { balances, prices } = useBalancesContext()
   const { address } = useAccount()
-  const isDesktop = useIsDesktop()
 
   const [amount, setAmount] = useState('')
   const { onRequestUnstake, isRequesting, isTxPending, isTxFailed, unstakeTxHash } = useUnstakeStRIF(

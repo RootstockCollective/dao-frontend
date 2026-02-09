@@ -9,7 +9,6 @@ import { useCallback, useMemo, useState, useEffect, useRef } from 'react'
 import { useDepositToVault } from '../hooks/useDepositToVault'
 import { useVaultAllowance } from '../hooks/useVaultAllowance'
 import { useCanDepositToVault } from '../hooks/useCanDepositToVault'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
 import { Divider } from '@/components/Divider'
 import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
@@ -62,7 +61,6 @@ const KycInfo = () => {
 export const DepositModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
   const { balances } = useGetAddressBalances()
   const { prices } = usePricesContext()
-  const isDesktop = useIsDesktop()
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [amount, setAmount] = useState('')
