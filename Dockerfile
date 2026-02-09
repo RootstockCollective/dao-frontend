@@ -73,5 +73,5 @@ RUN apk add --no-cache wget && \
 EXPOSE 3000
 
 # Run database migrations and start the Next.js application
-# Migration errors are logged but won't fail the startup (as per requirements)
-CMD ["sh", "-c", "node src/db/migrate.js && npm start"]
+# Migration errors are logged but won't prevent startup (as per requirements)
+CMD ["sh", "-c", "node src/db/migrate.js; npm start"]

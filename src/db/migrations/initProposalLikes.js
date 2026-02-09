@@ -33,24 +33,24 @@ const sslConfig = fs.existsSync(certPath)
 // This is intentionally different from DB_CONNECTION_STRING used by state-sync
 const connectionString = process.env.DAO_DATA_DB_CONNECTION_STRING
 
-if (!connectionString) {
-  console.warn('[Migration] DAO_DATA_DB_CONNECTION_STRING not set, skipping migration')
-  process.exit(0)
-}
-
-const db = knex({
-  client: 'pg',
-  connection: {
-    connectionString,
-    ssl: sslConfig,
-  },
-})
-
 const SCHEMA_NAME = 'dao_data'
 const TABLE_NAME = 'ProposalLikes'
 const FULL_TABLE_NAME = `${SCHEMA_NAME}."${TABLE_NAME}"`
 
 async function runMigration() {
+  if (!connectionString) {
+    console.warn('[Migration] DAO_DATA_DB_CONNECTION_STRING not set, skipping ProposalLikes migration')
+    return
+  }
+
+  const db = knex({
+    client: 'pg',
+    connection: {
+      connectionString,
+      ssl: sslConfig,
+    },
+  })
+
   console.log('[Migration] Starting ProposalLikes migration...')
 
   try {
