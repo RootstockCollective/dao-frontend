@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { FC, ReactNode, useMemo, useRef } from 'react'
+import { FC, ReactNode, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { CloseIconKoto } from '../Icons'
 import { PortalContainerContext } from '../PortalContainerContext'
