@@ -31,11 +31,11 @@ export const StrategiesInfo = () => {
         header: 'Strategy Name',
         cell: ({ row }) => (
           <CopyButton copyText={row.original.address} className="flex items-center">
-            <Paragraph>{truncateMiddle(row.original.name, 10, 10)}</Paragraph>
+            <Paragraph className="break-words">{truncateMiddle(row.original.name, 10, 10)}</Paragraph>
           </CopyButton>
         ),
         meta: {
-          width: '1.5fr',
+          width: '2fr',
         },
       }),
       accessor('funds', {
@@ -45,7 +45,7 @@ export const StrategiesInfo = () => {
           <Paragraph>{isLoading ? '...' : formatSymbol(row.original.funds, USDRIF)} USDRIF</Paragraph>
         ),
         meta: {
-          width: '1.2fr',
+          width: '1.1fr',
         },
       }),
       accessor('percentageAllocated', {
@@ -96,7 +96,14 @@ export const StrategiesInfo = () => {
         )}
 
         {!error && strategies.length > 0 && (
-          <GridTable table={table} className="mt-4" rowStyles="py-2" data-testid="StrategiesTable" />
+          <div className="mt-4 overflow-x-auto -mx-6 px-6">
+            <GridTable
+              table={table}
+              className="min-w-[500px]"
+              rowStyles="py-2"
+              data-testid="StrategiesTable"
+            />
+          </div>
         )}
 
         {!error && !isLoading && strategies.length === 0 && (
