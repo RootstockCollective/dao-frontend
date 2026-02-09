@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { showToast } from '@/shared/notification'
+import { sentryClient } from '@/lib/sentry/sentry-client'
 
 interface ErrorHandlerParams {
   title: string
@@ -10,7 +11,6 @@ interface ErrorHandlerParams {
 type ErrorHandler = (params: ErrorHandlerParams) => void
 export const useHandleErrors: ErrorHandler = ({ error, title, content }) => {
   useEffect(() => {
-    // disable toasts that pop-up every minute during development
     if (process.env.NEXT_PUBLIC_DAO_DEV) return
     if (error) {
       showToast({
@@ -19,6 +19,16 @@ export const useHandleErrors: ErrorHandler = ({ error, title, content }) => {
         content: content ?? error.message,
       })
       console.error(`🐛 ${title}:`, error)
+      sentryClient.captureException(error, {
+        tags: {
+          errorType: 'COLLECTIVE_REWARDS_ERROR',
+          title,
+        },
+        extra: {
+          title,
+          content: content ?? error.message,
+        },
+      })
     }
   }, [error, title, content])
 }
