@@ -12,7 +12,7 @@ import {
   clearChunkReloadAttempts,
 } from './commonErrors'
 import { Header, Paragraph } from '../Typography'
-import { sentryClient } from '@/lib/sentry-wrapper'
+import { sentryClient } from '@/lib/sentry/sentry-wrapper'
 
 interface ErrorFallbackProps {
   error: Error

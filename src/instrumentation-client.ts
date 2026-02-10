@@ -1,4 +1,4 @@
-import { initSentryIfEnabled } from '@/lib/sentry-wrapper'
+import { initSentryIfEnabled } from '@/lib/sentry/sentry-wrapper'
 import * as Sentry from '@sentry/nextjs'
 
 // NOTE: DSN is only used if NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_ERROR_TRACKING=true
