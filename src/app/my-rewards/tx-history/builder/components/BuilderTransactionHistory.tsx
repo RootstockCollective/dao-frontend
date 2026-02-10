@@ -5,6 +5,7 @@ import { useTableActionsContext, useTableContext, usePricesContext } from '@/sha
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { ColumnId, DEFAULT_HEADERS, PAGE_SIZE, TransactionHistoryCellDataMap } from '../../config'
 import { DesktopTransactionHistory } from '../../components/desktop'
+import { MobileTransactionHistory } from '../../components/mobile'
 import { convertBuilderDataToRowData } from '../utils/convertBuilderDataToRowData'
 import { useCycleContext } from '@/app/collective-rewards/metrics/context'
 import { TablePager } from '@/components/TableNew'
@@ -12,9 +13,9 @@ import { Header } from '@/components/Typography'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { BuilderTransactionHistoryFilterSideBar } from './BuilderTransactionHistoryFilterSideBar'
 import { motion } from 'motion/react'
-import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
+import { useScrollLock } from '@/shared/hooks/useScrollLock'
 import { ActiveFilter } from '@/components/FilterSideBar/types'
 import { FilterButton } from '@/app/proposals/components/filter/FilterButton'
 import { useAccount } from 'wagmi'
@@ -53,6 +54,9 @@ export const BuilderTransactionHistory = () => {
   const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false)
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([])
   const filterSidebarRef = useRef<HTMLDivElement>(null)
+
+  // Only lock scroll on mobile when filter modal is open
+  useScrollLock(isFilterSidebarOpen && !isDesktop)
 
   // Only apply click outside on desktop - mobile uses Modal component
   useClickOutside(filterSidebarRef, () => isDesktop && setIsFilterSidebarOpen(false))
@@ -146,7 +150,7 @@ export const BuilderTransactionHistory = () => {
         </div>
       </div>
 
-      <div className={cn('flex flex-row-reverse')}>
+      <div className="flex flex-row-reverse">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: isFilterSidebarOpen ? 264 : 0 }}
@@ -163,7 +167,7 @@ export const BuilderTransactionHistory = () => {
           </div>
         </motion.div>
         <div className="grow overflow-y-auto">
-          <DesktopTransactionHistory rows={rows} />
+          {isDesktop ? <DesktopTransactionHistory rows={rows} /> : <MobileTransactionHistory rows={rows} />}
         </div>
       </div>
 
