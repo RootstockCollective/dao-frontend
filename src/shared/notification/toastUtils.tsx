@@ -67,7 +67,6 @@ export const updateToast = (toastId: Id, props: ToastAlertOptions) => {
 const buildToastProps = ({
   severity,
   title,
-  content,
   toastId,
   dismissible = true,
   loading = false,

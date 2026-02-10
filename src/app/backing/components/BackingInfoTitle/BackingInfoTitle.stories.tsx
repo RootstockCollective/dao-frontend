@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { BackingInfoTitle } from './BackingInfoTitle'
-import { ContextProviders } from '@/app/providers/ContextProviders'
 
 const meta: Meta<typeof BackingInfoTitle> = {
   title: 'Backing/BackingInfoTitle',

@@ -178,10 +178,20 @@ export function CollectiveRewardsDualAxisChart({
     return [first, last + X_DOMAIN_BUFFER]
   }, [data])
 
+  const chartMargins = useMemo(
+    () => ({
+      left: isDesktop ? -5 : 0,
+      right: isDesktop ? -5 : 0,
+      top: 60,
+      bottom: 10,
+    }),
+    [isDesktop],
+  )
+
   return (
     <div className="w-full" style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ left: -20, right: 0, top: 60, bottom: 10 }} stackOffset="none">
+        <AreaChart data={data} margin={chartMargins} stackOffset="none">
           <XAxis
             dataKey={(p: any) => (p.day instanceof Date ? p.day.getTime() : p.day)}
             type="number"

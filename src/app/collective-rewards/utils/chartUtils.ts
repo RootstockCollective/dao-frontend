@@ -14,7 +14,11 @@ export const formatShort = (n: number) => {
   if (abs >= 1_000_000_000) return `${Math.round(n / 1_000_000_000)} B`
   if (abs >= 1_000_000) return `${Math.round(n / 1_000_000)} M`
   if (abs >= 1_000) return `${Math.round(n / 1_000)} K`
-  return `${n.toLocaleString()}`
+
+  if (abs >= 100) return `${Math.round(n)}`
+  if (abs >= 10) return `${n.toFixed(1)}`
+  if (abs >= 1) return `${n.toFixed(2)}`
+  return `${n.toFixed(2)}`
 }
 
 /**
@@ -223,6 +227,12 @@ export const transformApiDataToChartData = (
   rifPrice: number,
   rbtcPrice: number,
   usdrifPrice: number,
+  /**
+   * Time window (in ms) that controls how many recent cycles/days to keep.
+   * Defaults to 5 "months" (~10 cycles) for desktop views.
+   * Mobile views can pass a shorter window (e.g. 4 months / ~8 cycles).
+   */
+  windowInMs: number = FIVE_MONTHS_IN_MS,
 ) => {
   if (backingData.length === 0 || rewardsData.length === 0)
     return {
@@ -247,11 +257,11 @@ export const transformApiDataToChartData = (
   const backingSeries: BackingPoint[] = transformBackingData(sortedBackingData, lastRewardsDate)
   const cycles: CycleWindow[] = transformCyclesData(sortedRewardsData)
 
-  const filteredRewardsSeries = filterToLastMonths(rewardsSeries, item => item.day)
-  const filteredCycles = filterToLastMonths(cycles, item => item.end)
+  const filteredRewardsSeries = filterToLastMonths(rewardsSeries, item => item.day, undefined, windowInMs)
+  const filteredCycles = filterToLastMonths(cycles, item => item.end, undefined, windowInMs)
 
   const minDate = convertToTimestamp(filteredRewardsSeries[0].day)
-  const filteredBackingSeries = filterToLastMonths(backingSeries, item => item.day, minDate)
+  const filteredBackingSeries = filterToLastMonths(backingSeries, item => item.day, minDate, windowInMs)
 
   return {
     backingSeries: filteredBackingSeries,

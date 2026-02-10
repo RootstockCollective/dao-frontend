@@ -1,5 +1,5 @@
 import { Jdenticon } from '@/components/Header/Jdenticon'
-import { FC, useState } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import { Address } from 'viem'
 import { ipfsGatewayUrl } from '@/lib/ipfs'

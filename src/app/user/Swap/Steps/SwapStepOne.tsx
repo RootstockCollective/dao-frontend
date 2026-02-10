@@ -2,9 +2,9 @@ import { SwapInputComponent, SwapInputToken } from '@/components/SwapInput'
 import { handleAmountInput, formatForDisplay } from '@/lib/utils'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { SwapStepProps } from '../types'
-import { useSwapInput, useTokenSelection, useTokenAllowance } from '@/shared/context/SwappingContext/hooks'
-import { useSwappingContext } from '@/shared/context/SwappingContext'
-import { executeTxFlow } from '@/shared/notification'
+import { useSwapInput, useTokenSelection, useTokenAllowance } from '@/shared/stores/swap'
+import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { useExecuteTxFlow } from '@/shared/notification'
 import { USDT0, USDRIF } from '@/lib/constants'
 import { parseUnits, Hash } from 'viem'
 import Big from '@/lib/big'
@@ -22,18 +22,19 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     mode,
   } = useSwapInput()
   const { tokenInData, tokenOutData } = useTokenSelection()
-  const { tokenData, setApproving } = useSwappingContext()
-  const { allowance, isApproving, hasSufficientAllowance, approve, refetchAllowance, isCheckingAllowance } =
+  const { balances, prices } = useBalancesContext()
+  const { execute: executeTxFlow, isExecuting: isApproving } = useExecuteTxFlow()
+  const { allowance, hasSufficientAllowance, approve, refetchAllowance, isCheckingAllowance } =
     useTokenAllowance()
   const inputRef = useRef<HTMLInputElement>(null)
   // Track which field the user is actively typing in (prevents loop from programmatic value updates)
   const activeFieldRef = useRef<'in' | 'out' | null>(null)
 
   // Get balances and prices from context
-  const tokenInBalance = tokenData.balances[USDT0]
-  const tokenOutBalance = tokenData.balances[USDRIF]
-  const tokenInPrice = tokenData.prices[USDT0]
-  const tokenOutPrice = tokenData.prices[USDRIF]
+  const tokenInBalance = balances[USDT0]?.balance ?? '0'
+  const tokenOutBalance = balances[USDRIF]?.balance ?? '0'
+  const tokenInPrice = prices[USDT0]?.price ?? 0
+  const tokenOutPrice = prices[USDRIF]?.price ?? 0
 
   // Display values: typed field shows raw, derived field shows formatted (2 decimals)
   // When empty, return '' so the placeholder "0" shows
@@ -84,7 +85,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
       onGoNext()
     } else {
       // Need ERC-20 approval
-      executeTxFlow({
+      void executeTxFlow({
         onRequestTx: async () => {
           const txHash = await approve(requiredAmount)
           if (!txHash) {
@@ -100,14 +101,10 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
           }
           onGoNext()
         },
-        onComplete: () => {
-          // Reset approving state when transaction flow completes (success or error)
-          setApproving(false)
-        },
         action: 'allowance',
       })
     }
-  }, [isAllowanceEnough, requiredAmount, approve, refetchAllowance, onGoNext, setApproving])
+  }, [isAllowanceEnough, requiredAmount, approve, refetchAllowance, onGoNext, executeTxFlow])
 
   // Set button actions
   useEffect(() => {

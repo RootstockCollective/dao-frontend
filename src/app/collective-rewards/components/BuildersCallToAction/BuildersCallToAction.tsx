@@ -33,7 +33,7 @@ const BuildersTitle = () => {
 const BuilderCTAButton = ({ className }: StylableComponentProps<HTMLButtonElement>) => {
   const router = useRouter()
   const { isConnected, address } = useAccount()
-  const { getBuilderByAddress, isLoading: builderLoading, error: builderLoadingError } = useBuilderContext()
+  const { getBuilderByAddress } = useBuilderContext()
 
   const builder = getBuilderByAddress(address ?? zeroAddress)
 

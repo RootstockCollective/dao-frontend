@@ -17,7 +17,7 @@ export const ProposalNameColumn = ({ name, proposalId }: ProposalNameColumnProps
     href={`/proposals/${proposalId}`}
     data-testid="ProposalLink"
   >
-    <Paragraph>{name}</Paragraph>
+    <Paragraph className="break-all">{name}</Paragraph>
   </Link>
 )
 

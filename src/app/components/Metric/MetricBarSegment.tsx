@@ -11,13 +11,17 @@ export type MetricBarSegmentProps = BarSegmentProps &
 
 const RIF_CLASSES = 'bg-v3-rif-blue border-v3-rif-blue'
 const USDRIF_CLASSES = RIF_CLASSES
+const STRIF_CLASSES = RIF_CLASSES
 const RBTC_CLASSES = 'bg-v3-primary border-v3-primary'
+const USDT0_CLASSES = 'bg-v3-teal border-v3-teal'
 
 const TOKEN_CLASSES: Record<TokenSymbol, string> = {
   RIF: RIF_CLASSES,
   USDRIF: USDRIF_CLASSES,
+  stRIF: STRIF_CLASSES,
   rBTC: RBTC_CLASSES,
   tRBTC: RBTC_CLASSES,
+  USDT0: USDT0_CLASSES,
 }
 
 export const MetricBarSegment = ({

@@ -18,7 +18,7 @@ import { useAccount } from 'wagmi'
 export function useAddToWallet() {
   const { tokenId = 0, nftAddress, nftSymbol, image } = useCommunityNFT()
   const { nftsInWallet, isNFTInWalletLoading, onUpdateNftInWalletData } = useCurrentUserNFTInWallet()
-  const { isConnected, connector } = useAccount()
+  const { connector } = useAccount()
   const [isAdding, setIsAdding] = useState(false)
 
   // Check if the connected wallet is MetaMask - wallet_watchAsset only works with MetaMask

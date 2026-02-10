@@ -30,6 +30,7 @@ const query = apolloGQL`
     }
     cycles(orderBy: currentCycleStart, orderDirection: desc) {
       id
+      currentCycleStart
       rewardPerToken {
         amount
         token
@@ -45,6 +46,7 @@ type RewardPerToken = {
 
 type CycleData = {
   id: string
+  currentCycleStart: number
   rewardPerToken: RewardPerToken[]
 }
 

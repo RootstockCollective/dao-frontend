@@ -1,15 +1,16 @@
-import { executeTxFlow } from '@/shared/notification'
+import { useExecuteTxFlow } from '@/shared/notification'
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { SwapStepProps } from '../types'
 import { StakeTokenAmountDisplay } from '@/app/user/Stake/components/StakeTokenAmountDisplay'
 import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
-import { useSwapInput, useTokenSelection, useSwapExecution } from '@/shared/context/SwappingContext/hooks'
-import { useSwappingContext } from '@/shared/context/SwappingContext'
+import { useSwapInput, useTokenSelection, useSwapExecution } from '@/shared/stores/swap'
+import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { USDT0, USDRIF } from '@/lib/constants'
 import { formatForDisplay } from '@/lib/utils'
 import { Hash, formatUnits } from 'viem'
 import Big from '@/lib/big'
-import { Label } from '@/components/Typography'
+import { Label, Paragraph } from '@/components/Typography'
+import Image from 'next/image'
 import { SwapInputComponent, SwapInputToken } from '@/components/SwapInput'
 import { PercentageButtons, PercentageButtonItem } from '@/components/PercentageButtons'
 
@@ -24,17 +25,18 @@ const SLIPPAGE_OPTIONS: PercentageButtonItem<number>[] = [
 export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: SwapStepProps) => {
   const { amountIn, amountOut, quote } = useSwapInput()
   const { tokenInData, tokenOutData } = useTokenSelection()
-  const { state, tokenData, setSwapping } = useSwappingContext()
-  const { execute, isSwapping, swapError, swapTxHash, canExecute } = useSwapExecution()
+  const { balances, prices } = useBalancesContext()
+  const { execute: executeTxFlow, isExecuting: isSwapTxPending } = useExecuteTxFlow()
+  const { execute, swapError, swapTxHash, canExecute } = useSwapExecution()
 
   // Slippage tolerance is local to Step 3 - only needed for final confirmation
   const [slippageTolerance, setSlippageTolerance] = useState<number | null>(null)
 
-  // Get values from tokenData
-  const tokenInPrice = tokenData.prices[USDT0]
-  const tokenOutPrice = tokenData.prices[USDRIF]
-  const tokenInBalance = tokenData.balances[USDT0]
-  const tokenOutBalance = tokenData.balances[USDRIF]
+  // Get values from context
+  const tokenInPrice = prices[USDT0]?.price ?? 0
+  const tokenOutPrice = prices[USDRIF]?.price ?? 0
+  const tokenInBalance = balances[USDT0]?.balance ?? '0'
+  const tokenOutBalance = balances[USDRIF]?.balance ?? '0'
 
   const from = useMemo(() => {
     const amountInCurrency = Big(amountIn || '0')
@@ -90,7 +92,7 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
     if (!canExecute || !amountOutMinimum) {
       return
     }
-    executeTxFlow({
+    void executeTxFlow({
       onRequestTx: async () => {
         const txHash = await execute(amountOutMinimum)
         if (!txHash) {
@@ -99,13 +101,9 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
         return txHash as Hash
       },
       onSuccess: onCloseModal,
-      onComplete: () => {
-        // Reset swapping state when transaction flow completes (success or error)
-        setSwapping(false)
-      },
       action: 'swap',
     })
-  }, [canExecute, amountOutMinimum, execute, onCloseModal, setSwapping])
+  }, [canExecute, amountOutMinimum, execute, onCloseModal, executeTxFlow])
 
   // Set button actions - disabled until slippage is selected and minimum is calculated
   useEffect(() => {
@@ -113,18 +111,26 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
       primary: {
         label: 'Confirm swap',
         onClick: handleConfirmSwap,
-        disabled: !canExecute || !amountIn || !Big(amountIn).gt(0) || !amountOutMinimum || isSwapping,
-        loading: isSwapping,
-        isTxPending: isSwapping,
+        disabled: !canExecute || !amountIn || !Big(amountIn).gt(0) || !amountOutMinimum || isSwapTxPending,
+        loading: isSwapTxPending,
+        isTxPending: isSwapTxPending,
       },
       secondary: {
         label: 'Back',
         onClick: () => onGoToStep(0), // Go back to Step One
-        disabled: isSwapping, // Disable back button while swapping
+        disabled: isSwapTxPending, // Disable back button while tx is confirming
         loading: false,
       },
     })
-  }, [canExecute, amountIn, isSwapping, amountOutMinimum, handleConfirmSwap, onGoToStep, setButtonActions])
+  }, [
+    canExecute,
+    amountIn,
+    isSwapTxPending,
+    amountOutMinimum,
+    handleConfirmSwap,
+    onGoToStep,
+    setButtonActions,
+  ])
 
   // At step 3, amountIn should always exist (user came from steps 1 and 2)
   if (!amountIn) {
@@ -163,6 +169,14 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
           onPercentageClick={setSlippageTolerance}
           testId="slippage-buttons"
         />
+        {slippageTolerance === null && (
+          <div className="flex items-center gap-2 mt-2 py-3 bg-st-info/20 rounded-sm">
+            <Image src="/images/warning-icon.svg" alt="Warning" width={24} height={24} />
+            <Paragraph variant="body-s" className="text-st-info">
+              Select a slippage option to swap
+            </Paragraph>
+          </div>
+        )}
       </div>
 
       {/* Minimum Received - shown after slippage is selected */}
@@ -181,8 +195,8 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
       )}
 
       <TransactionStatus
-        txHash={swapTxHash || state.swapTxHash || undefined}
-        isTxFailed={!!swapError || !!state.swapError}
+        txHash={swapTxHash || undefined}
+        isTxFailed={!!swapError}
         failureMessage="Swap TX failed."
       />
     </>

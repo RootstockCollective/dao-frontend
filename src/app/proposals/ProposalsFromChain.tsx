@@ -6,7 +6,7 @@ import { useProposalListData } from '@/app/proposals/hooks/useProposalListData'
 
 export function ProposalsFromChain() {
   const { latestProposals } = useFetchAllProposals()
-  const { data, activeProposals, totalProposals } = useProposalListData({
+  const { data, totalProposals } = useProposalListData({
     proposals: latestProposals,
   })
   const memoizedProposals = useMemo(() => data, [data])

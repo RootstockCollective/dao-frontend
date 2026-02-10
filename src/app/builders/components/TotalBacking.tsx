@@ -4,7 +4,7 @@ import { useBuilderContext } from '@/app/collective-rewards/user'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
-import { TokenImage, TokenSymbol } from '@/components/TokenImage'
+import { TokenImage } from '@/components/TokenImage'
 import { Header } from '@/components/Typography'
 import { Paragraph } from '@/components/Typography/Paragraph'
 import { Span } from '@/components/Typography/Span'
@@ -12,7 +12,7 @@ import { Address } from 'viem'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { formatCurrencyWithLabel } from '@/lib/utils'
-import { RIF } from '@/lib/constants'
+import { RIF, STRIF } from '@/lib/constants'
 
 export const TotalBacking = () => {
   const { builders, isLoading: isLoadingBuilders, error: errorBuilders } = useBuilderContext()
@@ -50,8 +50,8 @@ export const TotalBacking = () => {
         <div className="flex items-center gap-2 font-kk-topo text-3xl font-normal tracking-tight">
           <Header variant={isDesktop ? 'h1' : 'h3'}>{formatSymbol(totalAllocations, 'StRIF')}</Header>
           <div className="flex items-center gap-1">
-            <TokenImage symbol={TokenSymbol.STRIF} size={isDesktop ? 24 : 16} />
-            <Span className="text-sm md:text-lg">{TokenSymbol.STRIF}</Span>
+            <TokenImage symbol={STRIF} size={isDesktop ? 24 : 16} />
+            <Span className="text-sm md:text-lg">{STRIF}</Span>
           </div>
         </div>
         <Span variant="body-s" className="text-bg-0">
