@@ -10,6 +10,7 @@ import { BalancesProvider } from '@/app/user/Balances/context/BalancesContext'
 import { GlobalErrorBoundary } from '@/components/ErrorPage/GlobalErrorBoundary'
 import { currentEnvChain, wagmiAdapter, wagmiAdapterConfig } from '@/config'
 import { REOWN_METADATA_URL, REOWN_PROJECT_ID } from '@/lib/constants'
+import { useChunkErrorHandler } from '@/lib/hooks/useChunkErrorHandler'
 import { FeatureFlagProvider } from '@/shared/context/FeatureFlag'
 import { ConnectWalletProvider } from '@/shared/walletConnection/connection/ConnectWalletProvider'
 import { AllocationsContextProvider } from '../collective-rewards/allocations/context'
@@ -64,32 +65,42 @@ createAppKit({
   },
 })
 
+/**
+ * Component that initializes global chunk error handling
+ */
+function ChunkErrorHandlerInit({ children }: { children: ReactNode }) {
+  useChunkErrorHandler()
+  return <>{children}</>
+}
+
 export const ContextProviders = ({ children, initialState }: Props) => {
   const queryClient = new QueryClient()
 
   return (
     <GlobalErrorBoundary>
-      <FeatureFlagProvider>
-        <WagmiProvider config={wagmiAdapterConfig} initialState={initialState}>
-          <QueryClientProvider client={queryClient}>
-            <ConnectWalletProvider>
-              <BuilderContextProviderWithPrices>
-                <BoosterProvider>
-                  <AllocationsContextProvider>
-                    <BalancesProvider>
-                      <TooltipProvider>
-                        <ReviewProposalProvider>
-                          <NavigationGuardProvider>{children}</NavigationGuardProvider>
-                        </ReviewProposalProvider>
-                      </TooltipProvider>
-                    </BalancesProvider>
-                  </AllocationsContextProvider>
-                </BoosterProvider>
-              </BuilderContextProviderWithPrices>
-            </ConnectWalletProvider>
-          </QueryClientProvider>
-        </WagmiProvider>
-      </FeatureFlagProvider>
+      <ChunkErrorHandlerInit>
+        <FeatureFlagProvider>
+          <WagmiProvider config={wagmiAdapterConfig} initialState={initialState}>
+            <QueryClientProvider client={queryClient}>
+              <ConnectWalletProvider>
+                <BuilderContextProviderWithPrices>
+                  <BoosterProvider>
+                    <AllocationsContextProvider>
+                      <BalancesProvider>
+                        <TooltipProvider>
+                          <ReviewProposalProvider>
+                            <NavigationGuardProvider>{children}</NavigationGuardProvider>
+                          </ReviewProposalProvider>
+                        </TooltipProvider>
+                      </BalancesProvider>
+                    </AllocationsContextProvider>
+                  </BoosterProvider>
+                </BuilderContextProviderWithPrices>
+              </ConnectWalletProvider>
+            </QueryClientProvider>
+          </WagmiProvider>
+        </FeatureFlagProvider>
+      </ChunkErrorHandlerInit>
     </GlobalErrorBoundary>
   )
 }
