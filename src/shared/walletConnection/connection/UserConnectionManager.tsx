@@ -4,6 +4,11 @@ import { ConnectWorkflow } from './ConnectWorkflow'
 import { useState, useEffect } from 'react'
 import { useAccount } from 'wagmi'
 
+interface UserConnectionManagerProps {
+  className?: string
+  showContent?: boolean
+}
+
 /**
  * UserConnectionManager handles wallet connection state in a Next.js environment.
  *
@@ -24,7 +29,7 @@ import { useAccount } from 'wagmi'
  * "Text content does not match server-rendered HTML" or
  * "Hydration failed because the initial UI does not match what was rendered on the server"
  */
-export function UserConnectionManager() {
+export function UserConnectionManager({ className, showContent = true }: UserConnectionManagerProps) {
   const { isConnected } = useAccount()
   const [mounted, setMounted] = useState(false)
 
@@ -32,12 +37,9 @@ export function UserConnectionManager() {
   useEffect(() => {
     setMounted(true)
   }, [])
-  // If the component is not mounted - return nothing
-  if (!mounted) return null
 
-  if (isConnected) {
-    return <DisconnectWorkflowContainer />
-  }
+  const content =
+    mounted && showContent ? isConnected ? <DisconnectWorkflowContainer /> : <ConnectWorkflow /> : null
 
-  return <ConnectWorkflow />
+  return <div className={className}>{content}</div>
 }

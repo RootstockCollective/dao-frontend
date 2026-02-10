@@ -20,27 +20,21 @@ export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElem
       ref={headerRef}
       {...props}
       className={cn(
-        'px-4 min-h-21 flex items-center relative transition-transform duration-300 ease-in-out z-modal bg-l-black',
+        'px-4 min-h-21 flex items-center transition-transform duration-300 ease-in-out z-modal bg-l-black',
         isVisible ? 'translate-y-0' : '-translate-y-full',
         className,
       )}
     >
       <Hamburger
+        className="flex-1"
         isOpen={isSidebarOpen}
         onClick={toggleSidebar}
         ariaLabel={isSidebarOpen ? 'Close menu' : 'Open menu'}
       />
 
-      {!isSidebarOpen ? (
-        <div className="flex-1 flex justify-end items-center gap-2">
-          <NetworkLogo compact />
-          <UserConnectionManager />
-        </div>
-      ) : (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <NetworkLogo />
-        </div>
-      )}
+      <NetworkLogo compact={!isSidebarOpen} />
+
+      <UserConnectionManager className="flex-1 flex justify-end" showContent={!isSidebarOpen} />
     </header>
   )
 }
