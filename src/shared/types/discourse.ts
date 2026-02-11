@@ -8,7 +8,6 @@ export interface DiscourseDetails {
     url?: string
     href?: string
     title?: string
-    [key: string]: unknown
   }>
 }
 
@@ -19,7 +18,6 @@ export interface DiscourseLinkCount {
   reflection?: boolean
   title?: string
   clicks?: number
-  [key: string]: unknown
 }
 
 export interface DiscoursePost {
@@ -27,12 +25,10 @@ export interface DiscoursePost {
   cooked?: string // HTML content
   raw?: string // Raw markdown/text content
   link_counts?: DiscourseLinkCount[] // Links extracted from the post by Discourse
-  [key: string]: unknown
 }
 
 export interface DiscoursePostData {
   posts?: DiscoursePost[]
-  [key: string]: unknown
 }
 
 /**
@@ -45,5 +41,4 @@ export interface DiscourseTopicResponse {
   created_at: string
   details?: DiscourseDetails
   post_stream?: DiscoursePostData // Discourse API returns this as post_stream
-  [key: string]: unknown
 }

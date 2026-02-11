@@ -311,9 +311,8 @@ function extractVideoUrlFromPostContent(content: string): string | null {
  * Type for Discourse topic with post data
  */
 export interface DiscourseTopicWithPosts {
-  post_stream?: DiscoursePostData // Discourse API returns this as post_stream
   details?: DiscourseDetails
-  [key: string]: unknown
+  post_stream?: DiscoursePostData // Discourse API returns this as post_stream
 }
 
 /**
