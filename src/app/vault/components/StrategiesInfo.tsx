@@ -28,7 +28,7 @@ export const StrategiesInfo = () => {
     () => [
       accessor('name', {
         id: 'name',
-        header: 'Strategy Name',
+        header: 'Allocations',
         cell: ({ row }) => (
           <CopyButton copyText={row.original.address} className="flex items-center">
             <Paragraph className="break-words">{truncateMiddle(row.original.name, 10, 10)}</Paragraph>
@@ -89,7 +89,7 @@ export const StrategiesInfo = () => {
   return (
     <MetricsContainer className="bg-v3-bg-accent-80">
       <div className="flex flex-col gap-6 w-full">
-        <Header variant="h3">Strategies</Header>
+        <Header variant="h3">Vault Strategy</Header>
 
         {error && (
           <ErrorMessageAlert message="An error occurred loading strategies information. Please try again shortly." />
