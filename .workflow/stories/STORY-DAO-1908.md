@@ -3,8 +3,8 @@
 ## Status
 - [ ] Draft
 - [ ] Ready for Development
-- [x] In Architecture
-- [ ] In Development
+- [ ] In Architecture
+- [x] In Development
 - [ ] In Review
 - [ ] In QA
 - [ ] Done
