@@ -113,55 +113,8 @@ export default defineConfig({
           },
         },
       },
-      {
-        // Mainnet project: for swap/quote tests only
-        plugins: [react({ jsxRuntime: 'automatic' })],
-        resolve: {
-          alias: {
-            '@': path.resolve(__dirname, './src'),
-          },
-        },
-        test: {
-          environment: 'jsdom',
-          setupFiles: './vitest.setup.ts',
-          // Use node environment for API route tests
-          environmentMatchGlobs: [
-            ['**/api/**/*.test.ts', 'node'],
-            ['**/api/**/*.test.tsx', 'node'],
-            ['**/providers/**/*.test.ts', 'node'],
-          ],
-          // Only include swap/quote tests in mainnet project
-          include: [
-            '**/swap/**/*.test.ts',
-            '**/swap/**/*.test.tsx',
-            '**/providers/uniswap.test.ts',
-            '**/api/swap/**/*.test.ts',
-          ],
-          exclude: ['**/node_modules/**'],
-          env: {
-            // Mainnet configuration for quote tests
-            // Quoting is read-only (view function), so it's safe to test on mainnet - no transactions or gas costs
-            JWT_SECRET: 'test-jwt',
-            NEXT_PUBLIC_ENV: 'mainnet',
-            NEXT_PUBLIC_CHAIN_ID: '30', // Rootstock mainnet chain ID
-            NEXT_PUBLIC_NODE_URL: 'https://public-node.rsk.co', // Mainnet RPC
-            NEXT_PUBLIC_BLOCKSCOUT_URL: 'https://rootstock.blockscout.com',
-            // Token addresses (Rootstock mainnet - checksummed)
-            // Verified from .env.mainnet and Uniswap V3 pool (https://oku.trade/uniswap/v3/pool/rootstock/0x134f5409cf7af4c68bf4a8f59c96cf4925f6bbb0)
-            NEXT_PUBLIC_RIF_ADDRESS: '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5',
-            NEXT_PUBLIC_USDRIF_ADDRESS: '0x3a15461d8ae0f0fb5fa2629e9da7d66a794a6e37', // From .env.mainnet - required for swap tests
-            NEXT_PUBLIC_USDT0_ADDRESS: '0x779Ded0c9e1022225f8E0630b35a9b54bE713736', // From Uniswap V3 pool token1 - required for swap tests
-            // DEX Router addresses (Rootstock mainnet)
-            // Verified from Uniswap Governance: https://gov.uniswap.org/t/official-uniswap-v3-deployments-list/24323
-            NEXT_PUBLIC_UNISWAP_QUOTER_V2_ADDRESS: '0xb51727c996C68E60F598A923a5006853cd2fEB31',
-            NEXT_PUBLIC_UNISWAP_UNIVERSAL_ROUTER_ADDRESS: '0x244f68e77357f86a8522323eBF80b5FC2F814d3E',
-            NEXT_PUBLIC_ICECREAMSWAP_ROUTER_ADDRESS: '0x63d3C7Ab37ca36A2A0A338076C163fF60c72527c',
-            // Pool addresses (Rootstock mainnet - checksummed)
-            NEXT_PUBLIC_USDT0_USDRIF_POOL_ADDRESS: '0x134F5409cf7AF4C68bF4A8f59C96CF4925f6Bbb0',
-          },
-        },
-      },
       // Fork project only runs when FORK_RPC_URL is set (avoids localhost:8545 timeout in CI)
+      // Swap/quote tests ONLY run on the fork - they are excluded from the testnet project above
       ...(hasForkRpc ? [forkProject] : []),
     ],
   },
