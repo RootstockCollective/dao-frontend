@@ -71,8 +71,8 @@ The endpoint will:
 
 ### Code Review
 - PR: #[number]
-- File: `../reviews/STORY-DAO-1908-review.md`
-- Status: [ ] Pending | [ ] Approved | [ ] Changes Requested
+- File: `../reviews/STORY-DAO-1908-phase-1-review.md`
+- Status: [ ] Pending | [x] Approved | [ ] Changes Requested
 
 ### QA Report
 - File: `../qa-reports/STORY-DAO-1908-qa.md`
