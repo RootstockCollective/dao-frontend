@@ -1,94 +1,89 @@
 import { NextResponse } from 'next/server'
+import { z } from 'zod'
 import { JWTPayload } from '@/lib/auth/jwt'
 import { withAuth } from '@/lib/auth/withAuth'
+import { daoDataDb } from '@/lib/daoDataDb'
+
+const TABLE = 'dao_data.ProposalLikes'
+
+const LikeRequestSchema = z.object({
+  proposalId: z
+    .string()
+    .min(1, 'proposalId is required')
+    .refine(val => {
+      try {
+        BigInt(val)
+        return true
+      } catch {
+        return false
+      }
+    }, 'proposalId must be a valid numeric string'),
+  reaction: z.enum(['heart']).default('heart'),
+})
+
+function bigIntToBuffer(value: string): Buffer {
+  let hex = BigInt(value).toString(16)
+  hex = hex.padStart(64, '0')
+  return Buffer.from(hex, 'hex')
+}
 
 /**
  * POST /api/like
  *
- * Validates JWT token and provides a protected endpoint for like functionality.
+ * Toggles a proposal reaction for the authenticated user.
+ * If the reaction exists, it is removed. If it does not exist, it is added.
  *
- * Request:
- * - Token can be sent via:
- *   1. Authorization header: `Authorization: Bearer <token>`
- *   2. Cookie: `auth-token=<token>`
- * - Body should contain like-related data (e.g., proposalId, itemId, etc.)
- *
- * Request body example:
+ * Request body:
  * {
- *   proposalId: string,
- *   // Add other fields as needed
+ *   proposalId: string  — numeric string representing the proposal ID
+ *   reaction?: string   — reaction type (default: "heart")
  * }
  *
  * Response (success):
- * {
- *   success: true,
- *   userAddress: string,
- *   // Add your custom response data here
- * }
+ * { success: true, liked: boolean }
  *
  * Response (error):
- * {
- *   success: false,
- *   error: string
- * }
+ * { success: false, error: string, details?: object }
  */
-export const POST = withAuth(async (_request, session: JWTPayload) => {
-  const { userAddress } = session
+export const POST = withAuth(async (request, session: JWTPayload) => {
+  if (!daoDataDb) {
+    return NextResponse.json({ success: false, error: 'Database not configured' }, { status: 503 })
+  }
 
-  // Parse request body
-  const body = await _request.json().catch(() => ({}))
+  const body = await request.json().catch(() => null)
+  const parsed = LikeRequestSchema.safeParse(body)
 
-  // ============================================
-  // PLACEHOLDER: Add your like logic here
-  // ============================================
-  //
-  // At this point, you have:
-  // - A validated session with userAddress (and future fields)
-  // - Request body data (e.g., proposalId, itemId, etc.)
-  //
-  // You can now:
-  // - Check if user already liked the item
-  // - Insert/update like in database
-  // - Return like count or status
-  // - etc.
-  //
-  // Example:
-  // const { proposalId } = body
-  // if (!proposalId) {
-  //   return NextResponse.json(
-  //     { success: false, error: 'proposalId is required' },
-  //     { status: 400 },
-  //   )
-  // }
-  //
-  // // Check if already liked
-  // const existingLike = await db('ProposalLike')
-  //   .where({ proposalId, userAddress: userAddress.toLowerCase() })
-  //   .first()
-  //
-  // if (existingLike) {
-  //   // Unlike: delete the like
-  //   await db('ProposalLike').where({ id: existingLike.id }).delete()
-  //   return NextResponse.json({ success: true, liked: false, userAddress })
-  // } else {
-  //   // Like: insert new like
-  //   await db('ProposalLike').insert({
-  //     proposalId,
-  //     userAddress: userAddress.toLowerCase(),
-  //     createdAt: new Date(),
-  //   })
-  //   return NextResponse.json({ success: true, liked: true, userAddress })
-  // }
-  //
-  // ============================================
+  if (!parsed.success) {
+    return NextResponse.json(
+      { success: false, error: 'Validation failed', details: parsed.error.flatten() },
+      { status: 400 },
+    )
+  }
 
-  // Return success response
-  // Modify this response to include your custom data
-  return NextResponse.json({
-    success: true,
-    userAddress,
-    body,
-    tester: 1,
-    session,
-  })
+  const { proposalId, reaction } = parsed.data
+  const userAddress = session.userAddress.toLowerCase()
+  const proposalIdBuffer = bigIntToBuffer(proposalId)
+
+  try {
+    const liked = await daoDataDb.transaction(async trx => {
+      const existing = await trx(TABLE).where({ proposalId: proposalIdBuffer, userAddress, reaction }).first()
+
+      if (existing) {
+        await trx(TABLE).where({ id: existing.id }).delete()
+        return false
+      }
+
+      await trx(TABLE).insert({
+        proposalId: proposalIdBuffer,
+        userAddress,
+        reaction,
+      })
+      return true
+    })
+
+    return NextResponse.json({ success: true, liked })
+  } catch (error) {
+    console.error('Error in POST /api/like:', error)
+    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 })
+  }
 })
