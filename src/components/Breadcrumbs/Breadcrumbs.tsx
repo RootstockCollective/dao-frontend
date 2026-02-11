@@ -21,7 +21,8 @@ const breadcrumbsMap = {
   '/proposals/new/review/grants': 'Review Grant Proposal',
   '/proposals/new/review/activation': 'Review Activation Proposal',
   '/proposals/new/review/deactivation': 'Review Deactivation Proposal',
-  '/my-rewards/tx-history': 'Transactions History',
+  '/my-rewards/tx-history/backer': 'Transaction History',
+  '/my-rewards/tx-history/builder': 'Claiming History',
   '/staking-history': 'Staking History',
   // community URLs
   ...Object.fromEntries(
@@ -31,7 +32,12 @@ const breadcrumbsMap = {
 }
 
 // Segments that should be skipped in breadcrumbs (no clickable links)
-const skipSegments = ['/proposals/new/review', '/proposals/new/details', '/communities/nft']
+const skipSegments = [
+  '/proposals/new/review',
+  '/proposals/new/details',
+  '/communities/nft',
+  '/my-rewards/tx-history',
+]
 
 /**
  * Simple breadcrumbs component used in desktop header
