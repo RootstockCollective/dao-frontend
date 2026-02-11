@@ -66,7 +66,7 @@ async function runMigration() {
         "userAddress" VARCHAR(42) NOT NULL,
         "likedAt" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
         reaction VARCHAR(50) NOT NULL,
-        CONSTRAINT unique_user_proposal UNIQUE ("proposalId", "userAddress")
+        CONSTRAINT unique_user_proposal UNIQUE ("proposalId", "userAddress", reaction)
       )
     `)
     console.log(`[Migration] Table "${FULL_TABLE_NAME}" ensured`)
