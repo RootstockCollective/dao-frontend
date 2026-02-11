@@ -580,6 +580,19 @@ export const BuilderRegistryAbi = [
   },
   {
     type: 'function',
+    name: 'maxRewardPercentage',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     name: 'pauseBuilderKYC',
     inputs: [
       {
@@ -753,6 +766,19 @@ export const BuilderRegistryAbi = [
         name: 'rewardPercentage_',
         type: 'uint64',
         internalType: 'uint64',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'updateMaxRewardPercentage',
+    inputs: [
+      {
+        name: 'maxRewardPercentage_',
+        type: 'uint256',
+        internalType: 'uint256',
       },
     ],
     outputs: [],
