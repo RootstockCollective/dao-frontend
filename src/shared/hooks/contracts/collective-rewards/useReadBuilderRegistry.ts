@@ -18,6 +18,7 @@ export const useReadBuilderRegistry = <TFunctionName extends BuilderRegistryFunc
   return useReadContract({
     abi: getAbi('BuilderRegistryAbi'),
     address: BuilderRegistryAddress,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...(config as any),
     query: {
       retry: true,

@@ -16,6 +16,7 @@ export const useReadGauge = <TFunctionName extends GaugeFunctionName>(
   return useReadContract({
     abi: getAbi('GaugeAbi'),
     address,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...(config as any),
     query: {
       retry: true,

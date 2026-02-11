@@ -18,6 +18,7 @@ export const useReadCycleTimeKeeper = <TFunctionName extends CycleTimeKeeperFunc
   return useReadContract({
     abi: getAbi('CycleTimeKeeperAbi'),
     address: BackersManagerAddress,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...(config as any),
     query: {
       retry: true,

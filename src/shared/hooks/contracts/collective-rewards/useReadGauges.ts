@@ -27,6 +27,7 @@ export const useReadGauges = <TFunctionName extends GaugeFunctionName>(
     contracts: addresses.map(address => ({
       abi,
       address,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ...(config as any),
     })),
     query: {
