@@ -2,9 +2,9 @@ import { LegendItem } from '@/components/Legend'
 
 export interface AllocationItem extends LegendItem {
   value: bigint
+  isEditable: boolean
   isTemporary?: boolean
   initialValue?: bigint
-  isEditable: boolean
 }
 
 export interface AllocationChangeData {

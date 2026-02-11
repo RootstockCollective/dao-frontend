@@ -7,9 +7,9 @@ import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
 import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react'
 
 interface Props {
-  label?: string
   amount: string
   tokenSymbol: string
+  label?: string
   amountInCurrency?: string
   className?: string
   isFlexEnd?: boolean

@@ -24,10 +24,10 @@ export interface CycleRewardsItem {
 
 export type Builder = {
   proposal: BuilderProposal
-  stateFlags?: BuilderStateFlags
-  gauge?: Address
   address: Address
   builderName: string
+  stateFlags?: BuilderStateFlags
+  gauge?: Address
   backerRewardPct?: BackerRewardPercentage
 }
 

@@ -18,8 +18,8 @@ interface ProposalDetailsProps {
   description: string | null
   proposer: string
   startsAt: Moment
-  fullProposalName?: string
   parsedActions: ParsedActionDetails[]
+  fullProposalName?: string
   link?: string
   readOnly?: boolean
 }

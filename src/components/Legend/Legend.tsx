@@ -10,8 +10,8 @@ export interface LegendItem {
 
 interface LegendProps {
   title: string
-  className?: string
   items: LegendItem[]
+  className?: string
 }
 
 export const Legend = ({ title, className, items }: LegendProps) => {

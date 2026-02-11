@@ -5,8 +5,8 @@ import Link from 'next/link'
 
 export interface BuilderNameProps {
   builder: Builder
-  isHighlighted?: boolean
   builderPageLink: string
+  isHighlighted?: boolean
 }
 
 export const BuilderName = ({ builder, isHighlighted, builderPageLink }: BuilderNameProps) => {

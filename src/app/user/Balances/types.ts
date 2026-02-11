@@ -52,7 +52,6 @@ export interface ServerResponseV2<T> {
   items: T[]
   next_page_params: NextPageParams | null
   error?: string
-  [key: string]: unknown
 }
 
 export type NftHolderItem = {
@@ -63,7 +62,7 @@ export type NftHolderItem = {
   ens_domain_name?: string
 }
 
-type Metadata = {
+interface Metadata {
   creator: string
   description: string
   external_url: string

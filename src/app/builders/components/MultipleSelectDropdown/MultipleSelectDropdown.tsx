@@ -16,9 +16,9 @@ interface MultipleSelectDropdownProps<ColumnId extends BaseColumnId = BaseColumn
   title: string
   options: SelectorOption<ColumnId>[]
   selected: ColumnId[]
+  trigger: ReactNode | ((isOpen: boolean) => ReactNode)
   onChange?: (selectedValues: ColumnId[]) => void
   className?: string
-  trigger: ReactNode | ((isOpen: boolean) => ReactNode)
   align?: 'start' | 'center' | 'end'
 }
 

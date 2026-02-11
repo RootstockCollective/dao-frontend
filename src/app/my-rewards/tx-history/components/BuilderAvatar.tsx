@@ -8,9 +8,9 @@ import Link from 'next/link'
 import { Address } from 'viem'
 
 export interface BuilderAvatarProps {
+  variant: 'desktop' | 'mobile'
   builder?: Builder
   builderAddress?: Address
-  variant: 'desktop' | 'mobile'
   isHovered?: boolean // desktop only
   className?: string
 }

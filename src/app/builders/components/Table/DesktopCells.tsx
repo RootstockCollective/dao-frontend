@@ -24,8 +24,8 @@ export const TableCellBase = ({
   columnTransforms,
 }: HtmlHTMLAttributes<HTMLTableCellElement> & {
   columnId: ColumnId
-  forceShow?: boolean
   columnTransforms: ColumnTransforms<ColumnId>
+  forceShow?: boolean
 }): ReactNode => {
   const { columns } = useTableContext<ColumnId, BuilderCellDataMap>()
   if (forceShow || !columns.find(col => col.id === columnId)?.hidden) {

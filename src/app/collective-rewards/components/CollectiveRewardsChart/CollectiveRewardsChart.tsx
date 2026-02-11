@@ -32,12 +32,12 @@ import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
  * Also renders active dots with higher z-index to appear above the line.
  */
 interface CustomCursorProps {
+  backingMaxDomain: number
+  rewardsMaxDomain: number
   points?: Array<{ x: number; y: number }>
   top?: number
   height?: number
   payload?: Array<{ dataKey: string; value: number; color?: string }>
-  backingMaxDomain: number
-  rewardsMaxDomain: number
 }
 
 const CustomCursor = (props: CustomCursorProps) => {

@@ -33,8 +33,8 @@ const termsAndConditionsModalText = {
 
 export interface TermsAndConditionsModalProps {
   onAgree: () => void
-  onDecline?: () => void
   shouldShow: boolean
+  onDecline?: () => void
 }
 
 /**

@@ -3,8 +3,8 @@ import { cn } from '@/lib/utils'
 import { FC } from 'react'
 
 interface BackerRewardsPercentageProps {
-  className?: string
   currentPct: number
+  className?: string
   nextPct?: number
 }
 

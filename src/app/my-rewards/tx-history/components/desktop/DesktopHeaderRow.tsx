@@ -1,7 +1,7 @@
 'use client'
 
 import { useTableActionsContext, useTableContext } from '@/shared/context'
-import { ReactElement, ReactNode, Suspense } from 'react'
+import { ReactElement, Suspense } from 'react'
 import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
 import { Label, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
@@ -18,10 +18,14 @@ import { ArrowsUpDown } from '@/components/Icons/v3design/ArrowsUpDown'
 import { ArrowDownWFill } from '@/components/Icons/v3design/ArrowDownWFill'
 import { ArrowUpWFill } from '@/components/Icons/v3design/ArrowUpWFill'
 
-const OrderIndicatorContainer: FC<{ className?: string; children: React.ReactNode }> = ({
-  className,
-  children,
-}) => <div className={cn('flex justify-center gap-2', className)}>{children}</div>
+interface ChildrenWithClassNameProps {
+  children: React.ReactNode
+  className?: string
+}
+
+const OrderIndicatorContainer: FC<ChildrenWithClassNameProps> = ({ children, className }) => (
+  <div className={cn('flex justify-center gap-2', className)}>{children}</div>
+)
 
 const OrderIndicator: FC<{ columnId: ColumnId }> = ({ columnId }) => {
   const { sort } = useTableContext<ColumnId, TransactionHistoryCellDataMap>()
@@ -68,7 +72,7 @@ const dispatchSortRoundRobin = (
   dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: nextSort ? columnId : null, direction: nextSort } })
 }
 
-const HeaderTitle: FC<{ className?: string; children: ReactNode }> = ({ className, children }) => (
+const HeaderTitle: FC<ChildrenWithClassNameProps> = ({ children, className }) => (
   <Label variant="tag-s" className={cn('cursor-[inherit]', className)}>
     {children}
   </Label>
@@ -80,15 +84,11 @@ const HeaderSubtotal: FC<{ value: string }> = ({ value }) => (
   </Paragraph>
 )
 
-export const HeaderCell = ({
-  className,
-  children,
-  columnId,
-}: {
-  className?: string
-  children: React.ReactNode
+interface HeaderCellProps extends ChildrenWithClassNameProps {
   columnId: ColumnId
-}): ReactElement | null => {
+}
+
+export const HeaderCell = ({ children, columnId, className }: HeaderCellProps): ReactElement | null => {
   const { sort, columns } = useTableContext<ColumnId, TransactionHistoryCellDataMap>()
   const dispatch = useTableActionsContext<ColumnId, TransactionHistoryCellDataMap>()
 

@@ -67,12 +67,12 @@ export interface TransactionAmount {
 
 export interface GroupedTransactionDetail {
   id: string
-  builder?: Builder
-  builderAddress?: Address
   blockTimestamp: string
   transactionHash: string
   amounts: TransactionAmount[]
   usdValue: string | string[]
+  builder?: Builder
+  builderAddress?: Address
   increased?: boolean
 }
 
@@ -80,9 +80,9 @@ export type TransactionHistoryCellDataMap = {
   cycle: { cycle: string | null }
   date: { timestamp: string; formatted: string; transactionHash: string }
   from_to: {
+    type: TransactionHistoryType
     builder?: Builder
     builderAddress?: Address
-    type: TransactionHistoryType
     isGrouped?: boolean
     groupedDetails?: GroupedTransactionDetail[]
   }

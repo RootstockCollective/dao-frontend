@@ -15,8 +15,8 @@ interface CollapsibleContext {
 const CollapsibleContext = createContext<CollapsibleContext | null>(null)
 
 interface CollapsibleProviderProps {
-  defaultOpen?: boolean
   children: ReactNode
+  defaultOpen?: boolean
 }
 
 const CollapsibleProvider = ({ defaultOpen = true, children }: CollapsibleProviderProps) => {
@@ -27,8 +27,8 @@ const CollapsibleProvider = ({ defaultOpen = true, children }: CollapsibleProvid
 }
 
 export interface CollapsibleProps extends CommonComponentProps {
-  defaultOpen?: boolean
   children: ReactNode
+  defaultOpen?: boolean
   className?: string
 }
 

@@ -6,7 +6,7 @@ export interface PaginationResponse {
   limit: number
   offset: number
   total: number
-  totalPages?: number
   sort_field: string
   sort_direction: 'asc' | 'desc'
+  totalPages?: number
 }

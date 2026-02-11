@@ -10,8 +10,8 @@ import { cn } from '@/lib/utils'
 export interface AmountDisplayProps {
   amounts: Array<{ address: string; value: string; symbol: string }>
   type: 'Claim' | 'Back'
-  increased?: boolean
   variant: 'desktop' | 'mobile'
+  increased?: boolean
   /**
    * Whether the row is currently hovered (desktop only)
    */

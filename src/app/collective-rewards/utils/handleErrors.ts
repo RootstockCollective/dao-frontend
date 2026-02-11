@@ -1,7 +1,13 @@
 import { useEffect } from 'react'
 import { showToast } from '@/shared/notification'
 
-type ErrorHandler = (params: { error?: Error | null; title: string; content?: string }) => void
+interface ErrorHandlerParams {
+  title: string
+  error?: Error | null
+  content?: string
+}
+
+type ErrorHandler = (params: ErrorHandlerParams) => void
 export const useHandleErrors: ErrorHandler = ({ error, title, content }) => {
   useEffect(() => {
     // disable toasts that pop-up every minute during development
