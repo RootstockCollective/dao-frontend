@@ -6,7 +6,7 @@
 - [x] In Architecture
 - [ ] In Development
 - [ ] In Review
-- [ ] In QA
+- [x] In QA
 - [ ] Done
 
 ## Description
@@ -27,12 +27,12 @@ The endpoint will:
 
 ## Acceptance Criteria
 
-- [ ] AC-1: POST endpoint is functional and correctly adds or removes the user's reaction in the database
-- [ ] AC-2: Errors are handled gracefully (invalid body, missing proposalId/reaction, DB errors, auth failures) with appropriate status codes and error messages
-- [ ] AC-3: A row is inserted in the DB containing the user address and the reaction when adding; the row is removed when the user removes the reaction
-- [ ] AC-4: Endpoint is behind authentication (JWT validation via `lib/auth` check)
-- [ ] AC-5: Request body includes `proposalId` (string) and `reaction` (string; first phase: heart)
-- [ ] AC-6: Response returns success/error status and relevant payload (e.g., liked/unliked, userAddress)
+- [x] AC-1: POST endpoint is functional and correctly adds or removes the user's reaction in the database
+- [x] AC-2: Errors are handled gracefully (invalid body, missing proposalId/reaction, DB errors, auth failures) with appropriate status codes and error messages
+- [x] AC-3: A row is inserted in the DB containing the user address and the reaction when adding; the row is removed when the user removes the reaction
+- [x] AC-4: Endpoint is behind authentication (JWT validation via `lib/auth` check)
+- [x] AC-5: Request body includes `proposalId` (string) and `reaction` (string; first phase: heart)
+- [x] AC-6: Response returns success/error status and relevant payload (e.g., liked/unliked, userAddress)
 
 ## Technical Notes
 
@@ -75,5 +75,5 @@ The endpoint will:
 - Status: [ ] Pending | [x] Approved | [ ] Changes Requested
 
 ### QA Report
-- File: `../qa-reports/STORY-DAO-1908-qa.md`
-- Status: [ ] Pending | [ ] Passed | [ ] Failed
+- File: `../qa-reports/STORY-DAO-1908-phase-1-qa.md`
+- Status: [ ] Pending | [x] Passed | [ ] Failed
