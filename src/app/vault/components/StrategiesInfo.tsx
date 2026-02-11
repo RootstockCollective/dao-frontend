@@ -96,14 +96,17 @@ export const StrategiesInfo = () => {
         )}
 
         {!error && strategies.length > 0 && (
-          <div className="mt-4 overflow-x-auto -mx-6 px-6">
-            <GridTable
-              table={table}
-              className="min-w-[500px]"
-              rowStyles="py-2"
-              data-testid="StrategiesTable"
-            />
-          </div>
+          <>
+            <div className="mt-4 overflow-x-auto -mx-6 px-6">
+              <GridTable
+                table={table}
+                className="min-w-[500px] border-b border-b-text-60"
+                rowStyles="py-2"
+                data-testid="StrategiesTable"
+              />
+            </div>
+            {!isLoading && <WeightedApySummary strategies={strategies} />}
+          </>
         )}
 
         {!error && !isLoading && strategies.length === 0 && (
@@ -113,5 +116,20 @@ export const StrategiesInfo = () => {
         {isLoading && <LoadingSpinner />}
       </div>
     </MetricsContainer>
+  )
+}
+
+const WeightedApySummary = ({ strategies }: { strategies: StrategyInfo[] }) => {
+  const weightedApy = strategies
+    .reduce((sum, s) => sum + (s.percentageAllocated * s.estimatedApy) / 100, 0)
+    .toFixed(2)
+
+  return (
+    <div className="grid gap-4 px-4" style={{ gridTemplateColumns: '2fr 1.1fr 1fr 1fr' }}>
+      <Paragraph>Weighted APY</Paragraph>
+      <div />
+      <div />
+      <Paragraph>{weightedApy}%</Paragraph>
+    </div>
   )
 }
