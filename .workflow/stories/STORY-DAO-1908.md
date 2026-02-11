@@ -5,8 +5,8 @@
 - [ ] Ready for Development
 - [ ] In Architecture
 - [ ] In Development
-- [x] In Review
-- [ ] In QA
+- [ ] In Review
+- [x] In QA
 - [ ] Done
 
 ## Description
@@ -65,5 +65,5 @@ The endpoint should:
 - Status: [ ] Pending | [x] Approved | [ ] Changes Requested
 
 ### QA Report
-- File: `../qa-reports/STORY-DAO-1908-qa.md`
-- Status: [ ] Pending | [ ] Passed | [ ] Failed
+- File: `../qa-reports/STORY-DAO-1908-phase-1-qa.md`
+- Status: [ ] Pending | [x] Passed | [ ] Failed
