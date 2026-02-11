@@ -2,8 +2,8 @@
 
 ## Status
 - [ ] Draft
-- [x] Ready for Development
-- [ ] In Architecture
+- [ ] Ready for Development
+- [x] In Architecture
 - [ ] In Development
 - [ ] In Review
 - [ ] In QA
@@ -57,7 +57,7 @@ The endpoint should:
 
 ### Architecture Plan
 - File: `../plans/STORY-DAO-1908-plan.md`
-- Status: [ ] Pending | [ ] Approved | [ ] Rejected
+- Status: [x] Pending | [ ] Approved | [ ] Rejected
 
 ### Code Review
 - PR: #[number]
