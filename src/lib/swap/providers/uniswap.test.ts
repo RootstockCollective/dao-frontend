@@ -462,7 +462,7 @@ describe('uniswap provider - integration tests', () => {
         expect(result.feeTier).toBeDefined()
         expect([100, 500, 3000, 10000]).toContain(result.feeTier)
       },
-      120000,
+      30000,
     )
   })
 

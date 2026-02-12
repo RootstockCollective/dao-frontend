@@ -1,10 +1,4 @@
 import * as Sentry from '@sentry/nextjs'
-import { isSentryEnabled } from './sentry-shared'
+import { createInitSentryIfEnabled } from './sentry-common'
 
-export function initSentryIfEnabled(config: Sentry.EdgeOptions): void {
-  if (!isSentryEnabled()) {
-    console.log('[Sentry] Error tracking disabled via feature flag')
-    return
-  }
-  Sentry.init(config)
-}
+export const initSentryIfEnabled = createInitSentryIfEnabled<Sentry.EdgeOptions>()

@@ -134,9 +134,9 @@ export default withSentryConfig(exportedNextConfig, {
   // - SENTRY_PROJECT: Your Sentry project name
   // - SENTRY_AUTH_TOKEN: Your Sentry auth token (keep this secret, do not commit to repo)
 
-  org: process.env.SENTRY_ORG || 'rootstocklabs',
+  org: process.env.SENTRY_ORG,
 
-  project: process.env.SENTRY_PROJECT || 'javascript-nextjs',
+  project: process.env.SENTRY_PROJECT,
 
   // Only print logs for uploading source maps in CI
   silent: !process.env.CI,
