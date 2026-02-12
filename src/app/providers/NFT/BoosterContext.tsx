@@ -26,12 +26,12 @@ export interface BoostData {
   holders: Holders
 }
 interface NFTBoosterContext {
+  isCampaignActive: (nft: Address | string | undefined) => boolean
   boostData?: BoostData
   isLoading?: boolean
   error?: Error | null
   currentBoost?: HolderRewards
   hasActiveCampaign?: boolean
-  isCampaignActive: (nft: Address | string | undefined) => boolean
   userHasRewards?: boolean
   isBoosted?: boolean
 }

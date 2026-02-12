@@ -19,15 +19,24 @@ const MobileColumnItem: FC<{ children: ReactNode; className?: string }> = ({ chi
   <div className={cn('w-[50%] flex flex-col items-start text-left', className)}>{children}</div>
 )
 
-// Generic mobile section wrapper with title, subtitle, and content
-const MobileSectionWrapper: FC<{
+interface MobileSectionWrapperProps {
   title: string
-  subtitle?: string
   children: ReactNode
+  subtitle?: string
   className?: string
   hasValue?: boolean
   isRowSelected?: boolean
-}> = ({ title, subtitle, children, className, hasValue = true, isRowSelected = false }) => (
+}
+
+// Generic mobile section wrapper with title, subtitle, and content
+const MobileSectionWrapper: FC<MobileSectionWrapperProps> = ({
+  title,
+  subtitle,
+  children,
+  className,
+  hasValue = true,
+  isRowSelected = false,
+}) => (
   <div className={cn('flex flex-col w-full', className)}>
     <Paragraph
       variant="body-xs"
@@ -54,8 +63,8 @@ const MobileSectionWrapper: FC<{
 // Generic mobile data section component
 export const MobileDataSection: FC<{
   title: string
-  subtitle?: string
   children: ReactNode
+  subtitle?: string
   className?: string
   hasValue?: boolean
   layout?: 'single' | 'two-column'

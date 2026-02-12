@@ -38,12 +38,13 @@ interface CommunityNFTContextProps {
   // Membership state
   isMember: boolean
   membersCount: number
-  isMintable?: boolean
 
   // Community Data
   tokensAvailable: number
   onReadFunctions: (functions: Array<{ functionName: string; args: string[] }>) => Promise<ContractReadResult>
   nftMeta: NftMeta | undefined
+
+  isMintable?: boolean
   tokenId?: number
   nftName?: string
   nftSymbol?: string

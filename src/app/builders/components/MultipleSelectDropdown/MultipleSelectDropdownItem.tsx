@@ -6,8 +6,8 @@ import { FC } from 'react'
 
 interface MultipleSelectDropdownItemProps {
   label: string
-  sublabel?: string
   checked: boolean
+  sublabel?: string
   className?: string
 }
 

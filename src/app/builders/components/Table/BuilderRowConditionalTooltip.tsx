@@ -5,11 +5,11 @@ import { SelectBuildersTooltipContent, NonHoverableBuilderTooltipContent } from 
 
 interface BuilderRowConditionalTooltipProps {
   children: ReactNode
-  className?: string
   isConnected: boolean
   canBack: boolean
   hasSelections: boolean
   onConnectWalletButtonClick: () => void
+  className?: string
 }
 
 export const BuilderRowConditionalTooltip = ({

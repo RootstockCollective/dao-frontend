@@ -103,9 +103,9 @@ export const DateCell = ({ formatted, transactionHash, isHovered }: DateCellProp
 }
 
 interface FromToCellProps {
+  type: TransactionHistoryType
   builder?: Builder
   builderAddress?: Address
-  type: TransactionHistoryType
   isGrouped?: boolean
   isExpanded?: boolean
   isHovered?: boolean

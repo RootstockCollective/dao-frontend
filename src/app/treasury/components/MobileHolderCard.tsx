@@ -7,8 +7,8 @@ import { Address } from 'viem'
 
 interface MobileHolderCardProps {
   address: Address
-  rns?: string
   amount: string
+  rns?: string
   className?: string
 }
 

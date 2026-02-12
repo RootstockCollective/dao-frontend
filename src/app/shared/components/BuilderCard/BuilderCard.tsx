@@ -39,12 +39,12 @@ const Warning = ({
 }
 
 export interface BuilderCardProps {
+  builder: Builder
+  allocationInputProps: Omit<AllocationInputProps, 'onEdit'>
   dataTestId?: string
   isInteractive?: boolean
   showAnimation?: boolean
   index?: number
-  builder: Builder
-  allocationInputProps: Omit<AllocationInputProps, 'onEdit'>
   estimatedRewards?: TokenRewards
   hasPendingTx?: boolean
   onConnect?: () => void

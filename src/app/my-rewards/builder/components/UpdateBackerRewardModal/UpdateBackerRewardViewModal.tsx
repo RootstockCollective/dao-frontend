@@ -13,12 +13,12 @@ import { Duration } from 'luxon'
 
 interface UpdateBackerRewardViewModalProps {
   onClose: () => void
-  className?: string
   currentReward: number
   updatedReward: number
-  alreadySubmitted?: boolean
   onRewardChange: (updatedReward: string) => void
   onSave: (updatedReward: string) => void
+  className?: string
+  alreadySubmitted?: boolean
   cooldownDuration?: Duration
   suggestedReward?: number
   isTxPending?: boolean

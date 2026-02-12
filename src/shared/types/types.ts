@@ -72,11 +72,11 @@ export interface CommunityData {
    * NFT Metadata
    */
   nftMeta: NftMeta | undefined
+  isLoading: boolean
   /**
    * Necessary amount of StRIFs to get a reward NFT
    */
   stRifThreshold?: bigint
-  isLoading: boolean
 }
 
 export enum ProposalState {

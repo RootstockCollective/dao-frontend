@@ -28,8 +28,8 @@ export const getActionType = (builder: Builder, hasBackingByUser: boolean): Acti
   return 'adjustBacking'
 }
 export type ActionCellProps = CommonComponentProps<HTMLButtonElement> & {
-  className?: string
   actionType: Action
+  className?: string
 }
 
 export const ActionCell = ({ className, actionType, onClick, ...props }: ActionCellProps): ReactNode => {

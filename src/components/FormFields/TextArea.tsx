@@ -6,10 +6,10 @@ import { Controller, Control, FieldPath, FieldValues } from 'react-hook-form'
 
 interface TextAreaProps<T extends FieldValues> extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string
-  minRows?: number
-  maxRows?: number
   name: FieldPath<T>
   control: Control<T>
+  minRows?: number
+  maxRows?: number
   'data-testid'?: string
 }
 

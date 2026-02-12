@@ -10,8 +10,8 @@ export interface FilterGroup {
   id: string
   title: string
   allLabel: string
-  allTestId?: string
   options: FilterOption[]
+  allTestId?: string
   isMultiSelect?: boolean
 }
 

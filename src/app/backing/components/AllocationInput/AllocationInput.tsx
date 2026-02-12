@@ -28,10 +28,10 @@ export interface AllocationInputProps extends CommonComponentProps {
   balance: bigint
   onchainBackingState: OnchainBackingState
   updatedBackingState: UpdatedBackingState
-  allocationTxPending?: boolean
-  disabled?: boolean
   prices: GetPricesResult
   updateBacking: (value: bigint) => void
+  allocationTxPending?: boolean
+  disabled?: boolean
   onEdit?: (editing: boolean) => void
 }
 

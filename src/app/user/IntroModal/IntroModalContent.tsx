@@ -186,7 +186,12 @@ const YourWalletInfo = ({ content, rbtcBalance, rifBalance }: YourWalletInfoProp
   )
 }
 
-const ContinueButton = ({ className, onClick }: { className?: string; onClick: () => void }) => (
+interface ContinueButtonProps {
+  onClick: () => void
+  className?: string
+}
+
+const ContinueButton = ({ className, onClick }: ContinueButtonProps) => (
   <Button
     variant="secondary"
     className={cn('flex items-center gap-1', className)}
@@ -198,7 +203,7 @@ const ContinueButton = ({ className, onClick }: { className?: string; onClick: (
   </Button>
 )
 
-const ContinueToStakingButton = ({ className, onClick }: { className?: string; onClick: () => void }) => (
+const ContinueToStakingButton = ({ className, onClick }: ContinueButtonProps) => (
   <Button variant="primary" className={cn('flex items-center gap-1', className)} onClick={onClick}>
     <Span bold>Continue to staking</Span>
   </Button>
