@@ -33,8 +33,8 @@ export const StepWrapper = ({ onCloseModal }: StepWrapperProps) => {
   const { progress, description } = stepConfigItem
 
   return (
-    <Modal onClose={onCloseModal} fullscreen={!isDesktop}>
-      <div className={cn('h-full flex flex-col', !isDesktop ? 'p-4' : 'p-6')}>
+    <Modal onClose={onCloseModal} data-testid="StakeModal">
+      <div className="h-full flex flex-col p-4 md:p-6">
         <Header className="mt-16 mb-4">STAKE</Header>
 
         <div className="mb-12">

@@ -6,30 +6,24 @@ import Big from '@/lib/big'
 import { cn, formatNumberWithCommas } from '@/lib/utils'
 import Image from 'next/image'
 import { CONTENT_CONFIG, IMAGE_CONFIG, type IntroModalContentProps, type IntroModalStatus } from './config'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 const GLASS_STYLE =
   'rounded bg-[rgba(255,255,255,0.16)] shadow-[inset_0px_0px_14px_0px_rgba(255,255,255,0.25)] backdrop-blur-[3px]'
 
 interface Props {
   tokenStatus: IntroModalStatus
-  isDesktop: boolean
   onClose: () => void
   onContinue: (url: string, external: boolean) => void
   rbtcBalance?: string
   rifBalance?: string
 }
 
-export const IntroModalContent = ({
-  tokenStatus,
-  isDesktop,
-  rbtcBalance,
-  rifBalance,
-  onClose,
-  onContinue,
-}: Props) => {
+export const IntroModalContent = ({ tokenStatus, rbtcBalance, rifBalance, onClose, onContinue }: Props) => {
   const currentConfig = IMAGE_CONFIG[tokenStatus]
   const currentContent = CONTENT_CONFIG[tokenStatus]
   const action = currentContent.action
+  const isDesktop = useIsDesktop()
 
   const handleContinue = () => onContinue(action.url, action.external)
 

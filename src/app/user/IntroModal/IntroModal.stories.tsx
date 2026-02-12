@@ -14,9 +14,6 @@ const meta: Meta<typeof IntroModalContent> = {
       control: 'select',
       options: Object.keys(CONTENT_CONFIG),
     },
-    isDesktop: {
-      control: 'boolean',
-    },
     rbtcBalance: {
       control: 'text',
     },
@@ -29,74 +26,33 @@ const meta: Meta<typeof IntroModalContent> = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-export const NeedBothRBTCAndRIFDesktop: Story = {
+export const NeedBothRBTCAndRIF: Story = {
   args: {
     tokenStatus: 'NEED_RBTC_RIF',
-    isDesktop: true,
     onClose: () => console.log('Modal closed'),
     onContinue: () => console.log('Continue'),
   },
 }
 
-export const NeedRBTCDesktop: Story = {
+export const NeedRBTC: Story = {
   args: {
     tokenStatus: 'NEED_RBTC',
-    isDesktop: true,
     onClose: () => console.log('Modal closed'),
     onContinue: () => console.log('Continue'),
   },
 }
 
-export const NeedRIFDesktop: Story = {
+export const NeedRIF: Story = {
   args: {
     tokenStatus: 'NEED_RIF',
-    isDesktop: true,
     onClose: () => console.log('Modal closed'),
     onContinue: () => console.log('Continue'),
   },
 }
 
-export const NeedSTRIFDesktop: Story = {
+export const NeedSTRIF: Story = {
   args: {
     tokenStatus: 'NEED_STRIF',
-    isDesktop: true,
-    rbtcBalance: '0.1234',
-    rifBalance: '543.21',
-    onClose: () => console.log('Modal closed'),
-    onContinue: () => console.log('Continue'),
-  },
-}
-
-export const NeedBothRBTCAndRIFMobile: Story = {
-  args: {
-    tokenStatus: 'NEED_RBTC_RIF',
-    isDesktop: false,
-    onClose: () => console.log('Modal closed'),
-    onContinue: () => console.log('Continue'),
-  },
-}
-export const NeedRBTCMobile: Story = {
-  args: {
-    tokenStatus: 'NEED_RBTC',
-    isDesktop: false,
-    onClose: () => console.log('Modal closed'),
-    onContinue: () => console.log('Continue'),
-  },
-}
-
-export const NeedRIFMobile: Story = {
-  args: {
-    tokenStatus: 'NEED_RIF',
-    isDesktop: false,
-    onClose: () => console.log('Modal closed'),
-    onContinue: () => console.log('Continue'),
-  },
-}
-
-export const NeedSTRIFMobile: Story = {
-  args: {
-    tokenStatus: 'NEED_STRIF',
-    isDesktop: false,
     rbtcBalance: '0.1234',
     rifBalance: '543.21',
     onClose: () => console.log('Modal closed'),

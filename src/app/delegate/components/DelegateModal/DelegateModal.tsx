@@ -39,7 +39,6 @@ export const DelegateModal = ({
       className="bg-text-80"
       closeButtonColor="black"
       data-testid={dataTestId}
-      fullscreen={!isDesktop}
     >
       <div className="flex flex-col gap-2 items-center py-4 px-8">
         <Paragraph className="pr-8 text-bg-100 md:mt-4 mt-16">{title}</Paragraph>

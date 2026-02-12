@@ -1,5 +1,4 @@
 import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useModal } from '@/shared/hooks/useModal'
 import { useEffect, useMemo } from 'react'
 import { useBalancesContext } from '../Balances/context/BalancesContext'
@@ -10,8 +9,7 @@ import { IntroModalContent } from './IntroModalContent'
 import { RBTC, RIF } from '@/lib/constants'
 
 export const IntroModal = () => {
-  const introModal = useModal()
-  const isDesktop = useIsDesktop()
+  const { isModalOpened, openModal, closeModal } = useModal()
   const tokenStatus = useRequiredTokens()
   const { balances } = useBalancesContext()
   const router = useRouter()
@@ -37,31 +35,30 @@ export const IntroModal = () => {
       window.open(url, '_blank', 'noopener,noreferrer')
     } else {
       router.push(url)
-      introModal.closeModal()
+      closeModal()
     }
   }
 
   useEffect(() => {
     if (isLoaded && tokenStatus !== null) {
-      introModal.openModal()
+      openModal()
     } else if (tokenStatus === null) {
-      introModal.closeModal()
+      closeModal()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoaded, tokenStatus])
 
   // Don't render if no required tokens or loading is not complete
-  if (!tokenStatus || !isLoaded || !introModal.isModalOpened) {
+  if (!tokenStatus || !isLoaded || !isModalOpened) {
     return null
   }
 
   return (
     <IntroModalContent
       tokenStatus={tokenStatus}
-      isDesktop={isDesktop}
       rbtcBalance={balances[RBTC].balance}
       rifBalance={balances[RIF].balance}
-      onClose={introModal.closeModal}
+      onClose={closeModal}
       onContinue={handleContinue}
     />
   )

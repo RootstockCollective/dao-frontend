@@ -11,7 +11,7 @@ import { cn, durationToLabel } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { Duration } from 'luxon'
 
-interface UpdateBackerRewardViewModalProps {
+interface Props {
   onClose: () => void
   currentReward: number
   updatedReward: number
@@ -28,7 +28,6 @@ interface UpdateBackerRewardViewModalProps {
 
 const UpdateBackerRewardViewModal = ({
   onClose,
-  className,
   currentReward,
   updatedReward,
   alreadySubmitted,
@@ -39,7 +38,7 @@ const UpdateBackerRewardViewModal = ({
   isTxPending,
   isLoading,
   isOperational,
-}: UpdateBackerRewardViewModalProps) => {
+}: Props) => {
   const isDesktop = useIsDesktop()
 
   const handleSave = () => {
@@ -49,17 +48,11 @@ const UpdateBackerRewardViewModal = ({
   const timeRemaining = durationToLabel(cooldownDuration)
 
   return (
-    <Modal
-      onClose={onClose}
-      width={700}
-      height="auto"
-      closeButtonColor="white"
-      data-testid="UpdateBackerRewardViewModal"
-      className={cn('font-rootstock-sans shadow-[0px_0px_40px_0px_rgba(255,255,255,0.10)]', className)}
-      fullscreen={!isDesktop}
-    >
-      <div className={cn('relative flex flex-col gap-8', isDesktop ? 'p-6' : 'p-4 mt-12')}>
-        <Header variant="h1">MY BACKERS&apos; REWARDS</Header>
+    <Modal onClose={onClose} data-testid="UpdateBackerRewardViewModal">
+      <div className="relative flex flex-col gap-8 p-4 md:p-6">
+        <Header variant="h1" className="mt-16 mb-4">
+          MY BACKERS&apos; REWARDS
+        </Header>
         {isLoading ? (
           <LoadingSpinner />
         ) : (

@@ -9,7 +9,6 @@ import { useCallback, useMemo, useState, useEffect, useRef } from 'react'
 import { useDepositToVault } from '../hooks/useDepositToVault'
 import { useVaultAllowance } from '../hooks/useVaultAllowance'
 import { useCanDepositToVault } from '../hooks/useCanDepositToVault'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
 import { Divider } from '@/components/Divider'
 import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
@@ -62,7 +61,6 @@ const KycInfo = () => {
 export const DepositModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
   const { balances } = useGetAddressBalances()
   const { prices } = usePricesContext()
-  const isDesktop = useIsDesktop()
   const inputRef = useRef<HTMLInputElement>(null)
 
   const [amount, setAmount] = useState('')
@@ -204,8 +202,8 @@ export const DepositModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
 
   return (
     <>
-      <Modal width={688} onClose={onCloseModal} fullscreen={!isDesktop}>
-        <div className={cn('h-full flex flex-col', !isDesktop ? 'p-4' : 'p-6')}>
+      <Modal onClose={onCloseModal} data-testid="DepositModal">
+        <div className="h-full flex flex-col p-4 md:p-6">
           <Header className="mt-16 mb-4">DEPOSIT USDRIF</Header>
 
           <div className="flex-1">
