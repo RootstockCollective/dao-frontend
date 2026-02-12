@@ -1,20 +1,11 @@
-import { getProposalsFromBlockscout } from '@/app/proposals/actions/getProposalsFromBlockscout'
-import { getProposalsFromTheGraph } from '@/app/proposals/actions/getProposalsFromTheGraph'
-import { getProposalsFromDB } from '@/app/proposals/actions/getProposalsFromDB'
+import { fetchAllProposals } from '@/app/proposals/actions/fetchAllProposals'
 
-export const revalidate = 60
+export const revalidate = 30
 
 export async function GET() {
-  const proposalsSources = [getProposalsFromDB, getProposalsFromTheGraph, getProposalsFromBlockscout]
-  let index = -1
-  for (const source of proposalsSources) {
-    index++
-    try {
-      const proposals = await source()
-      return Response.json(proposals, { headers: { 'X-Source': `source-${index}` } })
-    } catch (error) {
-      console.error(error)
-    }
+  const { proposals, sourceIndex } = await fetchAllProposals()
+  if (proposals.length === 0) {
+    return Response.json({ error: 'Can not fetch proposals from any source' }, { status: 500 })
   }
-  return Response.json({ error: 'Can not fetch proposals from any source' }, { status: 500 })
+  return Response.json(proposals, { headers: { 'X-Source': `source-${sourceIndex}` } })
 }
