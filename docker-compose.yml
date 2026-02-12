@@ -7,4 +7,30 @@ services:
         PROFILE: dev
     ports:
       - '3010:3000'
-    command: npm start
+    command: sh -c "node src/db/migrate.js; npm start"
+    environment:
+      - DAO_DATA_DB_CONNECTION_STRING=postgresql://dao_data:dao_data@dao-data-db:5432/dao_data
+    depends_on:
+      dao-data-db:
+        condition: service_healthy
+
+  # Separate database for user-generated data (likes, reactions, etc.)
+  # This is intentionally separate from state-sync database
+  dao-data-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: dao_data
+      POSTGRES_PASSWORD: dao_data
+      POSTGRES_DB: dao_data
+    ports:
+      - '5433:5432'
+    volumes:
+      - dao-data-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U dao_data -d dao_data']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  dao-data-db-data:

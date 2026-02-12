@@ -60,6 +60,9 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/.env.local ./.env.local
 COPY --from=builder /app/node_modules ./node_modules
 
+# Copy database migration scripts
+COPY --from=builder /app/src/db ./src/db
+
 
 # Download AWS RDS CA certificate
 RUN apk add --no-cache wget && \
@@ -69,5 +72,6 @@ RUN apk add --no-cache wget && \
 # Expose the port that Next.js will run on
 EXPOSE 3000
 
-# Start the Next.js application
-CMD ["npm", "start"]
+# Run database migrations and start the Next.js application
+# Migration errors are logged but won't prevent startup (as per requirements)
+CMD ["sh", "-c", "node src/db/migrate.js; npm start"]
