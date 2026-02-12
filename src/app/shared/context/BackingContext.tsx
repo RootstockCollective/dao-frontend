@@ -5,7 +5,7 @@ import { AllocationsContext } from '@/app/collective-rewards/allocations/context
 import { BackerEstimatedRewards } from '@/app/collective-rewards/types'
 import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
 
-type BackingContextValue = {
+interface BackingContextValue {
   data: BackerEstimatedRewards[]
   isLoading: boolean
   error: Error | null
@@ -17,7 +17,7 @@ const BackingContext = createContext<BackingContextValue>({
   error: null,
 })
 
-type BackingProviderProps = {
+interface BackingProviderProps {
   children: ReactNode
   dynamicAllocations?: boolean
 }

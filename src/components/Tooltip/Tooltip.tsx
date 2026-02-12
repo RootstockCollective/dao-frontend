@@ -37,7 +37,7 @@ function usePointerDown() {
   return down
 }
 
-type TooltipTriggerContextType = {
+interface TooltipTriggerContextType {
   supportMobileTap: boolean
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>

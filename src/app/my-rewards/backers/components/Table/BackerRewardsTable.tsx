@@ -34,7 +34,7 @@ const RewardsDetails = ({
   )
 }
 
-type PagedFilter = {
+interface PagedFilter {
   backer: Address
   tokens: { [token: string]: Token }
   pageOptions: { start: number; end: number }

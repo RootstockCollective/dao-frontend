@@ -5,14 +5,14 @@ import { useAccount } from 'wagmi'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { TOKENS } from '@/lib/tokens'
 
-type TransactionHistoryResponse = {
+interface TransactionHistoryResponse {
   data: TransactionHistoryItem[]
   count: number
   page: number
   pageSize: number
 }
 
-type UseGetTransactionHistoryParams = {
+interface UseGetTransactionHistoryParams {
   role?: 'backer' | 'builder'
   page?: number
   pageSize?: number

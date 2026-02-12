@@ -9,26 +9,26 @@ import { isBuilderRewardable } from '../../utils'
 import { BuilderStateFlags } from '../../types'
 import { TOKENS } from '@/lib/tokens'
 
-export type CycleData = {
+export interface CycleData {
   id: string
   currentCycleStart: number
   rewardPerToken: Record<string, string>
 }
 
-type BackerRewardPercentageData = {
+interface BackerRewardPercentageData {
   next: string
   previous: string
   cooldownEndTime: string
 }
 
-export type BuilderData = {
+export interface BuilderData {
   address: Address
   backerRewardPct: BackerRewardPercentageData
   totalAllocation: string
   stateFlags: BuilderStateFlags
 }
 
-export type AbiData = {
+export interface AbiData {
   builders: BuilderData[]
   cycles: CycleData[]
 }

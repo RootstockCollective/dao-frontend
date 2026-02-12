@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { FC } from 'react'
 import { applyPinataImageOptions } from '@/lib/ipfs'
 
-type NFTBoosterCardProps = {
+interface NFTBoosterCardProps {
   nftThumbPath: string
   boostValue: number
   title: string

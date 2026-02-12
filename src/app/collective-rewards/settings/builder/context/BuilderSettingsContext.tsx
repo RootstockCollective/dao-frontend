@@ -13,13 +13,13 @@ import { createContext, FC, ReactNode, useContext, useMemo } from 'react'
 import { Address, zeroAddress } from 'viem'
 import { useAccount, UseReadContractReturnType } from 'wagmi'
 
-type BackerReward = {
+interface BackerReward {
   previous: bigint
   next: bigint
   cooldownEndTime: DateTime
 }
 
-type BackerRewardsPercentageContext = {
+interface BackerRewardsPercentageContext {
   update: SetBackerRewardsForBuilder
   current: Modify<UseReadContractReturnType, { data: BackerReward }>
   rewardPercentageToApply: Modify<UseReadContractReturnType, { data: bigint | undefined }>

@@ -1,6 +1,6 @@
 import { HTMLAttributes, PropsWithChildren } from 'react'
 
-export type StylableComponentProps<T extends Element> = {
+export interface StylableComponentProps<T extends Element> {
   className?: HTMLAttributes<T>['className']
   style?: HTMLAttributes<T>['style']
 }

@@ -1,6 +1,6 @@
 import { useCallback, useRef } from 'react'
 
-type Options = {
+interface Options {
   onLongPress: (e: React.TouchEvent) => void
   threshold?: number
   moveTolerance?: number // cancel if finger drifts too far

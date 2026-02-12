@@ -8,7 +8,7 @@ import { isBuilderRewardable } from '../../utils'
 
 const SPOTLIGHT_BUILDERS = 4
 
-type BuilderContextValue = {
+interface BuilderContextValue {
   builders: Builder[]
   randomBuilders: Builder[]
   isLoading: boolean

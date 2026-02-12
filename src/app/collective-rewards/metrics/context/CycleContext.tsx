@@ -3,7 +3,7 @@ import { DateTime, Duration } from 'luxon'
 import { createContext, FC, ReactNode, useContext, useMemo, useState } from 'react'
 import { useIntervalTimestamp } from '../hooks/useIntervalTimestamp'
 
-export type Cycle = {
+export interface Cycle {
   cycleStart: DateTime
   cycleDuration: Duration
   cycleNext: DateTime
@@ -11,7 +11,7 @@ export type Cycle = {
   endDistributionWindow: DateTime
 }
 
-type CycleContextValue = {
+interface CycleContextValue {
   data: Cycle
   isLoading: boolean
   error: Error | null
@@ -23,7 +23,7 @@ const CycleContext = createContext<CycleContextValue>({
   error: null,
 })
 
-type CycleProviderProps = {
+interface CycleProviderProps {
   children: ReactNode
 }
 

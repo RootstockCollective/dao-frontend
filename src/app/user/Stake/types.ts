@@ -1,6 +1,6 @@
 import { Address } from 'viem'
 
-export type StakingToken = {
+export interface StakingToken {
   balance: string
   symbol: string
   price: string | undefined
