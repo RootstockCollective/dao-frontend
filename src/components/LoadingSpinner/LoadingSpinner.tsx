@@ -2,7 +2,7 @@ import { cn } from '@/lib/utils'
 
 export type SpinnerSize = 'small' | 'medium' | 'large' | number | 'auto' | 'responsive'
 
-type LoadingSpinnerProps = {
+interface LoadingSpinnerProps {
   className?: string
   size?: SpinnerSize
 }

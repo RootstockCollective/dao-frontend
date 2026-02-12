@@ -98,7 +98,7 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
 ]
 
 // Typed table configuration for BackerRewardsTable
-export type BackerRewardsCellDataMap = {
+export interface BackerRewardsCellDataMap {
   builder: BuilderNameCellProps
   backing: BackingCellProps
   backer_rewards: BackersPercentageProps

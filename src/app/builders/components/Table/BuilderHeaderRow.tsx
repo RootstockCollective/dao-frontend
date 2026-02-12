@@ -197,7 +197,7 @@ export const HeaderSubtitle: FC<CommonComponentProps> = ({ className, children }
   </Paragraph>
 )
 
-type BuilderHeaderRowProps = {
+interface BuilderHeaderRowProps {
   actions: Action[]
 }
 export const BuilderHeaderRow = ({ actions }: BuilderHeaderRowProps): ReactElement => {

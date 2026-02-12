@@ -10,7 +10,7 @@ import {
   validateUserFlags,
 } from './flags.utils'
 
-type FeatureFlagContextType = {
+interface FeatureFlagContextType {
   flags: FeatureFlags
   toggleFlag: (flagName: FeatureFlag) => void
   updateFlags: (newFlags: BaseFlags) => void

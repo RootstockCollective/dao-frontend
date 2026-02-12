@@ -3,7 +3,7 @@ import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { NFTBoosterCard } from '@/app/shared/components'
 import { FC } from 'react'
 
-type SelfContainedNFTBoosterCardPros = {
+interface SelfContainedNFTBoosterCardPros {
   forceRender?: boolean
 }
 export const SelfContainedNFTBoosterCard: FC<SelfContainedNFTBoosterCardPros> = ({ forceRender = false }) => {

@@ -35,10 +35,10 @@ export type UseReadContractsConfig<TAbi extends Abi, TFunctionName extends ViewP
             addresses: Address[]
           }
 
-export type UseReadContractForMultipleArgsConfig<
+export interface UseReadContractForMultipleArgsConfig<
   TAbi extends Abi,
   TFunctionName extends ViewPureFunctionName<TAbi>,
-> = {
+> {
   functionName: TFunctionName
   args: Array<FunctionParams<TAbi, TFunctionName>>
 }

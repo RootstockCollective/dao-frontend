@@ -11,13 +11,13 @@ import { useReadGauges } from '@/shared/hooks/contracts'
 import { createContext, FC, ReactNode, useContext, useMemo, useState } from 'react'
 import { Address } from 'viem'
 
-export type TokenBackerRewards = {
+export interface TokenBackerRewards {
   earned: Record<Address, bigint>
   claimed: Record<Address, BackerRewardsClaimedEventLog>
   estimated: Record<Address, bigint>
 }
 
-type BackerRewardsContextValue = {
+interface BackerRewardsContextValue {
   data: {
     [token: string]: TokenBackerRewards
   }
@@ -38,7 +38,7 @@ const BackerRewardsContext = createContext<BackerRewardsContextValue>({
   },
 })
 
-type BackerRewardsProviderProps = {
+interface BackerRewardsProviderProps {
   children: ReactNode
   backer: Address
   tokens: {

@@ -39,18 +39,18 @@ const query = apolloGQL`
   }
 `
 
-type RewardPerToken = {
+interface RewardPerToken {
   amount: string
   token: string
 }
 
-type CycleData = {
+interface CycleData {
   id: string
   currentCycleStart: number
   rewardPerToken: RewardPerToken[]
 }
 
-export type ResponseABIData = {
+export interface ResponseABIData {
   builders: BuilderData[]
   cycles: CycleData[]
 }

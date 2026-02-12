@@ -54,7 +54,7 @@ export interface ServerResponseV2<T> {
   error?: string
 }
 
-export type NftHolderItem = {
+export interface NftHolderItem {
   owner: string
   id: string
   image_url: string

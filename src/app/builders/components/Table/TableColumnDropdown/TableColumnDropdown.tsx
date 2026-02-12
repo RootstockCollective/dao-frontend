@@ -4,7 +4,7 @@ import { CloseIconKoto } from '@/components/Icons'
 import { MoreIcon } from '@/components/Icons/MoreIcon'
 import { BaseColumnId, useTableActionsContext, useTableContext } from '@/shared/context/TableContext'
 
-type ColumnLabel = {
+interface ColumnLabel {
   label: string
   sublabel?: string
 }

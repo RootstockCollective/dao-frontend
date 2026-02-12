@@ -189,7 +189,7 @@ export const HeaderSubtitle: FC<CommonComponentProps> = ({ className, children }
   </Paragraph>
 )
 
-type BackerRewardsHeaderRowProps = {
+interface BackerRewardsHeaderRowProps {
   actions: Action[]
 }
 export const BackerRewardsHeaderRow = ({ actions }: BackerRewardsHeaderRowProps): ReactElement => {

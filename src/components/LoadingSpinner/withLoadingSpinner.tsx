@@ -1,11 +1,11 @@
 import { ComponentType, FC } from 'react'
 import { LoadingSpinner, SpinnerSize } from '@/components/LoadingSpinner'
 
-type WithLoadingProps = {
+interface WithLoadingProps {
   isLoading: boolean
 }
 
-type SpinnerOptions = {
+interface SpinnerOptions {
   className?: string
   size?: SpinnerSize
 }

@@ -5,7 +5,7 @@ import { Address, isAddressEqual } from 'viem'
 export type NotifyRewardEvent = GaugeNotifyRewardEventLog[number] & { timeStamp: number }
 export type UseGetGaugesNotifyRewardReturnType = Record<Address, NotifyRewardEvent[]>
 
-export type UseGetGaugesNotifyRewardParams = {
+export interface UseGetGaugesNotifyRewardParams {
   gauges: Address[]
   rewardTokens?: Address[]
   fromTimestamp?: number

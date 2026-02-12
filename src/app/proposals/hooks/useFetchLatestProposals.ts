@@ -64,7 +64,7 @@ type ElementType<T> = T extends (infer U)[] ? U : never
 type EventLog = ElementType<ReturnType<typeof parseEventLogs<typeof GovernorAbi, true, 'ProposalCreated'>>>
 export type CreateBuilderProposalEventLog = EventLog & { timeStamp: number }
 
-type CrProposalCachedEvent = {
+interface CrProposalCachedEvent {
   event: CreateBuilderProposalEventLog
   builder: string
 }

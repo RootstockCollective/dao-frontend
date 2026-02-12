@@ -29,7 +29,7 @@ const calculateCycleDay = (date: Date, cycles: CycleWindow[]) => {
   }
 }
 
-type MergedDataPoint = {
+interface MergedDataPoint {
   day: Date
   backing?: number
   backingWei?: bigint

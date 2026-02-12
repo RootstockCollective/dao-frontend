@@ -1,13 +1,13 @@
 import { Address } from 'viem'
 import { RIF, USDRIF, RBTC } from '@/lib/constants'
 
-type BucketItem = {
+interface BucketItem {
   amount: string
   fiatAmount: string
   formattedAmount: string
 }
 
-export type Bucket = {
+export interface Bucket {
   [RIF]: BucketItem
   [USDRIF]: BucketItem
   [RBTC]: BucketItem

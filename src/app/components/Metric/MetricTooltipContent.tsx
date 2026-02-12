@@ -5,7 +5,7 @@ import { cn, formatCurrency } from '@/lib/utils'
 import { ReactElement } from 'react'
 import { MetricToken } from './types'
 
-export type MetricTooltipContentProps = {
+export interface MetricTooltipContentProps {
   tokens: Array<MetricToken & { fade?: boolean }>
 }
 

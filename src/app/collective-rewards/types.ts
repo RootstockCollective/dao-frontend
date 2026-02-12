@@ -22,7 +22,7 @@ export interface CycleRewardsItem {
   rewardPerToken: Record<string, string>
 }
 
-export type Builder = {
+export interface Builder {
   proposal: BuilderProposal
   address: Address
   builderName: string
@@ -83,18 +83,18 @@ export type BuilderState = 'active' | 'inProgress'
 
 export type CompleteBuilder = Required<Builder>
 
-export type StateWithUpdate<T> = {
+export interface StateWithUpdate<T> {
   value: T
   onChange: Dispatch<SetStateAction<T>>
 }
 
-export type BackingPoint = {
+export interface BackingPoint {
   day: Date | number | string
   backing: bigint
   backingWei?: bigint
 }
 
-export type RewardsPoint = {
+export interface RewardsPoint {
   day: Date | number | string
   rewards: {
     rif: number | bigint
@@ -103,7 +103,7 @@ export type RewardsPoint = {
   }
 }
 
-export type CycleWindow = {
+export interface CycleWindow {
   label: string
   start: Date
   end: Date

@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import type { ComponentType, FC } from 'react'
 import { type FeatureFlag, getEnvFlag } from './flags.utils'
 
-export type FeatureHandleConfig = {
+export interface FeatureHandleConfig {
   feature: FeatureFlag
   fallback?: React.ReactNode
   redirectTo?: string

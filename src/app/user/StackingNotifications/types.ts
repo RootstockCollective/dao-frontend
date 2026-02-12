@@ -55,6 +55,6 @@ export interface BannerConfig extends Omit<BannerContentProps, 'buttonOnClick'> 
  * }
  * ```
  */
-export type BannerConfigMap = {
+export interface BannerConfigMap {
   [key: string]: BannerConfig
 }

@@ -3,7 +3,7 @@ import Big from 'big.js'
 
 export type { TokenSymbol } from '@/components/TokenImage'
 
-export type MetricToken = {
+export interface MetricToken {
   symbol: TokenSymbol
   value: string
   fiatValue: Big

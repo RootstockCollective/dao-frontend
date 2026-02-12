@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Address } from 'viem'
 import { fetchBackerStakingHistory } from '../actions/fetchBackerStakingHistory'
 
-export type BackerStakingHistory = {
+export interface BackerStakingHistory {
   id: Address
   backerTotalAllocation: string
   accumulatedTime: string
@@ -11,7 +11,7 @@ export type BackerStakingHistory = {
   gauges: GaugeStakingHistory[]
 }
 
-type GaugeStakingHistory = {
+interface GaugeStakingHistory {
   allocation: string
   gauge: Address
   accumulatedAllocationsTime: string

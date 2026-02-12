@@ -18,7 +18,7 @@ export interface BackendEventByTopic0ResponseValue {
   transactionIndex: string
 }
 
-export type CachedData = {
+export interface CachedData {
   lastUpdated: number
   data: BackendEventByTopic0ResponseValue[]
   isFetching: boolean

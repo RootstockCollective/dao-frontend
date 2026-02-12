@@ -52,7 +52,7 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
   },
 ]
 
-export type StakingHistoryCellDataMap = {
+export interface StakingHistoryCellDataMap {
   period: string
   action: 'STAKE' | 'UNSTAKE'
   amount: string

@@ -10,7 +10,7 @@ const isMode = (mode: string): mode is Mode => modes.includes(mode as Mode)
 const isExpandable = (mode: Mode) => mode === 'expandable'
 const isCyclic = (mode: Mode) => mode === 'cyclic'
 
-export type Range = {
+export interface Range {
   start: number
   end: number
 }

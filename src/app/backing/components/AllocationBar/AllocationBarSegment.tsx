@@ -10,7 +10,7 @@ import { AllocationBarTooltip, AllocationBarTooltipProps } from './AllocationBar
 import { AllocationBarValueDisplay, AllocationItem } from './types'
 import { valueToPercentage } from './utils'
 
-type AllocationBarSegmentPercentProps = {
+interface AllocationBarSegmentPercentProps {
   pendingValue: bigint
   totalBacking: bigint
   valueDisplay: AllocationBarValueDisplay

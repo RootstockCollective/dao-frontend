@@ -112,7 +112,7 @@ const _builderStates = [BUILDER_IN_PROGRESS, BUILDER_ACTIVE, ...builderInactiveS
 export type BuilderState = (typeof _builderStates)[number]
 
 // Typed table configuration for BuildersTable
-export type BuilderCellDataMap = {
+export interface BuilderCellDataMap {
   builder: BuilderNameCellProps
   backing: BackingCellProps
   backer_rewards: BackersPercentageProps
