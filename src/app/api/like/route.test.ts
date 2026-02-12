@@ -176,3 +176,137 @@ describe('POST /api/like (database not configured)', () => {
     expect(data.error).toBe('Database not configured')
   })
 })
+
+describe('GET /api/like', () => {
+  const mockCount = vi.fn()
+  const mockSelect = vi.fn(() => ({ count: mockCount }))
+  const mockGroupBy = vi.fn(() => ({ select: mockSelect }))
+  const mockWhereGet = vi.fn(() => ({ groupBy: mockGroupBy }))
+  const mockDaoDataDb = Object.assign(
+    vi.fn((_table: string) => ({ where: mockWhereGet })),
+    {
+      transaction: vi.fn(),
+    },
+  )
+
+  function createGetRequest(proposalId?: string): NextRequest {
+    const url = proposalId
+      ? `http://localhost/api/like?proposalId=${proposalId}`
+      : 'http://localhost/api/like'
+    return new NextRequest(url, { method: 'GET' })
+  }
+
+  beforeEach(() => {
+    vi.resetModules()
+    vi.clearAllMocks()
+    vi.doMock('@/lib/daoDataDb', () => ({ daoDataDb: mockDaoDataDb }))
+    vi.doMock('@/lib/auth/session', () => ({ requireAuth: vi.fn() }))
+    vi.doMock('@/app/proposals/actions/getProposalById', () => ({
+      confirmProposalExists: vi.fn().mockResolvedValue(true),
+    }))
+  })
+
+  it('should return 200 with aggregated reaction counts', async () => {
+    mockCount.mockResolvedValueOnce([{ reaction: 'heart', count: 5 }])
+
+    const { GET } = await import('./route')
+    const response = await GET(createGetRequest('123'))
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data).toEqual({
+      success: true,
+      proposalId: '123',
+      reactions: { heart: 5 },
+    })
+    expect(mockWhereGet).toHaveBeenCalledWith({ proposalId: expect.any(Buffer) })
+    expect(mockGroupBy).toHaveBeenCalledWith('reaction')
+    expect(mockSelect).toHaveBeenCalledWith('reaction')
+    expect(mockCount).toHaveBeenCalledWith('* as count')
+  })
+
+  it('should return 200 with empty reactions when proposal has no likes', async () => {
+    mockCount.mockResolvedValueOnce([])
+
+    const { GET } = await import('./route')
+    const response = await GET(createGetRequest('999'))
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data).toEqual({
+      success: true,
+      proposalId: '999',
+      reactions: {},
+    })
+  })
+
+  it('should return 200 with multiple reaction types', async () => {
+    mockCount.mockResolvedValueOnce([
+      { reaction: 'heart', count: 3 },
+      { reaction: 'thumbsup', count: 7 },
+    ])
+
+    const { GET } = await import('./route')
+    const response = await GET(createGetRequest('456'))
+    const data = await response.json()
+
+    expect(response.status).toBe(200)
+    expect(data).toEqual({
+      success: true,
+      proposalId: '456',
+      reactions: { heart: 3, thumbsup: 7 },
+    })
+  })
+
+  it('should return 400 when proposalId is missing', async () => {
+    const { GET } = await import('./route')
+    const response = await GET(createGetRequest())
+    const data = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(data.success).toBe(false)
+    expect(data.error).toBe('Validation failed')
+  })
+
+  it('should return 400 when proposalId is not a valid BigInt', async () => {
+    const { GET } = await import('./route')
+    const response = await GET(createGetRequest('not-a-number'))
+    const data = await response.json()
+
+    expect(response.status).toBe(400)
+    expect(data.success).toBe(false)
+    expect(data.error).toBe('Validation failed')
+  })
+
+  it('should return 500 on database error', async () => {
+    mockCount.mockRejectedValueOnce(new Error('DB connection lost'))
+
+    const { GET } = await import('./route')
+    const response = await GET(createGetRequest('123'))
+    const data = await response.json()
+
+    expect(response.status).toBe(500)
+    expect(data.success).toBe(false)
+    expect(data.error).toBe('Internal server error')
+  })
+})
+
+describe('GET /api/like (database not configured)', () => {
+  it('should return 503 when database is not configured', async () => {
+    vi.resetModules()
+    vi.doMock('@/lib/daoDataDb', () => ({ daoDataDb: undefined }))
+    vi.doMock('@/lib/auth/session', () => ({ requireAuth: vi.fn() }))
+    vi.doMock('@/app/proposals/actions/getProposalById', () => ({
+      confirmProposalExists: vi.fn().mockResolvedValue(true),
+    }))
+
+    const { GET } = await import('./route')
+    const request = new NextRequest('http://localhost/api/like?proposalId=123', { method: 'GET' })
+    const response = await GET(request)
+    const data = await response.json()
+
+    expect(response.status).toBe(503)
+    expect(data.success).toBe(false)
+    expect(data.error).toBe('Database not configured')
+  })
+})
