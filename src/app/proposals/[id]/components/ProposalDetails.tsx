@@ -6,9 +6,8 @@ import { formatSymbol } from '@/app/shared/formatter'
 import type { Address } from 'viem'
 import {
   convertAmountToBigint,
-  DISPLAY_NAME_SEPARATOR,
+  extractBuilderName,
   getDiscourseLinkFromProposalDescription,
-  splitCombinedName,
 } from '@/app/proposals/shared/utils'
 import { type ParsedActionDetails, ProposalType } from '../types'
 import type { Moment } from 'moment'
@@ -92,8 +91,7 @@ export const ProposalDetails = ({
   link,
   readOnly,
 }: ProposalDetailsProps) => {
-  const nameToUse = name.includes(DISPLAY_NAME_SEPARATOR) ? name : (description ?? '').split(';')[0]
-  const { builderName } = splitCombinedName(nameToUse)
+  const builderName = extractBuilderName(name, description)
 
   // For display purposes, we use the first action
   const parsedAction = parsedActions[0]
