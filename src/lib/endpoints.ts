@@ -54,3 +54,4 @@ export const getStakingHistoryEndpoint = `/api/staking/v1/addresses/{{address}}/
 
 const REWARD_DISTRIBUTION_REWARDS = '0xd6a836213168f39ab7f02eb32044ca51969fe036e85cf25737139ec6b1580d91'
 export const fetchRewardDistributionRewardsLogsByAddress = `/address/{{address}}/eventsByTopic0?topic0=${REWARD_DISTRIBUTION_REWARDS}&${CHAIN_ID_PARAM}&${FROM_BLOCK_PARAM}`
+export const getVaultHistoryEndpoint = `/api/vault/v1/addresses/{{address}}/history`
