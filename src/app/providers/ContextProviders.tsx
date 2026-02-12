@@ -63,6 +63,13 @@ createAppKit({
     emailShowWallets: true,
     onramp: true,
   },
+  // Use our own font instead of Reown's default KHTeka to prevent unnecessary
+  // font preloading warnings (fonts from fonts.reown.com are preloaded on every
+  // page but only used when the modal is open).
+  // See: https://docs.reown.com/appkit/react/core/theming
+  themeVariables: {
+    '--apkt-font-family': 'Rootstock-Sans, Open Sans, sans-serif',
+  },
 })
 
 /**
