@@ -24,6 +24,10 @@ vi.mock('@/lib/auth/session', () => ({
   requireAuth: vi.fn(),
 }))
 
+vi.mock('@/app/proposals/actions/getProposalById', () => ({
+  confirmProposalExists: vi.fn().mockResolvedValue(true),
+}))
+
 const mockedRequireAuth = vi.mocked(requireAuth)
 
 function createRequest(body?: Record<string, unknown>): NextRequest {
@@ -48,7 +52,7 @@ describe('POST /api/like', () => {
     const data = await response.json()
 
     expect(response.status).toBe(200)
-    expect(data).toEqual({ success: true, liked: true })
+    expect(data).toEqual({ success: true, liked: true, reaction: 'heart' })
     expect(mockInsert).toHaveBeenCalledWith({
       proposalId: expect.any(Buffer),
       userAddress: '0xabcdef0123456789abcdef0123456789abcdef01',
@@ -72,7 +76,7 @@ describe('POST /api/like', () => {
     const data = await response.json()
 
     expect(response.status).toBe(200)
-    expect(data).toEqual({ success: true, liked: false })
+    expect(data).toEqual({ success: true, liked: false, reaction: 'heart' })
   })
 
   it('should return 400 when proposalId is missing', async () => {
@@ -149,7 +153,7 @@ describe('POST /api/like', () => {
     const data = await response.json()
 
     expect(response.status).toBe(200)
-    expect(data).toEqual({ success: true, liked: true })
+    expect(data).toEqual({ success: true, liked: true, reaction: 'heart' })
     expect(mockInsert).toHaveBeenCalledWith(expect.objectContaining({ reaction: 'heart' }))
   })
 })

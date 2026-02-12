@@ -3,6 +3,7 @@ import { z } from 'zod'
 import { JWTPayload } from '@/lib/auth/jwt'
 import { withAuth } from '@/lib/auth/withAuth'
 import { daoDataDb } from '@/lib/daoDataDb'
+import { confirmProposalExists } from '@/app/proposals/actions/getProposalById'
 
 const TABLE = 'dao_data.ProposalLikes'
 
@@ -61,6 +62,12 @@ export const POST = withAuth(async (request, session: JWTPayload) => {
   }
 
   const { proposalId, reaction } = parsed.data
+
+  const proposalExists = await confirmProposalExists(proposalId)
+  if (!proposalExists) {
+    return NextResponse.json({ success: false, error: 'Proposal not found in the Governor' }, { status: 404 })
+  }
+
   const userAddress = session.userAddress.toLowerCase()
   const proposalIdBuffer = bigIntToBuffer(proposalId)
 
@@ -81,7 +88,7 @@ export const POST = withAuth(async (request, session: JWTPayload) => {
       return true
     })
 
-    return NextResponse.json({ success: true, liked })
+    return NextResponse.json({ success: true, liked, reaction })
   } catch (error) {
     console.error('Error in POST /api/like:', error)
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 })
