@@ -259,7 +259,7 @@ export const useTokenAllowance = () => {
 
   // Approve ERC-20 token for Permit2 contract
   const approve = useCallback(
-    async (amount: bigint) => {
+    async (_amount: bigint) => {
       if (!address || !writeContractAsync || !UNISWAP_UNIVERSAL_ROUTER_ADDRESS) {
         throw new Error('Wallet not connected. Please connect your wallet and try again.')
       }

@@ -9,7 +9,6 @@ export function ParachuteIcon({
   'aria-label': ariaLabel = 'Parachute Icon',
   size = DEFAULT_ICON_SIZE,
   color = DEFAULT_ICON_COLOR,
-  fill = color,
   useGradient = false,
   ...props
 }: ParachuteIconProps) {

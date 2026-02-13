@@ -10,7 +10,7 @@ import { BottomDrawer } from '@/components/MainContainer/drawers/BottomDrawer'
 import { TopPageHeader } from '@/shared/walletConnection/components/topPageHeader/TopPageHeader'
 import { MAIN_CONTAINER_ID } from '@/lib/constants'
 
-export default function ContainerMobile({ className, children, ...props }: HTMLAttributes<HTMLDivElement>) {
+export default function ContainerMobile({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { isSidebarOpen } = useLayoutContext()
   return (
     <div
@@ -18,6 +18,7 @@ export default function ContainerMobile({ className, children, ...props }: HTMLA
       className={cn(
         'flex flex-col w-full',
         isSidebarOpen ? 'overflow-hidden h-[calc(100dvh-var(--header-height))]' : 'min-h-screen',
+        className,
       )}
     >
       <HeaderMobile />

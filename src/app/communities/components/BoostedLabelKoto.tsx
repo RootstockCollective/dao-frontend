@@ -25,7 +25,7 @@ export const BoostedLabelKoto = ({ text, className, ...props }: Props) => {
       }}
       {...props}
     >
-      <RocketIconKoto color="white" stroke="white" className="bg-black rounded-full p-1" size={24} />
+      <RocketIconKoto color="white" className="bg-black rounded-full p-1" size={24} />
       {typeof text === 'string' ? <Paragraph>{text}</Paragraph> : <div>{text}</div>}
     </div>
   )

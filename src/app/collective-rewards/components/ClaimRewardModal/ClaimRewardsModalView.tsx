@@ -11,7 +11,7 @@ import { Separator } from '@radix-ui/react-select'
 import { FC, ReactNode } from 'react'
 import { ClaimRewardRadioGroup } from './ClaimRewardRadioGroup'
 import { ClaimRewardType } from './types'
-import { REWARD_TOKEN_KEYS, TOKENS, type RewardToken } from '@/lib/tokens'
+import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 
 interface ClaimRewardsModalViewProps {
   onClose: () => void

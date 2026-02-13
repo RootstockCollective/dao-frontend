@@ -44,13 +44,16 @@ export const StickySlider: React.FC<StickySliderProps> = ({
     onValueChange(val)
   }
 
+  // Clamp values within [0, max]
+  const clampToRange = (value: number, max: number): number => Math.max(0, Math.min(value, max))
+
   // Handle clicks/taps on the track to jump the thumb
   const handleTrackClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect()
     const clickX = e.clientX - rect.left
     const percentage = clickX / rect.width
     const rawValue = percentage * max
-    const steppedValue = Math.round(rawValue / step) * step
+    const steppedValue = clampToRange(Math.round(rawValue / step) * step, max)
 
     const nearest = ticks.reduce((prev, curr) =>
       Math.abs(curr - steppedValue) < Math.abs(prev - steppedValue) ? curr : prev,

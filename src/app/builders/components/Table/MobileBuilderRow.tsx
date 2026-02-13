@@ -27,13 +27,7 @@ interface MobileBuilderRowProps extends HtmlHTMLAttributes<HTMLTableRowElement> 
   actionCount: number
 }
 
-export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({
-  row,
-  userBacking,
-  logic,
-  actionCount,
-  ...props
-}) => {
+export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ logic, actionCount, ...props }) => {
   const { isConnected } = useAccount()
   const { onConnectWalletButtonClick } = useAppKitFlow()
 

@@ -86,7 +86,7 @@ export function useFormAddressResolution(props?: Props) {
             setValue(rnsFieldName, rns ?? '')
             // Trigger validation to force re-render and show message
             //trigger(rnsOrAddressFieldName)
-          } catch (_error) {
+          } catch {
             setResolutionMsg('')
           }
         } else {

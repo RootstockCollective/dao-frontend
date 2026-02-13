@@ -18,8 +18,8 @@ export const isTreasuryContract = (address: Address): boolean => {
 type TreasuryDecodedData = DecodeFunctionDataReturnType<typeof DAOTreasuryAbi>
 
 // Treasury functions that are supported for transfer extraction
-const TREASURY_TRANSFER_FUNCTIONS = ['withdraw', 'withdrawERC20'] as const
-type TreasuryTransferFunctionName = (typeof TREASURY_TRANSFER_FUNCTIONS)[number]
+const _TREASURY_TRANSFER_FUNCTIONS = ['withdraw', 'withdrawERC20'] as const
+type TreasuryTransferFunctionName = (typeof _TREASURY_TRANSFER_FUNCTIONS)[number]
 
 /**
  * Type guard to check if a function name is a supported treasury transfer function
@@ -63,7 +63,7 @@ export const decodeTreasuryTransfer = (calldata: string): TreasuryTransferInfo |
 
     // Use the shared extractTreasuryTransferInfo function
     return extractTreasuryTransferInfo(decodedData)
-  } catch (error) {
+  } catch {
     // If decoding fails, it's not a treasury function we recognize
     return null
   }

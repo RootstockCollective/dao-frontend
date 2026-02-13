@@ -14,6 +14,9 @@ import { EstimatedCycleRewards } from './EstimatedCycleRewards'
 import { LastCycleRewards } from './LastCycleRewards'
 import { TotalEarned } from './TotalEarned'
 import { UnclaimedRewards } from './UnclaimedRewards'
+import { Button } from '@/components/Button'
+import { HistoryIcon } from '@/components/Icons/HistoryIcon'
+import { useRouter } from 'next/navigation'
 
 const BuilderRewardsContainer = ({
   children,
@@ -40,6 +43,8 @@ export const BuilderRewards = ({ address, gauge }: { address: Address; gauge: Ad
     openModal: openUpdateBackersRewardsModal,
     closeModal: closeUpdateBackersRewardsModal,
   } = useModal()
+
+  const router = useRouter()
   const { getBuilderByAddress } = useBuilderContext()
 
   return (
@@ -70,7 +75,17 @@ export const BuilderRewards = ({ address, gauge }: { address: Address; gauge: Ad
           </BuilderRewardsContainer>
 
           <BuilderRewardsContainer className="hidden md:block">
-            <TotalEarned gauge={gauge} />
+            <div className="flex flex-col gap-2">
+              <TotalEarned gauge={gauge} />
+              <Button
+                variant="transparent"
+                className="font-medium px-0 gap-1 text-sm font-rootstock-sans"
+                onClick={() => router.push('/my-rewards/tx-history/builder')}
+              >
+                <HistoryIcon className="size-5" />
+                See Claiming History
+              </Button>
+            </div>
           </BuilderRewardsContainer>
 
           <BuilderRewardsContainer>
@@ -85,7 +100,17 @@ export const BuilderRewards = ({ address, gauge }: { address: Address; gauge: Ad
             </BuilderRewardsContainer>
 
             <BuilderRewardsContainer>
-              <TotalEarned gauge={gauge} />
+              <div className="flex flex-col gap-2">
+                <TotalEarned gauge={gauge} />
+                <Button
+                  variant="transparent"
+                  className="font-medium px-0 gap-1 text-sm font-rootstock-sans"
+                  onClick={() => router.push('/my-rewards/tx-history/builder')}
+                >
+                  <HistoryIcon className="size-5" />
+                  See Claiming History
+                </Button>
+              </div>
             </BuilderRewardsContainer>
           </div>
         </Collapsible.Content>

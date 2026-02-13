@@ -22,7 +22,7 @@ export const validateRnsDomain = async (
       setDomainStatus('invalid')
       returnObject.error = 'Invalid RNS domain'
     }
-  } catch (err) {
+  } catch {
     setDomainStatus('invalid')
     returnObject.error = 'Error resolving RNS domain'
   }

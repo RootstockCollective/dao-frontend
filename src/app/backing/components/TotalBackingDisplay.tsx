@@ -22,13 +22,13 @@ export const TotalBackingDisplay = ({
   } = useContext(AllocationsContext)
 
   const currentAllocation = useMemo(() => {
-    return Object.entries(initialAllocations).reduce((acc, [builderAddress, allocation]) => {
+    return Object.entries(initialAllocations).reduce((acc, [_builderAddress, allocation]) => {
       return acc + allocation
     }, 0n)
   }, [initialAllocations])
 
   const futureAllocation = useMemo(() => {
-    return Object.entries(allocations).reduce((acc, [builderAddress, allocation]) => {
+    return Object.entries(allocations).reduce((acc, [_builderAddress, allocation]) => {
       return acc + allocation
     }, 0n)
   }, [allocations])

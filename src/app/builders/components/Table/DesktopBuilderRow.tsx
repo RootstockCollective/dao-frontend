@@ -22,13 +22,7 @@ interface DesktopBuilderRowProps extends HtmlHTMLAttributes<HTMLTableRowElement>
   actionCount: number
 }
 
-export const DesktopBuilderRow: FC<DesktopBuilderRowProps> = ({
-  row,
-  userBacking,
-  logic,
-  actionCount,
-  ...props
-}) => {
+export const DesktopBuilderRow: FC<DesktopBuilderRowProps> = ({ logic, actionCount, ...props }) => {
   const { isConnected } = useAccount()
   const { onConnectWalletButtonClick } = useAppKitFlow()
 
