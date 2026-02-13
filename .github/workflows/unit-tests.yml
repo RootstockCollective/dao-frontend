@@ -24,8 +24,15 @@ jobs:
 
       - name: Start Anvil Fork
         env:
-          ROOTSTOCK_RPC_URL: ${{ secrets.ROOTSTOCK_RPC_URL || 'https://public-node.rsk.co' }}
+          ROOTSTOCK_RPC_URL: ${{ secrets.ROOTSTOCK_RPC_URL }}
         run: |
+          # Fall back to public node if secret is not set
+          if [ -z "$ROOTSTOCK_RPC_URL" ]; then
+            echo "⚠️ ROOTSTOCK_RPC_URL secret is NOT set — falling back to public node (may be slow/rate-limited)"
+            ROOTSTOCK_RPC_URL="https://public-node.rsk.co"
+          else
+            echo "✅ ROOTSTOCK_RPC_URL secret is set (using private RPC)"
+          fi
           # Start Anvil fork in background for swap execution tests
           # Fork is required for testing swap execution (write operations) without spending real funds
           anvil --fork-url $ROOTSTOCK_RPC_URL --chain-id 31337 > /tmp/anvil.log 2>&1 &
