@@ -8,6 +8,12 @@ interface LikeApiResponse {
   reactions: Record<string, number>
 }
 
+interface UserReactionResponse {
+  success: boolean
+  proposalId: string
+  reactions: string[]
+}
+
 interface ToggleLikeResponse {
   success: boolean
   liked: boolean
@@ -15,6 +21,11 @@ interface ToggleLikeResponse {
 }
 
 const likeQueryKey = (proposalId: string) => ['proposalLikes', proposalId]
+const userReactionQueryKey = (proposalId: string, jwtToken: string) => [
+  'proposalUserReaction',
+  proposalId,
+  jwtToken,
+]
 
 export const useLike = (proposalId: string) => {
   const queryClient = useQueryClient()
@@ -34,6 +45,28 @@ export const useLike = (proposalId: string) => {
     },
     enabled: !!proposalId,
   })
+
+  const { data: userReactionData } = useQuery<UserReactionResponse>({
+    queryKey: userReactionQueryKey(proposalId, jwtToken ?? ''),
+    queryFn: async () => {
+      const response = await fetch(`/api/like/user?proposalId=${proposalId}`, {
+        headers: { Authorization: `Bearer ${jwtToken}` },
+      })
+      if (!response.ok) {
+        throw new Error('Failed to fetch user reaction')
+      }
+      return response.json()
+    },
+    enabled: !!proposalId && !!jwtToken,
+  })
+
+  // Sync server-side user reaction into local state (only when uninitialized)
+  useEffect(() => {
+    if (lastLikedState !== null) return
+    if (!userReactionData?.success) return
+    const hasHeart = userReactionData.reactions.includes('heart')
+    setLastLikedState(hasHeart)
+  }, [userReactionData, lastLikedState])
 
   // Reset liked state on logout
   useEffect(() => {
@@ -75,6 +108,9 @@ export const useLike = (proposalId: string) => {
       setLastLikedState(result.liked)
       setOptimisticDelta(0)
       queryClient.invalidateQueries({ queryKey: likeQueryKey(proposalId) })
+      if (jwtToken) {
+        queryClient.invalidateQueries({ queryKey: userReactionQueryKey(proposalId, jwtToken) })
+      }
     } catch {
       setOptimisticDelta(prev => prev + (willLike ? -1 : 1))
       setLastLikedState(willLike ? (lastLikedState === null ? null : lastLikedState) : lastLikedState)
