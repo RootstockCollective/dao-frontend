@@ -2,6 +2,7 @@ import { db } from '@/lib/db'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { buildProposal } from '@/app/proposals/actions/utils'
 import { Address } from 'viem'
+import { sentryServer } from '@/lib/sentry/sentry-server'
 
 interface ProposalDBRow {
   proposalId: string
@@ -73,11 +74,15 @@ export async function getProposalsFromDB(): Promise<ProposalApiResponse[]> {
     // Transform proposals
     return result.map(transformProposal)
   } catch (error) {
-    // Re-throw with more context if it's already our error
+    const errorObj = error instanceof Error ? error : new Error(String(error))
+    sentryServer.captureException(errorObj, {
+      tags: {
+        errorType: 'PROPOSALS_DB_ERROR',
+      },
+    })
     if (error instanceof Error && error.message.includes('database')) {
       throw error
     }
-    // Wrap database errors (connection errors, query errors, etc.)
     throw new Error(
       `Failed to fetch proposals from database: ${error instanceof Error ? error.message : String(error)}`,
     )

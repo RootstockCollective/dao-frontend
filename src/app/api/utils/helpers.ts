@@ -1,3 +1,5 @@
+import { sentryServer } from '@/lib/sentry/sentry-server'
+
 export const queryParam = (searchParams: URLSearchParams) => (key: string) => {
   const v = searchParams.get(key)
   return v === null || v === '' ? undefined : v
@@ -35,6 +37,19 @@ export const handleApiError = (err: unknown, context?: string): Response => {
   const errorMessage = err instanceof Error ? err.message : String(err)
   const errorStack = err instanceof Error ? err.stack : undefined
   const errorName = err instanceof Error ? err.name : 'UnknownError'
+
+  const error = err instanceof Error ? err : new Error(errorMessage)
+  sentryServer.captureException(error, {
+    tags: {
+      errorType: 'API_ERROR',
+      context: context || 'unknown',
+    },
+    extra: {
+      errorName,
+      errorMessage,
+      errorStack,
+    },
+  })
 
   return Response.json(
     {
