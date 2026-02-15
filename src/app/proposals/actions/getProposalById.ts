@@ -1,27 +1,30 @@
+import { unstable_cache } from 'next/cache'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
-import { getProposalsFromDB } from './getProposalsFromDB'
-import { getProposalsFromTheGraph } from './getProposalsFromTheGraph'
-import { getProposalsFromBlockscout } from './getProposalsFromBlockscout'
+import { getCachedProposals } from './fetchAllProposals'
 
 /**
- * Fetches a single proposal by ID from available sources
- * Tries DB first, then GraphQL, then Node
+ * Fetches a single proposal by ID using the cached proposals
  */
 export async function getProposalById(proposalId: string): Promise<ProposalApiResponse | null> {
-  const proposalsSources = [getProposalsFromDB, getProposalsFromTheGraph, getProposalsFromBlockscout]
+  const { proposals } = await getCachedProposals()
+  return proposals.find(p => p.proposalId === proposalId) ?? null
+}
 
-  for (const source of proposalsSources) {
-    try {
-      const proposals = await source()
-      const proposal = proposals.find(p => p.proposalId === proposalId)
-      if (proposal) {
-        return proposal
-      }
-    } catch (error) {
-      console.error(`Failed to fetch proposals from source:`, error)
-      // Continue to next source
-    }
-  }
+/** Transforms the proposals list into a map keyed by proposalId for fast lookup */
+async function transformProposalsIntoMap(): Promise<Record<string, string>> {
+  const { proposals } = await getCachedProposals()
+  return proposals.reduce(
+    (acc, proposal) => ({ ...acc, [proposal.proposalId]: proposal.proposalId }),
+    {} as Record<string, string>,
+  )
+}
 
-  return null
+const getCachedProposalsMap = unstable_cache(transformProposalsIntoMap, ['cached_proposals_map'], {
+  revalidate: 30,
+})
+
+/** Checks whether a proposal with the given ID exists */
+export async function confirmProposalExists(proposalId: string): Promise<boolean> {
+  const proposals = await getCachedProposalsMap()
+  return proposalId in proposals
 }

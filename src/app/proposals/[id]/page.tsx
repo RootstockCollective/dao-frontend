@@ -17,6 +17,7 @@ import {
   VotingDetails,
   ProposalDetails,
 } from './components'
+import { LikeButton } from './components/LikeButton'
 import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { useProposalById } from '../context'
 import { Category } from '../components/category'
@@ -162,6 +163,7 @@ const PageWithProposal = (proposal: Proposal) => {
           </Paragraph>
         </div>
       </div>
+      <LikeButton proposalId={proposalId} />
       <div className="flex md:flex-row flex-col gap-2 w-full max-w-full mt-6">
         <div className="flex-1 flex flex-col min-w-0">
           <div className="bg-bg-80 flex flex-col overflow-hidden">
