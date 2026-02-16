@@ -52,3 +52,6 @@ bun.lockb
 
 #VSCode
 .vscode
+
+# Sentry Config File
+.env.sentry-build-plugin
