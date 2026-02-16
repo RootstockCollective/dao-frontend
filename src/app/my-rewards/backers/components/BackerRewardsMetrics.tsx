@@ -90,7 +90,17 @@ export const BackerRewardsMetrics = ({ backer }: { backer: Address }) => {
           <Collapsible.Content>
             <Container className="block md:hidden mt-6">
               <InnerContainer>
-                <TotalEarned />
+                <div className="flex flex-col gap-2">
+                  <TotalEarned />
+                  <Button
+                    variant="transparent"
+                    className="font-medium px-0 gap-1 text-sm font-rootstock-sans"
+                    onClick={() => router.push(`/my-rewards/tx-history/backer`)}
+                  >
+                    <HistoryIcon className="size-5" />
+                    See Rewards History
+                  </Button>
+                </div>
                 <RBI backer={backer} tokens={TOKENS} />
               </InnerContainer>
             </Container>
