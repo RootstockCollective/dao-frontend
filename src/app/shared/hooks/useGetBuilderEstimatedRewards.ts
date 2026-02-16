@@ -10,7 +10,7 @@ import { useMemo } from 'react'
 
 import { REWARD_TOKEN_KEYS, TOKENS, type RewardTokenKey } from '@/lib/tokens' // adjust import path
 
-type TokenAmount = {
+interface TokenAmount {
   amount: {
     value: bigint
     price: number

@@ -2,7 +2,7 @@ import { Address } from 'viem'
 import { Allocations, Backer } from './AllocationsContext'
 import { Builder } from '../../types'
 
-export type ValidateAllocationsStateParams = {
+export interface ValidateAllocationsStateParams {
   backer: Pick<Backer, 'amountToAllocate' | 'balance' | 'cumulativeAllocation'>
   initialAllocations: Allocations
   currentAllocations: Allocations
@@ -29,7 +29,7 @@ export const validateAllocationsState = ({
   return true
 }
 
-type GetVoteAllocationsParams = {
+interface GetVoteAllocationsParams {
   initialAllocations: Allocations
   currentAllocations: Allocations
   getBuilder: (address: Address) => Builder | null

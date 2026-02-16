@@ -33,14 +33,14 @@ type DecodedFunctionData = DecodeFunctionDataReturnType<SupportedActionAbi>
 export type DecodedFunctionName = DecodedFunctionData['functionName'] & SupportedProposalActionName
 
 // Separate types for successful decode and fallback
-type DecodedSuccessData = {
+interface DecodedSuccessData {
   type: 'decoded'
   functionName: DecodedFunctionName
   args: DecodedFunctionData['args']
   inputs: FunctionInputs
 }
 
-type DecodedFallbackData = {
+interface DecodedFallbackData {
   type: 'fallback'
   affectedAddress: string
   callData: string

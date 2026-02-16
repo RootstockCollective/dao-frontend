@@ -9,7 +9,7 @@ import { BuilderState } from '../BuilderTable.config'
 
 export type BuilderFilterOptionId = 'all' | Exclude<BuilderState, 'selfPaused'>
 
-export type BuilderFilterOption = {
+export interface BuilderFilterOption {
   id: BuilderFilterOptionId
   label: string
 }

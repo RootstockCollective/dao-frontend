@@ -2,7 +2,7 @@ import { Tooltip, TooltipProps } from '@/components/Tooltip'
 import { cn } from '@/lib/utils'
 import { ReactNode } from 'react'
 
-export type TooltipConditionPair = {
+export interface TooltipConditionPair {
   condition: () => boolean
   lazyContent: () => ReactNode
 }

@@ -5,7 +5,7 @@ import { client } from '@/shared/components/ApolloClient'
 import { gql } from '@apollo/client'
 import { Address } from 'viem'
 
-type Response = {
+interface Response {
   backerStakingHistory?: BackerStakingHistory
 }
 

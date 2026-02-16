@@ -5,7 +5,7 @@ import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
 import { paginateQuery } from '@/app/api/utils/paginateQuery'
 import { TX_HISTORY_COLUMNS } from '@/app/api/db/constants'
 
-type PriceParam = {
+interface PriceParam {
   token: string
   priceUsd: number
   decimals: number

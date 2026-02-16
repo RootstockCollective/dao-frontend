@@ -36,7 +36,7 @@ import { getBuilderInactiveState, isBuilderInProgress } from '@/app/collective-r
 // Filter logic is now centralized in builderFilters.ts
 
 // TODO: this is a temporary solution to filter builders by state.
-type PagedFilter = {
+interface PagedFilter {
   filterOption: BuilderFilterOptionId
   pageOptions: { start: number; end: number }
   sort: Sort<ColumnId>

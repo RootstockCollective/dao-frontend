@@ -6,7 +6,7 @@ export type BaseColumnId = string | number | symbol
 
 type BaseRowId = Exclude<React.Key, bigint>
 
-export type Sort<ColumnId extends Column['id'] = Column['id']> = {
+export interface Sort<ColumnId extends Column['id'] = Column['id']> {
   columnId: ColumnId | null // For now only one column can be sorted at a time
   direction: SortDirection
 }
@@ -19,27 +19,27 @@ export type RowData<
   [K in ColumnId]: K extends keyof CellDataMap ? CellDataMap[K] : unknown
 }
 
-export type Row<
+export interface Row<
   ColumnId extends Column['id'] = Column['id'],
   RowId extends BaseRowId = BaseRowId,
   CellDataMap extends Record<ColumnId, unknown> = Record<ColumnId, unknown>,
-> = {
+> {
   id: RowId
   data: RowData<ColumnId, CellDataMap>
 }
 
 type SelectedRows<RowId extends Row['id'] = Row['id']> = Record<RowId, boolean>
 
-export type Column<ColumnId extends BaseColumnId = BaseColumnId> = {
+export interface Column<ColumnId extends BaseColumnId = BaseColumnId> {
   id: ColumnId
   hidden: boolean
   sortable: boolean
 }
 
-export type TableState<
+export interface TableState<
   ColumnId extends Column['id'] = Column['id'],
   CellDataMap extends Record<ColumnId, unknown> = Record<ColumnId, unknown>,
-> = {
+> {
   columns: Column<ColumnId>[]
   rows: Row<ColumnId, BaseRowId, CellDataMap>[]
   sort: Sort<ColumnId>
@@ -129,7 +129,7 @@ export type TableAction<
  * // - MyTable['RowData'] for RowData
  * ```
  */
-export type TypedTable<ColumnId extends BaseColumnId, CellDataMap extends Record<ColumnId, unknown>> = {
+export interface TypedTable<ColumnId extends BaseColumnId, CellDataMap extends Record<ColumnId, unknown>> {
   ColumnId: ColumnId
   CellDataMap: CellDataMap
   State: TableState<ColumnId, CellDataMap>

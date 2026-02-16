@@ -188,6 +188,11 @@ This project uses semantic z-index classes instead of arbitrary values. Defined 
 
 **Do not use** raw z-index values like `z-10`, `z-50`, or `z-[999]`. Use the semantic classes above.
 
+## TypeScript Type Conventions
+
+Use `interface` for object shapes (enforced by `@typescript-eslint/consistent-type-definitions`). Use `type` for unions, intersections, and mapped types.
+
+
 ## Unit testing
 
 The repository is configured to use [Jest as the Testing Framework](https://jestjs.io/). Please refer to the [Next.js official guide](https://nextjs.org/docs/app/building-your-application/testing/jest) for information on how to integrate Jest.

@@ -76,7 +76,7 @@ export interface GroupedTransactionDetail {
   increased?: boolean
 }
 
-export type TransactionHistoryCellDataMap = {
+export interface TransactionHistoryCellDataMap {
   cycle: { cycle: string | null }
   date: { timestamp: string; formatted: string; transactionHash: string }
   from_to: {

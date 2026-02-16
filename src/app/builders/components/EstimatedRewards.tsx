@@ -14,7 +14,7 @@ import { usePricesContext } from '@/shared/context'
 import Big from 'big.js'
 import { useMemo } from 'react'
 
-type USDWithTokensRewardsProps = {
+interface USDWithTokensRewardsProps {
   usd: Big
   tokens: MetricTooltipContentProps['tokens']
 }
