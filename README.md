@@ -131,6 +131,20 @@ All environment files are prefixed with `.env`.
 **CR**: Rootstock Collective Rewards squad <br>
 **DAO**: Rootstock DAO squad
 
+## API Route Handlers
+
+In route handlers (`src/app/api/**/route.ts`), use the native Web `Response` API by default:
+
+```ts
+export async function GET() {
+  return Response.json({ data })
+}
+```
+
+Only use `NextResponse` from `next/server` when you need its extended capabilities (redirects, rewrites, cookie manipulation). See the [Next.js Route Handlers docs](https://nextjs.org/docs/app/getting-started/route-handlers) for details.
+
+For the **request** side, `NextRequest` is fine when you need access to cookies, headers helpers, or other Next.js-specific extensions.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
