@@ -1,4 +1,3 @@
-import { NextResponse } from 'next/server'
 import { z } from 'zod'
 import { JWTPayload } from '@/lib/auth/jwt'
 import { withAuth } from '@/lib/auth/withAuth'
@@ -48,14 +47,14 @@ function bigIntToBuffer(value: string): Buffer {
  */
 export const POST = withAuth(async (request, session: JWTPayload) => {
   if (!daoDataDb) {
-    return NextResponse.json({ success: false, error: 'Database not configured' }, { status: 503 })
+    return Response.json({ success: false, error: 'Database not configured' }, { status: 503 })
   }
 
   const body = await request.json().catch(() => null)
   const parsed = LikeRequestSchema.safeParse(body)
 
   if (!parsed.success) {
-    return NextResponse.json(
+    return Response.json(
       { success: false, error: 'Validation failed', details: parsed.error.flatten() },
       { status: 400 },
     )
@@ -65,7 +64,7 @@ export const POST = withAuth(async (request, session: JWTPayload) => {
 
   const proposalExists = await confirmProposalExists(proposalId)
   if (!proposalExists) {
-    return NextResponse.json({ success: false, error: 'Proposal not found in the Governor' }, { status: 404 })
+    return Response.json({ success: false, error: 'Proposal not found in the Governor' }, { status: 404 })
   }
 
   const userAddress = session.userAddress.toLowerCase()
@@ -88,9 +87,9 @@ export const POST = withAuth(async (request, session: JWTPayload) => {
       return true
     })
 
-    return NextResponse.json({ success: true, liked, reaction })
+    return Response.json({ success: true, liked, reaction })
   } catch (error) {
     console.error('Error in POST /api/like:', error)
-    return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 })
+    return Response.json({ success: false, error: 'Internal server error' }, { status: 500 })
   }
 })
