@@ -8,8 +8,7 @@ import { NftMeta, CommunityData } from '../types'
 import { config } from '@/config'
 import Big from '@/lib/big'
 import { useQuery } from '@tanstack/react-query'
-import { fetchClient, splitWords } from '@/lib/utils'
-import { NftDataFromAddressesReturnType } from '@/app/user/api/communities/route'
+import { splitWords } from '@/lib/utils'
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
 
 /**
@@ -61,10 +60,10 @@ const useContractData = (nftAddress?: Address) => {
 
   const { data: nftData = {} } = useQuery({
     queryKey: ['nftInfo'],
-    queryFn: () =>
-      fetchClient
-        .get<NftDataFromAddressesReturnType>('/user/api/communities', { baseURL: '/' })
-        .then(({ data }) => data),
+    queryFn: async () => {
+      const res = await fetch('/user/api/communities')
+      return res.json()
+    },
   })
 
   return useMemo(() => {
