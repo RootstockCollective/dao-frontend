@@ -85,23 +85,23 @@ These use `fetchClient` only for its base URL (`RIF_WALLET_SERVICES_URL`). The `
   - Target: plain `fetch` with full URL + manually serialize `nextPageParams` query string
   - Note: same `params` consideration as B5
 
-- [ ] **B7.** `src/app/collective-rewards/actions.ts` — lines 14–18 (`fetchGaugeNotifyRewardLogs`)
+- [x] **B7.** `src/app/collective-rewards/actions.ts` — lines 14–18 (`fetchGaugeNotifyRewardLogs`)
   - Current: `fetchClient.get<any>(fetchGaugeNotifyRewardLogsByAddress...)`
   - Target: plain `fetch` with full URL
 
-- [ ] **B8.** `src/app/collective-rewards/actions.ts` — lines 22–26 (`fetchBuilderRewardsClaimed`)
+- [x] **B8.** `src/app/collective-rewards/actions.ts` — lines 22–26 (`fetchBuilderRewardsClaimed`)
   - Current: `fetchClient.get<any>(fetchBuilderRewardsClaimedLogsByAddress...)`
   - Target: plain `fetch` with full URL
 
-- [ ] **B9.** `src/app/collective-rewards/actions.ts` — lines 30–34 (`fetchBackerRewardsClaimed`)
+- [x] **B9.** `src/app/collective-rewards/actions.ts` — lines 30–34 (`fetchBackerRewardsClaimed`)
   - Current: `fetchClient.get<any>(fetchBackerRewardsClaimedLogsByAddress...)`
   - Target: plain `fetch` with full URL
 
-- [ ] **B10.** `src/app/collective-rewards/actions.ts` — lines 38–42 (`fetchRewardDistributionFinished`)
+- [x] **B10.** `src/app/collective-rewards/actions.ts` — lines 38–42 (`fetchRewardDistributionFinished`)
   - Current: `fetchClient.get<any>(fetchRewardDistributionFinishedLogsByAddress...)`
   - Target: plain `fetch` with full URL
 
-- [ ] **B11.** `src/app/collective-rewards/actions.ts` — lines 46–50 (`fetchRewardDistributionRewards`)
+- [x] **B11.** `src/app/collective-rewards/actions.ts` — lines 46–50 (`fetchRewardDistributionRewards`)
   - Current: `fetchClient.get<any>(fetchRewardDistributionRewardsLogsByAddress...)`
   - Target: plain `fetch` with full URL
 
