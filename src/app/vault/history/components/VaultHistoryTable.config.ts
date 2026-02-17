@@ -64,7 +64,7 @@ export const DEFAULT_HEADERS: Column<ColumnId>[] = [
   },
 ]
 
-export type VaultHistoryCellDataMap = {
+export interface VaultHistoryCellDataMap {
   period: string
   action: 'DEPOSIT' | 'WITHDRAW'
   assets: string

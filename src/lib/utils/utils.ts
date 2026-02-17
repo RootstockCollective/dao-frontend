@@ -1,5 +1,4 @@
 import Big from '@/lib/big'
-import axios from 'axios'
 import { BigSource } from 'big.js'
 import { ClassValue, clsx } from 'clsx'
 import { Duration } from 'luxon'
@@ -38,44 +37,59 @@ export const shortProposalId = (proposalId: string): string => {
   return `${proposalId.slice(0, 12)}…${proposalId.slice(-12)}`
 }
 
-export const axiosInstance = axios.create({
-  baseURL: RIF_WALLET_SERVICES_URL,
-  params: {
-    chainId: CHAIN_ID,
-  },
-})
+export interface FetchGetConfig {
+  baseURL?: string
+  params?: Record<string, unknown>
+}
 
-axiosInstance.interceptors.request.use(
-  config => {
-    try {
-      const fullUrl = config.baseURL + (config.url || '')
-      const doesBaseUrlHasChainId = fullUrl.includes('chainId')
-      if (doesBaseUrlHasChainId) {
-        // Parse the full URL (baseURL + request URL)
-        const url = new URL(fullUrl)
+export interface FetchResponse<T> {
+  data: T
+}
 
-        // Get existing URL parameters
-        const existingChainId = url.searchParams.get('chainId')
-
-        // If there are params in the request config
-        if (config.params) {
-          // If chainId exists in both URL and params, remove it from params
-          if (existingChainId && 'chainId' in config.params) {
-            const { chainId: _chainId, ...otherParams } = config.params
-            config.params = otherParams
-          }
-        }
-      }
-      return config
-    } catch (error) {
-      console.error('Error in axios interceptor:', error)
-      return config
+function serializeParams(params: Record<string, unknown>, prefix = ''): string {
+  const parts: string[] = []
+  for (const [key, value] of Object.entries(params)) {
+    if (value == null) continue
+    const fullKey = prefix ? `${prefix}[${key}]` : key
+    if (typeof value === 'object' && !Array.isArray(value)) {
+      parts.push(serializeParams(value as Record<string, unknown>, fullKey))
+    } else {
+      parts.push(`${encodeURIComponent(fullKey)}=${encodeURIComponent(String(value))}`)
     }
+  }
+  return parts.filter(Boolean).join('&')
+}
+
+export const fetchClient = {
+  async get<T = unknown>(path: string, config?: FetchGetConfig): Promise<FetchResponse<T>> {
+    const baseURL = config?.baseURL !== undefined ? config.baseURL : (RIF_WALLET_SERVICES_URL ?? '')
+
+    const base = baseURL.replace(/\/+$/, '')
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`
+    let fullUrl = `${base}${normalizedPath}`
+
+    // Replicate default chainId param + interceptor dedup logic:
+    // chainId is always added unless the URL already contains it
+    const extraParams: Record<string, unknown> = {}
+    if (!fullUrl.includes('chainId')) {
+      extraParams.chainId = CHAIN_ID
+    }
+
+    Object.assign(extraParams, config?.params ?? {})
+
+    const serialized = serializeParams(extraParams)
+    if (serialized) {
+      fullUrl += fullUrl.includes('?') ? `&${serialized}` : `?${serialized}`
+    }
+
+    const response = await fetch(fullUrl)
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    const data = (await response.json()) as T
+    return { data }
   },
-  error => {
-    return Promise.reject(error)
-  },
-)
+}
 
 /**
  * Truncates a string to a given length
