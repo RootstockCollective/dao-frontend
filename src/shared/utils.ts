@@ -1,6 +1,5 @@
 import type { NextRequest } from 'next/server'
 import './utils.css'
-import type { FetchResponse } from '@/lib/utils'
 import type { EIP1193Provider, WatchAssetParams } from 'viem'
 // Had to be done this way because tailwind css is not dynamically rendering the image on build
 export const BG_IMG_CLASSES = 'background-logo'
@@ -29,7 +28,7 @@ export interface CachedData {
 export const handleCachedGetRequest = (
   cachedData: CachedData,
   request: NextRequest,
-  functionToBeFetch: (fromBlock: number) => Promise<FetchResponse<unknown>>,
+  functionToBeFetch: (fromBlock: number) => Promise<{ data: unknown }>,
   interval = 10,
 ) => {
   const shouldRestartFromBlock = request.nextUrl.searchParams.get('restartBlock')
@@ -54,7 +53,7 @@ export const handleCachedGetRequest = (
 
 const fetchFunction = (
   cachedData: CachedData,
-  functionToBeFetch: (fromBlock: number) => Promise<FetchResponse<unknown>>,
+  functionToBeFetch: (fromBlock: number) => Promise<{ data: unknown }>,
 ) => {
   const shouldAddRowToDataArray = (newTransaction: { blockNumber: string }) => {
     const indexFound = cachedData.data.findIndex(i => i.blockNumber === newTransaction.blockNumber)

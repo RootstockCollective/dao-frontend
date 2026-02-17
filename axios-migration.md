@@ -109,11 +109,11 @@ These use `fetchClient` only for its base URL (`RIF_WALLET_SERVICES_URL`). The `
 
 Once all callers in Categories A and B are migrated, these can be deleted.
 
-- [ ] **C1.** `src/lib/utils/utils.ts` — lines 40–92
+- [x] **C1.** `src/lib/utils/utils.ts` — lines 40–92
   - Remove: `FetchGetConfig` interface, `FetchResponse` interface, `serializeParams` function, `fetchClient` object
   - Also: remove `CHAIN_ID, RIF_WALLET_SERVICES_URL` from the import on line 7 (if no longer used)
 
-- [ ] **C2.** `src/shared/utils.ts` — line 3
+- [x] **C2.** `src/shared/utils.ts` — line 3
   - Remove: `import type { FetchResponse } from '@/lib/utils'`
   - Update: `handleCachedGetRequest` and `fetchFunction` signatures (lines 32, 57) — replace `Promise<FetchResponse<unknown>>` with the actual return type of the callback (e.g. `Promise<{ data: unknown }>` or `Promise<Response>`)
   - Downstream: `src/app/proposals/api/route.ts:14` passes `fetchProposalCreated` as the callback — its return type must match
