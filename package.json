@@ -51,7 +51,6 @@
     "@tanstack/react-table": "^8.21.3",
     "@trezor/connect-web": "^9.6.2",
     "@uiw/react-md-editor": "4.0.11",
-    "axios": "1.13.2",
     "big.js": "^6.2.2",
     "clsx": "^2.1.1",
     "dompurify": "3.3.0",
@@ -132,8 +131,7 @@
     "vitest": "^3.2.4"
   },
   "overrides": {
-    "elliptic": "6.6.1",
-    "axios": "1.13.2"
+    "elliptic": "6.6.1"
   },
   "engines": {
     "node": "^24.0.0"

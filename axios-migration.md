@@ -35,5 +35,5 @@ Remove the `axios` dependency and replace all usages with the native `fetch` API
 - [x] **9. Migrate direct `axios.get()` in `.github/scripts/nft_boost/actions.utils.ts`**
   Replace `import axios` and `axios.get(url)` with native `fetch`.
 
-- [ ] **10. Remove `axios` dependency from `package.json` and `package-lock.json`**
+- [x] **10. Remove `axios` dependency from `package.json` and `package-lock.json`**
   Uninstall the package after all usages are migrated.
