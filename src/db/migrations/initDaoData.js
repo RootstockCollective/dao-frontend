@@ -54,9 +54,20 @@ async function runMigration() {
   console.log('[Migration] Starting ProposalLikes migration...')
 
   try {
-    // Create schema if not exists
-    await db.raw(`CREATE SCHEMA IF NOT EXISTS ${SCHEMA_NAME}`)
-    console.log(`[Migration] Schema "${SCHEMA_NAME}" ensured`)
+    // Check if schema exists before attempting to create it.
+    // In AWS, the DB user may not have permissions to create schemas,
+    // so we only attempt creation when the schema is actually missing (e.g. local dev).
+    const schemaExists = await db.raw(
+      `SELECT EXISTS (SELECT 1 FROM information_schema.schemata WHERE schema_name = ?)`,
+      [SCHEMA_NAME],
+    )
+
+    if (!schemaExists.rows[0].exists) {
+      await db.raw(`CREATE SCHEMA ${SCHEMA_NAME}`)
+      console.log(`[Migration] Schema "${SCHEMA_NAME}" created`)
+    } else {
+      console.log(`[Migration] Schema "${SCHEMA_NAME}" already exists`)
+    }
 
     // Create table if not exists
     await db.raw(`
