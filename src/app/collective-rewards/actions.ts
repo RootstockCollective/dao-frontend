@@ -1,6 +1,6 @@
 import { Address } from 'viem'
 import { BackersManagerAddress } from '@/lib/contracts'
-import { axiosInstance } from '@/lib/utils'
+import { fetchClient } from '@/lib/utils'
 import {
   fetchBackerRewardsClaimedLogsByAddress,
   fetchBuilderRewardsClaimedLogsByAddress,
@@ -9,8 +9,9 @@ import {
   fetchRewardDistributionRewardsLogsByAddress,
 } from '@/lib/endpoints'
 
+/* eslint-disable @typescript-eslint/no-explicit-any -- these endpoints return event logs consumed by viem's parseEventLogs which expects (Log | RpcLog)[] */
 export const fetchGaugeNotifyRewardLogs = (gaugeAddress: Address, fromBlock = 0) => {
-  return axiosInstance.get(
+  return fetchClient.get<any>(
     fetchGaugeNotifyRewardLogsByAddress
       .replace('{{address}}', gaugeAddress)
       .replace('{{fromBlock}}', fromBlock.toString()),
@@ -18,7 +19,7 @@ export const fetchGaugeNotifyRewardLogs = (gaugeAddress: Address, fromBlock = 0)
 }
 
 export const fetchBuilderRewardsClaimed = (gaugeAddress: Address, fromBlock = 0) => {
-  return axiosInstance.get(
+  return fetchClient.get<any>(
     fetchBuilderRewardsClaimedLogsByAddress
       .replace('{{address}}', gaugeAddress)
       .replace('{{fromBlock}}', fromBlock.toString()),
@@ -26,7 +27,7 @@ export const fetchBuilderRewardsClaimed = (gaugeAddress: Address, fromBlock = 0)
 }
 
 export const fetchBackerRewardsClaimed = (gaugeAddress: Address, fromBlock = 0) => {
-  return axiosInstance.get(
+  return fetchClient.get<any>(
     fetchBackerRewardsClaimedLogsByAddress
       .replace('{{address}}', gaugeAddress)
       .replace('{{fromBlock}}', fromBlock.toString()),
@@ -34,7 +35,7 @@ export const fetchBackerRewardsClaimed = (gaugeAddress: Address, fromBlock = 0) 
 }
 
 export const fetchRewardDistributionFinished = (fromBlock = 0) => {
-  return axiosInstance.get(
+  return fetchClient.get<any>(
     fetchRewardDistributionFinishedLogsByAddress
       .replace('{{address}}', BackersManagerAddress)
       .replace('{{fromBlock}}', fromBlock.toString()),
@@ -42,7 +43,7 @@ export const fetchRewardDistributionFinished = (fromBlock = 0) => {
 }
 
 export const fetchRewardDistributionRewards = (fromBlock = 0) => {
-  return axiosInstance.get(
+  return fetchClient.get<any>(
     fetchRewardDistributionRewardsLogsByAddress
       .replace('{{address}}', BackersManagerAddress)
       .replace('{{fromBlock}}', fromBlock.toString()),
