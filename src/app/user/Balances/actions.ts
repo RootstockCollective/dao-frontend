@@ -67,7 +67,11 @@ export const fetchNewAllocationEventByAccountAddress = (address: Address) =>
   )
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- event logs consumed by viem's parseEventLogs
-export const fetchProposalsCreatedCached = () => fetchClient.get<any>('/proposals/api', { baseURL: '/' })
+export const fetchProposalsCreatedCached = async (): Promise<{ data: any }> => {
+  const res = await fetch('/proposals/api')
+  const data = await res.json()
+  return { data }
+}
 
 export const fetchNftHoldersOfAddress = async (address: string, nextParams: NextPageParams | null) => {
   const { data } = await fetchClient.get<ServerResponseV2<NftHolderItem>>(

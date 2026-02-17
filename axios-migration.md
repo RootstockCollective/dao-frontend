@@ -46,7 +46,7 @@ These call internal Next.js route handlers. They don't need `fetchClient` — pl
   - Target: `fetch('/user/api/tokens').then(res => res.json() as Promise<TokenInfoReturnType>)`
   - Also: remove `fetchClient` import on line 7
 
-- [ ] **A3.** `src/app/user/Balances/actions.ts` — line 70
+- [x] **A3.** `src/app/user/Balances/actions.ts` — line 70
   - Current: `fetchClient.get<any>('/proposals/api', { baseURL: '/' })`
   - Target: `fetch('/proposals/api').then(res => res.json()).then(data => ({ data }))`
   - Note: callers destructure `{ data }` from the return value (`handleCachedGetRequest` in `src/app/proposals/api/route.ts:14`), so the `{ data }` wrapper must be preserved or the caller updated too
