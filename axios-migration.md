@@ -57,30 +57,30 @@ These use `fetchClient` only for its base URL (`RIF_WALLET_SERVICES_URL`). The `
 
 **Goal:** Build the full URL inline as `` `${RIF_WALLET_SERVICES_URL}${endpointPath}` `` and call `fetch()` directly. Return parsed JSON wrapped in `{ data }` (to match current caller expectations), or update callers to consume the response directly.
 
-- [ ] **B1.** `src/app/user/Balances/actions.ts` — lines 22–32 (`fetchPrices`)
+- [x] **B1.** `src/app/user/Balances/actions.ts` — lines 22–32 (`fetchPrices`)
   - Current: `fetchClient.get<GetPricesResult>(fetchPricesEndpoint...)`
   - Target: `fetch(\`${RIF_WALLET_SERVICES_URL}${fetchPricesEndpoint...}\`).then(res => res.json())`
   - Note: `.then(({ data: prices }) => ...)` on line 33 destructures `data` — must update to receive JSON directly
 
-- [ ] **B2.** `src/app/user/Balances/actions.ts` — lines 47–51 (`fetchProposalCreated`)
+- [x] **B2.** `src/app/user/Balances/actions.ts` — lines 47–51 (`fetchProposalCreated`)
   - Current: `fetchClient.get<BackendEventByTopic0ResponseValue[]>(fetchProposalsCreatedByGovernorAddress...)`
   - Target: plain `fetch` with full URL
   - Note: return value is consumed by `handleCachedGetRequest` in `src/app/proposals/api/route.ts:14` and `src/shared/utils.ts:66` which destructures `{ data }` — the `FetchResponse` wrapper or caller must be updated
 
-- [ ] **B3.** `src/app/user/Balances/actions.ts` — lines 56–60 (`fetchVoteCastEventByAccountAddress`)
+- [x] **B3.** `src/app/user/Balances/actions.ts` — lines 56–60 (`fetchVoteCastEventByAccountAddress`)
   - Current: `fetchClient.get<BackendEventByTopic0ResponseValue[]>(fetchVoteCastEventEndpoint...)`
   - Target: plain `fetch` with full URL
 
-- [ ] **B4.** `src/app/user/Balances/actions.ts` — lines 63–67 (`fetchNewAllocationEventByAccountAddress`)
+- [x] **B4.** `src/app/user/Balances/actions.ts` — lines 63–67 (`fetchNewAllocationEventByAccountAddress`)
   - Current: `fetchClient.get<BackendEventByTopic0ResponseValue[]>(fetchNewAllocationEventEndpoint...)`
   - Target: plain `fetch` with full URL
 
-- [ ] **B5.** `src/app/user/Balances/actions.ts` — lines 73–75 (`fetchNftHoldersOfAddress`)
+- [x] **B5.** `src/app/user/Balances/actions.ts` — lines 73–75 (`fetchNftHoldersOfAddress`)
   - Current: `fetchClient.get<ServerResponseV2<NftHolderItem>>(getNftHolders..., { params: { nextPageParams: nextParams } })`
   - Target: plain `fetch` with full URL + manually serialize `nextPageParams` query string
   - Note: this is one of two call sites that use `params` — need `URLSearchParams` or manual serialization
 
-- [ ] **B6.** `src/app/user/Balances/actions.ts` — lines 84–86 (`fetchTokenHoldersOfAddress`)
+- [x] **B6.** `src/app/user/Balances/actions.ts` — lines 84–86 (`fetchTokenHoldersOfAddress`)
   - Current: `fetchClient.get<ServerResponseV2<TokenHoldersResponse>>(getTokenHoldersOfAddress..., { params: { nextPageParams: nextParams } })`
   - Target: plain `fetch` with full URL + manually serialize `nextPageParams` query string
   - Note: same `params` consideration as B5
