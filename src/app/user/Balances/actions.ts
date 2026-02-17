@@ -1,5 +1,5 @@
 import { GetPricesResult } from '@/app/user/types'
-import { axiosInstance } from '@/lib/utils'
+import { fetchClient } from '@/lib/utils'
 import {
   fetchNewAllocationEventEndpoint,
   fetchPricesEndpoint,
@@ -19,7 +19,7 @@ import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 import { Address, isAddress, padHex } from 'viem'
 
 export const fetchPrices = () =>
-  axiosInstance
+  fetchClient
     .get<GetPricesResult>(
       fetchPricesEndpoint
         .replace(
@@ -44,7 +44,7 @@ export const fetchPrices = () =>
     })
 
 export const fetchProposalCreated = (fromBlock = 0) =>
-  axiosInstance.get<BackendEventByTopic0ResponseValue[]>(
+  fetchClient.get<BackendEventByTopic0ResponseValue[]>(
     fetchProposalsCreatedByGovernorAddress
       .replace('{{address}}', GovernorAddress)
       .replace('{{fromBlock}}', fromBlock.toString()),
@@ -53,23 +53,24 @@ export const fetchProposalCreated = (fromBlock = 0) =>
 //TODO: refactor this out of Balances folder as it does not related to Balances
 // the suggestion is to move it up the folder in User or moving it to shared
 export const fetchVoteCastEventByAccountAddress = (address: Address) =>
-  axiosInstance.get<BackendEventByTopic0ResponseValue[]>(
+  fetchClient.get<BackendEventByTopic0ResponseValue[]>(
     fetchVoteCastEventEndpoint
       .replace('{{address}}', GovernorAddress)
       .replace('{{topic1}}', padHex(address, { size: 32 })),
   )
 
 export const fetchNewAllocationEventByAccountAddress = (address: Address) =>
-  axiosInstance.get<BackendEventByTopic0ResponseValue[]>(
+  fetchClient.get<BackendEventByTopic0ResponseValue[]>(
     fetchNewAllocationEventEndpoint
       .replace('{{address}}', BackersManagerAddress)
       .replace('{{topic1}}', padHex(address, { size: 32 })),
   )
 
-export const fetchProposalsCreatedCached = () => axiosInstance.get('/proposals/api', { baseURL: '/' })
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- event logs consumed by viem's parseEventLogs
+export const fetchProposalsCreatedCached = () => fetchClient.get<any>('/proposals/api', { baseURL: '/' })
 
 export const fetchNftHoldersOfAddress = async (address: string, nextParams: NextPageParams | null) => {
-  const { data } = await axiosInstance.get<ServerResponseV2<NftHolderItem>>(
+  const { data } = await fetchClient.get<ServerResponseV2<NftHolderItem>>(
     getNftHolders.replace('{{address}}', address),
     { params: { nextPageParams: nextParams } },
   )
@@ -80,7 +81,7 @@ export const fetchNftHoldersOfAddress = async (address: string, nextParams: Next
 }
 
 export const fetchTokenHoldersOfAddress = async (address: string, nextParams: NextPageParams | null) => {
-  const { data } = await axiosInstance.get<ServerResponseV2<TokenHoldersResponse>>(
+  const { data } = await fetchClient.get<ServerResponseV2<TokenHoldersResponse>>(
     getTokenHoldersOfAddress.replace('{{address}}', address),
     { params: { nextPageParams: nextParams } },
   )
