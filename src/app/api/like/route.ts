@@ -4,6 +4,7 @@ import { JWTPayload } from '@/lib/auth/jwt'
 import { withAuth } from '@/lib/auth/withAuth'
 import { daoDataDb } from '@/lib/daoDataDb'
 import { confirmProposalExists } from '@/app/proposals/actions/getProposalById'
+import { ENV } from '@/lib/constants'
 
 const TABLE = 'dao_data.ProposalLikes'
 
@@ -89,7 +90,12 @@ export async function GET(request: NextRequest) {
     return Response.json({ success: true, proposalId: parsed.data, reactions })
   } catch (error) {
     console.error('Error in GET /api/like:', error)
-    return Response.json({ success: false, error: 'Internal server error' }, { status: 500 })
+    // @TODO Remove debug header once the like/reaction flow is fully completed
+    const headers: HeadersInit = {}
+    if (ENV !== 'mainnet' && request.nextUrl.searchParams.get('debug') === '1') {
+      headers['X-Debug-Error'] = error instanceof Error ? error.message : String(error)
+    }
+    return Response.json({ success: false, error: 'Internal server error' }, { status: 500, headers })
   }
 }
 
@@ -138,6 +144,11 @@ export const POST = withAuth(async (request, session: JWTPayload) => {
     return Response.json({ success: true, liked, reaction })
   } catch (error) {
     console.error('Error in POST /api/like:', error)
-    return Response.json({ success: false, error: 'Internal server error' }, { status: 500 })
+    // @TODO Remove debug header once the like/reaction flow is fully completed
+    const headers: HeadersInit = {}
+    if (ENV !== 'mainnet' && request.nextUrl.searchParams.get('debug') === '1') {
+      headers['X-Debug-Error'] = error instanceof Error ? error.message : String(error)
+    }
+    return Response.json({ success: false, error: 'Internal server error' }, { status: 500, headers })
   }
 })
