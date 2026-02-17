@@ -41,7 +41,7 @@ These call internal Next.js route handlers. They don't need `fetchClient` — pl
   - Target: `fetch('/user/api/communities').then(res => res.json() as Promise<NftDataFromAddressesReturnType>)`
   - Also: remove `fetchClient` from the import on line 11
 
-- [ ] **A2.** `src/app/user/Balances/hooks/useGetAddressTokens.ts` — line 68
+- [x] **A2.** `src/app/user/Balances/hooks/useGetAddressTokens.ts` — line 68
   - Current: `fetchClient.get<TokenInfoReturnType>('/user/api/tokens', { baseURL: '/' }).then(({ data }) => data)`
   - Target: `fetch('/user/api/tokens').then(res => res.json() as Promise<TokenInfoReturnType>)`
   - Also: remove `fetchClient` import on line 7

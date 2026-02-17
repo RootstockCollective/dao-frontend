@@ -4,8 +4,6 @@ import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { tokenContracts, MulticallAddress } from '@/lib/contracts'
 import { AddressToken } from '@/app/user/types'
 import { useQuery } from '@tanstack/react-query'
-import { fetchClient } from '@/lib/utils'
-import { TokenInfoReturnType } from '@/app/user/api/tokens/route'
 import { AVERAGE_BLOCKTIME, RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
 
 const getTokenFunction = (
@@ -64,8 +62,7 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
     error: tokenDataError,
   } = useQuery({
     queryKey: ['tokenData'],
-    queryFn: () =>
-      fetchClient.get<TokenInfoReturnType>('/user/api/tokens', { baseURL: '/' }).then(({ data }) => data),
+    queryFn: () => fetch('/user/api/tokens').then(res => res.json()),
   })
 
   const rifTokenData =
