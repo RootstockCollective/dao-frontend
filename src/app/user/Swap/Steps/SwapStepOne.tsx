@@ -249,7 +249,13 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
 
         <div className="flex justify-center -my-2">
           <button
-            onClick={toggleTokenSelection}
+            onClick={() => {
+              const previousAmountOut = amountOut
+              toggleTokenSelection()
+              if (previousAmountOut) {
+                setAmountIn(previousAmountOut)
+              }
+            }}
             aria-label="Switch swap direction"
             className="p-2 rounded-full hover:bg-input-bg transition-colors"
           >
