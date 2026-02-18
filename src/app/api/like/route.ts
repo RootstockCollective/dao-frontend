@@ -1,23 +1,27 @@
+import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { JWTPayload } from '@/lib/auth/jwt'
 import { withAuth } from '@/lib/auth/withAuth'
 import { daoDataDb } from '@/lib/daoDataDb'
 import { confirmProposalExists } from '@/app/proposals/actions/getProposalById'
+import { ENV } from '@/lib/constants'
 
 const TABLE = 'dao_data.ProposalLikes'
 
+const ProposalIdSchema = z
+  .string()
+  .min(1, 'proposalId is required')
+  .refine(val => {
+    try {
+      BigInt(val)
+      return true
+    } catch {
+      return false
+    }
+  }, 'proposalId must be a valid numeric string')
+
 const LikeRequestSchema = z.object({
-  proposalId: z
-    .string()
-    .min(1, 'proposalId is required')
-    .refine(val => {
-      try {
-        BigInt(val)
-        return true
-      } catch {
-        return false
-      }
-    }, 'proposalId must be a valid numeric string'),
+  proposalId: ProposalIdSchema,
   reaction: z.enum(['heart']).default('heart'),
 })
 
@@ -45,6 +49,56 @@ function bigIntToBuffer(value: string): Buffer {
  * Response (error):
  * { success: false, error: string, details?: object }
  */
+/**
+ * GET /api/like?proposalId=<BigInt string>
+ *
+ * Returns aggregated reaction counts for a given proposal.
+ * Public endpoint — no authentication required.
+ *
+ * Response (success):
+ * { success: true, proposalId: string, reactions: Record<string, number> }
+ */
+export async function GET(request: NextRequest) {
+  if (!daoDataDb) {
+    return Response.json({ success: false, error: 'Database not configured' }, { status: 503 })
+  }
+
+  const proposalId = request.nextUrl.searchParams.get('proposalId') ?? ''
+  const parsed = ProposalIdSchema.safeParse(proposalId)
+
+  if (!parsed.success) {
+    return Response.json(
+      { success: false, error: 'Validation failed', details: parsed.error.flatten() },
+      { status: 400 },
+    )
+  }
+
+  const proposalIdBuffer = bigIntToBuffer(parsed.data)
+
+  try {
+    const rows: { reaction: string; count: number }[] = await daoDataDb(TABLE)
+      .where({ proposalId: proposalIdBuffer })
+      .groupBy('reaction')
+      .select('reaction')
+      .count('* as count')
+
+    const reactions: Record<string, number> = {}
+    for (const row of rows) {
+      reactions[row.reaction] = Number(row.count)
+    }
+
+    return Response.json({ success: true, proposalId: parsed.data, reactions })
+  } catch (error) {
+    console.error('Error in GET /api/like:', error)
+    // @TODO Remove debug header once the like/reaction flow is fully completed
+    const headers: HeadersInit = {}
+    if (ENV !== 'mainnet' && request.nextUrl.searchParams.get('debug') === '1') {
+      headers['X-Debug-Error'] = error instanceof Error ? error.message : String(error)
+    }
+    return Response.json({ success: false, error: 'Internal server error' }, { status: 500, headers })
+  }
+}
+
 export const POST = withAuth(async (request, session: JWTPayload) => {
   if (!daoDataDb) {
     return Response.json({ success: false, error: 'Database not configured' }, { status: 503 })
@@ -90,6 +144,11 @@ export const POST = withAuth(async (request, session: JWTPayload) => {
     return Response.json({ success: true, liked, reaction })
   } catch (error) {
     console.error('Error in POST /api/like:', error)
-    return Response.json({ success: false, error: 'Internal server error' }, { status: 500 })
+    // @TODO Remove debug header once the like/reaction flow is fully completed
+    const headers: HeadersInit = {}
+    if (ENV !== 'mainnet' && request.nextUrl.searchParams.get('debug') === '1') {
+      headers['X-Debug-Error'] = error instanceof Error ? error.message : String(error)
+    }
+    return Response.json({ success: false, error: 'Internal server error' }, { status: 500, headers })
   }
 })
