@@ -67,6 +67,7 @@ jobs:
           build-args: |
             PROFILE=${{ env.PROFILE }}
             NEXT_PUBLIC_BUILD_ID=${{ github.sha }}
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
