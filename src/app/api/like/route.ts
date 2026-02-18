@@ -115,16 +115,15 @@ export const POST = withAuth(async (request, session: JWTPayload) => {
   }
 
   const { proposalId, reaction } = parsed.data
-
-  const proposalExists = await confirmProposalExists(proposalId)
-  if (!proposalExists) {
-    return Response.json({ success: false, error: 'Proposal not found in the Governor' }, { status: 404 })
-  }
-
   const userAddress = session.userAddress.toLowerCase()
   const proposalIdBuffer = bigIntToBuffer(proposalId)
 
   try {
+    const proposalExists = await confirmProposalExists(proposalId)
+    if (!proposalExists) {
+      return Response.json({ success: false, error: 'Proposal not found in the Governor' }, { status: 404 })
+    }
+
     const liked = await daoDataDb.transaction(async trx => {
       const existing = await trx(TABLE).where({ proposalId: proposalIdBuffer, userAddress, reaction }).first()
 
