@@ -144,7 +144,7 @@ export const VaultActions = () => {
           data-testid="vault-swap-button"
           ref={swapButtonRef}
         >
-          USDT0 to USDRIF
+          Swap
         </Button>
 
         {/* Tertiary action: Withdraw (ghost) */}
