@@ -28,9 +28,10 @@ COPY . .
 # Disable telemetry
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# Set the build argument 
+# Set the build arguments
 ARG PROFILE
 ARG NEXT_PUBLIC_BUILD_ID
+ARG SENTRY_AUTH_TOKEN
 
 # Inject the NEXT_PUBLIC_BUILD_ID into the profile env file BEFORE copying
 # This is critical because next.config.mjs loads from .env.${PROFILE} with override: true
@@ -41,6 +42,7 @@ RUN cp .env.${PROFILE} .env.local
 
 # Also export as environment variable for the build step
 ENV NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}
+ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 
 # Build the Next.js application
 RUN npm run build
