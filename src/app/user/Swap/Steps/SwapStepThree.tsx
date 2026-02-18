@@ -5,7 +5,6 @@ import { StakeTokenAmountDisplay } from '@/app/user/Stake/components/StakeTokenA
 import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
 import { useSwapInput, useTokenSelection, useSwapExecution } from '@/shared/stores/swap'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { USDT0, USDRIF } from '@/lib/constants'
 import { formatForDisplay } from '@/lib/utils'
 import { Hash, formatUnits } from 'viem'
 import Big from '@/lib/big'
@@ -24,7 +23,7 @@ const SLIPPAGE_OPTIONS: PercentageButtonItem<number>[] = [
 
 export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: SwapStepProps) => {
   const { amountIn, amountOut, quote } = useSwapInput()
-  const { tokenInData, tokenOutData } = useTokenSelection()
+  const { tokenIn, tokenOut, tokenInData, tokenOutData } = useTokenSelection()
   const { balances, prices } = useBalancesContext()
   const { execute: executeTxFlow, isExecuting: isSwapTxPending } = useExecuteTxFlow()
   const { execute, swapError, swapTxHash, canExecute } = useSwapExecution()
@@ -33,10 +32,10 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
   const [slippageTolerance, setSlippageTolerance] = useState<number | null>(null)
 
   // Get values from context
-  const tokenInPrice = prices[USDT0]?.price ?? 0
-  const tokenOutPrice = prices[USDRIF]?.price ?? 0
-  const tokenInBalance = balances[USDT0]?.balance ?? '0'
-  const tokenOutBalance = balances[USDRIF]?.balance ?? '0'
+  const tokenInPrice = prices[tokenIn]?.price ?? 0
+  const tokenOutPrice = prices[tokenOut]?.price ?? 0
+  const tokenInBalance = balances[tokenIn]?.balance ?? '0'
+  const tokenOutBalance = balances[tokenOut]?.balance ?? '0'
 
   const from = useMemo(() => {
     const amountInCurrency = Big(amountIn || '0')

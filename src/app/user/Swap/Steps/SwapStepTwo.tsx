@@ -4,7 +4,6 @@ import { SwapStepProps } from '../types'
 import { StakeTokenAmountDisplay } from '@/app/user/Stake/components/StakeTokenAmountDisplay'
 import { useSwapInput, useTokenSelection, usePermitSigning } from '@/shared/stores/swap'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { USDT0 } from '@/lib/constants'
 import Big from '@/lib/big'
 import { parseUnits } from 'viem'
 
@@ -16,9 +15,9 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
 
   // Calculate amount in currency using price from context
   const amountInCurrency = useMemo(() => {
-    const priceValue = prices[USDT0]?.price ?? 0
+    const priceValue = prices[tokenInData.symbol]?.price ?? 0
     return `$${Big(amountIn).times(priceValue).toFixed(2)}`
-  }, [amountIn, prices])
+  }, [amountIn, prices, tokenInData.symbol])
 
   // Calculate current required amount in bigint
   const requiredAmount = useMemo(() => {

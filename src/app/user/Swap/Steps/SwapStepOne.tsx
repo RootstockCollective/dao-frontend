@@ -1,11 +1,11 @@
 import { SwapInputComponent, SwapInputToken } from '@/components/SwapInput'
+import { ArrowsUpDown } from '@/components/Icons'
 import { handleAmountInput, formatForDisplay } from '@/lib/utils'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { SwapStepProps } from '../types'
 import { useSwapInput, useTokenSelection, useTokenAllowance } from '@/shared/stores/swap'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { useExecuteTxFlow } from '@/shared/notification'
-import { USDT0, USDRIF } from '@/lib/constants'
 import { parseUnits, Hash } from 'viem'
 import Big from '@/lib/big'
 
@@ -21,7 +21,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     quote,
     mode,
   } = useSwapInput()
-  const { tokenInData, tokenOutData } = useTokenSelection()
+  const { tokenIn, tokenOut, tokenInData, tokenOutData, toggleTokenSelection } = useTokenSelection()
   const { balances, prices } = useBalancesContext()
   const { execute: executeTxFlow, isExecuting: isApproving } = useExecuteTxFlow()
   const { allowance, hasSufficientAllowance, approve, refetchAllowance, isCheckingAllowance } =
@@ -31,10 +31,10 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   const activeFieldRef = useRef<'in' | 'out' | null>(null)
 
   // Get balances and prices from context
-  const tokenInBalance = balances[USDT0]?.balance ?? '0'
-  const tokenOutBalance = balances[USDRIF]?.balance ?? '0'
-  const tokenInPrice = prices[USDT0]?.price ?? 0
-  const tokenOutPrice = prices[USDRIF]?.price ?? 0
+  const tokenInBalance = balances[tokenIn]?.balance ?? '0'
+  const tokenOutBalance = balances[tokenOut]?.balance ?? '0'
+  const tokenInPrice = prices[tokenIn]?.price ?? 0
+  const tokenOutPrice = prices[tokenOut]?.price ?? 0
 
   // Display values: typed field shows raw, derived field shows formatted (2 decimals)
   // When empty, return '' so the placeholder "0" shows
@@ -246,6 +246,16 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
               : ''
           }
         />
+
+        <div className="flex justify-center -my-2">
+          <button
+            onClick={toggleTokenSelection}
+            aria-label="Switch swap direction"
+            className="p-2 rounded-full hover:bg-input-bg transition-colors"
+          >
+            <ArrowsUpDown size={20} />
+          </button>
+        </div>
 
         {/* "You will receive" - user can also type here to specify exact output */}
         <SwapInputComponent
