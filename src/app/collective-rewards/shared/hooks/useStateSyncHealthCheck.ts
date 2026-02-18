@@ -1,6 +1,7 @@
 import type { HealthCheckResult } from '@/app/api/health/healthCheck.utils'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useQuery, UseQueryOptions } from '@tanstack/react-query'
+import { sentryClient } from '@/lib/sentry/sentry-client'
 
 export const useStateSyncHealthCheck = (
   options?: Omit<UseQueryOptions<HealthCheckResult, Error>, 'queryKey' | 'queryFn'>,
@@ -14,15 +15,28 @@ export const useStateSyncHealthCheck = (
         },
       })
       if (!response.ok) {
-        // TODO: propagate server errors
-        throw new Error('Failed to fetch health check data')
+        const fetchError = new Error('Failed to fetch health check data')
+        sentryClient.captureException(fetchError, {
+          tags: {
+            errorType: 'HEALTH_CHECK_FETCH_ERROR',
+          },
+          extra: {
+            status: response.status,
+          },
+        })
+        throw fetchError
       }
 
       try {
         return response.json()
       } catch (error) {
         console.error('Error parsing health check response:', error)
-
+        const parseError = error instanceof Error ? error : new Error('Invalid health check data')
+        sentryClient.captureException(parseError, {
+          tags: {
+            errorType: 'HEALTH_CHECK_PARSE_ERROR',
+          },
+        })
         throw new Error('Invalid health check data')
       }
     },

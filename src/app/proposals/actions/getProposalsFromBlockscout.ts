@@ -12,6 +12,7 @@ import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 import { BLOCKSCOUT_URL, GOVERNOR_ADDRESS } from '@/lib/constants'
 import { PROPOSAL_CREATED_EVENT } from '@/lib/endpoints'
+import { sentryServer } from '@/lib/sentry/sentry-server'
 
 type ElementType<T> = T extends (infer U)[] ? U : never
 
@@ -152,6 +153,15 @@ async function fetchProposalLogsFromBlockscout(): Promise<BackendEventByTopic0Re
       console.error(
         `Failed to fetch logs from Blockscout: ${error instanceof Error ? error.message : String(error)}`,
       )
+      const errorObj = error instanceof Error ? error : new Error(String(error))
+      sentryServer.captureException(errorObj, {
+        tags: {
+          errorType: 'PROPOSALS_BLOCKSCOUT_ERROR',
+        },
+        extra: {
+          fromBlock,
+        },
+      })
       break
     }
   }

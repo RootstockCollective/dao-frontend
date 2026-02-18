@@ -6,6 +6,7 @@ import { TxStatus } from '@/shared/types'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { Id } from 'react-toastify'
 import { Hash } from 'viem'
+import { sentryClient } from '@/lib/sentry/sentry-client'
 
 interface Props {
   action: keyof typeof TX_MESSAGES
@@ -113,6 +114,17 @@ export const executeTxFlow = async ({
       onError?.(txHash, err as Error)
       console.error(`Error requesting ${action} tx`, err)
 
+      const errorObj = err instanceof Error ? err : new Error(String(err))
+      sentryClient.captureException(errorObj, {
+        tags: {
+          errorType: 'TRANSACTION_ERROR',
+          action,
+        },
+        extra: {
+          txHash,
+          action,
+        },
+      })
       // Use the actual error message if available, otherwise fall back to generic message
       const actualErrorMessage = err instanceof Error ? err.message : String(err)
       const errorConfig = {

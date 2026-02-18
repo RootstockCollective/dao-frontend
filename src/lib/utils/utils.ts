@@ -6,6 +6,7 @@ import { Duration } from 'luxon'
 import { twMerge } from 'tailwind-merge'
 import { Address, formatEther, isAddress } from 'viem'
 import { CHAIN_ID, RIF_WALLET_SERVICES_URL } from '../constants'
+import { sentryClient } from '@/lib/sentry/sentry-client'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
@@ -69,6 +70,12 @@ axiosInstance.interceptors.request.use(
       return config
     } catch (error) {
       console.error('Error in axios interceptor:', error)
+      const interceptorError = error instanceof Error ? error : new Error(String(error))
+      sentryClient.captureException(interceptorError, {
+        tags: {
+          errorType: 'AXIOS_INTERCEPTOR_ERROR',
+        },
+      })
       return config
     }
   },

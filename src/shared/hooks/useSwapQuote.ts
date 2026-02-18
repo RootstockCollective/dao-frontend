@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Address, isAddress } from 'viem'
 import { SWAP_TOKEN_ADDRESSES } from '@/lib/swap/constants'
+import { sentryClient } from '@/lib/sentry/sentry-client'
 
 /**
  * Response type from the swap quote API
@@ -61,7 +62,19 @@ export function useSwapQuote(params: UseSwapQuoteParams) {
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({ error: 'Failed to fetch swap quotes' }))
-        throw new Error(error.error || `HTTP error! status: ${response.status}`)
+        const fetchError = new Error(error.error || `HTTP error! status: ${response.status}`)
+        sentryClient.captureException(fetchError, {
+          tags: {
+            errorType: 'SWAP_QUOTE_FETCH_ERROR',
+          },
+          extra: {
+            status: response.status,
+            tokenIn: tokenInAddress,
+            tokenOut: tokenOutAddress,
+            amount,
+          },
+        })
+        throw fetchError
       }
 
       return response.json()

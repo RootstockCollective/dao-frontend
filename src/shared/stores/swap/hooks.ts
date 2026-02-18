@@ -14,6 +14,7 @@ import { Permit2Abi } from '@/lib/abis/Permit2Abi'
 import { uniswapProvider, getPermitSwapEncodedData } from '@/lib/swap/providers/uniswap'
 import { UniswapUniversalRouterAbi } from '@/lib/abis/UniswapUniversalRouterAbi'
 import { createSecurePermit } from '@/lib/swap/permit2'
+import { sentryClient } from '@/lib/sentry/sentry-client'
 import type { QuoteResult } from './types'
 
 const QUOTE_DEBOUNCE_MS = 500
@@ -529,21 +530,29 @@ export const useSwapExecution = () => {
 
         // Check for wallet connection issues
         if (errorMessage.includes('getChainId is not a function') || errorMessage.includes('connector')) {
-          failSwap(
-            new Error(
-              'Wallet connection error. Please disconnect and reconnect your wallet, then try again.',
-            ),
+          const walletError = new Error(
+            'Wallet connection error. Please disconnect and reconnect your wallet, then try again.',
           )
+          sentryClient.captureException(walletError, {
+            tags: {
+              errorType: 'SWAP_WALLET_CONNECTION_ERROR',
+            },
+          })
+          failSwap(walletError)
           return null
         }
 
         // Check for AllowanceExpired error (0xd81b2f2e) from Permit2/Universal Router
         if (errorString.includes('0xd81b2f2e') || errorMessage.includes('AllowanceExpired')) {
-          failSwap(
-            new Error(
-              'Allowance error detected. Please go back to Step 2 and click "Request allowance" again.',
-            ),
+          const allowanceError = new Error(
+            'Allowance error detected. Please go back to Step 2 and click "Request allowance" again.',
           )
+          sentryClient.captureException(allowanceError, {
+            tags: {
+              errorType: 'SWAP_ALLOWANCE_ERROR',
+            },
+          })
+          failSwap(allowanceError)
           return null
         }
 
@@ -551,7 +560,18 @@ export const useSwapExecution = () => {
         if (errorMessage.includes('rejected') || errorMessage.includes('denied')) {
           failSwap(new Error('Transaction cancelled by user'))
         } else {
-          failSwap(error instanceof Error ? error : new Error(`Swap failed: ${errorMessage}`))
+          const swapError = error instanceof Error ? error : new Error(`Swap failed: ${errorMessage}`)
+          sentryClient.captureException(swapError, {
+            tags: {
+              errorType: 'SWAP_EXECUTION_ERROR',
+            },
+            extra: {
+              tokenIn,
+              tokenOut,
+              amountIn,
+            },
+          })
+          failSwap(swapError)
         }
         return null
       }
