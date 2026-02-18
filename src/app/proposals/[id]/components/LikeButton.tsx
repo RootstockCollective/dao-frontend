@@ -32,7 +32,7 @@ export const LikeButton = ({ proposalId }: LikeButtonProps) => {
     <button
       onClick={handleClick}
       disabled={isLoading || isToggling || isSigningIn}
-      className="flex items-center gap-1.5 text-sm disabled:opacity-50 transition-opacity"
+      className="flex items-center gap-1.5 text-sm disabled:opacity-50 transition-opacity self-start"
       aria-label={liked ? 'Unlike proposal' : 'Like proposal'}
     >
       <Heart size={18} className={liked ? 'text-red-500 fill-red-500' : 'text-white'} />
