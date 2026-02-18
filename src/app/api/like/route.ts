@@ -5,31 +5,12 @@ import { withAuth } from '@/lib/auth/withAuth'
 import { daoDataDb } from '@/lib/daoDataDb'
 import { confirmProposalExists } from '@/app/proposals/actions/getProposalById'
 import { ENV } from '@/lib/constants'
-
-const TABLE = 'dao_data.ProposalLikes'
-
-const ProposalIdSchema = z
-  .string()
-  .min(1, 'proposalId is required')
-  .refine(val => {
-    try {
-      BigInt(val)
-      return true
-    } catch {
-      return false
-    }
-  }, 'proposalId must be a valid numeric string')
+import { TABLE, ProposalIdSchema, bigIntToBuffer } from './shared'
 
 const LikeRequestSchema = z.object({
   proposalId: ProposalIdSchema,
   reaction: z.enum(['heart']).default('heart'),
 })
-
-function bigIntToBuffer(value: string): Buffer {
-  let hex = BigInt(value).toString(16)
-  hex = hex.padStart(64, '0')
-  return Buffer.from(hex, 'hex')
-}
 
 /**
  * POST /api/like
