@@ -6,5 +6,5 @@ initSentryIfEnabled({
   dsn: process.env.NEXT_PUBLIC_SENTRY_DSN || '',
   tracesSampleRate: 1,
   enableLogs: true,
-  environment: process.env.NEXT_PUBLIC_ENV || 'unknown',
+  environment: process.env.NEXT_PUBLIC_PROFILE || 'unknown',
 })

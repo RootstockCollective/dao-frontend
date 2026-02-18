@@ -10,6 +10,7 @@ const features = {
   debug_logs: 'Enable debug logs',
   vault: 'USDRIF Vault page',
   sentry_error_tracking: 'Enable Sentry error tracking',
+  sentry_replay: 'Enable Sentry session replay',
 } as const
 
 type Feature = keyof typeof features
