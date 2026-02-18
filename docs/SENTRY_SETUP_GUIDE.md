@@ -58,7 +58,7 @@ SENTRY_PROJECT=rootstock-dao-frontend
 
 ## 4. Generate SENTRY_AUTH_TOKEN (for Source Maps)
 
-The auth token is used during build to upload source maps for readable stack traces.
+The auth token is used during build to upload source maps for readable stack traces. **Optional**: without it, Sentry still captures errors but stack traces remain minified and unreadable.
 
 1. In Sentry, go to **Settings** → **Auth Tokens**
    - Direct link: `https://sentry.io/settings/<org-slug>/auth-tokens/`

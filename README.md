@@ -177,7 +177,7 @@ Sentry parameters used in the project:
 | `NEXT_PUBLIC_SENTRY_DSN` | Yes (when enabled) | Sentry Data Source Name for receiving events |
 | `SENTRY_ORG` | Yes (for builds) | Sentry organization slug (e.g. `rootstock-labs`) |
 | `SENTRY_PROJECT` | Yes (for builds) | Sentry project name (e.g. `rootstock-dao-frontend`) |
-| `SENTRY_AUTH_TOKEN` | Yes (for source maps) | Auth token for uploading source maps during build. **Keep secret.** |
+| `SENTRY_AUTH_TOKEN` | No (optional) | Auth token for uploading source maps. Without it, stack traces stay minified/unreadable. **Keep secret.** |
 
 ### How to Enable When Ready
 
