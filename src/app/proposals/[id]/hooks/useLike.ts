@@ -83,6 +83,9 @@ export const useLike = (proposalId: string) => {
 
     setIsToggling(true)
 
+    // Read token directly from store to avoid stale closure after signIn
+    const currentToken = useSiweStore.getState().jwtToken
+
     const willLike = lastLikedState === null ? true : !lastLikedState
     setOptimisticDelta(prev => prev + (willLike ? 1 : -1))
     setLastLikedState(willLike)
@@ -92,7 +95,7 @@ export const useLike = (proposalId: string) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          ...(jwtToken && { Authorization: `Bearer ${jwtToken}` }),
+          ...(currentToken && { Authorization: `Bearer ${currentToken}` }),
         },
         body: JSON.stringify({ proposalId, reaction: 'heart' }),
       })
@@ -108,8 +111,8 @@ export const useLike = (proposalId: string) => {
       setLastLikedState(result.liked)
       setOptimisticDelta(0)
       queryClient.invalidateQueries({ queryKey: likeQueryKey(proposalId) })
-      if (jwtToken) {
-        queryClient.invalidateQueries({ queryKey: userReactionQueryKey(proposalId, jwtToken) })
+      if (currentToken) {
+        queryClient.invalidateQueries({ queryKey: userReactionQueryKey(proposalId, currentToken) })
       }
     } catch {
       setOptimisticDelta(prev => prev + (willLike ? -1 : 1))
@@ -117,7 +120,7 @@ export const useLike = (proposalId: string) => {
     } finally {
       setIsToggling(false)
     }
-  }, [isToggling, lastLikedState, proposalId, queryClient, jwtToken])
+  }, [isToggling, lastLikedState, proposalId, queryClient])
 
   return {
     count: Math.max(0, count),
