@@ -6,6 +6,7 @@ import { DisconnectWorkflowPresentation } from './DisconnectWorkflowPresentation
 import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { useContext } from 'react'
+import { useSiweStore } from '@/lib/auth/siweStore'
 
 /**
  * Container component in charge of disconnecting the user logic
@@ -19,9 +20,11 @@ export const DisconnectWorkflowContainer = () => {
   const {
     actions: { resetAllocations },
   } = useContext(AllocationsContext)
+  const signOut = useSiweStore(state => state.signOut)
 
   const handleDisconnect = () => {
     disconnect()
+    signOut()
     resetAllocations()
     closeDrawer()
   }
