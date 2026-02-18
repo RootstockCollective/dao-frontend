@@ -185,7 +185,7 @@ export const extractBuilderName = (name: string, description?: string | null): s
 
   // Fallback: Check if description has the pattern in first line
   if (description) {
-    const firstLine = description.split(';')[0] || description.split('\n')[0]
+    const firstLine = description.includes(';') ? description.split(';')[0] : description.split('\n')[0]
     if (firstLine.includes(DISPLAY_NAME_SEPARATOR)) {
       const { builderName } = splitCombinedName(firstLine)
       if (builderName) return builderName.trim()
@@ -222,7 +222,7 @@ export const getDiscourseLinkFromProposalDescription = (description: string): st
 
   // Fallback: Try to find discourse URLs directly in the description
   // Match gov.rootstockcollective.xyz URLs (with or without https://)
-  const discourseUrlRegex = /https?:\/\/gov\.rootstockcollective\.xyz\/[^\s)]+/gi
+  const discourseUrlRegex = /https?:\/\/gov\.rootstockcollective\.xyz\/[^\s)]+/i
   const matches = description.match(discourseUrlRegex)
 
   if (matches && matches.length > 0) {

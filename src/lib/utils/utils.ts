@@ -4,7 +4,7 @@ import { BigSource } from 'big.js'
 import { ClassValue, clsx } from 'clsx'
 import { Duration } from 'luxon'
 import { twMerge } from 'tailwind-merge'
-import { Address, formatEther, isAddress } from 'viem'
+import { Address, formatEther, getAddress, isAddress } from 'viem'
 import { CHAIN_ID, RIF_WALLET_SERVICES_URL } from '../constants'
 
 /**
@@ -32,6 +32,17 @@ export const shortAddress = (address: Address | undefined, amount = 4): string =
 
   const prefixLength = amount + 2 // 2 for '0x' prefix
   return `${address.slice(0, prefixLength)}…${address.slice(-amount)}`
+}
+
+/**
+ * Normalizes an address to its checksummed format (EIP-55)
+ * @param address - The address to normalize
+ * @returns The checksummed address or undefined if invalid
+ * @example normalizeAddress('0xf39fd6e51aad88f6f4ce6ab8827279cfffb29266') // '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
+ */
+export const normalizeAddress = (address: string | undefined): string | undefined => {
+  if (!address || !isAddress(address)) return address
+  return getAddress(address)
 }
 
 export const shortProposalId = (proposalId: string): string => {

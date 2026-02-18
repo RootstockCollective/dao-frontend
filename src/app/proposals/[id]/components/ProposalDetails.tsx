@@ -1,7 +1,7 @@
 import { Paragraph, Span } from '@/components/Typography'
 import { TokenImage } from '@/components/TokenImage'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
-import { cn, shortAddress } from '@/lib/utils'
+import { cn, normalizeAddress, shortAddress } from '@/lib/utils'
 import { formatSymbol } from '@/app/shared/formatter'
 import type { Address } from 'viem'
 import {
@@ -99,7 +99,8 @@ export const ProposalDetails = ({
 
   const discourseLink =
     link ?? (description ? getDiscourseLinkFromProposalDescription(description) : undefined)
-  const addressToWhitelist = parsedAction.builder
+  const addressToWhitelist = normalizeAddress(parsedAction.builder)
+  const normalizedProposer = normalizeAddress(proposer)
 
   const isCommunityApproveBuilderAction = parsedAction.type === ProposalType.BUILDER_ACTIVATION
   const isBuilderDeactivationAction = parsedAction.type === ProposalType.BUILDER_DEACTIVATION
@@ -193,12 +194,12 @@ export const ProposalDetails = ({
 
       <DetailItem label="Proposed by" data-testid="ProposedByLabel">
         <div className={cn(detailItemParagraph, 'text-primary')}>
-          {proposer ? (
+          {normalizedProposer ? (
             !readOnly ? (
-              <ShortenAndCopy value={proposer} data-testid="ProposedBy" />
+              <ShortenAndCopy value={normalizedProposer} data-testid="ProposedBy" />
             ) : (
               <Span variant="body" data-testid="ProposedBy">
-                {shortAddress(proposer as Address)}
+                {shortAddress(normalizedProposer as Address)}
               </Span>
             )
           ) : (
