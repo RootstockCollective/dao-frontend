@@ -126,7 +126,7 @@ const WeightedApySummary = ({ strategies }: { strategies: StrategyInfo[] }) => {
 
   return (
     <div className="grid gap-4 px-4" style={{ gridTemplateColumns: '2fr 1.1fr 1fr 1fr' }}>
-      <Paragraph>Weighted APY</Paragraph>
+      <Paragraph>Strategy APY</Paragraph>
       <div />
       <div />
       <Paragraph>{weightedApy}%</Paragraph>
