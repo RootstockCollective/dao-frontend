@@ -106,7 +106,11 @@ export const BuilderCard = ({
             data-testid="builderCardContent"
           >
             {isRewardable && (
-              <RewardsInfo backerRewardPercentage={backerRewardPct} estimatedRewards={estimatedRewards} />
+              <RewardsInfo
+                backerRewardPercentage={backerRewardPct}
+                estimatedRewards={estimatedRewards}
+                isInteractive={isInteractive}
+              />
             )}
 
             {isInteractive && (

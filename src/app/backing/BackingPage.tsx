@@ -291,7 +291,7 @@ export const BackingPage = () => {
           <Header variant="h3" caps className="px-6">
             {isConnected ? 'Builders that you may want to back' : 'In the spotlight'}
           </Header>
-          <Spotlight />
+          <Spotlight isInteractive={isConnected} />
         </ActionsContainer>
       )}
     </div>

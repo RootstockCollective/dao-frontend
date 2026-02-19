@@ -1,4 +1,5 @@
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
+import { Builder } from '@/app/collective-rewards/types'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { BuilderCardControl } from '@/app/shared/components/BuilderCard'
@@ -24,7 +25,7 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
     actions: { toggleSelectedBuilder },
   } = useContext(AllocationsContext)
 
-  const { randomBuilders } = useBuilderContext()
+  const { randomBuilders, isLoading: isBuildersLoading, error: isBuildersError } = useBuilderContext()
 
   const {
     data: backingData,
@@ -32,13 +33,12 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
     error: isBackingDataError,
   } = useBackingContext()
 
-  const isLoading = isBackingDataLoading
-  const error = isBackingDataError
-
-  useHandleErrors({ error, title: 'Error loading backing data' })
+  useHandleErrors({ error: isBackingDataError, title: 'Error loading backing data' })
+  useHandleErrors({ error: isBuildersError, title: 'Error loading builders' })
 
   const userSelections = useMemo(() => searchParams.get('builders')?.split(',') as Address[], [searchParams])
 
+  const selectionsKey = userSelections?.join(',') ?? ''
   useEffect(() => {
     if (userSelections) {
       // include the new user selections into the selections object
@@ -51,11 +51,14 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
           toggleSelectedBuilder(builder as Address),
       )
     }
-  }, [userSelections, toggleSelectedBuilder, selections])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectionsKey])
 
   const hasAllocations = useMemo(() => {
     return isConnected && totalOnchainAllocation > 0n
   }, [totalOnchainAllocation, isConnected])
+
+  const needsBackingData = hasAllocations || userSelections?.length > 0
 
   const spotlightBuilders = useMemo(() => {
     // Get builders based on allocation or selection state
@@ -69,20 +72,32 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
 
     // Resolve builder objects from keys or fallback to random builders
     const resolvedBuilders = builderKeys.length
-      ? builderKeys.map(key => getBuilder(key)).filter(builder => !!builder)
+      ? builderKeys.map(key => getBuilder(key)).filter((builder): builder is Builder => !!builder)
       : randomBuilders
 
     const resolvedAddresses = resolvedBuilders.map(({ address }) => address)
 
     // Place builders from userSelections first, then the rest
     const sortedAddresses = [...new Set([...(userSelections ?? []), ...resolvedAddresses])]
+
+    // If we don't need backing data (disconnected, no allocations, no selections),
+    // use basic builder data directly for faster loading
+    if (!needsBackingData && randomBuilders.length > 0) {
+      return randomBuilders
+    }
+
     return (
       sortedAddresses
         // this is inefficient, but it's the only way to get the builders in the order we want
         .map(address => backingData.find(b => b.address === address))
         .filter(builder => !!builder)
     )
-  }, [backingData, hasAllocations, allocations, getBuilder, randomBuilders, userSelections])
+  }, [backingData, hasAllocations, allocations, getBuilder, randomBuilders, userSelections, needsBackingData])
+
+  const estimatedRewardsByAddress = useMemo(
+    () => new Map(backingData.map(b => [b.address, b.backerEstimatedRewards])),
+    [backingData],
+  )
 
   const isBuilderSelected = useCallback(
     (builderAddress: Address) => {
@@ -90,11 +105,18 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
     },
     [userSelections],
   )
+  const isLoading = needsBackingData ? isBackingDataLoading : isBuildersLoading
 
   if (isLoading) {
+    return <LoadingSpinner />
+  }
+
+  if (spotlightBuilders.length === 0) {
     return (
       <div className="flex justify-center self-center mt-6">
-        <LoadingSpinner />
+        <Button variant="secondary-outline" onClick={() => router.push('/builders')}>
+          See all Builders
+        </Button>
       </div>
     )
   }
@@ -108,7 +130,7 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
             builder={builder}
             index={index}
             isInteractive={isInteractive}
-            estimatedRewards={builder.backerEstimatedRewards}
+            estimatedRewards={estimatedRewardsByAddress.get(builder.address)}
             showAnimation={isBuilderSelected(builder.address)}
           />
         ))}
