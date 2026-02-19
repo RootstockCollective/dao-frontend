@@ -1,7 +1,7 @@
 'use client'
 import { DisconnectWorkflowContainer } from './DisconnectWorkflowContainer'
 import { ConnectWorkflow } from './ConnectWorkflow'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { useAccount } from 'wagmi'
 
 interface UserConnectionManagerProps {
@@ -38,8 +38,12 @@ export function UserConnectionManager({ className, showContent = true }: UserCon
     setMounted(true)
   }, [])
 
-  const content =
-    mounted && showContent ? isConnected ? <DisconnectWorkflowContainer /> : <ConnectWorkflow /> : null
+  const shouldRender = mounted && showContent
+  let content: ReactNode = null
+
+  if (shouldRender) {
+    content = isConnected ? <DisconnectWorkflowContainer /> : <ConnectWorkflow />
+  }
 
   return <div className={className}>{content}</div>
 }
