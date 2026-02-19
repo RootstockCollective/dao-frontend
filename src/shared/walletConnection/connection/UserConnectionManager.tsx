@@ -3,6 +3,7 @@ import { DisconnectWorkflowContainer } from './DisconnectWorkflowContainer'
 import { ConnectWorkflow } from './ConnectWorkflow'
 import { useState, useEffect, type ReactNode } from 'react'
 import { useAccount } from 'wagmi'
+import { cn } from '@/lib/utils'
 
 interface UserConnectionManagerProps {
   className?: string
@@ -45,5 +46,5 @@ export function UserConnectionManager({ className, showContent = true }: UserCon
     content = isConnected ? <DisconnectWorkflowContainer /> : <ConnectWorkflow />
   }
 
-  return <div className={className}>{content}</div>
+  return <div className={cn('flex items-center', className)}>{content}</div>
 }
