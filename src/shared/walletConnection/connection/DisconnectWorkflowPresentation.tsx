@@ -38,7 +38,7 @@ export const DisconnectWorkflowPresentation = ({
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   return (
     <>
-      <div className="flex items-center gap-1 md:mr-4">
+      <div className="flex items-center flex-nowrap gap-1 md:mr-4">
         <div className="hidden md:inline">
           <WalletDetailsButton />
         </div>
@@ -50,7 +50,7 @@ export const DisconnectWorkflowPresentation = ({
           <Button
             variant="secondary-outline"
             onClick={openRamp}
-            className="md:mr-4 py-1.5 px-2 whitespace-nowrap"
+            className="md:mr-4 py-1.5 px-2 whitespace-nowrap shrink-0"
             data-testid="OnRampButton"
           >
             <Span variant="body-xs" className="md:hidden leading-none tracking-tight">
