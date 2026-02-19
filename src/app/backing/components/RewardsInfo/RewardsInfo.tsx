@@ -14,9 +14,14 @@ import { LabeledContent } from '../LabeledContent/LabeledContent'
 export interface RewardsInfoProps {
   backerRewardPercentage?: BackerRewardPercentage
   estimatedRewards?: TokenRewards
+  isInteractive?: boolean
 }
 
-export const RewardsInfo: FC<RewardsInfoProps> = ({ backerRewardPercentage, estimatedRewards }) => {
+export const RewardsInfo: FC<RewardsInfoProps> = ({
+  backerRewardPercentage,
+  estimatedRewards,
+  isInteractive = false,
+}) => {
   const { current, next } = backerRewardPercentage ?? { current: 0n, next: 0n }
   const { prices } = usePricesContext()
 
@@ -44,7 +49,7 @@ export const RewardsInfo: FC<RewardsInfoProps> = ({ backerRewardPercentage, esti
           nextPct={Number(weiToPercentage(next, 0))}
         />
       </LabeledContent>
-      {estimatedRewards && (
+      {estimatedRewards && isInteractive && (
         <LabeledContent label="Rewards (est.)" className="">
           <div className="flex flex-row items-center gap-2">
             <Paragraph>{formatCurrency(total)}</Paragraph>
