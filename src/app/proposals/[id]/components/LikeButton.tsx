@@ -16,11 +16,11 @@ export const LikeButton = ({ proposalId }: LikeButtonProps) => {
   const { isConnected } = useAccount()
   const { onConnectWalletButtonClick } = useAppKitFlow()
   const { signIn, isAuthenticated, isLoading: isSigningIn } = useSignIn()
-  const { count, liked, isLoading, isToggling, toggleLike } = useLike(proposalId)
+  const { count, liked, isLoading, isToggling, toggleLike } = useLike(proposalId, isConnected, signIn)
 
   const isBusy = isLoading || isToggling || isSigningIn
 
-  const handleClick = async () => {
+  const handleClick = () => {
     if (isBusy) return
 
     if (!isConnected) {
@@ -28,15 +28,7 @@ export const LikeButton = ({ proposalId }: LikeButtonProps) => {
       return
     }
 
-    if (!isAuthenticated) {
-      const token = await signIn()
-      if (!token) return
-      // Return after sign-in to let the user reaction query sync the
-      // current like state from the server before allowing a toggle.
-      // Without this, toggleLike assumes no prior like and may invert the state.
-      return
-    }
-
+    // toggleLike handles everything: sign-in if needed → fetch reaction → like/unlike
     toggleLike()
   }
 
