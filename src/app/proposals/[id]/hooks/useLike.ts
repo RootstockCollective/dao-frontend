@@ -31,7 +31,7 @@ export const useLike = (proposalId: string) => {
   const queryClient = useQueryClient()
   const jwtToken = useSiweStore(state => state.jwtToken)
   const [isToggling, setIsToggling] = useState(false)
-  const [optimisticDelta, setOptimisticDelta] = useState(0)
+  const [count, setCount] = useState(0)
   const [lastLikedState, setLastLikedState] = useState<boolean | null>(null)
 
   const { data, isLoading } = useQuery<LikeApiResponse>({
@@ -68,15 +68,18 @@ export const useLike = (proposalId: string) => {
     setLastLikedState(hasHeart)
   }, [userReactionData, lastLikedState])
 
+  // Sync server count into local state
+  const serverCount = data?.reactions?.heart ?? 0
+  useEffect(() => {
+    setCount(serverCount)
+  }, [serverCount])
+
   // Reset liked state on logout
   useEffect(() => {
     if (!jwtToken) {
       setLastLikedState(null)
     }
   }, [jwtToken])
-
-  const serverCount = data?.reactions?.heart ?? 0
-  const count = serverCount + optimisticDelta
 
   const toggleLike = useCallback(async () => {
     if (isToggling) return
@@ -87,7 +90,7 @@ export const useLike = (proposalId: string) => {
     const currentToken = useSiweStore.getState().jwtToken
 
     const willLike = lastLikedState === null ? true : !lastLikedState
-    setOptimisticDelta(prev => prev + (willLike ? 1 : -1))
+    setCount(prev => Math.max(0, prev + (willLike ? 1 : -1)))
     setLastLikedState(willLike)
 
     try {
@@ -103,19 +106,18 @@ export const useLike = (proposalId: string) => {
       const result: ToggleLikeResponse = await response.json()
 
       if (!response.ok || !result.success) {
-        setOptimisticDelta(prev => prev + (willLike ? -1 : 1))
+        setCount(prev => Math.max(0, prev + (willLike ? -1 : 1)))
         setLastLikedState(willLike ? (lastLikedState === null ? null : lastLikedState) : lastLikedState)
         return
       }
 
       setLastLikedState(result.liked)
-      setOptimisticDelta(0)
       queryClient.invalidateQueries({ queryKey: likeQueryKey(proposalId) })
       if (currentToken) {
         queryClient.invalidateQueries({ queryKey: userReactionQueryKey(proposalId, currentToken) })
       }
     } catch {
-      setOptimisticDelta(prev => prev + (willLike ? -1 : 1))
+      setCount(prev => Math.max(0, prev + (willLike ? -1 : 1)))
       setLastLikedState(willLike ? (lastLikedState === null ? null : lastLikedState) : lastLikedState)
     } finally {
       setIsToggling(false)
@@ -123,7 +125,7 @@ export const useLike = (proposalId: string) => {
   }, [isToggling, lastLikedState, proposalId, queryClient])
 
   return {
-    count: Math.max(0, count),
+    count,
     liked: lastLikedState ?? false,
     isLoading,
     isToggling,

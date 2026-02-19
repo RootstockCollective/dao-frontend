@@ -4,6 +4,7 @@ import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlo
 import { useSignIn } from '@/shared/hooks/useSignIn'
 import { ConditionalTooltip } from '@/app/components/Tooltip/ConditionalTooltip'
 import { ConnectTooltipContent } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltipContent'
+import { Button } from '@/components/Button/Button'
 import { SiweTooltipContent } from './SiweTooltipContent'
 import { useLike } from '../hooks/useLike'
 
@@ -17,7 +18,11 @@ export const LikeButton = ({ proposalId }: LikeButtonProps) => {
   const { signIn, isAuthenticated, isLoading: isSigningIn } = useSignIn()
   const { count, liked, isLoading, isToggling, toggleLike } = useLike(proposalId)
 
+  const isBusy = isLoading || isToggling || isSigningIn
+
   const handleClick = async () => {
+    if (isBusy) return
+
     if (!isConnected) {
       onConnectWalletButtonClick()
       return
@@ -53,15 +58,18 @@ export const LikeButton = ({ proposalId }: LikeButtonProps) => {
         },
       ]}
     >
-      <button
+      <Button
+        variant="transparent"
         onClick={handleClick}
-        disabled={isLoading || isToggling || isSigningIn}
-        className="flex items-center gap-1.5 text-sm disabled:opacity-50 transition-opacity self-start"
+        className={`flex items-center gap-1.5 text-sm transition-opacity self-start p-0 w-auto font-normal ${isBusy ? 'opacity-50' : ''}`}
         aria-label={liked ? 'Unlike proposal' : 'Like proposal'}
       >
-        <Heart size={18} className={liked ? 'text-red-500 fill-red-500' : 'text-white'} />
+        <Heart
+          size={18}
+          className={`${liked ? 'text-primary fill-primary' : 'text-white'} ${isToggling ? 'animate-like-pop' : ''}`}
+        />
         <span className="text-white">{isLoading ? '...' : count}</span>
-      </button>
+      </Button>
     </ConditionalTooltip>
   )
 }
