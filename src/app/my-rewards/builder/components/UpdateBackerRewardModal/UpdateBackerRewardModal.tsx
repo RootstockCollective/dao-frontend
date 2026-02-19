@@ -36,7 +36,7 @@ export const UpdateBackerRewardModal = ({ onClose }: Props) => {
     functionName: 'rewardPercentageCooldown',
   })
 
-  const { data: maxRewardPercentageWei } = useReadBuilderRegistry({
+  const { data: maxRewardPercentageWei, isLoading: isMaxRewardPercentageLoading } = useReadBuilderRegistry({
     functionName: 'maxRewardPercentage',
   })
 
@@ -77,7 +77,7 @@ export const UpdateBackerRewardModal = ({ onClose }: Props) => {
       // TODO: suggested reward out of scope atm.
       suggestedReward={undefined}
       isTxPending={isTxPending}
-      isLoading={isRewardsLoading || isCooldownPending}
+      isLoading={isRewardsLoading || isCooldownPending || isMaxRewardPercentageLoading}
       isOperational={isBuilderOperational}
       onClose={onClose}
     />
