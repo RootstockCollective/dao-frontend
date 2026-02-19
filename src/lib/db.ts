@@ -1,24 +1,19 @@
-import knex from 'knex'
-import fs from 'fs'
-import pg from 'pg'
+import knex, { Knex } from 'knex'
+import { sslConfig } from './dbUtils'
 
-pg.types.setTypeParser(17, val => Buffer.from(val.slice(2), 'hex').toString())
+const globalForDb = globalThis as typeof globalThis & { _db?: Knex }
 
-// Check if SSL certificate exists and configure SSL accordingly
-const certPath = '/app/rds-ca-cert.pem'
-const sslConfig = fs.existsSync(certPath)
-  ? {
-      rejectUnauthorized: true,
-      ca: fs.readFileSync(certPath).toString(),
-    }
-  : false
+if (!globalForDb._db) {
+  globalForDb._db = knex({
+    client: 'pg',
+    connection: {
+      connectionString: process.env.DB_CONNECTION_STRING,
+      ssl: sslConfig,
+    },
+    pool: { min: 0, max: 5 },
+  })
+}
 
-const db = knex({
-  client: 'pg',
-  connection: {
-    connectionString: process.env.DB_CONNECTION_STRING,
-    ssl: sslConfig,
-  },
-})
+const db = globalForDb._db
 
 export { db }

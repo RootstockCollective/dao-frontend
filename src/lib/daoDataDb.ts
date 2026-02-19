@@ -5,35 +5,24 @@
  * during reorg operations. Uses DAO_DATA_DB_CONNECTION_STRING env variable.
  */
 
-import knex from 'knex'
-import fs from 'fs'
-import pg from 'pg'
-
-pg.types.setTypeParser(17, val => Buffer.from(val.slice(2), 'hex').toString())
-
-// Check if SSL certificate exists and configure SSL accordingly
-const certPath = '/app/rds-ca-cert.pem'
-const sslConfig = fs.existsSync(certPath)
-  ? {
-      rejectUnauthorized: true,
-      ca: fs.readFileSync(certPath).toString(),
-    }
-  : false
+import knex, { Knex } from 'knex'
+import { sslConfig } from './dbUtils'
 
 const connectionString = process.env.DAO_DATA_DB_CONNECTION_STRING
 
-/**
- * Database client for dao_data
- * Will be undefined if DAO_DATA_DB_CONNECTION_STRING is not set
- */
-const daoDataDb = connectionString
-  ? knex({
-      client: 'pg',
-      connection: {
-        connectionString,
-        ssl: sslConfig,
-      },
-    })
-  : undefined
+const globalForDb = globalThis as typeof globalThis & { _daoDataDb?: Knex }
+
+if (connectionString && !globalForDb._daoDataDb) {
+  globalForDb._daoDataDb = knex({
+    client: 'pg',
+    connection: {
+      connectionString,
+      ssl: sslConfig,
+    },
+    pool: { min: 0, max: 5 },
+  })
+}
+
+const daoDataDb = globalForDb._daoDataDb
 
 export { daoDataDb }
