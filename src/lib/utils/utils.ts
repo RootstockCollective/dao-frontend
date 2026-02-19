@@ -38,10 +38,9 @@ export const shortAddress = (address: Address | undefined, amount = 4): string =
  * Normalizes an address to its checksummed format (EIP-55)
  * @param address - The address to normalize
  * @returns The checksummed address or undefined if invalid
- * @example normalizeAddress('0xf39fd6e51aad88f6f4ce6ab8827279cfffb29266') // '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
  */
 export const normalizeAddress = (address: string | undefined): string | undefined => {
-  if (!address || !isAddress(address)) return address
+  if (!address || !isAddress(address)) return undefined
   return getAddress(address)
 }
 
