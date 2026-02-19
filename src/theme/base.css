@@ -78,6 +78,7 @@
 
   --animate-windshield-wiper-sweep-1: windshield-wiper-left-to-right 0.8s ease-out 0.3s forwards;
   --animate-windshield-wiper-sweep-2: windshield-wiper-left-to-right 0.8s ease-in 1.3s forwards;
+  --animate-like-pop: like-pop 0.6s ease-in-out infinite;
 
   /* TODO: replace these main layout colors with New Design 2025 colors */
   --color-v-charcoal: var(--v-charcoal);
@@ -149,6 +150,17 @@
     }
     to {
       transform: translateX(0);
+    }
+  }
+  @keyframes like-pop {
+    0% {
+      transform: scale(1);
+    }
+    40% {
+      transform: scale(1.15);
+    }
+    100% {
+      transform: scale(1);
     }
   }
   @keyframes windshield-wiper-left-to-right {
