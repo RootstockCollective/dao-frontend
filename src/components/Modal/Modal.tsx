@@ -19,7 +19,7 @@ export interface ModalProps {
 
 /**
  * Modal component that wraps the content of the modal and provides a close button.
- * On mobile, the modal is fullscreen by default.
+ * On mobile, the modal is always fullscreen.
  */
 export const Modal: FC<ModalProps> = ({
   children,
