@@ -48,20 +48,20 @@ export const Modal: FC<ModalProps> = ({
     <div
       ref={portalContainerRef}
       className={cn(
-        'fixed inset-0 flex items-center justify-center z-modal max-w-screen max-h-screen overflow-hidden',
+        'fixed inset-0 flex items-center justify-center z-modal max-w-screen max-h-dvh overflow-hidden',
         fullscreen ? '' : 'p-4',
       )}
       data-testid={dataTestId}
     >
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-bg-100/50 backdrop-blur-xs max-w-screen max-h-screen overflow-hidden" />
+      <div className="fixed inset-0 bg-bg-100/50 backdrop-blur-xs max-w-screen max-h-dvh overflow-hidden" />
 
       {/* Modal Container */}
       <div
         className={cn(
           'relative overflow-x-hidden bg-bg-80 rounded overflow-y-auto min-w-0',
           'shadow-[0px_0px_40px_0px_rgba(255,255,255,0.10)]',
-          fullscreen ? 'w-screen h-screen' : 'w-[95vw] max-w-[380px] md:w-[688px] md:max-w-[97vw]',
+          fullscreen ? 'w-screen h-dvh' : 'w-[95vw] max-w-[380px] md:w-[688px] md:max-w-[97vw]',
           height === 'auto' && !fullscreen ? 'h-full md:h-auto' : '',
           className,
         )}
