@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import { Button } from '@/components/Button'
 import { NewPopover } from '@/components/NewPopover'
@@ -12,7 +13,7 @@ import { ConnectButtonComponent } from '@/shared/walletConnection/components/Con
 import { useModal } from '@/shared/hooks/useModal'
 import { DepositModal } from './DepositModal'
 import { WithdrawModal } from './WithdrawModal'
-import { MoneyIconKoto } from '@/components/Icons'
+import { HistoryIcon, MoneyIconKoto } from '@/components/Icons'
 import { SwappingFlow } from '@/app/user/Swap'
 import { useVaultBalance } from '../hooks/useVaultBalance'
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
@@ -173,6 +174,8 @@ export const VaultActions = () => {
           <Span className="flex-shrink-0">Withdraw</Span>
           <MoneyIconKoto />
         </Button>
+
+        <VaultHistoryButton />
       </div>
 
       {depositModal.isModalOpened && (
@@ -183,5 +186,19 @@ export const VaultActions = () => {
       )}
       {swapModal.isModalOpened && <SwappingFlow onCloseModal={swapModal.closeModal} />}
     </div>
+  )
+}
+
+const VaultHistoryButton = () => {
+  const router = useRouter()
+  return (
+    <Button
+      variant="transparent"
+      className="flex flex-row gap-2 pl-0 max-w-[200px] justify-start font-medium text-sm font-rootstock-sans"
+      onClick={() => router.push('/vault/history')}
+    >
+      <HistoryIcon />
+      <Span className="flex-shrink-0">See Vault History</Span>
+    </Button>
   )
 }
