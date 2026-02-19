@@ -68,8 +68,8 @@ jobs:
             PROFILE=${{ env.PROFILE }}
             NEXT_PUBLIC_BUILD_ID=${{ github.sha }}
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=dao-qa
+          cache-to: type=gha,mode=max,scope=dao-qa
 
       - name: Download task definition
         run: aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
