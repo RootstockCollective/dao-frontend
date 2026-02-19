@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import { axiosInstance } from '@/lib/utils'
 import { TokenInfoReturnType } from '@/app/user/api/tokens/route'
 import { AVERAGE_BLOCKTIME, RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
+import { useCallback } from 'react'
 
 const getTokenFunction = (
   tokenAddress: Address,
@@ -85,10 +86,10 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
     tokenData &&
     ([contracts[3], { result: tokenData[tokenContracts.USDT0]?.symbol }] as TokenData)
 
-  const refetch = () => {
+  const refetch = useCallback(() => {
     refetchRbtc()
     refetchContracts()
-  }
+  }, [refetchRbtc, refetchContracts])
 
   return {
     data: [
