@@ -1,5 +1,5 @@
 import type { HTMLAttributes } from 'react'
-import { RootstockLogoIcon } from '@/components/Icons'
+import { NetworkLogo } from '@/components/NetworkLogo'
 import { useLayoutContext } from '../LayoutProvider'
 import { Hamburger } from '@/components/Hamburger'
 import { cn } from '@/lib/utils'
@@ -20,24 +20,21 @@ export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElem
       ref={headerRef}
       {...props}
       className={cn(
-        'px-4 min-h-21 flex items-center relative transition-transform duration-300 ease-in-out z-sticky',
+        'px-4 min-h-21 flex items-center transition-transform duration-300 ease-in-out z-modal bg-l-black',
         isVisible ? 'translate-y-0' : '-translate-y-full',
         className,
       )}
     >
-      <div className="basis-1/2">
-        <Hamburger
-          isOpen={isSidebarOpen}
-          onClick={toggleSidebar}
-          ariaLabel={isSidebarOpen ? 'Close menu' : 'Open menu'}
-        />
-      </div>
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div className="p-1 rounded-full">
-          <RootstockLogoIcon />
-        </div>
-      </div>
-      <div className="basis-1/2 flex justify-end gap-2">{!isSidebarOpen && <UserConnectionManager />}</div>
+      <Hamburger
+        className="flex-1"
+        isOpen={isSidebarOpen}
+        onClick={toggleSidebar}
+        ariaLabel={isSidebarOpen ? 'Close menu' : 'Open menu'}
+      />
+
+      <NetworkLogo compact={!isSidebarOpen} />
+
+      <UserConnectionManager className="flex-1 flex justify-end" showContent={!isSidebarOpen} />
     </header>
   )
 }
