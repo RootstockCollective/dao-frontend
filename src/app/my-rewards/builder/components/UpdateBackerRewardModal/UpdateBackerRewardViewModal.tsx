@@ -147,6 +147,16 @@ const UpdateBackerRewardViewModal = ({
           </Button>
           {isTxPending ? (
             <TransactionInProgressButton />
+          ) : exceedsMax ? (
+            <Tooltip
+              text={`Value exceeds the maximum allowed (${maxRewardPercentage}%)`}
+              side="top"
+              align="center"
+            >
+              <Button disabled className="w-full md:w-auto">
+                Save changes
+              </Button>
+            </Tooltip>
           ) : (
             <AlwaysEnabledButton
               onClick={handleSave}
@@ -159,10 +169,6 @@ const UpdateBackerRewardViewModal = ({
                 {
                   condition: () => !!alreadySubmitted,
                   lazyContent: () => "You can't submit the same backer reward %",
-                },
-                {
-                  condition: () => exceedsMax,
-                  lazyContent: () => `Value exceeds the maximum allowed (${maxRewardPercentage}%)`,
                 },
               ]}
             >
