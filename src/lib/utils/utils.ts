@@ -4,7 +4,7 @@ import { BigSource } from 'big.js'
 import { ClassValue, clsx } from 'clsx'
 import { Duration } from 'luxon'
 import { twMerge } from 'tailwind-merge'
-import { Address, formatEther, isAddress } from 'viem'
+import { Address, formatEther, getAddress, isAddress } from 'viem'
 import { CHAIN_ID, RIF_WALLET_SERVICES_URL } from '../constants'
 import { sentryClient } from '@/lib/sentry/sentry-client'
 
@@ -33,6 +33,16 @@ export const shortAddress = (address: Address | undefined, amount = 4): string =
 
   const prefixLength = amount + 2 // 2 for '0x' prefix
   return `${address.slice(0, prefixLength)}…${address.slice(-amount)}`
+}
+
+/**
+ * Normalizes an address to its checksummed format (EIP-55)
+ * @param address - The address to normalize
+ * @returns The checksummed address or undefined if invalid
+ */
+export const normalizeAddress = (address: string | undefined): string | undefined => {
+  if (!address || !isAddress(address)) return undefined
+  return getAddress(address)
 }
 
 export const shortProposalId = (proposalId: string): string => {

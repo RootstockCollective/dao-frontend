@@ -1,6 +1,14 @@
 import Big from '@/lib/big'
-import { durationToLabel, formatCurrency, formatNumberWithCommas, millify, splitWords } from '@/lib/utils'
+import {
+  durationToLabel,
+  formatCurrency,
+  formatNumberWithCommas,
+  millify,
+  normalizeAddress,
+  splitWords,
+} from '@/lib/utils'
 import { Duration } from 'luxon'
+import { getAddress } from 'viem'
 import { describe, expect, it } from 'vitest'
 
 describe('formatCurrency', () => {
@@ -186,5 +194,33 @@ describe('durationToLabel', () => {
 
   it('returns undefined for undefined duration', () => {
     expect(durationToLabel(undefined)).toBe(undefined)
+  })
+})
+
+describe('normalizeAddress', () => {
+  it('returns undefined for undefined', () => {
+    expect(normalizeAddress(undefined)).toBe(undefined)
+  })
+
+  it('returns undefined for empty string', () => {
+    expect(normalizeAddress('')).toBe(undefined)
+  })
+
+  it('returns undefined for invalid address', () => {
+    expect(normalizeAddress('not-an-address')).toBe(undefined)
+  })
+
+  it('returns undefined for invalid format', () => {
+    expect(normalizeAddress('0x123')).toBe(undefined)
+  })
+
+  it('returns checksummed address for valid lowercase address', () => {
+    const lowercase = '0xf39fd6e51aad88f6f4ce6ab8827279cfffb29266'
+    expect(normalizeAddress(lowercase)).toBe(getAddress(lowercase))
+  })
+
+  it('returns same address for valid checksummed address', () => {
+    const checksummed = getAddress('0xf39fd6e51aad88f6f4ce6ab8827279cfffb29266')
+    expect(normalizeAddress(checksummed)).toBe(checksummed)
   })
 })

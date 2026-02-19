@@ -82,7 +82,8 @@ const parseSingleAction = (action: SerializedDecodedData, prices: GetPricesResul
         toAddress,
       }
     }
-    case 'communityApproveBuilder': {
+    case 'communityApproveBuilder':
+    case 'whitelistBuilder': {
       const builder = typeof args[0] === 'string' ? args[0] : undefined
       return {
         type: ProposalType.BUILDER_ACTIVATION,
@@ -90,7 +91,8 @@ const parseSingleAction = (action: SerializedDecodedData, prices: GetPricesResul
       }
     }
     case 'removeWhitelistedBuilder':
-    case 'communityBanBuilder': {
+    case 'communityBanBuilder':
+    case 'dewhitelistBuilder': {
       const builder = typeof args[0] === 'string' ? args[0] : undefined
       return {
         type: ProposalType.BUILDER_DEACTIVATION,

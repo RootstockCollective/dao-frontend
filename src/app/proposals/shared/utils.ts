@@ -165,25 +165,72 @@ export const splitCombinedName = (name: string) => {
   return { proposalName, builderName }
 }
 
+/**
+ * Extracts builder name from proposal title (supports D15PL4Y_N4M3: and [BUILDER] formats)
+ */
+export const extractBuilderName = (name: string, description?: string | null): string | undefined => {
+  // Try new format first (with D15PL4Y_N4M3: separator)
+  if (name.includes(DISPLAY_NAME_SEPARATOR)) {
+    const { builderName } = splitCombinedName(name)
+    if (builderName) return builderName.trim()
+  }
+
+  // Try old format: "[XXX BUILDER XXX] BuilderName"
+  // Pattern: text in brackets followed by the builder name
+  const bracketPattern = /\[[^\]]*(?:BUILDER|ACTIVATION|DEACTIVATION)[^\]]*\]\s*(.+)/i
+  const bracketMatch = name.match(bracketPattern)
+  if (bracketMatch && bracketMatch[1]) {
+    return bracketMatch[1].trim()
+  }
+
+  // Fallback: Check if description has the pattern in first line
+  if (description) {
+    const firstLine = description.includes(';') ? description.split(';')[0] : description.split('\n')[0]
+    if (firstLine.includes(DISPLAY_NAME_SEPARATOR)) {
+      const { builderName } = splitCombinedName(firstLine)
+      if (builderName) return builderName.trim()
+    }
+
+    // Try bracket pattern in description
+    const descBracketMatch = firstLine.match(bracketPattern)
+    if (descBracketMatch && descBracketMatch[1]) {
+      return descBracketMatch[1].trim()
+    }
+  }
+
+  return undefined
+}
+
 export const getDiscourseLinkFromProposalDescription = (description: string): string | undefined => {
+  // First, try to find explicit DiscourseLink: separator
   const startIndex = description.indexOf(DISCOURSE_LINK_SEPARATOR)
 
-  if (startIndex === -1) {
-    return undefined
+  if (startIndex !== -1) {
+    const afterLink = startIndex + DISCOURSE_LINK_SEPARATOR.length
+
+    // Find the first space after DiscourseLink: separator
+    const firstSpaceIndex = description.indexOf(' ', afterLink)
+
+    if (firstSpaceIndex === -1) {
+      // If there's no space after DiscourseLink:, take everything to the end
+      return description.substring(afterLink).trim()
+    }
+
+    // Extract everything from after DiscourseLink: up to (but not including) the first space
+    return description.substring(afterLink, firstSpaceIndex).trim()
   }
 
-  const afterLink = startIndex + DISCOURSE_LINK_SEPARATOR.length
+  // Fallback: Try to find discourse URLs directly in the description
+  // Match gov.rootstockcollective.xyz URLs (with or without https://)
+  const discourseUrlRegex = /https?:\/\/gov\.rootstockcollective\.xyz\/[^\s)]+/i
+  const matches = description.match(discourseUrlRegex)
 
-  // Find the first space after DiscourseLink: separator
-  const firstSpaceIndex = description.indexOf(' ', afterLink)
-
-  if (firstSpaceIndex === -1) {
-    // If there's no space after DiscourseLink:, take everything to the end
-    return description.substring(afterLink).trim()
+  if (matches && matches.length > 0) {
+    // Return the first discourse link found (cleaned up)
+    return matches[0].replace(/[.,;:!?]+$/, '') // Remove trailing punctuation
   }
 
-  // Extract everything from after DiscourseLink: up to (but not including) the first space
-  return description.substring(afterLink, firstSpaceIndex).trim()
+  return undefined
 }
 
 // each parameter uses 32 bytes in the calldata but we only need the address which is 20 bytes
@@ -260,6 +307,7 @@ export function getProposalCategoryFromParsedData(
     ['whitelistBuilder', ProposalCategory.Activation],
     ['communityBanBuilder', ProposalCategory.Deactivation],
     ['removeWhitelistedBuilder', ProposalCategory.Deactivation],
+    ['dewhitelistBuilder', ProposalCategory.Deactivation],
   ])
 
   // Check for builder functions first
