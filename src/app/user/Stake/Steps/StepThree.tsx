@@ -1,3 +1,4 @@
+import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
 import { executeTxFlow } from '@/shared/notification'
@@ -18,6 +19,7 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
     amount,
     tokenToReceive.contract,
   )
+  const { refetchBalances } = useGetAddressBalances()
 
   // Set button actions directly
   useEffect(() => {
@@ -27,7 +29,10 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
         onClick: () => {
           executeTxFlow({
             onRequestTx: onRequestStake,
-            onSuccess: onCloseModal,
+            onSuccess: () => {
+              refetchBalances()
+              onCloseModal()
+            },
             action: 'staking',
           })
         },
@@ -42,7 +47,16 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
         loading: false,
       },
     })
-  }, [amount, isRequesting, isTxPending, onRequestStake, onCloseModal, onGoToStep, setButtonActions])
+  }, [
+    amount,
+    isRequesting,
+    isTxPending,
+    onRequestStake,
+    onCloseModal,
+    onGoToStep,
+    setButtonActions,
+    refetchBalances,
+  ])
 
   return (
     <>

@@ -1,4 +1,5 @@
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { StakingToken } from '@/app/user/Stake/types'
 import { Modal } from '@/components/Modal'
 import { Header } from '@/components/Typography'
@@ -25,6 +26,7 @@ interface Props {
 
 export const UnstakeModal = ({ onCloseModal }: Props) => {
   const { balances, prices } = useBalancesContext()
+  const { refetchBalances } = useGetAddressBalances()
   const { address } = useAccount()
   const isDesktop = useIsDesktop()
 
@@ -97,10 +99,13 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
   const handleConfirmUnstake = useCallback(() => {
     executeTxFlow({
       onRequestTx: onRequestUnstake,
-      onSuccess: onCloseModal,
+      onSuccess: () => {
+        refetchBalances()
+        onCloseModal()
+      },
       action: 'unstaking',
     })
-  }, [onRequestUnstake, onCloseModal])
+  }, [onRequestUnstake, onCloseModal, refetchBalances])
 
   return (
     <Modal width={688} onClose={onCloseModal} fullscreen={!isDesktop}>
