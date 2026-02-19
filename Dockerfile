@@ -45,7 +45,7 @@ ENV NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}
 ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 
 # Build the Next.js application
-RUN npm run build
+RUN --mount=type=cache,target=/app/.next/cache npm run build
 
 # Clean node_modules for production after build
 RUN npm prune --production
