@@ -8,7 +8,7 @@ import { useBackingContext } from '@/app/shared/context/BackingContext'
 import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useContext, useMemo } from 'react'
+import { useCallback, useContext, useEffect, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 
@@ -25,7 +25,7 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
     actions: { toggleSelectedBuilder },
   } = useContext(AllocationsContext)
 
-  const { randomBuilders, isLoading: isBuildersLoading } = useBuilderContext()
+  const { randomBuilders, isLoading: isBuildersLoading, error: isBuildersError } = useBuilderContext()
 
   const {
     data: backingData,
@@ -34,11 +34,12 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
   } = useBackingContext()
 
   useHandleErrors({ error: isBackingDataError, title: 'Error loading backing data' })
+  useHandleErrors({ error: isBuildersError, title: 'Error loading builders' })
 
   const userSelections = useMemo(() => searchParams.get('builders')?.split(',') as Address[], [searchParams])
 
   const selectionsKey = userSelections?.join(',') ?? ''
-  useMemo(() => {
+  useEffect(() => {
     if (userSelections) {
       // include the new user selections into the selections object
       userSelections.forEach(builder => !selections[builder] && toggleSelectedBuilder(builder))
@@ -93,10 +94,8 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
     )
   }, [backingData, hasAllocations, allocations, getBuilder, randomBuilders, userSelections, needsBackingData])
 
-  const getEstimatedRewards = useCallback(
-    (builderAddress: Address) => {
-      return backingData.find(b => b.address === builderAddress)?.backerEstimatedRewards
-    },
+  const estimatedRewardsByAddress = useMemo(
+    () => new Map(backingData.map(b => [b.address, b.backerEstimatedRewards])),
     [backingData],
   )
 
@@ -106,11 +105,20 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
     },
     [userSelections],
   )
-  const isLoading =
-    (needsBackingData ? isBackingDataLoading : isBuildersLoading) || spotlightBuilders.length === 0
+  const isLoading = needsBackingData ? isBackingDataLoading : isBuildersLoading
 
   if (isLoading) {
     return <LoadingSpinner />
+  }
+
+  if (spotlightBuilders.length === 0) {
+    return (
+      <div className="flex justify-center self-center mt-6">
+        <Button variant="secondary-outline" onClick={() => router.push('/builders')}>
+          See all Builders
+        </Button>
+      </div>
+    )
   }
 
   return (
@@ -122,7 +130,7 @@ export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean })
             builder={builder}
             index={index}
             isInteractive={isInteractive}
-            estimatedRewards={getEstimatedRewards(builder.address)}
+            estimatedRewards={estimatedRewardsByAddress.get(builder.address)}
             showAnimation={isBuilderSelected(builder.address)}
           />
         ))}
