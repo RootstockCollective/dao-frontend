@@ -43,7 +43,7 @@ export const UnclaimedRewards = ({ builder, gauge }: { builder: Address; gauge: 
       <div className="flex justify-start">
         <ClaimRewardsButton onClick={() => openModal()} />
       </div>
-      <ClaimRewardsModal open={isModalOpened} onClose={() => closeModal()} isBacker={false} />
+      {isModalOpened && <ClaimRewardsModal onClose={closeModal} isBacker={false} />}
     </RewardCard>
   )
 }

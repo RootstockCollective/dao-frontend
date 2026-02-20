@@ -7,8 +7,6 @@ import { swapStepConfig } from './Steps/swapStepConfig'
 import { useSteps } from '@/app/user/Stake/hooks/useSteps'
 import { StepActionButtons } from '@/app/user/Stake/components/StepActionButtons'
 import { Divider } from '@/components/Divider'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { cn } from '@/lib/utils'
 import { ButtonActions } from './types'
 import { useSwapStore } from '@/shared/stores/swap'
 
@@ -27,7 +25,6 @@ const DEFAULT_BUTTON_ACTIONS: ButtonActions = {
 }
 
 export const SwappingFlow = ({ onCloseModal }: Props) => {
-  const isDesktop = useIsDesktop()
   const [buttonActions, setButtonActions] = useState<ButtonActions>(DEFAULT_BUTTON_ACTIONS)
   const resetSwapStore = useSwapStore(state => state.reset)
 
@@ -49,8 +46,8 @@ export const SwappingFlow = ({ onCloseModal }: Props) => {
   const { progress, description } = stepConfigItem
 
   return (
-    <Modal onClose={handleCloseModal} fullscreen={!isDesktop}>
-      <div className={cn('h-full flex flex-col', !isDesktop ? 'p-4' : 'p-6')}>
+    <Modal onClose={handleCloseModal} data-testid="SwappingFlowModal">
+      <div className="h-full flex flex-col p-4 md:p-6">
         <Header className="mt-16 mb-4">SWAP</Header>
 
         <div className="mb-12">
@@ -65,11 +62,13 @@ export const SwappingFlow = ({ onCloseModal }: Props) => {
         )}
 
         {/* Content area */}
-        <StepComponent
-          {...stepFunctions}
-          onCloseModal={handleCloseModal}
-          setButtonActions={handleSetButtonActions}
-        />
+        <div className="flex-1">
+          <StepComponent
+            {...stepFunctions}
+            onCloseModal={handleCloseModal}
+            setButtonActions={handleSetButtonActions}
+          />
+        </div>
 
         {/* Footer with buttons */}
         <div className="mt-8">

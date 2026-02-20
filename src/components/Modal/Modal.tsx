@@ -5,6 +5,7 @@ import { FC, ReactNode, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { CloseIconKoto } from '../Icons'
 import { PortalContainerContext } from '../PortalContainerContext'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 export interface ModalProps {
   children: ReactNode
@@ -13,11 +14,13 @@ export interface ModalProps {
   width?: number
   height?: number | 'auto'
   closeButtonColor?: 'white' | 'black'
-  /** When true, modal takes full viewport width and height, bypassing width/height constraints */
-  fullscreen?: boolean
   'data-testid'?: string
 }
 
+/**
+ * Modal component that wraps the content of the modal and provides a close button.
+ * On mobile, the modal is always fullscreen.
+ */
 export const Modal: FC<ModalProps> = ({
   children,
   onClose,
@@ -25,11 +28,12 @@ export const Modal: FC<ModalProps> = ({
   width,
   height = 'auto',
   closeButtonColor = 'white',
-  fullscreen,
   'data-testid': dataTestId,
 }) => {
   const portalContainerRef = useRef<HTMLDivElement>(null)
   const containerStyle: React.CSSProperties = {}
+
+  const fullscreen = !useIsDesktop()
 
   if (!fullscreen && width) {
     containerStyle.width = `${width}px`
@@ -44,19 +48,19 @@ export const Modal: FC<ModalProps> = ({
     <div
       ref={portalContainerRef}
       className={cn(
-        'fixed inset-0 flex items-center justify-center z-modal max-w-screen max-h-screen overflow-hidden',
+        'fixed inset-0 flex items-center justify-center z-modal max-w-screen max-h-dvh overflow-hidden',
         fullscreen ? '' : 'p-4',
       )}
       data-testid={dataTestId}
     >
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-bg-100/50 backdrop-blur-xs max-w-screen max-h-screen overflow-hidden" />
+      <div className="fixed inset-0 bg-bg-100/50 backdrop-blur-xs max-w-screen max-h-dvh overflow-hidden" />
 
-      {/* Modal Container */}
       <div
         className={cn(
-          'relative overflow-x-hidden bg-bg-80 rounded overflow-y-auto min-w-0',
-          fullscreen ? 'w-screen h-screen' : 'w-[95vw] max-w-[380px] md:w-[688px] md:max-w-[97vw]',
+          'relative overflow-x-hidden bg-bg-80 rounded overflow-y-auto min-w-0 touch-pan-y',
+          'shadow-[0px_0px_40px_0px_rgba(255,255,255,0.10)]',
+          fullscreen ? 'w-screen h-dvh' : 'w-[95vw] max-w-[380px] md:w-[688px] md:max-w-[97vw]',
           height === 'auto' && !fullscreen ? 'h-full md:h-auto' : '',
           className,
         )}

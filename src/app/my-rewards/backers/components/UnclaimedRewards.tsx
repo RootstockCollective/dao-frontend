@@ -53,7 +53,7 @@ export const UnclaimedRewards = () => {
       <div className="flex justify-start">
         <ClaimRewardsButton onClick={() => openModal()} />
       </div>
-      <ClaimRewardsModal open={isModalOpened} onClose={() => closeModal()} isBacker={true} />
+      {isModalOpened && <ClaimRewardsModal onClose={closeModal} isBacker={true} />}
     </RewardCard>
   )
 }

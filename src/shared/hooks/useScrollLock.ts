@@ -19,27 +19,24 @@ export function useScrollLock(lock: boolean) {
 
     const html = document.documentElement
     const body = document.body
-    const prevHtmlOverflow = html.style.overflow
-    const prevBodyOverflow = body.style.overflow
-    const prevTouchAction = body.style.touchAction
 
     if (lock) {
       scrollLockCount++
       if (scrollLockCount === 1) {
-        // First lock → actually apply styles
         html.style.overflow = 'hidden'
         body.style.overflow = 'hidden'
-        body.style.touchAction = 'none' // iOS Safari fix
+        body.style.touchAction = 'none'
       }
     }
 
     return () => {
       if (lock) {
         scrollLockCount--
+        if (scrollLockCount < 0) scrollLockCount = 0
         if (scrollLockCount <= 0) {
-          html.style.overflow = prevHtmlOverflow
-          body.style.overflow = prevBodyOverflow
-          body.style.touchAction = prevTouchAction
+          html.style.overflow = ''
+          body.style.overflow = ''
+          body.style.touchAction = ''
         }
       }
     }

@@ -27,6 +27,7 @@ import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { MobileVotingButton } from './MobileVotingButton'
 import { Modal } from '@/components/Modal'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
+import { useModal } from '@/shared/hooks/useModal'
 
 interface VotingDetailsProps {
   proposalId: string
@@ -52,7 +53,7 @@ export const VotingDetails = ({
   const [votingTxIsPending, setVotingTxIsPending] = useState(false)
 
   // Mobile modal state
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const { isModalOpened, openModal, closeModal } = useModal()
   const isDesktop = useIsDesktop()
 
   const [againstVote, forVote, abstainVote] = useGetProposalVotes(proposalId, true)
@@ -288,12 +289,12 @@ export const VotingDetails = ({
     return (
       <>
         <ActionDetails parsedActions={parsedActions} />
-        {isModalOpen && (
-          <Modal onClose={() => setIsModalOpen(false)} fullscreen>
+        {isModalOpened && (
+          <Modal onClose={closeModal} data-testid="VotingDetailsModal">
             <VotingDetailsContent />
           </Modal>
         )}
-        <MobileVotingButton onClick={() => setIsModalOpen(true)} disabled={isQueueing || isExecuting} />
+        <MobileVotingButton onClick={openModal} disabled={isQueueing || isExecuting} />
       </>
     )
   }

@@ -6,7 +6,7 @@ import { Modal } from '@/components/Modal/Modal'
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Paragraph } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
-import { cn, formatCurrencyWithLabel } from '@/lib/utils'
+import { formatCurrencyWithLabel } from '@/lib/utils'
 import { Separator } from '@radix-ui/react-select'
 import { FC, ReactNode } from 'react'
 import { ClaimRewardRadioGroup } from './ClaimRewardRadioGroup'
@@ -24,7 +24,6 @@ interface ClaimRewardsModalViewProps {
   isClaimable: boolean
   isTxPending?: boolean
   isLoading?: boolean
-  className?: string
 }
 
 export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
@@ -38,7 +37,6 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
   isClaimable,
   isTxPending = false,
   isLoading = false,
-  className,
 }) => {
   const radioOptions: Array<{
     value: ClaimRewardType
@@ -63,16 +61,11 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
   ]
 
   return (
-    <Modal
-      onClose={onClose}
-      width={700}
-      height="auto"
-      closeButtonColor="white"
-      data-testid="ClaimRewardsModalView"
-      className={cn('font-rootstock-sans shadow-[0px_0px_40px_0px_rgba(255,255,255,0.10)]', className)}
-    >
-      <div className="p-8 flex flex-col gap-8 h-full justify-start">
-        <Header variant="h1">CLAIM REWARDS</Header>
+    <Modal onClose={onClose} data-testid="ClaimRewardsModalView">
+      <div className="h-full flex flex-col p-4 md:p-6">
+        <Header variant="h1" className="mt-16 mb-4">
+          CLAIM REWARDS
+        </Header>
         <Paragraph>
           Select the rewards that you want to claim, then confirm the transaction in your wallet.
         </Paragraph>

@@ -56,7 +56,7 @@ export const MobileSortModal: FC<MobileSortModalProps> = ({ isOpen, onClose }) =
     }))
 
   return (
-    <Modal onClose={onClose} fullscreen data-testid="mobile-backer-rewards-sort-modal">
+    <Modal onClose={onClose} data-testid="mobile-backer-rewards-sort-modal">
       <div className="flex flex-col h-full bg-v3-bg-accent-80 rounded-lg">
         <div className="flex-1 p-4 pt-16 overflow-y-auto">
           <div className="mb-8">
