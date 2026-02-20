@@ -15,6 +15,7 @@ interface ExtractionResult {
 interface ConfigObject {
   coords: (width: number, height: number) => { x: number; y: number }
   size: number
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any // Allow additional properties
 }
 

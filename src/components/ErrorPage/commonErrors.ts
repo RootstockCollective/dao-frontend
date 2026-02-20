@@ -12,6 +12,7 @@ export class BaseError extends Error {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isUserRejectedTxError = (error: any): boolean => {
   return (
     (error && typeof error.message === 'string' && error.message.includes('User rejected the request')) ||

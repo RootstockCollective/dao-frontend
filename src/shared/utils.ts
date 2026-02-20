@@ -127,7 +127,9 @@ export const requestProviderToAddToken: (arg: AddToWalletArgument) => Promise<un
   // Ensure window.ethereum (MetaMask provider) is available
   if (
     typeof window === 'undefined' ||
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     !(window as any).ethereum ||
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     typeof (window as any).ethereum.request !== 'function'
   ) {
     console.error('MetaMask (window.ethereum) is not detected.')

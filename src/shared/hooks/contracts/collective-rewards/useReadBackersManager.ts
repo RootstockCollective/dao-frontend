@@ -18,6 +18,7 @@ export const useReadBackersManager = <TFunctionName extends BackersManagerFuncti
   return useReadContract({
     abi: getAbi('BackersManagerAbi'),
     address: BackersManagerAddress,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ...(config as any),
     query: {
       retry: true,

@@ -31,6 +31,7 @@ const splitContent = (children: ReactNode): [ReactNode, ReactNode] => {
 
   if (isValidElement(children) && children.type === React.Fragment) {
     // For React fragments: first child is preview, rest is full content
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const fragmentChildren = (children.props as any).children
     if (Array.isArray(fragmentChildren) && fragmentChildren.length > 1) {
       return [fragmentChildren[0], fragmentChildren.slice(1)]

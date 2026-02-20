@@ -95,6 +95,7 @@ export function ipfsGatewayUrl(cid: string) {
  * @param prefix - The prefix to add to each key. Defaults to 'img-'.
  * @returns A new object with prefixed lowercase keys and stringified values.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function attachPrefixToKeys(obj: Record<string, any> = {}, prefix = 'img-'): Record<string, string> {
   return Object.fromEntries(
     Object.entries(obj)

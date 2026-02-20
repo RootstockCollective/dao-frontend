@@ -283,6 +283,7 @@ export const useTokenAllowance = () => {
 
         if (!txHash) {
           const rejectionError = new Error('User rejected the request')
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           ;(rejectionError as any).cause = { code: 4001 }
           throw rejectionError
         }
