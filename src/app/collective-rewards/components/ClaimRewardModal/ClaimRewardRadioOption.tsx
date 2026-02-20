@@ -31,9 +31,9 @@ export const ClaimRewardRadioOption: FC<ClaimRewardRadioOptionProps> = ({
           <span className="w-5 h-5 aspect-square rounded-full border-2 border-white flex items-center justify-center flex-shrink-0">
             <RadioGroup.Indicator className="w-full h-full rounded-full border-4 border-white" />
           </span>
-          <div className="flex flex-col items-start gap-2 justify-start text-left w-full">
+          <div className="flex flex-col items-start justify-start text-left w-full">
             <Header variant="h3">{label}</Header>
-            <Span variant="body" className="text-v3-bg-accent-0">
+            <Span variant="body-xs" className="text-v3-bg-accent-0" bold>
               {subLabel}
             </Span>
           </div>
