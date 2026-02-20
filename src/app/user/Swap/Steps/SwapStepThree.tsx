@@ -1,3 +1,4 @@
+import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useExecuteTxFlow } from '@/shared/notification'
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { SwapStepProps } from '../types'
@@ -25,6 +26,7 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
   const { amountIn, amountOut, quote } = useSwapInput()
   const { tokenIn, tokenOut, tokenInData, tokenOutData } = useTokenSelection()
   const { balances, prices } = useBalancesContext()
+  const { refetchBalances } = useGetAddressBalances()
   const { execute: executeTxFlow, isExecuting: isSwapTxPending } = useExecuteTxFlow()
   const { execute, swapError, swapTxHash, canExecute } = useSwapExecution()
 
@@ -99,10 +101,13 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
         }
         return txHash as Hash
       },
-      onSuccess: onCloseModal,
+      onSuccess: () => {
+        refetchBalances()
+        onCloseModal()
+      },
       action: 'swap',
     })
-  }, [canExecute, amountOutMinimum, execute, onCloseModal, executeTxFlow])
+  }, [canExecute, amountOutMinimum, execute, onCloseModal, executeTxFlow, refetchBalances])
 
   // Set button actions - disabled until slippage is selected and minimum is calculated
   useEffect(() => {
