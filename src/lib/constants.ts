@@ -12,6 +12,7 @@ export const RIF_ADDRESS = process.env.NEXT_PUBLIC_RIF_ADDRESS as Address
 export const STRIF_ADDRESS = process.env.NEXT_PUBLIC_STRIF_ADDRESS as Address
 export const USDRIF_ADDRESS = process.env.NEXT_PUBLIC_USDRIF_ADDRESS as Address
 export const USDRIF_VAULT_ADDRESS = process.env.NEXT_PUBLIC_USDRIF_VAULT_ADDRESS as Address
+export const BTC_VAULT_ADDRESS = process.env.NEXT_PUBLIC_BTC_VAULT_ADDRESS as Address
 export const USDT0_ADDRESS = process.env.NEXT_PUBLIC_USDT0_ADDRESS as Address
 
 // DEX Router Addresses
@@ -96,6 +97,7 @@ const FEATURE_FLAGS: Record<Feature, string> = {
   use_state_sync: process.env.NEXT_PUBLIC_ENABLE_FEATURE_USE_STATE_SYNC ?? '',
   debug_logs: process.env.NEXT_PUBLIC_ENABLE_FEATURE_DEBUG_LOGS ?? '',
   vault: process.env.NEXT_PUBLIC_ENABLE_FEATURE_VAULT ?? '',
+  btc_vault: process.env.NEXT_PUBLIC_ENABLE_FEATURE_BTC_VAULT ?? '',
   sentry_error_tracking: process.env.NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_ERROR_TRACKING ?? '',
   sentry_replay: process.env.NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY ?? '',
 }
