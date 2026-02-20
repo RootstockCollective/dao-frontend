@@ -36,6 +36,14 @@ export const UpdateBackerRewardModal = ({ onClose }: Props) => {
     functionName: 'rewardPercentageCooldown',
   })
 
+  const { data: maxRewardPercentageWei, isLoading: isMaxRewardPercentageLoading } = useReadBuilderRegistry({
+    functionName: 'maxRewardPercentage',
+  })
+
+  const maxRewardPercentage = maxRewardPercentageWei
+    ? Number(weiToPercentage(maxRewardPercentageWei, 0))
+    : undefined
+
   const cooldownDuration = formatDuration(rewardPercentageCooldown)
   const alreadySubmitted = useMemo(() => updatedReward === nextReward, [updatedReward, nextReward])
 
@@ -61,14 +69,15 @@ export const UpdateBackerRewardModal = ({ onClose }: Props) => {
     <UpdateBackerRewardViewModal
       currentReward={currentReward}
       updatedReward={updatedReward}
-      alreadySubmitted={alreadySubmitted}
-      // TODO: suggested reward out of scope atm.
-      suggestedReward={undefined}
       onSave={handleSave}
       onRewardChange={handleRewardChange}
+      alreadySubmitted={alreadySubmitted}
       cooldownDuration={cooldownDuration}
+      maxRewardPercentage={maxRewardPercentage}
+      // TODO: suggested reward out of scope atm.
+      suggestedReward={undefined}
       isTxPending={isTxPending}
-      isLoading={isRewardsLoading || isCooldownPending}
+      isLoading={isRewardsLoading || isCooldownPending || isMaxRewardPercentageLoading}
       isOperational={isBuilderOperational}
       onClose={onClose}
     />

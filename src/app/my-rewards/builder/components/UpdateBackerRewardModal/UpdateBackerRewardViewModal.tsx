@@ -8,6 +8,7 @@ import { Modal } from '@/components/Modal/Modal'
 import { Tooltip } from '@/components/Tooltip'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import { cn, durationToLabel } from '@/lib/utils'
+import Image from 'next/image'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { Duration } from 'luxon'
 
@@ -17,9 +18,9 @@ interface Props {
   updatedReward: number
   onRewardChange: (updatedReward: string) => void
   onSave: (updatedReward: string) => void
-  className?: string
   alreadySubmitted?: boolean
   cooldownDuration?: Duration
+  maxRewardPercentage?: number
   suggestedReward?: number
   isTxPending?: boolean
   isLoading?: boolean
@@ -30,16 +31,19 @@ const UpdateBackerRewardViewModal = ({
   onClose,
   currentReward,
   updatedReward,
-  alreadySubmitted,
   onRewardChange,
   onSave,
+  alreadySubmitted,
   cooldownDuration,
+  maxRewardPercentage,
   suggestedReward,
   isTxPending,
   isLoading,
   isOperational,
 }: Props) => {
   const isDesktop = useIsDesktop()
+
+  const exceedsMax = maxRewardPercentage != null && updatedReward > maxRewardPercentage
 
   const handleSave = () => {
     onSave(updatedReward.toString())
@@ -49,7 +53,7 @@ const UpdateBackerRewardViewModal = ({
 
   return (
     <Modal onClose={onClose} data-testid="UpdateBackerRewardViewModal">
-      <div className="relative flex flex-col gap-8 p-4 md:p-6">
+      <div className="relative flex flex-col gap-6 p-4 md:p-6">
         <Header variant="h1" className="mt-16 mb-4">
           MY BACKERS&apos; REWARDS
         </Header>
@@ -57,36 +61,58 @@ const UpdateBackerRewardViewModal = ({
           <LoadingSpinner />
         ) : (
           <>
-            <Paragraph variant="body">
+            <Paragraph>
               Any updates to the Rewards % will take effect after the {cooldownDuration?.days} days cooling
               period.
             </Paragraph>
+
+            {maxRewardPercentage && (
+              <Paragraph>You can set a rewards % up to a max of {maxRewardPercentage}%</Paragraph>
+            )}
+
             <div className="flex flex-col md:flex-row gap-6 md:justify-between">
               <div className="flex flex-col items-start gap-2">
-                <Span variant="body" className="text-bg-0">
-                  Current Rewards %
-                </Span>
+                <Span className="text-bg-0">Current Rewards %</Span>
                 <Header variant="h1">{currentReward}%</Header>
               </div>
               <div className="flex flex-col items-center gap-2 w-full md:w-[60%]">
-                <div className="flex flex-row items-end justify-between px-4 py-3 bg-bg-60 w-full gap-2">
-                  <div className="flex flex-col">
-                    <Span variant="body-xs" className="text-bg-0">
-                      Updated Rewards %
-                    </Span>
-                    <InputNumber
-                      name="updatedReward"
-                      value={updatedReward}
-                      onValueChange={({ value }) => onRewardChange(value)}
-                      className="w-20 border-none focus-visible:ring-0 outline-none"
-                      decimalScale={0}
-                      max={100}
-                    />
+                <div className="flex flex-col px-4 py-3 bg-bg-60 w-full gap-2">
+                  <div className="flex flex-row gap-2 items-end justify-between">
+                    <div className="flex flex-col">
+                      <Span variant="body-xs" className="text-bg-0">
+                        Updated Rewards %
+                      </Span>
+                      <InputNumber
+                        name="updatedReward"
+                        value={updatedReward}
+                        onValueChange={({ value }) => onRewardChange(value)}
+                        className={cn(
+                          'w-20 border-none focus-visible:ring-0 outline-none',
+                          exceedsMax && 'text-error',
+                        )}
+                        decimalScale={0}
+                        max={100}
+                      />
+                    </div>
+                    {timeRemaining && (
+                      <Paragraph variant="body-s" className="text-brand-rootstock-lime md:self-end">
+                        Effective in {timeRemaining}
+                      </Paragraph>
+                    )}
                   </div>
-                  {timeRemaining && (
-                    <Paragraph variant="body-s" className="text-brand-rootstock-lime md:self-end">
-                      Effective in {timeRemaining}
-                    </Paragraph>
+                  {exceedsMax && (
+                    <div className="flex items-start gap-2 mt-2 max-w-full">
+                      <Image
+                        src="/images/warning-icon.svg"
+                        alt="Warning"
+                        width={24}
+                        height={24}
+                        className="shrink-0 mt-1"
+                      />
+                      <Paragraph className="text-error break-words" data-testid="ExceedsMaxError">
+                        This value exceeds the maximum allowed ({maxRewardPercentage}%)
+                      </Paragraph>
+                    </div>
                   )}
                 </div>
                 {suggestedReward && (
@@ -121,6 +147,16 @@ const UpdateBackerRewardViewModal = ({
           </Button>
           {isTxPending ? (
             <TransactionInProgressButton />
+          ) : exceedsMax ? (
+            <Tooltip
+              text={`Value exceeds the maximum allowed (${maxRewardPercentage}%)`}
+              side="top"
+              align="center"
+            >
+              <Button disabled className="w-full md:w-auto">
+                Save changes
+              </Button>
+            </Tooltip>
           ) : (
             <AlwaysEnabledButton
               onClick={handleSave}
