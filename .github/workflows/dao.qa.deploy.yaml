@@ -89,3 +89,12 @@ jobs:
           service: ${{ env.ECS_SERVICE }}
           cluster: ${{ env.ECS_CLUSTER }}
           wait-for-service-stability: true
+
+  trigger-e2e-tests:
+    needs: deploy
+    uses: ./.github/workflows/trigger-e2e-tests.yml
+    with:
+      environment: DAO-QA
+      test_type: smoke
+    secrets:
+      token: ${{ secrets.DAO_DAPP_AUTOMATION_PAT }}
