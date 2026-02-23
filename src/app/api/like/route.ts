@@ -2,10 +2,10 @@ import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { JWTPayload } from '@/lib/auth/jwt'
 import { withAuth } from '@/lib/auth/withAuth'
-import { daoDataDb } from '@/lib/daoDataDb'
+import { prisma } from '@/lib/prisma'
 import { confirmProposalExists } from '@/app/proposals/actions/getProposalById'
 import { ENV } from '@/lib/constants'
-import { TABLE, ProposalIdSchema, bigIntToBuffer } from './shared'
+import { ProposalIdSchema, bigIntToBuffer } from './shared'
 
 const LikeRequestSchema = z.object({
   proposalId: ProposalIdSchema,
@@ -40,7 +40,7 @@ const LikeRequestSchema = z.object({
  * { success: true, proposalId: string, reactions: Record<string, number> }
  */
 export async function GET(request: NextRequest) {
-  if (!daoDataDb) {
+  if (!prisma) {
     return Response.json({ success: false, error: 'Database not configured' }, { status: 503 })
   }
 
@@ -57,15 +57,15 @@ export async function GET(request: NextRequest) {
   const proposalIdBuffer = bigIntToBuffer(parsed.data)
 
   try {
-    const rows: { reaction: string; count: number }[] = await daoDataDb(TABLE)
-      .where({ proposalId: proposalIdBuffer })
-      .groupBy('reaction')
-      .select('reaction')
-      .count('* as count')
+    const rows = await prisma.proposalLike.groupBy({
+      by: ['reaction'],
+      where: { proposalId: proposalIdBuffer },
+      _count: { _all: true },
+    })
 
     const reactions: Record<string, number> = {}
     for (const row of rows) {
-      reactions[row.reaction] = Number(row.count)
+      reactions[row.reaction] = row._count._all
     }
 
     return Response.json({ success: true, proposalId: parsed.data, reactions })
@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
 }
 
 export const POST = withAuth(async (request, session: JWTPayload) => {
-  if (!daoDataDb) {
+  if (!prisma) {
     return Response.json({ success: false, error: 'Database not configured' }, { status: 503 })
   }
 
@@ -105,18 +105,18 @@ export const POST = withAuth(async (request, session: JWTPayload) => {
       return Response.json({ success: false, error: 'Proposal not found in the Governor' }, { status: 404 })
     }
 
-    const liked = await daoDataDb.transaction(async trx => {
-      const existing = await trx(TABLE).where({ proposalId: proposalIdBuffer, userAddress, reaction }).first()
+    const liked = await prisma.$transaction(async tx => {
+      const existing = await tx.proposalLike.findFirst({
+        where: { proposalId: proposalIdBuffer, userAddress, reaction },
+      })
 
       if (existing) {
-        await trx(TABLE).where({ id: existing.id }).delete()
+        await tx.proposalLike.delete({ where: { id: existing.id } })
         return false
       }
 
-      await trx(TABLE).insert({
-        proposalId: proposalIdBuffer,
-        userAddress,
-        reaction,
+      await tx.proposalLike.create({
+        data: { proposalId: proposalIdBuffer, userAddress, reaction },
       })
       return true
     })
