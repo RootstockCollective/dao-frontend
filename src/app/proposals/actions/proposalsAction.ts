@@ -39,6 +39,11 @@ export const getCachedProposalSharedDetails = unstable_cache(fetchProposalShared
 
 const query = apolloGQL`
   query GetProposals {
+    _meta {
+      block {
+        number
+      }
+    }
     proposals(first: 1000, orderDirection: desc, orderBy: createdAt) {
       id
       proposalId
@@ -69,7 +74,12 @@ const query = apolloGQL`
   }
 `
 
-interface GraphQLResponse {
+export interface GraphQLResponse {
+  _meta: {
+    block: {
+      number: number
+    }
+  }
   proposals: ProposalGraphQLResponse[]
   counters: Counter[]
 }
@@ -103,7 +113,12 @@ interface Counter {
 }
 
 export async function fetchProposals(): Promise<GraphQLResponse> {
-  const { data } = await daoClient.query<GraphQLResponse>({ query, fetchPolicy: 'no-cache' })
+  const { data, errors } = await daoClient.query<GraphQLResponse>({ query, fetchPolicy: 'no-cache' })
+
+  if (errors && errors.length > 0) {
+    throw new Error(`The Graph returned GraphQL errors: ${errors.map(e => e.message).join('; ')}`)
+  }
+
   return data
 }
 
