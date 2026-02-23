@@ -3,7 +3,6 @@ import { Address, isAddress, getAddress } from 'viem'
 import { uniswapProvider } from '@/lib/swap/providers/uniswap'
 import { SWAP_TOKEN_ADDRESSES } from '@/lib/swap/constants'
 import { getTokenDecimalsBatch, scaleAmount, isValidAmount } from '@/lib/swap/utils'
-import { sentryServer } from '@/lib/sentry/sentry-server'
 
 /**
  * Cache quotes for 30 seconds
@@ -85,17 +84,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ quotes }, { status: 200 })
   } catch (error) {
     console.error('Error fetching swap quotes:', error)
-    const errorObj = error instanceof Error ? error : new Error(String(error))
-    sentryServer.captureException(errorObj, {
-      tags: {
-        errorType: 'SWAP_QUOTE_ERROR',
-      },
-      extra: {
-        tokenInParam,
-        tokenOutParam,
-        amountParam,
-      },
-    })
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to fetch swap quotes' },
       { status: 500 },
