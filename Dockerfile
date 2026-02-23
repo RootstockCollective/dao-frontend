@@ -16,6 +16,9 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
+# Copy Prisma schema so postinstall hook (prisma generate) can find it
+COPY prisma/schema.prisma ./prisma/schema.prisma
+
 # Skip cypress install
 ENV CYPRESS_INSTALL_BINARY 0
 
