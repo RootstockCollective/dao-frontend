@@ -1,9 +1,10 @@
-import { config } from '@/config'
-import { getBlockNumber } from 'wagmi/actions'
-import { STATE_SYNC_BLOCK_STALENESS_THRESHOLD } from '@/lib/constants'
-import { daoClient } from '@/shared/components/ApolloClient'
 import { gql as apolloGQL } from '@apollo/client'
+import { getBlockNumber } from 'wagmi/actions'
+
+import { config } from '@/config'
+import { STATE_SYNC_BLOCK_STALENESS_THRESHOLD } from '@/lib/constants'
 import { db } from '@/lib/db'
+import { daoClient } from '@/shared/components/ApolloClient'
 
 const SUBGRAPH_META_QUERY = apolloGQL`
   query GetSubgraphMeta {
@@ -28,6 +29,13 @@ interface SubgraphMetadataRow {
   blockNumber: string
 }
 
+/**
+ * Verifies that the `SubgraphMetadata` row for governance is within
+ * `STATE_SYNC_BLOCK_STALENESS_THRESHOLD` blocks of the current chain head.
+ * Used before trusting DB-backed proposal lists.
+ *
+ * @throws {Error} When metadata is missing, the chain head cannot be read, or the DB lags too much
+ */
 export async function validateDBSync(): Promise<void> {
   try {
     const metadataRecord = await db<SubgraphMetadataRow>('SubgraphMetadata')
@@ -57,12 +65,22 @@ export async function validateDBSync(): Promise<void> {
   }
 }
 
+/**
+ * Fetches subgraph `_meta` via a lightweight query and ensures its block is within
+ * `STATE_SYNC_BLOCK_STALENESS_THRESHOLD` of the latest on-chain block.
+ *
+ * @throws {Error} When metadata cannot be fetched, the chain head cannot be read, or the subgraph lags too much
+ */
 export async function validateSubgraphSync(): Promise<void> {
   try {
     const { data } = await daoClient.query<SubgraphMetaResponse>({
       query: SUBGRAPH_META_QUERY,
       fetchPolicy: 'no-cache',
     })
+
+    if (!data) {
+      throw new Error('Failed to fetch subgraph metadata')
+    }
 
     const subgraphBlockNumber = BigInt(data._meta.block.number)
     const latestBlockNumber = await getBlockNumber(config)

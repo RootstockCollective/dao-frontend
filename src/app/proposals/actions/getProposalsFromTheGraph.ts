@@ -1,6 +1,10 @@
+import { getBlockNumber } from 'wagmi/actions'
+
 import { fetchProposals, ProposalGraphQLResponse } from '@/app/proposals/actions/proposalsAction'
-import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { buildProposal } from '@/app/proposals/actions/utils'
+import { ProposalApiResponse } from '@/app/proposals/shared/types'
+import { config } from '@/config'
+import { STATE_SYNC_BLOCK_STALENESS_THRESHOLD } from '@/lib/constants'
 
 function transformGraphQLProposal(proposal: ProposalGraphQLResponse): ProposalApiResponse {
   return buildProposal(proposal, {
@@ -28,6 +32,29 @@ function validateProposalStructure(proposal: ProposalGraphQLResponse, index: num
   }
 }
 
+/**
+ * Rejects the proposals response if the subgraph block from `_meta` is too far behind
+ * the latest on-chain block (`STATE_SYNC_BLOCK_STALENESS_THRESHOLD`).
+ *
+ * @param subgraphBlockNumber - Block number reported by the subgraph for the proposals query
+ * @throws {Error} When the chain head cannot be read, or the subgraph is beyond the allowed lag
+ */
+async function validateSubgraphSyncFromMeta(subgraphBlockNumber: number): Promise<void> {
+  const latestBlockNumber = await getBlockNumber(config)
+
+  if (!latestBlockNumber) {
+    throw new Error('The Graph: failed to fetch latest block number from blockchain')
+  }
+
+  const blockDifference = latestBlockNumber - BigInt(subgraphBlockNumber)
+
+  if (blockDifference > BigInt(STATE_SYNC_BLOCK_STALENESS_THRESHOLD)) {
+    throw new Error(
+      `The Graph subgraph is lagging behind: subgraph block ${subgraphBlockNumber}, latest block ${latestBlockNumber}, difference ${blockDifference} blocks (threshold: ${STATE_SYNC_BLOCK_STALENESS_THRESHOLD})`,
+    )
+  }
+}
+
 export async function getProposalsFromTheGraph(): Promise<ProposalApiResponse[]> {
   try {
     const response = await fetchProposals()
@@ -36,6 +63,12 @@ export async function getProposalsFromTheGraph(): Promise<ProposalApiResponse[]>
     if (!response) {
       throw new Error('The Graph returned null or undefined response')
     }
+
+    if (!response._meta?.block?.number) {
+      throw new Error('The Graph response is missing _meta block information')
+    }
+
+    await validateSubgraphSyncFromMeta(response._meta.block.number)
 
     if (!response.proposals) {
       throw new Error('The Graph response is missing proposals array')

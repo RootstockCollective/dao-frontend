@@ -1,13 +1,14 @@
 'use server'
 
-import { publicClient } from '@/lib/viemPublicClient'
+import { gql as apolloGQL } from '@apollo/client'
+import { unstable_cache } from 'next/cache'
+import { Address } from 'viem'
+
+import { GovernorAbi } from '@/lib/abis/Governor'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { GovernorAddress, tokenContracts } from '@/lib/contracts'
-import { GovernorAbi } from '@/lib/abis/Governor'
-import { unstable_cache } from 'next/cache'
-import { gql as apolloGQL } from '@apollo/client'
+import { publicClient } from '@/lib/viemPublicClient'
 import { daoClient } from '@/shared/components/ApolloClient'
-import { Address } from 'viem'
 
 const fetchProposalSharedDetails = async () => {
   // Proposal Threshold (from governor)
@@ -39,6 +40,11 @@ export const getCachedProposalSharedDetails = unstable_cache(fetchProposalShared
 
 const query = apolloGQL`
   query GetProposals {
+    _meta {
+      block {
+        number
+      }
+    }
     proposals(first: 1000, orderDirection: desc, orderBy: createdAt) {
       id
       proposalId
@@ -69,7 +75,12 @@ const query = apolloGQL`
   }
 `
 
-interface GraphQLResponse {
+export interface GraphQLResponse {
+  _meta: {
+    block: {
+      number: number
+    }
+  }
   proposals: ProposalGraphQLResponse[]
   counters: Counter[]
 }
@@ -104,10 +115,16 @@ interface Counter {
 
 /** Fetches all proposals from the DAO subgraph. */
 export async function fetchProposals(): Promise<GraphQLResponse> {
-  const { data } = await daoClient.query<GraphQLResponse>({ query, fetchPolicy: 'no-cache' })
+  const { data, error } = await daoClient.query<GraphQLResponse>({ query, fetchPolicy: 'no-cache' })
+
+  if (error) {
+    throw new Error(`The Graph returned GraphQL error: ${error.message}`)
+  }
+
   if (!data) {
     throw new Error('Failed to fetch proposals from subgraph')
   }
+
   return data
 }
 
