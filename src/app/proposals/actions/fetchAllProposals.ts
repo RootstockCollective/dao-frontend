@@ -8,6 +8,8 @@ import { getProposalsFromBlockscout } from './getProposalsFromBlockscout'
  * Fetches all proposals from available sources with fallback.
  * Tries DB first, then GraphQL, then Blockscout — returns from the first source that succeeds.
  */
+const SOURCE_NAMES = ['DB', 'TheGraph', 'Blockscout'] as const
+
 export async function fetchAllProposals(): Promise<{
   proposals: ProposalApiResponse[]
   sourceIndex: number
@@ -21,7 +23,7 @@ export async function fetchAllProposals(): Promise<{
         return { proposals, sourceIndex: i }
       }
     } catch (error) {
-      console.error(`Failed to fetch proposals from source:`, error)
+      console.error(`[Proposals] Source ${SOURCE_NAMES[i]} failed:`, error)
     }
   }
 
