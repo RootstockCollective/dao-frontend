@@ -3,9 +3,9 @@ import { Builder, BuilderStateFlags } from '../types'
 export const isBuilderOperational = (stateFlags?: BuilderStateFlags) => {
   return Boolean(
     stateFlags?.initialized &&
-      stateFlags?.communityApproved &&
-      stateFlags?.kycApproved &&
-      !stateFlags?.kycPaused,
+    stateFlags?.communityApproved &&
+    stateFlags?.kycApproved &&
+    !stateFlags?.kycPaused,
   )
 }
 
@@ -22,9 +22,9 @@ export const isBuilderSelfPaused = (stateFlags?: BuilderStateFlags) => Boolean(s
 export const isBuilderActive = (stateFlags?: BuilderStateFlags) => {
   return Boolean(
     stateFlags?.communityApproved &&
-      stateFlags?.kycApproved &&
-      !stateFlags?.kycPaused &&
-      !stateFlags?.selfPaused,
+    stateFlags?.kycApproved &&
+    !stateFlags?.kycPaused &&
+    !stateFlags?.selfPaused,
   )
 }
 
@@ -38,10 +38,10 @@ export const isBuilderInProgress = (builder: Builder) => {
 export const isBuilderRewardable = (stateFlags?: BuilderStateFlags) => {
   return Boolean(
     stateFlags?.initialized &&
-      stateFlags?.communityApproved &&
-      stateFlags?.kycApproved &&
-      !stateFlags?.kycPaused &&
-      !stateFlags?.selfPaused,
+    stateFlags?.communityApproved &&
+    stateFlags?.kycApproved &&
+    !stateFlags?.kycPaused &&
+    !stateFlags?.selfPaused,
   )
 }
 

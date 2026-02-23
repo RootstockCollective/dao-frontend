@@ -72,7 +72,7 @@
     "pg": "^8.16.3",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "react-error-boundary": "^6.0.0",
+    "react-error-boundary": "6.0.0",
     "react-hook-form": "^7.62.0",
     "react-markdown": "10.1.0",
     "react-number-format": "^5.4.4",
@@ -106,8 +106,8 @@
     "@types/mock-knex": "^0.4.8",
     "@types/node": "^24",
     "@types/pg": "^8.15.5",
-    "@types/react": "^19.1.9",
-    "@types/react-dom": "^19.1.7",
+    "@types/react": "19.1.9",
+    "@types/react-dom": "19.1.11",
     "@types/sanitize-html": "^2.16.0",
     "@vitejs/plugin-react": "^4.7.0",
     "cypress": "^13.17.0",
@@ -133,7 +133,17 @@
   },
   "overrides": {
     "elliptic": "6.6.1",
-    "axios": "1.13.2"
+    "axios": "1.13.2",
+    "minimatch": "10.2.1",
+    "next-navigation-guard": {
+      "next": "$next"
+    },
+    "@apollo/client-integration-nextjs": {
+      "next": "$next"
+    },
+    "@reown/appkit-adapter-wagmi": {
+      "@wagmi/connectors": "6.2.0"
+    }
   },
   "engines": {
     "node": "^24.0.0"
