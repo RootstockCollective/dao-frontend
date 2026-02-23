@@ -2,17 +2,14 @@ import { NextRequest } from 'next/server'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { requireAuth } from '@/lib/auth/session'
 
-const mockSelect = vi.fn()
-const mockWhere = vi.fn(() => ({ select: mockSelect }))
-const mockDaoDataDb = Object.assign(
-  vi.fn((_table: string) => ({ where: mockWhere })),
-  {
-    transaction: vi.fn(),
+const mockPrisma = {
+  proposalLike: {
+    findMany: vi.fn(),
   },
-)
+}
 
-vi.mock('@/lib/daoDataDb', () => ({
-  daoDataDb: mockDaoDataDb,
+vi.mock('@/lib/prisma', () => ({
+  prisma: mockPrisma,
 }))
 
 vi.mock('@/lib/auth/session', () => ({
@@ -35,7 +32,7 @@ describe('GET /api/like/user', () => {
   })
 
   it("should return user's reactions when liked", async () => {
-    mockSelect.mockResolvedValueOnce([{ reaction: 'heart' }])
+    mockPrisma.proposalLike.findMany.mockResolvedValueOnce([{ reaction: 'heart' }])
 
     const { GET } = await import('./route')
     const response = await GET(createGetRequest('123'))
@@ -50,7 +47,7 @@ describe('GET /api/like/user', () => {
   })
 
   it('should return empty array when not liked', async () => {
-    mockSelect.mockResolvedValueOnce([])
+    mockPrisma.proposalLike.findMany.mockResolvedValueOnce([])
 
     const { GET } = await import('./route')
     const response = await GET(createGetRequest('123'))
@@ -65,14 +62,17 @@ describe('GET /api/like/user', () => {
   })
 
   it('should normalize userAddress to lowercase', async () => {
-    mockSelect.mockResolvedValueOnce([])
+    mockPrisma.proposalLike.findMany.mockResolvedValueOnce([])
 
     const { GET } = await import('./route')
     await GET(createGetRequest('123'))
 
-    expect(mockWhere).toHaveBeenCalledWith({
-      proposalId: expect.any(Buffer),
-      userAddress: '0xabcdef0123456789abcdef0123456789abcdef01',
+    expect(mockPrisma.proposalLike.findMany).toHaveBeenCalledWith({
+      where: {
+        proposalId: expect.any(Uint8Array),
+        userAddress: '0xabcdef0123456789abcdef0123456789abcdef01',
+      },
+      select: { reaction: true },
     })
   })
 
@@ -108,7 +108,7 @@ describe('GET /api/like/user', () => {
   })
 
   it('should return 500 on database error', async () => {
-    mockSelect.mockRejectedValueOnce(new Error('DB connection lost'))
+    mockPrisma.proposalLike.findMany.mockRejectedValueOnce(new Error('DB connection lost'))
 
     const { GET } = await import('./route')
     const response = await GET(createGetRequest('123'))
@@ -123,7 +123,7 @@ describe('GET /api/like/user', () => {
 describe('GET /api/like/user (database not configured)', () => {
   it('should return 503 when database is not configured', async () => {
     vi.resetModules()
-    vi.doMock('@/lib/daoDataDb', () => ({ daoDataDb: undefined }))
+    vi.doMock('@/lib/prisma', () => ({ prisma: undefined }))
     vi.doMock('@/lib/auth/session', () => ({
       requireAuth: vi.fn().mockResolvedValue({
         userAddress: '0xAbCdEf0123456789AbCdEf0123456789AbCdEf01',

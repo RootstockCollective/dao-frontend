@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DAO_DATA_DB_CONNECTION_STRING")
+  schemas  = ["dao_data"]
+}
+
+model ProposalLike {
+  id          Int      @id @default(autoincrement())
+  proposalId  Bytes
+  userAddress String   @db.VarChar(42)
+  likedAt     DateTime @default(now()) @db.Timestamptz()
+  reaction    String   @db.VarChar(50)
+
+  @@unique([proposalId, userAddress, reaction], map: "unique_user_proposal")
+  @@index([proposalId], map: "idx_proposal_likes_proposal_id")
+  @@index([userAddress], map: "idx_proposal_likes_user_address")
+  @@map("ProposalLikes")
+  @@schema("dao_data")
+}
