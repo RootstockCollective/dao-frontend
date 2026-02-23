@@ -17,7 +17,7 @@ const config = createConfig({
 // Add BigInt serialization
 const originalJSONStringify = JSON.stringify
 JSON.stringify = function (value, replacer, space) {
-  const customReplacer = (key: string, value: any) => {
+  const customReplacer = (key: string, value: unknown) => {
     if (typeof value === 'bigint') {
       return value.toString()
     }

@@ -45,7 +45,7 @@ export const IMAGE_CONFIG = {
 } as const
 
 // Content configuration
-/* eslint-disable quotes */
+
 export const CONTENT_CONFIG = {
   NEED_RBTC_RIF: {
     title: 'Before you stake',

@@ -1,4 +1,3 @@
-/* eslint-disable quotes */
 import { nftContracts } from '@/lib/contracts'
 import type { FC, ReactNode } from 'react'
 import { Header, Paragraph } from '@/components/Typography'

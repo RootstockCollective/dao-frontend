@@ -76,7 +76,7 @@ function buildAllocationAmountUsdExpression(prices: PriceParam[]) {
   return db.raw(`${sql} as "amountUsd"`, [factor])
 }
 
-export async function GET(req: Request, { params }: { params: Promise<{ backer: Address }> }) {
+export async function GET(req: Request, { params }: { params: Promise<{ backer: string }> }) {
   const { backer } = await params
 
   if (!isAddress(backer)) {

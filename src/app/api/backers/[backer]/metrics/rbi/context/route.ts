@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { Address, isAddress } from 'viem'
+import { isAddress } from 'viem'
 
 const DB_COMMAND_COALESCE = `
   COALESCE(
@@ -15,7 +15,7 @@ const DB_COMMAND_COALESCE = `
   '[]')
 `
 
-export async function GET(req: Request, { params }: { params: Promise<{ backer: Address }> }) {
+export async function GET(req: Request, { params }: { params: Promise<{ backer: string }> }) {
   const { backer } = await params
 
   if (!isAddress(backer)) {

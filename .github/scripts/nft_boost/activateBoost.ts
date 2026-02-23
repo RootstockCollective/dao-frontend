@@ -3,7 +3,7 @@ import { Address, getAddress, zeroAddress } from 'viem'
 import { getActions } from './actions.utils'
 import { boostPercentage, nftContractAddress } from './process.utils'
 
-export type HolderData = {
+export interface HolderData {
   estimatedRBTCRewards: bigint
   estimatedRIFRewards: bigint
   boostedRBTCRewards: bigint
@@ -12,7 +12,7 @@ export type HolderData = {
 
 export type Holders = Record<Address, HolderData>
 
-export type NftBoostData = {
+export interface NftBoostData {
   nftContractAddress: Address
   boostPercentage: number
   calculationBlock: number

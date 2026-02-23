@@ -1,4 +1,4 @@
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import type { useRouter } from 'next/navigation'
 import { BannerConfig } from '@/app/user/StackingNotifications/types'
 
 /**
@@ -26,7 +26,10 @@ import { BannerConfig } from '@/app/user/StackingNotifications/types'
  * })
  * ```
  */
-export const handleActionClick = (content: { action: BannerConfig['action'] }, router: AppRouterInstance) => {
+export const handleActionClick = (
+  content: { action: BannerConfig['action'] },
+  router: ReturnType<typeof useRouter>,
+) => {
   if (content.action.external && typeof content.action.url === 'string') {
     // Open external links in a new tab/window
     window.open(content.action.url, '_blank')

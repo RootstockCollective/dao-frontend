@@ -1,5 +1,5 @@
 import { BannerContentProps } from '@/components/StackableBanner/BannerContent'
-import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import type { useRouter } from 'next/navigation'
 
 /**
  * Configuration object for a single banner notification.
@@ -30,7 +30,7 @@ export interface BannerConfig extends Omit<BannerContentProps, 'buttonOnClick'> 
      * The target URL. Can be an internal route (e.g., '/user?action=stake')
      * or an external URL (e.g., 'https://exchange.example.com')
      */
-    url: string | ((router?: AppRouterInstance) => void)
+    url: string | ((router?: ReturnType<typeof useRouter>) => void)
 
     /**
      * Whether this is an external link:

@@ -3,9 +3,9 @@ import { db } from '@/lib/db'
 import { paginateQuery } from '@/app/api/utils/paginateQuery'
 import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
 import { BACKER_TO_BUILDER_COLUMNS } from '@/app/api/db/constants'
-import { Address, isAddress } from 'viem'
+import { isAddress } from 'viem'
 
-export async function GET(req: NextRequest, { params }: { params: Promise<{ backer: Address }> }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ backer: string }> }) {
   const { backer } = await params
 
   if (!isAddress(backer)) {

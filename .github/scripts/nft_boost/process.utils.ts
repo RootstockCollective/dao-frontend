@@ -2,7 +2,7 @@ import { config as envConfig } from 'dotenv'
 import { Address, getAddress } from 'viem'
 
 const [, , ...args] = process.argv
-type Args = {
+interface Args {
   nftContractAddress: Address
   boostPercentage: number
   env: string
