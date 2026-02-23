@@ -75,7 +75,7 @@ npm install
 .fork
 ```
 
-The chosen set of variables depends on the targeted contract versions you plan to work with. `.dev` is similar to the `.testnet` versions of the contract, with the exception of reduced wait times for `votingDelay`, `votingPeriod`, and `timelockMinDelay` for automation purposes. `.testnet` and `.mainnet` versions are aligned on time but target respective chains (chainIds 31 and 30). `.fork` uses a local fork of Rootstock Mainnet (via Anvil) for testing swap functionality without spending real funds - see [Fork Setup Guide](./docs/FORK_SETUP.md) for details. For testing with the Envio indexer (proposals data), see [Envio Test Guide](./docs/ENVIO_TEST_GUIDE.md).
+The chosen set of variables depends on the targeted contract versions you plan to work with. `.dev` is similar to the `.testnet` versions of the contract, with the exception of reduced wait times for `votingDelay`, `votingPeriod`, and `timelockMinDelay` for automation purposes. `.testnet` and `.mainnet` versions are aligned on time but target respective chains (chainIds 31 and 30). `.fork` uses a local fork of Rootstock Mainnet (via Anvil) for testing swap functionality without spending real funds - see [Fork Setup Guide](./docs/FORK_SETUP.md) for details. For details on the Envio indexer integration (proposals data), deployment configuration, and troubleshooting, see [Envio Integration](./docs/ENVIO_INTEGRATION.md).
 
 5. Run the development server:
 
@@ -106,7 +106,7 @@ The value must correspond to one of the `.env.` file endings.
 >
 > **Fork Environment**: Use `PROFILE=fork` to test swap functionality on a local fork of Rootstock Mainnet without spending real funds. See [Fork Setup Guide](./docs/FORK_SETUP.md) for setup instructions.
 >
-> **Envio Indexer**: For local development with proposals data, you can run the Envio indexer locally. See [Envio Test Guide](./docs/ENVIO_TEST_GUIDE.md) for setup instructions.
+> **Envio Indexer**: Envio is the primary data source for proposals. See [Envio Integration](./docs/ENVIO_INTEGRATION.md) for architecture details and troubleshooting.
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
@@ -207,7 +207,6 @@ This project uses semantic z-index classes instead of arbitrary values. Defined 
 ## TypeScript Type Conventions
 
 Use `interface` for object shapes (enforced by `@typescript-eslint/consistent-type-definitions`). Use `type` for unions, intersections, and mapped types.
-
 
 ## Unit testing
 
