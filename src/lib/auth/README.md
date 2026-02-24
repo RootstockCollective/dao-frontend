@@ -49,19 +49,25 @@ Key components: `LikeButton.tsx`, `useLike.ts`, `SiweTooltipContent.tsx`
 
 ## Key Files
 
-| File | Purpose |
-|---|---|
-| `siweStore.ts` | Zustand store for JWT token, auth state, and `signOut` |
-| `actions.ts` | Server actions: `requestChallenge`, `verifySignature` |
-| `challengeStore.ts` | Server-side challenge storage and validation |
-| `jwt.ts` | Client-side JWT utilities (decode, check expiry) |
-| `jwt.server.ts` | Server-side JWT signing and verification |
-| `session.ts` | Session management utilities |
-| `withAuth.ts` | API route middleware for JWT validation |
-| `useSignIn.ts` (shared hook) | React hook wrapping the full sign-in flow |
+| File                          | Purpose                                                       |
+| ----------------------------- | ------------------------------------------------------------- |
+| `siweStore.ts`                | Zustand store for JWT token, auth state, and `signOut`        |
+| `actions.ts`                  | Server-side auth logic: `requestChallenge`, `verifySignature` |
+| `challengeStore.ts`           | Server-side challenge storage and validation                  |
+| `jwt.ts`                      | Client-side JWT utilities (decode, check expiry)              |
+| `jwt.server.ts`               | Server-side JWT signing and verification                      |
+| `session.ts`                  | Session management utilities                                  |
+| `withAuth.ts`                 | API route middleware for JWT validation                       |
+| `useSignIn.ts` (shared hook)  | React hook wrapping the full sign-in flow                     |
+| `api/auth/challenge/route.ts` | POST endpoint for SIWE challenge creation                     |
+| `api/auth/login/route.ts`     | POST endpoint for signature verification and JWT issuance     |
+| `api/auth/verify/route.ts`    | POST endpoint for JWT validation                              |
+| `middleware.ts` (src root)    | Rate limiting middleware for all auth API routes              |
+| `rateLimit.ts` (src/lib)      | In-memory sliding window rate limiter                         |
 
 ## Security Considerations
 
 - **Challenge is server-generated**: The SIWE message is created entirely on the server, preventing client-side manipulation of the nonce, domain, or expiration.
 - **JWT on disconnect**: When the user disconnects their wallet, the JWT is destroyed and all authenticated UI state (e.g. like icons) is reset. On reconnect, the user must re-authenticate via SIWE to restore their session.
 - **Token expiry**: Expired JWTs are cleared automatically on store rehydration.
+- **Rate limiting**: All auth endpoints are rate-limited via middleware (5 req/min for challenge and login, 20 req/min for verify) to prevent brute-force and DoS attacks.
