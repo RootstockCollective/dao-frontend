@@ -1,6 +1,6 @@
 import { useAccount, useSignMessage } from 'wagmi'
-import { requestChallenge, verifySignature } from '@/lib/auth/actions'
 import { useSiweStore, selectIsAuthenticated } from '@/lib/auth/siweStore'
+import type { RequestChallengeResult, VerifySignatureResult } from '@/lib/auth/actions'
 
 interface UseSignInReturn {
   signIn: () => Promise<string | null>
@@ -50,15 +50,35 @@ export function useSignIn(): UseSignInReturn {
       setLoading(true)
 
       // Request challenge from server (creates SIWE message server-side)
-      const { challengeId, message } = await requestChallenge(address)
-
-      // Sign the server-provided message with the wallet
-      const signature = await signMessageAsync({
-        message,
+      const challengeRes = await fetch('/api/auth/challenge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address }),
       })
 
+      if (!challengeRes.ok) {
+        const { error } = await challengeRes.json()
+        throw new Error(error || 'Challenge request failed')
+      }
+
+      const { challengeId, message }: RequestChallengeResult = await challengeRes.json()
+
+      // Sign the server-provided message with the wallet
+      const signature = await signMessageAsync({ message })
+
       // Verify signature with server and get JWT token
-      const { token: jwtToken } = await verifySignature(challengeId, signature)
+      const loginRes = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ challengeId, signature }),
+      })
+
+      if (!loginRes.ok) {
+        const { error } = await loginRes.json()
+        throw new Error(error || 'Login failed')
+      }
+
+      const { token: jwtToken }: VerifySignatureResult = await loginRes.json()
 
       // Store jwtToken in Zustand store (which also updates localStorage)
       setToken(jwtToken)
