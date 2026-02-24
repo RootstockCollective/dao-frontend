@@ -13,6 +13,8 @@ const RATE_LIMIT_CONFIGS: Record<string, RouteRateLimitConfig> = {
   '/api/auth/verify': { prefix: 'auth_verify', limit: 20, windowMs: 60_000 },
 }
 
+// Falls back to 127.0.0.1 when no proxy headers are present (local dev, tests).
+// In production the reverse proxy always sets x-forwarded-for / x-real-ip.
 function getClientIp(request: NextRequest): string {
   return (
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
