@@ -391,27 +391,31 @@ export type BtcVaultServiceEvent =
     }
 
 /**
- * Callback for vault service events. Passed to `BtcVaultService.subscribe()`.
+ * Callback for vault adapter events. Passed to `BtcVaultAdapter.subscribe()`.
  */
 export type BtcVaultServiceListener = (event: BtcVaultServiceEvent) => void
 
-// ─── Service Interface ───────────────────────────────────────────────
+// ─── Adapter Interface ───────────────────────────────────────────────
 
 /**
- * Data/service layer for the BTC vault.
+ * Contract-oriented data adapter for the BTC vault.
  *
  * All reads return `Promise<T>` so the mock and real (contract) implementations
  * share the same interface shape. Guards on write methods are enforced internally.
+ * All monetary values are bigint/Wei — no formatting concerns.
  *
- * **Implementations:**
- * - `MockBtcVaultService` — in-memory mock with timer-based epoch cycling.
- * - `ContractBtcVaultService` — stub, throws until contract ABIs are available.
+ * **Implementation:**
+ * - `MockBtcVaultAdapter` — in-memory mock with timer-based epoch cycling.
  *
- * **Lifecycle:** Created via `createBtcVaultService()`, provided to components
- * via `BtcVaultServiceProvider` React context, and cleaned up via `dispose()`
+ * Mock-specific: This interface is consumed by mock hooks (*.mock.ts) via the
+ * MockBtcVaultProvider context. Contract hooks use useReadContract/useWriteContract
+ * directly and do not use this interface.
+ *
+ * **Lifecycle:** Created via `createBtcVaultAdapter()`, provided to mock hooks
+ * via `MockBtcVaultProvider` React context, and cleaned up via `dispose()`
  * on provider unmount.
  */
-export interface BtcVaultService {
+export interface BtcVaultAdapter {
   // ── Vault-level reads ──────────────────────────────────────────────
 
   /** Returns aggregate vault metrics (TVL, APY, NAV). Same data for all users. */
@@ -493,7 +497,7 @@ export interface BtcVaultService {
 // ─── Mock Configuration ──────────────────────────────────────────────
 
 /**
- * Configuration for `MockBtcVaultService` timer durations.
+ * Configuration for `MockBtcVaultAdapter` timer durations.
  * All values in milliseconds. Used to speed up or slow down the
  * simulated epoch cycle and transaction confirmations for testing/demos.
  */

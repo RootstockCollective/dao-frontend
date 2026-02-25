@@ -1,5 +1,5 @@
 import type {
-  BtcVaultService,
+  BtcVaultAdapter,
   BtcVaultServiceEvent,
   BtcVaultServiceListener,
   ClaimableInfo,
@@ -41,7 +41,7 @@ function generateTxHash(): string {
   return `0x${hex}`
 }
 
-export class MockBtcVaultService implements BtcVaultService {
+export class MockBtcVaultAdapter implements BtcVaultAdapter {
   private store: MockStore
   private config: Required<MockBtcVaultConfig>
   private timers = new Set<ReturnType<typeof setTimeout>>()

@@ -1,12 +1,12 @@
 'use client'
 
-import { BtcVaultServiceProvider } from './providers/BtcVaultServiceProvider'
+import { MockBtcVaultProvider } from './providers/MockBtcVaultProvider'
 
 const NAME = 'BTC Vault'
 
 export const BtcVaultPage = () => {
   return (
-    <BtcVaultServiceProvider>
+    <MockBtcVaultProvider>
       <div
         data-testid={NAME}
         className="flex flex-col items-start w-full h-full pt-[0.13rem] md:gap-6 rounded-sm"
@@ -36,6 +36,6 @@ export const BtcVaultPage = () => {
           {/* BTC Vault History - implemented in F10 */}
         </section>
       </div>
-    </BtcVaultServiceProvider>
+    </MockBtcVaultProvider>
   )
 }
