@@ -52,5 +52,6 @@ export const routePatterns = [
   { pattern: /^\/delegate$/, component: <HeaderTitle variant="h1">DELEGATION</HeaderTitle> },
   { pattern: /^\/treasury$/, component: <HeaderTitle variant="h1">TREASURY</HeaderTitle> },
   { pattern: /^\/vault$/, component: <HeaderTitle variant="h1">USD VAULT</HeaderTitle> },
+  { pattern: /^\/btc-vault$/, component: <HeaderTitle variant="h1">BTC VAULT</HeaderTitle> },
   // Add more patterns as needed
 ]

@@ -9,6 +9,7 @@ const features = {
   use_state_sync: 'Use the state sync for data collection',
   debug_logs: 'Enable debug logs',
   vault: 'USDRIF Vault page',
+  btc_vault: 'BTC Vault page',
   sentry_error_tracking: 'Enable Sentry error tracking',
   sentry_replay: 'Enable Sentry session replay',
 } as const
