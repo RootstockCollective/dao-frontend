@@ -1,0 +1,66 @@
+---
+description: Enforces naming, imports, exports, types, error handling, and styling conventions
+alwaysApply: true
+---
+
+# Coding Conventions
+
+Apply to ALL new code. When editing existing code that violates these, update the touched code to comply.
+
+## File Naming
+
+| Type                        | Case                          | Example              |
+| --------------------------- | ----------------------------- | -------------------- |
+| Components                  | PascalCase                    | `SomeComponent.tsx`  |
+| Hooks                       | camelCase starting with `use` | `useVaultBalance.ts` |
+| Other files and all folders | kebab-case                    | `component-utils.ts` |
+
+- File name MUST match the primary export. `useGetMetrics.ts` cannot export `useGetMetricsAbi`.
+- `.tsx` only for files containing JSX. Pure logic uses `.ts`.
+
+## Exports
+
+- **No default exports** except where Next.js requires: `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`, `default.tsx`, and `*.stories.tsx`, `*.config.*`.
+- Use barrel exports (`index.ts`) for feature component folders to shorten import paths.
+
+## Import Ordering
+
+Group with blank line separators, top-to-bottom:
+
+1. External packages (`react`, `next`, `wagmi`, `viem`, `zod`, etc.)
+2. Alias imports (`@/lib/...`, `@/components/...`, `@/shared/...`)
+3. Relative imports (`./...`, `../...`)
+
+- `@/` for cross-feature imports, relative for same-feature/same-directory.
+
+## Types
+
+- `interface` for object shapes, `type` for unions, intersections, mapped types.
+- No `I` prefix on interfaces.
+- Props: `Props` internally, `{ComponentName}Props` when exported.
+- Required properties first in interfaces.
+- **No `any`** without a `// SAFETY: <reason>` comment.
+
+## Error Handling
+
+- Catch variable: always `error`. Never `err`, `e`, or `_`.
+- When `error` would shadow an outer variable, use `caughtError`.
+- Unused catch: `catch {` (no variable).
+- API routes: always `NextResponse.json()` with shape `{ success: boolean, error?: string }`.
+
+## Variables
+
+- `camelCase` for variables and functions.
+- `UPPER_SNAKE_CASE` for true constants.
+- `PascalCase` only for components, classes, types, interfaces.
+
+## Strings
+
+- Shared token/chain names (`RIF`, `RBTC`, `stRIF`, `USDRIF`) from `@/lib/constants`.
+- Domain-specific UI strings: extract to a `strings` const or co-located `constants.ts`.
+
+## Layout & Styling
+
+- Tailwind CSS classes over `style` prop. Use `style` only for runtime-computed dynamic values.
+- Flexbox for linear layouts, Grid for two-dimensional layouts. No justification needed for either choice.
+- Use the `cn()` utility from `@/lib/utils` for conditional class composition.

@@ -1,0 +1,39 @@
+---
+description: When touching existing files, clean up violations proportional to the change scope
+alwaysApply: true
+---
+
+# Tech Debt: Clean on Touch
+
+When editing existing files, bring touched code up to current standards. This incrementally closes the gap between current and target codebase state.
+
+## Fix When You Touch a File
+
+1. **Imports:** reorder to standard (external → alias → relative, blank line separators)
+2. **Error variables:** rename `err`, `e`, `_` to `error` (or `caughtError` if shadowed)
+3. **Type safety:** replace `any` with proper types in code you touch. Add `// SAFETY:` if unavoidable.
+4. **Variable naming:** fix casing violations (e.g., `IsLoading` → `isLoading`)
+5. **API responses:** replace `Response.json()` with `NextResponse.json()` in routes you edit
+6. **Axios → fetch:** replace `axiosInstance` calls with `fetch` in code you touch
+7. **Missing JSDoc:** add JSDoc to exported hooks/functions you modify
+8. **TODO format:** update `@TODO`, `//TODO:`, unlinked TODOs to `// TODO(DAO-XXXX):` format
+9. **Narration comments:** remove comments that restate what the code does
+
+## Do NOT Fix (Create Ticket Instead)
+
+- File/export renames affecting 5+ import sites
+- Component hierarchy restructuring
+- Moving files between directories
+- Changes requiring test file updates you can't verify
+- Refactoring entire untouched functions
+
+Keep cleanup scope proportional to the feature change. A one-line bugfix should not become a 200-line refactor.
+
+## Creating Tech Debt Tickets
+
+When a violation requires a separate PR to fix, create a Jira ticket:
+
+- **Epic:** TechDebt
+- **Title:** `[TechDebt] <file-path>: <violation description>`
+- **Description:** current state, target state, affected files
+- Add `// TODO(DAO-XXXX): <description>` in the code referencing the ticket.
