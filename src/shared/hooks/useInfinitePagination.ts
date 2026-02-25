@@ -23,8 +23,10 @@ interface UseInfinitePaginatedQueryOptions<
   resultsPerTablePage: number
 }
 
-interface UseInfinitePaginatedQueryResult<T>
-  extends Omit<UseInfiniteQueryResult<InfiniteData<PaginatedResponse<T>>>, 'data'> {
+interface UseInfinitePaginatedQueryResult<T> extends Omit<
+  UseInfiniteQueryResult<InfiniteData<PaginatedResponse<T>>>,
+  'data'
+> {
   currentResults: T[]
   tablePage: number
   totalPages: number

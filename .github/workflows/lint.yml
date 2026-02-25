@@ -1,14 +1,12 @@
 name: Lint files
 
-on:
-  pull_request
+on: pull_request
 
 # Declare default permissions as read only.
 permissions: read-all
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -18,5 +16,5 @@ jobs:
           node-version-file: '.nvmrc'
       - run: npm i
       - run: npm run lint
+      - run: npx next typegen
       - run: npm run lint-tsc
-        

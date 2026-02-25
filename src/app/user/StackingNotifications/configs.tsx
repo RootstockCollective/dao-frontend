@@ -63,7 +63,6 @@ export const getBannerConfigForCycleEnding = (cycle: Cycle): BannerConfig | null
     ...staticConfig,
     rightContent: (
       <Header variant="h1" className="text-black md:text-white">
-        {/* eslint-disable-next-line quotes */}
         {`${diff.toFormat("d'd' hh'h' mm'm'")}`}
       </Header>
     ),

@@ -56,7 +56,7 @@ export default function GrantsProposalForm() {
     [handleSubmit, router, setRecord],
   )
   // set focus on proposal name field
-  // eslint-disable-next-line
+
   useEffect(() => {
     if (isDesktop) {
       setFocus('proposalName')
