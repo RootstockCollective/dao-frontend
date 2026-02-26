@@ -2,6 +2,7 @@ import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { Address } from 'viem'
 import { DEFAULT_NFT_CONTRACT_ABI } from '@/lib/contracts'
 import { publicClient, transformMulticallResults } from '@/lib/viemPublicClient'
+import { cacheLife } from 'next/cache'
 
 const nftAddresses = Object.keys(communitiesMapByContract) as Address[]
 
@@ -41,12 +42,14 @@ async function getNftDataFromAddresses() {
     {},
   )
 }
-// This is in seconds (Note: Math won't work)
-export const revalidate = 60
+async function getCachedNftData() {
+  'use cache'
+  cacheLife({ revalidate: 60 })
+  return getNftDataFromAddresses()
+}
 
 export async function GET() {
-  const result = await getNftDataFromAddresses()
-
+  const result = await getCachedNftData()
   return Response.json(result)
 }
 
