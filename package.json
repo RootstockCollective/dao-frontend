@@ -1,6 +1,6 @@
 {
   "name": "dao-frontend",
-  "version": "1.18.0",
+  "version": "1.18.1",
   "scripts": {
     "prepare": "husky",
     "dev": "next dev --turbo",

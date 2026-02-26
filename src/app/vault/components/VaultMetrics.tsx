@@ -30,7 +30,7 @@ export const VaultMetrics = () => {
           tooltipContent={
             <div className="flex flex-col gap-2 text-wrap max-w-[35rem] text-xs p-2">
               <Paragraph>
-                Strategies APY:{' '}
+                Strategy APY:{' '}
                 {isLoading || isLoadingSynthetic ? '...' : formatApy(estimatedApy - syntheticYield)}%
                 <br />
                 Synthetic yield: {isLoadingSynthetic ? '...' : formatApy(syntheticYield)}%
