@@ -69,12 +69,6 @@ const nextConfig = {
   output: 'standalone',
   cacheComponents: true,
   webpack: config => {
-    config.optimization.splitChunks = {
-      chunks: 'all',
-      maxInitialRequests: 2,
-      maxAsyncRequests: 2,
-    }
-
     config.resolve.fallback = {
       ...config.resolve.fallback,
       '@react-native-async-storage/async-storage': false,
@@ -82,7 +76,11 @@ const nextConfig = {
 
     return config
   },
-  turbopack: {},
+  turbopack: {
+    resolveAlias: {
+      '@react-native-async-storage/async-storage': '',
+    },
+  },
   images: {
     remotePatterns: [
       {
