@@ -1,9 +1,10 @@
 'use server'
-
-import { client } from '@/shared/components/ApolloClient'
 import { gql as apolloGQL } from '@apollo/client'
-import { unstable_cache } from 'next/cache'
+import { cacheLife, cacheTag } from 'next/cache'
+
 import { CACHE_REVALIDATE_SECONDS } from '@/lib/constants'
+import { client } from '@/shared/components/ApolloClient'
+
 import { BuilderData } from '../hooks/useGetABI'
 
 const query = apolloGQL`
@@ -69,8 +70,9 @@ async function fetchABIData() {
   }
 }
 
-/** Fetches builders and reward cycles from the Collective Rewards subgraph (cached). */
-export const getCachedABIData = unstable_cache(fetchABIData, ['cached_abi_data'], {
-  revalidate: CACHE_REVALIDATE_SECONDS,
-  tags: ['cached_abi_data'],
-})
+export async function getCachedABIData() {
+  'use cache'
+  cacheLife({ revalidate: CACHE_REVALIDATE_SECONDS })
+  cacheTag('cached_abi_data')
+  return fetchABIData()
+}

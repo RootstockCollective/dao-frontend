@@ -6,7 +6,7 @@ import { stRif } from '@/lib/contracts'
 import { publicClient } from '@/lib/viemPublicClient'
 import { formatEther } from 'viem'
 import Big from '@/lib/big'
-import { unstable_cache } from 'next/cache'
+import { cacheLife, cacheTag } from 'next/cache'
 import { resolveRnsDomain } from '@/lib/rns'
 
 async function fetchNftHoldersShepherds() {
@@ -59,7 +59,9 @@ async function getNftHoldersShepherds() {
     .filter(({ votingPower }) => votingPower > 0)
 }
 
-export const getCachedNftHoldersShepherds = unstable_cache(getNftHoldersShepherds, ['nft_shepherds'], {
-  revalidate: 60, // Every 60 seconds
-  tags: ['nft_shepherds'],
-})
+export async function getCachedNftHoldersShepherds() {
+  'use cache'
+  cacheLife({ revalidate: 60 })
+  cacheTag('nft_shepherds')
+  return getNftHoldersShepherds()
+}

@@ -67,6 +67,7 @@ const corsBypassRewrite = () => {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  cacheComponents: true,
   webpack: config => {
     config.optimization.splitChunks = {
       chunks: 'all',

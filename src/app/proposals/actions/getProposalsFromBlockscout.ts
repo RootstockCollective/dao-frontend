@@ -1,6 +1,6 @@
 import Big from '@/lib/big'
 import { parseEventLogs, Log, Address, Hash, getAddress, isAddress, isHex } from 'viem'
-import { unstable_cache } from 'next/cache'
+import { cacheLife, cacheTag } from 'next/cache'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import {
   EventArgumentsParameter,
@@ -247,11 +247,9 @@ async function getProposalsFromBlockscoutUncached(): Promise<ProposalApiResponse
   return proposals.map(transformEventLogProposal)
 }
 
-export const getProposalsFromBlockscout = unstable_cache(
-  getProposalsFromBlockscoutUncached,
-  ['cached_proposals_blockscout'],
-  {
-    revalidate: 60, // 60 seconds
-    tags: ['cached_proposals_blockscout'],
-  },
-)
+export async function getProposalsFromBlockscout(): Promise<ProposalApiResponse[]> {
+  'use cache'
+  cacheLife({ revalidate: 60 })
+  cacheTag('cached_proposals_blockscout')
+  return getProposalsFromBlockscoutUncached()
+}

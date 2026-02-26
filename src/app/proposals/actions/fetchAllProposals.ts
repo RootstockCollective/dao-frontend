@@ -1,4 +1,4 @@
-import { unstable_cache } from 'next/cache'
+import { cacheLife } from 'next/cache'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { getProposalsFromDB } from './getProposalsFromDB'
 import { getProposalsFromEnvio } from './getProposalsFromEnvio'
@@ -34,6 +34,8 @@ export async function fetchAllProposals(): Promise<{
   return { proposals: [], sourceIndex: -1 }
 }
 
-export const getCachedProposals = unstable_cache(fetchAllProposals, ['cached_all_proposals'], {
-  revalidate: 30,
-})
+export async function getCachedProposals() {
+  'use cache'
+  cacheLife({ revalidate: 30 })
+  return fetchAllProposals()
+}
