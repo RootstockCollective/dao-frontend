@@ -6,5 +6,5 @@ echo "pre-push: running unit tests (excluding swap integration tests)"
 npx vitest run --exclude '**/swap/**/*.test.ts' --exclude '**/providers/uniswap.test.ts'
 
 echo "pre-push: running build"
-NEXT_PUBLIC_BUILD_ID="$(git rev-parse --short HEAD 2>/dev/null || echo local)" PROFILE=dev npm run build
+NODE_OPTIONS="--max-old-space-size=8192" NEXT_PUBLIC_BUILD_ID="$(git rev-parse --short HEAD 2>/dev/null || echo local)" PROFILE=dev npm run build
 
