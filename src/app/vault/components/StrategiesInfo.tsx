@@ -8,7 +8,9 @@ import { Header } from '@/components/Typography'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
 import { useStrategies, StrategyInfo } from '../hooks/useStrategies'
-import { formatSymbol } from '@/app/shared/formatter'
+import { formatSymbol, formatApy } from '@/app/shared/formatter'
+import { useVaultBalance } from '../hooks/useVaultBalance'
+import { useSubsidyPool } from '../hooks/useSubsidyPool'
 import { truncateMiddle } from '@/lib/utils'
 import { USDRIF } from '@/lib/constants'
 import { CopyButton } from '@/components/CopyButton'
@@ -105,7 +107,7 @@ export const StrategiesInfo = () => {
                 data-testid="StrategiesTable"
               />
             </div>
-            {!isLoading && <WeightedApySummary strategies={strategies} />}
+            {!isLoading && <WeightedApySummary />}
           </>
         )}
 
@@ -119,17 +121,16 @@ export const StrategiesInfo = () => {
   )
 }
 
-const WeightedApySummary = ({ strategies }: { strategies: StrategyInfo[] }) => {
-  const weightedApy = strategies
-    .reduce((sum, s) => sum + (s.percentageAllocated * s.estimatedApy) / 100, 0)
-    .toFixed(2)
+const WeightedApySummary = () => {
+  const { estimatedApy } = useVaultBalance()
+  const { syntheticYield } = useSubsidyPool()
 
   return (
     <div className="grid gap-4 px-4" style={{ gridTemplateColumns: '2fr 1.1fr 1fr 1fr' }}>
       <Paragraph>Strategy APY</Paragraph>
       <div />
       <div />
-      <Paragraph>{weightedApy}%</Paragraph>
+      <Paragraph>{formatApy(estimatedApy - syntheticYield)}%</Paragraph>
     </div>
   )
 }

@@ -22,7 +22,7 @@ export interface StrategyInfo {
  * Fetches strategy addresses, then for each strategy fetches totalDeposited and estimatedApy
  */
 export function useStrategies() {
-  const { totalAssets } = useVaultBalance()
+  const { totalAssets, isLoading: isLoadingVaultBalance } = useVaultBalance()
 
   // Fetch strategy addresses from vault
   const {
@@ -123,7 +123,7 @@ export function useStrategies() {
   })
 
   return useMemo(() => {
-    if (isLoadingStrategies || isLoadingStrategyData || isLoadingRatioBuffer) {
+    if (isLoadingVaultBalance || isLoadingStrategies || isLoadingStrategyData || isLoadingRatioBuffer) {
       return {
         strategies: [] as StrategyInfo[],
         isLoading: true,
@@ -220,6 +220,7 @@ export function useStrategies() {
     strategyNames,
     totalAssets,
     ratioBufferBalance,
+    isLoadingVaultBalance,
     isLoadingStrategies,
     isLoadingStrategyData,
     isLoadingRatioBuffer,
