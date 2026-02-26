@@ -166,6 +166,10 @@ export default withSentryConfig(exportedNextConfig, {
     // https://vercel.com/docs/cron-jobs
     automaticVercelMonitors: true,
 
+    // Disable server component wrapping — server-side Sentry is disabled (DAO-1955)
+    // and the wrapping conflicts with cacheComponents (crypto.randomUUID during prerender)
+    autoInstrumentAppDirectory: false,
+
     // Tree-shaking options for reducing bundle size
     treeshake: {
       // Automatically tree-shake Sentry logger statements to reduce bundle size
