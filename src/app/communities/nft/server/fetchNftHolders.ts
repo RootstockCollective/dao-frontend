@@ -3,16 +3,21 @@ import { fetchNftHoldersOfAddress } from '@/app/user/Balances/actions'
 import { NextPageParams, NftHolderItem } from '@/app/user/Balances/types'
 import { ipfsGatewayUrl } from '@/lib/ipfs'
 import { cacheLife, cacheTag } from 'next/cache'
+import { getAddress } from 'viem'
 
 /**
  * Fetches all NFT holders and returns them sorted in ascending order (starting from the oldest holder).
  */
 const getAllNftHolders = async (nftAddress: string) => {
+  const sanitizedAddress = getAddress(nftAddress)
   let nextPageParams: NextPageParams | null = null
   let allData: NftHolderItem[] = []
   try {
     do {
-      const { items, next_page_params: next } = await fetchNftHoldersOfAddress(nftAddress, nextPageParams)
+      const { items, next_page_params: next } = await fetchNftHoldersOfAddress(
+        sanitizedAddress,
+        nextPageParams,
+      )
       allData = allData.concat(items)
       nextPageParams = next
     } while (nextPageParams)
