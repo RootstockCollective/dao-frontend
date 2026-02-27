@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import { JWTPayload } from '@/lib/auth/jwt'
@@ -70,7 +71,7 @@ export async function GET(request: NextRequest) {
 
     return Response.json({ success: true, proposalId: parsed.data, reactions })
   } catch (error) {
-    console.error('Error in GET /api/like:', error)
+    logger.error({ err: error, route: '/api/like' }, 'Error in GET /api/like')
     // @TODO Remove debug header once the like/reaction flow is fully completed
     const headers: HeadersInit = {}
     if (ENV !== 'mainnet' && request.nextUrl.searchParams.get('debug') === '1') {
@@ -123,7 +124,7 @@ export const POST = withAuth(async (request, session: JWTPayload) => {
 
     return Response.json({ success: true, liked, reaction })
   } catch (error) {
-    console.error('Error in POST /api/like:', error)
+    logger.error({ err: error, route: '/api/like' }, 'Error in POST /api/like')
     // @TODO Remove debug header once the like/reaction flow is fully completed
     const headers: HeadersInit = {}
     if (ENV !== 'mainnet' && request.nextUrl.searchParams.get('debug') === '1') {

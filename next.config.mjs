@@ -67,6 +67,9 @@ const corsBypassRewrite = () => {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  experimental: {
+    serverSourceMaps: true,
+  },
   webpack: config => {
     config.optimization.splitChunks = {
       chunks: 'all',
@@ -90,7 +93,7 @@ const nextConfig = {
     ],
   },
 
-  serverExternalPackages: ['knex'],
+  serverExternalPackages: ['knex', 'pino', 'pino-pretty'],
 }
 
 const getNextConfig = () => {
