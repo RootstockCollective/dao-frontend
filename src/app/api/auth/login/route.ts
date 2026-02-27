@@ -11,7 +11,7 @@ const isProduction = process.env.NODE_ENV === 'production'
  *
  * Request body:
  * {
- *   challengeId: string,  // The challenge ID from requestChallenge server action
+ *   challengeId: string,  // The challenge ID from /api/auth/challenge
  *   signature: string     // The signature of the SIWE message
  * }
  *
