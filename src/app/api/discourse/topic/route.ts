@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { NextRequest, NextResponse } from 'next/server'
 import { extractTopicIdFromDiscourseUrl, getDiscourseTopicApiUrl } from '@/lib/discourse'
 
@@ -69,7 +70,7 @@ export async function GET(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Error fetching Discourse topic:', error)
+    logger.error({ err: error, route: '/api/discourse/topic' }, 'Error fetching Discourse topic')
     return NextResponse.json({ error: 'Failed to fetch Discourse topic data' }, { status: 500 })
   }
 }

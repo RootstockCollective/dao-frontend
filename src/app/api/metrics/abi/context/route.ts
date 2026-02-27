@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
@@ -52,7 +53,7 @@ export async function GET() {
 
     return NextResponse.json({ builders, cycles })
   } catch (err) {
-    console.error(err)
+    logger.error({ err, route: '/api/metrics/abi/context' }, 'Database error')
     return NextResponse.json({ error: 'Database error' }, { status: 500 })
   }
 }

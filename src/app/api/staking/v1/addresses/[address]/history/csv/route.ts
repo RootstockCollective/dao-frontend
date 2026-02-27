@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 import {
@@ -176,7 +177,10 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
 
           controller.close()
         } catch (streamError) {
-          console.error('Error in CSV stream:', streamError)
+          logger.error(
+            { err: streamError, route: '/api/staking/v1/addresses/[address]/history/csv' },
+            'Error in CSV stream',
+          )
           const errorMessage = streamError instanceof Error ? streamError.message : String(streamError)
           const encoder = new TextEncoder()
           // Try to send error as CSV row (though this might not work if stream already started)
@@ -202,7 +206,10 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
     if (err instanceof z.ZodError) {
       return Response.json({ error: 'Validation failed', details: err.flatten() }, { status: 400 })
     }
-    console.error('Error in staking history CSV route:', err)
+    logger.error(
+      { err, route: '/api/staking/v1/addresses/[address]/history/csv' },
+      'Error in staking history CSV route',
+    )
 
     // Return detailed error information for debugging
     const errorMessage = err instanceof Error ? err.message : String(err)

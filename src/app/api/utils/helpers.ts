@@ -1,3 +1,7 @@
+import { logger } from '@/lib/logger'
+
+const log = logger.child({ module: 'api' })
+
 export const queryParam = (searchParams: URLSearchParams) => (key: string) => {
   const v = searchParams.get(key)
   return v === null || v === '' ? undefined : v
@@ -27,9 +31,9 @@ export const applyActionTypeFilter = <
  */
 export const handleApiError = (err: unknown, context?: string): Response => {
   if (context) {
-    console.error(`Error in ${context}:`, err)
+    log.error({ err, context }, `Error in ${context}`)
   } else {
-    console.error(err)
+    log.error({ err }, 'API error')
   }
 
   const errorMessage = err instanceof Error ? err.message : String(err)
