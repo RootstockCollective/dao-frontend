@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { NextResponse } from 'next/server'
 import { type HealthCheckType, runHealthCheck } from './healthCheck'
 import { WrongHealthCheckTypeError } from './healthCheck.errors'
@@ -15,7 +16,10 @@ export async function GET(
       if (err instanceof WrongHealthCheckTypeError) {
         return NextResponse.json({ error: err.message }, { status: 400 })
       }
-      console.error(`Health check failed for type "${healthCheckType}":`, err)
+      logger.error(
+        { err, route: '/api/health', healthCheckType },
+        `Health check failed for type "${healthCheckType}"`,
+      )
 
       return NextResponse.json(
         { error: `Health check failed for type "${healthCheckType}"` },

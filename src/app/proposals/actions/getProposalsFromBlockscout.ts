@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import Big from '@/lib/big'
 import { parseEventLogs, Log, Address, Hash, getAddress, isAddress, isHex } from 'viem'
 import { unstable_cache } from 'next/cache'
@@ -125,7 +126,7 @@ async function fetchProposalLogsFromBlockscout(): Promise<BackendEventByTopic0Re
       const data: BlockscoutLogResponse = await response.json()
 
       if (data.status !== '1' || !data.result) {
-        console.error(`Blockscout API returned error: ${data.message || 'Unknown error'}`)
+        logger.error({ message: data.message }, 'Blockscout API returned error')
         break
       }
 
@@ -149,9 +150,7 @@ async function fetchProposalLogsFromBlockscout(): Promise<BackendEventByTopic0Re
       // Set fromBlock to the last block number (as decimal string) for the next iteration
       fromBlock = lastBlockNumber
     } catch (error) {
-      console.error(
-        `Failed to fetch logs from Blockscout: ${error instanceof Error ? error.message : String(error)}`,
-      )
+      logger.error({ err: error }, 'Failed to fetch logs from Blockscout')
       break
     }
   }
