@@ -5,7 +5,6 @@ import { Duration } from 'luxon'
 import { twMerge } from 'tailwind-merge'
 import { Address, formatEther, getAddress, isAddress } from 'viem'
 import { CHAIN_ID, RIF_WALLET_SERVICES_URL } from '../constants'
-import { sentryClient } from '@/lib/sentry/sentry-client'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
