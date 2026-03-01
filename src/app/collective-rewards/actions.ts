@@ -1,3 +1,4 @@
+import type { RpcLog } from 'viem'
 import { Address } from 'viem'
 import { BackersManagerAddress } from '@/lib/contracts'
 import {
@@ -11,11 +12,10 @@ import { RIF_WALLET_SERVICES_URL } from '@/lib/constants'
 
 const rws = RIF_WALLET_SERVICES_URL ?? ''
 
-/* eslint-disable @typescript-eslint/no-explicit-any -- these endpoints return event logs consumed by viem's parseEventLogs which expects (Log | RpcLog)[] */
-async function fetchRws(path: string): Promise<{ data: any }> {
+async function fetchRws(path: string): Promise<{ data: RpcLog[] }> {
   const res = await fetch(`${rws}${path}`)
   if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
-  const data = await res.json()
+  const data = (await res.json()) as RpcLog[]
   return { data }
 }
 

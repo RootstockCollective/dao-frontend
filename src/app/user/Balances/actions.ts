@@ -14,6 +14,7 @@ import {
   ServerResponseV2,
   TokenHoldersResponse,
 } from '@/app/user/Balances/types'
+import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 import { Address, isAddress, padHex } from 'viem'
 import { RIF_WALLET_SERVICES_URL } from '@/lib/constants'
 
@@ -72,10 +73,11 @@ export const fetchNewAllocationEventByAccountAddress = (address: Address) =>
       .replace('{{topic1}}', padHex(address, { size: 32 })),
   )
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any -- event logs consumed by viem's parseEventLogs
-export const fetchProposalsCreatedCached = async (): Promise<{ data: any }> => {
+export const fetchProposalsCreatedCached = async (): Promise<{
+  data: BackendEventByTopic0ResponseValue[]
+}> => {
   const res = await fetch('/proposals/api')
-  const data = await res.json()
+  const data = (await res.json()) as BackendEventByTopic0ResponseValue[]
   return { data }
 }
 

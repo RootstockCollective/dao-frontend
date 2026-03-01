@@ -3,6 +3,7 @@ import { GovernorAbi } from '@/lib/abis/Governor'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
 import { useQuery, UseQueryResult } from '@tanstack/react-query'
 import { useMemo } from 'react'
+import type { Log } from 'viem'
 import { getAddress, parseEventLogs, prepareEncodeFunctionData } from 'viem'
 import { ADDRESS_PADDING_LENGTH, RELAY_PARAMETER_PADDING_LENGTH } from '@/app/proposals/shared/utils'
 import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
@@ -23,7 +24,7 @@ export const useFetchAllProposals = () => {
     if (data?.data) {
       const proposals = parseEventLogs({
         abi: GovernorAbi,
-        logs: data.data,
+        logs: data.data as unknown as Log[],
         eventName: 'ProposalCreated',
       })
 
@@ -85,7 +86,7 @@ export const useFetchCreateBuilderProposals = (): ProposalQueryResult<ProposalsP
 
     const events = parseEventLogs({
       abi: GovernorAbi,
-      logs: fetchedData.data,
+      logs: fetchedData.data as unknown as Log[],
       eventName: 'ProposalCreated',
     }) as CreateBuilderProposalEventLog[]
 
