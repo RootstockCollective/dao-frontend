@@ -176,7 +176,7 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
     const hasInactiveState = inactiveState !== null
     const hasBacking = userBacking > 0n
     const canBack = !isInProgress && (!hasInactiveState || hasBacking)
-    const isRowSelected = selectedRows[rowId]
+    const isRowSelected = selectedRows[rowId] ?? false
 
     // Event handlers that require table dispatch
     const handleToggleSelection = () => {
