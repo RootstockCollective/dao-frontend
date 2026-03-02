@@ -16,7 +16,8 @@ vi.mock('@wagmi/core', () => ({
   waitForTransactionReceipt: vi.fn(),
 }))
 
-vi.mock('@/components/ErrorPage/commonErrors', () => ({
+vi.mock(import('@/components/ErrorPage/commonErrors'), async (importOriginal) => ({
+  ...(await importOriginal()),
   isUserRejectedTxError: vi.fn(),
 }))
 
