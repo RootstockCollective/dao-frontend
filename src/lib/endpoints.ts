@@ -16,8 +16,7 @@ export const fetchAddressTokensEndpoint = withChainId(
 )
 
 export const fetchPricesEndpoint = withChainId(
-  process.env.NEXT_PUBLIC_API_RWS_PRICES_BY_ADDRESS ||
-    '/price?addresses={{addresses}}&convert={{convert}}',
+  process.env.NEXT_PUBLIC_API_RWS_PRICES_BY_ADDRESS || '/price?addresses={{addresses}}&convert={{convert}}',
 )
 
 export const fetchNFTsOwnedByAddressAndNftAddress = withChainId(
@@ -37,9 +36,7 @@ export const fetchVoteCastEventEndpoint = withChainId(
   `/address/{{address}}/eventsByTopic0?topic0=${CAST_VOTE_EVENT}&topic1={{topic1}}&topic01Opr=and`,
 )
 
-export const getNftInfo = withChainId(
-  process.env.NEXT_PUBLIC_API_RWS_NFT_INFO || '/nfts/{{nftAddress}}',
-)
+export const getNftInfo = withChainId(process.env.NEXT_PUBLIC_API_RWS_NFT_INFO || '/nfts/{{nftAddress}}')
 
 // keccak256('NewAllocation(address,address,uint256)')
 const NEW_ALLOCATION_EVENT = '0xed07ca57097393e77ba36105a07f6810afc2180b72a9c02a4b0da4b51a73a6ec'
