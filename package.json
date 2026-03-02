@@ -141,7 +141,8 @@
     },
     "@reown/appkit-adapter-wagmi": {
       "@wagmi/connectors": "6.2.0"
-    }
+    },
+    "axios": "^1.13.5"
   },
   "engines": {
     "node": "^24.0.0"
