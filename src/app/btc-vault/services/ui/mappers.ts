@@ -16,8 +16,8 @@ import type {
   ActiveRequestDisplay,
   PaginatedHistoryDisplay,
 } from './types'
+import { formatEther } from 'viem'
 import {
-  formatRbtc,
   formatApyPercent,
   formatPercent,
   formatTimestamp,
@@ -32,9 +32,9 @@ import {
  */
 export function toVaultMetricsDisplay(raw: VaultMetrics): VaultMetricsDisplay {
   return {
-    tvlFormatted: formatRbtc(raw.tvl),
+    tvlFormatted: formatEther(raw.tvl),
     apyFormatted: formatApyPercent(raw.apy),
-    navFormatted: formatRbtc(raw.nav),
+    navFormatted: formatEther(raw.nav),
     timestamp: raw.timestamp,
   }
 }
@@ -62,9 +62,9 @@ export function toEpochDisplay(raw: EpochState): EpochDisplay {
  */
 export function toUserPositionDisplay(raw: UserPosition): UserPositionDisplay {
   return {
-    rbtcBalanceFormatted: formatRbtc(raw.rbtcBalance),
-    vaultTokensFormatted: formatRbtc(raw.vaultTokens),
-    positionValueFormatted: formatRbtc(raw.positionValue),
+    rbtcBalanceFormatted: formatEther(raw.rbtcBalance),
+    vaultTokensFormatted: formatEther(raw.vaultTokens),
+    positionValueFormatted: formatEther(raw.positionValue),
     percentOfVaultFormatted: formatPercent(raw.percentOfVault),
     vaultTokensRaw: raw.vaultTokens,
     rbtcBalanceRaw: raw.rbtcBalance,
@@ -119,12 +119,12 @@ export function toActiveRequestDisplay(
   return {
     id: req.id,
     type: req.type,
-    amountFormatted: formatRbtc(req.amount),
+    amountFormatted: formatEther(req.amount),
     status: req.status,
     createdAtFormatted: formatTimestamp(req.timestamps.created),
     claimable: claimableInfo?.claimable ?? false,
     lockedSharePriceFormatted:
-      claimableInfo?.lockedSharePrice != null ? `${formatRbtc(claimableInfo.lockedSharePrice)}/share` : null,
+      claimableInfo?.lockedSharePrice != null ? `${formatEther(claimableInfo.lockedSharePrice)}/share` : null,
     finalizeId: req.type === 'deposit' ? req.epochId : req.batchRedeemId,
     epochId: req.epochId,
     batchRedeemId: req.batchRedeemId,
@@ -141,7 +141,7 @@ export function toPaginatedHistoryDisplay(raw: PaginatedResult<VaultRequest>): P
     rows: raw.data.map(req => ({
       id: req.id,
       type: req.type,
-      amountFormatted: formatRbtc(req.amount),
+      amountFormatted: formatEther(req.amount),
       status: req.status,
       createdAtFormatted: formatTimestamp(req.timestamps.created),
       finalizedAtFormatted: req.timestamps.finalized ? formatTimestamp(req.timestamps.finalized) : null,

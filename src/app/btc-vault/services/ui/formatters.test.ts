@@ -1,24 +1,11 @@
 import { describe, it, expect } from 'vitest'
 import {
-  formatRbtc,
   formatApyPercent,
   formatPercent,
   formatTimestamp,
   shortenTxHash,
   formatCountdown,
 } from './formatters'
-
-describe('formatRbtc', () => {
-  it('formats 0n as "0"', () => {
-    expect(formatRbtc(0n)).toBe('0')
-  })
-  it('formats 1 BTC in Wei', () => {
-    expect(formatRbtc(10n ** 18n)).toBe('1')
-  })
-  it('formats fractional BTC', () => {
-    expect(formatRbtc(1_020_000_000_000_000_000n)).toBe('1.02')
-  })
-})
 
 describe('formatApyPercent', () => {
   it('formats 8.5% APY from basis points', () => {

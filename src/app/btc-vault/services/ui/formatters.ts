@@ -1,15 +1,4 @@
-import { formatEther } from 'viem'
-
 const VAULT_BASIS_POINTS = 1_000_000_000n // 1e9 = 100%
-
-/**
- * Formats a Wei bigint value to a human-readable RBTC string using viem's formatEther.
- * @param wei - Amount in Wei (1e18 = 1 RBTC)
- * @returns Formatted RBTC string (e.g. "1.020000000000000000")
- */
-export function formatRbtc(wei: bigint): string {
-  return formatEther(wei)
-}
 
 /**
  * Converts vault basis points (1e9 = 100%) to a percentage string with 2 decimal places.
