@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { NextRequest, NextResponse } from 'next/server'
 import { Address, isAddress, getAddress } from 'viem'
 import { uniswapProvider } from '@/lib/swap/providers/uniswap'
@@ -83,7 +84,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ quotes }, { status: 200 })
   } catch (error) {
-    console.error('Error fetching swap quotes:', error)
+    logger.error({ err: error, route: '/api/swap/quote' }, 'Error fetching swap quotes')
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to fetch swap quotes' },
       { status: 500 },

@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { isAddress } from 'viem'
@@ -42,7 +43,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
 
     return NextResponse.json(result)
   } catch (err) {
-    console.error(err)
+    logger.error({ err, route: '/api/backers/[backer]/metrics/rbi/context' }, 'Database error')
     return NextResponse.json({ error: 'Database error' }, { status: 500 })
   }
 }
