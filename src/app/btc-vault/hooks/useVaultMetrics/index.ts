@@ -1,0 +1,1 @@
+export { useVaultMetrics } from './useVaultMetrics'
