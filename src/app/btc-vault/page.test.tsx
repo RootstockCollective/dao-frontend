@@ -5,6 +5,30 @@ vi.mock('@/shared/context/FeatureFlag', () => ({
   withServerFeatureFlag: vi.fn((Component, _config) => Component),
 }))
 
+vi.mock('wagmi', () => ({
+  useAccount: () => ({ address: undefined, isConnected: false }),
+}))
+
+vi.mock('./hooks/useActionEligibility', () => ({
+  useActionEligibility: () => ({ data: undefined }),
+}))
+
+vi.mock('@/shared/walletConnection/connection/useAppKitFlow', () => ({
+  useAppKitFlow: vi.fn(() => ({
+    onConnectWalletButtonClick: vi.fn(),
+    handleConnectWallet: vi.fn(),
+    handleCloseIntermediateStep: vi.fn(),
+  })),
+}))
+
+vi.mock('@/shared/hooks/useIsDesktop', () => ({
+  useIsDesktop: () => true,
+}))
+
+vi.mock('@/app/backing/components/DecorativeSquares', () => ({
+  DecorativeSquares: () => null,
+}))
+
 describe('BtcVault page', () => {
   it('wraps BtcVaultPage with withServerFeatureFlag using btc_vault feature and redirect', async () => {
     const { withServerFeatureFlag } = await import('@/shared/context/FeatureFlag')

@@ -1,5 +1,7 @@
 'use client'
 
+import { BtcVaultBanners } from './BtcVaultBanners'
+
 const NAME = 'BTC Vault'
 
 export const BtcVaultPage = () => {
@@ -8,6 +10,8 @@ export const BtcVaultPage = () => {
       data-testid={NAME}
       className="flex flex-col items-start w-full h-full pt-[0.13rem] md:gap-6 rounded-sm"
     >
+      <BtcVaultBanners />
+
       {/* Vault Metrics Zone - F3 */}
       <section data-testid="btc-vault-metrics" className="w-full">
         {/* BTC Vault Metrics - implemented in F3 */}
