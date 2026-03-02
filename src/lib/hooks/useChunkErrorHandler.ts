@@ -24,7 +24,7 @@ export function useChunkErrorHandler() {
     const handleError = (event: ErrorEvent) => {
       const error = event.error
       if (error && isChunkLoadError(error)) {
-        console.warn('ChunkLoadError caught by global handler:', error.message)
+        console.warn('ChunkLoadError caught by global handler:', String(error))
 
         // Prevent the default error handling
         event.preventDefault()
@@ -38,8 +38,8 @@ export function useChunkErrorHandler() {
 
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
       const error = event.reason
-      if (error instanceof Error && isChunkLoadError(error)) {
-        console.warn('ChunkLoadError caught by unhandled rejection handler:', error.message)
+      if (isChunkLoadError(error)) {
+        console.warn('ChunkLoadError caught by unhandled rejection handler:', String(error))
 
         // Prevent the default error handling
         event.preventDefault()
