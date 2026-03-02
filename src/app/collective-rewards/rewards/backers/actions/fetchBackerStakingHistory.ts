@@ -26,6 +26,11 @@ const query = gql`
   }
 `
 
+/**
+ * Fetches staking history for a backer from the Collective Rewards subgraph.
+ * @param backer - On-chain address of the backer
+ * @returns Staking history or `undefined` if the backer has no history
+ */
 export async function fetchBackerStakingHistory(backer: Address) {
   const { data } = await client.query<Response>({
     query,
@@ -33,5 +38,5 @@ export async function fetchBackerStakingHistory(backer: Address) {
       backer,
     },
   })
-  return data.backerStakingHistory
+  return data?.backerStakingHistory
 }

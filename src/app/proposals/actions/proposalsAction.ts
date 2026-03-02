@@ -102,8 +102,12 @@ interface Counter {
   count: string
 }
 
+/** Fetches all proposals from the DAO subgraph. */
 export async function fetchProposals(): Promise<GraphQLResponse> {
   const { data } = await daoClient.query<GraphQLResponse>({ query, fetchPolicy: 'no-cache' })
+  if (!data) {
+    throw new Error('Failed to fetch proposals from subgraph')
+  }
   return data
 }
 

@@ -22,7 +22,11 @@ const query = apolloGQL`
 }
 `
 
+/** Fetches all contributors with their delegation data from the DAO subgraph. */
 export async function fetchContributors(): Promise<ContributorGraphResponse> {
   const { data } = await daoClient.query<ContributorGraphResponse>({ query, fetchPolicy: 'no-cache' })
+  if (!data) {
+    throw new Error('Failed to fetch contributors from subgraph')
+  }
   return data
 }
