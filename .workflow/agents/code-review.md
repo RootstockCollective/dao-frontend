@@ -19,6 +19,13 @@ Read the project context to understand expected patterns and conventions.
 **Project Context:**
 [PASTE THE CONTENTS OF .workflow/PROJECT.md HERE]
 
+**Coding Standards:**
+Read ALL coding standards and use them as your review checklist:
+- `.cursor/rules/architecture-patterns.mdc` — data fetching, state management, hook & component conventions
+- `.cursor/rules/coding-conventions.mdc` — file naming, exports, imports, types, error handling, styling
+- `.cursor/rules/documentation-and-testing.mdc` — JSDoc requirements, inline comments, TODO format, testing requirements
+- `.cursor/rules/tech-debt-on-touch.mdc` — when editing existing files, touched code must be brought up to standards
+
 **Coverage Targets:**
 [PASTE THE COVERAGE SECTION FROM .workflow/CONFIG.md HERE]
 
@@ -78,7 +85,36 @@ Review **ONE PHASE** of the implementation for quality, correctness, and adheren
    - DOMPurify used for any rendered HTML/markdown
    - No XSS vectors in dynamic content
 
-7. **Save Review**
+7. **Review Coding Standards Compliance (`.cursor/rules/`)**
+   Read each rule file and verify the code complies:
+
+   **Architecture Patterns** (`.cursor/rules/architecture-patterns.mdc`):
+   - Data fetching uses correct pattern (useQuery, wagmi hooks, server actions — not axios)
+   - State management follows rules (no server state in local state, no useEffect sync)
+   - Hook naming follows `use[Feature][Action]` convention
+   - Server components by default, `'use client'` pushed as deep as possible
+
+   **Coding Conventions** (`.cursor/rules/coding-conventions.mdc`):
+   - File naming: PascalCase components, camelCase hooks, kebab-case others
+   - File name matches primary export
+   - No default exports (except Next.js-required files)
+   - Import ordering: external → alias → relative with blank line separators
+   - `interface` for object shapes, `type` for unions/intersections
+   - No `any` without `// SAFETY:` comment
+   - Error catch variable is `error` (not `err`, `e`, `_`)
+   - Tailwind CSS over `style` prop, `cn()` for conditional classes
+
+   **Documentation & Testing** (`.cursor/rules/documentation-and-testing.mdc`):
+   - JSDoc on exported hooks with non-obvious behavior
+   - No narration comments restating what code does
+   - TODOs use `// TODO(DAO-XXXX): description` format
+   - No `@TODO`, `//TODO:`, or unlinked TODOs
+
+   **Tech Debt on Touch** (`.cursor/rules/tech-debt-on-touch.mdc`):
+   - If existing files were edited, touched code brought up to standards
+   - Imports reordered, error variables renamed, type safety improved in touched code
+
+8. **Save Review**
    Save to: .workflow/reviews/STORY-XXX-phase-N-review.md
 ```
 
@@ -89,6 +125,7 @@ Review **ONE PHASE** of the implementation for quality, correctness, and adheren
 | Item | Source |
 |------|--------|
 | Project Context | `.workflow/PROJECT.md` |
+| Coding Standards | `.cursor/rules/*.mdc` |
 | Coverage Targets | `.workflow/CONFIG.md` |
 | User Story | `.workflow/stories/STORY-XXX.md` |
 | Implementation Plan | `.workflow/plans/STORY-XXX-plan.md` |
@@ -237,6 +274,18 @@ Before handing off, ensure:
 - [ ] Input validation present
 - [ ] HTML sanitized with DOMPurify where needed
 - [ ] No XSS vectors
+
+### Coding Standards Compliance (`.cursor/rules/`)
+- [ ] Data fetching pattern correct (no axios, correct hook/server action usage)
+- [ ] State management follows rules (no server→local state sync via useEffect)
+- [ ] File naming conventions followed (PascalCase components, camelCase hooks, kebab-case others)
+- [ ] No default exports (except Next.js-required files)
+- [ ] Import ordering correct (external → alias → relative)
+- [ ] No `any` without `// SAFETY:` comment
+- [ ] Error catch variable is `error` (not `err`, `e`, `_`)
+- [ ] JSDoc present on exported hooks/functions with non-obvious behavior
+- [ ] No narration comments; TODOs use `// TODO(DAO-XXXX):` format
+- [ ] Tech debt on touch: touched existing code brought up to standards
 
 ---
 

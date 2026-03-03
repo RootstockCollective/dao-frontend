@@ -19,6 +19,12 @@ Read the project context to understand how to run tests and validate the impleme
 **Project Context:**
 [PASTE THE CONTENTS OF .workflow/PROJECT.md HERE]
 
+**Testing Standards:**
+Read the testing requirements from `.cursor/rules/documentation-and-testing.mdc` to understand:
+- What must be tested (hooks, utilities, API routes, stores) vs what should not be tested
+- Test file conventions (co-located, naming, structure)
+- No `as any` in mocks without `// SAFETY:` comment
+
 **Coverage Targets:**
 [PASTE THE COVERAGE SECTION FROM .workflow/CONFIG.md HERE]
 
@@ -68,15 +74,21 @@ Validate that **the current phase** meets its acceptance criteria.
 6. **Check Coverage**
    Reference CONFIG.md for targets by file type
 
-7. **Integration Check**
+7. **Verify Testing Standards** (from `.cursor/rules/documentation-and-testing.mdc`)
+   - Tests co-located with source files (`*.test.ts` / `*.test.tsx`)
+   - Test structure follows `describe('[unit]', () => { it('should [behavior]', ...) })`
+   - No `as any` in mocks without `// SAFETY:` comment
+   - Correct things are tested (hooks with logic, utilities, API routes, stores — not pass-through hooks or pure presentational components)
+
+8. **Integration Check**
    - Existing functionality still works?
    - No regressions from previous phases?
    - Server and client components rendering correctly?
 
-8. **Save Report**
+9. **Save Report**
    Save to: .workflow/qa-reports/STORY-XXX-phase-N-qa.md
 
-9. **Determine Next Step**
+10. **Determine Next Step**
    - If this is the final phase: Ready to merge
    - If more phases remain: Approve progression to next phase
 ```
@@ -88,6 +100,7 @@ Validate that **the current phase** meets its acceptance criteria.
 | Item | Source |
 |------|--------|
 | Project Context | `.workflow/PROJECT.md` |
+| Testing Standards | `.cursor/rules/documentation-and-testing.mdc` |
 | Coverage Targets | `.workflow/CONFIG.md` |
 | User Story | `.workflow/stories/STORY-XXX.md` |
 | Implementation Plan | `.workflow/plans/STORY-XXX-plan.md` |

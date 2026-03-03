@@ -22,6 +22,11 @@ Read the project context file to understand:
 **Project Context:**
 [PASTE THE CONTENTS OF .workflow/PROJECT.md HERE]
 
+**Coding Standards:**
+Read the following coding standards — your plan must align with these rules:
+- `.cursor/rules/architecture-patterns.mdc` — data fetching, state management, hook & component conventions
+- `.cursor/rules/coding-conventions.mdc` — file naming, exports, imports, types, folder structure
+
 ## Your Task
 Analyze this user story and create an implementation plan.
 
@@ -42,7 +47,9 @@ Analyze this user story and create an implementation plan.
    - Map dependencies between requirements
 
 3. **Design the Solution with PHASES**
-   - Follow existing patterns (see PROJECT.md Architecture Patterns)
+   - Follow existing patterns (see PROJECT.md and `.cursor/rules/architecture-patterns.mdc`)
+   - Use correct data fetching pattern per scenario (useQuery, wagmi hooks, server actions — see architecture-patterns)
+   - Apply file naming conventions from `.cursor/rules/coding-conventions.mdc` when specifying new files
    - Minimize changes to existing code
    - **Divide work into logical phases** (each phase should be independently testable)
    - Map each acceptance criterion to a specific phase
@@ -79,6 +86,7 @@ Use the plan template at the end of this document.
 | Item | Source |
 |------|--------|
 | Project Context | `.workflow/PROJECT.md` |
+| Coding Standards | `.cursor/rules/architecture-patterns.mdc`, `.cursor/rules/coding-conventions.mdc` |
 | User Story | `.workflow/stories/STORY-XXX.md` |
 | Codebase | Full repository access |
 

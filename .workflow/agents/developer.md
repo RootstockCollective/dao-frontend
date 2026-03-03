@@ -19,6 +19,15 @@ Read the project context to understand the tech stack, patterns, and conventions
 **Project Context:**
 [PASTE THE CONTENTS OF .workflow/PROJECT.md HERE]
 
+**Coding Standards:**
+Read and follow ALL coding standards defined in `.cursor/rules/`:
+- `.cursor/rules/architecture-patterns.mdc` — data fetching, state management, hook & component conventions
+- `.cursor/rules/coding-conventions.mdc` — file naming, exports, imports, types, error handling, styling
+- `.cursor/rules/documentation-and-testing.mdc` — JSDoc requirements, inline comments, TODO format, testing requirements
+- `.cursor/rules/tech-debt-on-touch.mdc` — when editing existing files, bring touched code up to current standards
+- `.cursor/rules/git-commits.mdc` — conventional commits, plan execution workflow
+- `.cursor/rules/docs-in-pr.mdc` — never include .md files in commits unless explicitly requested
+
 ## Your Task
 Implement **ONE PHASE** from the approved architecture plan.
 
@@ -44,7 +53,10 @@ Implement **ONE PHASE** from the approved architecture plan.
    - Review existing code that will be affected
 
    ### Step 2: Implement Code + Tests Together
-   - Write implementation following existing patterns (see PROJECT.md)
+   - Write implementation following existing patterns (see PROJECT.md and `.cursor/rules/`)
+   - Apply coding conventions from `.cursor/rules/coding-conventions.mdc` (naming, exports, imports, types)
+   - Follow architecture patterns from `.cursor/rules/architecture-patterns.mdc` (data fetching, state management)
+   - When editing existing files, apply tech-debt-on-touch cleanup from `.cursor/rules/tech-debt-on-touch.mdc`
    - Write co-located unit tests alongside each file (`*.test.ts` / `*.test.tsx`)
    - For components: use React Testing Library (`render`, `screen`, `userEvent`)
    - For hooks: use `renderHook` from React Testing Library
@@ -60,7 +72,10 @@ Implement **ONE PHASE** from the approved architecture plan.
    ### Step 4: Clean Up
    - Ensure code follows project patterns (Prettier: no semicolons, single quotes, 110 char width)
    - Remove any debug code or console.logs
-   - Ensure proper TypeScript types (no `any` where avoidable)
+   - Ensure proper TypeScript types (no `any` without `// SAFETY:` comment)
+   - Verify JSDoc on exported hooks/functions per `.cursor/rules/documentation-and-testing.mdc`
+   - Verify no narration comments (e.g., `// Import the module`, `// Set the value`)
+   - Verify TODOs use `// TODO(DAO-XXXX): description` format
 
 3. **Validate (MUST PASS before handoff)**
    ```bash
@@ -91,6 +106,7 @@ Implement **ONE PHASE** from the approved architecture plan.
 | Item | Source |
 |------|--------|
 | Project Context | `.workflow/PROJECT.md` |
+| Coding Standards | `.cursor/rules/*.mdc` |
 | User Story | `.workflow/stories/STORY-XXX.md` |
 | Implementation Plan | `.workflow/plans/STORY-XXX-plan.md` |
 | Coverage Targets | `.workflow/CONFIG.md` |
