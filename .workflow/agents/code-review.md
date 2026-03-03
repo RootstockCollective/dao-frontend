@@ -113,6 +113,18 @@ Review **ONE PHASE** of the implementation for quality, correctness, and adheren
    **Tech Debt on Touch** (`.cursor/rules/tech-debt-on-touch.mdc`):
    - If existing files were edited, touched code brought up to standards
    - Imports reordered, error variables renamed, type safety improved in touched code
+   - Mobile-first layout migration applied to touched layout code
+
+   **Responsive Design** (`.cursor/rules/responsive-mobile-first.mdc`):
+   - New UI components use mobile-first Tailwind (base = mobile, `md:` = desktop)
+   - `useIsDesktop()` only where CSS alone cannot express the difference
+   - Touch targets meet minimum `h-11` (44px)
+
+   **Commit Sizing** (`.cursor/rules/git-commits.mdc`):
+   - Phase commit touches one layer (data OR UI OR integration)
+   - Fewer than 5 source files changed (excluding test files)
+   - Subject line answers "why does this exist?" for future blame
+   - Tests co-located with source in the same commit
 
 8. **Save Review**
    Save to: .workflow/reviews/STORY-XXX-phase-N-review.md
