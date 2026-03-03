@@ -15,6 +15,9 @@ import type { DepositRequestParams } from '../services/types'
 import { DepositAmountStep } from './DepositAmountStep'
 import { DepositReviewStep } from './DepositReviewStep'
 
+// No fee at launch per contract spec
+const BTC_VAULT_DEPOSIT_FEE = '0'
+
 type DepositStep = 'amount' | 'review'
 
 interface BtcDepositModalProps {
@@ -95,7 +98,7 @@ export const BtcDepositModal = ({ onClose, onSubmit, isSubmitting }: BtcDepositM
             estimatedShares={estimatedShares}
             navFormatted={navFormatted}
             navTimestamp={navTimestamp}
-            depositFee="0"
+            depositFee={BTC_VAULT_DEPOSIT_FEE}
             onBack={handleBack}
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}

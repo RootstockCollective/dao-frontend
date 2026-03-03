@@ -21,18 +21,13 @@ export const BtcVaultActions = () => {
   const { address } = useAccount()
   const { data: actionEligibility } = useActionEligibility(address)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [depositParams, setDepositParams] = useState<DepositRequestParams | null>(null)
   const [showSuccessBanner, setShowSuccessBanner] = useState(false)
   const successTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const canDeposit = actionEligibility?.canDeposit ?? false
   const depositBlockReason = actionEligibility?.depositBlockReason ?? ''
 
-  const amount = depositParams?.amount ?? 0n
-  const slippageDecimal = depositParams?.slippage ?? 0.005
-  const slippagePercentage = slippageDecimal * 100
-
-  const { onRequestDeposit, isRequesting, isTxPending } = useSubmitDeposit(amount, slippagePercentage)
+  const { onRequestDeposit, isRequesting, isTxPending } = useSubmitDeposit()
 
   const isSubmitting = isRequesting || isTxPending
 
@@ -43,7 +38,6 @@ export const BtcVaultActions = () => {
 
   const handleCloseModal = useCallback(() => {
     setIsModalOpen(false)
-    setDepositParams(null)
   }, [])
 
   const dismissSuccessBanner = useCallback(() => {
@@ -54,30 +48,25 @@ export const BtcVaultActions = () => {
     }
   }, [])
 
-  const handleSubmit = useCallback(async (params: DepositRequestParams) => {
-    setDepositParams(params)
-  }, [])
-
-  // Trigger executeTxFlow when depositParams are set and hook has updated
-  useEffect(() => {
-    if (!depositParams || amount === 0n) return
-
-    executeTxFlow({
-      action: 'btcVaultDepositRequest',
-      onRequestTx: onRequestDeposit,
-      onSuccess: () => {
-        setIsModalOpen(false)
-        setDepositParams(null)
-        setShowSuccessBanner(true)
-        queryClient.invalidateQueries({ queryKey: ['btc-vault', 'active-requests', address] })
-        queryClient.invalidateQueries({ queryKey: ['btc-vault', 'action-eligibility', address] })
-        successTimerRef.current = setTimeout(() => {
-          setShowSuccessBanner(false)
-        }, SUCCESS_BANNER_TIMEOUT_MS)
-      },
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [depositParams])
+  const handleSubmit = useCallback(
+    async (params: DepositRequestParams) => {
+      const slippagePercentage = (params.slippage ?? 0.005) * 100
+      executeTxFlow({
+        action: 'btcVaultDepositRequest',
+        onRequestTx: () => onRequestDeposit(params.amount, slippagePercentage),
+        onSuccess: () => {
+          setIsModalOpen(false)
+          setShowSuccessBanner(true)
+          queryClient.invalidateQueries({ queryKey: ['btc-vault', 'active-requests', address] })
+          queryClient.invalidateQueries({ queryKey: ['btc-vault', 'action-eligibility', address] })
+          successTimerRef.current = setTimeout(() => {
+            setShowSuccessBanner(false)
+          }, SUCCESS_BANNER_TIMEOUT_MS)
+        },
+      })
+    },
+    [onRequestDeposit, queryClient, address],
+  )
 
   // Cleanup timer on unmount
   useEffect(() => {
