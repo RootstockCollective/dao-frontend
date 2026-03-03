@@ -79,7 +79,7 @@ Implement **ONE PHASE** from the approved architecture plan.
 
 3. **Validate (MUST PASS before handoff)**
    ```bash
-   npm run build:dev   # Next.js production build (with dev env)
+   npm run build       # Next.js production build
    npm run lint        # ESLint (0 errors)
    npm run lint-tsc    # TypeScript type checking (0 errors)
    npm run test        # Vitest unit tests (all pass)
@@ -129,8 +129,8 @@ Implement **ONE PHASE** from the approved architecture plan.
 **Before handing off to Code Review, ALL must pass:**
 
 ```bash
-# Build (with dev env)
-npm run build:dev
+# Build
+npm run build
 
 # Lint
 npm run lint
@@ -195,21 +195,19 @@ Before handing off, ensure:
 
 ## Commit Message Format
 
-```
-type(STORY-XXX): short description
+Follow [Conventional Commits](https://www.conventionalcommits.org/) per `.cursor/rules/git-commits.mdc`.
 
-Longer description if needed.
+```
+type(scope): short description
+
+STORY-XXX Phase N.
 
 - Bullet points for details
 ```
 
-**Types:**
-- `feat`: New feature
-- `fix`: Bug fix
-- `refactor`: Code refactoring
-- `test`: Adding/updating tests
-- `docs`: Documentation changes
-- `chore`: Maintenance tasks
+- **Scope** = affected code area (`vault`, `api`, `staking`), not the story ID
+- **Story reference** goes in the commit body
+- Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`
 
 ## Testing Patterns Reference
 
