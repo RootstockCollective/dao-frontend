@@ -1,10 +1,10 @@
-import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { BuilderRegistryAddress } from '@/lib/contracts'
-import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
 import { AbiFunction, Address } from 'viem'
 import { useReadContracts } from 'wagmi'
+
+import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
+import { BuilderRegistryAddress } from '@/lib/contracts'
+import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 
 const _gaugeTypeOptions = ['active', 'halted'] as const
 type GaugeType = (typeof _gaugeTypeOptions)[number]
@@ -35,9 +35,6 @@ export const useGetGaugesArray = () => {
     error: gaugesAddressError,
   } = useReadContracts<Address[]>({
     contracts: contractCalls,
-    query: {
-      refetchInterval: AVERAGE_BLOCKTIME,
-    },
   })
 
   const gauges = useMemo(() => gaugesAddress?.map(gauge => gauge.result as Address) ?? [], [gaugesAddress])

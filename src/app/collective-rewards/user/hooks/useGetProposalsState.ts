@@ -1,11 +1,11 @@
-import { ProposalsToState } from '@/app/collective-rewards/types'
-import { GovernorAbi } from '@/lib/abis/Governor'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { GovernorAddress } from '@/lib/contracts'
-import { ProposalState } from '@/shared/types'
 import { useMemo } from 'react'
 import { Address } from 'viem'
 import { useReadContracts } from 'wagmi'
+
+import { ProposalsToState } from '@/app/collective-rewards/types'
+import { GovernorAbi } from '@/lib/abis/Governor'
+import { GovernorAddress } from '@/lib/contracts'
+import { ProposalState } from '@/shared/types'
 
 export const useGetProposalsState = (proposalIds: bigint[]) => {
   const contractCalls = useMemo(
@@ -27,9 +27,6 @@ export const useGetProposalsState = (proposalIds: bigint[]) => {
     error,
   } = useReadContracts<ProposalState[]>({
     contracts: contractCalls,
-    query: {
-      refetchInterval: AVERAGE_BLOCKTIME,
-    },
   })
 
   const proposalsToStates = useMemo(() => {

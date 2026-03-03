@@ -65,6 +65,7 @@ const useContractData = (nftAddress?: Address) => {
       axiosInstance
         .get<NftDataFromAddressesReturnType>('/user/api/communities', { baseURL: '/' })
         .then(({ data }) => data),
+    refetchInterval: false,
   })
 
   return useMemo(() => {

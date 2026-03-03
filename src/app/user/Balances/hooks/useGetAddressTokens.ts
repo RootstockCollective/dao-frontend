@@ -1,13 +1,14 @@
-import { useBalance, useReadContracts } from 'wagmi'
+import { useCallback } from 'react'
 import { Address } from 'viem'
+import { useQuery } from '@tanstack/react-query'
+import { useBalance, useReadContracts } from 'wagmi'
+
+import { AddressToken } from '@/app/user/types'
+import { TokenInfoReturnType } from '@/app/user/api/tokens/route'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { tokenContracts, MulticallAddress } from '@/lib/contracts'
-import { AddressToken } from '@/app/user/types'
-import { useQuery } from '@tanstack/react-query'
+import { RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
 import { axiosInstance } from '@/lib/utils'
-import { TokenInfoReturnType } from '@/app/user/api/tokens/route'
-import { AVERAGE_BLOCKTIME, RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
-import { useCallback } from 'react'
 
 const getTokenFunction = (
   tokenAddress: Address,
@@ -54,9 +55,6 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
       getTokenFunction(tokenContracts.USDT0, address, 'balanceOf'),
     ],
     multicallAddress: MulticallAddress,
-    query: {
-      refetchInterval: AVERAGE_BLOCKTIME,
-    },
   })
 
   const {
@@ -67,6 +65,7 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
     queryKey: ['tokenData'],
     queryFn: () =>
       axiosInstance.get<TokenInfoReturnType>('/user/api/tokens', { baseURL: '/' }).then(({ data }) => data),
+    refetchInterval: false,
   })
 
   const rifTokenData =

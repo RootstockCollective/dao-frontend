@@ -12,7 +12,7 @@ export const useGetProposalVotes = (proposalId: string, shouldRefetch = false) =
     functionName: 'proposalVotes',
     args: [BigInt(proposalId)],
     query: {
-      ...(shouldRefetch && { refetchInterval: 5000 }),
+      refetchInterval: shouldRefetch ? 5000 : false,
     },
   })
 

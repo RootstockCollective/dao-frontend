@@ -1,6 +1,6 @@
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useQuery } from '@tanstack/react-query'
 import Big from 'big.js'
+
 import { AbiData, useGetABI } from './useGetABI'
 import { useStateSyncHealthCheck } from './useStateSyncHealthCheck'
 
@@ -27,7 +27,6 @@ export const useGetMetricsAbiWithStateSync = () => {
       return response.json()
     },
     queryKey: ['abiData'],
-    refetchInterval: AVERAGE_BLOCKTIME,
     enabled: !healthCheckIsLoading && isStateSyncHealthy,
   })
 

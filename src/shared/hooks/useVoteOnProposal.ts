@@ -26,7 +26,7 @@ export const useVoteOnProposal = (proposalId: string, shouldRefetch = true) => {
     functionName: 'hasVoted',
     args: [BigInt(proposalId), address as Address],
     query: {
-      ...(shouldRefetch && { refetchInterval: 5000 }),
+      refetchInterval: shouldRefetch ? 5000 : false,
     },
   })
 

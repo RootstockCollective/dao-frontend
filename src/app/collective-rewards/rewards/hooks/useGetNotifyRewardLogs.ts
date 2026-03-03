@@ -1,9 +1,9 @@
+import { useMemo } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { Address, getAddress, isAddressEqual, parseEventLogs } from 'viem'
+
 import { fetchGaugeNotifyRewardLogs } from '@/app/collective-rewards/actions'
 import { GaugeAbi } from '@/lib/abis/tok/GaugeAbi'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { useQuery } from '@tanstack/react-query'
-import { useMemo } from 'react'
-import { Address, getAddress, isAddressEqual, parseEventLogs } from 'viem'
 
 export type GaugeNotifyRewardEventLog = ReturnType<
   typeof parseEventLogs<typeof GaugeAbi, true, 'NotifyReward'>
@@ -31,7 +31,6 @@ export const useGetGaugeNotifyRewardLogs = (
       })
     },
     queryKey: ['notifyRewardLogs', gauge],
-    refetchInterval: AVERAGE_BLOCKTIME,
     initialData: [],
   })
 

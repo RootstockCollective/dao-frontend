@@ -1,6 +1,5 @@
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { useQuery, UseQueryResult } from '@tanstack/react-query'
 import { useCallback, useMemo, useState } from 'react'
+import { useQuery, UseQueryResult } from '@tanstack/react-query'
 
 interface UsePaginatedQueryOptions<T> {
   queryKey: string[]
@@ -29,7 +28,6 @@ export function usePagination<T>({
     queryKey,
     queryFn,
     refetchOnWindowFocus: false,
-    refetchInterval: AVERAGE_BLOCKTIME,
   })
 
   const allItems = useMemo(() => (Array.isArray(data) ? data : []), [data])
