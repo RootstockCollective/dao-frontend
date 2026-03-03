@@ -4,6 +4,7 @@ import { SectionContainer } from '@/app/communities/components/SectionContainer'
 
 import { ActiveRequestSection } from './ActiveRequestSection'
 import { BtcVaultBanners } from './BtcVaultBanners'
+import { BtcVaultActions } from './components/BtcVaultActions'
 import { BtcVaultDashboard } from './components/BtcVaultDashboard'
 import { BtcVaultDisclosureSection } from './components/BtcVaultDisclosureSection'
 import { BtcVaultMetrics } from './components/BtcVaultMetrics'
@@ -35,8 +36,8 @@ export const BtcVaultPage = () => {
       <CapitalAllocationSection />
 
       {/* Actions Zone - F5/F6 */}
-      <section data-testid="btc-vault-actions-zone" className="w-full">
-        {/* BTC Vault Actions (Deposit/Withdraw) - implemented in F5/F6 */}
+      <section data-testid="btc-vault-actions" className="w-full">
+        <BtcVaultActions />
       </section>
 
       {/* Request Queue Zone - F9 */}
