@@ -1,4 +1,8 @@
 import { zeroAddress } from 'viem'
+
+import { BtcVaultAbi } from '@/lib/abis/BtcVaultAbi'
+import { VaultAbi } from '@/lib/abis/VaultAbi'
+
 import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'
 import { GovernorAbi } from './abis/Governor'
 import { RootlingsS1ABI } from './abis/RootlingsS1'
@@ -7,6 +11,7 @@ import { VotingVanguardsNftAbi } from './abis/VotingVanguardsNFTAbi'
 import {
   BACKERS_MANAGER_ADDRESS,
   BB_NFT_ADDRESS,
+  BTC_VAULT_ADDRESS,
   BUILDER_REGISTRY_ADDRESS,
   EA_NFT_ADDRESS,
   GENERAL_BUCKET_ADDRESS,
@@ -32,7 +37,6 @@ import {
   USDT0_ADDRESS,
   VANGUARD_NFT_ADDRESS,
 } from './constants'
-import { VaultAbi } from '@/lib/abis/VaultAbi'
 
 const tokenContracts = {
   [RIF]: RIF_ADDRESS,
@@ -113,4 +117,9 @@ export const stRif = {
 export const vault = {
   address: USDRIF_VAULT_ADDRESS,
   abi: VaultAbi,
+} as const
+
+export const btcVault = {
+  address: BTC_VAULT_ADDRESS,
+  abi: BtcVaultAbi,
 } as const
