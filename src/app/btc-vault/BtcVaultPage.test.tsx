@@ -60,6 +60,7 @@ vi.mock('./hooks/useVaultMetrics', () => ({
       apyFormatted: '8.50',
       navFormatted: '1.02',
       timestamp: 1709000000,
+      navRaw: 1_020_000_000_000_000_000n,
     },
     isLoading: false,
   }),

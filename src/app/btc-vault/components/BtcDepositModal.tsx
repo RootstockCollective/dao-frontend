@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { formatEther, parseEther } from 'viem'
 import { useAccount } from 'wagmi'
 
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from '@/app/vault/utils/slippage'
@@ -9,8 +10,10 @@ import { Modal } from '@/components/Modal'
 import { Header } from '@/components/Typography'
 
 import { useUserPosition } from '../hooks/useUserPosition'
+import { useVaultMetrics } from '../hooks/useVaultMetrics'
 import type { DepositRequestParams } from '../services/types'
 import { DepositAmountStep } from './DepositAmountStep'
+import { DepositReviewStep } from './DepositReviewStep'
 
 type DepositStep = 'amount' | 'review'
 
@@ -20,13 +23,10 @@ interface BtcDepositModalProps {
   isSubmitting: boolean
 }
 
-export const BtcDepositModal = ({
-  onClose,
-  onSubmit: _onSubmit,
-  isSubmitting: _isSubmitting,
-}: BtcDepositModalProps) => {
+export const BtcDepositModal = ({ onClose, onSubmit, isSubmitting }: BtcDepositModalProps) => {
   const { address } = useAccount()
   const { data: userPosition } = useUserPosition(address)
+  const { data: vaultMetrics } = useVaultMetrics()
 
   const [step, setStep] = useState<DepositStep>('amount')
   const [amount, setAmount] = useState('')
@@ -35,9 +35,40 @@ export const BtcDepositModal = ({
   const rbtcBalanceFormatted = userPosition?.rbtcBalanceFormatted ?? '0'
   const rbtcBalanceRaw = userPosition?.rbtcBalanceRaw ?? 0n
 
+  const navFormatted = vaultMetrics?.navFormatted ?? '0'
+  const navTimestamp = vaultMetrics?.timestamp ?? 0
+  const navRaw = vaultMetrics?.navRaw ?? 0n
+
+  const estimatedShares = useMemo(() => {
+    if (!amount || navRaw === 0n) return '0'
+    try {
+      const amountWei = parseEther(amount)
+      // shares = amount / navPerShare (both in 18 decimals)
+      const sharesWei = (amountWei * 10n ** 18n) / navRaw
+      return formatEther(sharesWei)
+    } catch {
+      return '0'
+    }
+  }, [amount, navRaw])
+
   const handleNext = () => {
     setStep('review')
   }
+
+  const handleBack = () => {
+    setStep('amount')
+  }
+
+  const handleSubmit = useCallback(() => {
+    if (!amount) return
+    try {
+      const amountWei = parseEther(amount)
+      const slippageDecimal = parseFloat(slippage) / 100
+      onSubmit({ amount: amountWei, slippage: slippageDecimal })
+    } catch {
+      // parseEther may throw on invalid input — noop
+    }
+  }, [amount, slippage, onSubmit])
 
   return (
     <Modal onClose={onClose} data-testid="BtcDepositModal">
@@ -58,7 +89,17 @@ export const BtcDepositModal = ({
         )}
 
         {step === 'review' && (
-          <div data-testid="DepositReviewStep">{/* Review step implemented in Phase 2 */}</div>
+          <DepositReviewStep
+            amount={amount}
+            slippage={slippage}
+            estimatedShares={estimatedShares}
+            navFormatted={navFormatted}
+            navTimestamp={navTimestamp}
+            depositFee="0"
+            onBack={handleBack}
+            onSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+          />
         )}
       </div>
     </Modal>
