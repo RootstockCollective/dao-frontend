@@ -9,9 +9,27 @@ import { BtcVaultPage } from './BtcVaultPage'
 const mockUseAccount = vi.fn()
 const mockUseActionEligibility = vi.fn()
 
-vi.mock('wagmi', () => ({
-  useAccount: () => mockUseAccount(),
-}))
+vi.mock('wagmi', async importOriginal => {
+  const actual = await importOriginal<typeof import('wagmi')>()
+  return {
+    ...actual,
+    useAccount: () => mockUseAccount(),
+    useWriteContract: () => ({
+      writeContractAsync: vi.fn(),
+      data: undefined,
+      isPending: false,
+    }),
+    useWaitForTransactionReceipt: () => ({ isPending: false, failureReason: null }),
+  }
+})
+
+vi.mock('@tanstack/react-query', async importOriginal => {
+  const actual = await importOriginal<typeof import('@tanstack/react-query')>()
+  return {
+    ...actual,
+    useQueryClient: () => ({ invalidateQueries: vi.fn() }),
+  }
+})
 
 vi.mock('./hooks/useActionEligibility', () => ({
   useActionEligibility: (address: string | undefined) => mockUseActionEligibility(address),
