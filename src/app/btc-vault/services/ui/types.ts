@@ -1,6 +1,6 @@
 import type { EpochStatus, RequestStatus, RequestType } from '../types'
 
-// ─── Display Types ───────────────────────────────────────────────────
+// --- Display Types ---
 
 export interface VaultMetricsDisplay {
   tvlFormatted: string

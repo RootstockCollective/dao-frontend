@@ -12,6 +12,9 @@ import Big from '@/lib/big'
 import { RBTC } from '@/lib/constants'
 import { cn, handleAmountInput } from '@/lib/utils'
 
+/** Conservative gas reserve for native rBTC deposits (0.001 rBTC ≈ $0.10) */
+const GAS_RESERVE_WEI = 1_000_000_000_000_000n // 0.001 rBTC
+
 const PERCENTAGE_OPTIONS: PercentageButtonItem<number>[] = [
   { value: 0.25, label: '25%', testId: '25Button' },
   { value: 0.5, label: '50%', testId: '50Button' },
@@ -53,9 +56,16 @@ export const DepositAmountStep = ({
 
   const handlePercentageClick = useCallback(
     (percentage: number) => {
-      const balanceStr = Big(rbtcBalanceRaw.toString()).div(Big(10).pow(18)).toString()
-      const calculatedAmount = Big(balanceStr).mul(percentage).toString()
-      setAmount(calculatedAmount)
+      if (percentage === 1) {
+        // Reserve gas for the native rBTC transaction
+        const maxWei = rbtcBalanceRaw > GAS_RESERVE_WEI ? rbtcBalanceRaw - GAS_RESERVE_WEI : 0n
+        const maxStr = Big(maxWei.toString()).div(Big(10).pow(18)).toString()
+        setAmount(maxStr)
+      } else {
+        const balanceStr = Big(rbtcBalanceRaw.toString()).div(Big(10).pow(18)).toString()
+        const calculatedAmount = Big(balanceStr).mul(percentage).toString()
+        setAmount(calculatedAmount)
+      }
     },
     [rbtcBalanceRaw, setAmount],
   )
