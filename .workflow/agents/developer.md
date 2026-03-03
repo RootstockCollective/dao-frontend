@@ -87,8 +87,11 @@ Implement **ONE PHASE** from the approved architecture plan.
    ```
 
 4. **Commit**
-   - Use conventional commit messages
-   - Reference the story ID and phase
+   - Use conventional commit messages per `.cursor/rules/git-commits.mdc`
+   - Reference the story ID and phase in the commit body
+   - One layer per commit — do not mix data layer and UI in the same commit
+   - Subject line must answer "why does this exist?" in blame one year from now
+   - Co-locate test files with source in the same commit — never split tests into a separate commit
 
 ## Important
 - **Only implement the current phase** - do not jump ahead

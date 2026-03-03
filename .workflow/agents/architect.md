@@ -72,12 +72,25 @@ Use the plan template at the end of this document.
 
 ## Phase Design Guidelines
 
-- Each phase should deliver testable, working functionality
-- Phases should build on each other logically
-- Earlier phases should establish foundations (types, hooks, utilities)
-- Later phases should add UI components and integration
-- Each phase should cover specific acceptance criteria
-- Consider the component hierarchy: shared hooks/utils → components → pages
+### Sizing — small, blame-friendly phases
+
+- **Target 1–3 ACs per phase.** If a phase covers 4+ ACs, split it unless all ACs are trivially related.
+- **One layer per phase.** Each phase should touch one concern: data layer (types, mappers, formatters) OR UI component OR integration/wiring. Mixing layers makes blame ambiguous.
+- **Aim for fewer than 5 source files changed per phase** (excluding co-located test files). If a phase touches 8+ files, it's likely doing too much.
+- Each commit message must answer **"why does this exist?"** when read in `git blame` one year from now.
+
+### Ordering — foundations first
+
+- Earlier phases should establish foundations (types, hooks, utilities).
+- Later phases should add UI components and page integration.
+- It is OK for multiple phases to modify the same file incrementally — blame will show which phase added which lines.
+
+### Testability
+
+- Each phase should deliver testable, working functionality.
+- Each phase should cover specific acceptance criteria.
+- Phases should build on each other logically.
+- Consider the component hierarchy: shared hooks/utils → components → pages.
 ```
 
 ---
@@ -192,11 +205,14 @@ Before handing off, ensure:
 
 ## 5. Implementation Phases
 
-Each phase goes through the complete cycle: Developer → Code Review → QA
+Each phase goes through the complete cycle: Developer → Code Review → QA.
+Target: 1–3 ACs per phase, one layer per phase, < 5 source files changed.
 
 ### Phase 1: [Phase Name]
 
 **Acceptance Criteria Covered:** AC-1, AC-2
+**Layer:** [data | UI | integration]
+**Commit message:** `type(scope): description`
 
 **Files to Create/Modify:**
 - [ ] [File path and description]
@@ -215,6 +231,8 @@ Each phase goes through the complete cycle: Developer → Code Review → QA
 ### Phase 2: [Phase Name]
 
 **Acceptance Criteria Covered:** AC-3
+**Layer:** [data | UI | integration]
+**Commit message:** `type(scope): description`
 
 **Files to Create/Modify:**
 - [ ] [File path and description]
