@@ -4,7 +4,8 @@ export type SortDirection = (typeof SORT_DIRECTIONS)[number]
 
 export type BaseColumnId = string | number | symbol
 
-type BaseRowId = Exclude<React.Key, bigint>
+// Explicit instead of Exclude<React.Key, bigint> to avoid bigint/experimental key types in @types/react@19.2.x
+type BaseRowId = string | number
 
 export interface Sort<ColumnId extends Column['id'] = Column['id']> {
   columnId: ColumnId | null // For now only one column can be sorted at a time
@@ -28,7 +29,7 @@ export interface Row<
   data: RowData<ColumnId, CellDataMap>
 }
 
-type SelectedRows<RowId extends Row['id'] = Row['id']> = Record<RowId, boolean>
+type SelectedRows<RowId extends Row['id'] = Row['id']> = { [K in RowId]?: boolean }
 
 export interface Column<ColumnId extends BaseColumnId = BaseColumnId> {
   id: ColumnId

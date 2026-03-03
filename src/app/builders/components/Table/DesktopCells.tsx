@@ -70,7 +70,7 @@ interface BuilderCellProps extends BuilderNameCellProps {
 export const BuilderCell = (props: BuilderCellProps): ReactElement => {
   const { isExpanded, onToggleExpand, ...builderProps } = props
   const { selectedRows } = useTableContext<ColumnId, BuilderCellDataMap>()
-  const isSelected = selectedRows[props.builder.address]
+  const isSelected = selectedRows[props.builder.address] ?? false
   const isDesktop = useIsDesktop()
 
   return (

@@ -68,7 +68,7 @@ export function TextArea<T extends FieldValues>({
     }
   }, [adjustHeight])
 
-  const handleInput = (e: React.FormEvent<HTMLTextAreaElement>) => {
+  const handleInput: NonNullable<typeof onInput> = e => {
     adjustHeight()
     onInput?.(e)
   }
