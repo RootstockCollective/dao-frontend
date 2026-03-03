@@ -44,8 +44,9 @@ next-env.d.ts
 # PHPStorm
 .idea
 
-# Cursor
-.cursor
+# Cursor — share rules, ignore user-specific config
+.cursor/*
+!.cursor/rules/
 
 # bun lock file
 bun.lockb

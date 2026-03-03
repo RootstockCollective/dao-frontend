@@ -1,6 +1,7 @@
 import nextCoreWebVitals from 'eslint-config-next/core-web-vitals'
 import prettierConfig from 'eslint-config-prettier'
 import prettierPlugin from 'eslint-plugin-prettier'
+import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import storybookPlugin from 'eslint-plugin-storybook'
 import tseslint from 'typescript-eslint'
 
@@ -37,6 +38,19 @@ const config = [
       'react-hooks/incompatible-library': 'off',
       'react-hooks/static-components': 'off',
       'react-hooks/immutability': 'off',
+    },
+  },
+
+  // -----------------------------------------------------------------------
+  // Import sorting (auto-fixable via `eslint --fix` or editor save)
+  // [TechDebt] Set to 'warn' to avoid breaking CI on existing files.
+  //            Promote to 'error' once cleanup epic is complete.
+  // -----------------------------------------------------------------------
+  {
+    plugins: { 'simple-import-sort': simpleImportSort },
+    rules: {
+      'simple-import-sort/imports': 'warn',
+      'simple-import-sort/exports': 'warn',
     },
   },
 
