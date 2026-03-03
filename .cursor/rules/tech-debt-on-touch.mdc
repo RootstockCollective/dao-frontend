@@ -18,6 +18,7 @@ When editing existing files, bring touched code up to current standards. This in
 7. **Missing JSDoc:** add JSDoc to exported hooks/functions you modify
 8. **TODO format:** update `@TODO`, `//TODO:`, unlinked TODOs to `// TODO(DAO-XXXX):` format
 9. **Narration comments:** remove comments that restate what the code does
+10. **Mobile-first layout:** migrate touched layout classes toward mobile-first (e.g., `w-[214px]` → `w-full md:w-[214px]`). See `responsive-mobile-first.mdc`.
 
 ## Do NOT Fix (Create Ticket Instead)
 

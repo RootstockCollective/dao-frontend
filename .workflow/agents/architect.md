@@ -26,6 +26,7 @@ Read the project context file to understand:
 Read the following coding standards — your plan must align with these rules:
 - `.cursor/rules/architecture-patterns.mdc` — data fetching, state management, hook & component conventions
 - `.cursor/rules/coding-conventions.mdc` — file naming, exports, imports, types, folder structure
+- `.cursor/rules/responsive-mobile-first.mdc` — mobile-first layouts, breakpoints, touch targets
 
 ## Your Task
 Analyze this user story and create an implementation plan.

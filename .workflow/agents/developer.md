@@ -23,6 +23,7 @@ Read the project context to understand the tech stack, patterns, and conventions
 Read and follow ALL coding standards defined in `.cursor/rules/`:
 - `.cursor/rules/architecture-patterns.mdc` — data fetching, state management, hook & component conventions
 - `.cursor/rules/coding-conventions.mdc` — file naming, exports, imports, types, error handling, styling
+- `.cursor/rules/responsive-mobile-first.mdc` — mobile-first layouts, breakpoints, touch targets
 - `.cursor/rules/documentation-and-testing.mdc` — JSDoc requirements, inline comments, TODO format, testing requirements
 - `.cursor/rules/tech-debt-on-touch.mdc` — when editing existing files, bring touched code up to current standards
 - `.cursor/rules/git-commits.mdc` — conventional commits, plan execution workflow
