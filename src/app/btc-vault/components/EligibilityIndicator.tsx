@@ -4,9 +4,8 @@ import { cn } from '@/lib/utils'
 import { Span } from '@/components/Typography'
 import type { ActionEligibility } from '../services/ui/types'
 import { DEPOSIT_PAUSE_REASON, WITHDRAWAL_PAUSE_REASON, ACTIVE_REQUEST_REASON } from '../BtcVaultBanners'
-import type { FC } from 'react'
 
-export interface EligibilityIndicatorProps {
+interface EligibilityIndicatorProps {
   eligibility: ActionEligibility
 }
 
@@ -37,7 +36,7 @@ function getStatusParts(eligibility: ActionEligibility): { kybLabel: string; pau
   return { kybLabel, pauseLabel }
 }
 
-export const EligibilityIndicator: FC<EligibilityIndicatorProps> = ({ eligibility }) => {
+export function EligibilityIndicator({ eligibility }: EligibilityIndicatorProps) {
   const { kybLabel, pauseLabel } = getStatusParts(eligibility)
   const isNotAuthorized = isEligibilityReason(eligibility.depositBlockReason)
   const hasPause = pauseLabel !== null
