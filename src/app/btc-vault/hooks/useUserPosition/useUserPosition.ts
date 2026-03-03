@@ -1,14 +1,16 @@
 import { useQuery } from '@tanstack/react-query'
-import { toUserPositionDisplay } from '../../services/ui/mappers'
-import type { UserPosition } from '../../services/types'
 
-const ONE_BTC = 10n ** 18n
+import { WeiPerEther } from '@/lib/constants'
+
+import type { UserPosition } from '../../services/types'
+import { toUserPositionDisplay } from '../../services/ui/mappers'
 
 const MOCK_POSITION: UserPosition = {
-  rbtcBalance: 2n * ONE_BTC,
-  vaultTokens: 5n * ONE_BTC,
-  positionValue: (51n * ONE_BTC) / 10n,
+  rbtcBalance: 2n * WeiPerEther,
+  vaultTokens: 5n * WeiPerEther,
+  positionValue: (51n * WeiPerEther) / 10n,
   percentOfVault: 10.2,
+  totalDepositedPrincipal: 5n * WeiPerEther,
 }
 
 const EMPTY_POSITION: UserPosition = {
@@ -16,6 +18,7 @@ const EMPTY_POSITION: UserPosition = {
   vaultTokens: 0n,
   positionValue: 0n,
   percentOfVault: 0,
+  totalDepositedPrincipal: 0n,
 }
 
 export function useUserPosition(address: string | undefined) {

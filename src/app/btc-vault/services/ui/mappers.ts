@@ -1,29 +1,34 @@
-import type {
-  VaultMetrics,
-  EpochState,
-  UserPosition,
-  PauseState,
-  EligibilityStatus,
-  VaultRequest,
-  ClaimableInfo,
-  PaginatedResult,
-} from '../types'
-import type {
-  VaultMetricsDisplay,
-  EpochDisplay,
-  UserPositionDisplay,
-  ActionEligibility,
-  ActiveRequestDisplay,
-  PaginatedHistoryDisplay,
-} from './types'
 import { formatEther } from 'viem'
+
+import { getFiatAmount } from '@/app/shared/formatter'
+import { formatCurrencyWithLabel } from '@/lib/utils'
+
+import type {
+  ClaimableInfo,
+  EligibilityStatus,
+  EpochState,
+  PaginatedResult,
+  PauseState,
+  UserPosition,
+  VaultMetrics,
+  VaultRequest,
+} from '../types'
 import {
   formatApyPercent,
+  formatCountdown,
   formatPercent,
   formatTimestamp,
-  formatCountdown,
+  MOCK_RBTC_USD_PRICE,
   shortenTxHash,
 } from './formatters'
+import type {
+  ActionEligibility,
+  ActiveRequestDisplay,
+  EpochDisplay,
+  PaginatedHistoryDisplay,
+  UserPositionDisplay,
+  VaultMetricsDisplay,
+} from './types'
 
 /**
  * Maps raw vault metrics from the adapter into display-ready formatted strings.
@@ -57,10 +62,19 @@ export function toEpochDisplay(raw: EpochState): EpochDisplay {
 
 /**
  * Maps raw user position into display-ready strings while preserving raw bigints for form validation.
+ * Derives current earnings, yield %, total balance, and fiat amounts.
  * @param raw - Raw user position with bigint balances
- * @returns Display object with formatted strings and raw bigint values
+ * @returns Display object with formatted strings, derived metrics, and raw bigint values
  */
 export function toUserPositionDisplay(raw: UserPosition): UserPositionDisplay {
+  const currentEarnings =
+    raw.positionValue > raw.totalDepositedPrincipal ? raw.positionValue - raw.totalDepositedPrincipal : 0n
+
+  // Integer math: (earnings * 10_000) / principal gives basis points, then divide by 100 for percent
+  const yieldBps =
+    raw.totalDepositedPrincipal > 0n ? (currentEarnings * 10_000n) / raw.totalDepositedPrincipal : 0n
+  const yieldPercent = Number(yieldBps) / 100
+
   return {
     rbtcBalanceFormatted: formatEther(raw.rbtcBalance),
     vaultTokensFormatted: formatEther(raw.vaultTokens),
@@ -68,6 +82,20 @@ export function toUserPositionDisplay(raw: UserPosition): UserPositionDisplay {
     percentOfVaultFormatted: formatPercent(raw.percentOfVault),
     vaultTokensRaw: raw.vaultTokens,
     rbtcBalanceRaw: raw.rbtcBalance,
+
+    totalDepositedPrincipalFormatted: formatEther(raw.totalDepositedPrincipal),
+    totalDepositedPrincipalRaw: raw.totalDepositedPrincipal,
+    currentEarningsFormatted: formatEther(currentEarnings),
+    totalBalanceFormatted: formatEther(raw.positionValue),
+    totalBalanceRaw: raw.positionValue,
+    yieldPercentToDateFormatted: formatPercent(yieldPercent),
+
+    fiatWalletBalance: formatCurrencyWithLabel(getFiatAmount(raw.rbtcBalance, MOCK_RBTC_USD_PRICE)),
+    fiatVaultShares: formatCurrencyWithLabel(getFiatAmount(raw.positionValue, MOCK_RBTC_USD_PRICE)),
+    fiatPrincipalDeposited: formatCurrencyWithLabel(
+      getFiatAmount(raw.totalDepositedPrincipal, MOCK_RBTC_USD_PRICE),
+    ),
+    fiatTotalBalance: formatCurrencyWithLabel(getFiatAmount(raw.positionValue, MOCK_RBTC_USD_PRICE)),
   }
 }
 
