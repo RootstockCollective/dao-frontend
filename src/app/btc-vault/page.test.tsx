@@ -5,9 +5,27 @@ vi.mock('@/shared/context/FeatureFlag', () => ({
   withServerFeatureFlag: vi.fn((Component, _config) => Component),
 }))
 
-vi.mock('wagmi', () => ({
-  useAccount: () => ({ address: undefined, isConnected: false }),
-}))
+vi.mock('wagmi', async importOriginal => {
+  const actual = await importOriginal<typeof import('wagmi')>()
+  return {
+    ...actual,
+    useAccount: () => ({ address: undefined, isConnected: false }),
+    useWriteContract: () => ({
+      writeContractAsync: vi.fn(),
+      data: undefined,
+      isPending: false,
+    }),
+    useWaitForTransactionReceipt: () => ({ isPending: false, failureReason: null }),
+  }
+})
+
+vi.mock('@tanstack/react-query', async importOriginal => {
+  const actual = await importOriginal<typeof import('@tanstack/react-query')>()
+  return {
+    ...actual,
+    useQueryClient: () => ({ invalidateQueries: vi.fn() }),
+  }
+})
 
 vi.mock('./hooks/useActionEligibility', () => ({
   useActionEligibility: () => ({ data: undefined }),
