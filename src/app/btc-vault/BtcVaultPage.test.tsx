@@ -14,6 +14,20 @@ vi.mock('wagmi', async importOriginal => {
   return {
     ...actual,
     useAccount: () => mockUseAccount(),
+    useWriteContract: () => ({
+      writeContractAsync: vi.fn(),
+      data: undefined,
+      isPending: false,
+    }),
+    useWaitForTransactionReceipt: () => ({ isPending: false, failureReason: null }),
+  }
+})
+
+vi.mock('@tanstack/react-query', async importOriginal => {
+  const actual = await importOriginal<typeof import('@tanstack/react-query')>()
+  return {
+    ...actual,
+    useQueryClient: () => ({ invalidateQueries: vi.fn() }),
   }
 })
 
