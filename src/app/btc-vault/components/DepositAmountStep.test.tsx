@@ -100,12 +100,23 @@ describe('DepositAmountStep', () => {
     expect(setAmount).toHaveBeenCalledWith('1')
   })
 
-  it('calls setAmount with full balance when Max is clicked', async () => {
+  it('calls setAmount with balance minus gas reserve when Max is clicked', async () => {
     const user = userEvent.setup()
     const setAmount = vi.fn()
     render(<DepositAmountStep {...defaultProps} setAmount={setAmount} />)
 
     await user.click(screen.getByTestId('MaxButton'))
-    expect(setAmount).toHaveBeenCalledWith('2')
+    // 2.0 rBTC - 0.001 rBTC gas reserve = 1.999 rBTC
+    expect(setAmount).toHaveBeenCalledWith('1.999')
+  })
+
+  it('calls setAmount with 0 when Max is clicked and balance is less than gas reserve', async () => {
+    const user = userEvent.setup()
+    const setAmount = vi.fn()
+    const tinyBalance = 500_000_000_000_000n // 0.0005 rBTC < gas reserve
+    render(<DepositAmountStep {...defaultProps} rbtcBalanceRaw={tinyBalance} setAmount={setAmount} />)
+
+    await user.click(screen.getByTestId('MaxButton'))
+    expect(setAmount).toHaveBeenCalledWith('0')
   })
 })

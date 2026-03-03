@@ -28,7 +28,7 @@ describe('useSubmitDeposit', () => {
   })
 
   it('returns the expected interface', () => {
-    const { result } = renderHook(() => useSubmitDeposit(1_000_000_000_000_000_000n))
+    const { result } = renderHook(() => useSubmitDeposit())
 
     expect(result.current).toEqual(
       expect.objectContaining({
@@ -46,8 +46,8 @@ describe('useSubmitDeposit', () => {
     const txHash = '0xmockhash'
     mockWriteContractAsync.mockResolvedValue(txHash)
 
-    const { result } = renderHook(() => useSubmitDeposit(amount))
-    const hash = await result.current.onRequestDeposit()
+    const { result } = renderHook(() => useSubmitDeposit())
+    const hash = await result.current.onRequestDeposit(amount)
 
     expect(hash).toBe(txHash)
     expect(mockWriteContractAsync).toHaveBeenCalledOnce()
@@ -67,8 +67,8 @@ describe('useSubmitDeposit', () => {
     const amount = 1_000_000_000_000_000_000n
     mockWriteContractAsync.mockResolvedValue('0xhash')
 
-    const { result } = renderHook(() => useSubmitDeposit(amount, 1.0))
-    await result.current.onRequestDeposit()
+    const { result } = renderHook(() => useSubmitDeposit())
+    await result.current.onRequestDeposit(amount, 1.0)
 
     const callArgs = mockWriteContractAsync.mock.calls[0][0]
     const minSharesOut = callArgs.args[2] as bigint
@@ -76,10 +76,20 @@ describe('useSubmitDeposit', () => {
     expect(minSharesOut).toBe(990_000_000_000_000_000n)
   })
 
-  it('sets minSharesOut to 0n when amount is 0n', () => {
-    const { result } = renderHook(() => useSubmitDeposit(0n))
+  it('sets minSharesOut to 0n when amount is 0n', async () => {
+    mockWriteContractAsync.mockResolvedValue('0xhash')
+    const { result } = renderHook(() => useSubmitDeposit())
+    await result.current.onRequestDeposit(0n)
 
-    // Hook initializes but minSharesOut is 0n internally
-    expect(result.current.onRequestDeposit).toBeDefined()
+    const callArgs = mockWriteContractAsync.mock.calls[0][0]
+    expect(callArgs.args[2]).toBe(0n)
+  })
+
+  it('rejects when wallet is disconnected', async () => {
+    mockUseAccount.mockReturnValue({ address: undefined })
+    const { result } = renderHook(() => useSubmitDeposit())
+    await expect(result.current.onRequestDeposit(1_000_000_000_000_000_000n)).rejects.toThrow(
+      'Wallet not connected',
+    )
   })
 })

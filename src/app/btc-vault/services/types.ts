@@ -1,4 +1,4 @@
-// ─── Vault-Level State ───────────────────────────────────────────────
+// --- Vault-Level State ---
 
 /**
  * Aggregate metrics for the entire BTC vault. Same data for every user.
@@ -97,7 +97,7 @@ export interface PauseState {
   withdrawals: 'active' | 'paused'
 }
 
-// ─── User-Level State ────────────────────────────────────────────────
+// --- User-Level State ---
 
 /**
  * A single user's position within the vault.
@@ -229,7 +229,7 @@ export interface ClaimableInfo {
   lockedSharePrice: bigint
 }
 
-// ─── Write Operation Types ───────────────────────────────────────────
+// --- Write Operation Types ---
 
 /**
  * Blockchain transaction status, aligned with the wagmi/viem lifecycle.
@@ -295,7 +295,7 @@ export interface WithdrawalRequestParams {
   slippage?: number
 }
 
-// ─── Pagination ──────────────────────────────────────────────────────
+// --- Pagination ---
 
 /**
  * Parameters for paginated queries (request history).

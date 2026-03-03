@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 import { Hash } from 'viem'
 import { useAccount, useWriteContract } from 'wagmi'
 
@@ -17,28 +17,29 @@ import { btcVault } from '@/lib/contracts'
  * `useContractWrite` hook's type doesn't support — so we compose wagmi
  * primitives directly.
  *
- * @param amount  - Deposit amount in Wei (bigint)
- * @param slippagePercentage - Slippage tolerance (e.g. 0.5 = 0.5%)
+ * Amount and slippage are passed at call time (not as hook params) so that
+ * the caller can invoke the returned function directly without needing a
+ * state + useEffect bridge to wait for re-render.
  */
-export function useSubmitDeposit(amount: bigint, slippagePercentage?: number) {
+export function useSubmitDeposit() {
   const { address } = useAccount()
-
-  const minSharesOut = useMemo(() => {
-    if (!amount || amount === 0n) return 0n
-    return calculateMinSharesOut(amount, slippagePercentage ?? DEFAULT_SLIPPAGE_PERCENTAGE)
-  }, [amount, slippagePercentage])
-
   const { writeContractAsync, data: depositTxHash, isPending: isRequesting } = useWriteContract()
   const { isTxPending, isTxFailed } = useTransactionStatus(depositTxHash)
 
-  const onRequestDeposit = useCallback((): Promise<Hash> => {
-    return writeContractAsync({
-      ...btcVault,
-      functionName: 'requestDeposit',
-      args: [amount, address!, minSharesOut],
-      value: amount,
-    })
-  }, [writeContractAsync, amount, address, minSharesOut])
+  const onRequestDeposit = useCallback(
+    (amount: bigint, slippagePercentage?: number): Promise<Hash> => {
+      if (!address) return Promise.reject(new Error('Wallet not connected'))
+      const minSharesOut =
+        amount === 0n ? 0n : calculateMinSharesOut(amount, slippagePercentage ?? DEFAULT_SLIPPAGE_PERCENTAGE)
+      return writeContractAsync({
+        ...btcVault,
+        functionName: 'requestDeposit',
+        args: [amount, address, minSharesOut],
+        value: amount,
+      })
+    },
+    [writeContractAsync, address],
+  )
 
   return {
     onRequestDeposit,
