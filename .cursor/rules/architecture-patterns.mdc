@@ -54,6 +54,7 @@ Apply to ALL new code. When editing existing code that violates these, update th
 - Never import wagmi hooks without `'use client'` in the file.
 - Presentational components: receive all data via props. No data fetching, no store access.
 - Container components: wire data to presentational components.
+- **Mobile-first layouts.** See `responsive-mobile-first.mdc` for full rules. Base Tailwind classes = mobile; `md:` = desktop.
 
 ## Folder Structure
 
