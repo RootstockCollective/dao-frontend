@@ -7,6 +7,7 @@ import { BtcVaultActions } from './BtcVaultActions'
 const mockUseAccount = vi.fn()
 const mockUseActionEligibility = vi.fn()
 const mockUseUserPosition = vi.fn()
+const mockUseVaultMetrics = vi.fn()
 
 vi.mock('wagmi', () => ({
   useAccount: () => mockUseAccount(),
@@ -18,6 +19,10 @@ vi.mock('../hooks/useActionEligibility', () => ({
 
 vi.mock('../hooks/useUserPosition', () => ({
   useUserPosition: (address: string | undefined) => mockUseUserPosition(address),
+}))
+
+vi.mock('../hooks/useVaultMetrics', () => ({
+  useVaultMetrics: () => mockUseVaultMetrics(),
 }))
 
 vi.mock('@/shared/hooks/useIsDesktop', () => ({
@@ -43,6 +48,16 @@ describe('BtcVaultActions', () => {
         percentOfVaultFormatted: '0%',
         vaultTokensRaw: 0n,
       },
+    })
+    mockUseVaultMetrics.mockReturnValue({
+      data: {
+        tvlFormatted: '50',
+        apyFormatted: '8.50',
+        navFormatted: '1.02',
+        timestamp: 1709000000,
+        navRaw: 1_020_000_000_000_000_000n,
+      },
+      isLoading: false,
     })
   })
 

@@ -5,6 +5,7 @@ import { BtcDepositModal } from './BtcDepositModal'
 
 const mockUseAccount = vi.fn()
 const mockUseUserPosition = vi.fn()
+const mockUseVaultMetrics = vi.fn()
 
 vi.mock('wagmi', () => ({
   useAccount: () => mockUseAccount(),
@@ -12,6 +13,10 @@ vi.mock('wagmi', () => ({
 
 vi.mock('../hooks/useUserPosition', () => ({
   useUserPosition: (address: string | undefined) => mockUseUserPosition(address),
+}))
+
+vi.mock('../hooks/useVaultMetrics', () => ({
+  useVaultMetrics: () => mockUseVaultMetrics(),
 }))
 
 vi.mock('@/shared/hooks/useIsDesktop', () => ({
@@ -36,6 +41,16 @@ describe('BtcDepositModal', () => {
         percentOfVaultFormatted: '0%',
         vaultTokensRaw: 0n,
       },
+    })
+    mockUseVaultMetrics.mockReturnValue({
+      data: {
+        tvlFormatted: '50',
+        apyFormatted: '8.50',
+        navFormatted: '1.02',
+        timestamp: 1709000000,
+        navRaw: 1_020_000_000_000_000_000n,
+      },
+      isLoading: false,
     })
   })
 
@@ -62,16 +77,77 @@ describe('BtcDepositModal', () => {
     const user = userEvent.setup()
     render(<BtcDepositModal {...defaultProps} />)
 
-    // Type a valid amount
     const input = screen.getByTestId('Input_amount-btc-vault')
     await user.type(input, '1')
 
-    // Click Continue
     await user.click(screen.getByTestId('ContinueButton'))
 
     expect(screen.getByTestId('DepositReviewStep')).toBeInTheDocument()
     expect(screen.queryByTestId('DepositAmountStep')).not.toBeInTheDocument()
     expect(screen.getByText('REVIEW DEPOSIT')).toBeInTheDocument()
+  })
+
+  it('navigates back to amount step from review', async () => {
+    const user = userEvent.setup()
+    render(<BtcDepositModal {...defaultProps} />)
+
+    // Navigate to review
+    const input = screen.getByTestId('Input_amount-btc-vault')
+    await user.type(input, '1')
+    await user.click(screen.getByTestId('ContinueButton'))
+    expect(screen.getByTestId('DepositReviewStep')).toBeInTheDocument()
+
+    // Navigate back
+    await user.click(screen.getByTestId('BackButton'))
+    expect(screen.getByTestId('DepositAmountStep')).toBeInTheDocument()
+    expect(screen.queryByTestId('DepositReviewStep')).not.toBeInTheDocument()
+    expect(screen.getByText('DEPOSIT rBTC')).toBeInTheDocument()
+  })
+
+  it('displays review fields with correct values', async () => {
+    const user = userEvent.setup()
+    render(<BtcDepositModal {...defaultProps} />)
+
+    const input = screen.getByTestId('Input_amount-btc-vault')
+    await user.type(input, '1')
+    await user.click(screen.getByTestId('ContinueButton'))
+
+    // Check review fields
+    expect(screen.getByTestId('review-amount')).toHaveTextContent('1')
+    expect(screen.getByTestId('review-nav')).toHaveTextContent('1.02')
+    expect(screen.getByTestId('review-fee')).toHaveTextContent('0%')
+    expect(screen.getByTestId('review-slippage')).toHaveTextContent('0.5%')
+    expect(screen.getByTestId('review-shares')).toBeInTheDocument()
+  })
+
+  it('displays all three disclosures on review step', async () => {
+    const user = userEvent.setup()
+    render(<BtcDepositModal {...defaultProps} />)
+
+    const input = screen.getByTestId('Input_amount-btc-vault')
+    await user.type(input, '1')
+    await user.click(screen.getByTestId('ContinueButton'))
+
+    const disclosures = screen.getByTestId('review-disclosures')
+    expect(disclosures).toHaveTextContent('This is a request and requires approval')
+    expect(disclosures).toHaveTextContent('Shares are minted at the NAV confirmed at epoch close')
+    expect(disclosures).toHaveTextContent('Once the epoch is closed, deposit requests cannot be canceled')
+  })
+
+  it('calls onSubmit with correct params when Submit Request is clicked', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(undefined)
+    render(<BtcDepositModal {...defaultProps} onSubmit={onSubmit} />)
+
+    const input = screen.getByTestId('Input_amount-btc-vault')
+    await user.type(input, '1')
+    await user.click(screen.getByTestId('ContinueButton'))
+    await user.click(screen.getByTestId('SubmitRequestButton'))
+
+    expect(onSubmit).toHaveBeenCalledWith({
+      amount: 1000000000000000000n,
+      slippage: 0.005,
+    })
   })
 
   it('calls onClose when the close button is clicked', async () => {
