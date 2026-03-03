@@ -1,6 +1,8 @@
 'use client'
 
+import { SectionContainer } from '@/app/communities/components/SectionContainer'
 import { BtcVaultBanners } from './BtcVaultBanners'
+import { BtcVaultMetrics } from './components/BtcVaultMetrics'
 
 const NAME = 'BTC Vault'
 
@@ -14,7 +16,9 @@ export const BtcVaultPage = () => {
 
       {/* Vault Metrics Zone - F3 */}
       <section data-testid="btc-vault-metrics" className="w-full">
-        {/* BTC Vault Metrics - implemented in F3 */}
+        <SectionContainer title="VAULT METRICS" headerVariant="h3">
+          <BtcVaultMetrics />
+        </SectionContainer>
       </section>
 
       {/* Dashboard Zone - F4 */}
