@@ -1,12 +1,9 @@
 import Big from '@/lib/big'
-import axios from 'axios'
 import { BigSource } from 'big.js'
 import { ClassValue, clsx } from 'clsx'
 import { Duration } from 'luxon'
 import { twMerge } from 'tailwind-merge'
 import { Address, formatEther, getAddress, isAddress } from 'viem'
-import { CHAIN_ID, RIF_WALLET_SERVICES_URL } from '../constants'
-import { sentryClient } from '@/lib/sentry/sentry-client'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
@@ -49,50 +46,9 @@ export const shortProposalId = (proposalId: string): string => {
   return `${proposalId.slice(0, 12)}…${proposalId.slice(-12)}`
 }
 
-export const axiosInstance = axios.create({
-  baseURL: RIF_WALLET_SERVICES_URL,
-  params: {
-    chainId: CHAIN_ID,
-  },
-})
-
-axiosInstance.interceptors.request.use(
-  config => {
-    try {
-      const fullUrl = config.baseURL + (config.url || '')
-      const doesBaseUrlHasChainId = fullUrl.includes('chainId')
-      if (doesBaseUrlHasChainId) {
-        // Parse the full URL (baseURL + request URL)
-        const url = new URL(fullUrl)
-
-        // Get existing URL parameters
-        const existingChainId = url.searchParams.get('chainId')
-
-        // If there are params in the request config
-        if (config.params) {
-          // If chainId exists in both URL and params, remove it from params
-          if (existingChainId && 'chainId' in config.params) {
-            const { chainId: _chainId, ...otherParams } = config.params
-            config.params = otherParams
-          }
-        }
-      }
-      return config
-    } catch (error) {
-      console.error('Error in axios interceptor:', error)
-      const interceptorError = error instanceof Error ? error : new Error(String(error))
-      sentryClient.captureException(interceptorError, {
-        tags: {
-          errorType: 'AXIOS_INTERCEPTOR_ERROR',
-        },
-      })
-      return config
-    }
-  },
-  error => {
-    return Promise.reject(error)
-  },
-)
+export interface FetchResponse<T> {
+  data: T
+}
 
 /**
  * Truncates a string to a given length

@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { Address, Block, getAddress } from 'viem'
 import { getAbi } from '../../../src/lib/abis/tok'
 import { COINBASE_ADDRESS } from '../../../src/lib/constants'
@@ -37,8 +36,11 @@ export async function getActions() {
     const fromBlock = 5000000 // all the NFT addresses in mainnet and testnet were deployed after block 5000000
     const url = `${rifWalletServicesUrl}/address/${nftContract}/eventsByTopic0?topic0=${transferTopic}&chainId=${chainId}&fromBlock=${fromBlock}`
     try {
-      const response = await axios.get(url)
-      return response.data
+      const response = await fetch(url)
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+      return response.json()
     } catch (error) {
       console.error('Error fetching NFT holders:', error)
       throw error
