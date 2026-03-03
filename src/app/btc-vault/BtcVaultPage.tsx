@@ -1,12 +1,19 @@
 'use client'
 
+import { useAccount } from 'wagmi'
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
 import { BtcVaultBanners } from './BtcVaultBanners'
 import { BtcVaultMetrics } from './components/BtcVaultMetrics'
+import { EligibilityIndicator } from './components/EligibilityIndicator'
+import { VaultActionButtons } from './components/VaultActionButtons'
+import { useActionEligibility } from './hooks/useActionEligibility'
 
 const NAME = 'BTC Vault'
 
 export const BtcVaultPage = () => {
+  const { address, isConnected } = useAccount()
+  const { data: actionEligibility } = useActionEligibility(address)
+
   return (
     <div
       data-testid={NAME}
@@ -14,31 +21,30 @@ export const BtcVaultPage = () => {
     >
       <BtcVaultBanners />
 
-      {/* Vault Metrics Zone - F3 */}
       <section data-testid="btc-vault-metrics" className="w-full">
         <SectionContainer title="VAULT METRICS" headerVariant="h3">
           <BtcVaultMetrics />
         </SectionContainer>
       </section>
 
-      {/* Dashboard Zone - F4 */}
+      {isConnected && actionEligibility && <EligibilityIndicator eligibility={actionEligibility} />}
+
       <section data-testid="btc-vault-dashboard" className="w-full">
-        {/* BTC Vault Dashboard - implemented in F4 */}
+        {/* BTC Vault Dashboard - F4 */}
       </section>
 
-      {/* Actions Zone - F5/F6 */}
       <section data-testid="btc-vault-actions" className="w-full">
-        {/* BTC Vault Actions (Deposit/Withdraw) - implemented in F5/F6 */}
+        {actionEligibility && (
+          <VaultActionButtons eligibility={actionEligibility} isConnected={isConnected} />
+        )}
       </section>
 
-      {/* Request Queue Zone - F9 */}
       <section data-testid="btc-vault-request-queue" className="w-full">
-        {/* BTC Vault Request Queue - implemented in F9 */}
+        {/* BTC Vault Request Queue - F9 */}
       </section>
 
-      {/* History Zone - F10 */}
       <section data-testid="btc-vault-history" className="w-full">
-        {/* BTC Vault History - implemented in F10 */}
+        {/* BTC Vault History - F10 */}
       </section>
     </div>
   )
