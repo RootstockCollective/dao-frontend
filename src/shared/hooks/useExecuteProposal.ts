@@ -33,6 +33,7 @@ export const useExecuteProposal = (proposalId: string) => {
   const { data: timelockAddress } = useReadContract({
     ...DAO_DEFAULT_PARAMS,
     functionName: 'timelock',
+    query: { refetchInterval: false },
   })
 
   const { data: minDelay } = useReadContract({
@@ -41,7 +42,8 @@ export const useExecuteProposal = (proposalId: string) => {
     functionName: 'getMinDelay',
     query: {
       enabled: !!timelockAddress,
-      staleTime: 60000, // Timelock delay rarely changes
+      refetchInterval: false,
+      staleTime: 60000,
     },
   })
 

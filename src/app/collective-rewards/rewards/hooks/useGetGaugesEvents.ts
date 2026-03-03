@@ -5,7 +5,7 @@ import {
   fetchGaugeNotifyRewardLogs,
 } from '@/app/collective-rewards/actions'
 import { useQuery } from '@tanstack/react-query'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+
 import { GaugeAbi } from '@/lib/abis/tok/GaugeAbi'
 
 type EventEntry = Extract<(typeof GaugeAbi)[number], AbiEvent>
@@ -37,7 +37,6 @@ export const useGetGaugesEvents = <T extends EventName>(gauges: Address[], event
       }, {})
     },
     queryKey: ['useGetGaugesEvents', eventName, gauges],
-    refetchInterval: AVERAGE_BLOCKTIME,
   })
 
   return {

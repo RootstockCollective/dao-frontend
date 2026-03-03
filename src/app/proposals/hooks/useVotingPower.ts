@@ -10,6 +10,7 @@ export const useVotingPower = () => {
   const { data: proposalDetails, isLoading: isProposalsDetailsLoading } = useQuery({
     queryFn: getCachedProposalSharedDetails,
     queryKey: ['cachedProposalsSharedDetails'],
+    refetchInterval: false,
   })
 
   const { data, isLoading: isLoadingVotes } = useReadContracts({

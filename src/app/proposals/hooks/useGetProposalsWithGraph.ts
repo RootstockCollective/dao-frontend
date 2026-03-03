@@ -1,16 +1,16 @@
 import { useMemo } from 'react'
-import { useBlockNumber } from 'wagmi'
+import { useBlockNumber, useReadContracts } from 'wagmi'
+import { formatEther, Address } from 'viem'
+import moment from 'moment'
 import { useQuery } from '@tanstack/react-query'
-import { useReadContracts } from 'wagmi'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+
+import { useBlockTime } from '@/shared/context/BlockTimeContext'
 import Big from '@/lib/big'
 import { ProposalState } from '@/shared/types'
 import { Proposal } from '../shared/types'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
-import moment from 'moment'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GOVERNOR_ADDRESS } from '@/lib/constants'
-import { formatEther, Address } from 'viem'
 
 function toProposalState(value: number | string | undefined): ProposalState {
   if (typeof value === 'number') {
@@ -172,10 +172,10 @@ function transformProposalsData(
 }
 
 export function useGetProposalsWithGraph() {
+  const { averageBlockTimeMs } = useBlockTime()
   const { data: latestBlockNumber } = useBlockNumber({
     query: {
-      refetchInterval: AVERAGE_BLOCKTIME,
-      staleTime: AVERAGE_BLOCKTIME,
+      staleTime: averageBlockTimeMs,
     },
   })
 
@@ -186,7 +186,6 @@ export function useGetProposalsWithGraph() {
   } = useQuery({
     queryFn: fetchProposalsFromAPI,
     queryKey: ['proposals'],
-    refetchInterval: AVERAGE_BLOCKTIME,
   })
 
   const proposalsFromNode = useMemo(
@@ -234,7 +233,7 @@ export function useGetProposalsWithGraph() {
     contracts: votesContracts,
     query: {
       enabled: proposalsFromNode.length > 0,
-      staleTime: AVERAGE_BLOCKTIME,
+      staleTime: averageBlockTimeMs,
     },
   })
 
@@ -250,7 +249,7 @@ export function useGetProposalsWithGraph() {
     contracts: stateContracts,
     query: {
       enabled: proposalsFromNode.length > 0,
-      staleTime: AVERAGE_BLOCKTIME,
+      staleTime: averageBlockTimeMs,
     },
   })
 

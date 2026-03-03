@@ -50,7 +50,6 @@ export const BUILDER_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_BUILDER_REGISTRY
 export const REWARD_DISTRIBUTOR_ADDRESS = process.env.NEXT_PUBLIC_REWARD_DISTRIBUTOR_ADDRESS as Address
 export const NFT_BOOSTER_DATA_URL = (process.env.NEXT_PUBLIC_NFT_BOOSTER_DATA_URL as string) ?? ''
 
-export const AVERAGE_BLOCKTIME = 60_000
 export const CACHE_REVALIDATE_SECONDS = 20
 
 export const RIF = 'RIF'
@@ -71,7 +70,6 @@ export const GRANT_TOKEN_LIMITS = {
 export const RNS_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_RNS_REGISTRY_ADDRESS as Address
 
 export const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL
-export const DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK = 30
 
 export const GOOGLE_TAG_ID = 'GTM-PTL6VZMT'
 

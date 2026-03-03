@@ -1,20 +1,29 @@
-import { Paragraph } from '@/components/Typography'
+'use client'
+
 import moment from 'moment'
-import { DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK } from '@/lib/constants'
-import { cn } from '@/lib/utils'
-import { CountdownProps, TimeSource } from './types'
-import Big from '@/lib/big'
 import { useBlockNumber } from 'wagmi'
+
+import { Paragraph } from '@/components/Typography'
+import { cn } from '@/lib/utils'
+import { useBlockTime } from '@/shared/context/BlockTimeContext'
+import Big from '@/lib/big'
+
+import { CountdownProps, TimeSource } from './types'
 
 /**
  * Calculates the time remaining in seconds
  */
-const calculateTimeRemaining = (end: Big, currentTime: Big, timeSource: TimeSource): number => {
+const calculateTimeRemaining = (
+  end: Big,
+  currentTime: Big,
+  timeSource: TimeSource,
+  secondsPerBlock: number,
+): number => {
   const remaining = end.minus(currentTime)
   if (remaining.lte(0)) return 0
 
   if (timeSource === 'blocks') {
-    return remaining.mul(DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK).toNumber()
+    return remaining.mul(secondsPerBlock).toNumber()
   } else {
     return remaining.toNumber()
   }
@@ -102,6 +111,7 @@ export function Countdown({
   className,
   colorDirection = 'normal',
 }: CountdownProps) {
+  const { secondsPerBlock } = useBlockTime()
   const { data: currentBlockNumber } = useBlockNumber()
 
   // Calculate current time based on timeSource
@@ -112,7 +122,7 @@ export function Countdown({
         : Big(0)
       : Big(Math.floor(Date.now() / 1000))
 
-  const timeRemainingSec = calculateTimeRemaining(end, currentTime, timeSource)
+  const timeRemainingSec = calculateTimeRemaining(end, currentTime, timeSource, secondsPerBlock)
   const ratio = calculateRatio(end, currentTime, referenceStart)
 
   // Color coding is automatically disabled if ratio cannot be calculated (no referenceStart)

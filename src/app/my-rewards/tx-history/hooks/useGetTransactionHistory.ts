@@ -1,9 +1,10 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
-import { TransactionHistoryItem } from '../utils/types'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useAccount } from 'wagmi'
+
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { TOKENS } from '@/lib/tokens'
+
+import { TransactionHistoryItem } from '../utils/types'
 
 interface TransactionHistoryResponse {
   data: TransactionHistoryItem[]
@@ -113,7 +114,6 @@ export const useGetTransactionHistory = (params?: UseGetTransactionHistoryParams
       builder,
       rewardToken,
     ],
-    refetchInterval: AVERAGE_BLOCKTIME,
     enabled: !!address,
     placeholderData: keepPreviousData,
   })

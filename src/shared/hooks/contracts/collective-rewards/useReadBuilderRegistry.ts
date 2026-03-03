@@ -1,5 +1,4 @@
 import { type BuilderRegistryAbi, getAbi } from '@/lib/abis/tok'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BuilderRegistryAddress } from '@/lib/contracts'
 import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
 import { UseReadContractConfig, ViewPureFunctionName } from '../types'
@@ -22,7 +21,6 @@ export const useReadBuilderRegistry = <TFunctionName extends BuilderRegistryFunc
     ...(config as any),
     query: {
       retry: true,
-      refetchInterval: AVERAGE_BLOCKTIME,
       ...query,
     },
   })

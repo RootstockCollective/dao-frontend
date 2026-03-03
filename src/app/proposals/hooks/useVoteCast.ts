@@ -35,7 +35,7 @@ export const useGetVoteForSpecificProposal = (
   const { data: voteEvents } = useQuery({
     queryFn: () => parseVoteCastEvents(address),
     queryKey: ['VoteCast', address],
-    enabled: !!address && !!proposalId, // Query will only run if both address and proposalId are present
+    enabled: !!address && !!proposalId,
   })
 
   const event = voteEvents?.find(event => event.args.proposalId.toString() === proposalId)

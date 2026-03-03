@@ -1,10 +1,10 @@
 'use client'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useQuery } from '@tanstack/react-query'
 import axios from 'axios'
 import { createContext, ReactNode, useCallback, useContext, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
+
 import { fetchBoostData, fetchLatestFile } from './boost.utils'
 
 interface HolderRewards {
@@ -118,7 +118,6 @@ export const useFetchBoostData = () => {
   } = useQuery<string>({
     queryFn: async () => fetchLatestFile(now),
     queryKey: ['nftBoosterLatestFile'],
-    refetchInterval: AVERAGE_BLOCKTIME,
   })
 
   const hasActiveCampaign = !!latestFile && latestFile.trim() !== 'None'
@@ -130,7 +129,6 @@ export const useFetchBoostData = () => {
   } = useQuery<BoostData>({
     queryFn: async () => fetchBoostData(latestFile?.trim(), now),
     queryKey: ['nftBoosterData'],
-    refetchInterval: AVERAGE_BLOCKTIME,
     enabled: hasActiveCampaign,
   })
 

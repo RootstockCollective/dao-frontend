@@ -1,9 +1,9 @@
-import { fetchRewardDistributionRewards } from '@/app/collective-rewards/actions'
-import { type BackersManagerAbi, getAbi } from '@/lib/abis/tok'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { BackersManagerAddress } from '@/lib/contracts'
 import { useQuery } from '@tanstack/react-query'
 import { parseEventLogs } from 'viem'
+
+import { fetchRewardDistributionRewards } from '@/app/collective-rewards/actions'
+import { type BackersManagerAbi, getAbi } from '@/lib/abis/tok'
+import { BackersManagerAddress } from '@/lib/contracts'
 
 export type RewardDistributionRewardsEventLog = ReturnType<
   typeof parseEventLogs<BackersManagerAbi, true, 'RewardDistributionRewards'>
@@ -21,7 +21,6 @@ export const useGetRewardDistributionRewardsLogs = () => {
       }) as Log[]
     },
     queryKey: ['RewardDistributionRewards', BackersManagerAddress],
-    refetchInterval: AVERAGE_BLOCKTIME,
     initialData: [],
   })
 

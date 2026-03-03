@@ -42,6 +42,7 @@ export const useGetBackedBuilders = (address?: Address) => {
     },
     queryKey: ['backerToBuilder', address],
     enabled: !!address,
+    refetchInterval: false,
   })
 
   // Transform the data into filter options
