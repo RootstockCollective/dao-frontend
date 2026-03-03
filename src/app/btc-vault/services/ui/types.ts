@@ -7,6 +7,8 @@ export interface VaultMetricsDisplay {
   apyFormatted: string
   navFormatted: string
   timestamp: number
+  /** Raw NAV bigint kept for form calculations (e.g. estimated shares = amount / nav) */
+  navRaw: bigint
 }
 
 export interface EpochDisplay {
