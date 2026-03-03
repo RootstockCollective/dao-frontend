@@ -12,23 +12,51 @@ export class BaseError extends Error {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const isUserRejectedTxError = (error: any): boolean => {
-  return (
-    (error && typeof error.message === 'string' && error.message.includes('User rejected the request')) ||
-    (error && error?.cause?.code === 4001)
-  )
+/**
+ * Normalizes an unknown thrown value into an Error instance.
+ * Handles null, undefined, strings, and arbitrary objects.
+ * Plain objects are JSON-stringified to preserve diagnostic info.
+ */
+export const toError = (value: unknown): Error => {
+  if (value instanceof Error) return value
+  if (typeof value === 'string') return new Error(value)
+  if (typeof value === 'object' && value !== null) {
+    try {
+      return new Error(JSON.stringify(value))
+    } catch {
+      return new Error(String(value))
+    }
+  }
+  return new Error(String(value))
 }
 
 /**
- * Detects if an error is a ChunkLoadError (failed to load a dynamic import chunk)
- * This typically happens after deployments when old chunks are no longer available,
- * or due to network issues (e.g., 502 errors)
+ * Detects if an error represents a user-rejected wallet transaction
+ * (e.g. MetaMask "User rejected the request" or EIP-1193 code 4001).
+ * Accepts `unknown` for compatibility with catch blocks and react-error-boundary FallbackProps.
  */
-export const isChunkLoadError = (error: Error): boolean => {
-  const errorStr = error.toString()
-  const errorName = error.name || ''
-  const errorMessage = error.message || ''
+export const isUserRejectedTxError = (error: unknown): boolean => {
+  if (typeof error === 'object' && error !== null) {
+    const msg = (error as Record<string, unknown>).message
+    if (typeof msg === 'string' && msg.includes('User rejected the request')) return true
+    const cause = (error as Record<string, unknown>).cause
+    if (typeof cause === 'object' && cause !== null && (cause as Record<string, unknown>).code === 4001)
+      return true
+  }
+  return false
+}
+
+/**
+ * Detects if an error is a ChunkLoadError (failed to load a dynamic import chunk).
+ * Accepts `unknown` to align with react-error-boundary v6.1+ FallbackProps.
+ * This typically happens after deployments when old chunks are no longer available,
+ * or due to network issues (e.g., 502 errors).
+ */
+export const isChunkLoadError = (error: unknown): boolean => {
+  const normalized = toError(error)
+  const errorStr = normalized.toString()
+  const errorName = normalized.name || ''
+  const errorMessage = normalized.message || ''
 
   return (
     errorName === 'ChunkLoadError' ||
@@ -36,7 +64,6 @@ export const isChunkLoadError = (error: Error): boolean => {
     errorStr.includes('Loading chunk') ||
     errorMessage.includes('Loading chunk') ||
     errorMessage.includes('Failed to fetch dynamically imported module') ||
-    // Next.js specific chunk loading patterns
     errorMessage.includes('_next/static/chunks')
   )
 }
@@ -122,15 +149,17 @@ export const commonErrors = {
     'A new version of the application is available. The page will reload to get the latest version.',
 }
 
-export const checkForCommonErrors = (error: Error): string => {
-  const errorStr = error.toString()
-
-  // Check for ChunkLoadError first (special handling)
+/**
+ * Maps a thrown value to a user-friendly message for known error types,
+ * or falls back to the stringified error.
+ */
+export const checkForCommonErrors = (error: unknown): string => {
   if (isChunkLoadError(error)) {
     return commonErrors.ChunkLoadError
   }
 
-  // Remove the leading 'Error: ' and extract the error name
+  const normalized = toError(error)
+  const errorStr = normalized.toString()
   const errorName = errorStr.replace(/^Error:\s*/, '').split(':')[0]
 
   if (errorName in commonErrors) {

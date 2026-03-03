@@ -1,5 +1,5 @@
 import { ReactNode, useEffect, useState } from 'react'
-import { ErrorBoundary } from 'react-error-boundary'
+import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
 import { cn } from '@/lib/utils'
 import { BG_IMG_CLASSES } from '@/shared/utils'
 import { HeaderText } from '@/components/HeaderText/HeaderText'
@@ -14,12 +14,7 @@ import {
 import { Header, Paragraph } from '../Typography'
 import { sentryClient } from '@/lib/sentry/sentry-client'
 
-interface ErrorFallbackProps {
-  error: Error
-  resetErrorBoundary: () => void
-}
-
-function ErrorFallback({ error, resetErrorBoundary }: ErrorFallbackProps) {
+function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   const [isRecovering, setIsRecovering] = useState(false)
   const isChunkError = isChunkLoadError(error)
   const canAutoRecover = isChunkError && shouldAttemptChunkRecovery()

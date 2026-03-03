@@ -1,5 +1,7 @@
 import * as Sentry from '@sentry/nextjs'
 import type { ParameterizedString, Log } from '@sentry/core'
+
+import { toError } from '@/components/ErrorPage/commonErrors'
 import { getEnvFlag } from '@/shared/context/FeatureFlag/flags.utils'
 
 const SENTRY_FEATURE_FLAG: 'sentry_error_tracking' = 'sentry_error_tracking'
@@ -10,9 +12,9 @@ export function isSentryEnabled(): boolean {
 
 export function createSentryWrapper() {
   return {
-    captureException: (error: Error, options?: Sentry.CaptureContext) => {
+    captureException: (error: unknown, options?: Sentry.CaptureContext) => {
       if (!isSentryEnabled()) {
-        console.warn('[Sentry disabled] Would have captured exception:', error.message)
+        console.warn('[Sentry disabled] Would have captured exception:', toError(error).message)
         return ''
       }
       return Sentry.captureException(error, options)
