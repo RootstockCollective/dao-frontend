@@ -1,11 +1,12 @@
 'use client'
 
 import { useAccount } from 'wagmi'
+
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
+
 import { BtcVaultBanners } from './BtcVaultBanners'
 import { BtcVaultMetrics } from './components/BtcVaultMetrics'
 import { EligibilityIndicator } from './components/EligibilityIndicator'
-import { VaultActionButtons } from './components/VaultActionButtons'
 import { useActionEligibility } from './hooks/useActionEligibility'
 
 const NAME = 'BTC Vault'
@@ -34,9 +35,7 @@ export const BtcVaultPage = () => {
       </section>
 
       <section data-testid="btc-vault-actions" className="w-full">
-        {actionEligibility && (
-          <VaultActionButtons eligibility={actionEligibility} isConnected={isConnected} />
-        )}
+        {/* BTC Vault Actions - F5 */}
       </section>
 
       <section data-testid="btc-vault-request-queue" className="w-full">

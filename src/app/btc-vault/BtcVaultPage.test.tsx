@@ -54,18 +54,6 @@ vi.mock('./hooks/useEpochState', () => ({
   }),
 }))
 
-vi.mock('@/components/Tooltip', () => ({
-  Tooltip: ({
-    children,
-    text,
-    disabled,
-  }: {
-    children: React.ReactNode
-    text: string
-    disabled?: boolean
-  }) => <div data-tooltip-text={disabled ? '' : text}>{children}</div>,
-}))
-
 const renderWithProviders = (ui: React.ReactElement = <BtcVaultPage />) =>
   render(<TooltipProvider>{ui}</TooltipProvider>)
 
@@ -87,13 +75,12 @@ describe('BtcVaultPage', () => {
     expect(screen.getByTestId('BTC Vault')).toBeInTheDocument()
     expect(screen.getByTestId('WalletDisconnectedBanner')).toBeInTheDocument()
     expect(screen.queryByTestId('EligibilityIndicator')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('VaultActionButtons')).not.toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-metrics')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-dashboard')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-history')).toBeInTheDocument()
   })
 
-  it('shows NotAuthorizedBanner with indicator and disabled buttons when connected but not eligible', () => {
+  it('shows NotAuthorizedBanner with indicator when connected but not eligible', () => {
     mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
     mockUseActionEligibility.mockReturnValue({
       data: {
@@ -108,7 +95,6 @@ describe('BtcVaultPage', () => {
     expect(screen.getByTestId('NotAuthorizedBanner')).toBeInTheDocument()
     expect(screen.getByTestId('EligibilityIndicator')).toBeInTheDocument()
     expect(screen.getByText('KYB: Not Authorized')).toBeInTheDocument()
-    expect(screen.getByTestId('DepositButton')).toBeDisabled()
   })
 
   it('renders Vault Metrics section with section title', () => {
@@ -129,7 +115,7 @@ describe('BtcVaultPage', () => {
     expect(screen.getByText('VAULT METRICS')).toBeInTheDocument()
   })
 
-  it('shows eligible state with enabled buttons when connected and approved', () => {
+  it('shows eligible state when connected and approved', () => {
     mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
     mockUseActionEligibility.mockReturnValue({
       data: {
@@ -145,11 +131,9 @@ describe('BtcVaultPage', () => {
     expect(screen.queryByTestId('NotAuthorizedBanner')).not.toBeInTheDocument()
     expect(screen.getByTestId('EligibilityIndicator')).toBeInTheDocument()
     expect(screen.getByText('KYB: Approved')).toBeInTheDocument()
-    expect(screen.getByTestId('DepositButton')).not.toBeDisabled()
-    expect(screen.getByTestId('WithdrawButton')).not.toBeDisabled()
   })
 
-  it('shows pause banner with disabled deposit and combined eligibility indicator', () => {
+  it('shows pause banner and combined eligibility indicator', () => {
     mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
     mockUseActionEligibility.mockReturnValue({
       data: {
@@ -164,11 +148,9 @@ describe('BtcVaultPage', () => {
     expect(screen.getByTestId('PauseBanner')).toBeInTheDocument()
     expect(screen.getByText('Deposits Paused')).toBeInTheDocument()
     expect(screen.getByText('KYB: Approved | Deposits: Paused')).toBeInTheDocument()
-    expect(screen.getByTestId('DepositButton')).toBeDisabled()
-    expect(screen.getByTestId('WithdrawButton')).not.toBeDisabled()
   })
 
-  it('shows disabled buttons when user has an active request', () => {
+  it('shows eligibility indicator when user has an active request', () => {
     mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
     mockUseActionEligibility.mockReturnValue({
       data: {
@@ -182,13 +164,11 @@ describe('BtcVaultPage', () => {
 
     expect(screen.queryByTestId('NotAuthorizedBanner')).not.toBeInTheDocument()
     expect(screen.getByText('KYB: Approved')).toBeInTheDocument()
-    expect(screen.getByTestId('DepositButton')).toBeDisabled()
-    expect(screen.getByTestId('WithdrawButton')).toBeDisabled()
   })
 
   it('keeps data sections visible in all states (read-only mode)', () => {
     mockUseAccount.mockReturnValue({ address: undefined, isConnected: false })
-    render(<BtcVaultPage />)
+    renderWithProviders()
 
     expect(screen.getByTestId('btc-vault-metrics')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-dashboard')).toBeInTheDocument()
