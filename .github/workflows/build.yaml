@@ -1,5 +1,12 @@
 name: Build dApp
 
+# --- Cache scoping ---
+# GitHub Actions caches are scoped by branch. A workflow run can restore
+# caches from its own branch AND the default branch (main), but NOT from
+# other feature branches. Caches created on a feature branch are only
+# available to that branch. This is why we run on push-to-main: it seeds
+# caches on the default branch so every new PR branch starts with a warm
+# cache instead of a cold miss.
 on:
   pull_request:
   # Merges to main populate caches so new PR branches start warm instead of cold.
