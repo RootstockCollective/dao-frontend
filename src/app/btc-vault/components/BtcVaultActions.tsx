@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/Button'
+import { SwapIcon } from '@/components/Icons'
 import { Tooltip } from '@/components/Tooltip'
 import { Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
@@ -49,7 +50,10 @@ export const BtcVaultActions = ({ address, onDeposit, onWithdraw }: Props) => {
   const withdrawVisible = canWithdraw || withdrawBlockReason === ACTIVE_REQUEST_REASON
 
   return (
-    <div className="flex flex-col gap-4 md:flex-row md:items-center w-full" data-testid="btc-vault-actions">
+    <div
+      className="flex flex-col gap-4 mt-4 md:flex-row md:items-center w-full"
+      data-testid="btc-vault-actions"
+    >
       {depositVisible && (
         <Tooltip text={depositBlockReason} disabled={canDeposit}>
           <Button
@@ -79,10 +83,11 @@ export const BtcVaultActions = ({ address, onDeposit, onWithdraw }: Props) => {
       {(depositVisible || withdrawVisible) && (
         <a
           href="#"
-          className="text-sm font-medium underline underline-offset-2"
+          className="flex items-center gap-1 text-sm font-medium underline underline-offset-2"
           data-testid="btc-vault-swap-link"
         >
-          <Span variant="body-s">Swap to/from {RBTC} →</Span>
+          <Span variant="body-s">Swap to/from {RBTC}</Span>
+          <SwapIcon />
         </a>
       )}
     </div>

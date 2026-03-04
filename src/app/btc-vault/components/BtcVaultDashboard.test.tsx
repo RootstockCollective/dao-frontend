@@ -60,6 +60,11 @@ describe('BtcVaultDashboard', () => {
     expect(screen.getByTestId('btc-vault-my-metrics-title')).toHaveTextContent('MY METRICS')
   })
 
+  it('applies accent background to the entire dashboard section', () => {
+    render(<BtcVaultDashboard />, { wrapper: Wrapper })
+    expect(screen.getByTestId('btc-vault-dashboard')).toHaveClass('bg-v3-bg-accent-80')
+  })
+
   it('renders 7 BalanceInfo metrics when connected with data', () => {
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
 
@@ -156,15 +161,18 @@ describe('BtcVaultDashboard', () => {
     })
   })
 
-  it('shows nav links when user has vault position', () => {
+  it('shows nav links with history icons when history exists', () => {
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
 
     expect(screen.getByTestId('btc-vault-nav-links')).toBeInTheDocument()
-    expect(screen.getByText('View history →')).toBeInTheDocument()
-    expect(screen.getByText('View yield history →')).toBeInTheDocument()
+    expect(screen.getByText('View history')).toBeInTheDocument()
+    expect(screen.getByText('View yield history')).toBeInTheDocument()
+
+    const icons = screen.getByTestId('btc-vault-nav-links').querySelectorAll('[aria-label="History Icon"]')
+    expect(icons.length).toBe(2)
   })
 
-  it('hides nav links when vaultTokensRaw is 0', () => {
+  it('hides nav links when user has no vault tokens (no history)', () => {
     const emptyDisplay: UserPositionDisplay = {
       ...MOCK_DISPLAY,
       vaultTokensRaw: 0n,

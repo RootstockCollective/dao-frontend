@@ -1,10 +1,10 @@
 'use client'
 
-import { ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import { useAccount } from 'wagmi'
 
 import { BalanceInfo } from '@/components/BalanceInfo'
-import { MetricsContainer } from '@/components/containers/MetricsContainer'
+import { HistoryIcon } from '@/components/Icons'
 import { Header, Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 
@@ -31,12 +31,15 @@ export const BtcVaultDashboard = () => {
   if (!address || !isConnected) return null
 
   return (
-    <section className="flex flex-col gap-4 w-full" data-testid="btc-vault-dashboard">
+    <section
+      className="flex flex-col gap-6 w-full rounded-sm bg-v3-bg-accent-80 px-4 py-6 md:p-6"
+      data-testid="btc-vault-dashboard"
+    >
       <Header variant="h2" data-testid="btc-vault-my-metrics-title">
         MY METRICS
       </Header>
 
-      <MetricsContainer className="divide-y-0">
+      <div className="flex flex-col gap-10">
         {/* Row 1: Wallet, Vault shares, Share of vault */}
         <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:gap-x-6 md:gap-y-6 w-full">
           <BalanceInfo
@@ -101,17 +104,19 @@ export const BtcVaultDashboard = () => {
             data-testid="metric-yield-percent"
           />
         </div>
-      </MetricsContainer>
+      </div>
 
       {data && data.vaultTokensRaw > 0n && (
         <div className="flex justify-between w-full" data-testid="btc-vault-nav-links">
           {/* TODO(DAO-1999): replace href with route to transaction history page */}
-          <a href="#" className="text-sm font-medium underline underline-offset-2">
-            <Span variant="body-s">View history →</Span>
+          <a href="#" className="flex items-center gap-x-1 text-sm font-medium underline underline-offset-2">
+            <HistoryIcon />
+            <Span variant="body-s">View history</Span>
           </a>
           {/* TODO(DAO-1999): replace href with route to yield history page */}
-          <a href="#" className="text-sm font-medium underline underline-offset-2">
-            <Span variant="body-s">View yield history →</Span>
+          <a href="#" className="flex items-center gap-x-1 text-sm font-medium underline underline-offset-2">
+            <HistoryIcon />
+            <Span variant="body-s">View yield history</Span>
           </a>
         </div>
       )}
