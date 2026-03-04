@@ -6,7 +6,7 @@ import type { ComponentPropsWithoutRef } from 'react'
 
 import { ProgressBar } from '@/components/ProgressBarNew'
 import { TokenImage } from '@/components/TokenImage/TokenImage'
-import { Header, Label, Span } from '@/components/Typography'
+import { Label, Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { btcVaultRequestHistory } from '@/shared/constants/routes'
@@ -63,10 +63,6 @@ export function RequestProcessingBlock({ request, className, ...props }: Request
       className={cn('flex flex-col gap-6 w-full', className)}
       {...props}
     >
-      <Header variant="h5" caps className="text-100">
-        Request processing
-      </Header>
-
       <div className="flex flex-col gap-2">
         <div className="flex justify-between gap-2">
           {STAGES.map((label, i) => {

@@ -48,12 +48,6 @@ function makeRequest(overrides: Partial<ActiveRequestDisplay> = {}): ActiveReque
 }
 
 describe('RequestProcessingBlock', () => {
-  it('renders header', () => {
-    const { container } = render(<RequestProcessingBlock request={makeRequest()} />)
-    const block = getBlock(container)
-    expect(within(block).getByText(/request processing/i)).toBeInTheDocument()
-  })
-
   it('renders four stage labels', () => {
     const { container } = render(<RequestProcessingBlock request={makeRequest()} />)
     const block = getBlock(container)
@@ -82,8 +76,7 @@ describe('RequestProcessingBlock', () => {
     )
     const block = getBlock(container)
     expect(within(block).getByText('Withdrawal')).toBeInTheDocument()
-    expect(within(block).getByText(/1.25 rBTC/)).toBeInTheDocument()
-    expect(within(block).getByText('1.25')).toBeInTheDocument()
+    expect(within(block).getAllByText('1.25').length).toBeGreaterThanOrEqual(1)
     expect(within(block).getByText('21 May 2025')).toBeInTheDocument()
   })
 

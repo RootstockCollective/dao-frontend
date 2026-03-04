@@ -88,7 +88,6 @@ describe('ActiveRequestSection', () => {
 
     expect(screen.getByTestId('btc-vault-active-request')).toBeInTheDocument()
     expect(screen.getByTestId('request-processing-block')).toBeInTheDocument()
-    expect(screen.getByText(/request processing/i)).toBeInTheDocument()
   })
 
   it('renders inside a SectionContainer with ACTIVE REQUEST title', () => {
