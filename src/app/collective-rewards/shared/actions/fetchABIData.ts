@@ -56,6 +56,9 @@ export interface ResponseABIData {
 }
 async function fetchABIData() {
   const { data } = await client.query<ResponseABIData>({ query })
+  if (!data) {
+    throw new Error('Failed to fetch ABI data from subgraph')
+  }
 
   return {
     builders: data.builders,
@@ -66,6 +69,7 @@ async function fetchABIData() {
   }
 }
 
+/** Fetches builders and reward cycles from the Collective Rewards subgraph (cached). */
 export const getCachedABIData = unstable_cache(fetchABIData, ['cached_abi_data'], {
   revalidate: CACHE_REVALIDATE_SECONDS,
   tags: ['cached_abi_data'],
