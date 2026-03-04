@@ -125,7 +125,7 @@ describe('toActiveRequestDisplay', () => {
     expect(result.lastUpdatedFormatted).toBeDefined()
     expect(typeof result.lastUpdatedFormatted).toBe('string')
     expect(result.sharesFormatted).toBe('—')
-    expect(result.usdEquivalentFormatted).toBeNull()
+    expect(result.usdEquivalentFormatted).toBe('$12,345 USD')
   })
 
   it('maps request with claimable info', () => {
@@ -145,7 +145,7 @@ describe('toActiveRequestDisplay', () => {
     expect(result.lockedSharePriceFormatted).toBe('1.02/share')
     expect(result.finalizeId).toBe('batch-1')
     expect(result.sharesFormatted).toBe('1')
-    expect(result.usdEquivalentFormatted).toBeNull()
+    expect(result.usdEquivalentFormatted).toBe('$12,345 USD')
   })
 
   it('includes lastUpdatedFormatted from updated when present, else created', () => {

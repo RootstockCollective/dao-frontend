@@ -5,7 +5,9 @@ import Link from 'next/link'
 import type { ComponentPropsWithoutRef } from 'react'
 
 import { ProgressBar } from '@/components/ProgressBarNew'
+import { TokenImage } from '@/components/TokenImage/TokenImage'
 import { Header, Label, Span } from '@/components/Typography'
+import { RBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { btcVaultRequestHistory } from '@/shared/constants/routes'
 
@@ -58,7 +60,7 @@ export function RequestProcessingBlock({ request, className, ...props }: Request
   return (
     <section
       data-testid="request-processing-block"
-      className={cn('flex flex-col gap-4 w-full', className)}
+      className={cn('flex flex-col gap-6 w-full', className)}
       {...props}
     >
       <Header variant="h5" caps className="text-100">
@@ -92,8 +94,8 @@ export function RequestProcessingBlock({ request, className, ...props }: Request
         <ProgressBar progress={progressPercent} className="w-full" />
       </div>
 
-      <div className="flex flex-wrap gap-x-8 gap-y-4">
-        <div className="flex flex-col gap-1">
+      <div className="flex gap-6 self-stretch">
+        <div className="flex flex-1 min-w-0 flex-col gap-2">
           <Label variant="tag" className="text-bg-0">
             Request type
           </Label>
@@ -101,14 +103,20 @@ export function RequestProcessingBlock({ request, className, ...props }: Request
             {getRequestTypeLabel(request.type)}
           </Span>
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-1 min-w-0 flex-col gap-2">
           <Label variant="tag" className="text-bg-0">
             {getAmountLabel(request.type)}
           </Label>
           <div className="flex flex-col">
-            <Span variant="body-l" className="text-100 overflow-hidden text-ellipsis">
-              {request.amountFormatted} rBTC
-            </Span>
+            <div className="flex items-center gap-1">
+              <Span variant="body-l" className="text-100 overflow-hidden text-ellipsis">
+                {request.amountFormatted}
+              </Span>
+              <TokenImage symbol={RBTC} size={16} />
+              <Span variant="body-l" className="text-100">
+                {RBTC}
+              </Span>
+            </div>
             {request.usdEquivalentFormatted && (
               <Span variant="body-xs" bold className="text-bg-0">
                 {request.usdEquivalentFormatted}
@@ -116,7 +124,7 @@ export function RequestProcessingBlock({ request, className, ...props }: Request
             )}
           </div>
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-1 min-w-0 flex-col gap-2">
           <Label variant="tag" className="text-bg-0">
             Shares
           </Label>
@@ -124,7 +132,7 @@ export function RequestProcessingBlock({ request, className, ...props }: Request
             {request.sharesFormatted}
           </Span>
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-1 min-w-0 flex-col gap-2">
           <Label variant="tag" className="text-bg-0">
             Last updated on
           </Label>

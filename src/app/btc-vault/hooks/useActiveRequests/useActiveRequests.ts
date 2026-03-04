@@ -1,6 +1,8 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
+
+import type { ClaimableInfo, VaultRequest } from '../../services/types'
 import { toActiveRequestDisplay } from '../../services/ui/mappers'
-import type { VaultRequest, ClaimableInfo } from '../../services/types'
+import type { ActiveRequestDisplay } from '../../services/ui/types'
 
 const ONE_BTC = 10n ** 18n
 const now = Math.floor(Date.now() / 1000)
@@ -18,11 +20,10 @@ const MOCK_ACTIVE_REQUEST: VaultRequest = {
 
 const MOCK_CLAIMABLE_INFO: ClaimableInfo | null = null
 
-export function useActiveRequests(address: string | undefined) {
-  return useQuery({
-    queryKey: ['btc-vault', 'active-requests', address],
-    queryFn: () => [toActiveRequestDisplay(MOCK_ACTIVE_REQUEST, MOCK_CLAIMABLE_INFO)],
-    enabled: !!address,
-    staleTime: Infinity,
-  })
+export function useActiveRequests(address: string | undefined): { data: ActiveRequestDisplay[] | undefined } {
+  const data = useMemo(
+    () => (address ? [toActiveRequestDisplay(MOCK_ACTIVE_REQUEST, MOCK_CLAIMABLE_INFO)] : undefined),
+    [address],
+  )
+  return { data }
 }

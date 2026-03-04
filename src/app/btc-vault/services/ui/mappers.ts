@@ -1,30 +1,31 @@
-import type {
-  VaultMetrics,
-  EpochState,
-  UserPosition,
-  PauseState,
-  EligibilityStatus,
-  VaultRequest,
-  ClaimableInfo,
-  PaginatedResult,
-} from '../types'
-import type {
-  VaultMetricsDisplay,
-  EpochDisplay,
-  UserPositionDisplay,
-  ActionEligibility,
-  ActiveRequestDisplay,
-  PaginatedHistoryDisplay,
-} from './types'
 import { formatEther } from 'viem'
+
+import type {
+  ClaimableInfo,
+  EligibilityStatus,
+  EpochState,
+  PaginatedResult,
+  PauseState,
+  UserPosition,
+  VaultMetrics,
+  VaultRequest,
+} from '../types'
 import {
   formatApyPercent,
+  formatCountdown,
+  formatDateShort,
   formatPercent,
   formatTimestamp,
-  formatDateShort,
-  formatCountdown,
   shortenTxHash,
 } from './formatters'
+import type {
+  ActionEligibility,
+  ActiveRequestDisplay,
+  EpochDisplay,
+  PaginatedHistoryDisplay,
+  UserPositionDisplay,
+  VaultMetricsDisplay,
+} from './types'
 
 /**
  * Maps raw vault metrics from the adapter into display-ready formatted strings.
@@ -119,7 +120,7 @@ export function toActiveRequestDisplay(
 ): ActiveRequestDisplay {
   const lastUpdated = req.timestamps.updated ?? req.timestamps.created
   const sharesFormatted = req.type === 'withdrawal' ? formatEther(req.amount) : '—'
-  const usdEquivalentFormatted = null // Mock/real USD in a later story
+  const usdEquivalentFormatted = '$12,345 USD' // TODO: replace with real price conversion
   return {
     id: req.id,
     type: req.type,
