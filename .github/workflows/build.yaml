@@ -1,4 +1,5 @@
 name: Build dApp
+# Cache test run
 
 # --- Cache scoping ---
 # GitHub Actions caches are scoped by branch. A workflow run can restore
