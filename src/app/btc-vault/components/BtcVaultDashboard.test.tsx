@@ -22,7 +22,7 @@ vi.mock('../hooks/useUserPosition/useUserPosition', () => ({
 }))
 
 vi.mock('./BtcVaultActions', () => ({
-  BtcVaultActions: () => <div data-testid="BtcVaultActions" />,
+  BtcVaultActions: () => <div data-testid="btc-vault-actions" />,
 }))
 
 const MOCK_DISPLAY: UserPositionDisplay = {
@@ -57,40 +57,40 @@ describe('BtcVaultDashboard', () => {
 
   it('renders MY METRICS title when connected', () => {
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
-    expect(screen.getByTestId('MyMetricsTitle')).toHaveTextContent('MY METRICS')
+    expect(screen.getByTestId('btc-vault-my-metrics-title')).toHaveTextContent('MY METRICS')
   })
 
   it('renders 7 BalanceInfo metrics when connected with data', () => {
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
 
-    expect(screen.getByTestId('Metric-Wallet')).toBeInTheDocument()
-    expect(screen.getByTestId('Metric-VaultShares')).toBeInTheDocument()
-    expect(screen.getByTestId('Metric-ShareOfVault')).toBeInTheDocument()
-    expect(screen.getByTestId('Metric-Principal')).toBeInTheDocument()
-    expect(screen.getByTestId('Metric-Earnings')).toBeInTheDocument()
-    expect(screen.getByTestId('Metric-TotalBalance')).toBeInTheDocument()
-    expect(screen.getByTestId('Metric-YieldPercent')).toBeInTheDocument()
+    expect(screen.getByTestId('metric-wallet')).toBeInTheDocument()
+    expect(screen.getByTestId('metric-vault-shares')).toBeInTheDocument()
+    expect(screen.getByTestId('metric-share-of-vault')).toBeInTheDocument()
+    expect(screen.getByTestId('metric-principal')).toBeInTheDocument()
+    expect(screen.getByTestId('metric-earnings')).toBeInTheDocument()
+    expect(screen.getByTestId('metric-total-balance')).toBeInTheDocument()
+    expect(screen.getByTestId('metric-yield-percent')).toBeInTheDocument()
   })
 
   it('displays formatted amounts from useUserPosition data', () => {
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
 
-    expect(screen.getByTestId('Metric-Wallet')).toHaveTextContent('2')
-    expect(screen.getByTestId('Metric-VaultShares')).toHaveTextContent('5')
-    expect(screen.getByTestId('Metric-ShareOfVault')).toHaveTextContent('10.20%')
-    expect(screen.getByTestId('Metric-Principal')).toHaveTextContent('5')
-    expect(screen.getByTestId('Metric-Earnings')).toHaveTextContent('0.1')
-    expect(screen.getByTestId('Metric-TotalBalance')).toHaveTextContent('5.1')
-    expect(screen.getByTestId('Metric-YieldPercent')).toHaveTextContent('2.00%')
+    expect(screen.getByTestId('metric-wallet')).toHaveTextContent('2')
+    expect(screen.getByTestId('metric-vault-shares')).toHaveTextContent('5')
+    expect(screen.getByTestId('metric-share-of-vault')).toHaveTextContent('10.20%')
+    expect(screen.getByTestId('metric-principal')).toHaveTextContent('5')
+    expect(screen.getByTestId('metric-earnings')).toHaveTextContent('0.1')
+    expect(screen.getByTestId('metric-total-balance')).toHaveTextContent('5.1')
+    expect(screen.getByTestId('metric-yield-percent')).toHaveTextContent('2.00%')
   })
 
   it('displays fiat amounts for applicable metrics', () => {
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
 
-    expect(screen.getByTestId('Metric-Wallet')).toHaveTextContent('$47,500.00 USD')
-    expect(screen.getByTestId('Metric-VaultShares')).toHaveTextContent('$121,125.00 USD')
-    expect(screen.getByTestId('Metric-Principal')).toHaveTextContent('$118,750.00 USD')
-    expect(screen.getByTestId('Metric-TotalBalance')).toHaveTextContent('$121,125.00 USD')
+    expect(screen.getByTestId('metric-wallet')).toHaveTextContent('$47,500.00 USD')
+    expect(screen.getByTestId('metric-vault-shares')).toHaveTextContent('$121,125.00 USD')
+    expect(screen.getByTestId('metric-principal')).toHaveTextContent('$118,750.00 USD')
+    expect(screen.getByTestId('metric-total-balance')).toHaveTextContent('$121,125.00 USD')
   })
 
   it('shows pulsing zero placeholders when isLoading', () => {
@@ -126,12 +126,12 @@ describe('BtcVaultDashboard', () => {
     mockUseUserPosition.mockReturnValue({ data: emptyDisplay, isLoading: false })
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
 
-    expect(screen.getByTestId('Metric-VaultShares')).toHaveTextContent('0')
-    expect(screen.getByTestId('Metric-ShareOfVault')).toHaveTextContent('0.00%')
-    expect(screen.getByTestId('Metric-Principal')).toHaveTextContent('0')
-    expect(screen.getByTestId('Metric-Earnings')).toHaveTextContent('0')
-    expect(screen.getByTestId('Metric-TotalBalance')).toHaveTextContent('0')
-    expect(screen.getByTestId('Metric-YieldPercent')).toHaveTextContent('0.00%')
+    expect(screen.getByTestId('metric-vault-shares')).toHaveTextContent('0')
+    expect(screen.getByTestId('metric-share-of-vault')).toHaveTextContent('0.00%')
+    expect(screen.getByTestId('metric-principal')).toHaveTextContent('0')
+    expect(screen.getByTestId('metric-earnings')).toHaveTextContent('0')
+    expect(screen.getByTestId('metric-total-balance')).toHaveTextContent('0')
+    expect(screen.getByTestId('metric-yield-percent')).toHaveTextContent('0.00%')
 
     const dashboard = screen.getByTestId('btc-vault-dashboard')
     expect(dashboard.textContent).not.toContain('—')
@@ -142,12 +142,12 @@ describe('BtcVaultDashboard', () => {
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
 
     const metricsWithTooltips = [
-      'Metric-Wallet',
-      'Metric-VaultShares',
-      'Metric-ShareOfVault',
-      'Metric-Earnings',
-      'Metric-TotalBalance',
-      'Metric-YieldPercent',
+      'metric-wallet',
+      'metric-vault-shares',
+      'metric-share-of-vault',
+      'metric-earnings',
+      'metric-total-balance',
+      'metric-yield-percent',
     ]
 
     metricsWithTooltips.forEach(testId => {
@@ -159,7 +159,7 @@ describe('BtcVaultDashboard', () => {
   it('shows nav links when user has vault position', () => {
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
 
-    expect(screen.getByTestId('NavLinks')).toBeInTheDocument()
+    expect(screen.getByTestId('btc-vault-nav-links')).toBeInTheDocument()
     expect(screen.getByText('View history →')).toBeInTheDocument()
     expect(screen.getByText('View yield history →')).toBeInTheDocument()
   })
@@ -172,7 +172,7 @@ describe('BtcVaultDashboard', () => {
     mockUseUserPosition.mockReturnValue({ data: emptyDisplay, isLoading: false })
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
 
-    expect(screen.queryByTestId('NavLinks')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('btc-vault-nav-links')).not.toBeInTheDocument()
   })
 
   it('returns null when wallet is disconnected', () => {
@@ -185,5 +185,13 @@ describe('BtcVaultDashboard', () => {
     mockUseAccount.mockReturnValue({ address: undefined, isConnected: true })
     const { container } = render(<BtcVaultDashboard />)
     expect(container.innerHTML).toBe('')
+  })
+
+  it('shows dashes for all metrics when useUserPosition returns an error', () => {
+    mockUseUserPosition.mockReturnValue({ data: undefined, isLoading: false, isError: true })
+    render(<BtcVaultDashboard />, { wrapper: Wrapper })
+
+    const dashes = screen.getAllByText('—')
+    expect(dashes.length).toBe(7)
   })
 })

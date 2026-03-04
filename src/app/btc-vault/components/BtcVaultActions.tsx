@@ -6,13 +6,18 @@ import { Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 
 import { useActionEligibility } from '../hooks/useActionEligibility'
+import { ACTIVE_REQUEST_REASON, DEPOSIT_PAUSED_REASON, WITHDRAWAL_PAUSED_REASON } from '../services/constants'
 
-const PAUSE_BLOCK_REASON = 'Deposits are currently paused'
-const ACTIVE_REQUEST_BLOCK_REASON = 'You already have an active request'
+/** Operational block reasons — these hide individual buttons, not the entire component. */
+const OPERATIONAL_BLOCK_REASONS = new Set([
+  DEPOSIT_PAUSED_REASON,
+  WITHDRAWAL_PAUSED_REASON,
+  ACTIVE_REQUEST_REASON,
+])
 
-/** Block reason is an eligibility issue (KYB) — hide all actions. */
+/** True when the reason is an eligibility issue (e.g. KYB) rather than an operational pause. */
 function isEligibilityBlock(reason: string): boolean {
-  return reason.length > 0 && reason !== PAUSE_BLOCK_REASON && reason !== ACTIVE_REQUEST_BLOCK_REASON
+  return reason.length > 0 && !OPERATIONAL_BLOCK_REASONS.has(reason)
 }
 
 interface Props {
@@ -38,13 +43,13 @@ export const BtcVaultActions = ({ address, onDeposit, onWithdraw }: Props) => {
 
   const { canDeposit, canWithdraw, depositBlockReason, withdrawBlockReason } = data
 
-  if (isEligibilityBlock(depositBlockReason)) return null
+  if (isEligibilityBlock(depositBlockReason) || isEligibilityBlock(withdrawBlockReason)) return null
 
-  const depositVisible = canDeposit || depositBlockReason === ACTIVE_REQUEST_BLOCK_REASON
-  const withdrawVisible = canWithdraw || withdrawBlockReason === ACTIVE_REQUEST_BLOCK_REASON
+  const depositVisible = canDeposit || depositBlockReason === ACTIVE_REQUEST_REASON
+  const withdrawVisible = canWithdraw || withdrawBlockReason === ACTIVE_REQUEST_REASON
 
   return (
-    <div className="flex flex-col gap-4 md:flex-row md:items-center w-full" data-testid="BtcVaultActions">
+    <div className="flex flex-col gap-4 md:flex-row md:items-center w-full" data-testid="btc-vault-actions">
       {depositVisible && (
         <Tooltip text={depositBlockReason} disabled={canDeposit}>
           <Button

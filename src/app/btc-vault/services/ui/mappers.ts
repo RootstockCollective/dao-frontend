@@ -3,6 +3,7 @@ import { formatEther } from 'viem'
 import { getFiatAmount } from '@/app/shared/formatter'
 import { formatCurrencyWithLabel } from '@/lib/utils'
 
+import { ACTIVE_REQUEST_REASON, DEPOSIT_PAUSED_REASON, WITHDRAWAL_PAUSED_REASON } from '../constants'
 import type {
   ClaimableInfo,
   EligibilityStatus,
@@ -121,16 +122,12 @@ export function toActionEligibility(
     depositBlockReason: !eligibility.eligible
       ? eligibility.reason
       : pause.deposits === 'paused'
-        ? 'Deposits are currently paused'
+        ? DEPOSIT_PAUSED_REASON
         : hasActive
-          ? 'You already have an active request'
+          ? ACTIVE_REQUEST_REASON
           : '',
     withdrawBlockReason:
-      pause.withdrawals === 'paused'
-        ? 'Withdrawals are currently paused'
-        : hasActive
-          ? 'You already have an active request'
-          : '',
+      pause.withdrawals === 'paused' ? WITHDRAWAL_PAUSED_REASON : hasActive ? ACTIVE_REQUEST_REASON : '',
   }
 }
 

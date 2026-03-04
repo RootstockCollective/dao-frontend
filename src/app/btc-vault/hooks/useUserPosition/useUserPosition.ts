@@ -13,6 +13,7 @@ const MOCK_POSITION: UserPosition = {
   totalDepositedPrincipal: 5n * WeiPerEther,
 }
 
+// Fallback for connected wallet with no vault position; used by the real adapter
 const EMPTY_POSITION: UserPosition = {
   rbtcBalance: 0n,
   vaultTokens: 0n,

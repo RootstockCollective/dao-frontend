@@ -9,7 +9,7 @@ const NAME = 'BTC Vault'
 export const BtcVaultPage = () => {
   return (
     <div
-      data-testid={NAME}
+      data-testid={NAME} // TODO: DAO-2029 Standardize data-test-ids to using kebab-case only
       className="flex flex-col items-start w-full h-full pt-[0.13rem] md:gap-6 rounded-sm"
     >
       <BtcVaultBanners />
@@ -25,7 +25,7 @@ export const BtcVaultPage = () => {
       <BtcVaultDashboard />
 
       {/* Actions Zone - F5/F6 */}
-      <section data-testid="btc-vault-actions" className="w-full">
+      <section data-testid="btc-vault-actions-zone" className="w-full">
         {/* BTC Vault Actions (Deposit/Withdraw) - implemented in F5/F6 */}
       </section>
 

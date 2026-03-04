@@ -1,5 +1,6 @@
 'use client'
 
+import { ReactNode } from 'react'
 import { useAccount } from 'wagmi'
 
 import { BalanceInfo } from '@/components/BalanceInfo'
@@ -12,19 +13,26 @@ import { BtcVaultActions } from './BtcVaultActions'
 
 const LoadingValue = () => <Span className="animate-pulse text-text-60">0</Span>
 
+/** Resolves the display value for a metric based on query state. */
+function metricAmount(isLoading: boolean, isError: boolean, value: string | undefined): ReactNode {
+  if (isLoading) return <LoadingValue />
+  if (isError || value === undefined) return '—'
+  return value
+}
+
 /**
  * Investor dashboard showing 7 position metrics in two rows.
  * Returns null when wallet is disconnected so the page section renders empty.
  */
 export const BtcVaultDashboard = () => {
   const { address, isConnected } = useAccount()
-  const { data, isLoading } = useUserPosition(address)
+  const { data, isLoading, isError } = useUserPosition(address)
 
   if (!address || !isConnected) return null
 
   return (
     <section className="flex flex-col gap-4 w-full" data-testid="btc-vault-dashboard">
-      <Header variant="h2" data-testid="MyMetricsTitle">
+      <Header variant="h2" data-testid="btc-vault-my-metrics-title">
         MY METRICS
       </Header>
 
@@ -34,27 +42,27 @@ export const BtcVaultDashboard = () => {
           <BalanceInfo
             className="w-full md:w-[214px] md:min-w-[180px]"
             title="Wallet"
-            amount={isLoading ? <LoadingValue /> : data?.rbtcBalanceFormatted}
+            amount={metricAmount(isLoading, isError, data?.rbtcBalanceFormatted)}
             symbol={RBTC}
-            fiatAmount={isLoading ? undefined : data?.fiatWalletBalance}
+            fiatAmount={isLoading || isError ? undefined : data?.fiatWalletBalance}
             tooltipContent="Your rBTC balance available in your connected wallet"
-            data-testid="Metric-Wallet"
+            data-testid="metric-wallet"
           />
           <BalanceInfo
             className="w-full md:w-[214px] md:min-w-[180px]"
             title="Vault shares"
-            amount={isLoading ? <LoadingValue /> : data?.vaultTokensFormatted}
+            amount={metricAmount(isLoading, isError, data?.vaultTokensFormatted)}
             symbol={RBTC}
-            fiatAmount={isLoading ? undefined : data?.fiatVaultShares}
+            fiatAmount={isLoading || isError ? undefined : data?.fiatVaultShares}
             tooltipContent="Your share tokens representing deposited rBTC in the vault"
-            data-testid="Metric-VaultShares"
+            data-testid="metric-vault-shares"
           />
           <BalanceInfo
             className="w-full md:w-[214px] md:min-w-[180px]"
             title="Your share of vault"
-            amount={isLoading ? <LoadingValue /> : data?.percentOfVaultFormatted}
+            amount={metricAmount(isLoading, isError, data?.percentOfVaultFormatted)}
             tooltipContent="Your ownership percentage of the total vault assets"
-            data-testid="Metric-ShareOfVault"
+            data-testid="metric-share-of-vault"
           />
         </div>
 
@@ -63,40 +71,40 @@ export const BtcVaultDashboard = () => {
           <BalanceInfo
             className="w-full md:w-[214px] md:min-w-[180px]"
             title="Principal deposited"
-            amount={isLoading ? <LoadingValue /> : data?.totalDepositedPrincipalFormatted}
+            amount={metricAmount(isLoading, isError, data?.totalDepositedPrincipalFormatted)}
             symbol={RBTC}
-            fiatAmount={isLoading ? undefined : data?.fiatPrincipalDeposited}
-            data-testid="Metric-Principal"
+            fiatAmount={isLoading || isError ? undefined : data?.fiatPrincipalDeposited}
+            data-testid="metric-principal"
           />
           <BalanceInfo
             className="w-full md:w-[214px] md:min-w-[180px]"
             title="Current earnings"
-            amount={isLoading ? <LoadingValue /> : data?.currentEarningsFormatted}
+            amount={metricAmount(isLoading, isError, data?.currentEarningsFormatted)}
             symbol={RBTC}
             tooltipContent="Subject to NAV updates, pending deposit windows"
-            data-testid="Metric-Earnings"
+            data-testid="metric-earnings"
           />
           <BalanceInfo
             className="w-full md:w-[214px] md:min-w-[180px]"
             title="Total balance"
-            amount={isLoading ? <LoadingValue /> : data?.totalBalanceFormatted}
+            amount={metricAmount(isLoading, isError, data?.totalBalanceFormatted)}
             symbol={RBTC}
-            fiatAmount={isLoading ? undefined : data?.fiatTotalBalance}
+            fiatAmount={isLoading || isError ? undefined : data?.fiatTotalBalance}
             tooltipContent="Current total value of your vault position based on NAV"
-            data-testid="Metric-TotalBalance"
+            data-testid="metric-total-balance"
           />
           <BalanceInfo
             className="w-full md:w-[214px] md:min-w-[180px]"
             title="Yield % to date"
-            amount={isLoading ? <LoadingValue /> : data?.yieldPercentToDateFormatted}
+            amount={metricAmount(isLoading, isError, data?.yieldPercentToDateFormatted)}
             tooltipContent="Cumulative yield earned on your deposited principal"
-            data-testid="Metric-YieldPercent"
+            data-testid="metric-yield-percent"
           />
         </div>
       </MetricsContainer>
 
       {data && data.vaultTokensRaw > 0n && (
-        <div className="flex justify-between w-full" data-testid="NavLinks">
+        <div className="flex justify-between w-full" data-testid="btc-vault-nav-links">
           {/* TODO(DAO-1999): replace href with route to transaction history page */}
           <a href="#" className="text-sm font-medium underline underline-offset-2">
             <Span variant="body-s">View history →</Span>
