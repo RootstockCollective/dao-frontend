@@ -1,12 +1,13 @@
-import Big from '@/lib/big'
 import { Address } from 'viem'
+
 import { SerializedDecodedData } from '@/app/proposals/shared/utils'
+import { CountdownProps } from '@/components/Countdown'
+import Big from '@/lib/big'
 import { ProposalCategory, ProposalState } from '@/shared/types'
 
-import { type GrantProposal } from '../../new/details/schemas/GrantProposalSchema'
 import { type ActivationProposal } from '../../new/details/schemas/ActivationProposalSchema'
 import { type DeactivationProposal } from '../../new/details/schemas/DeactivationProposalSchema'
-import { CountdownProps } from '@/components/Countdown'
+import { type GrantProposal } from '../../new/details/schemas/GrantProposalSchema'
 
 // Base proposal input type that covers all sources (GraphQL, DB, Node)
 export interface BaseProposalInput {
@@ -71,7 +72,7 @@ export interface Proposal {
 }
 
 export interface Eta extends Omit<CountdownProps, 'className'> {
-  type: 'vote end in' | 'queue ends in'
+  type: 'vote ends in' | 'queue ends in'
 }
 
 export interface ProposalApiResponse {

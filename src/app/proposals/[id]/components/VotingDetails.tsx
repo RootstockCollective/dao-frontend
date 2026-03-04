@@ -1,33 +1,35 @@
+import { waitForTransactionReceipt } from '@wagmi/core'
 import { type MouseEvent, useCallback, useRef, useState } from 'react'
-import { useAccount } from 'wagmi'
 import { zeroAddress } from 'viem'
+import { useAccount } from 'wagmi'
+
+import { useCheckTreasuryFunds } from '@/app/proposals/hooks/useCheckTreasuryFunds'
 import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
-import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
 import { useProposalQuorumAtSnapshot } from '@/app/proposals/hooks/useProposalQuorumAtSnapshot'
 import { useGetVoteForSpecificProposal } from '@/app/proposals/hooks/useVoteCast'
-import type { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
-import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
-import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
-import { waitForTransactionReceipt } from '@wagmi/core'
+import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
+import { Modal } from '@/components/Modal'
+import { NewPopover } from '@/components/NewPopover'
+import { Span } from '@/components/Typography'
 import { config } from '@/config'
+import Big from '@/lib/big'
+import { useExecuteProposal } from '@/shared/hooks/useExecuteProposal'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { useModal } from '@/shared/hooks/useModal'
+import { useQueueProposal } from '@/shared/hooks/useQueueProposal'
+import type { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
 import { executeTxFlow, showToast } from '@/shared/notification'
-import { useCheckTreasuryFunds } from '@/app/proposals/hooks/useCheckTreasuryFunds'
 import type { Vote } from '@/shared/types'
 import { ProposalState } from '@/shared/types'
-import Big from '@/lib/big'
-import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { ConnectButtonComponent } from '@/shared/walletConnection/components/ConnectButtonComponent'
-import { NewPopover } from '@/components/NewPopover'
-import { VotingDetails as VotingDetailsComponent, type ButtonAction } from '../../components/vote-details'
-import { ActionDetails } from '../../components/action-details'
-import type { ParsedActionDetails } from '../types'
-import { Span } from '@/components/Typography'
-import type { Eta } from '../../shared/types'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { MobileVotingButton } from './MobileVotingButton'
-import { Modal } from '@/components/Modal'
+import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
-import { useModal } from '@/shared/hooks/useModal'
+
+import { ActionDetails } from '../../components/action-details'
+import { type ButtonAction, VotingDetails as VotingDetailsComponent } from '../../components/vote-details'
+import type { Eta } from '../../shared/types'
+import type { ParsedActionDetails } from '../types'
+import { MobileVotingButton } from './MobileVotingButton'
 
 interface VotingDetailsProps {
   proposalId: string
@@ -219,7 +221,7 @@ export const VotingDetails = ({
         }
       case ProposalState.Active:
         return {
-          type: 'vote end in',
+          type: 'vote ends in',
           end: proposalDeadline,
           timeSource: 'blocks',
           referenceStart: voteStart ? Big(voteStart) : undefined,
