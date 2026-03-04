@@ -1,31 +1,52 @@
 name: Deploy Storybook site to Pages
 
+# --- Cache scoping ---
+# GitHub Actions caches are scoped by branch. A workflow run can restore
+# caches from its own branch AND the default branch (main), but NOT from
+# other feature branches. The push trigger already covers main, so
+# caches are seeded on the default branch automatically.
 on:
-  workflow_dispatch: # Manually triggered from GitHub Actions tab
+  workflow_dispatch:
   push:
     branches: [main, develop]
 
 # Declare default permissions as read only.
 permissions: read-all
-  
-concurrency: 
+
+concurrency:
   group: "storybook"
   cancel-in-progress: false
-  
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions: 
+    permissions:
       pages: write
       id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 #v4.4.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 #v4.4.0
         with:
           node-version-file: '.nvmrc'
+
+      # Caches the full node_modules directory keyed on package-lock.json.
+      # On hit, npm ci is skipped entirely. The post-job hook saves the
+      # cache after all steps complete (only when the exact key was a miss).
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 #v5.0.3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+
       - name: Install dependencies
-        run: npm i
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        env:
+          CYPRESS_INSTALL_BINARY: '0'
+        run: npm ci
       - name: Build storybook
         run: npm run build-storybook
       - name: Fix image paths for subdirectory deployment
