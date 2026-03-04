@@ -103,6 +103,32 @@ describe('toActionEligibility', () => {
     expect(result.canWithdraw).toBe(false)
     expect(result.withdrawBlockReason).toBe('You already have an active request')
   })
+
+  it('AC-6: in-flight requests are unaffected by pause — pause does not alter active request state', () => {
+    const activeReq = [
+      {
+        id: 'req-1',
+        type: 'deposit' as const,
+        amount: 1_000_000_000_000_000_000n,
+        status: 'pending' as const,
+        epochId: '1',
+        batchRedeemId: null,
+        timestamps: { created: 1700000000 },
+        txHashes: { submit: '0xabc' },
+      },
+    ]
+    const fullyPaused = { deposits: 'paused' as const, withdrawals: 'paused' as const }
+
+    const result = toActionEligibility(fullyPaused, eligible, activeReq)
+
+    expect(result.canDeposit).toBe(false)
+    expect(result.canWithdraw).toBe(false)
+
+    expect(activeReq).toHaveLength(1)
+    expect(activeReq[0].status).toBe('pending')
+    expect(activeReq[0].amount).toBe(1_000_000_000_000_000_000n)
+    expect(activeReq[0].id).toBe('req-1')
+  })
 })
 
 describe('toActiveRequestDisplay', () => {
