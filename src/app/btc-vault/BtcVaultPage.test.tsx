@@ -2,12 +2,12 @@ import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
+  ELIGIBILITY_REASON_DEPOSITS_PAUSED,
   ELIGIBILITY_REASON_DISCONNECTED,
   ELIGIBILITY_REASON_ELIGIBLE,
   ELIGIBILITY_REASON_LOADING,
   ELIGIBILITY_REASON_NOT_AUTHORIZED,
-  ELIGIBILITY_REASON_DEPOSITS_PAUSED,
-} from './hooks/useActionEligibility'
+} from './services/ui/eligibilityReasons'
 import { BtcVaultPage } from './BtcVaultPage'
 
 const mockUseAccount = vi.fn()
@@ -19,13 +19,6 @@ vi.mock('wagmi', () => ({
 
 vi.mock('./hooks/useActionEligibility', () => ({
   useActionEligibility: () => mockUseActionEligibility(),
-  ELIGIBILITY_REASON_DISCONNECTED: 'Wallet disconnected — reconnect to continue',
-  ELIGIBILITY_REASON_NOT_AUTHORIZED:
-    'This wallet is not authorized to interact with the BTC Vault. Contact your administrator.',
-  ELIGIBILITY_REASON_DEPOSITS_PAUSED: 'Deposits are currently paused.',
-  ELIGIBILITY_REASON_WITHDRAWALS_PAUSED: 'Withdrawals are currently paused.',
-  ELIGIBILITY_REASON_ELIGIBLE: '',
-  ELIGIBILITY_REASON_LOADING: 'Loading eligibility…',
 }))
 
 vi.mock('@/shared/walletConnection/connection/useAppKitFlow', () => ({

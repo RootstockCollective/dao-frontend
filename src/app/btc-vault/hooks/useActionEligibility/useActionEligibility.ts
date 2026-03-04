@@ -7,16 +7,6 @@ import {
 } from '../../services/ui/eligibilityReasons'
 import { toActionEligibility } from '../../services/ui/mappers'
 
-// Re-export for banners and tests
-export {
-  ELIGIBILITY_REASON_DEPOSITS_PAUSED,
-  ELIGIBILITY_REASON_DISCONNECTED,
-  ELIGIBILITY_REASON_ELIGIBLE,
-  ELIGIBILITY_REASON_LOADING,
-  ELIGIBILITY_REASON_NOT_AUTHORIZED,
-  ELIGIBILITY_REASON_WITHDRAWALS_PAUSED,
-} from '../../services/ui/eligibilityReasons'
-
 // --- Mock data (replace with real contract/KYB once deployed) ---
 
 const MOCK_PAUSE: PauseState = {

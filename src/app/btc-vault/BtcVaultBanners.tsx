@@ -4,6 +4,7 @@ import { BannerContent } from '@/components/StackableBanner/BannerContent'
 import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
 
+import { useActionEligibility } from './hooks/useActionEligibility'
 import {
   ELIGIBILITY_REASON_DEPOSITS_PAUSED,
   ELIGIBILITY_REASON_DISCONNECTED,
@@ -11,8 +12,7 @@ import {
   ELIGIBILITY_REASON_LOADING,
   ELIGIBILITY_REASON_NOT_AUTHORIZED,
   ELIGIBILITY_REASON_WITHDRAWALS_PAUSED,
-  useActionEligibility,
-} from './hooks/useActionEligibility'
+} from './services/ui/eligibilityReasons'
 
 const WalletDisconnectedBanner = () => {
   const { onConnectWalletButtonClick } = useAppKitFlow()
