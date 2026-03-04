@@ -90,7 +90,7 @@ describe('ActiveRequestSection', () => {
     expect(screen.getByTestId('request-processing-block')).toBeInTheDocument()
   })
 
-  it('renders inside a SectionContainer with ACTIVE REQUEST title', () => {
+  it('renders inside a SectionContainer with REQUEST PROCESSING title', () => {
     mockedUseAccount.mockReturnValue({
       address: '0x1234567890abcdef1234567890abcdef12345678',
     } as unknown as ReturnType<typeof useAccount>)
@@ -98,7 +98,7 @@ describe('ActiveRequestSection', () => {
 
     render(<ActiveRequestSection />)
 
-    expect(screen.getAllByText('ACTIVE REQUEST').length).toBeGreaterThan(0)
+    expect(screen.getAllByText('REQUEST PROCESSING').length).toBeGreaterThan(0)
   })
 
   it('renders nothing when data is undefined (still loading)', () => {
