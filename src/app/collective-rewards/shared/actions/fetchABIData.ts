@@ -1,3 +1,4 @@
+'use cache'
 import { gql as apolloGQL } from '@apollo/client'
 import { cacheLife, cacheTag } from 'next/cache'
 
@@ -55,7 +56,10 @@ export interface ResponseABIData {
   cycles: CycleData[]
 }
 async function fetchABIData() {
-  const { data } = await client.query<ResponseABIData>({ query })
+  const { data, errors } = await client.query<ResponseABIData>({ query })
+  if (errors?.length) {
+    throw new Error(`Subgraph query failed: ${errors.map(error => error.message).join(', ')}`)
+  }
   if (!data) {
     throw new Error('Failed to fetch ABI data from subgraph')
   }
@@ -71,7 +75,6 @@ async function fetchABIData() {
 
 /** Fetches builders and reward cycles from the Collective Rewards subgraph (cached). */
 export async function getCachedABIData() {
-  'use cache'
   cacheLife({ revalidate: CACHE_REVALIDATE_SECONDS })
   cacheTag('cached_abi_data')
   return fetchABIData()
