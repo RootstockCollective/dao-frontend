@@ -13,7 +13,7 @@ const meta = {
     Story => (
       <div className="w-full">
         <section data-testid="btc-vault-request-queue" className="w-full">
-          <SectionContainer title="ACTIVE REQUEST" headerVariant="h3">
+          <SectionContainer title="REQUEST PROCESSING" headerVariant="h3">
             <Story />
           </SectionContainer>
         </section>

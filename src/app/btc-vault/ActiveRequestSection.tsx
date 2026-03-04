@@ -15,7 +15,7 @@ export function ActiveRequestSection() {
 
   return (
     <section data-testid="btc-vault-active-request" className="w-full">
-      <SectionContainer title="ACTIVE REQUEST" headerVariant="h3">
+      <SectionContainer title="REQUEST PROCESSING" headerVariant="h3">
         <RequestProcessingBlock request={data[0]} />
       </SectionContainer>
     </section>
