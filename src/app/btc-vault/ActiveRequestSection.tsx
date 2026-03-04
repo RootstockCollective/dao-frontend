@@ -4,8 +4,8 @@ import { useAccount } from 'wagmi'
 
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
 
+import { RequestProcessingBlock } from './components/RequestProcessingBlock'
 import { useActiveRequests } from './hooks/useActiveRequests'
-import { RequestProcessingBlock } from './RequestProcessingBlock'
 
 export function ActiveRequestSection() {
   const { address } = useAccount()

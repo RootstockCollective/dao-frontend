@@ -11,7 +11,7 @@ import { RBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { btcVaultRequestHistory } from '@/shared/constants/routes'
 
-import type { ActiveRequestDisplay } from './services/ui/types'
+import type { ActiveRequestDisplay } from '../services/ui/types'
 
 const STAGES = ['Submitted', 'Pending', 'Approved', 'Successful'] as const
 

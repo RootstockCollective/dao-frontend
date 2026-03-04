@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
-import { RequestProcessingBlock } from './RequestProcessingBlock'
+import { RequestProcessingBlock } from './components/RequestProcessingBlock'
 import type { ActiveRequestDisplay } from './services/ui/types'
 
 const meta = {
