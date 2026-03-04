@@ -1,3 +1,5 @@
+import { DateTime } from 'luxon'
+
 const VAULT_BASIS_POINTS = 1_000_000_000n // 1e9 = 100%
 
 /**
@@ -25,26 +27,16 @@ export function formatPercent(value: number): string {
  * @returns Formatted date string (e.g. "Mar 15, 2025, 02:30 PM")
  */
 export function formatTimestamp(unix: number): string {
-  return new Intl.DateTimeFormat('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(unix * 1000))
+  return DateTime.fromSeconds(unix).toFormat('MMM dd, yyyy, hh:mm a')
 }
 
 /**
  * Formats a Unix timestamp (seconds) into a date-only string for "Last updated on" display.
  * @param unix - Unix timestamp in seconds
- * @returns Formatted date string (e.g. "21 May 2025")
+ * @returns Formatted date string (e.g. "May 21, 2025")
  */
 export function formatDateShort(unix: number): string {
-  return new Intl.DateTimeFormat('en-US', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  }).format(new Date(unix * 1000))
+  return DateTime.fromSeconds(unix).toFormat('MMM dd, yyyy')
 }
 
 /**
