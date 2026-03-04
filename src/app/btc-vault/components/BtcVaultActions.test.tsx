@@ -109,6 +109,22 @@ describe('BtcVaultActions', () => {
     expect(screen.getByTestId('btc-vault-swap-link')).toBeInTheDocument()
   })
 
+  it('hides all actions including swap when both deposits and withdrawals are paused', () => {
+    mockUseActionEligibility.mockReturnValue({
+      data: {
+        canDeposit: false,
+        canWithdraw: false,
+        depositBlockReason: 'Deposits are currently paused',
+        withdrawBlockReason: 'Withdrawals are currently paused',
+      },
+    })
+    render(<BtcVaultActions address="0x123" />, { wrapper: Wrapper })
+
+    expect(screen.queryByTestId('btc-vault-deposit-button')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('btc-vault-withdraw-button')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('btc-vault-swap-link')).not.toBeInTheDocument()
+  })
+
   it('does not throw when onClick handlers are omitted (no-op)', () => {
     mockUseActionEligibility.mockReturnValue({
       data: { canDeposit: true, canWithdraw: true, depositBlockReason: '', withdrawBlockReason: '' },

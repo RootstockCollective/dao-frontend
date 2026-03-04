@@ -138,11 +138,22 @@ describe('BtcVaultDashboard', () => {
     expect(dashboard.textContent).not.toContain('- ')
   })
 
-  it('renders current earnings tooltip content', () => {
+  it('renders tooltip icons on all metrics that have tooltips', () => {
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
 
-    const earningsMetric = screen.getByTestId('Metric-Earnings')
-    expect(earningsMetric.querySelector('[data-testid="TooltipIcon"]')).toBeInTheDocument()
+    const metricsWithTooltips = [
+      'Metric-Wallet',
+      'Metric-VaultShares',
+      'Metric-ShareOfVault',
+      'Metric-Earnings',
+      'Metric-TotalBalance',
+      'Metric-YieldPercent',
+    ]
+
+    metricsWithTooltips.forEach(testId => {
+      const metric = screen.getByTestId(testId)
+      expect(metric.querySelector('[data-testid="TooltipIcon"]')).toBeInTheDocument()
+    })
   })
 
   it('shows nav links when user has vault position', () => {

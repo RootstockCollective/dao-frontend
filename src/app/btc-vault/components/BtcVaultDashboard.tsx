@@ -37,6 +37,7 @@ export const BtcVaultDashboard = () => {
             amount={isLoading ? <LoadingValue /> : data?.rbtcBalanceFormatted}
             symbol={RBTC}
             fiatAmount={isLoading ? undefined : data?.fiatWalletBalance}
+            tooltipContent="Your rBTC balance available in your connected wallet"
             data-testid="Metric-Wallet"
           />
           <BalanceInfo
@@ -45,12 +46,14 @@ export const BtcVaultDashboard = () => {
             amount={isLoading ? <LoadingValue /> : data?.vaultTokensFormatted}
             symbol={RBTC}
             fiatAmount={isLoading ? undefined : data?.fiatVaultShares}
+            tooltipContent="Your share tokens representing deposited rBTC in the vault"
             data-testid="Metric-VaultShares"
           />
           <BalanceInfo
             className="w-full md:w-[214px] md:min-w-[180px]"
             title="Your share of vault"
             amount={isLoading ? <LoadingValue /> : data?.percentOfVaultFormatted}
+            tooltipContent="Your ownership percentage of the total vault assets"
             data-testid="Metric-ShareOfVault"
           />
         </div>
@@ -79,12 +82,14 @@ export const BtcVaultDashboard = () => {
             amount={isLoading ? <LoadingValue /> : data?.totalBalanceFormatted}
             symbol={RBTC}
             fiatAmount={isLoading ? undefined : data?.fiatTotalBalance}
+            tooltipContent="Current total value of your vault position based on NAV"
             data-testid="Metric-TotalBalance"
           />
           <BalanceInfo
             className="w-full md:w-[214px] md:min-w-[180px]"
             title="Yield % to date"
             amount={isLoading ? <LoadingValue /> : data?.yieldPercentToDateFormatted}
+            tooltipContent="Cumulative yield earned on your deposited principal"
             data-testid="Metric-YieldPercent"
           />
         </div>
@@ -92,11 +97,11 @@ export const BtcVaultDashboard = () => {
 
       {data && data.vaultTokensRaw > 0n && (
         <div className="flex justify-between w-full" data-testid="NavLinks">
-          {/* TODO(DAO-XXXX): replace href with route to transaction history page */}
+          {/* TODO(DAO-1999): replace href with route to transaction history page */}
           <a href="#" className="text-sm font-medium underline underline-offset-2">
             <Span variant="body-s">View history →</Span>
           </a>
-          {/* TODO(DAO-XXXX): replace href with route to yield history page */}
+          {/* TODO(DAO-1999): replace href with route to yield history page */}
           <a href="#" className="text-sm font-medium underline underline-offset-2">
             <Span variant="body-s">View yield history →</Span>
           </a>
