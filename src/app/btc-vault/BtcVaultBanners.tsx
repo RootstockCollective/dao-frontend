@@ -1,18 +1,18 @@
 'use client'
 
-import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
 import { BannerContent } from '@/components/StackableBanner/BannerContent'
+import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
-import { useAccount } from 'wagmi'
-import { useActionEligibility } from './hooks/useActionEligibility'
 
-/** Block reasons from pause or active request; any other non-empty reason is eligibility (not authorized). */
-const PAUSE_BLOCK_REASON = 'Deposits are currently paused'
-const ACTIVE_REQUEST_BLOCK_REASON = 'You already have an active request'
-
-function isEligibilityBlockReason(reason: string): boolean {
-  return reason.length > 0 && reason !== PAUSE_BLOCK_REASON && reason !== ACTIVE_REQUEST_BLOCK_REASON
-}
+import {
+  ELIGIBILITY_REASON_DEPOSITS_PAUSED,
+  ELIGIBILITY_REASON_DISCONNECTED,
+  ELIGIBILITY_REASON_ELIGIBLE,
+  ELIGIBILITY_REASON_LOADING,
+  ELIGIBILITY_REASON_NOT_AUTHORIZED,
+  ELIGIBILITY_REASON_WITHDRAWALS_PAUSED,
+  useActionEligibility,
+} from './hooks/useActionEligibility'
 
 const WalletDisconnectedBanner = () => {
   const { onConnectWalletButtonClick } = useAppKitFlow()
@@ -21,7 +21,7 @@ const WalletDisconnectedBanner = () => {
     <StackableBanner testId="WalletDisconnectedBanner">
       <BannerContent
         title="Wallet Disconnected"
-        description="Wallet disconnected — reconnect to continue"
+        description={ELIGIBILITY_REASON_DISCONNECTED}
         buttonText="Connect Wallet"
         buttonOnClick={onConnectWalletButtonClick}
       />
@@ -29,31 +29,50 @@ const WalletDisconnectedBanner = () => {
   )
 }
 
-const NotAuthorizedBanner = ({ reason }: { reason?: string }) => {
-  return (
-    <StackableBanner testId="NotAuthorizedBanner">
-      <BannerContent
-        title="Not Authorized"
-        description={
-          reason ||
-          'This wallet is not authorized to interact with the BTC Vault. Contact your administrator.'
-        }
-        buttonOnClick={() => {}}
-      />
-    </StackableBanner>
-  )
-}
+const NotAuthorizedBanner = ({ reason }: { reason: string }) => (
+  <StackableBanner testId="NotAuthorizedBanner">
+    <BannerContent title="Not Authorized" description={reason} buttonOnClick={() => {}} />
+  </StackableBanner>
+)
+
+const DepositsPausedBanner = () => (
+  <StackableBanner testId="DepositsPausedBanner">
+    <BannerContent
+      title="Deposits Paused"
+      description={ELIGIBILITY_REASON_DEPOSITS_PAUSED}
+      buttonOnClick={() => {}}
+    />
+  </StackableBanner>
+)
+
+const WithdrawalsPausedBanner = () => (
+  <StackableBanner testId="WithdrawalsPausedBanner">
+    <BannerContent
+      title="Withdrawals Paused"
+      description={ELIGIBILITY_REASON_WITHDRAWALS_PAUSED}
+      buttonOnClick={() => {}}
+    />
+  </StackableBanner>
+)
 
 export const BtcVaultBanners = () => {
-  const { address, isConnected } = useAccount()
-  const { data: actionEligibility } = useActionEligibility(address)
+  const { isEligible, reason } = useActionEligibility()
 
-  if (!address || !isConnected) {
-    return <WalletDisconnectedBanner />
+  if (isEligible || reason === ELIGIBILITY_REASON_ELIGIBLE || reason === ELIGIBILITY_REASON_LOADING) {
+    return null
   }
 
-  if (actionEligibility && isEligibilityBlockReason(actionEligibility.depositBlockReason)) {
-    return <NotAuthorizedBanner reason={actionEligibility.depositBlockReason} />
+  if (reason === ELIGIBILITY_REASON_DISCONNECTED) {
+    return <WalletDisconnectedBanner />
+  }
+  if (reason === ELIGIBILITY_REASON_NOT_AUTHORIZED) {
+    return <NotAuthorizedBanner reason={reason} />
+  }
+  if (reason === ELIGIBILITY_REASON_DEPOSITS_PAUSED) {
+    return <DepositsPausedBanner />
+  }
+  if (reason === ELIGIBILITY_REASON_WITHDRAWALS_PAUSED) {
+    return <WithdrawalsPausedBanner />
   }
 
   return null

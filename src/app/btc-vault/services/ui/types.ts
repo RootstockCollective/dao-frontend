@@ -1,4 +1,4 @@
-import type { RequestType, RequestStatus, EpochStatus } from '../types'
+import type { EpochStatus, RequestStatus, RequestType } from '../types'
 
 // ─── Display Types ───────────────────────────────────────────────────
 
@@ -32,6 +32,12 @@ export interface ActionEligibility {
   canWithdraw: boolean
   depositBlockReason: string
   withdrawBlockReason: string
+}
+
+/** Result of eligibility check: can the user use the vault? */
+export interface EligibilityResult {
+  isEligible: boolean
+  reason: string
 }
 
 export interface ActiveRequestDisplay {

@@ -1,29 +1,36 @@
-import type {
-  VaultMetrics,
-  EpochState,
-  UserPosition,
-  PauseState,
-  EligibilityStatus,
-  VaultRequest,
-  ClaimableInfo,
-  PaginatedResult,
-} from '../types'
-import type {
-  VaultMetricsDisplay,
-  EpochDisplay,
-  UserPositionDisplay,
-  ActionEligibility,
-  ActiveRequestDisplay,
-  PaginatedHistoryDisplay,
-} from './types'
 import { formatEther } from 'viem'
+
+import type {
+  ClaimableInfo,
+  EligibilityStatus,
+  EpochState,
+  PaginatedResult,
+  PauseState,
+  UserPosition,
+  VaultMetrics,
+  VaultRequest,
+} from '../types'
+import {
+  ELIGIBILITY_REASON_DEPOSITS_PAUSED,
+  ELIGIBILITY_REASON_ELIGIBLE,
+  ELIGIBILITY_REASON_NOT_AUTHORIZED,
+  ELIGIBILITY_REASON_WITHDRAWALS_PAUSED,
+} from './eligibilityReasons'
 import {
   formatApyPercent,
+  formatCountdown,
   formatPercent,
   formatTimestamp,
-  formatCountdown,
   shortenTxHash,
 } from './formatters'
+import type {
+  ActiveRequestDisplay,
+  EligibilityResult,
+  EpochDisplay,
+  PaginatedHistoryDisplay,
+  UserPositionDisplay,
+  VaultMetricsDisplay,
+} from './types'
 
 /**
  * Maps raw vault metrics from the adapter into display-ready formatted strings.
@@ -72,38 +79,27 @@ export function toUserPositionDisplay(raw: UserPosition): UserPositionDisplay {
 }
 
 /**
- * Consolidates pause state, eligibility, and active requests into a single action eligibility result.
- * Determines whether the user can deposit/withdraw and provides human-readable block reasons.
+ * Determines whether the user can use the vault (eligible = KYB + deposits/withdrawals not paused).
+ * Step order: not approved → deposits paused → withdrawals paused → eligible.
+ *
  * @param pause - Current pause state for deposits and withdrawals
  * @param eligibility - User's eligibility status (e.g. KYC, allowlist)
- * @param activeRequests - User's currently active vault requests
- * @returns Object with canDeposit/canWithdraw booleans and block reason strings
+ * @returns Object with isEligible and a reason string (use ELIGIBILITY_REASON_* constants for comparison)
  */
-export function toActionEligibility(
-  pause: PauseState,
-  eligibility: EligibilityStatus,
-  activeRequests: VaultRequest[],
-): ActionEligibility {
-  const hasActive = activeRequests.length > 0
-  const canDeposit = pause.deposits === 'active' && eligibility.eligible && !hasActive
-  const canWithdraw = pause.withdrawals === 'active' && !hasActive
-  return {
-    canDeposit,
-    canWithdraw,
-    depositBlockReason: !eligibility.eligible
-      ? eligibility.reason
-      : pause.deposits === 'paused'
-        ? 'Deposits are currently paused'
-        : hasActive
-          ? 'You already have an active request'
-          : '',
-    withdrawBlockReason:
-      pause.withdrawals === 'paused'
-        ? 'Withdrawals are currently paused'
-        : hasActive
-          ? 'You already have an active request'
-          : '',
+export function toActionEligibility(pause: PauseState, eligibility: EligibilityStatus): EligibilityResult {
+  if (!eligibility.eligible) {
+    return {
+      isEligible: false,
+      reason: eligibility.reason || ELIGIBILITY_REASON_NOT_AUTHORIZED,
+    }
   }
+  if (pause.deposits === 'paused') {
+    return { isEligible: false, reason: ELIGIBILITY_REASON_DEPOSITS_PAUSED }
+  }
+  if (pause.withdrawals === 'paused') {
+    return { isEligible: false, reason: ELIGIBILITY_REASON_WITHDRAWALS_PAUSED }
+  }
+  return { isEligible: true, reason: ELIGIBILITY_REASON_ELIGIBLE }
 }
 
 /**
