@@ -1,8 +1,10 @@
 'use client'
 
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
+
 import { BtcVaultBanners } from './BtcVaultBanners'
 import { BtcVaultMetrics } from './components/BtcVaultMetrics'
+import { BtcVaultWalletDisconnectedSection } from './components/BtcVaultWalletDisconnectedSection'
 
 const NAME = 'BTC Vault'
 
@@ -40,6 +42,8 @@ export const BtcVaultPage = () => {
       <section data-testid="btc-vault-history" className="w-full">
         {/* BTC Vault History - implemented in F10 */}
       </section>
+
+      <BtcVaultWalletDisconnectedSection />
     </div>
   )
 }

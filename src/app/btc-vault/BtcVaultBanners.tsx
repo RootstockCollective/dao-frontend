@@ -2,32 +2,15 @@
 
 import { BannerContent } from '@/components/StackableBanner/BannerContent'
 import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
-import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
 
 import { useActionEligibility } from './hooks/useActionEligibility'
 import {
   ELIGIBILITY_REASON_DEPOSITS_PAUSED,
-  ELIGIBILITY_REASON_DISCONNECTED,
   ELIGIBILITY_REASON_ELIGIBLE,
   ELIGIBILITY_REASON_LOADING,
   ELIGIBILITY_REASON_NOT_AUTHORIZED,
   ELIGIBILITY_REASON_WITHDRAWALS_PAUSED,
 } from './services/ui/eligibilityReasons'
-
-const WalletDisconnectedBanner = () => {
-  const { onConnectWalletButtonClick } = useAppKitFlow()
-
-  return (
-    <StackableBanner testId="WalletDisconnectedBanner">
-      <BannerContent
-        title="Wallet Disconnected"
-        description={ELIGIBILITY_REASON_DISCONNECTED}
-        buttonText="Connect Wallet"
-        buttonOnClick={onConnectWalletButtonClick}
-      />
-    </StackableBanner>
-  )
-}
 
 const NotAuthorizedBanner = ({ reason }: { reason: string }) => (
   <StackableBanner testId="NotAuthorizedBanner">
@@ -62,9 +45,6 @@ export const BtcVaultBanners = () => {
     return null
   }
 
-  if (reason === ELIGIBILITY_REASON_DISCONNECTED) {
-    return <WalletDisconnectedBanner />
-  }
   if (reason === ELIGIBILITY_REASON_NOT_AUTHORIZED) {
     return <NotAuthorizedBanner reason={reason} />
   }

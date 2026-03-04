@@ -13,9 +13,13 @@ import { BtcVaultPage } from './BtcVaultPage'
 const mockUseAccount = vi.fn()
 const mockUseActionEligibility = vi.fn()
 
-vi.mock('wagmi', () => ({
-  useAccount: () => mockUseAccount(),
-}))
+vi.mock('wagmi', async importOriginal => {
+  const actual = await importOriginal<typeof import('wagmi')>()
+  return {
+    ...actual,
+    useAccount: () => mockUseAccount(),
+  }
+})
 
 vi.mock('./hooks/useActionEligibility', () => ({
   useActionEligibility: () => mockUseActionEligibility(),
@@ -79,7 +83,7 @@ describe('BtcVaultPage', () => {
     vi.clearAllMocks()
   })
 
-  it('shows WalletDisconnectedBanner when wallet is not connected', () => {
+  it('shows wallet disconnected section at bottom when wallet is not connected', () => {
     mockUseAccount.mockReturnValue({ address: undefined, isConnected: false })
     mockUseActionEligibility.mockReturnValue({
       isEligible: false,
@@ -88,8 +92,24 @@ describe('BtcVaultPage', () => {
     })
     renderWithProviders()
 
-    expect(screen.getByTestId('BTC Vault')).toBeInTheDocument()
-    expect(screen.getByTestId('WalletDisconnectedBanner')).toBeInTheDocument()
+    expect(screen.getByTestId('BtcVaultWalletDisconnectedSection')).toBeInTheDocument()
+    expect(screen.getByText('Your wallet is not connected')).toBeInTheDocument()
+    expect(screen.getByTestId('ConnectWallet')).toBeInTheDocument()
+  })
+
+  it('does not show wallet disconnected section when wallet is connected', () => {
+    mockUseAccount.mockReturnValue({
+      address: '0x123',
+      isConnected: true,
+    })
+    mockUseActionEligibility.mockReturnValue({
+      isEligible: true,
+      reason: ELIGIBILITY_REASON_ELIGIBLE,
+      isLoading: false,
+    })
+    renderWithProviders()
+
+    expect(screen.queryByTestId('BtcVaultWalletDisconnectedSection')).not.toBeInTheDocument()
   })
 
   it('shows NotAuthorizedBanner when connected but not eligible', () => {
@@ -142,8 +162,8 @@ describe('BtcVaultPage', () => {
     expect(screen.getByTestId('btc-vault-actions')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-request-queue')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-history')).toBeInTheDocument()
-    expect(screen.queryByTestId('WalletDisconnectedBanner')).not.toBeInTheDocument()
     expect(screen.queryByTestId('NotAuthorizedBanner')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('BtcVaultWalletDisconnectedSection')).not.toBeInTheDocument()
   })
 
   it('shows DepositsPausedBanner when connected but deposits are paused', () => {
