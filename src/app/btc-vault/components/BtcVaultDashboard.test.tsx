@@ -21,6 +21,10 @@ vi.mock('../hooks/useUserPosition/useUserPosition', () => ({
   useUserPosition: (address: string | undefined) => mockUseUserPosition(address),
 }))
 
+vi.mock('./BtcVaultActions', () => ({
+  BtcVaultActions: () => <div data-testid="BtcVaultActions" />,
+}))
+
 const MOCK_DISPLAY: UserPositionDisplay = {
   rbtcBalanceFormatted: '2',
   vaultTokensFormatted: '5',
@@ -139,6 +143,25 @@ describe('BtcVaultDashboard', () => {
 
     const earningsMetric = screen.getByTestId('Metric-Earnings')
     expect(earningsMetric.querySelector('[data-testid="TooltipIcon"]')).toBeInTheDocument()
+  })
+
+  it('shows nav links when user has vault position', () => {
+    render(<BtcVaultDashboard />, { wrapper: Wrapper })
+
+    expect(screen.getByTestId('NavLinks')).toBeInTheDocument()
+    expect(screen.getByText('View history →')).toBeInTheDocument()
+    expect(screen.getByText('View yield history →')).toBeInTheDocument()
+  })
+
+  it('hides nav links when vaultTokensRaw is 0', () => {
+    const emptyDisplay: UserPositionDisplay = {
+      ...MOCK_DISPLAY,
+      vaultTokensRaw: 0n,
+    }
+    mockUseUserPosition.mockReturnValue({ data: emptyDisplay, isLoading: false })
+    render(<BtcVaultDashboard />, { wrapper: Wrapper })
+
+    expect(screen.queryByTestId('NavLinks')).not.toBeInTheDocument()
   })
 
   it('returns null when wallet is disconnected', () => {

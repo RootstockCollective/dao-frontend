@@ -8,12 +8,13 @@ import { Header, Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 
 import { useUserPosition } from '../hooks/useUserPosition/useUserPosition'
+import { BtcVaultActions } from './BtcVaultActions'
 
 const LoadingValue = () => <Span className="animate-pulse text-text-60">0</Span>
 
 /**
  * Investor dashboard showing 7 position metrics in two rows.
- * Returns null when wallet is disconnected — the F4 section renders empty.
+ * Returns null when wallet is disconnected so the page section renders empty.
  */
 export const BtcVaultDashboard = () => {
   const { address, isConnected } = useAccount()
@@ -88,6 +89,21 @@ export const BtcVaultDashboard = () => {
           />
         </div>
       </MetricsContainer>
+
+      {data && data.vaultTokensRaw > 0n && (
+        <div className="flex justify-between w-full" data-testid="NavLinks">
+          {/* TODO(DAO-XXXX): replace href with route to transaction history page */}
+          <a href="#" className="text-sm font-medium underline underline-offset-2">
+            <Span variant="body-s">View history →</Span>
+          </a>
+          {/* TODO(DAO-XXXX): replace href with route to yield history page */}
+          <a href="#" className="text-sm font-medium underline underline-offset-2">
+            <Span variant="body-s">View yield history →</Span>
+          </a>
+        </div>
+      )}
+
+      <BtcVaultActions address={address} />
     </section>
   )
 }
