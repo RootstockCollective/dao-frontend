@@ -100,6 +100,47 @@ describe('BtcVaultDashboard', () => {
     })
   })
 
+  it('shows zeros for empty position — no dashes', () => {
+    const emptyDisplay: UserPositionDisplay = {
+      rbtcBalanceFormatted: '0',
+      vaultTokensFormatted: '0',
+      positionValueFormatted: '0',
+      percentOfVaultFormatted: '0.00%',
+      vaultTokensRaw: 0n,
+      rbtcBalanceRaw: 0n,
+      totalDepositedPrincipalFormatted: '0',
+      totalDepositedPrincipalRaw: 0n,
+      currentEarningsFormatted: '0',
+      totalBalanceFormatted: '0',
+      totalBalanceRaw: 0n,
+      yieldPercentToDateFormatted: '0.00%',
+      fiatWalletBalance: '$0.00 USD',
+      fiatVaultShares: '$0.00 USD',
+      fiatPrincipalDeposited: '$0.00 USD',
+      fiatTotalBalance: '$0.00 USD',
+    }
+    mockUseUserPosition.mockReturnValue({ data: emptyDisplay, isLoading: false })
+    render(<BtcVaultDashboard />, { wrapper: Wrapper })
+
+    expect(screen.getByTestId('Metric-VaultShares')).toHaveTextContent('0')
+    expect(screen.getByTestId('Metric-ShareOfVault')).toHaveTextContent('0.00%')
+    expect(screen.getByTestId('Metric-Principal')).toHaveTextContent('0')
+    expect(screen.getByTestId('Metric-Earnings')).toHaveTextContent('0')
+    expect(screen.getByTestId('Metric-TotalBalance')).toHaveTextContent('0')
+    expect(screen.getByTestId('Metric-YieldPercent')).toHaveTextContent('0.00%')
+
+    const dashboard = screen.getByTestId('btc-vault-dashboard')
+    expect(dashboard.textContent).not.toContain('—')
+    expect(dashboard.textContent).not.toContain('- ')
+  })
+
+  it('renders current earnings tooltip content', () => {
+    render(<BtcVaultDashboard />, { wrapper: Wrapper })
+
+    const earningsMetric = screen.getByTestId('Metric-Earnings')
+    expect(earningsMetric.querySelector('[data-testid="TooltipIcon"]')).toBeInTheDocument()
+  })
+
   it('returns null when wallet is disconnected', () => {
     mockUseAccount.mockReturnValue({ address: undefined, isConnected: false })
     const { container } = render(<BtcVaultDashboard />)
