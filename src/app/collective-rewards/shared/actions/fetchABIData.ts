@@ -1,4 +1,3 @@
-'use server'
 import { gql as apolloGQL } from '@apollo/client'
 import { cacheLife, cacheTag } from 'next/cache'
 
@@ -70,6 +69,7 @@ async function fetchABIData() {
   }
 }
 
+/** Fetches builders and reward cycles from the Collective Rewards subgraph (cached). */
 export async function getCachedABIData() {
   'use cache'
   cacheLife({ revalidate: CACHE_REVALIDATE_SECONDS })

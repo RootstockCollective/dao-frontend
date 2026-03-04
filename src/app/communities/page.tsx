@@ -1,21 +1,23 @@
-import { SectionContainer } from './components/SectionContainer'
-import { ResponsiveCommunityItemHOC } from './components/ResponsiveCommunityItemHOC'
+import { cacheLife } from 'next/cache'
+
 import {
   betaBuilders,
   earlyAdoptersCommunity,
   ogFounders,
   ogFoundersEcosystemPartners,
   ogFoundersExternalContributors,
-  rootstockHacktivator,
   rootlingsS1,
+  rootstockHacktivator,
   vanguardCommunity,
 } from '@/app/communities/communityUtils'
 import { HeroCommunitiesComponent } from '@/app/communities/components'
-import { cacheLife } from 'next/cache'
+
+import { ResponsiveCommunityItemHOC } from './components/ResponsiveCommunityItemHOC'
+import { SectionContainer } from './components/SectionContainer'
 
 /**
  * Server Component: Cached with 'max' profile — regenerated only on deployments.
- * Client-side interactivity is managed by injected client components
+ * Client-side interactivity is managed by injected client components.
  */
 export default async function Communities() {
   'use cache'
