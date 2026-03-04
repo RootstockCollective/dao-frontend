@@ -1,6 +1,19 @@
 name: Build dApp
 
-on: pull_request
+# --- Cache scoping ---
+# GitHub Actions caches are scoped by branch. A workflow run can restore
+# caches from its own branch AND the default branch (main), but NOT from
+# other feature branches. Caches created on a feature branch are only
+# available to that branch. This is why we run on push-to-main: it seeds
+# caches on the default branch so every new PR branch starts with a warm
+# cache instead of a cold miss.
+on:
+  pull_request:
+  # Merges to main populate caches so new PR branches start warm instead of cold.
+  push:
+    branches: [main]
+  # Allows manually re-seeding caches from the Actions tab (e.g. after a deps update).
+  workflow_dispatch:
 
 # Declare default permissions as read only.
 permissions: read-all
@@ -18,12 +31,35 @@ jobs:
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 #v4.4.0
         with:
           node-version: 24
-          cache: 'npm'
+
+      # Caches the full node_modules directory keyed on package-lock.json.
+      # On hit, npm ci is skipped entirely. The post-job hook saves the
+      # cache after all steps complete (only when the exact key was a miss).
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 #v5.0.3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
 
       - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         env:
           CYPRESS_INSTALL_BINARY: '0'
         run: npm ci
+
+      # Caches .next/cache (webpack compilation artifacts) for incremental builds.
+      # restore-keys allow falling back to a previous build's cache even when
+      # source files change, so webpack only recompiles what actually changed.
+      # The updated cache is saved in the post-job hook after the build step.
+      - name: Cache .next/cache
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 #v5.0.3
+        with:
+          path: .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('package-lock.json') }}-${{ hashFiles('src/**/*.js', 'src/**/*.jsx', 'src/**/*.ts', 'src/**/*.tsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('package-lock.json') }}-
+            ${{ runner.os }}-nextjs-
 
       - name: Build
         env:
