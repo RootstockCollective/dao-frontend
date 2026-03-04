@@ -5,7 +5,8 @@ import { useAccount } from 'wagmi'
 
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { HistoryIcon } from '@/components/Icons'
-import { Header, Span } from '@/components/Typography'
+import { Span } from '@/components/Typography'
+import { SectionContainer } from '@/app/communities/components/SectionContainer'
 import { RBTC } from '@/lib/constants'
 
 import { useUserPosition } from '../hooks/useUserPosition/useUserPosition'
@@ -31,15 +32,8 @@ export const BtcVaultDashboard = () => {
   if (!address || !isConnected) return null
 
   return (
-    <section
-      className="flex flex-col gap-6 w-full rounded-sm bg-v3-bg-accent-80 px-4 py-6 md:p-6"
-      data-testid="btc-vault-dashboard"
-    >
-      <Header variant="h2" data-testid="btc-vault-my-metrics-title">
-        MY METRICS
-      </Header>
-
-      <div className="flex flex-col gap-10">
+    <SectionContainer title="MY METRICS">
+      <div className="flex flex-col gap-10" data-testid="btc-vault-dashboard">
         {/* Row 1: Wallet, Vault shares, Share of vault */}
         <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:gap-x-6 md:gap-y-6 w-full">
           <BalanceInfo
@@ -122,6 +116,6 @@ export const BtcVaultDashboard = () => {
       )}
 
       <BtcVaultActions address={address} />
-    </section>
+    </SectionContainer>
   )
 }
