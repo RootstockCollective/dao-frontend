@@ -5,7 +5,7 @@ import Link from 'next/link'
 import type { ComponentPropsWithoutRef } from 'react'
 
 import { ProgressBar } from '@/components/ProgressBarNew'
-import { TokenImage } from '@/components/TokenImage/TokenImage'
+import { TokenImage } from '@/components/TokenImage'
 import { Label, Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
