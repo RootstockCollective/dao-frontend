@@ -21,6 +21,7 @@ import {
   formatApyPercent,
   formatPercent,
   formatTimestamp,
+  formatDateShort,
   formatCountdown,
   shortenTxHash,
 } from './formatters'
@@ -116,6 +117,9 @@ export function toActiveRequestDisplay(
   req: VaultRequest,
   claimableInfo: ClaimableInfo | null,
 ): ActiveRequestDisplay {
+  const lastUpdated = req.timestamps.updated ?? req.timestamps.created
+  const sharesFormatted = req.type === 'withdrawal' ? formatEther(req.amount) : '—'
+  const usdEquivalentFormatted = null // Mock/real USD in a later story
   return {
     id: req.id,
     type: req.type,
@@ -128,6 +132,9 @@ export function toActiveRequestDisplay(
     finalizeId: req.type === 'deposit' ? req.epochId : req.batchRedeemId,
     epochId: req.epochId,
     batchRedeemId: req.batchRedeemId,
+    lastUpdatedFormatted: formatDateShort(lastUpdated),
+    sharesFormatted,
+    usdEquivalentFormatted,
   }
 }
 

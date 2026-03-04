@@ -122,6 +122,10 @@ describe('toActiveRequestDisplay', () => {
     expect(result.lockedSharePriceFormatted).toBeNull()
     expect(result.finalizeId).toBe('1')
     expect(result.amountFormatted).toBe('0.5')
+    expect(result.lastUpdatedFormatted).toBeDefined()
+    expect(typeof result.lastUpdatedFormatted).toBe('string')
+    expect(result.sharesFormatted).toBe('—')
+    expect(result.usdEquivalentFormatted).toBeNull()
   })
 
   it('maps request with claimable info', () => {
@@ -140,6 +144,63 @@ describe('toActiveRequestDisplay', () => {
     expect(result.claimable).toBe(true)
     expect(result.lockedSharePriceFormatted).toBe('1.02/share')
     expect(result.finalizeId).toBe('batch-1')
+    expect(result.sharesFormatted).toBe('1')
+    expect(result.usdEquivalentFormatted).toBeNull()
+  })
+
+  it('includes lastUpdatedFormatted from updated when present, else created', () => {
+    const withUpdated = {
+      id: 'req-3',
+      type: 'deposit' as const,
+      amount: 1n,
+      status: 'pending' as const,
+      epochId: '1',
+      batchRedeemId: null,
+      timestamps: { created: 1700000000, updated: 1700086400 },
+      txHashes: {},
+    }
+    const resultUpdated = toActiveRequestDisplay(withUpdated, null)
+    expect(resultUpdated.lastUpdatedFormatted).toContain('2023')
+
+    const withCreatedOnly = {
+      id: 'req-4',
+      type: 'deposit' as const,
+      amount: 1n,
+      status: 'pending' as const,
+      epochId: '1',
+      batchRedeemId: null,
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    const resultCreated = toActiveRequestDisplay(withCreatedOnly, null)
+    expect(resultCreated.lastUpdatedFormatted).toBeDefined()
+    expect(resultCreated.lastUpdatedFormatted.length).toBeGreaterThan(0)
+  })
+
+  it('withdrawal has sharesFormatted from amount; deposit has "—"', () => {
+    const depositReq = {
+      id: 'd1',
+      type: 'deposit' as const,
+      amount: 2_000_000_000_000_000_000n,
+      status: 'pending' as const,
+      epochId: '1',
+      batchRedeemId: null,
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    expect(toActiveRequestDisplay(depositReq, null).sharesFormatted).toBe('—')
+
+    const withdrawalReq = {
+      id: 'w1',
+      type: 'withdrawal' as const,
+      amount: 3_500_000_000_000_000_000n,
+      status: 'pending' as const,
+      epochId: null,
+      batchRedeemId: null,
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    expect(toActiveRequestDisplay(withdrawalReq, null).sharesFormatted).toBe('3.5')
   })
 })
 

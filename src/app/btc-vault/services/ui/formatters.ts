@@ -35,6 +35,19 @@ export function formatTimestamp(unix: number): string {
 }
 
 /**
+ * Formats a Unix timestamp (seconds) into a date-only string for "Last updated on" display.
+ * @param unix - Unix timestamp in seconds
+ * @returns Formatted date string (e.g. "21 May 2025")
+ */
+export function formatDateShort(unix: number): string {
+  return new Intl.DateTimeFormat('en-US', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(new Date(unix * 1000))
+}
+
+/**
  * Shortens a transaction hash for display by keeping the first 6 and last 4 characters.
  * @param hash - Full transaction hash string
  * @returns Shortened hash (e.g. "0xabc1...def4") or original if too short
