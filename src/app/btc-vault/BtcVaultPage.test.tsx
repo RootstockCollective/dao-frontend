@@ -1,6 +1,13 @@
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+  ELIGIBILITY_REASON_DEPOSITS_PAUSED,
+  ELIGIBILITY_REASON_DISCONNECTED,
+  ELIGIBILITY_REASON_ELIGIBLE,
+  ELIGIBILITY_REASON_LOADING,
+  ELIGIBILITY_REASON_NOT_AUTHORIZED,
+} from './services/ui/eligibilityReasons'
 import { BtcVaultPage } from './BtcVaultPage'
 
 const mockUseAccount = vi.fn()
@@ -11,7 +18,7 @@ vi.mock('wagmi', () => ({
 }))
 
 vi.mock('./hooks/useActionEligibility', () => ({
-  useActionEligibility: (address: string | undefined) => mockUseActionEligibility(address),
+  useActionEligibility: () => mockUseActionEligibility(),
 }))
 
 vi.mock('@/shared/walletConnection/connection/useAppKitFlow', () => ({
@@ -60,7 +67,11 @@ const renderWithProviders = (ui: React.ReactElement = <BtcVaultPage />) =>
 describe('BtcVaultPage', () => {
   beforeEach(() => {
     mockUseAccount.mockReturnValue({ address: undefined, isConnected: false })
-    mockUseActionEligibility.mockReturnValue({ data: undefined })
+    mockUseActionEligibility.mockReturnValue({
+      isEligible: false,
+      reason: ELIGIBILITY_REASON_LOADING,
+      isLoading: false,
+    })
   })
 
   afterEach(() => {
@@ -70,6 +81,11 @@ describe('BtcVaultPage', () => {
 
   it('shows WalletDisconnectedBanner when wallet is not connected', () => {
     mockUseAccount.mockReturnValue({ address: undefined, isConnected: false })
+    mockUseActionEligibility.mockReturnValue({
+      isEligible: false,
+      reason: ELIGIBILITY_REASON_DISCONNECTED,
+      isLoading: false,
+    })
     renderWithProviders()
 
     expect(screen.getByTestId('BTC Vault')).toBeInTheDocument()
@@ -82,18 +98,15 @@ describe('BtcVaultPage', () => {
       isConnected: true,
     })
     mockUseActionEligibility.mockReturnValue({
-      data: {
-        canDeposit: false,
-        canWithdraw: false,
-        depositBlockReason: 'KYC required',
-        withdrawBlockReason: '',
-      },
+      isEligible: false,
+      reason: ELIGIBILITY_REASON_NOT_AUTHORIZED,
+      isLoading: false,
     })
     renderWithProviders()
 
     expect(screen.getByTestId('BTC Vault')).toBeInTheDocument()
     expect(screen.getByTestId('NotAuthorizedBanner')).toBeInTheDocument()
-    expect(screen.getByText('KYC required')).toBeInTheDocument()
+    expect(screen.getByText(ELIGIBILITY_REASON_NOT_AUTHORIZED)).toBeInTheDocument()
   })
 
   it('renders Vault Metrics section with section title', () => {
@@ -102,12 +115,9 @@ describe('BtcVaultPage', () => {
       isConnected: true,
     })
     mockUseActionEligibility.mockReturnValue({
-      data: {
-        canDeposit: true,
-        canWithdraw: true,
-        depositBlockReason: '',
-        withdrawBlockReason: '',
-      },
+      isEligible: true,
+      reason: ELIGIBILITY_REASON_ELIGIBLE,
+      isLoading: false,
     })
     renderWithProviders()
     expect(screen.getByTestId('btc-vault-metrics')).toBeInTheDocument()
@@ -120,12 +130,9 @@ describe('BtcVaultPage', () => {
       isConnected: true,
     })
     mockUseActionEligibility.mockReturnValue({
-      data: {
-        canDeposit: true,
-        canWithdraw: true,
-        depositBlockReason: '',
-        withdrawBlockReason: '',
-      },
+      isEligible: true,
+      reason: ELIGIBILITY_REASON_ELIGIBLE,
+      isLoading: false,
     })
     renderWithProviders()
 
@@ -139,37 +146,32 @@ describe('BtcVaultPage', () => {
     expect(screen.queryByTestId('NotAuthorizedBanner')).not.toBeInTheDocument()
   })
 
-  it('shows main content when connected but blocked by pause (not eligibility)', () => {
+  it('shows DepositsPausedBanner when connected but deposits are paused', () => {
     mockUseAccount.mockReturnValue({
       address: '0x123',
       isConnected: true,
     })
     mockUseActionEligibility.mockReturnValue({
-      data: {
-        canDeposit: false,
-        canWithdraw: true,
-        depositBlockReason: 'Deposits are currently paused',
-        withdrawBlockReason: '',
-      },
+      isEligible: false,
+      reason: ELIGIBILITY_REASON_DEPOSITS_PAUSED,
+      isLoading: false,
     })
     renderWithProviders()
 
     expect(screen.getByTestId('BTC Vault')).toBeInTheDocument()
+    expect(screen.getByTestId('DepositsPausedBanner')).toBeInTheDocument()
     expect(screen.queryByTestId('NotAuthorizedBanner')).not.toBeInTheDocument()
   })
 
-  it('shows main content when connected but blocked by active request (not eligibility)', () => {
+  it('shows no eligibility banner when connected with active request (eligible, not paused)', () => {
     mockUseAccount.mockReturnValue({
       address: '0x123',
       isConnected: true,
     })
     mockUseActionEligibility.mockReturnValue({
-      data: {
-        canDeposit: false,
-        canWithdraw: false,
-        depositBlockReason: 'You already have an active request',
-        withdrawBlockReason: 'You already have an active request',
-      },
+      isEligible: true,
+      reason: ELIGIBILITY_REASON_ELIGIBLE,
+      isLoading: false,
     })
     renderWithProviders()
 

@@ -10,7 +10,18 @@ vi.mock('wagmi', () => ({
 }))
 
 vi.mock('./hooks/useActionEligibility', () => ({
-  useActionEligibility: () => ({ data: undefined }),
+  useActionEligibility: () => ({
+    isEligible: false,
+    reason: 'Loading eligibility…',
+    isLoading: false,
+  }),
+  ELIGIBILITY_REASON_DISCONNECTED: 'Wallet disconnected — reconnect to continue',
+  ELIGIBILITY_REASON_NOT_AUTHORIZED:
+    'This wallet is not authorized to interact with the BTC Vault. Contact your administrator.',
+  ELIGIBILITY_REASON_DEPOSITS_PAUSED: 'Deposits are currently paused.',
+  ELIGIBILITY_REASON_WITHDRAWALS_PAUSED: 'Withdrawals are currently paused.',
+  ELIGIBILITY_REASON_ELIGIBLE: '',
+  ELIGIBILITY_REASON_LOADING: 'Loading eligibility…',
 }))
 
 vi.mock('@/shared/walletConnection/connection/useAppKitFlow', () => ({
