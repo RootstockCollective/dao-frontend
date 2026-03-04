@@ -1,7 +1,12 @@
 name: Build dApp
-# Cache test run
 
-on: pull_request
+on:
+  pull_request:
+  # Merges to main populate caches so new PR branches start warm instead of cold.
+  push:
+    branches: [main]
+  # Allows manually re-seeding caches from the Actions tab (e.g. after a deps update).
+  workflow_dispatch:
 
 # Declare default permissions as read only.
 permissions: read-all
@@ -20,6 +25,9 @@ jobs:
         with:
           node-version: 24
 
+      # Caches the full node_modules directory keyed on package-lock.json.
+      # On hit, npm ci is skipped entirely. The post-job hook saves the
+      # cache after all steps complete (only when the exact key was a miss).
       - name: Cache node_modules
         id: cache-node-modules
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 #v5.0.3
@@ -33,6 +41,10 @@ jobs:
           CYPRESS_INSTALL_BINARY: '0'
         run: npm ci
 
+      # Caches .next/cache (webpack compilation artifacts) for incremental builds.
+      # restore-keys allow falling back to a previous build's cache even when
+      # source files change, so webpack only recompiles what actually changed.
+      # The updated cache is saved in the post-job hook after the build step.
       - name: Cache .next/cache
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 #v5.0.3
         with:
