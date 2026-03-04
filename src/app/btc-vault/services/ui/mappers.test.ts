@@ -117,7 +117,7 @@ describe('toActiveRequestDisplay', () => {
       timestamps: { created: 1700000000 },
       txHashes: { submit: '0xabc' },
     }
-    const result = toActiveRequestDisplay(req, null)
+    const result = toActiveRequestDisplay(req, null, 50000)
     expect(result.claimable).toBe(false)
     expect(result.lockedSharePriceFormatted).toBeNull()
     expect(result.finalizeId).toBe('1')
@@ -125,7 +125,7 @@ describe('toActiveRequestDisplay', () => {
     expect(result.lastUpdatedFormatted).toBeDefined()
     expect(typeof result.lastUpdatedFormatted).toBe('string')
     expect(result.sharesFormatted).toBe('—')
-    expect(result.usdEquivalentFormatted).toBe('$12,345 USD')
+    expect(result.usdEquivalentFormatted).toBe('$25,000.00 USD')
   })
 
   it('maps request with claimable info', () => {
@@ -140,12 +140,12 @@ describe('toActiveRequestDisplay', () => {
       txHashes: { submit: '0xdef' },
     }
     const claimable = { claimable: true, lockedSharePrice: 1_020_000_000_000_000_000n }
-    const result = toActiveRequestDisplay(req, claimable)
+    const result = toActiveRequestDisplay(req, claimable, 50000)
     expect(result.claimable).toBe(true)
     expect(result.lockedSharePriceFormatted).toBe('1.02/share')
     expect(result.finalizeId).toBe('batch-1')
     expect(result.sharesFormatted).toBe('1')
-    expect(result.usdEquivalentFormatted).toBe('$12,345 USD')
+    expect(result.usdEquivalentFormatted).toBe('$50,000.00 USD')
   })
 
   it('includes lastUpdatedFormatted from updated when present, else created', () => {
@@ -159,7 +159,7 @@ describe('toActiveRequestDisplay', () => {
       timestamps: { created: 1700000000, updated: 1700086400 },
       txHashes: {},
     }
-    const resultUpdated = toActiveRequestDisplay(withUpdated, null)
+    const resultUpdated = toActiveRequestDisplay(withUpdated, null, 0)
     expect(resultUpdated.lastUpdatedFormatted).toContain('2023')
 
     const withCreatedOnly = {
@@ -172,7 +172,7 @@ describe('toActiveRequestDisplay', () => {
       timestamps: { created: 1700000000 },
       txHashes: {},
     }
-    const resultCreated = toActiveRequestDisplay(withCreatedOnly, null)
+    const resultCreated = toActiveRequestDisplay(withCreatedOnly, null, 0)
     expect(resultCreated.lastUpdatedFormatted).toBeDefined()
     expect(resultCreated.lastUpdatedFormatted.length).toBeGreaterThan(0)
   })
@@ -188,7 +188,7 @@ describe('toActiveRequestDisplay', () => {
       timestamps: { created: 1700000000 },
       txHashes: {},
     }
-    expect(toActiveRequestDisplay(depositReq, null).sharesFormatted).toBe('—')
+    expect(toActiveRequestDisplay(depositReq, null, 0).sharesFormatted).toBe('—')
 
     const withdrawalReq = {
       id: 'w1',
@@ -200,7 +200,7 @@ describe('toActiveRequestDisplay', () => {
       timestamps: { created: 1700000000 },
       txHashes: {},
     }
-    expect(toActiveRequestDisplay(withdrawalReq, null).sharesFormatted).toBe('3.5')
+    expect(toActiveRequestDisplay(withdrawalReq, null, 0).sharesFormatted).toBe('3.5')
   })
 })
 

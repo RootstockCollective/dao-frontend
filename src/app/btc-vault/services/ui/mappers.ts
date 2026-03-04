@@ -1,5 +1,8 @@
 import { formatEther } from 'viem'
 
+import Big from '@/lib/big'
+import { formatCurrencyWithLabel } from '@/lib/utils'
+
 import type {
   ClaimableInfo,
   EligibilityStatus,
@@ -112,15 +115,19 @@ export function toActionEligibility(
  * Maps a vault request and optional claimable info into a display-ready active request object.
  * @param req - Raw vault request from the adapter
  * @param claimableInfo - Claimable status info, or null if the request is not in claimable state
+ * @param rbtcPrice - Current rBTC price in USD (0 if unavailable)
  * @returns Display object with formatted amounts, dates, and claimable details
  */
 export function toActiveRequestDisplay(
   req: VaultRequest,
   claimableInfo: ClaimableInfo | null,
+  rbtcPrice: number,
 ): ActiveRequestDisplay {
   const lastUpdated = req.timestamps.updated ?? req.timestamps.created
   const sharesFormatted = req.type === 'withdrawal' ? formatEther(req.amount) : '—'
-  const usdEquivalentFormatted = '$12,345 USD' // TODO: replace with real price conversion
+  const amountNumber = Number(formatEther(req.amount))
+  const usdEquivalentFormatted =
+    rbtcPrice > 0 ? formatCurrencyWithLabel(Big(amountNumber).mul(rbtcPrice)) : null
   return {
     id: req.id,
     type: req.type,
