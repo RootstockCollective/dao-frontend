@@ -57,12 +57,14 @@ describe('BtcVaultDashboard', () => {
 
   it('renders MY METRICS title when connected', () => {
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
-    expect(screen.getByTestId('btc-vault-my-metrics-title')).toHaveTextContent('MY METRICS')
+    expect(screen.getByText('MY METRICS')).toBeInTheDocument()
   })
 
-  it('applies accent background to the entire dashboard section', () => {
+  it('applies background to the entire dashboard section via SectionContainer', () => {
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
-    expect(screen.getByTestId('btc-vault-dashboard')).toHaveClass('bg-v3-bg-accent-80')
+    const dashboard = screen.getByTestId('btc-vault-dashboard')
+    const sectionContainer = dashboard.closest('.bg-bg-80')
+    expect(sectionContainer).toBeInTheDocument()
   })
 
   it('renders 7 BalanceInfo metrics when connected with data', () => {
