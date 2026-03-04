@@ -33,6 +33,10 @@ vi.mock('./components/BtcVaultDashboard', () => ({
   BtcVaultDashboard: () => null,
 }))
 
+vi.mock('./components/BtcVaultMetrics', () => ({
+  BtcVaultMetrics: () => null,
+}))
+
 describe('BtcVault page', () => {
   it('wraps BtcVaultPage with withServerFeatureFlag using btc_vault feature and redirect', async () => {
     const { withServerFeatureFlag } = await import('@/shared/context/FeatureFlag')

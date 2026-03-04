@@ -1,8 +1,10 @@
 'use client'
 
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
+
 import { BtcVaultBanners } from './BtcVaultBanners'
 import { BtcVaultDashboard } from './components/BtcVaultDashboard'
+import { BtcVaultMetrics } from './components/BtcVaultMetrics'
 
 const NAME = 'BTC Vault'
 
