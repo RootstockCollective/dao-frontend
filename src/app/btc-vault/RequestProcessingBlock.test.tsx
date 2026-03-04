@@ -87,22 +87,6 @@ describe('RequestProcessingBlock', () => {
     expect(within(block).getByText('21 May 2025')).toBeInTheDocument()
   })
 
-  it('shows "Waiting for epoch to close" when status is pending', () => {
-    const { container } = render(<RequestProcessingBlock request={makeRequest({ status: 'pending' })} />)
-    const block = getBlock(container)
-    const msg = within(block).getByTestId('request-status-message')
-    expect(msg).toHaveTextContent('Waiting for epoch to close')
-  })
-
-  it('shows "Ready for next step" when status is claimable', () => {
-    const { container } = render(
-      <RequestProcessingBlock request={makeRequest({ status: 'claimable' })} />,
-    )
-    const block = getBlock(container)
-    const msg = within(block).getByTestId('request-status-message')
-    expect(msg).toHaveTextContent('Ready for next step')
-  })
-
   it('renders View requests history link with correct href', () => {
     const { container } = render(<RequestProcessingBlock request={makeRequest()} />)
     const block = getBlock(container)

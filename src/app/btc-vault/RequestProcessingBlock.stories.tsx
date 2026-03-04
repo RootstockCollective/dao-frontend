@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
+import { SectionContainer } from '@/app/communities/components/SectionContainer'
 import { RequestProcessingBlock } from './RequestProcessingBlock'
 import type { ActiveRequestDisplay } from './services/ui/types'
 
@@ -6,8 +7,19 @@ const meta = {
   title: 'BTC Vault/RequestProcessingBlock',
   component: RequestProcessingBlock,
   parameters: {
-    layout: 'centered',
+    layout: 'fullscreen',
   },
+  decorators: [
+    Story => (
+      <div className="w-full">
+        <section data-testid="btc-vault-request-queue" className="w-full">
+          <SectionContainer title="ACTIVE REQUEST" headerVariant="h3">
+            <Story />
+          </SectionContainer>
+        </section>
+      </div>
+    ),
+  ],
 } satisfies Meta<typeof RequestProcessingBlock>
 
 export default meta
@@ -28,7 +40,7 @@ function makeRequest(overrides: Partial<ActiveRequestDisplay> = {}): ActiveReque
     batchRedeemId: null,
     lastUpdatedFormatted: '14 Nov 2023',
     sharesFormatted: '—',
-    usdEquivalentFormatted: null,
+    usdEquivalentFormatted: '$12,345 USD',
     ...overrides,
   }
 }
@@ -78,7 +90,7 @@ export const WithUsdEquivalent: Story = {
       status: 'claimable',
       amountFormatted: '1.5',
       sharesFormatted: '1.5',
-      usdEquivalentFormatted: '$42,000',
+      usdEquivalentFormatted: '$42,000 USD',
       lastUpdatedFormatted: '21 May 2025',
     }),
   },
@@ -95,3 +107,4 @@ export const LargeAmount: Story = {
     }),
   },
 }
+
