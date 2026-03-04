@@ -29,8 +29,8 @@ vi.mock('@/app/backing/components/DecorativeSquares', () => ({
   DecorativeSquares: () => null,
 }))
 
-vi.mock('./components/BtcVaultMetrics', () => ({
-  BtcVaultMetrics: () => null,
+vi.mock('./components/BtcVaultDashboard', () => ({
+  BtcVaultDashboard: () => null,
 }))
 
 describe('BtcVault page', () => {

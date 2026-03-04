@@ -2,7 +2,7 @@
 
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
 import { BtcVaultBanners } from './BtcVaultBanners'
-import { BtcVaultMetrics } from './components/BtcVaultMetrics'
+import { BtcVaultDashboard } from './components/BtcVaultDashboard'
 
 const NAME = 'BTC Vault'
 
@@ -22,9 +22,7 @@ export const BtcVaultPage = () => {
       </section>
 
       {/* Dashboard Zone - F4 */}
-      <section data-testid="btc-vault-dashboard" className="w-full">
-        {/* BTC Vault Dashboard - implemented in F4 */}
-      </section>
+      <BtcVaultDashboard />
 
       {/* Actions Zone - F5/F6 */}
       <section data-testid="btc-vault-actions" className="w-full">

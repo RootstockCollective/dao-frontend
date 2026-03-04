@@ -30,32 +30,9 @@ vi.mock('@/app/backing/components/DecorativeSquares', () => ({
   DecorativeSquares: () => null,
 }))
 
-vi.mock('./hooks/useVaultMetrics', () => ({
-  useVaultMetrics: () => ({
-    data: {
-      tvlFormatted: '50',
-      apyFormatted: '8.50',
-      navFormatted: '1.02',
-      timestamp: 1709000000,
-    },
-    isLoading: false,
-  }),
+vi.mock('./components/BtcVaultDashboard', () => ({
+  BtcVaultDashboard: () => <section data-testid="btc-vault-dashboard" />,
 }))
-
-vi.mock('./hooks/useEpochState', () => ({
-  useEpochState: () => ({
-    data: {
-      epochId: '1',
-      status: 'open',
-      statusSummary: 'Closes in 5m',
-      isAcceptingRequests: true,
-    },
-    isLoading: false,
-  }),
-}))
-
-const renderWithProviders = (ui: React.ReactElement = <BtcVaultPage />) =>
-  render(<TooltipProvider>{ui}</TooltipProvider>)
 
 describe('BtcVaultPage', () => {
   beforeEach(() => {
