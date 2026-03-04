@@ -1,17 +1,19 @@
+import { useRouter } from 'next/navigation'
+import { ReactNode, Suspense } from 'react'
+
 import { BackersPercentage } from '@/app/builders/components/Table/Cell/BackersPercentageCell/BackersPercentageCell'
 import { BackingCell } from '@/app/builders/components/Table/Cell/BackingCell/BackingCell'
 import { BuilderName } from '@/app/builders/components/Table/Cell/BuilderNameCell/BuilderName'
 import { RewardsCell } from '@/app/builders/components/Table/Cell/RewardsCell/RewardsCell'
-import { EmptyPlaceholder } from '@/components/Table/components'
 import { Button } from '@/components/Button'
 import { Collapsible } from '@/components/Collapsible'
 import { Divider } from '@/components/Divider'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { CogIcon } from '@/components/Icons/v3design/CogIcon'
+import { EmptyPlaceholder } from '@/components/Table/components'
 import { Span } from '@/components/Typography'
 import { Row } from '@/shared/context/TableContext/types'
-import { useRouter } from 'next/navigation'
-import { ReactNode, Suspense } from 'react'
+
 import { BackerRewardsCellDataMap, ColumnId } from './BackerRewardsTable.config'
 
 const RewardDetailsMetric = ({ children }: { children: ReactNode }) => {
@@ -40,17 +42,17 @@ const RewardDetailsItem = ({
               />
             </div>
 
-            <Collapsible.Toggle className="w-auto" />
+            <Collapsible.Toggle className="w-auto" iconClassName="text-v3-bg-accent-0" />
           </div>
           <div className="flex align-start align-self-stretch gap-6">
             <RewardDetailsMetric>
-              <Span variant="body-xs" className="text-v3-text-40">
+              <Span variant="body-xs" className="text-v3-bg-accent-0">
                 Unclaimed
               </Span>
               <RewardsCell className="justify-start" {...unclaimed} emptyPlaceholder={<EmptyPlaceholder />} />
             </RewardDetailsMetric>
             <RewardDetailsMetric>
-              <Span variant="h5" className="text-v3-text-40">
+              <Span variant="body-xs" className="text-v3-bg-accent-0">
                 Estimated this cycle
               </Span>
               <RewardsCell className="justify-start" {...estimated} emptyPlaceholder={<EmptyPlaceholder />} />
@@ -59,13 +61,13 @@ const RewardDetailsItem = ({
           <Collapsible.Content className="flex flex-col gap-4">
             <div className="flex align-start align-self-stretch gap-6">
               <RewardDetailsMetric>
-                <Span variant="h5" className="text-v3-text-40">
+                <Span variant="body-xs" className="text-v3-bg-accent-0">
                   Total - lifetime
                 </Span>
                 <RewardsCell className="justify-start" {...total} emptyPlaceholder={<EmptyPlaceholder />} />
               </RewardDetailsMetric>
               <RewardDetailsMetric>
-                <Span variant="h5" className="text-v3-text-40">
+                <Span variant="body-xs" className="text-v3-bg-accent-0">
                   Backing
                 </Span>
                 <BackingCell className="justify-start" {...backing} emptyPlaceholder={<EmptyPlaceholder />} />
@@ -73,7 +75,7 @@ const RewardDetailsItem = ({
             </div>
             <div className="flex align-start align-self-stretch gap-6">
               <RewardDetailsMetric>
-                <Span variant="h5" className="text-v3-text-40">
+                <Span variant="body-xs" className="text-v3-bg-accent-0">
                   Backer rewards %
                 </Span>
                 <BackersPercentage className="self-start" percentage={backer_rewards.percentage} />
