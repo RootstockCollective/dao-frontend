@@ -1,29 +1,34 @@
-import type {
-  VaultMetrics,
-  EpochState,
-  UserPosition,
-  PauseState,
-  EligibilityStatus,
-  VaultRequest,
-  ClaimableInfo,
-  PaginatedResult,
-} from '../types'
-import type {
-  VaultMetricsDisplay,
-  EpochDisplay,
-  UserPositionDisplay,
-  ActionEligibility,
-  ActiveRequestDisplay,
-  PaginatedHistoryDisplay,
-} from './types'
 import { formatEther } from 'viem'
+
+import Big from '@/lib/big'
+import { formatCurrencyWithLabel } from '@/lib/utils'
+
+import type {
+  ClaimableInfo,
+  EligibilityStatus,
+  EpochState,
+  PaginatedResult,
+  PauseState,
+  UserPosition,
+  VaultMetrics,
+  VaultRequest,
+} from '../types'
 import {
   formatApyPercent,
+  formatCountdown,
+  formatDateShort,
   formatPercent,
   formatTimestamp,
-  formatCountdown,
   shortenTxHash,
 } from './formatters'
+import type {
+  ActionEligibility,
+  ActiveRequestDisplay,
+  EpochDisplay,
+  PaginatedHistoryDisplay,
+  UserPositionDisplay,
+  VaultMetricsDisplay,
+} from './types'
 
 /**
  * Maps raw vault metrics from the adapter into display-ready formatted strings.
@@ -110,12 +115,19 @@ export function toActionEligibility(
  * Maps a vault request and optional claimable info into a display-ready active request object.
  * @param req - Raw vault request from the adapter
  * @param claimableInfo - Claimable status info, or null if the request is not in claimable state
+ * @param rbtcPrice - Current rBTC price in USD (0 if unavailable)
  * @returns Display object with formatted amounts, dates, and claimable details
  */
 export function toActiveRequestDisplay(
   req: VaultRequest,
   claimableInfo: ClaimableInfo | null,
+  rbtcPrice: number,
 ): ActiveRequestDisplay {
+  const lastUpdated = req.timestamps.updated ?? req.timestamps.created
+  const sharesFormatted = req.type === 'withdrawal' ? formatEther(req.amount) : '—'
+  const amountNumber = Number(formatEther(req.amount))
+  const usdEquivalentFormatted =
+    rbtcPrice > 0 ? formatCurrencyWithLabel(Big(amountNumber).mul(rbtcPrice)) : null
   return {
     id: req.id,
     type: req.type,
@@ -128,6 +140,9 @@ export function toActiveRequestDisplay(
     finalizeId: req.type === 'deposit' ? req.epochId : req.batchRedeemId,
     epochId: req.epochId,
     batchRedeemId: req.batchRedeemId,
+    lastUpdatedFormatted: formatDateShort(lastUpdated),
+    sharesFormatted,
+    usdEquivalentFormatted,
   }
 }
 

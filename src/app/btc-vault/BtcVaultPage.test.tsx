@@ -30,6 +30,10 @@ vi.mock('@/app/backing/components/DecorativeSquares', () => ({
   DecorativeSquares: () => null,
 }))
 
+vi.mock('./ActiveRequestSection', () => ({
+  ActiveRequestSection: () => null,
+}))
+
 vi.mock('./hooks/useVaultMetrics', () => ({
   useVaultMetrics: () => ({
     data: {
@@ -133,7 +137,6 @@ describe('BtcVaultPage', () => {
     expect(screen.getByTestId('btc-vault-metrics')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-dashboard')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-actions')).toBeInTheDocument()
-    expect(screen.getByTestId('btc-vault-request-queue')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-history')).toBeInTheDocument()
     expect(screen.queryByTestId('WalletDisconnectedBanner')).not.toBeInTheDocument()
     expect(screen.queryByTestId('NotAuthorizedBanner')).not.toBeInTheDocument()

@@ -45,6 +45,12 @@ export interface ActiveRequestDisplay {
   finalizeId: string | null
   epochId: string | null
   batchRedeemId: string | null
+  /** Date-only string for "Last updated on" (e.g. "21 May 2025"). */
+  lastUpdatedFormatted: string
+  /** Withdrawal: amount as shares; deposit: "—" until settled. */
+  sharesFormatted: string
+  /** USD equivalent for display; mock or null in UI-only scope. */
+  usdEquivalentFormatted: string | null
 }
 
 export interface RequestHistoryRowDisplay {
