@@ -83,9 +83,11 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
         <div className="mt-8 flex flex-col w-full gap-8 justify-end h-full">
           <Separator className="bg-v3-bg-accent-60 h-[1px] w-full" />
           <div className="w-full flex justify-stretch md:justify-end gap-4">
-            <Button variant="secondary-outline" className="w-full md:w-auto" onClick={onClose}>
-              Cancel
-            </Button>
+            {!isTxPending && (
+              <Button variant="secondary-outline" className="w-full md:w-auto" onClick={onClose}>
+                Cancel
+              </Button>
+            )}
             {isTxPending ? (
               <TransactionInProgressButton />
             ) : (
