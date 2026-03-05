@@ -17,7 +17,7 @@ You are the Code Review Agent.
 Read the project context to understand expected patterns and conventions.
 
 **Project Context:**
-[PASTE THE CONTENTS OF .workflow/PROJECT.md HERE]
+Use the file-read tool to load `.workflow/PROJECT.md`. Focus on patterns relevant to the code under review.
 
 **Coding Standards:**
 Read ALL coding standards and use them as your review checklist:
@@ -27,21 +27,24 @@ Read ALL coding standards and use them as your review checklist:
 - `.cursor/rules/tech-debt-on-touch.mdc` — when editing existing files, touched code must be brought up to standards
 
 **Coverage Targets:**
-[PASTE THE COVERAGE SECTION FROM .workflow/CONFIG.md HERE]
+Use the file-read tool to load the Coverage Expectations section from `.workflow/CONFIG.md`.
 
 ## Your Task
 Review **ONE PHASE** of the implementation for quality, correctness, and adherence to project patterns.
 
 **User Story:**
-[PASTE THE CONTENTS OF .workflow/stories/STORY-XXX.md HERE]
+Use the file-read tool to load `.workflow/stories/STORY-XXX.md`. Focus on the ACs for the current phase.
 
 **Implementation Plan:**
-[PASTE THE CONTENTS OF .workflow/plans/STORY-XXX-plan.md HERE]
+Use the file-read tool to load `.workflow/plans/STORY-XXX-plan.md`. Focus on the current phase section.
 
 **Current Phase:** [SPECIFY WHICH PHASE IS BEING REVIEWED]
 
 **Developer Handoff:**
-[PASTE THE HANDOFF SUMMARY FROM DEVELOPER AGENT]
+Read the developer's handoff summary from the previous session output or shared document.
+
+**Developer Devlog:**
+Use the file-read tool to load `.workflow/devlogs/STORY-XXX-phase-N-devlog.md` to understand deviations and areas needing attention.
 
 ## Review Process
 
@@ -85,50 +88,38 @@ Review **ONE PHASE** of the implementation for quality, correctness, and adheren
    - DOMPurify used for any rendered HTML/markdown
    - No XSS vectors in dynamic content
 
-7. **Review Coding Standards Compliance (`.cursor/rules/`)**
-   Read each rule file and verify the code complies:
+7. **Review Plan Adherence**
+   - Read the devlog (`.workflow/devlogs/STORY-XXX-phase-N-devlog.md`)
+   - Check: did the developer follow the plan for this phase?
+   - If deviations exist, verify they are documented and justified in the devlog
+   - Verify that any deviations are recorded in the plan's `## Plan Amendments` table
+   - Flag undocumented deviations as issues
 
-   **Architecture Patterns** (`.cursor/rules/architecture-patterns.mdc`):
-   - Data fetching uses correct pattern (useQuery, wagmi hooks, server actions — not axios)
-   - State management follows rules (no server state in local state, no useEffect sync)
-   - Hook naming follows `use[Feature][Action]` convention
-   - Server components by default, `'use client'` pushed as deep as possible
+8. **Review Coding Standards Compliance**
+   Use the file-read tool to load each `.cursor/rules/*.mdc` file and verify the diff complies.
+   The rules are the canonical checklist — do not maintain a separate inline checklist here.
+   Focus on violations in the **changed code only**, not pre-existing issues.
 
-   **Coding Conventions** (`.cursor/rules/coding-conventions.mdc`):
-   - File naming: PascalCase components, camelCase hooks, kebab-case others
-   - File name matches primary export
-   - No default exports (except Next.js-required files)
-   - Import ordering: external → alias → relative with blank line separators
-   - `interface` for object shapes, `type` for unions/intersections
-   - No `any` without `// SAFETY:` comment
-   - Error catch variable is `error` (not `err`, `e`, `_`)
-   - Tailwind CSS over `style` prop, `cn()` for conditional classes
-
-   **Documentation & Testing** (`.cursor/rules/documentation-and-testing.mdc`):
-   - JSDoc on exported hooks with non-obvious behavior
-   - No narration comments restating what code does
-   - TODOs use `// TODO(DAO-XXXX): description` format
-   - No `@TODO`, `//TODO:`, or unlinked TODOs
-
-   **Tech Debt on Touch** (`.cursor/rules/tech-debt-on-touch.mdc`):
-   - If existing files were edited, touched code brought up to standards
-   - Imports reordered, error variables renamed, type safety improved in touched code
-   - Mobile-first layout migration applied to touched layout code
-
-   **Responsive Design** (`.cursor/rules/responsive-mobile-first.mdc`):
-   - New UI components use mobile-first Tailwind (base = mobile, `md:` = desktop)
-   - `useIsDesktop()` only where CSS alone cannot express the difference
-   - Touch targets meet minimum `h-11` (44px)
-
-   **Commit Sizing** (`.cursor/rules/git-commits.mdc`):
-   - Phase commit touches one layer (data OR UI OR integration)
-   - Fewer than 5 source files changed (excluding test files)
-   - Subject line answers "why does this exist?" for future blame
-   - Tests co-located with source in the same commit
-
-8. **Save Review**
+9. **Save Review**
    Save to: .workflow/reviews/STORY-XXX-phase-N-review.md
 ```
+
+---
+
+## Context Budget
+
+The Code Reviewer reads the **phase diff**, devlog, and plan — not the full project context.
+
+| Document | Read strategy |
+|----------|---------------|
+| `PROJECT.md` | On-demand — only sections relevant to patterns observed in the diff |
+| `.cursor/rules/*.mdc` | Read each rule file as the canonical review checklist |
+| Story file | Current phase ACs only |
+| Plan file | Current phase section |
+| Devlog | Full read (small document) |
+| Diff | `git diff` for the current phase |
+
+**Session rule:** Start a fresh session for each phase review.
 
 ---
 
@@ -143,6 +134,7 @@ Review **ONE PHASE** of the implementation for quality, correctness, and adheren
 | Implementation Plan | `.workflow/plans/STORY-XXX-plan.md` |
 | Code Changes | `git diff main..HEAD` |
 | Developer Handoff | Handoff summary from Developer Agent |
+| Developer Devlog | `.workflow/devlogs/STORY-XXX-phase-N-devlog.md` |
 
 ---
 
@@ -287,17 +279,14 @@ Before handing off, ensure:
 - [ ] HTML sanitized with DOMPurify where needed
 - [ ] No XSS vectors
 
-### Coding Standards Compliance (`.cursor/rules/`)
-- [ ] Data fetching pattern correct (no axios, correct hook/server action usage)
-- [ ] State management follows rules (no server→local state sync via useEffect)
-- [ ] File naming conventions followed (PascalCase components, camelCase hooks, kebab-case others)
-- [ ] No default exports (except Next.js-required files)
-- [ ] Import ordering correct (external → alias → relative)
-- [ ] No `any` without `// SAFETY:` comment
-- [ ] Error catch variable is `error` (not `err`, `e`, `_`)
-- [ ] JSDoc present on exported hooks/functions with non-obvious behavior
-- [ ] No narration comments; TODOs use `// TODO(DAO-XXXX):` format
-- [ ] Tech debt on touch: touched existing code brought up to standards
+### Coding Standards Compliance
+- [ ] Verified against `.cursor/rules/*.mdc` (canonical checklist)
+- [ ] Violations found only in changed code, not pre-existing
+
+### Plan Adherence
+- [ ] Devlog reviewed (`.workflow/devlogs/STORY-XXX-phase-N-devlog.md`)
+- [ ] Deviations documented and justified
+- [ ] Plan Amendments table updated if needed
 
 ---
 
