@@ -60,7 +60,7 @@ export function toEpochDisplay(raw: EpochState): EpochDisplay {
     raw.status === 'open'
       ? `Closes in ${formatCountdown(raw.endTime)}`
       : raw.status === 'claimable'
-        ? `Settled ${formatTimestamp(raw.settledAt!)}`
+        ? `Settled ${formatTimestamp(raw.settledAt!, { includeTime: true })}`
         : raw.status.charAt(0).toUpperCase() + raw.status.slice(1)
   return { epochId: raw.epochId, status: raw.status, statusSummary, isAcceptingRequests }
 }

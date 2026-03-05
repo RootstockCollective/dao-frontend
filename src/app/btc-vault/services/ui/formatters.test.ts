@@ -43,20 +43,24 @@ describe('formatCountdown', () => {
 })
 
 describe('formatTimestamp', () => {
-  it('formats a unix timestamp to readable date', () => {
+  it('defaults to day-first date-only format', () => {
     const result = formatTimestamp(1700000000)
-    // Just verify it returns a non-empty string (locale-dependent exact format)
-    expect(result.length).toBeGreaterThan(0)
     expect(result).toContain('2023')
+    expect(result).toMatch(/^\d{2} \w{3} \d{4}$/)
+  })
+
+  it('includes time when includeTime option is true', () => {
+    const result = formatTimestamp(1700000000, { includeTime: true })
+    expect(result).toContain('2023')
+    expect(result).toMatch(/^\d{2} \w{3} \d{4}, \d{2}:\d{2} [AP]M$/)
   })
 })
 
 describe('formatDateShort', () => {
-  it('formats unix timestamp to date-only string (e.g. 21 May 2025)', () => {
+  it('formats unix timestamp to day-first date-only string (e.g. 21 May 2025)', () => {
     const result = formatDateShort(1747872000) // 21 May 2025 00:00:00 UTC
-    expect(result.length).toBeGreaterThan(0)
     expect(result).toContain('2025')
-    expect(result).toMatch(/\d+/)
+    expect(result).toMatch(/^\d{2} \w{3} \d{4}$/)
   })
   it('uses updated when present for lastUpdated display', () => {
     const created = 1700000000

@@ -2,8 +2,9 @@
 
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { Label } from '@/components/Typography'
-import { useVaultMetrics } from '../hooks/useVaultMetrics'
+
 import { useEpochState } from '../hooks/useEpochState'
+import { useVaultMetrics } from '../hooks/useVaultMetrics'
 import { formatTimestamp } from '../services/ui/formatters'
 
 const PLACEHOLDER = '—'
@@ -57,7 +58,7 @@ export const BtcVaultMetrics = () => {
           />
           {!isMetricsLoading && timestamp != null && (
             <Label variant="body-s" className="text-bg-0 mt-1 block" data-testid="nav-last-updated">
-              Updated {formatTimestamp(timestamp)}
+              Updated {formatTimestamp(timestamp, { includeTime: true })}
             </Label>
           )}
           {!isEpochLoading && isNavPending && (

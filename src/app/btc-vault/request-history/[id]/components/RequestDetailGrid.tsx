@@ -24,7 +24,7 @@ export function RequestDetailGrid({ detail }: RequestDetailGridProps) {
         </Span>
       </div>
 
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-2">
         <Label variant="tag" className="text-bg-0">
           {detail.type === 'withdrawal' ? 'Amount to withdraw' : 'Amount to deposit'}
         </Label>

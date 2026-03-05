@@ -13,18 +13,18 @@ describe('RequestStatusStepper', () => {
   afterEach(() => {
     cleanup()
   })
-  it('renders withdrawal stages with "Redeemed" as final label', () => {
+  it('renders withdrawal stages with "Shares Claimed" as final label', () => {
     render(<RequestStatusStepper status="pending" type="withdrawal" />)
     expect(screen.getByText('Submitted')).toBeInTheDocument()
     expect(screen.getByText('Pending')).toBeInTheDocument()
     expect(screen.getByText('Approved')).toBeInTheDocument()
-    expect(screen.getByText('Redeemed')).toBeInTheDocument()
+    expect(screen.getByText('Shares Claimed')).toBeInTheDocument()
   })
 
-  it('renders deposit stages with "Deposited" as final label', () => {
+  it('renders deposit stages with "Redeemed" as final label', () => {
     render(<RequestStatusStepper status="pending" type="deposit" />)
-    expect(screen.getByText('Deposited')).toBeInTheDocument()
-    expect(screen.queryByText('Redeemed')).not.toBeInTheDocument()
+    expect(screen.getByText('Redeemed')).toBeInTheDocument()
+    expect(screen.queryByText('Shares Claimed')).not.toBeInTheDocument()
   })
 
   it('highlights stage 2 for pending status', () => {
@@ -41,7 +41,7 @@ describe('RequestStatusStepper', () => {
 
   it('highlights stage 4 for done status', () => {
     render(<RequestStatusStepper status="done" type="withdrawal" />)
-    const stage4 = screen.getByText('Redeemed')
+    const stage4 = screen.getByText('Shares Claimed')
     expect(stage4).toHaveClass('font-semibold')
   })
 

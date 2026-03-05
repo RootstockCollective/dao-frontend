@@ -6,8 +6,8 @@ import { cn } from '@/lib/utils'
 
 import type { RequestStatus, RequestType } from '../../../services/types'
 
-const WITHDRAWAL_STAGES = ['Submitted', 'Pending', 'Approved', 'Redeemed'] as const
-const DEPOSIT_STAGES = ['Submitted', 'Pending', 'Approved', 'Deposited'] as const
+const WITHDRAWAL_STAGES = ['Submitted', 'Pending', 'Approved', 'Shares Claimed'] as const
+const DEPOSIT_STAGES = ['Submitted', 'Pending', 'Approved', 'Redeemed'] as const
 
 function getStages(type: RequestType) {
   return type === 'withdrawal' ? WITHDRAWAL_STAGES : DEPOSIT_STAGES
