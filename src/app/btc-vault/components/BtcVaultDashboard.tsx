@@ -127,7 +127,9 @@ export const BtcVaultDashboard = () => {
         </div>
       </div>
 
-      <BtcVaultActions address={address} />
+      <div className="mt-10">
+        <BtcVaultActions />
+      </div>
     </SectionContainer>
   )
 }
