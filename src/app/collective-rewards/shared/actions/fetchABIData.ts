@@ -56,10 +56,7 @@ export interface ResponseABIData {
   cycles: CycleData[]
 }
 async function fetchABIData() {
-  const { data, errors } = await client.query<ResponseABIData>({ query })
-  if (errors?.length) {
-    throw new Error(`Subgraph query failed: ${errors.map(error => error.message).join(', ')}`)
-  }
+  const { data } = await client.query<ResponseABIData>({ query })
   if (!data) {
     throw new Error('Failed to fetch ABI data from subgraph')
   }
