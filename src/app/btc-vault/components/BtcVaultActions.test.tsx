@@ -9,6 +9,7 @@ const mockUseActionEligibility = vi.fn()
 const mockUseUserPosition = vi.fn()
 const mockUseVaultMetrics = vi.fn()
 const mockOnRequestDeposit = vi.fn()
+const mockOnRequestRedeem = vi.fn()
 const mockInvalidateQueries = vi.fn()
 
 let capturedOnSuccess: (() => void) | undefined
@@ -52,6 +53,16 @@ vi.mock('../hooks/useSubmitDeposit', () => ({
   }),
 }))
 
+vi.mock('../hooks/useSubmitWithdrawal', () => ({
+  useSubmitWithdrawal: () => ({
+    onRequestRedeem: mockOnRequestRedeem,
+    isRequesting: false,
+    isTxPending: false,
+    isTxFailed: false,
+    withdrawTxHash: undefined,
+  }),
+}))
+
 vi.mock('@/shared/notification', () => ({
   executeTxFlow: (...args: unknown[]) => mockExecuteTxFlow(...args),
 }))
@@ -76,10 +87,10 @@ describe('BtcVaultActions', () => {
       data: {
         rbtcBalanceFormatted: '2.0',
         rbtcBalanceRaw: 2000000000000000000n,
-        vaultTokensFormatted: '0',
-        positionValueFormatted: '0',
-        percentOfVaultFormatted: '0%',
-        vaultTokensRaw: 0n,
+        vaultTokensFormatted: '5.0',
+        positionValueFormatted: '5.1',
+        percentOfVaultFormatted: '10.20%',
+        vaultTokensRaw: 5_000_000_000_000_000_000n,
       },
     })
     mockUseVaultMetrics.mockReturnValue({
@@ -95,7 +106,7 @@ describe('BtcVaultActions', () => {
     mockUseActionEligibility.mockReturnValue({
       data: {
         canDeposit: true,
-        canWithdraw: false,
+        canWithdraw: true,
         depositBlockReason: '',
         withdrawBlockReason: '',
       },
@@ -106,6 +117,8 @@ describe('BtcVaultActions', () => {
     cleanup()
     vi.clearAllMocks()
   })
+
+  // --- Deposit tests ---
 
   it('renders the Deposit button', () => {
     renderWithProviders()
@@ -118,7 +131,7 @@ describe('BtcVaultActions', () => {
     mockUseActionEligibility.mockReturnValue({
       data: {
         canDeposit: false,
-        canWithdraw: false,
+        canWithdraw: true,
         depositBlockReason: 'Deposits are currently paused',
         withdrawBlockReason: '',
       },
@@ -162,7 +175,7 @@ describe('BtcVaultActions', () => {
     mockUseActionEligibility.mockReturnValue({
       data: {
         canDeposit: false,
-        canWithdraw: false,
+        canWithdraw: true,
         depositBlockReason: 'Not eligible',
         withdrawBlockReason: '',
       },
@@ -288,5 +301,96 @@ describe('BtcVaultActions', () => {
     // Opening modal again should hide the success banner
     await user.click(screen.getByTestId('DepositButton'))
     expect(screen.queryByTestId('DepositSuccessBanner')).not.toBeInTheDocument()
+  })
+
+  // --- Withdraw tests ---
+
+  it('renders the Withdraw button', () => {
+    renderWithProviders()
+
+    expect(screen.getByTestId('WithdrawButton')).toBeInTheDocument()
+    expect(screen.getByTestId('WithdrawButton')).not.toBeDisabled()
+  })
+
+  it('disables the Withdraw button when canWithdraw is false', () => {
+    mockUseActionEligibility.mockReturnValue({
+      data: {
+        canDeposit: true,
+        canWithdraw: false,
+        depositBlockReason: '',
+        withdrawBlockReason: 'Withdrawals are currently paused',
+      },
+    })
+    renderWithProviders()
+
+    expect(screen.getByTestId('WithdrawButton')).toBeDisabled()
+  })
+
+  it('disables both buttons when user has active request', () => {
+    mockUseActionEligibility.mockReturnValue({
+      data: {
+        canDeposit: false,
+        canWithdraw: false,
+        depositBlockReason: 'You already have an active request',
+        withdrawBlockReason: 'You already have an active request',
+      },
+    })
+    renderWithProviders()
+
+    expect(screen.getByTestId('DepositButton')).toBeDisabled()
+    expect(screen.getByTestId('WithdrawButton')).toBeDisabled()
+  })
+
+  it('opens the withdraw modal when clicking the enabled Withdraw button', async () => {
+    const user = userEvent.setup()
+    renderWithProviders()
+
+    await user.click(screen.getByTestId('WithdrawButton'))
+    expect(screen.getByTestId('BtcWithdrawModal')).toBeInTheDocument()
+  })
+
+  it('triggers executeTxFlow with btcVaultWithdrawRequest action on withdraw submit', async () => {
+    const user = userEvent.setup()
+    renderWithProviders()
+
+    await user.click(screen.getByTestId('WithdrawButton'))
+    const input = screen.getByTestId('Input_amount-btc-vault-withdraw')
+    await user.type(input, '2')
+    await user.click(screen.getByTestId('ContinueButton'))
+    await user.click(screen.getByTestId('SubmitRequestButton'))
+
+    await waitFor(() => {
+      expect(mockExecuteTxFlow).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'btcVaultWithdrawRequest',
+          onRequestTx: expect.any(Function),
+          onSuccess: expect.any(Function),
+        }),
+      )
+    })
+  })
+
+  it('shows withdraw success banner on successful withdrawal submission', async () => {
+    const user = userEvent.setup()
+    renderWithProviders()
+
+    await user.click(screen.getByTestId('WithdrawButton'))
+    const input = screen.getByTestId('Input_amount-btc-vault-withdraw')
+    await user.type(input, '2')
+    await user.click(screen.getByTestId('ContinueButton'))
+    await user.click(screen.getByTestId('SubmitRequestButton'))
+
+    await waitFor(() => {
+      expect(capturedOnSuccess).toBeDefined()
+    })
+
+    capturedOnSuccess!()
+
+    await waitFor(() => {
+      expect(screen.queryByTestId('BtcWithdrawModal')).not.toBeInTheDocument()
+      expect(screen.getByTestId('WithdrawSuccessBanner')).toBeInTheDocument()
+      expect(screen.getByText('Withdrawal request submitted')).toBeInTheDocument()
+      expect(screen.getByText('Pending Fund Manager processing')).toBeInTheDocument()
+    })
   })
 })
