@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 import { Button } from '@/components/Button'
 import { Header, Paragraph } from '@/components/Typography'
-import { btcVaultRequestHistory } from '@/shared/constants/routes'
+import { btcVault } from '@/shared/constants/routes'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
 
 type OopsVariant = 'not-connected' | 'not-found'
@@ -50,11 +50,11 @@ export function TransactionDetailOops({ variant }: TransactionDetailOopsProps) {
       {variant === 'not-connected' && <ConnectWalletAction />}
       {variant === 'not-found' && (
         <Link
-          href={btcVaultRequestHistory}
+          href={btcVault}
           className="text-primary hover:underline font-bold"
           data-testid="back-to-history-link"
         >
-          Back to Request History
+          Back to BTC Vault
         </Link>
       )}
     </div>

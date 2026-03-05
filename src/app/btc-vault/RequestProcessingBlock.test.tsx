@@ -81,9 +81,10 @@ describe('RequestProcessingBlock', () => {
   })
 
   it('renders View requests history link with correct href', () => {
-    const { container } = render(<RequestProcessingBlock request={makeRequest()} />)
+    const request = makeRequest()
+    const { container } = render(<RequestProcessingBlock request={request} />)
     const block = getBlock(container)
-    const link = block?.querySelector('a[href="/btc-vault/request-history"]')
+    const link = block?.querySelector(`a[href="/btc-vault/request-history/${request.id}"]`)
     expect(link).toBeInTheDocument()
     expect(link).toHaveTextContent(/view requests history/i)
   })

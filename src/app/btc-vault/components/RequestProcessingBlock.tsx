@@ -9,7 +9,7 @@ import { TokenImage } from '@/components/TokenImage'
 import { Label, Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import { btcVaultRequestHistory } from '@/shared/constants/routes'
+import { btcVaultRequestDetail } from '@/shared/constants/routes'
 
 import type { ActiveRequestDisplay } from '../services/ui/types'
 
@@ -139,7 +139,7 @@ export function RequestProcessingBlock({ request, className, ...props }: Request
       </div>
 
       <Link
-        href={btcVaultRequestHistory}
+        href={btcVaultRequestDetail(request.id)}
         className="inline-flex items-center gap-2 text-100 hover:underline mt-6"
         data-testid="view-requests-history-link"
       >
