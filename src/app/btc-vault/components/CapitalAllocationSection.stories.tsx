@@ -8,15 +8,11 @@ import { RBTC } from '@/lib/constants'
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
 import type { CapitalCategoryDisplay } from '../services/ui/types'
 
+import { CAPITAL_ALLOCATION_TOOLTIP_MAP } from './CapitalAllocationSection.constants'
+
 interface StoryProps {
   categories: CapitalCategoryDisplay[]
   isLoading?: boolean
-}
-
-const TOOLTIP_MAP: Record<string, string> = {
-  'Deployed capital': 'Capital currently deployed to yield-generating strategies',
-  'Liquidity reserve': 'Capital held in reserve for withdrawal liquidity',
-  'Unallocated capital': 'Capital not yet allocated to any strategy',
 }
 
 function CapitalAllocationStory({ categories, isLoading = false }: StoryProps) {
@@ -66,7 +62,7 @@ function CapitalAllocationStory({ categories, isLoading = false }: StoryProps) {
                       </span>
                     }
                     fiatAmount={cat.fiatAmountFormatted}
-                    tooltipContent={TOOLTIP_MAP[cat.label]}
+                    tooltipContent={CAPITAL_ALLOCATION_TOOLTIP_MAP[cat.label]}
                   />
                 ))}
           </div>

@@ -10,12 +10,7 @@ import { Label, Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 
 import { useCapitalAllocation } from '../hooks/useCapitalAllocation'
-
-const TOOLTIP_MAP: Record<string, string> = {
-  'Deployed capital': 'Capital currently deployed to yield-generating strategies',
-  'Liquidity reserve': 'Capital held in reserve for withdrawal liquidity',
-  'Unallocated capital': 'Capital not yet allocated to any strategy',
-}
+import { CAPITAL_ALLOCATION_TOOLTIP_MAP } from './CapitalAllocationSection.constants'
 
 export function CapitalAllocationSection() {
   const [isDetailed, setIsDetailed] = useState(false)
@@ -76,7 +71,7 @@ export function CapitalAllocationSection() {
                       </span>
                     }
                     fiatAmount={cat.fiatAmountFormatted}
-                    tooltipContent={TOOLTIP_MAP[cat.label]}
+                    tooltipContent={CAPITAL_ALLOCATION_TOOLTIP_MAP[cat.label]}
                     data-testid={`metric-${cat.label.toLowerCase().replace(/\s+/g, '-')}`}
                   />
                 ))}
