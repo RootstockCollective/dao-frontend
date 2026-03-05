@@ -2,8 +2,6 @@ const COLUMN_ID = 'id'
 
 const CURRENT_CYCLE_START = 'currentCycleStart'
 const CURRENT_CYCLE_DURATION = 'currentCycleDuration'
-const PREVIOUS_CYCLE_START = 'previousCycleStart'
-const PREVIOUS_CYCLE_DURATION = 'previousCycleDuration'
 const DISTRIBUTION_DURATION = 'distributionDuration'
 const ON_DISTRIBUTION_PERIOD = 'onDistributionPeriod'
 
@@ -11,8 +9,6 @@ export const CYCLE_COLUMNS = [
   `Cycle.${COLUMN_ID}`,
   CURRENT_CYCLE_START,
   CURRENT_CYCLE_DURATION,
-  PREVIOUS_CYCLE_START,
-  PREVIOUS_CYCLE_DURATION,
   DISTRIBUTION_DURATION,
   ON_DISTRIBUTION_PERIOD,
 ]
