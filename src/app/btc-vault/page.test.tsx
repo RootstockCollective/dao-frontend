@@ -33,6 +33,10 @@ vi.mock('@/app/backing/components/DecorativeSquares', () => ({
   DecorativeSquares: () => null,
 }))
 
+vi.mock('./components/CapitalAllocationSection', () => ({
+  CapitalAllocationSection: () => null,
+}))
+
 vi.mock('./components/BtcVaultDashboard', () => ({
   BtcVaultDashboard: () => null,
 }))

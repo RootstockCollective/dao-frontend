@@ -41,6 +41,10 @@ vi.mock('./ActiveRequestSection', () => ({
   ActiveRequestSection: () => null,
 }))
 
+vi.mock('./components/CapitalAllocationSection', () => ({
+  CapitalAllocationSection: () => null,
+}))
+
 vi.mock('./components/BtcVaultDashboard', () => ({
   BtcVaultDashboard: () => <section data-testid="btc-vault-dashboard" />,
 }))
