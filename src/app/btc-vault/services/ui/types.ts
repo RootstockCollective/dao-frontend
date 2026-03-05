@@ -1,6 +1,14 @@
 import type { EpochStatus, RequestStatus, RequestType } from '../types'
 
-// ─── Display Status ──────────────────────────────────────────────────
+export const DISPLAY_REQUEST_TYPE_LABELS: Record<RequestType, string> = {
+  deposit: 'Deposit',
+  withdrawal: 'Withdrawal',
+} as const
+
+/** Human-readable label derived from `RequestType` for table display. */
+export type DisplayRequestType = (typeof DISPLAY_REQUEST_TYPE_LABELS)[RequestType]
+
+// --- Display Status ---
 
 /**
  * Visual status shown in the transaction history table.
@@ -30,7 +38,7 @@ export interface DisplayStatusResult {
   displayStatusLabel: DisplayStatusLabel
 }
 
-// ─── Filter Params ───────────────────────────────────────────────────
+// --- Filter Params ---
 
 export interface HistoryFilterParams {
   type?: RequestType[]
@@ -38,7 +46,7 @@ export interface HistoryFilterParams {
   status?: DisplayStatus[]
 }
 
-// ─── Display Types ───────────────────────────────────────────────────
+// --- Display Types ---
 
 export interface VaultMetricsDisplay {
   tvlFormatted: string

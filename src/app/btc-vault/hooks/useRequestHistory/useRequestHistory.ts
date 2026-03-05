@@ -187,7 +187,8 @@ const MOCK_REQUESTS: VaultRequest[] = [
   },
 ]
 
-function applyFilters(requests: VaultRequest[], filters?: HistoryFilterParams): VaultRequest[] {
+/** @internal Exported for testing. Will be removed when Feature 9 wires real backend. */
+export function applyFilters(requests: VaultRequest[], filters?: HistoryFilterParams): VaultRequest[] {
   if (!filters) return requests
 
   let filtered = requests
@@ -213,7 +214,8 @@ function applyFilters(requests: VaultRequest[], filters?: HistoryFilterParams): 
   return filtered
 }
 
-function paginate(requests: VaultRequest[], params: PaginationParams): PaginatedResult<VaultRequest> {
+/** @internal Exported for testing. Will be removed when Feature 9 wires real backend. */
+export function paginate(requests: VaultRequest[], params: PaginationParams): PaginatedResult<VaultRequest> {
   const sorted = [...requests].sort((a, b) => {
     const dir = params.sortDirection === 'asc' ? 1 : -1
     return dir * (a.timestamps.created - b.timestamps.created)
