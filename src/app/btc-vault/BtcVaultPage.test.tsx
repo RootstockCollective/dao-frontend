@@ -33,8 +33,16 @@ vi.mock('@/app/backing/components/DecorativeSquares', () => ({
   DecorativeSquares: () => null,
 }))
 
+vi.mock('./ActiveRequestSection', () => ({
+  ActiveRequestSection: () => null,
+}))
+
 vi.mock('./components/BtcVaultDashboard', () => ({
   BtcVaultDashboard: () => <section data-testid="btc-vault-dashboard" />,
+}))
+
+vi.mock('./components/BtcVaultMetrics', () => ({
+  BtcVaultMetrics: () => null,
 }))
 
 vi.mock('./hooks/useVaultMetrics', () => ({

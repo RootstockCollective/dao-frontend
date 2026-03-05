@@ -2,6 +2,7 @@
 
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
 
+import { ActiveRequestSection } from './ActiveRequestSection'
 import { BtcVaultBanners } from './BtcVaultBanners'
 import { BtcVaultDashboard } from './components/BtcVaultDashboard'
 import { BtcVaultMetrics } from './components/BtcVaultMetrics'
@@ -15,7 +16,8 @@ export const BtcVaultPage = () => {
       className="flex flex-col items-start w-full h-full pt-[0.13rem] md:gap-6 rounded-sm"
     >
       <BtcVaultBanners />
-
+      {/* Active Request Zone - F7 (STORY-EPIC-7-001) */}
+      <ActiveRequestSection />
       {/* Vault Metrics Zone - F3 */}
       <section data-testid="btc-vault-metrics" className="w-full">
         <SectionContainer title="VAULT METRICS" headerVariant="h3">

@@ -1,6 +1,15 @@
 name: Unit tests
 
-on: push
+# --- Cache scoping ---
+# GitHub Actions caches are scoped by branch. A workflow run can restore
+# caches from its own branch AND the default branch (main), but NOT from
+# other feature branches. Caches created on a feature branch are only
+# available to that branch. The push trigger already covers main, so
+# caches are seeded on the default branch automatically.
+on:
+  push:
+  # Allows manually re-seeding caches from the Actions tab (e.g. after a deps update).
+  workflow_dispatch:
 
 # Declare default permissions as read only.
 permissions: read-all
@@ -9,12 +18,28 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 #v4.4.0
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 #v5.0.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 #v4.4.0
         with:
           node-version-file: '.nvmrc'
 
-      - name: Install modules
+      # Caches the full node_modules directory keyed on package-lock.json.
+      # On hit, npm ci is skipped entirely. The post-job hook saves the
+      # cache after all steps complete (only when the exact key was a miss).
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 #v5.0.3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        env:
+          CYPRESS_INSTALL_BINARY: '0'
         run: npm ci
 
       - name: Install Foundry
