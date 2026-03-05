@@ -2,17 +2,14 @@
 
 import { useAccount } from 'wagmi'
 
+import { Button } from '@/components/Button'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header } from '@/components/Typography'
 
 import { useRequestById } from '../../hooks/useRequestById'
 import { MOCK_RBTC_USD_PRICE } from '../../services/ui/formatters'
 import { toRequestDetailDisplay } from '../../services/ui/mappers'
-import {
-  CancelRequestButton,
-  RequestDetailGrid,
-  RequestStatusStepper,
-  TransactionDetailOops,
-} from './components'
+import { RequestDetailGrid, RequestStatusStepper, TransactionDetailOops } from './components'
 
 interface TransactionDetailPageProps {
   id: string
@@ -32,11 +29,7 @@ function TransactionDetailContent({ id, address }: { id: string; address: string
   const { data: request, isLoading, isError } = useRequestById(id)
 
   if (isLoading) {
-    return (
-      <div data-testid="transaction-detail-loading" className="flex items-center justify-center py-16">
-        <span className="text-bg-0">Loading...</span>
-      </div>
-    )
+    return <LoadingSpinner />
   }
 
   if (isError || !request) {
@@ -53,7 +46,12 @@ function TransactionDetailContent({ id, address }: { id: string; address: string
       <div className="bg-bg-80 rounded py-8 px-4 md:p-6 w-full flex flex-col gap-6">
         <RequestStatusStepper status={request.status} type={request.type} />
         <RequestDetailGrid detail={detail} />
-        {detail.canCancel && <CancelRequestButton />}
+        {/* TODO(DAO-XXXX): Wire up cancel logic when the cancel request story is implemented */}
+        {detail.canCancel && (
+          <Button variant="secondary-outline" data-testid="cancel-request-button" onClick={() => {}}>
+            Cancel request
+          </Button>
+        )}
       </div>
     </div>
   )

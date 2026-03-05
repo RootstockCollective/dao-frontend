@@ -26,6 +26,10 @@ vi.mock('@/components/TokenImage', () => ({
   TokenImage: () => <span data-testid="token-image" />,
 }))
 
+vi.mock('@/components/LoadingSpinner', () => ({
+  LoadingSpinner: () => <div data-testid="loading-spinner" />,
+}))
+
 vi.mock('@/components/ProgressBarNew', () => ({
   ProgressBar: ({ progress }: { progress: number }) => (
     <div data-testid="progress-bar" data-progress={progress} />
@@ -114,6 +118,7 @@ describe('TransactionDetailPage', () => {
   it('renders loading state while data is being fetched', () => {
     mockUseRequestById.mockReturnValue({ data: undefined, isLoading: true })
     render(<TransactionDetailPage id="req-withdrawal-pending" />)
-    expect(screen.getByTestId('transaction-detail-loading')).toBeInTheDocument()
+    expect(screen.getByTestId('loading-spinner')).toBeInTheDocument()
+    expect(screen.queryByTestId('transaction-detail-page')).not.toBeInTheDocument()
   })
 })
