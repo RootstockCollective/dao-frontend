@@ -6,6 +6,7 @@ import { ActiveRequestSection } from './ActiveRequestSection'
 import { BtcVaultBanners } from './BtcVaultBanners'
 import { BtcVaultDashboard } from './components/BtcVaultDashboard'
 import { BtcVaultMetrics } from './components/BtcVaultMetrics'
+import { BtcVaultWalletDisconnectedSection } from './components/BtcVaultWalletDisconnectedSection'
 
 const NAME = 'BTC Vault'
 
@@ -42,6 +43,8 @@ export const BtcVaultPage = () => {
       <section data-testid="btc-vault-history" className="w-full">
         {/* BTC Vault History - implemented in F10 */}
       </section>
+
+      <BtcVaultWalletDisconnectedSection />
     </div>
   )
 }
