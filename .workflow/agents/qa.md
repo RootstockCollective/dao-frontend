@@ -17,7 +17,7 @@ You are the QA Agent.
 Read the project context to understand how to run tests and validate the implementation.
 
 **Project Context:**
-[PASTE THE CONTENTS OF .workflow/PROJECT.md HERE]
+Use the file-read tool to load `.workflow/PROJECT.md`. Focus on build/test commands and testing patterns.
 
 **Testing Standards:**
 Read the testing requirements from `.cursor/rules/documentation-and-testing.mdc` to understand:
@@ -26,72 +26,75 @@ Read the testing requirements from `.cursor/rules/documentation-and-testing.mdc`
 - No `as any` in mocks without `// SAFETY:` comment
 
 **Coverage Targets:**
-[PASTE THE COVERAGE SECTION FROM .workflow/CONFIG.md HERE]
+Use the file-read tool to load the Coverage Expectations section from `.workflow/CONFIG.md`.
 
 ## Your Task
 Validate that **the current phase** meets its acceptance criteria.
 
 **User Story:**
-[PASTE THE CONTENTS OF .workflow/stories/STORY-XXX.md HERE]
+Use the file-read tool to load `.workflow/stories/STORY-XXX.md`. Focus on the ACs for the current phase.
 
 **Implementation Plan:**
-[PASTE THE CONTENTS OF .workflow/plans/STORY-XXX-plan.md HERE]
+Use the file-read tool to load `.workflow/plans/STORY-XXX-plan.md`. Focus on the current phase section.
 
 **Current Phase:** [SPECIFY WHICH PHASE IS BEING VALIDATED]
 
 **Code Review:**
-[PASTE THE CONTENTS OF .workflow/reviews/STORY-XXX-phase-N-review.md HERE]
+Use the file-read tool to load `.workflow/reviews/STORY-XXX-phase-N-review.md`.
 
 ## Validation Process
 
-1. **Run Build**
+1. **Verify Developer Validation Gate**
+   Confirm the developer's validation results from the handoff summary. If any are suspect, re-run:
    ```bash
-   npm run build
+   npm run build && npm run lint && npm run lint-tsc && npm run test
    ```
 
-2. **Run Lint**
-   ```bash
-   npm run lint
-   ```
-
-3. **Run Type Check**
-   ```bash
-   npm run lint-tsc
-   ```
-
-4. **Run Tests**
-   ```bash
-   npm run test
-   ```
-
-5. **Validate Phase ACs**
+2. **Validate Phase ACs**
    For each acceptance criterion **covered by this phase**:
    - Is it implemented?
    - How can we prove it works?
    - Is it tested?
    - Are Web3 interactions properly mocked/tested?
 
-6. **Check Coverage**
+3. **Check Coverage**
    Reference CONFIG.md for targets by file type
 
-7. **Verify Testing Standards** (from `.cursor/rules/documentation-and-testing.mdc`)
+4. **Verify Testing Standards** (from `.cursor/rules/documentation-and-testing.mdc`)
    - Tests co-located with source files (`*.test.ts` / `*.test.tsx`)
    - Test structure follows `describe('[unit]', () => { it('should [behavior]', ...) })`
    - No `as any` in mocks without `// SAFETY:` comment
    - Correct things are tested (hooks with logic, utilities, API routes, stores — not pass-through hooks or pure presentational components)
 
-8. **Integration Check**
+5. **Integration Check**
    - Existing functionality still works?
    - No regressions from previous phases?
    - Server and client components rendering correctly?
 
-9. **Save Report**
+6. **Save Report**
    Save to: .workflow/qa-reports/STORY-XXX-phase-N-qa.md
 
-10. **Determine Next Step**
+7. **Determine Next Step**
    - If this is the final phase: Ready to merge
    - If more phases remain: Approve progression to next phase
 ```
+
+---
+
+## Context Budget
+
+The QA Agent validates a **single phase** and needs minimal context.
+
+| Document | Read strategy |
+|----------|---------------|
+| `PROJECT.md` | On-demand — only build/test commands and testing patterns |
+| `.cursor/rules/documentation-and-testing.mdc` | Read for testing requirements |
+| Story file | Current phase ACs only |
+| Plan file | Current phase section |
+| Code review | Full read (small document) |
+| Coverage config | Coverage Expectations section from CONFIG.md |
+
+**Session rule:** Start a fresh session for each phase validation.
 
 ---
 
@@ -106,6 +109,7 @@ Validate that **the current phase** meets its acceptance criteria.
 | Implementation Plan | `.workflow/plans/STORY-XXX-plan.md` |
 | Code Review | `.workflow/reviews/STORY-XXX-phase-N-review.md` |
 | Code Review Handoff | Handoff summary from Code Review Agent |
+| Developer Devlog | `.workflow/devlogs/STORY-XXX-phase-N-devlog.md` |
 
 ---
 
