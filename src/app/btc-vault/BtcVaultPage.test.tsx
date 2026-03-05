@@ -167,7 +167,7 @@ describe('BtcVaultPage', () => {
     expect(screen.getByTestId('BTC Vault')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-metrics')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-dashboard')).toBeInTheDocument()
-    expect(screen.getByTestId('btc-vault-actions-zone')).toBeInTheDocument()
+    expect(screen.getByTestId('btc-vault-actions')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-request-queue')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-history')).toBeInTheDocument()
     expect(screen.queryByTestId('WalletDisconnectedBanner')).not.toBeInTheDocument()
