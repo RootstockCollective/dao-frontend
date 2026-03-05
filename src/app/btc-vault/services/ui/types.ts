@@ -1,5 +1,43 @@
 import type { EpochStatus, RequestStatus, RequestType } from '../types'
 
+// ─── Display Status ──────────────────────────────────────────────────
+
+/**
+ * Visual status shown in the transaction history table.
+ * Maps from domain `RequestStatus` + `RequestType` + optional `failureReason`.
+ */
+export type DisplayStatus =
+  | 'open_to_claim'
+  | 'pending'
+  | 'claim_pending'
+  | 'successful'
+  | 'cancelled'
+  | 'rejected'
+
+export const DISPLAY_STATUS_LABELS = {
+  open_to_claim: 'Open to claim',
+  pending: 'Pending',
+  claim_pending: 'Claim pending',
+  successful: 'Successful',
+  cancelled: 'Cancelled',
+  rejected: 'Rejected',
+} as const
+
+export type DisplayStatusLabel = (typeof DISPLAY_STATUS_LABELS)[DisplayStatus]
+
+export interface DisplayStatusResult {
+  displayStatus: DisplayStatus
+  displayStatusLabel: DisplayStatusLabel
+}
+
+// ─── Filter Params ───────────────────────────────────────────────────
+
+export interface HistoryFilterParams {
+  type?: RequestType[]
+  claimToken?: ('shares' | 'rbtc')[]
+  status?: DisplayStatus[]
+}
+
 // ─── Display Types ───────────────────────────────────────────────────
 
 export interface VaultMetricsDisplay {
@@ -80,6 +118,14 @@ export interface RequestHistoryRowDisplay {
   finalizeTxShort: string | null
   submitTxFull: string | null
   finalizeTxFull: string | null
+  /** Mapped visual status for the table badge (6 variants). */
+  displayStatus: DisplayStatus
+  /** Human-readable label for the display status (e.g. "Open to claim"). */
+  displayStatusLabel: DisplayStatusLabel
+  /** USD equivalent of the amount (deposits only). `null` for withdrawals. */
+  fiatAmountFormatted: string | null
+  /** Whether the row represents rBTC (deposits) or vault share tokens (withdrawals). */
+  claimTokenType: 'rbtc' | 'shares'
 }
 
 export interface PaginatedHistoryDisplay {

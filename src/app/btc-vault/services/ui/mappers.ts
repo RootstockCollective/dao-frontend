@@ -13,6 +13,8 @@ import type {
   EpochState,
   PaginatedResult,
   PauseState,
+  RequestStatus,
+  RequestType,
   UserPosition,
   VaultMetrics,
   VaultRequest,
@@ -29,13 +31,15 @@ import {
 import type {
   ActionEligibility,
   ActiveRequestDisplay,
-  CapitalAllocationDisplay,
+  DisplayStatus,
+  DisplayStatusResult,
   EpochDisplay,
   PaginatedHistoryDisplay,
   RequestDetailDisplay,
   UserPositionDisplay,
   VaultMetricsDisplay,
 } from './types'
+import { DISPLAY_STATUS_LABELS } from './types'
 
 /**
  * Maps raw vault metrics from the adapter into display-ready formatted strings.
@@ -174,52 +178,76 @@ export function toActiveRequestDisplay(
 }
 
 /**
- * Maps a vault request into a detail-page display object, extending the active request display
- * with address, tx hash, and cancel eligibility fields.
- * @param req - Raw vault request from the adapter
- * @param claimableInfo - Claimable status info, or null
- * @param rbtcPrice - Current rBTC price in USD (0 if unavailable)
- * @param userAddress - Connected wallet address
- * @returns Display object with all fields needed for the transaction detail page
+ * Maps domain `RequestStatus` + `RequestType` + optional `failureReason` to a visual display status.
+ * @param status - Domain request lifecycle status
+ * @param type - Whether this is a deposit or withdrawal
+ * @param failureReason - Optional reason for failure (cancelled vs rejected)
+ * @returns Display status key and human-readable label
  */
-export function toRequestDetailDisplay(
-  req: VaultRequest,
-  claimableInfo: ClaimableInfo | null,
-  rbtcPrice: number,
-  userAddress: string,
-): RequestDetailDisplay {
-  const base = toActiveRequestDisplay(req, claimableInfo, rbtcPrice)
-  return {
-    ...base,
-    typeLabel: req.type === 'deposit' ? 'Deposit' : 'Withdrawal',
-    // SAFETY: userAddress comes from useAccount which returns `0x${string}` at runtime
-    addressShort: shortAddress(userAddress as `0x${string}`),
-    addressFull: userAddress,
-    submitTxShort: req.txHashes.submit ? shortenTxHash(req.txHashes.submit) : null,
-    submitTxFull: req.txHashes.submit ?? null,
-    canCancel: req.status === 'pending',
+export function mapRequestDisplayStatus(
+  status: RequestStatus,
+  type: RequestType,
+  failureReason?: VaultRequest['failureReason'],
+): DisplayStatusResult {
+  let displayStatus: DisplayStatus
+
+  switch (status) {
+    case 'pending':
+      displayStatus = 'pending'
+      break
+    case 'claimable':
+      displayStatus = type === 'deposit' ? 'open_to_claim' : 'claim_pending'
+      break
+    case 'done':
+      displayStatus = 'successful'
+      break
+    case 'failed':
+      displayStatus = failureReason === 'rejected' ? 'rejected' : 'cancelled'
+      break
   }
+
+  return { displayStatus, displayStatusLabel: DISPLAY_STATUS_LABELS[displayStatus] }
 }
 
 /**
  * Maps a paginated result of vault requests into display-ready history rows with formatted values and shortened tx hashes.
  * @param raw - Paginated result containing raw vault requests
+ * @param rbtcPrice - Current rBTC price in USD for fiat conversion
  * @returns Paginated display object with formatted rows and pagination metadata
  */
-export function toPaginatedHistoryDisplay(raw: PaginatedResult<VaultRequest>): PaginatedHistoryDisplay {
+export function toPaginatedHistoryDisplay(
+  raw: PaginatedResult<VaultRequest>,
+  rbtcPrice = MOCK_RBTC_USD_PRICE,
+): PaginatedHistoryDisplay {
   return {
-    rows: raw.data.map(req => ({
-      id: req.id,
-      type: req.type,
-      amountFormatted: formatEther(req.amount),
-      status: req.status,
-      createdAtFormatted: formatTimestamp(req.timestamps.created),
-      finalizedAtFormatted: req.timestamps.finalized ? formatTimestamp(req.timestamps.finalized) : null,
-      submitTxShort: req.txHashes.submit ? shortenTxHash(req.txHashes.submit) : null,
-      finalizeTxShort: req.txHashes.finalize ? shortenTxHash(req.txHashes.finalize) : null,
-      submitTxFull: req.txHashes.submit ?? null,
-      finalizeTxFull: req.txHashes.finalize ?? null,
-    })),
+    rows: raw.data.map(req => {
+      const { displayStatus, displayStatusLabel } = mapRequestDisplayStatus(
+        req.status,
+        req.type,
+        req.failureReason,
+      )
+      const isDeposit = req.type === 'deposit'
+      const amountNumber = Number(formatEther(req.amount))
+      const fiatAmountFormatted =
+        isDeposit && rbtcPrice > 0 ? formatCurrencyWithLabel(Big(amountNumber).mul(rbtcPrice)) : null
+
+      return {
+        id: req.id,
+        type: req.type,
+        amountFormatted: formatEther(req.amount),
+        status: req.status,
+        createdAtFormatted: formatTimestamp(req.timestamps.created),
+        finalizedAtFormatted: req.timestamps.finalized ? formatTimestamp(req.timestamps.finalized) : null,
+        submitTxShort: req.txHashes.submit ? shortenTxHash(req.txHashes.submit) : null,
+        finalizeTxShort: req.txHashes.finalize ? shortenTxHash(req.txHashes.finalize) : null,
+        submitTxFull: req.txHashes.submit ?? null,
+        finalizeTxFull: req.txHashes.finalize ?? null,
+        displayStatus,
+        displayStatusLabel,
+        fiatAmountFormatted,
+        claimTokenType: isDeposit ? ('rbtc' as const) : ('shares' as const),
+      }
+    }),
     total: raw.total,
     page: raw.page,
     limit: raw.limit,
