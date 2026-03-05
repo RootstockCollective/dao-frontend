@@ -281,6 +281,27 @@ export const TX_MESSAGES = {
       loading: false,
     },
   },
+  btcVaultWithdrawRequest: {
+    pending: {
+      title: 'Withdrawal request in process',
+      content: 'Waiting for transaction confirmation...',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Withdrawal request submitted',
+      content: 'Your withdrawal request has been submitted successfully.',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Withdrawal request failed',
+      content:
+        'An unexpected error occurred while submitting your withdrawal request. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
   swap: {
     pending: {
       title: 'Swap in process',
