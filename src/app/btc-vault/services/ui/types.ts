@@ -39,6 +39,7 @@ export interface UserPositionDisplay {
   fiatWalletBalance: string
   fiatVaultShares: string
   fiatPrincipalDeposited: string
+  fiatCurrentEarnings: string
   fiatTotalBalance: string
 }
 
