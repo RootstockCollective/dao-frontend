@@ -103,6 +103,7 @@ describe('toUserPositionDisplay', () => {
     })
     expect(result.fiatWalletBalance).toBe('$47,500.00 USD')
     expect(result.fiatPrincipalDeposited).toBe('$118,750.00 USD')
+    expect(result.fiatCurrentEarnings).toBe('$2,375.00 USD')
     expect(result.fiatTotalBalance).toBe('$121,125.00 USD')
   })
 
@@ -117,6 +118,7 @@ describe('toUserPositionDisplay', () => {
     expect(result.fiatWalletBalance).toBe('$0.00 USD')
     expect(result.fiatVaultShares).toBe('$0.00 USD')
     expect(result.fiatPrincipalDeposited).toBe('$0.00 USD')
+    expect(result.fiatCurrentEarnings).toBe('$0.00 USD')
     expect(result.fiatTotalBalance).toBe('$0.00 USD')
   })
 })

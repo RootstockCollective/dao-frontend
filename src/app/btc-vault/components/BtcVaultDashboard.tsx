@@ -3,10 +3,10 @@
 import { type ReactNode } from 'react'
 import { useAccount } from 'wagmi'
 
+import { SectionContainer } from '@/app/communities/components/SectionContainer'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { HistoryIcon } from '@/components/Icons'
 import { Span } from '@/components/Typography'
-import { SectionContainer } from '@/app/communities/components/SectionContainer'
 import { RBTC } from '@/lib/constants'
 
 import { useUserPosition } from '../hooks/useUserPosition/useUserPosition'
@@ -31,8 +31,10 @@ export const BtcVaultDashboard = () => {
 
   if (!address || !isConnected) return null
 
+  const hasHistory = !!data && data.vaultTokensRaw > 0n
+
   return (
-    <SectionContainer title="MY METRICS">
+    <SectionContainer title="MY METRICS" className="w-full">
       <div className="flex flex-col gap-10" data-testid="btc-vault-dashboard">
         {/* Row 1: Wallet, Vault shares, Share of vault */}
         <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:gap-x-6 md:gap-y-6 w-full">
@@ -65,19 +67,32 @@ export const BtcVaultDashboard = () => {
 
         {/* Row 2: Principal, Current earnings, Total balance, Yield % */}
         <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:gap-x-6 md:gap-y-6 w-full">
-          <BalanceInfo
-            className="w-full md:w-[214px] md:min-w-[180px]"
-            title="Principal deposited"
-            amount={metricAmount(isLoading, isError, data?.totalDepositedPrincipalFormatted)}
-            symbol={RBTC}
-            fiatAmount={isLoading || isError ? undefined : data?.fiatPrincipalDeposited}
-            data-testid="metric-principal"
-          />
+          <div className="w-full md:w-[214px] md:min-w-[180px]">
+            <BalanceInfo
+              title="Principal deposited"
+              amount={metricAmount(isLoading, isError, data?.totalDepositedPrincipalFormatted)}
+              symbol={RBTC}
+              fiatAmount={isLoading || isError ? undefined : data?.fiatPrincipalDeposited}
+              data-testid="metric-principal"
+            />
+            {hasHistory && (
+              // TODO(DAO-1999): replace href with route to transaction history page
+              <a
+                href="#"
+                className="mt-6 flex items-center gap-x-1 text-sm font-medium underline underline-offset-2"
+                data-testid="btc-vault-history-link"
+              >
+                <HistoryIcon />
+                <Span variant="body-s">View history</Span>
+              </a>
+            )}
+          </div>
           <BalanceInfo
             className="w-full md:w-[214px] md:min-w-[180px]"
             title="Current earnings"
             amount={metricAmount(isLoading, isError, data?.currentEarningsFormatted)}
             symbol={RBTC}
+            fiatAmount={isLoading || isError ? undefined : data?.fiatCurrentEarnings}
             tooltipContent="Subject to NAV updates, pending deposit windows"
             data-testid="metric-earnings"
           />
@@ -90,32 +105,31 @@ export const BtcVaultDashboard = () => {
             tooltipContent="Current total value of your vault position based on NAV"
             data-testid="metric-total-balance"
           />
-          <BalanceInfo
-            className="w-full md:w-[214px] md:min-w-[180px]"
-            title="Yield % to date"
-            amount={metricAmount(isLoading, isError, data?.yieldPercentToDateFormatted)}
-            tooltipContent="Cumulative yield earned on your deposited principal"
-            data-testid="metric-yield-percent"
-          />
+          <div className="w-full md:w-[214px] md:min-w-[180px]">
+            <BalanceInfo
+              title="Yield % to date"
+              amount={metricAmount(isLoading, isError, data?.yieldPercentToDateFormatted)}
+              tooltipContent="Cumulative yield earned on your deposited principal"
+              data-testid="metric-yield-percent"
+            />
+            {hasHistory && (
+              // TODO(DAO-1999): replace href with route to yield history page
+              <a
+                href="#"
+                className="mt-6 flex items-center gap-x-1 text-sm font-medium underline underline-offset-2"
+                data-testid="btc-vault-yield-history-link"
+              >
+                <HistoryIcon />
+                <Span variant="body-s">View yield history</Span>
+              </a>
+            )}
+          </div>
         </div>
       </div>
 
-      {data && data.vaultTokensRaw > 0n && (
-        <div className="flex justify-between w-full" data-testid="btc-vault-nav-links">
-          {/* TODO(DAO-1999): replace href with route to transaction history page */}
-          <a href="#" className="flex items-center gap-x-1 text-sm font-medium underline underline-offset-2">
-            <HistoryIcon />
-            <Span variant="body-s">View history</Span>
-          </a>
-          {/* TODO(DAO-1999): replace href with route to yield history page */}
-          <a href="#" className="flex items-center gap-x-1 text-sm font-medium underline underline-offset-2">
-            <HistoryIcon />
-            <Span variant="body-s">View yield history</Span>
-          </a>
-        </div>
-      )}
-
-      <BtcVaultActions address={address} />
+      <div className="mt-10">
+        <BtcVaultActions address={address} />
+      </div>
     </SectionContainer>
   )
 }

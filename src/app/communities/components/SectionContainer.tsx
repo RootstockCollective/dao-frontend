@@ -1,12 +1,15 @@
 import type { ComponentProps, ReactNode } from 'react'
-import { Header } from '@/components/Typography'
+
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
+import { Header } from '@/components/Typography'
+import { cn } from '@/lib/utils'
 
 interface SectionContainerProps {
   title: string
   children: ReactNode
   rightContent?: ReactNode
   headerVariant?: ComponentProps<typeof Header>['variant']
+  className?: string
 }
 
 /**
@@ -23,8 +26,9 @@ export const SectionContainer = ({
   rightContent,
   children,
   headerVariant = 'h2',
+  className,
 }: SectionContainerProps) => (
-  <div className="bg-bg-80 rounded py-8 px-4 md:p-6">
+  <div className={cn('bg-bg-80 rounded py-8 px-4 md:p-6', className)}>
     <div className="flex flex-col gap-8 md:gap-0 md:flex-row md:mb-10">
       <Header variant={headerVariant} className="flex-1">
         {title}

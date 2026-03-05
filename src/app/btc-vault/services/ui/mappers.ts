@@ -98,6 +98,7 @@ export function toUserPositionDisplay(raw: UserPosition): UserPositionDisplay {
     fiatPrincipalDeposited: formatCurrencyWithLabel(
       getFiatAmount(raw.totalDepositedPrincipal, MOCK_RBTC_USD_PRICE),
     ),
+    fiatCurrentEarnings: formatCurrencyWithLabel(getFiatAmount(currentEarnings, MOCK_RBTC_USD_PRICE)),
     fiatTotalBalance: formatCurrencyWithLabel(getFiatAmount(raw.positionValue, MOCK_RBTC_USD_PRICE)),
   }
 }

@@ -41,6 +41,7 @@ const MOCK_DISPLAY: UserPositionDisplay = {
   fiatWalletBalance: '$47,500.00 USD',
   fiatVaultShares: '$121,125.00 USD',
   fiatPrincipalDeposited: '$118,750.00 USD',
+  fiatCurrentEarnings: '$2,375.00 USD',
   fiatTotalBalance: '$121,125.00 USD',
 }
 
@@ -97,6 +98,7 @@ describe('BtcVaultDashboard', () => {
     expect(screen.getByTestId('metric-wallet')).toHaveTextContent('$47,500.00 USD')
     expect(screen.getByTestId('metric-vault-shares')).toHaveTextContent('$121,125.00 USD')
     expect(screen.getByTestId('metric-principal')).toHaveTextContent('$118,750.00 USD')
+    expect(screen.getByTestId('metric-earnings')).toHaveTextContent('$2,375.00 USD')
     expect(screen.getByTestId('metric-total-balance')).toHaveTextContent('$121,125.00 USD')
   })
 
@@ -128,6 +130,7 @@ describe('BtcVaultDashboard', () => {
       fiatWalletBalance: '$0.00 USD',
       fiatVaultShares: '$0.00 USD',
       fiatPrincipalDeposited: '$0.00 USD',
+      fiatCurrentEarnings: '$0.00 USD',
       fiatTotalBalance: '$0.00 USD',
     }
     mockUseUserPosition.mockReturnValue({ data: emptyDisplay, isLoading: false })
@@ -163,18 +166,37 @@ describe('BtcVaultDashboard', () => {
     })
   })
 
-  it('shows nav links with history icons when history exists', () => {
+  it('shows history links under their respective metrics when history exists', () => {
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
 
-    expect(screen.getByTestId('btc-vault-nav-links')).toBeInTheDocument()
+    const historyLink = screen.getByTestId('btc-vault-history-link')
+    const yieldHistoryLink = screen.getByTestId('btc-vault-yield-history-link')
+    expect(historyLink).toBeInTheDocument()
+    expect(yieldHistoryLink).toBeInTheDocument()
     expect(screen.getByText('View history')).toBeInTheDocument()
     expect(screen.getByText('View yield history')).toBeInTheDocument()
 
-    const icons = screen.getByTestId('btc-vault-nav-links').querySelectorAll('[aria-label="History Icon"]')
-    expect(icons.length).toBe(2)
+    expect(historyLink.querySelector('[aria-label="History Icon"]')).toBeInTheDocument()
+    expect(yieldHistoryLink.querySelector('[aria-label="History Icon"]')).toBeInTheDocument()
   })
 
-  it('hides nav links when user has no vault tokens (no history)', () => {
+  it('positions View history under Principal deposited', () => {
+    render(<BtcVaultDashboard />, { wrapper: Wrapper })
+
+    const principalMetric = screen.getByTestId('metric-principal')
+    const historyLink = screen.getByTestId('btc-vault-history-link')
+    expect(principalMetric.parentElement).toContain(historyLink)
+  })
+
+  it('positions View yield history under Yield % to date', () => {
+    render(<BtcVaultDashboard />, { wrapper: Wrapper })
+
+    const yieldMetric = screen.getByTestId('metric-yield-percent')
+    const yieldHistoryLink = screen.getByTestId('btc-vault-yield-history-link')
+    expect(yieldMetric.parentElement).toContain(yieldHistoryLink)
+  })
+
+  it('hides history links when user has no vault tokens', () => {
     const emptyDisplay: UserPositionDisplay = {
       ...MOCK_DISPLAY,
       vaultTokensRaw: 0n,
@@ -182,7 +204,8 @@ describe('BtcVaultDashboard', () => {
     mockUseUserPosition.mockReturnValue({ data: emptyDisplay, isLoading: false })
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
 
-    expect(screen.queryByTestId('btc-vault-nav-links')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('btc-vault-history-link')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('btc-vault-yield-history-link')).not.toBeInTheDocument()
   })
 
   it('returns null when wallet is disconnected', () => {
