@@ -1,8 +1,10 @@
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useMemo } from 'react'
-import Link from 'next/link'
-import { menuData } from '../MainContainer'
+
 import { communitiesToRender } from '@/app/communities/communityUtils'
+
+import { menuData } from '../MainContainer'
 
 const menuBreadCrumbsMap = Object.fromEntries(menuData.map(({ href, text }) => [href, text])) as {
   [K in (typeof menuData)[number] as K['href']]: K['text']
@@ -25,6 +27,8 @@ const breadcrumbsMap = {
   '/my-rewards/tx-history/builder': 'Claiming History',
   '/staking-history': 'Staking History',
   '/vault/history': 'USD Vault History',
+  '/btc-vault': 'BTC Vault',
+  '/btc-vault/request-history': 'Request History',
   // community URLs
   ...Object.fromEntries(
     communitiesToRender.map(({ nftAddress, title }) => [`/communities/nft/${nftAddress}`, title]),
@@ -51,10 +55,12 @@ export function Breadcrumbs() {
       .map((segment, index) => {
         const href = '/' + segments.slice(0, index + 1).join('/')
         // First try to match the full path, then fall back to segment-based lookup
-        const title =
-          breadcrumbsMap[href as keyof typeof breadcrumbsMap] ||
-          breadcrumbsMap[segment as keyof typeof breadcrumbsMap] ||
-          decodeURIComponent(segment)
+        const isBtcVaultDetail = /^\/btc-vault\/request-history\/.+/.test(href)
+        const title = isBtcVaultDetail
+          ? 'Transaction Detail'
+          : breadcrumbsMap[href as keyof typeof breadcrumbsMap] ||
+            breadcrumbsMap[segment as keyof typeof breadcrumbsMap] ||
+            decodeURIComponent(segment)
 
         return { href, title }
       })
