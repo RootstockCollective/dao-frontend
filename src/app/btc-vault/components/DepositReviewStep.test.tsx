@@ -5,7 +5,6 @@ import { DepositReviewStep } from './DepositReviewStep'
 
 const defaultProps = {
   amount: '1.5',
-  slippage: '0.5',
   estimatedShares: '1.470588235294117647',
   navFormatted: '1.02',
   navTimestamp: 1709000000,
@@ -29,7 +28,6 @@ describe('DepositReviewStep', () => {
     expect(screen.getByTestId('review-shares')).toBeInTheDocument()
     expect(screen.getByTestId('review-nav')).toBeInTheDocument()
     expect(screen.getByTestId('review-fee')).toBeInTheDocument()
-    expect(screen.getByTestId('review-slippage')).toBeInTheDocument()
   })
 
   it('displays the correct deposit amount', () => {
@@ -63,14 +61,6 @@ describe('DepositReviewStep', () => {
     const feeRow = screen.getByTestId('review-fee')
     expect(feeRow).toHaveTextContent('Deposit fee')
     expect(feeRow).toHaveTextContent('0%')
-  })
-
-  it('displays slippage tolerance', () => {
-    render(<DepositReviewStep {...defaultProps} />)
-
-    const slippageRow = screen.getByTestId('review-slippage')
-    expect(slippageRow).toHaveTextContent('Slippage tolerance')
-    expect(slippageRow).toHaveTextContent('0.5%')
   })
 
   it('displays all three disclosures', () => {

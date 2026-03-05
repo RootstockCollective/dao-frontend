@@ -116,7 +116,6 @@ describe('BtcDepositModal', () => {
     expect(screen.getByTestId('review-amount')).toHaveTextContent('1')
     expect(screen.getByTestId('review-nav')).toHaveTextContent('1.02')
     expect(screen.getByTestId('review-fee')).toHaveTextContent('0%')
-    expect(screen.getByTestId('review-slippage')).toHaveTextContent('0.5%')
     expect(screen.getByTestId('review-shares')).toBeInTheDocument()
   })
 
@@ -146,7 +145,6 @@ describe('BtcDepositModal', () => {
 
     expect(onSubmit).toHaveBeenCalledWith({
       amount: 1000000000000000000n,
-      slippage: 0.005,
     })
   })
 

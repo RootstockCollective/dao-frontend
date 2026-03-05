@@ -5,7 +5,6 @@ import { Hash } from 'viem'
 import { useAccount, useWriteContract } from 'wagmi'
 
 import { useTransactionStatus } from '@/app/user/Stake/hooks/useTransactionStatus'
-import { calculateMinSharesOut, DEFAULT_SLIPPAGE_PERCENTAGE } from '@/app/vault/utils/slippage'
 import { btcVault } from '@/lib/contracts'
 
 /**
@@ -17,9 +16,9 @@ import { btcVault } from '@/lib/contracts'
  * `useContractWrite` hook's type doesn't support — so we compose wagmi
  * primitives directly.
  *
- * Amount and slippage are passed at call time (not as hook params) so that
- * the caller can invoke the returned function directly without needing a
- * state + useEffect bridge to wait for re-render.
+ * `minSharesOut` is hardcoded to `0n` because this is a request-based vault:
+ * shares are minted at the NAV confirmed at epoch close, not at request time,
+ * so slippage protection on the request is not applicable.
  */
 export function useSubmitDeposit() {
   const { address } = useAccount()
@@ -27,14 +26,12 @@ export function useSubmitDeposit() {
   const { isTxPending, isTxFailed } = useTransactionStatus(depositTxHash)
 
   const onRequestDeposit = useCallback(
-    (amount: bigint, slippagePercentage?: number): Promise<Hash> => {
+    (amount: bigint): Promise<Hash> => {
       if (!address) return Promise.reject(new Error('Wallet not connected'))
-      const minSharesOut =
-        amount === 0n ? 0n : calculateMinSharesOut(amount, slippagePercentage ?? DEFAULT_SLIPPAGE_PERCENTAGE)
       return writeContractAsync({
         ...btcVault,
         functionName: 'requestDeposit',
-        args: [amount, address, minSharesOut],
+        args: [amount, address, 0n],
         value: amount,
       })
     },

@@ -4,7 +4,6 @@ import { useCallback, useMemo, useState } from 'react'
 import { formatEther, parseEther } from 'viem'
 import { useAccount } from 'wagmi'
 
-import { DEFAULT_SLIPPAGE_PERCENTAGE } from '@/app/vault/utils/slippage'
 import { Divider } from '@/components/Divider'
 import { Modal } from '@/components/Modal'
 import { Header } from '@/components/Typography'
@@ -33,7 +32,6 @@ export const BtcDepositModal = ({ onClose, onSubmit, isSubmitting }: BtcDepositM
 
   const [step, setStep] = useState<DepositStep>('amount')
   const [amount, setAmount] = useState('')
-  const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE_PERCENTAGE.toString())
 
   const rbtcBalanceFormatted = userPosition?.rbtcBalanceFormatted ?? '0'
   const rbtcBalanceRaw = userPosition?.rbtcBalanceRaw ?? 0n
@@ -66,12 +64,11 @@ export const BtcDepositModal = ({ onClose, onSubmit, isSubmitting }: BtcDepositM
     if (!amount) return
     try {
       const amountWei = parseEther(amount)
-      const slippageDecimal = parseFloat(slippage) / 100
-      onSubmit({ amount: amountWei, slippage: slippageDecimal })
+      onSubmit({ amount: amountWei })
     } catch {
       // parseEther may throw on invalid input — noop
     }
-  }, [amount, slippage, onSubmit])
+  }, [amount, onSubmit])
 
   return (
     <Modal onClose={onClose} data-testid="BtcDepositModal">
@@ -83,8 +80,6 @@ export const BtcDepositModal = ({ onClose, onSubmit, isSubmitting }: BtcDepositM
           <DepositAmountStep
             amount={amount}
             setAmount={setAmount}
-            slippage={slippage}
-            setSlippage={setSlippage}
             rbtcBalanceFormatted={rbtcBalanceFormatted}
             rbtcBalanceRaw={rbtcBalanceRaw}
             onNext={handleNext}
@@ -94,7 +89,6 @@ export const BtcDepositModal = ({ onClose, onSubmit, isSubmitting }: BtcDepositM
         {step === 'review' && (
           <DepositReviewStep
             amount={amount}
-            slippage={slippage}
             estimatedShares={estimatedShares}
             navFormatted={navFormatted}
             navTimestamp={navTimestamp}

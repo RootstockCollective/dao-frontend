@@ -3,7 +3,6 @@
 import Image from 'next/image'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 
-import { SlippageInput } from '@/app/vault/components/SlippageInput'
 import { Button } from '@/components/Button'
 import { Input } from '@/components/Input'
 import { PercentageButtonItem, PercentageButtons } from '@/components/PercentageButtons'
@@ -25,8 +24,6 @@ const PERCENTAGE_OPTIONS: PercentageButtonItem<number>[] = [
 interface DepositAmountStepProps {
   amount: string
   setAmount: (value: string) => void
-  slippage: string
-  setSlippage: (value: string) => void
   rbtcBalanceFormatted: string
   rbtcBalanceRaw: bigint
   onNext: () => void
@@ -35,8 +32,6 @@ interface DepositAmountStepProps {
 export const DepositAmountStep = ({
   amount,
   setAmount,
-  slippage,
-  setSlippage,
   rbtcBalanceFormatted,
   rbtcBalanceRaw,
   onNext,
@@ -120,8 +115,6 @@ export const DepositAmountStep = ({
             </Label>
           </div>
         </div>
-
-        <SlippageInput value={slippage} onChange={setSlippage} name="slippage-btc-deposit-input" />
 
         {errorMessage && (
           <div className="flex items-start gap-2 mt-2 max-w-full">

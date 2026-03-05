@@ -273,9 +273,6 @@ export interface TxResult {
 export interface DepositRequestParams {
   /** Amount of rBTC to deposit. Wei, 18 decimals. Must be > 0. */
   amount: bigint
-
-  /** Maximum acceptable slippage as a decimal (e.g. 0.01 = 1%). Optional. */
-  slippage?: number
 }
 
 /**
@@ -290,9 +287,6 @@ export interface DepositRequestParams {
 export interface WithdrawalRequestParams {
   /** Amount of vault tokens to redeem. Wei, 18 decimals. Must be > 0 and <= user's vaultTokens. */
   amount: bigint
-
-  /** Maximum acceptable slippage as a decimal (e.g. 0.01 = 1%). Optional. */
-  slippage?: number
 }
 
 // --- Pagination ---
