@@ -20,7 +20,7 @@ Read the project context file to understand:
 - Key files for reference
 
 **Project Context:**
-[PASTE THE CONTENTS OF .workflow/PROJECT.md HERE]
+Use the file-read tool to load `.workflow/PROJECT.md`.
 
 **Coding Standards:**
 Read the following coding standards — your plan must align with these rules:
@@ -32,7 +32,7 @@ Read the following coding standards — your plan must align with these rules:
 Analyze this user story and create an implementation plan.
 
 **User Story:**
-[PASTE THE CONTENTS OF .workflow/stories/STORY-XXX.md HERE]
+Use the file-read tool to load `.workflow/stories/STORY-XXX.md`.
 
 ## Instructions
 
@@ -92,6 +92,21 @@ Use the plan template at the end of this document.
 - Phases should build on each other logically.
 - Consider the component hierarchy: shared hooks/utils → components → pages.
 ```
+
+---
+
+## Context Budget
+
+The Architect is the **only agent that reads the full project context**. This is intentional — it needs the complete picture to design phases.
+
+| Document | Read strategy |
+|----------|---------------|
+| `PROJECT.md` | Full read (only agent that does this) |
+| `.cursor/rules/*.mdc` | Full read of architecture-patterns, coding-conventions, responsive-mobile-first |
+| Story file | Full read |
+| Codebase | Explore referenced files as needed |
+
+**Session rule:** Start each story in a fresh session to prevent context bleed between stories.
 
 ---
 
@@ -213,6 +228,8 @@ Target: 1–3 ACs per phase, one layer per phase, < 5 source files changed.
 **Acceptance Criteria Covered:** AC-1, AC-2
 **Layer:** [data | UI | integration]
 **Commit message:** `type(scope): description`
+**Confidence:** High / Medium / Low
+**Decision point:** [Any question the developer may need the orchestrator to decide — leave blank if none]
 
 **Files to Create/Modify:**
 - [ ] [File path and description]
@@ -233,6 +250,8 @@ Target: 1–3 ACs per phase, one layer per phase, < 5 source files changed.
 **Acceptance Criteria Covered:** AC-3
 **Layer:** [data | UI | integration]
 **Commit message:** `type(scope): description`
+**Confidence:** High / Medium / Low
+**Decision point:** [Any question the developer may need the orchestrator to decide — leave blank if none]
 
 **Files to Create/Modify:**
 - [ ] [File path and description]
@@ -269,6 +288,16 @@ Reference: `.workflow/CONFIG.md`
 | Risk | Likelihood | Impact | Mitigation |
 |------|------------|--------|------------|
 | [Risk] | Low/Medium/High | Low/Medium/High | [How to mitigate] |
+
+---
+
+## Plan Amendments
+
+> This section is maintained by the Developer Agent during implementation. The Architect creates the plan; amendments are recorded here when reality diverges from design.
+
+| Phase | Amendment | Reason | Date |
+|-------|-----------|--------|------|
+| — | (none yet) | — | — |
 
 ---
 
