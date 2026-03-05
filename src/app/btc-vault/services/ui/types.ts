@@ -89,3 +89,12 @@ export interface PaginatedHistoryDisplay {
   limit: number
   totalPages: number
 }
+
+export interface RequestDetailDisplay extends ActiveRequestDisplay {
+  typeLabel: string
+  addressShort: string
+  addressFull: string
+  submitTxShort: string | null
+  submitTxFull: string | null
+  canCancel: boolean
+}

@@ -7,6 +7,7 @@ import {
   toUserPositionDisplay,
   toActionEligibility,
   toActiveRequestDisplay,
+  toRequestDetailDisplay,
   toPaginatedHistoryDisplay,
 } from './mappers'
 
@@ -285,6 +286,79 @@ describe('toActiveRequestDisplay', () => {
       txHashes: {},
     }
     expect(toActiveRequestDisplay(withdrawalReq, null, 0).sharesFormatted).toBe('3.5')
+  })
+})
+
+describe('toRequestDetailDisplay', () => {
+  const userAddress = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb29266'
+
+  it('maps a pending withdrawal with canCancel true', () => {
+    const req = {
+      id: 'w1',
+      type: 'withdrawal' as const,
+      amount: 1_000_000_000_000_000_000n,
+      status: 'pending' as const,
+      epochId: null,
+      batchRedeemId: 'batch-1',
+      timestamps: { created: 1700000000 },
+      txHashes: { submit: '0x' + 'a'.repeat(64) },
+    }
+    const result = toRequestDetailDisplay(req, null, 50000, userAddress)
+    expect(result.typeLabel).toBe('Withdrawal')
+    expect(result.canCancel).toBe(true)
+    expect(result.submitTxShort).toBe('0xaaaa...aaaa')
+    expect(result.submitTxFull).toBe('0x' + 'a'.repeat(64))
+    expect(result.addressFull).toBe(userAddress)
+    expect(result.addressShort.length).toBeGreaterThan(0)
+    expect(result.sharesFormatted).toBe('1')
+  })
+
+  it('maps a done deposit with canCancel false', () => {
+    const req = {
+      id: 'd1',
+      type: 'deposit' as const,
+      amount: 2_000_000_000_000_000_000n,
+      status: 'done' as const,
+      epochId: '1',
+      batchRedeemId: null,
+      timestamps: { created: 1700000000, finalized: 1700003600 },
+      txHashes: { submit: '0x' + 'b'.repeat(64), finalize: '0x' + 'c'.repeat(64) },
+    }
+    const result = toRequestDetailDisplay(req, null, 50000, userAddress)
+    expect(result.typeLabel).toBe('Deposit')
+    expect(result.canCancel).toBe(false)
+    expect(result.amountFormatted).toBe('2')
+  })
+
+  it('handles missing submit tx hash', () => {
+    const req = {
+      id: 'd2',
+      type: 'deposit' as const,
+      amount: 1n,
+      status: 'pending' as const,
+      epochId: '1',
+      batchRedeemId: null,
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    const result = toRequestDetailDisplay(req, null, 0, userAddress)
+    expect(result.submitTxShort).toBeNull()
+    expect(result.submitTxFull).toBeNull()
+  })
+
+  it('sets canCancel false for claimable and failed statuses', () => {
+    const makeReq = (status: 'claimable' | 'failed') => ({
+      id: `req-${status}`,
+      type: 'withdrawal' as const,
+      amount: 1n,
+      status,
+      epochId: null,
+      batchRedeemId: 'batch-0',
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    })
+    expect(toRequestDetailDisplay(makeReq('claimable'), null, 0, userAddress).canCancel).toBe(false)
+    expect(toRequestDetailDisplay(makeReq('failed'), null, 0, userAddress).canCancel).toBe(false)
   })
 })
 

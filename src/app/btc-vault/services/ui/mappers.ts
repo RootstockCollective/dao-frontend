@@ -3,6 +3,7 @@ import { formatEther } from 'viem'
 import { getFiatAmount } from '@/app/shared/formatter'
 import Big from '@/lib/big'
 import { formatCurrencyWithLabel } from '@/lib/utils'
+import { shortAddress } from '@/lib/utils'
 
 import { ACTIVE_REQUEST_REASON, DEPOSIT_PAUSED_REASON, WITHDRAWAL_PAUSED_REASON } from '../constants'
 import type {
@@ -29,6 +30,7 @@ import type {
   ActiveRequestDisplay,
   EpochDisplay,
   PaginatedHistoryDisplay,
+  RequestDetailDisplay,
   UserPositionDisplay,
   VaultMetricsDisplay,
 } from './types'
@@ -58,7 +60,7 @@ export function toEpochDisplay(raw: EpochState): EpochDisplay {
     raw.status === 'open'
       ? `Closes in ${formatCountdown(raw.endTime)}`
       : raw.status === 'claimable'
-        ? `Settled ${formatTimestamp(raw.settledAt!)}`
+        ? `Settled ${formatTimestamp(raw.settledAt!, { includeTime: true })}`
         : raw.status.charAt(0).toUpperCase() + raw.status.slice(1)
   return { epochId: raw.epochId, status: raw.status, statusSummary, isAcceptingRequests }
 }
@@ -166,6 +168,34 @@ export function toActiveRequestDisplay(
     lastUpdatedFormatted: formatDateShort(lastUpdated),
     sharesFormatted,
     usdEquivalentFormatted,
+  }
+}
+
+/**
+ * Maps a vault request into a detail-page display object, extending the active request display
+ * with address, tx hash, and cancel eligibility fields.
+ * @param req - Raw vault request from the adapter
+ * @param claimableInfo - Claimable status info, or null
+ * @param rbtcPrice - Current rBTC price in USD (0 if unavailable)
+ * @param userAddress - Connected wallet address
+ * @returns Display object with all fields needed for the transaction detail page
+ */
+export function toRequestDetailDisplay(
+  req: VaultRequest,
+  claimableInfo: ClaimableInfo | null,
+  rbtcPrice: number,
+  userAddress: string,
+): RequestDetailDisplay {
+  const base = toActiveRequestDisplay(req, claimableInfo, rbtcPrice)
+  return {
+    ...base,
+    typeLabel: req.type === 'deposit' ? 'Deposit' : 'Withdrawal',
+    // SAFETY: userAddress comes from useAccount which returns `0x${string}` at runtime
+    addressShort: shortAddress(userAddress as `0x${string}`),
+    addressFull: userAddress,
+    submitTxShort: req.txHashes.submit ? shortenTxHash(req.txHashes.submit) : null,
+    submitTxFull: req.txHashes.submit ?? null,
+    canCancel: req.status === 'pending',
   }
 }
 

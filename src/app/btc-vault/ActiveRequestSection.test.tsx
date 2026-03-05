@@ -44,7 +44,7 @@ const MOCK_REQUEST: ActiveRequestDisplay = {
   type: 'deposit',
   amountFormatted: '0.5',
   status: 'pending',
-  createdAtFormatted: 'Nov 14, 2023, 10:00 AM',
+  createdAtFormatted: '14 Nov 2023',
   claimable: false,
   lockedSharePriceFormatted: null,
   finalizeId: '1',

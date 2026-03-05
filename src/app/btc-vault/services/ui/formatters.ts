@@ -28,21 +28,23 @@ export function formatPercent(value: number): string {
 }
 
 /**
- * Formats a Unix timestamp (seconds) into a localized date string.
+ * Formats a Unix timestamp (seconds) into a day-first date string.
  * @param unix - Unix timestamp in seconds
- * @returns Formatted date string (e.g. "Mar 15, 2025, 02:30 PM")
+ * @param options.includeTime - When true, appends time (e.g. "15 Mar 2025, 02:30 PM")
+ * @returns Formatted date string (e.g. "15 Mar 2025")
  */
-export function formatTimestamp(unix: number): string {
-  return DateTime.fromSeconds(unix).toFormat('MMM dd, yyyy, hh:mm a')
+export function formatTimestamp(unix: number, options?: { includeTime?: boolean }): string {
+  const format = options?.includeTime ? 'dd MMM yyyy, hh:mm a' : 'dd MMM yyyy'
+  return DateTime.fromSeconds(unix).toFormat(format)
 }
 
 /**
- * Formats a Unix timestamp (seconds) into a date-only string for "Last updated on" display.
+ * Formats a Unix timestamp (seconds) into a day-first date-only string.
  * @param unix - Unix timestamp in seconds
- * @returns Formatted date string (e.g. "May 21, 2025")
+ * @returns Formatted date string (e.g. "21 May 2025")
  */
 export function formatDateShort(unix: number): string {
-  return DateTime.fromSeconds(unix).toFormat('MMM dd, yyyy')
+  return DateTime.fromSeconds(unix).toFormat('dd MMM yyyy')
 }
 
 /**

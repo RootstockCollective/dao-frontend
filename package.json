@@ -5,6 +5,7 @@
     "prepare": "husky",
     "dev": "next dev",
     "dev:fork": "PROFILE=fork next dev",
+    "dev:dev": "PROFILE=dev next dev",
     "dev:webpack": "next dev",
     "build": "next build --webpack",
     "start": "next start",

@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-import type { PaginatedResult, PaginationParams, VaultRequest } from '../../services/types'
-import { toPaginatedHistoryDisplay } from '../../services/ui/mappers'
+import type { VaultRequest } from '../../services/types'
 
 // TODO(DAO-XXXX): Remove mock data once contract integration is in place
 const ONE_BTC = 10n ** 18n
@@ -96,28 +95,14 @@ const MOCK_REQUESTS: VaultRequest[] = [
 ]
 
 /**
- * Sorts and paginates an array of vault requests for mock data.
+ * Returns a single VaultRequest by ID from mock data.
+ * Returns null when no request matches the given ID.
  */
-function paginate(requests: VaultRequest[], params: PaginationParams): PaginatedResult<VaultRequest> {
-  const sorted = [...requests].sort((a, b) => {
-    const dir = params.sortDirection === 'asc' ? 1 : -1
-    return dir * (a.timestamps.created - b.timestamps.created)
-  })
-  const start = (params.page - 1) * params.limit
-  return {
-    data: sorted.slice(start, start + params.limit),
-    total: requests.length,
-    page: params.page,
-    limit: params.limit,
-    totalPages: Math.ceil(requests.length / params.limit),
-  }
-}
-
-export function useRequestHistory(address: string | undefined, params: PaginationParams) {
+export function useRequestById(id: string | undefined) {
   return useQuery({
-    queryKey: ['btc-vault', 'history', address, params],
-    queryFn: () => toPaginatedHistoryDisplay(paginate(MOCK_REQUESTS, params)),
-    enabled: !!address,
+    queryKey: ['btc-vault', 'request', id],
+    queryFn: () => MOCK_REQUESTS.find(r => r.id === id) ?? null,
+    enabled: !!id,
     staleTime: Infinity,
   })
 }
