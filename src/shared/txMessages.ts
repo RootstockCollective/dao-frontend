@@ -260,6 +260,27 @@ export const TX_MESSAGES = {
       loading: false,
     },
   },
+  btcVaultDepositRequest: {
+    pending: {
+      title: 'Deposit request in process',
+      content: 'Waiting for transaction confirmation...',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Deposit request submitted',
+      content: 'Your deposit request is pending Fund Manager approval.',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Deposit request failed',
+      content:
+        'An unexpected error occurred while submitting your deposit request. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
   swap: {
     pending: {
       title: 'Swap in process',
