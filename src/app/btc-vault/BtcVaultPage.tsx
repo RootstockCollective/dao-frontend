@@ -5,6 +5,7 @@ import { SectionContainer } from '@/app/communities/components/SectionContainer'
 import { ActiveRequestSection } from './ActiveRequestSection'
 import { BtcVaultBanners } from './BtcVaultBanners'
 import { BtcVaultDashboard } from './components/BtcVaultDashboard'
+import { BtcVaultDisclosureSection } from './components/BtcVaultDisclosureSection'
 import { BtcVaultMetrics } from './components/BtcVaultMetrics'
 import { BtcVaultWalletDisconnectedSection } from './components/BtcVaultWalletDisconnectedSection'
 
@@ -45,6 +46,7 @@ export const BtcVaultPage = () => {
       </section>
 
       <BtcVaultWalletDisconnectedSection />
+      <BtcVaultDisclosureSection />
     </div>
   )
 }
