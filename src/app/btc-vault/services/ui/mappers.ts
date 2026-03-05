@@ -44,6 +44,7 @@ export function toVaultMetricsDisplay(raw: VaultMetrics): VaultMetricsDisplay {
     apyFormatted: formatApyPercent(raw.apy),
     navFormatted: formatEther(raw.nav),
     timestamp: raw.timestamp,
+    navRaw: raw.nav,
   }
 }
 
