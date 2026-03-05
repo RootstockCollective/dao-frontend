@@ -129,26 +129,6 @@ export const BtcVaultDashboard = () => {
 
       <div className="mt-10">
         <BtcVaultActions />
-        {data && data.vaultTokensRaw > 0n && (
-          <div className="flex justify-between w-full" data-testid="btc-vault-nav-links">
-            {/* TODO(DAO-1999): replace href with route to transaction history page */}
-            <a
-              href="#"
-              className="flex items-center gap-x-1 text-sm font-medium underline underline-offset-2"
-            >
-              <HistoryIcon />
-              <Span variant="body-s">View history</Span>
-            </a>
-            {/* TODO(DAO-1999): replace href with route to yield history page */}
-            <a
-              href="#"
-              className="flex items-center gap-x-1 text-sm font-medium underline underline-offset-2"
-            >
-              <HistoryIcon />
-              <Span variant="body-s">View yield history</Span>
-            </a>
-          </div>
-        )}
       </div>
     </SectionContainer>
   )
