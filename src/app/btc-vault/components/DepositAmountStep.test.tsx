@@ -12,8 +12,6 @@ const TWO_RBTC = 2000000000000000000n
 const defaultProps = {
   amount: '',
   setAmount: vi.fn(),
-  slippage: '0.5',
-  setSlippage: vi.fn(),
   rbtcBalanceFormatted: '2.0',
   rbtcBalanceRaw: TWO_RBTC,
   onNext: vi.fn(),
@@ -40,12 +38,6 @@ describe('DepositAmountStep', () => {
     expect(screen.getByTestId('50Button')).toBeInTheDocument()
     expect(screen.getByTestId('75Button')).toBeInTheDocument()
     expect(screen.getByTestId('MaxButton')).toBeInTheDocument()
-  })
-
-  it('renders slippage input', () => {
-    render(<DepositAmountStep {...defaultProps} />)
-
-    expect(screen.getByTestId('Input_slippage-btc-deposit-input')).toBeInTheDocument()
   })
 
   it('disables Continue button when amount is empty', () => {

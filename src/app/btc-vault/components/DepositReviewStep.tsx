@@ -16,7 +16,6 @@ const DISCLOSURES = [
 
 interface DepositReviewStepProps {
   amount: string
-  slippage: string
   estimatedShares: string
   navFormatted: string
   navTimestamp: number
@@ -28,7 +27,6 @@ interface DepositReviewStepProps {
 
 export const DepositReviewStep = ({
   amount,
-  slippage,
   estimatedShares,
   navFormatted,
   navTimestamp,
@@ -49,7 +47,6 @@ export const DepositReviewStep = ({
           testId="review-nav"
         />
         <ReviewRow label="Deposit fee" value={`${depositFee}%`} testId="review-fee" />
-        <ReviewRow label="Slippage tolerance" value={`${slippage}%`} testId="review-slippage" />
       </div>
 
       <Divider className="my-4" />

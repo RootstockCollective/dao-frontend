@@ -50,10 +50,9 @@ export const BtcVaultActions = () => {
 
   const handleSubmit = useCallback(
     async (params: DepositRequestParams) => {
-      const slippagePercentage = (params.slippage ?? 0.005) * 100
       executeTxFlow({
         action: 'btcVaultDepositRequest',
-        onRequestTx: () => onRequestDeposit(params.amount, slippagePercentage),
+        onRequestTx: () => onRequestDeposit(params.amount),
         onSuccess: () => {
           setIsModalOpen(false)
           setShowSuccessBanner(true)
