@@ -1,8 +1,10 @@
 import { formatEther } from 'viem'
 
+import { getFiatAmount } from '@/app/shared/formatter'
 import Big from '@/lib/big'
 import { formatCurrencyWithLabel } from '@/lib/utils'
 
+import { ACTIVE_REQUEST_REASON, DEPOSIT_PAUSED_REASON, WITHDRAWAL_PAUSED_REASON } from '../constants'
 import type {
   ClaimableInfo,
   EligibilityStatus,
@@ -19,6 +21,7 @@ import {
   formatDateShort,
   formatPercent,
   formatTimestamp,
+  MOCK_RBTC_USD_PRICE,
   shortenTxHash,
 } from './formatters'
 import type {
@@ -62,10 +65,19 @@ export function toEpochDisplay(raw: EpochState): EpochDisplay {
 
 /**
  * Maps raw user position into display-ready strings while preserving raw bigints for form validation.
+ * Derives current earnings, yield %, total balance, and fiat amounts.
  * @param raw - Raw user position with bigint balances
- * @returns Display object with formatted strings and raw bigint values
+ * @returns Display object with formatted strings, derived metrics, and raw bigint values
  */
 export function toUserPositionDisplay(raw: UserPosition): UserPositionDisplay {
+  const currentEarnings =
+    raw.positionValue > raw.totalDepositedPrincipal ? raw.positionValue - raw.totalDepositedPrincipal : 0n
+
+  // Integer math: (earnings * 10_000) / principal gives basis points, then divide by 100 for percent
+  const yieldBps =
+    raw.totalDepositedPrincipal > 0n ? (currentEarnings * 10_000n) / raw.totalDepositedPrincipal : 0n
+  const yieldPercent = Number(yieldBps) / 100
+
   return {
     rbtcBalanceFormatted: formatEther(raw.rbtcBalance),
     vaultTokensFormatted: formatEther(raw.vaultTokens),
@@ -73,6 +85,20 @@ export function toUserPositionDisplay(raw: UserPosition): UserPositionDisplay {
     percentOfVaultFormatted: formatPercent(raw.percentOfVault),
     vaultTokensRaw: raw.vaultTokens,
     rbtcBalanceRaw: raw.rbtcBalance,
+
+    totalDepositedPrincipalFormatted: formatEther(raw.totalDepositedPrincipal),
+    totalDepositedPrincipalRaw: raw.totalDepositedPrincipal,
+    currentEarningsFormatted: formatEther(currentEarnings),
+    totalBalanceFormatted: formatEther(raw.positionValue),
+    totalBalanceRaw: raw.positionValue,
+    yieldPercentToDateFormatted: formatPercent(yieldPercent),
+
+    fiatWalletBalance: formatCurrencyWithLabel(getFiatAmount(raw.rbtcBalance, MOCK_RBTC_USD_PRICE)),
+    fiatVaultShares: formatCurrencyWithLabel(getFiatAmount(raw.positionValue, MOCK_RBTC_USD_PRICE)),
+    fiatPrincipalDeposited: formatCurrencyWithLabel(
+      getFiatAmount(raw.totalDepositedPrincipal, MOCK_RBTC_USD_PRICE),
+    ),
+    fiatTotalBalance: formatCurrencyWithLabel(getFiatAmount(raw.positionValue, MOCK_RBTC_USD_PRICE)),
   }
 }
 
@@ -98,16 +124,12 @@ export function toActionEligibility(
     depositBlockReason: !eligibility.eligible
       ? eligibility.reason
       : pause.deposits === 'paused'
-        ? 'Deposits are currently paused'
+        ? DEPOSIT_PAUSED_REASON
         : hasActive
-          ? 'You already have an active request'
+          ? ACTIVE_REQUEST_REASON
           : '',
     withdrawBlockReason:
-      pause.withdrawals === 'paused'
-        ? 'Withdrawals are currently paused'
-        : hasActive
-          ? 'You already have an active request'
-          : '',
+      pause.withdrawals === 'paused' ? WITHDRAWAL_PAUSED_REASON : hasActive ? ACTIVE_REQUEST_REASON : '',
   }
 }
 

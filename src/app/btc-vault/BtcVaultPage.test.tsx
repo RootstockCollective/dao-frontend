@@ -1,6 +1,9 @@
-import { TooltipProvider } from '@radix-ui/react-tooltip'
-import { cleanup, render, screen } from '@testing-library/react'
+import type { ReactNode } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { cleanup, render, screen } from '@testing-library/react'
+import { TooltipProvider } from '@radix-ui/react-tooltip'
+
 import { BtcVaultPage } from './BtcVaultPage'
 
 const mockUseAccount = vi.fn()
@@ -34,6 +37,14 @@ vi.mock('./ActiveRequestSection', () => ({
   ActiveRequestSection: () => null,
 }))
 
+vi.mock('./components/BtcVaultDashboard', () => ({
+  BtcVaultDashboard: () => <section data-testid="btc-vault-dashboard" />,
+}))
+
+vi.mock('./components/BtcVaultMetrics', () => ({
+  BtcVaultMetrics: () => null,
+}))
+
 vi.mock('./hooks/useVaultMetrics', () => ({
   useVaultMetrics: () => ({
     data: {
@@ -58,8 +69,9 @@ vi.mock('./hooks/useEpochState', () => ({
   }),
 }))
 
-const renderWithProviders = (ui: React.ReactElement = <BtcVaultPage />) =>
-  render(<TooltipProvider>{ui}</TooltipProvider>)
+function Wrapper({ children }: { children: ReactNode }) {
+  return <TooltipProvider>{children}</TooltipProvider>
+}
 
 describe('BtcVaultPage', () => {
   beforeEach(() => {
@@ -74,7 +86,7 @@ describe('BtcVaultPage', () => {
 
   it('shows WalletDisconnectedBanner when wallet is not connected', () => {
     mockUseAccount.mockReturnValue({ address: undefined, isConnected: false })
-    renderWithProviders()
+    render(<BtcVaultPage />, { wrapper: Wrapper })
 
     expect(screen.getByTestId('BTC Vault')).toBeInTheDocument()
     expect(screen.getByTestId('WalletDisconnectedBanner')).toBeInTheDocument()
@@ -93,7 +105,7 @@ describe('BtcVaultPage', () => {
         withdrawBlockReason: '',
       },
     })
-    renderWithProviders()
+    render(<BtcVaultPage />, { wrapper: Wrapper })
 
     expect(screen.getByTestId('BTC Vault')).toBeInTheDocument()
     expect(screen.getByTestId('NotAuthorizedBanner')).toBeInTheDocument()
@@ -113,7 +125,7 @@ describe('BtcVaultPage', () => {
         withdrawBlockReason: '',
       },
     })
-    renderWithProviders()
+    render(<BtcVaultPage />, { wrapper: Wrapper })
     expect(screen.getByTestId('btc-vault-metrics')).toBeInTheDocument()
     expect(screen.getByText('VAULT METRICS')).toBeInTheDocument()
   })
@@ -131,12 +143,13 @@ describe('BtcVaultPage', () => {
         withdrawBlockReason: '',
       },
     })
-    renderWithProviders()
+    render(<BtcVaultPage />, { wrapper: Wrapper })
 
     expect(screen.getByTestId('BTC Vault')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-metrics')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-dashboard')).toBeInTheDocument()
-    expect(screen.getByTestId('btc-vault-actions')).toBeInTheDocument()
+    expect(screen.getByTestId('btc-vault-actions-zone')).toBeInTheDocument()
+    expect(screen.getByTestId('btc-vault-request-queue')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-history')).toBeInTheDocument()
     expect(screen.queryByTestId('WalletDisconnectedBanner')).not.toBeInTheDocument()
     expect(screen.queryByTestId('NotAuthorizedBanner')).not.toBeInTheDocument()
@@ -155,7 +168,7 @@ describe('BtcVaultPage', () => {
         withdrawBlockReason: '',
       },
     })
-    renderWithProviders()
+    render(<BtcVaultPage />, { wrapper: Wrapper })
 
     expect(screen.getByTestId('BTC Vault')).toBeInTheDocument()
     expect(screen.queryByTestId('NotAuthorizedBanner')).not.toBeInTheDocument()
@@ -174,7 +187,7 @@ describe('BtcVaultPage', () => {
         withdrawBlockReason: 'You already have an active request',
       },
     })
-    renderWithProviders()
+    render(<BtcVaultPage />, { wrapper: Wrapper })
 
     expect(screen.getByTestId('BTC Vault')).toBeInTheDocument()
     expect(screen.queryByTestId('NotAuthorizedBanner')).not.toBeInTheDocument()

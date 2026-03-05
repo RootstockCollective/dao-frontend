@@ -1,4 +1,4 @@
-import type { RequestType, RequestStatus, EpochStatus } from '../types'
+import type { EpochStatus, RequestStatus, RequestType } from '../types'
 
 // ─── Display Types ───────────────────────────────────────────────────
 
@@ -25,6 +25,21 @@ export interface UserPositionDisplay {
   vaultTokensRaw: bigint
   /** Raw bigint kept for form validation */
   rbtcBalanceRaw: bigint
+
+  totalDepositedPrincipalFormatted: string
+  totalDepositedPrincipalRaw: bigint
+  /** Derived: positionValue - totalDepositedPrincipal (clamped to 0) */
+  currentEarningsFormatted: string
+  /** positionValue as "Total balance" — same underlying value, semantic alias */
+  totalBalanceFormatted: string
+  totalBalanceRaw: bigint
+  /** Derived: ((positionValue - principal) / principal) * 100, or "0.00%" when principal is 0 */
+  yieldPercentToDateFormatted: string
+
+  fiatWalletBalance: string
+  fiatVaultShares: string
+  fiatPrincipalDeposited: string
+  fiatTotalBalance: string
 }
 
 export interface ActionEligibility {

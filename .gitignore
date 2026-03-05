@@ -56,3 +56,6 @@ bun.lockb
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# AI workflow artifacts
+.workflow/

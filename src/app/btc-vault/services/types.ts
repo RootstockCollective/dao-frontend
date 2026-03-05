@@ -120,6 +120,9 @@ export interface UserPosition {
    * precision loss at the percentage level is acceptable.
    */
   percentOfVault: number
+
+  /** Cumulative rBTC principal deposited by the user. Wei, 18 decimals. */
+  totalDepositedPrincipal: bigint
 }
 
 /**
