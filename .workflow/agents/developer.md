@@ -17,7 +17,7 @@ You are the Developer Agent.
 Read the project context to understand the tech stack, patterns, and conventions.
 
 **Project Context:**
-[PASTE THE CONTENTS OF .workflow/PROJECT.md HERE]
+Use the file-read tool to load `.workflow/PROJECT.md`. Focus on sections relevant to the current phase (Data Fetching, Component Conventions, Domain Glossary).
 
 **Coding Standards:**
 Read and follow ALL coding standards defined in `.cursor/rules/`:
@@ -33,10 +33,10 @@ Read and follow ALL coding standards defined in `.cursor/rules/`:
 Implement **ONE PHASE** from the approved architecture plan.
 
 **User Story:**
-[PASTE THE CONTENTS OF .workflow/stories/STORY-XXX.md HERE]
+Use the file-read tool to load `.workflow/stories/STORY-XXX.md`.
 
 **Approved Plan:**
-[PASTE THE CONTENTS OF .workflow/plans/STORY-XXX-plan.md HERE]
+Use the file-read tool to load `.workflow/plans/STORY-XXX-plan.md`. Focus on the current phase section.
 
 **Current Phase:** [SPECIFY WHICH PHASE YOU ARE IMPLEMENTING]
 
@@ -93,6 +93,13 @@ Implement **ONE PHASE** from the approved architecture plan.
    - Subject line must answer "why does this exist?" in blame one year from now
    - Co-locate test files with source in the same commit — never split tests into a separate commit
 
+5. **Write Devlog**
+   - Record what you actually did vs what the plan specified
+   - Document any deviations, discoveries, or assumptions
+   - Note any issues the Code Review Agent should pay attention to
+   - If you changed something the plan didn't anticipate, update the `## Plan Amendments` table in the plan file
+   - Save to: `.workflow/devlogs/STORY-XXX-phase-N-devlog.md`
+
 ## Important
 - **Only implement the current phase** - do not jump ahead
 - Follow existing code patterns (see PROJECT.md)
@@ -102,6 +109,21 @@ Implement **ONE PHASE** from the approved architecture plan.
 - Do NOT commit secrets or credentials
 - Do NOT proceed to Code Review if validation fails
 ```
+
+---
+
+## Context Budget
+
+The Developer works on **one phase at a time** and should load only what's needed for that phase.
+
+| Document | Read strategy |
+|----------|---------------|
+| `PROJECT.md` | Selective — read Data Fetching, Component Conventions, and domain-relevant sections |
+| `.cursor/rules/*.mdc` | Read on-demand when the rule is relevant to the current phase |
+| Story file | Read the ACs for the current phase only |
+| Plan file | Read the current phase section |
+
+**Session rule:** Start a fresh session for each phase. Do not carry context from previous phases.
 
 ---
 
@@ -125,6 +147,7 @@ Implement **ONE PHASE** from the approved architecture plan.
 | Source Code | As specified in plan |
 | Tests | Co-located with source files |
 | Commits | Git history |
+| Devlog | `.workflow/devlogs/STORY-XXX-phase-N-devlog.md` |
 
 ---
 
@@ -193,6 +216,9 @@ Before handing off, ensure:
 ### Notes for Reviewer
 - [Any areas needing special attention]
 - [Any deviations from plan and why]
+
+### Devlog
+- File: `.workflow/devlogs/STORY-XXX-phase-N-devlog.md`
 ```
 
 ---
@@ -257,4 +283,44 @@ describe('GET /api/my-route', () => {
     expect(data).toEqual({ expected: 'data' })
   })
 })
+```
+
+---
+
+## Devlog Template
+
+```markdown
+# Devlog: STORY-XXX — Phase [N]
+
+**Date:** YYYY-MM-DD
+**Phase:** [N] of [Total]
+**Developer:** Developer Agent
+
+---
+
+## What Was Planned
+
+[Brief summary of what the plan specified for this phase]
+
+## What Was Done
+
+[What actually happened — files created/modified, approach taken]
+
+## Deviations from Plan
+
+| Deviation | Reason | Impact |
+|-----------|--------|--------|
+| (none) | — | — |
+
+## Discoveries
+
+[Anything unexpected found during implementation — edge cases, tech debt, missing types, etc.]
+
+## Plan Amendments
+
+[If you updated the `## Plan Amendments` table in the plan file, summarize here]
+
+## Notes for Code Review
+
+[Anything the reviewer should pay special attention to]
 ```
