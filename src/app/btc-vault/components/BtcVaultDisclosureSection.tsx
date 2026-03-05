@@ -18,10 +18,14 @@ export const BtcVaultDisclosureSection = () => {
   }
 
   return (
-    <section className="w-full" data-testid="BtcVaultDisclosureSection">
-      <SectionContainer title="DISCLOSURE" headerVariant="h3">
-        <DisclosureContent />
-      </SectionContainer>
-    </section>
+    <SectionContainer
+      title="DISCLOSURE"
+      headerVariant="h3"
+      className="w-full"
+      contentClassName="mt-4"
+      data-testid="BtcVaultDisclosureSection"
+    >
+      <DisclosureContent />
+    </SectionContainer>
   )
 }

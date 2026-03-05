@@ -34,9 +34,9 @@ const NotAuthorizedBanner = ({ reason }: { reason?: string }) => {
 
 const DisclosureBanner = () => (
   <StackableBanner testId="DisclosureBanner">
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-4">
       <Header variant="h3">DISCLOSURE</Header>
-      <DisclosureContent />
+      <DisclosureContent variant="banner" />
     </div>
   </StackableBanner>
 )
