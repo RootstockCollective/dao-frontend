@@ -1,5 +1,6 @@
 'use client'
 
+import { CopyButton } from '@/components/CopyButton'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
 import { TokenImage } from '@/components/TokenImage'
 import { Label, Span } from '@/components/Typography'
@@ -14,7 +15,7 @@ interface RequestDetailGridProps {
 export function RequestDetailGrid({ detail }: RequestDetailGridProps) {
   return (
     <div data-testid="request-detail-grid" className="grid grid-cols-1 gap-4 md:grid-cols-2">
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1 md:col-span-2">
         <Label variant="tag" className="text-bg-0">
           Request type
         </Label>
@@ -25,16 +26,7 @@ export function RequestDetailGrid({ detail }: RequestDetailGridProps) {
 
       <div className="flex flex-col gap-1">
         <Label variant="tag" className="text-bg-0">
-          Shares requested
-        </Label>
-        <Span variant="body-l" className="text-100">
-          {detail.sharesFormatted}
-        </Span>
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <Label variant="tag" className="text-bg-0">
-          Shares value
+          {detail.type === 'withdrawal' ? 'Amount to withdraw' : 'Amount to deposit'}
         </Label>
         <div className="flex flex-col">
           <div className="flex items-center gap-1">
@@ -52,6 +44,15 @@ export function RequestDetailGrid({ detail }: RequestDetailGridProps) {
             </Span>
           )}
         </div>
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <Label variant="tag" className="text-bg-0">
+          Shares
+        </Label>
+        <Span variant="body-l" className="text-100">
+          {detail.sharesFormatted}
+        </Span>
       </div>
 
       <div className="flex flex-col gap-1">
@@ -74,17 +75,25 @@ export function RequestDetailGrid({ detail }: RequestDetailGridProps) {
 
       <div className="flex flex-col gap-1">
         <Label variant="tag" className="text-bg-0">
-          {detail.type === 'withdrawal' ? 'Withdrawal address' : 'Deposit address'}
+          {detail.type === 'withdrawal' ? 'Address to withdraw' : 'Address to deposit'}
         </Label>
-        <ShortenAndCopy value={detail.addressFull} />
+        <ShortenAndCopy
+          value={detail.addressFull}
+          className="text-primary overflow-hidden text-ellipsis font-rootstock-sans font-normal text-lg leading-[133%]"
+        />
       </div>
 
       <div className="flex flex-col gap-1">
         <Label variant="tag" className="text-bg-0">
           Tx hash
         </Label>
-        {detail.submitTxFull ? (
-          <ShortenAndCopy value={detail.submitTxFull} />
+        {detail.submitTxShort ? (
+          <CopyButton
+            copyText={detail.submitTxFull!}
+            className="justify-start text-primary overflow-hidden text-ellipsis font-rootstock-sans font-normal text-lg leading-[133%]"
+          >
+            {detail.submitTxShort}
+          </CopyButton>
         ) : (
           <Span variant="body-l" className="text-200">
             —

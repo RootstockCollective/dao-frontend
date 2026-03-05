@@ -91,6 +91,9 @@ export const MOCK_REQUESTS: VaultRequest[] = [
   },
 ]
 
+/**
+ * Sorts and paginates an array of vault requests for mock data.
+ */
 export function paginate(requests: VaultRequest[], params: PaginationParams): PaginatedResult<VaultRequest> {
   const sorted = [...requests].sort((a, b) => {
     const dir = params.sortDirection === 'asc' ? 1 : -1

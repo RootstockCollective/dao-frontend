@@ -23,8 +23,10 @@ function getCurrentStage(status: RequestStatus): number {
       return 4
     case 'failed':
       return 0
-    default:
-      return 1
+    default: {
+      const _exhaustive: never = status
+      return _exhaustive
+    }
   }
 }
 

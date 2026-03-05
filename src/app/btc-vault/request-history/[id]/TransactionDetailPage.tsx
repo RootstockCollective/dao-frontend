@@ -46,13 +46,15 @@ function TransactionDetailContent({ id, address }: { id: string; address: string
   const detail = toRequestDetailDisplay(request, null, MOCK_RBTC_USD_PRICE, address)
 
   return (
-    <div data-testid="transaction-detail-page" className="flex flex-col items-start w-full gap-6 rounded-sm">
+    <div data-testid="transaction-detail-page" className="flex flex-col items-start w-full gap-6">
       <Header variant="h2" caps className="text-100">
         {detail.typeLabel.toUpperCase()} REQUEST
       </Header>
-      <RequestStatusStepper status={request.status} type={request.type} />
-      <RequestDetailGrid detail={detail} />
-      {detail.canCancel && <CancelRequestButton />}
+      <div className="bg-bg-80 rounded py-8 px-4 md:p-6 w-full flex flex-col gap-6">
+        <RequestStatusStepper status={request.status} type={request.type} />
+        <RequestDetailGrid detail={detail} />
+        {detail.canCancel && <CancelRequestButton />}
+      </div>
     </div>
   )
 }
