@@ -333,3 +333,29 @@ export interface PaginatedResult<T> {
   /** Total number of pages (`Math.ceil(total / limit)`). */
   totalPages: number
 }
+
+// ─── Capital Allocation ──────────────────────────────────────────────
+
+/**
+ * A single category in the vault's capital allocation breakdown.
+ * Used to express how vault capital is distributed (e.g. deployed, reserve, unallocated).
+ */
+export interface CapitalCategory {
+  /** Human-readable label (e.g. "Deployed capital"). */
+  label: string
+
+  /** Amount of rBTC allocated to this category. Wei, 18 decimals. */
+  amount: bigint
+}
+
+/**
+ * Breakdown of the vault's total capital across categories.
+ * The sum of all `categories[].amount` should equal `totalCapital`.
+ */
+export interface CapitalAllocation {
+  /** Individual allocation buckets. */
+  categories: CapitalCategory[]
+
+  /** Total capital across all categories. Wei, 18 decimals. */
+  totalCapital: bigint
+}

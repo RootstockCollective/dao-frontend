@@ -9,6 +9,7 @@ import {
   toActiveRequestDisplay,
   toRequestDetailDisplay,
   toPaginatedHistoryDisplay,
+  toCapitalAllocationDisplay,
 } from './mappers'
 
 describe('toVaultMetricsDisplay', () => {
@@ -414,5 +415,61 @@ describe('toPaginatedHistoryDisplay', () => {
     expect(result.rows[0].submitTxShort).toBeNull()
     expect(result.rows[0].finalizeTxShort).toBeNull()
     expect(result.rows[0].finalizedAtFormatted).toBeNull()
+  })
+})
+
+describe('toCapitalAllocationDisplay', () => {
+  it('maps three categories with correct amounts, percentages, and USD values', () => {
+    const raw = {
+      categories: [
+        { label: 'Deployed capital', amount: WeiPerEther / 2n },
+        { label: 'Liquidity reserve', amount: WeiPerEther / 4n },
+        { label: 'Unallocated capital', amount: WeiPerEther / 4n },
+      ],
+      totalCapital: WeiPerEther,
+    }
+    const result = toCapitalAllocationDisplay(raw, 50000)
+
+    expect(result.categories).toHaveLength(3)
+
+    expect(result.categories[0].label).toBe('Deployed capital')
+    expect(result.categories[0].amountFormatted).toBe('0.5')
+    expect(result.categories[0].percentFormatted).toBe('50%')
+    expect(result.categories[0].fiatAmountFormatted).toBe('$25,000.00 USD')
+
+    expect(result.categories[1].label).toBe('Liquidity reserve')
+    expect(result.categories[1].amountFormatted).toBe('0.25')
+    expect(result.categories[1].percentFormatted).toBe('25%')
+    expect(result.categories[1].fiatAmountFormatted).toBe('$12,500.00 USD')
+
+    expect(result.categories[2].label).toBe('Unallocated capital')
+    expect(result.categories[2].amountFormatted).toBe('0.25')
+    expect(result.categories[2].percentFormatted).toBe('25%')
+    expect(result.categories[2].fiatAmountFormatted).toBe('$12,500.00 USD')
+  })
+
+  it('handles zero total capital without division by zero', () => {
+    const raw = {
+      categories: [{ label: 'Deployed capital', amount: 0n }],
+      totalCapital: 0n,
+    }
+    const result = toCapitalAllocationDisplay(raw, 50000)
+
+    expect(result.categories[0].percentFormatted).toBe('0%')
+    expect(result.categories[0].amountFormatted).toBe('0')
+  })
+
+  it('returns $0.00 USD fiat amounts when rbtcPrice is 0', () => {
+    const raw = {
+      categories: [
+        { label: 'Deployed capital', amount: WeiPerEther },
+        { label: 'Liquidity reserve', amount: WeiPerEther / 2n },
+      ],
+      totalCapital: (WeiPerEther * 3n) / 2n,
+    }
+    const result = toCapitalAllocationDisplay(raw, 0)
+
+    expect(result.categories[0].fiatAmountFormatted).toBe('$0.00 USD')
+    expect(result.categories[1].fiatAmountFormatted).toBe('$0.00 USD')
   })
 })
