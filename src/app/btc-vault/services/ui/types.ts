@@ -98,3 +98,20 @@ export interface RequestDetailDisplay extends ActiveRequestDisplay {
   submitTxFull: string | null
   canCancel: boolean
 }
+
+// ─── Capital Allocation Display ──────────────────────────────────────
+
+export interface CapitalCategoryDisplay {
+  /** Category label (e.g. "Deployed capital"). */
+  label: string
+  /** Formatted rBTC amount (e.g. "0.52"). */
+  amountFormatted: string
+  /** Percentage of total capital (e.g. "50%"). */
+  percentFormatted: string
+  /** USD equivalent (e.g. "$12,345.00 USD"). */
+  fiatAmountFormatted: string
+}
+
+export interface CapitalAllocationDisplay {
+  categories: CapitalCategoryDisplay[]
+}

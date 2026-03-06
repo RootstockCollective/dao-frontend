@@ -7,6 +7,7 @@ import { shortAddress } from '@/lib/utils'
 
 import { ACTIVE_REQUEST_REASON, DEPOSIT_PAUSED_REASON, WITHDRAWAL_PAUSED_REASON } from '../constants'
 import type {
+  CapitalAllocation,
   ClaimableInfo,
   EligibilityStatus,
   EpochState,
@@ -28,6 +29,7 @@ import {
 import type {
   ActionEligibility,
   ActiveRequestDisplay,
+  CapitalAllocationDisplay,
   EpochDisplay,
   PaginatedHistoryDisplay,
   RequestDetailDisplay,
@@ -222,5 +224,31 @@ export function toPaginatedHistoryDisplay(raw: PaginatedResult<VaultRequest>): P
     page: raw.page,
     limit: raw.limit,
     totalPages: raw.totalPages,
+  }
+}
+
+/**
+ * Maps raw capital allocation data into display-ready formatted strings.
+ * @param raw - Raw capital allocation with bigint amounts
+ * @param rbtcPrice - Current rBTC price in USD (0 if unavailable)
+ * @returns Display object with formatted categories
+ */
+export function toCapitalAllocationDisplay(
+  raw: CapitalAllocation,
+  rbtcPrice: number,
+): CapitalAllocationDisplay {
+  return {
+    categories: raw.categories.map(cat => {
+      const amountEther = formatEther(cat.amount)
+      const percent = raw.totalCapital > 0n ? Number((cat.amount * 10000n) / raw.totalCapital) / 100 : 0
+      const fiatAmountFormatted =
+        rbtcPrice > 0 ? formatCurrencyWithLabel(Big(amountEther).mul(rbtcPrice)) : '$0.00 USD'
+      return {
+        label: cat.label,
+        amountFormatted: amountEther,
+        percentFormatted: `${percent}%`,
+        fiatAmountFormatted,
+      }
+    }),
   }
 }

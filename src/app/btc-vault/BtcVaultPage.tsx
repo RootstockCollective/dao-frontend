@@ -4,6 +4,7 @@ import { SectionContainer } from '@/app/communities/components/SectionContainer'
 
 import { ActiveRequestSection } from './ActiveRequestSection'
 import { BtcVaultBanners } from './BtcVaultBanners'
+import { CapitalAllocationSection } from './components/CapitalAllocationSection'
 import { BtcVaultDashboard } from './components/BtcVaultDashboard'
 import { BtcVaultMetrics } from './components/BtcVaultMetrics'
 import { BtcVaultWalletDisconnectedSection } from './components/BtcVaultWalletDisconnectedSection'
@@ -28,6 +29,9 @@ export const BtcVaultPage = () => {
 
       {/* Dashboard Zone - F4 */}
       <BtcVaultDashboard />
+
+      {/* Capital Allocation Transparency - DAO-2017 */}
+      <CapitalAllocationSection />
 
       {/* Actions Zone - F5/F6 */}
       <section data-testid="btc-vault-actions-zone" className="w-full">
