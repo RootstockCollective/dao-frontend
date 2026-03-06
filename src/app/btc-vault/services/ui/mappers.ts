@@ -65,8 +65,8 @@ export function toEpochDisplay(raw: EpochState): EpochDisplay {
   const statusSummary =
     raw.status === 'open'
       ? `Closes in ${formatCountdown(raw.endTime)}`
-      : raw.status === 'claimable'
-        ? `Settled ${formatTimestamp(raw.settledAt!, { includeTime: true })}`
+      : raw.status === 'claimable' && raw.settledAt != null
+        ? `Settled ${formatTimestamp(raw.settledAt)}`
         : raw.status.charAt(0).toUpperCase() + raw.status.slice(1)
   return { epochId: raw.epochId, status: raw.status, statusSummary, isAcceptingRequests }
 }

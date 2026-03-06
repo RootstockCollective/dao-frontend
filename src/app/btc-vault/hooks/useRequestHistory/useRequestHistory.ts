@@ -193,21 +193,23 @@ export function applyFilters(requests: VaultRequest[], filters?: HistoryFilterPa
 
   let filtered = requests
 
-  if (filters.type?.length) {
-    filtered = filtered.filter(r => filters.type!.includes(r.type))
+  const { type, claimToken, status } = filters
+
+  if (type?.length) {
+    filtered = filtered.filter(r => type.includes(r.type))
   }
 
-  if (filters.claimToken?.length) {
+  if (claimToken?.length) {
     filtered = filtered.filter(r => {
       const tokenType = r.type === 'deposit' ? 'rbtc' : 'shares'
-      return filters.claimToken!.includes(tokenType)
+      return claimToken.includes(tokenType)
     })
   }
 
-  if (filters.status?.length) {
+  if (status?.length) {
     filtered = filtered.filter(r => {
       const { displayStatus } = mapRequestDisplayStatus(r.status, r.type, r.failureReason)
-      return filters.status!.includes(displayStatus)
+      return status.includes(displayStatus)
     })
   }
 

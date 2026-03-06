@@ -28,7 +28,6 @@ describe('toVaultMetricsDisplay', () => {
 })
 
 describe('toUserPositionDisplay', () => {
-
   it('includes formatted strings and raw bigints', () => {
     const result = toUserPositionDisplay({
       rbtcBalance: 2n * WeiPerEther,

@@ -115,7 +115,7 @@ describe('paginate', () => {
     expect(result.totalPages).toBe(3)
   })
 
-  it('sorts descending by default (newest first)', () => {
+  it('sorts descending when sortDirection is desc (newest first)', () => {
     const result = paginate(FIXTURES, { page: 1, limit: 10, sortDirection: 'desc' })
     const timestamps = result.data.map(r => r.timestamps.created)
     for (let i = 1; i < timestamps.length; i++) {
