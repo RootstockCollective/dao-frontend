@@ -22,7 +22,14 @@ const config = [
   ...storybookPlugin.configs['flat/recommended'],
 
   {
-    ignores: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx', '**/*.stories.tsx'],
+    ignores: [
+      '**/*.test.ts',
+      '**/*.test.tsx',
+      '**/*.spec.ts',
+      '**/*.spec.tsx',
+      '**/*.stories.tsx',
+      'eslint-fixtures/**',
+    ],
   },
 
   {
@@ -84,6 +91,21 @@ const config = [
           },
           typeLiterals: {
             optionalityOrder: 'required-first',
+          },
+        },
+      ],
+      '@typescript-eslint/no-restricted-types': [
+        'error',
+        {
+          types: {
+            FC: {
+              message:
+                'Do not use FC. Type the component as (props: Props) => JSX.Element and use (props: Props) in the parameter.',
+            },
+            FunctionComponent: {
+              message:
+                'Do not use FunctionComponent. Type the component as (props: Props) => JSX.Element and use (props: Props) in the parameter.',
+            },
           },
         },
       ],
