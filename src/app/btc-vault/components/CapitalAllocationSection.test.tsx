@@ -149,7 +149,7 @@ describe('CapitalAllocationSection', () => {
     expect(screen.queryByTestId('capital-allocation-detailed')).not.toBeInTheDocument()
   })
 
-  it('toggling ON shows detailed placeholder and hides metric cards', async () => {
+  it('toggling ON shows detailed view with donut chart and wallet placeholder', async () => {
     mockedUseCapitalAllocation.mockReturnValue({
       data: MOCK_DATA,
       isLoading: false,
@@ -164,6 +164,26 @@ describe('CapitalAllocationSection', () => {
 
     expect(screen.getByTestId('capital-allocation-detailed')).toBeInTheDocument()
     expect(screen.queryByTestId('capital-allocation-undetailed')).not.toBeInTheDocument()
+    expect(screen.getAllByTestId('capital-allocation-donut-chart').length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByTestId('capital-allocation-wallet-placeholder').length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('detailed view shows loading placeholder when isLoading is true', async () => {
+    mockedUseCapitalAllocation.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      isError: false,
+    } as ReturnType<typeof useCapitalAllocation>)
+
+    render(<CapitalAllocationSection />, { wrapper: Wrapper })
+    const user = userEvent.setup()
+
+    const toggle = screen.getByTestId('detailed-view-toggle')
+    await user.click(toggle)
+
+    expect(screen.getByTestId('capital-allocation-detailed')).toBeInTheDocument()
+    expect(screen.getAllByTestId('detailed-loading').length).toBeGreaterThanOrEqual(1)
+    expect(screen.queryByTestId('capital-allocation-donut-chart')).not.toBeInTheDocument()
   })
 
   it('returns null when hook returns an error', () => {
