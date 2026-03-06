@@ -19,7 +19,7 @@ export const MobileBtcVaultHistoryCard: FC<Props> = ({ row }) => {
   return (
     <div
       className="flex flex-col bg-v3-bg-accent-80 rounded-sm border-b border-b-v3-bg-accent-60 p-4 gap-3"
-      data-testid="MobileBtcVaultHistoryCard"
+      data-testid="mobile-btc-vault-history-card"
     >
       {/* Type and status */}
       <div className="flex items-center justify-between">

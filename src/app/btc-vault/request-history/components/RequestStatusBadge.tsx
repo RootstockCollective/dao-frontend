@@ -27,7 +27,7 @@ export const RequestStatusBadge: FC<Props> = ({ displayStatus, label, className,
         BADGE_STYLES[displayStatus],
         className,
       )}
-      data-testid="RequestStatusBadge"
+      data-testid="request-status-badge"
       {...props}
     >
       <Paragraph className="whitespace-nowrap text-[clamp(10px,1.1vw,12px)]">{label}</Paragraph>

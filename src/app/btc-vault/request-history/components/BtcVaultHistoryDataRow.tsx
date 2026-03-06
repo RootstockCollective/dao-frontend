@@ -23,12 +23,11 @@ export const BtcVaultHistoryDataRow: FC<Props> = memo(({ row }) => {
     <tr
       className={cn(
         'flex border-b-v3-bg-accent-60 border-b-1 gap-4 pl-4 py-3 min-h-[65px]',
-        'cursor-pointer',
         isHovered && 'bg-v3-text-100',
       )}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      data-testid="BtcVaultHistoryDataRow"
+      data-testid="btc-vault-history-data-row"
     >
       <TypeCell type={data.type} isHovered={isHovered} />
       <DateCell date={data.date} isHovered={isHovered} />

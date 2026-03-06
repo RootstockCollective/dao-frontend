@@ -65,8 +65,10 @@ const HeaderCell = ({ children, columnId }: HeaderCellProps) => {
   return (
     <TableHeaderCell
       className={cn('h-full', COLUMN_TRANSFORMS[columnId])}
-      onClick={() => isSortable && dispatchSortRoundRobin(dispatch, columnId, sort)}
-      data-testid={`BtcVaultHistoryHeaderCell-${columnId}`}
+      onClick={() =>
+        isSortable && dispatchSortRoundRobin(dispatch, columnId, sort ?? { columnId: null, direction: null })
+      }
+      data-testid={`btc-vault-history-header-cell-${columnId}`}
     >
       {isSortable && (
         <div className="flex pt-1 justify-center gap-2">
@@ -85,7 +87,7 @@ export const BtcVaultHistoryHeaderRow = () => (
     <thead>
       <tr
         className="flex select-none gap-4 pb-2 pl-4 border-b-1 border-b-v3-text-60"
-        data-testid="BtcVaultHistoryHeaderRow"
+        data-testid="btc-vault-history-header-row"
       >
         <HeaderCell columnId="type">
           <Label variant="tag-s" className="cursor-[inherit]">

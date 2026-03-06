@@ -25,7 +25,7 @@ const TableCell = ({ children, className, columnId }: TableCellProps): ReactNode
   return (
     <td
       className={cn('flex self-stretch items-center select-none', COLUMN_TRANSFORMS[columnId], className)}
-      data-testid={`BtcVaultHistoryCell-${columnId}`}
+      data-testid={`btc-vault-history-cell-${columnId}`}
     >
       {children}
     </td>
@@ -114,7 +114,7 @@ interface ActionsCellProps extends CellStateProps {
 
 /**
  * Renders action buttons for actionable rows (claimable/pending).
- * Buttons are visual stubs — interaction wiring is in STORY-EPIC-MOTHER-008-B.
+ * Buttons are visual stubs — interaction wiring is a follow-up story (expandable rows + finalization CTA).
  */
 export const ActionsCell: FC<ActionsCellProps> = ({ requestStatus, type, isHovered }) => {
   const isClaimable = requestStatus === 'claimable'
@@ -126,7 +126,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ requestStatus, type, isHover
         <Paragraph
           variant="body-s"
           className={cn('font-medium', isHovered ? 'text-black' : 'text-primary')}
-          data-testid="BtcVaultHistoryClaimAction"
+          data-testid="btc-vault-history-claim-action"
         >
           {type === 'Deposit' ? 'Claim shares' : 'Claim rBTC'}
         </Paragraph>
@@ -140,7 +140,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ requestStatus, type, isHover
         <Paragraph
           variant="body-s"
           className={cn('font-medium', isHovered ? 'text-black' : 'text-v3-text-60')}
-          data-testid="BtcVaultHistoryCancelAction"
+          data-testid="btc-vault-history-cancel-action"
         >
           Cancel request
         </Paragraph>
