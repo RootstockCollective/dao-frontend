@@ -23,6 +23,7 @@ const mockData50_25_25: CapitalAllocationDisplay = {
     { label: 'Liquidity reserve', amountFormatted: '0.26', percentFormatted: '25%', fiatAmountFormatted: '$12,500.00 USD' },
     { label: 'Unallocated capital', amountFormatted: '0.26', percentFormatted: '25%', fiatAmountFormatted: '$12,500.00 USD' },
   ],
+  wallets: [],
 }
 
 const mockData80_10_10: CapitalAllocationDisplay = {
@@ -31,6 +32,7 @@ const mockData80_10_10: CapitalAllocationDisplay = {
     { label: 'Liquidity reserve', amountFormatted: '0.10', percentFormatted: '10%', fiatAmountFormatted: '$5,000.00 USD' },
     { label: 'Unallocated capital', amountFormatted: '0.10', percentFormatted: '10%', fiatAmountFormatted: '$5,000.00 USD' },
   ],
+  wallets: [],
 }
 
 const mockData100_0_0: CapitalAllocationDisplay = {
@@ -39,6 +41,7 @@ const mockData100_0_0: CapitalAllocationDisplay = {
     { label: 'Liquidity reserve', amountFormatted: '0', percentFormatted: '0%', fiatAmountFormatted: '$0.00 USD' },
     { label: 'Unallocated capital', amountFormatted: '0', percentFormatted: '0%', fiatAmountFormatted: '$0.00 USD' },
   ],
+  wallets: [],
 }
 
 describe('CapitalAllocationDonutChart', () => {

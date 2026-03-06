@@ -1,0 +1,1 @@
+export const DEFAULT_VISIBLE_WALLETS = 5

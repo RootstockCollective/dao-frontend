@@ -370,4 +370,23 @@ export interface CapitalAllocation {
 
   /** Total capital across all categories. Wei, 18 decimals. */
   totalCapital: bigint
+
+  /** On-chain custodial wallets managed by the Fund Manager. */
+  wallets: WalletBalance[]
+}
+
+/**
+ * A single custodial wallet used by the Fund Manager to deploy capital.
+ */
+export interface WalletBalance {
+  /** Human-readable wallet label (e.g. "Fordefi 9"). */
+  label: string
+  /** Strategy tracking platform name (e.g. "Nimbus", "Suivision"). */
+  trackingPlatform: string
+  /** External URL to the strategy platform dashboard. */
+  trackingUrl: string
+  /** rBTC balance held by this wallet. Wei, 18 decimals. */
+  amount: bigint
+  /** Wallet's share of total capital as a percentage (e.g. 0.5 means 0.5%). */
+  percentOfTotal: number
 }

@@ -78,6 +78,7 @@ const MOCK_DATA: CapitalAllocationDisplay = {
       fiatAmountFormatted: '$13,000.00 USD',
     },
   ],
+  wallets: [],
 }
 
 describe('CapitalAllocationSection', () => {

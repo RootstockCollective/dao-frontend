@@ -172,4 +172,20 @@ export interface CapitalCategoryDisplay {
 
 export interface CapitalAllocationDisplay {
   categories: CapitalCategoryDisplay[]
+  wallets: WalletBalanceDisplay[]
+}
+
+export interface WalletBalanceDisplay {
+  /** Human-readable wallet label (e.g. "Fordefi 9"). */
+  label: string
+  /** Strategy platform name (e.g. "Nimbus"). */
+  trackingPlatform: string
+  /** External URL to the strategy platform. */
+  trackingUrl: string
+  /** Formatted rBTC balance (e.g. "9.99999"). */
+  amountFormatted: string
+  /** Formatted USD equivalent (e.g. "$282.00 USD"). */
+  fiatAmountFormatted: string
+  /** Formatted percentage of total (e.g. "0.5%"). */
+  percentFormatted: string
 }

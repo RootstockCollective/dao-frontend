@@ -19,7 +19,7 @@ interface StoryProps {
 function CapitalAllocationStory({ categories, isLoading = false }: StoryProps) {
   const [isDetailed, setIsDetailed] = useState(false)
 
-  const displayData: CapitalAllocationDisplay = { categories }
+  const displayData: CapitalAllocationDisplay = { categories, wallets: [] }
 
   const toggleControl = (
     <div className="flex items-center gap-2 md:justify-end">

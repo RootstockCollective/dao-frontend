@@ -15,6 +15,64 @@ const MOCK_CAPITAL_ALLOCATION: CapitalAllocation = {
     { label: 'Unallocated capital', amount: (ONE_BTC * 26n) / 100n },
   ],
   totalCapital: (ONE_BTC * 104n) / 100n,
+  wallets: [
+    {
+      label: 'Fordefi 1',
+      trackingPlatform: 'Nimbus',
+      trackingUrl: 'https://app.nimbus.io',
+      amount: (ONE_BTC * 999_99999n) / 100_000n,
+      percentOfTotal: 96.49,
+    },
+    {
+      label: 'Fordefi 2',
+      trackingPlatform: 'Nimbus',
+      trackingUrl: 'https://app.nimbus.io',
+      amount: (ONE_BTC * 9_99999n) / 1_000_000n,
+      percentOfTotal: 0.5,
+    },
+    {
+      label: 'Fordefi 3',
+      trackingPlatform: 'Suivision',
+      trackingUrl: 'https://suivision.xyz',
+      amount: (ONE_BTC * 9_99999n) / 1_000_000n,
+      percentOfTotal: 0.5,
+    },
+    {
+      label: 'Fordefi 4',
+      trackingPlatform: 'Nimbus',
+      trackingUrl: 'https://app.nimbus.io',
+      amount: (ONE_BTC * 9_99999n) / 1_000_000n,
+      percentOfTotal: 0.5,
+    },
+    {
+      label: 'Fordefi 5',
+      trackingPlatform: 'Nimbus',
+      trackingUrl: 'https://app.nimbus.io',
+      amount: (ONE_BTC * 9_99999n) / 1_000_000n,
+      percentOfTotal: 0.5,
+    },
+    {
+      label: 'Fordefi 6',
+      trackingPlatform: 'Nimbus',
+      trackingUrl: 'https://app.nimbus.io',
+      amount: (ONE_BTC * 9_99999n) / 1_000_000n,
+      percentOfTotal: 0.5,
+    },
+    {
+      label: 'Fordefi 7',
+      trackingPlatform: 'Nimbus',
+      trackingUrl: 'https://app.nimbus.io',
+      amount: (ONE_BTC * 9_99999n) / 1_000_000n,
+      percentOfTotal: 0.5,
+    },
+    {
+      label: 'Fordefi 8',
+      trackingPlatform: 'Nimbus',
+      trackingUrl: 'https://app.nimbus.io',
+      amount: (ONE_BTC * 9_99999n) / 1_000_000n,
+      percentOfTotal: 0.51,
+    },
+  ],
 }
 
 export function useCapitalAllocation() {

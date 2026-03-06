@@ -12,6 +12,7 @@ import {
   toPaginatedHistoryDisplay,
   toCapitalAllocationDisplay,
   mapRequestDisplayStatus,
+  toWalletBalanceDisplay,
 } from './mappers'
 
 describe('toEpochDisplay', () => {
@@ -499,6 +500,7 @@ describe('toCapitalAllocationDisplay', () => {
         { label: 'Unallocated capital', amount: WeiPerEther / 4n },
       ],
       totalCapital: WeiPerEther,
+      wallets: [],
     }
     const result = toCapitalAllocationDisplay(raw, 50000)
 
@@ -524,6 +526,7 @@ describe('toCapitalAllocationDisplay', () => {
     const raw = {
       categories: [{ label: 'Deployed capital', amount: 0n }],
       totalCapital: 0n,
+      wallets: [],
     }
     const result = toCapitalAllocationDisplay(raw, 50000)
 
@@ -538,10 +541,46 @@ describe('toCapitalAllocationDisplay', () => {
         { label: 'Liquidity reserve', amount: WeiPerEther / 2n },
       ],
       totalCapital: (WeiPerEther * 3n) / 2n,
+      wallets: [],
     }
     const result = toCapitalAllocationDisplay(raw, 0)
 
     expect(result.categories[0].fiatAmountFormatted).toBe('$0.00 USD')
     expect(result.categories[1].fiatAmountFormatted).toBe('$0.00 USD')
+  })
+})
+
+describe('toWalletBalanceDisplay', () => {
+  it('formats wallet balance with correct amount, fiat, and percentage', () => {
+    const wallet = {
+      label: 'Fordefi 1',
+      trackingPlatform: 'Nimbus',
+      trackingUrl: 'https://app.nimbus.io',
+      amount: WeiPerEther * 10n,
+      percentOfTotal: 96.49,
+    }
+    const result = toWalletBalanceDisplay(wallet, 50000)
+
+    expect(result.label).toBe('Fordefi 1')
+    expect(result.trackingPlatform).toBe('Nimbus')
+    expect(result.trackingUrl).toBe('https://app.nimbus.io')
+    expect(result.amountFormatted).toBe('10')
+    expect(result.fiatAmountFormatted).toBe('$500,000.00 USD')
+    expect(result.percentFormatted).toBe('96.49%')
+  })
+
+  it('returns $0.00 USD when rbtcPrice is 0', () => {
+    const wallet = {
+      label: 'Fordefi 2',
+      trackingPlatform: 'Suivision',
+      trackingUrl: 'https://suivision.xyz',
+      amount: WeiPerEther,
+      percentOfTotal: 0.5,
+    }
+    const result = toWalletBalanceDisplay(wallet, 0)
+
+    expect(result.amountFormatted).toBe('1')
+    expect(result.fiatAmountFormatted).toBe('$0.00 USD')
+    expect(result.percentFormatted).toBe('0.5%')
   })
 })
