@@ -38,6 +38,7 @@ const config = [
       'react-hooks/incompatible-library': 'off',
       'react-hooks/static-components': 'off',
       'react-hooks/immutability': 'off',
+      'react/jsx-pascal-case': 'error',
     },
   },
 
