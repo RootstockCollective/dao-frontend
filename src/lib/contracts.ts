@@ -2,7 +2,7 @@ import { zeroAddress } from 'viem'
 
 import { BufferAbi } from '@/lib/abis/BufferAbi'
 import { PermissionsManagerAbi } from '@/lib/abis/PermissionsManagerAbi'
-import { RbtcAsyncVaultAbi } from '@/lib/abis/RbtcAsyncVaultAbi'
+import { RBTCAsyncVaultAbi } from '@/lib/abis/RbtcAsyncVaultAbi'
 import { SyntheticYieldAbi } from '@/lib/abis/SyntheticYieldAbi'
 import { VaultAbi } from '@/lib/abis/VaultAbi'
 
@@ -127,7 +127,7 @@ export const vault = {
 
 export const rbtcVault = {
   address: RBTC_VAULT_ADDRESS,
-  abi: RbtcAsyncVaultAbi,
+  abi: RBTCAsyncVaultAbi,
 } as const
 
 export const buffer = {
@@ -144,4 +144,3 @@ export const syntheticYield = {
   address: SYNTHETIC_YIELD_ADDRESS,
   abi: SyntheticYieldAbi,
 } as const
-
