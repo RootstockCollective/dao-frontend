@@ -8,6 +8,7 @@ import { BalanceInfo } from '@/components/BalanceInfo'
 import { HistoryIcon } from '@/components/Icons'
 import { Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
+import { btcVaultRequestHistory } from '@/shared/constants/routes'
 
 import { useUserPosition } from '../hooks/useUserPosition/useUserPosition'
 import { BtcVaultActions } from './BtcVaultActions'
@@ -127,9 +128,23 @@ export const BtcVaultDashboard = () => {
         </div>
       </div>
 
-      <div className="mt-10">
-        <BtcVaultActions address={address} />
-      </div>
+      {data && data.vaultTokensRaw > 0n && (
+        <div className="flex justify-between w-full" data-testid="btc-vault-nav-links">
+          <a
+            href={btcVaultRequestHistory}
+            className="flex items-center gap-x-1 text-sm font-medium underline underline-offset-2"
+          >
+            <HistoryIcon />
+            <Span variant="body-s">View history</Span>
+          </a>
+          <a href="#" className="flex items-center gap-x-1 text-sm font-medium underline underline-offset-2">
+            <HistoryIcon />
+            <Span variant="body-s">View yield history</Span>
+          </a>
+        </div>
+      )}
+
+      <BtcVaultActions address={address} />
     </SectionContainer>
   )
 }
