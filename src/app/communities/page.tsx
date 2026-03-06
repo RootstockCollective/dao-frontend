@@ -1,25 +1,27 @@
-import { SectionContainer } from './components/SectionContainer'
-import { ResponsiveCommunityItemHOC } from './components/ResponsiveCommunityItemHOC'
+import { cacheLife } from 'next/cache'
+
 import {
   betaBuilders,
   earlyAdoptersCommunity,
   ogFounders,
   ogFoundersEcosystemPartners,
   ogFoundersExternalContributors,
-  rootstockHacktivator,
   rootlingsS1,
+  rootstockHacktivator,
   vanguardCommunity,
 } from '@/app/communities/communityUtils'
 import { HeroCommunitiesComponent } from '@/app/communities/components'
 
-export const dynamic = 'force-static'
+import { ResponsiveCommunityItemHOC } from './components/ResponsiveCommunityItemHOC'
+import { SectionContainer } from './components/SectionContainer'
 
 /**
- * Server Component: Renders the Communities page as a static route (SSG) using 'force-static' mode.
- * The page is generated at build time and won't change until the next deployment
- * Client-side interactivity is managed by injected client components
+ * Server Component: Cached with 'max' profile — regenerated only on deployments.
+ * Client-side interactivity is managed by injected client components.
  */
-export default function Communities() {
+export default async function Communities() {
+  'use cache'
+  cacheLife('max')
   return (
     <div>
       <div className="flex flex-col gap-2">

@@ -4,7 +4,7 @@ import { publicClient } from '@/lib/viemPublicClient'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { GovernorAddress, tokenContracts } from '@/lib/contracts'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { unstable_cache } from 'next/cache'
+import { cacheLife, cacheTag } from 'next/cache'
 import { gql as apolloGQL } from '@apollo/client'
 import { daoClient } from '@/shared/components/ApolloClient'
 import { Address } from 'viem'
@@ -33,9 +33,11 @@ const fetchProposalSharedDetails = async () => {
   }
 }
 
-export const getCachedProposalSharedDetails = unstable_cache(fetchProposalSharedDetails, undefined, {
-  revalidate: 3600, // 1 hour in seconds
-})
+export async function getCachedProposalSharedDetails() {
+  'use cache'
+  cacheLife({ revalidate: 3600 })
+  return fetchProposalSharedDetails()
+}
 
 const query = apolloGQL`
   query GetProposals {
@@ -111,8 +113,9 @@ export async function fetchProposals(): Promise<GraphQLResponse> {
   return data
 }
 
-export const getCachedProposals = unstable_cache(fetchProposals, ['cached_proposals'], {
-  // TODO: we may want to reduce this to 20 seconds
-  revalidate: 60,
-  tags: ['cached_proposals'],
-})
+export async function getCachedProposals() {
+  'use cache'
+  cacheLife({ revalidate: 60 })
+  cacheTag('cached_proposals')
+  return fetchProposals()
+}

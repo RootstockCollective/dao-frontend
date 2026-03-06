@@ -1,4 +1,14 @@
+import { Address, getAddress, isAddress, padHex } from 'viem'
+
+import {
+  NextPageParams,
+  NftHolderItem,
+  ServerResponseV2,
+  TokenHoldersResponse,
+} from '@/app/user/Balances/types'
 import { GetPricesResult } from '@/app/user/types'
+import { RIF_WALLET_SERVICES_URL } from '@/lib/constants'
+import { BackersManagerAddress, GovernorAddress, tokenContracts } from '@/lib/contracts'
 import {
   fetchNewAllocationEventEndpoint,
   fetchPricesEndpoint,
@@ -7,16 +17,7 @@ import {
   getNftHolders,
   getTokenHoldersOfAddress,
 } from '@/lib/endpoints'
-import { tokenContracts, GovernorAddress, BackersManagerAddress } from '@/lib/contracts'
-import {
-  NextPageParams,
-  NftHolderItem,
-  ServerResponseV2,
-  TokenHoldersResponse,
-} from '@/app/user/Balances/types'
 import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
-import { Address, isAddress, padHex } from 'viem'
-import { RIF_WALLET_SERVICES_URL } from '@/lib/constants'
 
 const rws = RIF_WALLET_SERVICES_URL ?? ''
 
@@ -81,26 +82,24 @@ export const fetchProposalsCreatedCached = async (): Promise<{
   return { data }
 }
 
-export const fetchNftHoldersOfAddress = async (address: string, nextParams: NextPageParams | null) => {
+async function fetchHoldersOfAddress<T>(
+  endpoint: string,
+  address: string,
+  nextParams: NextPageParams | null,
+) {
+  const sanitizedAddress = getAddress(address)
   const params = nextParams ? `&nextPageParams=${encodeURIComponent(JSON.stringify(nextParams))}` : ''
-  const url = `${rws}${getNftHolders.replace('{{address}}', address)}${params}`
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
-  const data: ServerResponseV2<NftHolderItem> = await res.json()
+  const { data } = await fetchRws<ServerResponseV2<T>>(
+    `${endpoint.replace('{{address}}', sanitizedAddress)}${params}`,
+  )
   if (data.error) {
     throw new Error(data.error)
   }
   return data
 }
 
-export const fetchTokenHoldersOfAddress = async (address: string, nextParams: NextPageParams | null) => {
-  const params = nextParams ? `&nextPageParams=${encodeURIComponent(JSON.stringify(nextParams))}` : ''
-  const url = `${rws}${getTokenHoldersOfAddress.replace('{{address}}', address)}${params}`
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
-  const data: ServerResponseV2<TokenHoldersResponse> = await res.json()
-  if (data.error) {
-    throw new Error(data.error)
-  }
-  return data
-}
+export const fetchNftHoldersOfAddress = (address: string, nextParams: NextPageParams | null) =>
+  fetchHoldersOfAddress<NftHolderItem>(getNftHolders, address, nextParams)
+
+export const fetchTokenHoldersOfAddress = (address: string, nextParams: NextPageParams | null) =>
+  fetchHoldersOfAddress<TokenHoldersResponse>(getTokenHoldersOfAddress, address, nextParams)

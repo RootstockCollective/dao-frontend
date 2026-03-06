@@ -1,4 +1,4 @@
-import { unstable_cache } from 'next/cache'
+import { cacheLife } from 'next/cache'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { getCachedProposals } from './fetchAllProposals'
 
@@ -19,9 +19,11 @@ async function transformProposalsIntoMap(): Promise<Record<string, string>> {
   )
 }
 
-const getCachedProposalsMap = unstable_cache(transformProposalsIntoMap, ['cached_proposals_map'], {
-  revalidate: 30,
-})
+async function getCachedProposalsMap() {
+  'use cache'
+  cacheLife({ revalidate: 30 })
+  return transformProposalsIntoMap()
+}
 
 /** Checks whether a proposal with the given ID exists */
 export async function confirmProposalExists(proposalId: string): Promise<boolean> {

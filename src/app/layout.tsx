@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
+import { Suspense } from 'react'
 import { Open_Sans } from 'next/font/google'
 import './globals.css'
 import { ContextProviders } from './providers'
@@ -29,8 +30,12 @@ interface Props {
   children: ReactNode
 }
 
-export default async function RootLayout({ children }: Readonly<Props>) {
+async function DynamicProviders({ children }: Readonly<Props>) {
   const initialState = cookieToInitialState(wagmiAdapterConfig, (await headers()).get('cookie'))
+  return <ContextProviders initialState={initialState}>{children}</ContextProviders>
+}
+
+export default function RootLayout({ children }: Readonly<Props>) {
   return (
     <html lang="en" data-theme="default">
       <GoogleTagManager gtmId={`${GOOGLE_TAG_ID}`} />
@@ -45,9 +50,11 @@ export default async function RootLayout({ children }: Readonly<Props>) {
           ></iframe>
         </noscript>
         {/* End Google Tag Manager (noscript) */}
-        <ContextProviders initialState={initialState}>
-          <MainContainer>{children}</MainContainer>
-        </ContextProviders>
+        <Suspense>
+          <DynamicProviders>
+            <MainContainer>{children}</MainContainer>
+          </DynamicProviders>
+        </Suspense>
       </body>
     </html>
   )

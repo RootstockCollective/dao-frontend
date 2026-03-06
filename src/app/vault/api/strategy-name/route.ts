@@ -58,9 +58,6 @@ async function getStrategyNames(addresses: Address[]): Promise<StrategyNamesResp
   }, {})
 }
 
-// Cache for 1 hour (3600 seconds)
-export const revalidate = 3600
-
 /**
  * POST endpoint to fetch contract names for strategy addresses
  * @param req Request containing JSON body with addresses array

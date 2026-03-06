@@ -67,13 +67,8 @@ const corsBypassRewrite = () => {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  cacheComponents: true,
   webpack: config => {
-    config.optimization.splitChunks = {
-      chunks: 'all',
-      maxInitialRequests: 2,
-      maxAsyncRequests: 2,
-    }
-
     config.resolve.fallback = {
       ...config.resolve.fallback,
       '@react-native-async-storage/async-storage': false,
@@ -81,7 +76,11 @@ const nextConfig = {
 
     return config
   },
-  turbopack: {},
+  turbopack: {
+    resolveAlias: {
+      '@react-native-async-storage/async-storage': '',
+    },
+  },
   images: {
     remotePatterns: [
       {
@@ -164,6 +163,10 @@ export default withSentryConfig(exportedNextConfig, {
     // https://docs.sentry.io/product/crons/
     // https://vercel.com/docs/cron-jobs
     automaticVercelMonitors: true,
+
+    // Disable server component wrapping — server-side Sentry is disabled (DAO-1955)
+    // and the wrapping conflicts with cacheComponents (crypto.randomUUID during prerender)
+    autoInstrumentAppDirectory: false,
 
     // Tree-shaking options for reducing bundle size
     treeshake: {
