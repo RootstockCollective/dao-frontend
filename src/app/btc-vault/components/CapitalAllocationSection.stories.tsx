@@ -6,8 +6,9 @@ import { TokenImage } from '@/components/TokenImage'
 import { Label, Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
-import type { CapitalCategoryDisplay } from '../services/ui/types'
+import type { CapitalAllocationDisplay, CapitalCategoryDisplay } from '../services/ui/types'
 
+import { CapitalAllocationDonutChart } from './CapitalAllocationDonutChart'
 import { CAPITAL_ALLOCATION_TOOLTIP_MAP } from './CapitalAllocationSection.constants'
 
 interface StoryProps {
@@ -17,6 +18,8 @@ interface StoryProps {
 
 function CapitalAllocationStory({ categories, isLoading = false }: StoryProps) {
   const [isDetailed, setIsDetailed] = useState(false)
+
+  const displayData: CapitalAllocationDisplay = { categories }
 
   const toggleControl = (
     <div className="flex items-center gap-2 md:justify-end">
@@ -33,7 +36,16 @@ function CapitalAllocationStory({ categories, isLoading = false }: StoryProps) {
     <section data-testid="capital-allocation-section" className="w-full">
       <SectionContainer title="CAPITAL ALLOCATION TRANSPARENCY" headerVariant="h3" rightContent={toggleControl}>
         {isDetailed ? (
-          <div data-testid="capital-allocation-detailed" className="min-h-[200px]" />
+          <div data-testid="capital-allocation-detailed" className="flex flex-col gap-6 md:flex-row">
+            <div className="w-full md:w-auto md:max-w-[480px] md:shrink-0">
+              {isLoading ? (
+                <div data-testid="detailed-loading" className="min-h-[200px]" />
+              ) : (
+                <CapitalAllocationDonutChart data={displayData} />
+              )}
+            </div>
+            <div data-testid="capital-allocation-wallet-placeholder" className="min-h-[200px] flex-1" />
+          </div>
         ) : (
           <div
             data-testid="capital-allocation-undetailed"
