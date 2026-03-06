@@ -101,6 +101,16 @@ describe('BtcVaultPage', () => {
     expect(screen.getByTestId('ConnectWallet')).toBeInTheDocument()
   })
 
+  it('shows disclosure banner and not disclosure section when wallet is not connected', () => {
+    mockUseAccount.mockReturnValue({ address: undefined, isConnected: false })
+    render(<BtcVaultPage />, { wrapper: Wrapper })
+
+    expect(screen.getByTestId('DisclosureBanner')).toBeInTheDocument()
+    expect(screen.getByText('DISCLOSURE')).toBeInTheDocument()
+    expect(screen.getByTestId('DisclosureContent')).toBeInTheDocument()
+    expect(screen.queryByTestId('BtcVaultDisclosureSection')).not.toBeInTheDocument()
+  })
+
   it('does not show wallet disconnected section when wallet is connected', () => {
     mockUseAccount.mockReturnValue({
       address: '0x123',
@@ -180,6 +190,28 @@ describe('BtcVaultPage', () => {
     expect(screen.getByTestId('btc-vault-history')).toBeInTheDocument()
     expect(screen.queryByTestId('NotAuthorizedBanner')).not.toBeInTheDocument()
     expect(screen.queryByTestId('BtcVaultWalletDisconnectedSection')).not.toBeInTheDocument()
+  })
+
+  it('shows disclosure section and not disclosure banner when wallet is connected', () => {
+    mockUseAccount.mockReturnValue({
+      address: '0x123',
+      isConnected: true,
+    })
+    mockUseActionEligibility.mockReturnValue({
+      data: {
+        canDeposit: true,
+        canWithdraw: true,
+        depositBlockReason: '',
+        withdrawBlockReason: '',
+      },
+    })
+    render(<BtcVaultPage />, { wrapper: Wrapper })
+
+    expect(screen.getByTestId('BtcVaultDisclosureSection')).toBeInTheDocument()
+    expect(screen.getByTestId('DisclosureContent')).toBeInTheDocument()
+    expect(screen.getByText('estimated')).toBeInTheDocument()
+    expect(screen.getByText(/Execution may be delayed\/batched by epoch/)).toBeInTheDocument()
+    expect(screen.queryByTestId('DisclosureBanner')).not.toBeInTheDocument()
   })
 
   it('shows main content when connected but blocked by pause (not eligibility)', () => {

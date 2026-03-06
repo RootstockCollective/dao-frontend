@@ -6,6 +6,7 @@ import { ActiveRequestSection } from './ActiveRequestSection'
 import { BtcVaultBanners } from './BtcVaultBanners'
 import { CapitalAllocationSection } from './components/CapitalAllocationSection'
 import { BtcVaultDashboard } from './components/BtcVaultDashboard'
+import { BtcVaultDisclosureSection } from './components/BtcVaultDisclosureSection'
 import { BtcVaultMetrics } from './components/BtcVaultMetrics'
 import { BtcVaultWalletDisconnectedSection } from './components/BtcVaultWalletDisconnectedSection'
 
@@ -49,6 +50,7 @@ export const BtcVaultPage = () => {
       </section>
 
       <BtcVaultWalletDisconnectedSection />
+      <BtcVaultDisclosureSection />
     </div>
   )
 }
