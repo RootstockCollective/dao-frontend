@@ -1,19 +1,21 @@
-import { Fragment, useMemo } from 'react'
+import { ClassValue } from 'clsx'
+import { motion, type Transition, type Variants } from 'motion/react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { motion, type Transition, type Variants } from 'motion/react'
-import { UsefulLinks } from './UsefulLinks'
-import styles from './styles.module.css'
-import { cn } from '@/lib/utils'
-import { NavIcon } from '../icons/NavIcon'
-import { MenuData, menuData, menuDataNotConnected } from './menuData'
+import { Fragment, useMemo } from 'react'
+
 import { NetworkLogo } from '@/components/NetworkLogo'
-import { useLayoutContext } from '../LayoutProvider'
 import { Tooltip } from '@/components/Tooltip'
 import { Span } from '@/components/Typography'
-import { ClassValue } from 'clsx'
-import { useAccount } from 'wagmi'
-import Image from 'next/image'
+import { cn } from '@/lib/utils'
+
+import { NavIcon } from '../icons/NavIcon'
+import { useLayoutContext } from '../LayoutProvider'
+import { MenuData } from './menuData'
+import styles from './styles.module.css'
+import { useFilteredMenuData } from './useFilteredMenuData'
+import { UsefulLinks } from './UsefulLinks'
 
 const transition: Transition = { duration: 0.3, ease: 'circOut' }
 
@@ -22,7 +24,7 @@ export const SIDEBAR_CLOSED_WIDTH = 79
 
 export const SidebarDesktop = () => {
   const { isSidebarOpen } = useLayoutContext()
-  const { isConnected } = useAccount()
+  const menuDataToUse = useFilteredMenuData()
   // Animation variants for the sidebar UI states
   const variants = useMemo<Variants>(
     () => ({
@@ -35,8 +37,6 @@ export const SidebarDesktop = () => {
     [isSidebarOpen],
   )
 
-  const menuDataToUse = isConnected ? menuData : menuDataNotConnected
-
   return (
     <motion.aside
       variants={variants}
@@ -46,8 +46,8 @@ export const SidebarDesktop = () => {
       transition={transition}
       className={cn('overflow-hidden shrink-0 border-r border-dark-gray sticky top-0 h-screen')}
     >
-      <div className={cn('h-full', 'flex flex-col justify-between whitespace-nowrap', '')}>
-        <div>
+      <div className={cn('h-full', 'flex flex-col whitespace-nowrap overflow-y-auto')}>
+        <div className="flex-1">
           {/* Logo / Testnet indicator */}
           <NetworkLogo
             compact={!isSidebarOpen}
@@ -80,10 +80,9 @@ export const SidebarDesktop = () => {
           initial="text"
           animate="text"
           transition={{ duration: transition.duration, ease: 'easeOut' }}
-          /* Hide transparent links */
-          className={cn('pb-8', { 'pointer-events-none': !isSidebarOpen })}
+          className={cn('shrink-0 px-6 py-4', { 'pointer-events-none': !isSidebarOpen })}
         >
-          <UsefulLinks className="ml-6" />
+          <UsefulLinks />
         </motion.div>
       </div>
     </motion.aside>
@@ -107,7 +106,7 @@ const MenuItem = ({ href, text, buttonProps, variants, iconUrl }: MenuData & { v
             initial="icon"
             animate="icon"
             transition={transition}
-            className={iconUrl ? 'flex-shrink-0' : ''}
+            className={iconUrl ? 'shrink-0' : ''}
           >
             <Tooltip text={text} disabled={isSidebarOpen}>
               {iconUrl ? <Image src={iconUrl} width={20} height={20} alt="Icon" /> : <NavIcon />}
