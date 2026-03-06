@@ -22,14 +22,7 @@ const config = [
   ...storybookPlugin.configs['flat/recommended'],
 
   {
-    ignores: [
-      '**/*.test.ts',
-      '**/*.test.tsx',
-      '**/*.spec.ts',
-      '**/*.spec.tsx',
-      '**/*.stories.tsx',
-      'eslint-fixtures/**',
-    ],
+    ignores: ['**/*.test.ts', '**/*.test.tsx', '**/*.spec.ts', '**/*.spec.tsx', '**/*.stories.tsx'],
   },
 
   {
