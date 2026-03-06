@@ -1,8 +1,9 @@
+import { Section } from '@/app/my-rewards/components/Section'
 import { Header } from '@/components/Typography'
 
 import { BtcVaultHistoryTableWithContext } from './components/BtcVaultHistoryTable'
 
-const PAGE_NAME = 'BTC Vault History'
+const PAGE_NAME = 'Transactions History'
 
 export default function BtcVaultRequestHistoryPage() {
   return (
@@ -18,9 +19,9 @@ export default function BtcVaultRequestHistoryPage() {
       >
         {PAGE_NAME}
       </Header>
-      <div className="flex flex-col w-full items-start gap-2">
+      <Section>
         <BtcVaultHistoryTableWithContext />
-      </div>
+      </Section>
     </div>
   )
 }

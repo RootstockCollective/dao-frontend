@@ -111,7 +111,7 @@ function BtcVaultHistoryTableInner() {
     <div className="w-full flex flex-col gap-6 md:gap-10">
       <div className="flex items-center justify-between">
         <Header variant="h3" className="m-0 text-lg md:text-xl" data-testid="BtcVaultHistoryListHeader">
-          TRANSACTION HISTORY
+          BTC VAULT EVENTS LIST
         </Header>
         <FilterButton
           isOpen={isFilterSidebarOpen}
@@ -155,7 +155,7 @@ function BtcVaultHistoryTableInner() {
         pageSize={PAGE_SIZE}
         totalItems={data?.total ?? 0}
         onPageChange={handlePageChange}
-        pagedItemName="requests"
+        pagedItemName="events"
         mode="expandable"
         data-testid="BtcVaultHistoryTablePager"
       />

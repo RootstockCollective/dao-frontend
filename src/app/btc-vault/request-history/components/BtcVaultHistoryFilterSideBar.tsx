@@ -4,8 +4,18 @@ import { useMemo } from 'react'
 
 import { FilterSideBar } from '@/components/FilterSideBar'
 import type { ActiveFilter, FilterGroup } from '@/components/FilterSideBar/types'
+import { TokenImage } from '@/components/TokenImage'
 
-import { DISPLAY_REQUEST_TYPE_LABELS, DISPLAY_STATUS_LABELS } from '../../services/ui/types'
+import type { DisplayStatus } from '../../services/ui/types'
+
+const FILTER_STATUS_LABELS: Record<DisplayStatus, string> = {
+  pending: 'Pending',
+  claim_pending: 'Shares claim pending',
+  open_to_claim: 'Active',
+  successful: 'Successful',
+  cancelled: 'Cancelled',
+  rejected: 'Rejected',
+}
 
 interface Props {
   isOpen: boolean
@@ -23,33 +33,33 @@ export function BtcVaultHistoryFilterSideBar({ isOpen, onClose, activeFilters, o
     () => [
       {
         id: 'type',
-        title: 'TYPE',
+        title: 'FILTER BY TYPE',
         allLabel: 'All types',
         allTestId: 'AllTypes',
         isMultiSelect: false,
-        options: Object.entries(DISPLAY_REQUEST_TYPE_LABELS).map(([value, label]) => ({
-          label,
-          value,
-        })),
+        options: [
+          { label: 'Deposit', value: 'deposit' },
+          { label: 'Withdraw', value: 'withdrawal' },
+        ],
       },
       {
         id: 'claimToken',
-        title: 'CLAIM TOKEN',
-        allLabel: 'All tokens',
+        title: 'FILTER BY CLAIM TOKEN',
+        allLabel: 'All claim tokens',
         allTestId: 'AllTokens',
         isMultiSelect: false,
         options: [
-          { label: 'rBTC', value: 'rbtc' },
+          { label: 'rBTC', value: 'rbtc', icon: <TokenImage symbol="RBTC" size={16} /> },
           { label: 'Shares', value: 'shares' },
         ],
       },
       {
         id: 'status',
-        title: 'STATUS',
+        title: 'FILTER BY STATUS',
         allLabel: 'All statuses',
         allTestId: 'AllStatuses',
         isMultiSelect: true,
-        options: Object.entries(DISPLAY_STATUS_LABELS).map(([value, label]) => ({
+        options: Object.entries(FILTER_STATUS_LABELS).map(([value, label]) => ({
           label,
           value,
         })),
