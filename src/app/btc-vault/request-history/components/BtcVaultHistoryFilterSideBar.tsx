@@ -8,6 +8,12 @@ import { TokenImage } from '@/components/TokenImage'
 
 import type { DisplayStatus } from '../../services/ui/types'
 
+/**
+ * Filter-specific status labels per design spec.
+ * Intentionally differs from DISPLAY_STATUS_LABELS (used for table badges):
+ * - badge "Open to claim" → filter "Active"
+ * - badge "Claim pending" → filter "Shares claim pending"
+ */
 const FILTER_STATUS_LABELS: Record<DisplayStatus, string> = {
   pending: 'Pending',
   claim_pending: 'Shares claim pending',
@@ -16,6 +22,15 @@ const FILTER_STATUS_LABELS: Record<DisplayStatus, string> = {
   cancelled: 'Cancelled',
   rejected: 'Rejected',
 }
+
+const STATUS_ORDER: DisplayStatus[] = [
+  'pending',
+  'open_to_claim',
+  'claim_pending',
+  'successful',
+  'cancelled',
+  'rejected',
+]
 
 interface Props {
   isOpen: boolean
@@ -35,7 +50,7 @@ export function BtcVaultHistoryFilterSideBar({ isOpen, onClose, activeFilters, o
         id: 'type',
         title: 'FILTER BY TYPE',
         allLabel: 'All types',
-        allTestId: 'AllTypes',
+        allTestId: 'all-types',
         isMultiSelect: false,
         options: [
           { label: 'Deposit', value: 'deposit' },
@@ -46,7 +61,7 @@ export function BtcVaultHistoryFilterSideBar({ isOpen, onClose, activeFilters, o
         id: 'claimToken',
         title: 'FILTER BY CLAIM TOKEN',
         allLabel: 'All claim tokens',
-        allTestId: 'AllTokens',
+        allTestId: 'all-tokens',
         isMultiSelect: false,
         options: [
           { label: 'rBTC', value: 'rbtc', icon: <TokenImage symbol="RBTC" size={16} /> },
@@ -57,12 +72,9 @@ export function BtcVaultHistoryFilterSideBar({ isOpen, onClose, activeFilters, o
         id: 'status',
         title: 'FILTER BY STATUS',
         allLabel: 'All statuses',
-        allTestId: 'AllStatuses',
+        allTestId: 'all-statuses',
         isMultiSelect: true,
-        options: Object.entries(FILTER_STATUS_LABELS).map(([value, label]) => ({
-          label,
-          value,
-        })),
+        options: STATUS_ORDER.map(value => ({ label: FILTER_STATUS_LABELS[value], value })),
       },
     ],
     [],
@@ -75,7 +87,7 @@ export function BtcVaultHistoryFilterSideBar({ isOpen, onClose, activeFilters, o
       filterGroups={filterGroups}
       activeFilters={activeFilters}
       onApply={onApply}
-      data-testid="BtcVaultHistoryFilterSideBar"
+      data-testid="btc-vault-history-filter-sidebar"
     />
   )
 }
