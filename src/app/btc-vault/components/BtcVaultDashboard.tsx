@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { type ReactNode } from 'react'
 import { useAccount } from 'wagmi'
 
@@ -130,17 +131,20 @@ export const BtcVaultDashboard = () => {
 
       {data && data.vaultTokensRaw > 0n && (
         <div className="flex justify-between w-full" data-testid="btc-vault-nav-links">
-          <a
+          <Link
             href={btcVaultRequestHistory}
             className="flex items-center gap-x-1 text-sm font-medium underline underline-offset-2"
           >
             <HistoryIcon />
             <Span variant="body-s">View history</Span>
-          </a>
-          <a href="#" className="flex items-center gap-x-1 text-sm font-medium underline underline-offset-2">
+          </Link>
+          <span
+            aria-disabled="true"
+            className="flex items-center gap-x-1 text-sm font-medium text-text-60 cursor-not-allowed opacity-50"
+          >
             <HistoryIcon />
             <Span variant="body-s">View yield history</Span>
-          </a>
+          </span>
         </div>
       )}
 
