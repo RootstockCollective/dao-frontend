@@ -8,13 +8,13 @@ import { FilterButton } from '@/app/proposals/components/filter/FilterButton'
 import type { ActiveFilter } from '@/components/FilterSideBar'
 import { TablePager } from '@/components/TableNew'
 import { Header } from '@/components/Typography'
-import { cn } from '@/lib/utils'
 import { useTableActionsContext, useTableContext, withTableContext } from '@/shared/context'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 import { useRequestHistory } from '../../hooks/useRequestHistory/useRequestHistory'
-import type { HistoryFilterParams } from '../../services/ui/types'
+import type { RequestType } from '../../services/types'
+import type { DisplayStatus, HistoryFilterParams } from '../../services/ui/types'
 import { BtcVaultHistoryFilterSideBar } from './BtcVaultHistoryFilterSideBar'
 import type { BtcVaultHistoryCellDataMap, ColumnId } from './BtcVaultHistoryTable.config'
 import { DEFAULT_HEADERS, PAGE_SIZE } from './BtcVaultHistoryTable.config'
@@ -22,22 +22,38 @@ import { convertDataToRowData } from './convertDataToRowData'
 import { DesktopBtcVaultHistory } from './DesktopBtcVaultHistory'
 import { MobileBtcVaultHistory } from './MobileBtcVaultHistory'
 
-function toHistoryFilters(activeFilters: ActiveFilter[]): HistoryFilterParams | undefined {
+const VALID_TYPES: readonly RequestType[] = ['deposit', 'withdrawal']
+const VALID_CLAIM_TOKENS: readonly ('shares' | 'rbtc')[] = ['shares', 'rbtc']
+const VALID_STATUSES: readonly DisplayStatus[] = [
+  'open_to_claim',
+  'pending',
+  'claim_pending',
+  'successful',
+  'cancelled',
+  'rejected',
+]
+
+/** @internal Exported for testing. Converts FilterSideBar state to typed filter params. */
+export function toHistoryFilters(activeFilters: ActiveFilter[]): HistoryFilterParams | undefined {
   if (!activeFilters.length) return undefined
 
   const valuesOf = (groupId: string) =>
     activeFilters.filter(f => f.groupId === groupId).map(f => f.option.value)
 
-  const type = valuesOf('type') as HistoryFilterParams['type']
-  const claimToken = valuesOf('claimToken') as HistoryFilterParams['claimToken']
-  const status = valuesOf('status') as HistoryFilterParams['status']
+  const type = valuesOf('type').filter((v): v is RequestType => VALID_TYPES.includes(v as RequestType))
+  const claimToken = valuesOf('claimToken').filter((v): v is 'shares' | 'rbtc' =>
+    VALID_CLAIM_TOKENS.includes(v as 'shares' | 'rbtc'),
+  )
+  const status = valuesOf('status').filter((v): v is DisplayStatus =>
+    VALID_STATUSES.includes(v as DisplayStatus),
+  )
 
-  if (!type?.length && !claimToken?.length && !status?.length) return undefined
+  if (!type.length && !claimToken.length && !status.length) return undefined
 
   return {
-    ...(type?.length ? { type } : {}),
-    ...(claimToken?.length ? { claimToken } : {}),
-    ...(status?.length ? { status } : {}),
+    ...(type.length ? { type } : {}),
+    ...(claimToken.length ? { claimToken } : {}),
+    ...(status.length ? { status } : {}),
   }
 }
 
@@ -82,7 +98,7 @@ function BtcVaultHistoryTableInner() {
     setPageEnd(end)
   }, [])
 
-  const hasActiveFilters = activeFilters.length > 0
+  const hasActiveFilters = useMemo(() => activeFilters.length > 0, [activeFilters])
 
   // Reacts to: mount. Provides column definitions and default sort (newest first) to TableContext.
   useEffect(() => {
@@ -100,28 +116,26 @@ function BtcVaultHistoryTableInner() {
     dispatch({ type: 'SET_LOADING', payload: isLoading })
   }, [dispatch, isLoading])
 
-  // Reacts to: error from useRequestHistory query. Propagates to TableContext for error display.
+  // Reacts to: error from useRequestHistory query. Clears on success, sets on failure.
   useEffect(() => {
-    if (error) {
-      dispatch({ type: 'SET_ERROR', payload: error.message })
-    }
+    dispatch({ type: 'SET_ERROR', payload: error ? error.message : null })
   }, [dispatch, error])
 
   return (
     <div className="w-full flex flex-col gap-6 md:gap-10">
       <div className="flex items-center justify-between">
-        <Header variant="h3" className="m-0 text-lg md:text-xl" data-testid="BtcVaultHistoryListHeader">
+        <Header variant="h3" className="m-0 text-lg md:text-xl" data-testid="btc-vault-history-list-header">
           BTC VAULT EVENTS LIST
         </Header>
         <FilterButton
           isOpen={isFilterSidebarOpen}
           setIsOpen={setIsFilterSidebarOpen}
           isFiltering={hasActiveFilters}
-          data-testid="BtcVaultHistoryFilterButton"
+          data-testid="btc-vault-history-filter-button"
         />
       </div>
 
-      <div className={cn('flex flex-row-reverse')}>
+      <div className="flex flex-row-reverse">
         {isDesktop && (
           <motion.div
             initial={{ width: 0 }}
@@ -157,7 +171,7 @@ function BtcVaultHistoryTableInner() {
         onPageChange={handlePageChange}
         pagedItemName="events"
         mode="expandable"
-        data-testid="BtcVaultHistoryTablePager"
+        data-testid="btc-vault-history-table-pager"
       />
     </div>
   )
