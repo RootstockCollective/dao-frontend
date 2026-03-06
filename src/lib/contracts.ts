@@ -146,3 +146,4 @@ export const syntheticYield = {
   address: SYNTHETIC_YIELD_ADDRESS,
   abi: getAbi('SyntheticYieldAbi'),
 } as const
+
