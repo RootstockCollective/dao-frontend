@@ -78,15 +78,14 @@ export const BtcVaultDashboard = () => {
               data-testid="metric-principal"
             />
             {hasHistory && (
-              // TODO(DAO-1999): replace href with route to transaction history page
-              <a
-                href="#"
+              <Link
+                href={btcVaultRequestHistory}
                 className="mt-6 flex items-center gap-x-1 text-sm font-medium underline underline-offset-2"
                 data-testid="btc-vault-history-link"
               >
                 <HistoryIcon />
                 <Span variant="body-s">View history</Span>
-              </a>
+              </Link>
             )}
           </div>
           <BalanceInfo
@@ -115,38 +114,18 @@ export const BtcVaultDashboard = () => {
               data-testid="metric-yield-percent"
             />
             {hasHistory && (
-              // TODO(DAO-1999): replace href with route to yield history page
-              <a
-                href="#"
-                className="mt-6 flex items-center gap-x-1 text-sm font-medium underline underline-offset-2"
+              <span
+                aria-disabled="true"
+                className="mt-6 flex items-center gap-x-1 text-sm font-medium text-text-60 cursor-not-allowed opacity-50"
                 data-testid="btc-vault-yield-history-link"
               >
                 <HistoryIcon />
                 <Span variant="body-s">View yield history</Span>
-              </a>
+              </span>
             )}
           </div>
         </div>
       </div>
-
-      {data && data.vaultTokensRaw > 0n && (
-        <div className="flex justify-between w-full" data-testid="btc-vault-nav-links">
-          <Link
-            href={btcVaultRequestHistory}
-            className="flex items-center gap-x-1 text-sm font-medium underline underline-offset-2"
-          >
-            <HistoryIcon />
-            <Span variant="body-s">View history</Span>
-          </Link>
-          <span
-            aria-disabled="true"
-            className="flex items-center gap-x-1 text-sm font-medium text-text-60 cursor-not-allowed opacity-50"
-          >
-            <HistoryIcon />
-            <Span variant="body-s">View yield history</Span>
-          </span>
-        </div>
-      )}
 
       <BtcVaultActions address={address} />
     </SectionContainer>

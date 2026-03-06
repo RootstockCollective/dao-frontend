@@ -9,6 +9,7 @@ import {
   toActiveRequestDisplay,
   toRequestDetailDisplay,
   toPaginatedHistoryDisplay,
+  toCapitalAllocationDisplay,
   mapRequestDisplayStatus,
 } from './mappers'
 

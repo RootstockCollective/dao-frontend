@@ -4,9 +4,6 @@ import type { PaginatedResult, PaginationParams, VaultRequest } from '../../serv
 import { mapRequestDisplayStatus, toPaginatedHistoryDisplay } from '../../services/ui/mappers'
 import type { HistoryFilterParams } from '../../services/ui/types'
 
-import type { PaginatedResult, PaginationParams, VaultRequest } from '../../services/types'
-import { toPaginatedHistoryDisplay } from '../../services/ui/mappers'
-
 // TODO(DAO-XXXX): Remove mock data once contract integration is in place
 const ONE_BTC = 10n ** 18n
 

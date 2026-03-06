@@ -31,6 +31,7 @@ import {
 import type {
   ActionEligibility,
   ActiveRequestDisplay,
+  CapitalAllocationDisplay,
   DisplayStatus,
   DisplayStatusResult,
   EpochDisplay,
@@ -207,6 +208,34 @@ export function mapRequestDisplayStatus(
   }
 
   return { displayStatus, displayStatusLabel: DISPLAY_STATUS_LABELS[displayStatus] }
+}
+
+/**
+ * Maps a vault request into a detail-page display object, extending the active request display
+ * with address, tx hash, and cancel eligibility fields.
+ * @param req - Raw vault request from the adapter
+ * @param claimableInfo - Claimable status info, or null
+ * @param rbtcPrice - Current rBTC price in USD (0 if unavailable)
+ * @param userAddress - Connected wallet address
+ * @returns Display object with all fields needed for the transaction detail page
+ */
+export function toRequestDetailDisplay(
+  req: VaultRequest,
+  claimableInfo: ClaimableInfo | null,
+  rbtcPrice: number,
+  userAddress: string,
+): RequestDetailDisplay {
+  const base = toActiveRequestDisplay(req, claimableInfo, rbtcPrice)
+  return {
+    ...base,
+    typeLabel: req.type === 'deposit' ? 'Deposit' : 'Withdrawal',
+    // SAFETY: userAddress comes from useAccount which returns `0x${string}` at runtime
+    addressShort: shortAddress(userAddress as `0x${string}`),
+    addressFull: userAddress,
+    submitTxShort: req.txHashes.submit ? shortenTxHash(req.txHashes.submit) : null,
+    submitTxFull: req.txHashes.submit ?? null,
+    canCancel: req.status === 'pending',
+  }
 }
 
 /**
