@@ -1,17 +1,17 @@
-import { formatSymbol } from '@/app/shared/formatter'
 import { ConditionalTooltip } from '@/app/components'
+import { formatSymbol } from '@/app/shared/formatter'
 import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
 import { Button } from '@/components/Button'
+import { Divider } from '@/components/Divider'
 import { Modal } from '@/components/Modal/Modal'
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Paragraph } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
+import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { formatCurrencyWithLabel } from '@/lib/utils'
-import { Separator } from '@radix-ui/react-select'
 import { FC, ReactNode } from 'react'
 import { ClaimRewardRadioGroup } from './ClaimRewardRadioGroup'
 import { ClaimRewardType } from './types'
-import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 
 interface ClaimRewardsModalViewProps {
   onClose: () => void
@@ -63,51 +63,49 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
   return (
     <Modal onClose={onClose} data-testid="ClaimRewardsModalView">
       <div className="h-full flex flex-col p-4 md:p-6">
-        <Header variant="h1" className="mt-16 mb-4">
-          CLAIM REWARDS
-        </Header>
-        <Paragraph>
+        <Header className="mt-16 mb-8 md:mb-10">CLAIM REWARDS</Header>
+
+        <Paragraph className="mb-6">
           Select the rewards that you want to claim, then confirm the transaction in your wallet.
         </Paragraph>
-        <ClaimRewardRadioGroup
-          value={selectedRewardType}
-          onValueChange={onRewardTypeChange}
-          options={radioOptions}
-          isLoading={isLoading}
-        />
-        <Paragraph variant="body">
-          Claim your rewards directly to your wallet. Claimed rewards are transferred immediately, and your
-          unclaimed balance resets.
-        </Paragraph>
 
-        <div className="mt-8 flex flex-col w-full gap-8 justify-end h-full">
-          <Separator className="bg-v3-bg-accent-60 h-[1px] w-full" />
-          <div className="w-full flex justify-stretch md:justify-end gap-4">
-            <Button variant="secondary-outline" className="w-full md:w-auto" onClick={onClose}>
-              Cancel
-            </Button>
-            {isTxPending ? (
-              <TransactionInProgressButton />
-            ) : (
-              <ConditionalTooltip
-                conditionPairs={[
-                  {
-                    condition: () => !isClaimable,
-                    lazyContent: () => 'Current rewards are not claimable',
-                  },
-                ]}
-                side="left"
-              >
-                <Button
-                  variant="primary"
-                  className="w-full md:w-auto"
-                  onClick={() => isClaimable && onClaim()}
-                >
-                  Claim now
-                </Button>
-              </ConditionalTooltip>
-            )}
-          </div>
+        <div className="flex-1">
+          <ClaimRewardRadioGroup
+            value={selectedRewardType}
+            onValueChange={onRewardTypeChange}
+            options={radioOptions}
+            isLoading={isLoading}
+          />
+
+          <Paragraph className="mt-6 md:mt-10">
+            Claim your rewards directly to your wallet. Claimed rewards are transferred immediately, and your
+            unclaimed balance resets.
+          </Paragraph>
+        </div>
+
+        <Divider className="mb-4 mt-14" />
+
+        <div className="flex justify-end gap-4">
+          <Button variant="secondary-outline" onClick={onClose}>
+            Cancel
+          </Button>
+          {isTxPending ? (
+            <TransactionInProgressButton />
+          ) : (
+            <ConditionalTooltip
+              conditionPairs={[
+                {
+                  condition: () => !isClaimable,
+                  lazyContent: () => 'Current rewards are not claimable',
+                },
+              ]}
+              side="left"
+            >
+              <Button variant="primary" onClick={() => isClaimable && onClaim()}>
+                Claim now
+              </Button>
+            </ConditionalTooltip>
+          )}
         </div>
       </div>
     </Modal>
