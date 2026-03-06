@@ -2,6 +2,8 @@ import type { ClassValue } from 'clsx'
 
 import { getEnvFlag } from '@/shared/context/FeatureFlag/flags.utils'
 
+export type RequiredRole = 'admin' | 'fundManager'
+
 export interface MenuData {
   text: string
   href: string
@@ -12,6 +14,7 @@ export interface MenuData {
   }
   type?: 'link' | 'category'
   iconUrl?: string
+  requiredRole?: RequiredRole
 }
 
 function getBetaToolsSection(): MenuData[] {

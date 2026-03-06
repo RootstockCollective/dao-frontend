@@ -1,17 +1,19 @@
+import { useRouter } from 'next/navigation'
+import { ReactNode, Suspense } from 'react'
+
 import { BackersPercentage } from '@/app/builders/components/Table/Cell/BackersPercentageCell/BackersPercentageCell'
 import { BackingCell } from '@/app/builders/components/Table/Cell/BackingCell/BackingCell'
 import { BuilderName } from '@/app/builders/components/Table/Cell/BuilderNameCell/BuilderName'
 import { RewardsCell } from '@/app/builders/components/Table/Cell/RewardsCell/RewardsCell'
-import { EmptyPlaceholder } from '@/components/Table/components'
 import { Button } from '@/components/Button'
 import { Collapsible } from '@/components/Collapsible'
 import { Divider } from '@/components/Divider'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { CogIcon } from '@/components/Icons/v3design/CogIcon'
+import { EmptyPlaceholder } from '@/components/Table/components'
 import { Span } from '@/components/Typography'
 import { Row } from '@/shared/context/TableContext/types'
-import { useRouter } from 'next/navigation'
-import { ReactNode, Suspense } from 'react'
+
 import { BackerRewardsCellDataMap, ColumnId } from './BackerRewardsTable.config'
 
 const RewardDetailsMetric = ({ children }: { children: ReactNode }) => {
