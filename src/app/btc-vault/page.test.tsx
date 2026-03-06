@@ -17,6 +17,20 @@ vi.mock('./hooks/useActionEligibility', () => ({
   useActionEligibility: () => ({ data: undefined }),
 }))
 
+vi.mock('./hooks/useEpochState', () => ({
+  useEpochState: () => ({
+    data: {
+      epochId: '1',
+      status: 'closed',
+      statusSummary: 'Closed',
+      isAcceptingRequests: false,
+      endTime: 0,
+      closesAtFormatted: '01 Jan 1970',
+    },
+    isLoading: false,
+  }),
+}))
+
 vi.mock('@/shared/walletConnection/connection/useAppKitFlow', () => ({
   useAppKitFlow: vi.fn(() => ({
     onConnectWalletButtonClick: vi.fn(),
