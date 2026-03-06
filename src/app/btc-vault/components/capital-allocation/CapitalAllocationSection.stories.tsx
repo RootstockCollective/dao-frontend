@@ -6,20 +6,22 @@ import { TokenImage } from '@/components/TokenImage'
 import { Label, Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
-import type { CapitalAllocationDisplay, CapitalCategoryDisplay } from '../../services/ui/types'
+import type { CapitalAllocationDisplay, CapitalCategoryDisplay, WalletBalanceDisplay } from '../../services/ui/types'
 
 import { CapitalAllocationDonutChart } from './CapitalAllocationDonutChart'
 import { CAPITAL_ALLOCATION_TOOLTIP_MAP } from './CapitalAllocationSection.constants'
+import { WalletBalancesTable } from './WalletBalancesTable'
 
 interface StoryProps {
   categories: CapitalCategoryDisplay[]
+  wallets?: WalletBalanceDisplay[]
   isLoading?: boolean
 }
 
-function CapitalAllocationStory({ categories, isLoading = false }: StoryProps) {
+function CapitalAllocationStory({ categories, wallets = [], isLoading = false }: StoryProps) {
   const [isDetailed, setIsDetailed] = useState(false)
 
-  const displayData: CapitalAllocationDisplay = { categories, wallets: [] }
+  const displayData: CapitalAllocationDisplay = { categories, wallets }
 
   const toggleControl = (
     <div className="flex items-center gap-2 md:justify-end">
@@ -44,7 +46,13 @@ function CapitalAllocationStory({ categories, isLoading = false }: StoryProps) {
                 <CapitalAllocationDonutChart data={displayData} />
               )}
             </div>
-            <div data-testid="capital-allocation-wallet-placeholder" className="min-h-[200px] flex-1" />
+            <div className="min-h-[200px] flex-1">
+              {isLoading ? (
+                <div data-testid="wallet-loading" className="min-h-[200px]" />
+              ) : (
+                <WalletBalancesTable wallets={wallets} />
+              )}
+            </div>
           </div>
         ) : (
           <div
@@ -103,6 +111,73 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
+const mockWallets: WalletBalanceDisplay[] = [
+  {
+    label: 'Fordefi 1',
+    trackingPlatform: 'Nimbus',
+    trackingUrl: 'https://app.nimbus.io',
+    amountFormatted: '999.99999',
+    fiatAmountFormatted: '$282.00 USD',
+    percentFormatted: '96.49%',
+  },
+  {
+    label: 'Fordefi 2',
+    trackingPlatform: 'Nimbus',
+    trackingUrl: 'https://app.nimbus.io',
+    amountFormatted: '9.99999',
+    fiatAmountFormatted: '$282.00 USD',
+    percentFormatted: '0.5%',
+  },
+  {
+    label: 'Fordefi 3',
+    trackingPlatform: 'Suivision',
+    trackingUrl: 'https://suivision.xyz',
+    amountFormatted: '9.99999',
+    fiatAmountFormatted: '$282.00 USD',
+    percentFormatted: '0.5%',
+  },
+  {
+    label: 'Fordefi 4',
+    trackingPlatform: 'Nimbus',
+    trackingUrl: 'https://app.nimbus.io',
+    amountFormatted: '9.99999',
+    fiatAmountFormatted: '$282.00 USD',
+    percentFormatted: '0.5%',
+  },
+  {
+    label: 'Fordefi 5',
+    trackingPlatform: 'Nimbus',
+    trackingUrl: 'https://app.nimbus.io',
+    amountFormatted: '9.99999',
+    fiatAmountFormatted: '$282.00 USD',
+    percentFormatted: '0.5%',
+  },
+  {
+    label: 'Fordefi 6',
+    trackingPlatform: 'Nimbus',
+    trackingUrl: 'https://app.nimbus.io',
+    amountFormatted: '9.99999',
+    fiatAmountFormatted: '$282.00 USD',
+    percentFormatted: '0.5%',
+  },
+  {
+    label: 'Fordefi 7',
+    trackingPlatform: 'Nimbus',
+    trackingUrl: 'https://app.nimbus.io',
+    amountFormatted: '9.99999',
+    fiatAmountFormatted: '$282.00 USD',
+    percentFormatted: '0.5%',
+  },
+  {
+    label: 'Fordefi 8',
+    trackingPlatform: 'Nimbus',
+    trackingUrl: 'https://app.nimbus.io',
+    amountFormatted: '9.99999',
+    fiatAmountFormatted: '$282.00 USD',
+    percentFormatted: '0.51%',
+  },
+]
+
 export const Default: Story = {
   args: {
     categories: [
@@ -125,6 +200,7 @@ export const Default: Story = {
         fiatAmountFormatted: '$13,000.00 USD',
       },
     ],
+    wallets: mockWallets,
   },
 }
 
@@ -150,6 +226,7 @@ export const EqualSplit: Story = {
         fiatAmountFormatted: '$17,000.00 USD',
       },
     ],
+    wallets: mockWallets,
   },
 }
 

@@ -14,6 +14,7 @@ import { CapitalAllocationDonutChart } from './CapitalAllocationDonutChart'
 import { CAPITAL_ALLOCATION_TOOLTIP_MAP } from './CapitalAllocationSection.constants'
 import { ContractAddressesSection } from './ContractAddressesSection'
 import { FeesInfoSection } from './FeesInfoSection'
+import { WalletBalancesTable } from './WalletBalancesTable'
 
 export function CapitalAllocationSection() {
   const [isDetailed, setIsDetailed] = useState(false)
@@ -48,7 +49,13 @@ export function CapitalAllocationSection() {
                 data && <CapitalAllocationDonutChart data={data} />
               )}
             </div>
-            <div data-testid="capital-allocation-wallet-placeholder" className="min-h-[200px] flex-1" />
+            <div className="min-h-[200px] flex-1">
+              {isLoading ? (
+                <div data-testid="wallet-loading" className="min-h-[200px]" />
+              ) : (
+                data && <WalletBalancesTable wallets={data.wallets} />
+              )}
+            </div>
           </div>
         ) : (
           <div

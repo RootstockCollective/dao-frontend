@@ -78,7 +78,24 @@ const MOCK_DATA: CapitalAllocationDisplay = {
       fiatAmountFormatted: '$13,000.00 USD',
     },
   ],
-  wallets: [],
+  wallets: [
+    {
+      label: 'Fordefi 1',
+      trackingPlatform: 'Nimbus',
+      trackingUrl: 'https://app.nimbus.io',
+      amountFormatted: '0.80',
+      fiatAmountFormatted: '$40,000.00 USD',
+      percentFormatted: '80%',
+    },
+    {
+      label: 'Fordefi 2',
+      trackingPlatform: 'Suivision',
+      trackingUrl: 'https://suivision.xyz',
+      amountFormatted: '0.20',
+      fiatAmountFormatted: '$10,000.00 USD',
+      percentFormatted: '20%',
+    },
+  ],
 }
 
 describe('CapitalAllocationSection', () => {
@@ -150,7 +167,7 @@ describe('CapitalAllocationSection', () => {
     expect(screen.queryByTestId('capital-allocation-detailed')).not.toBeInTheDocument()
   })
 
-  it('toggling ON shows detailed view with donut chart and wallet placeholder', async () => {
+  it('toggling ON shows detailed view with donut chart and wallet table', async () => {
     mockedUseCapitalAllocation.mockReturnValue({
       data: MOCK_DATA,
       isLoading: false,
@@ -166,10 +183,10 @@ describe('CapitalAllocationSection', () => {
     expect(screen.getByTestId('capital-allocation-detailed')).toBeInTheDocument()
     expect(screen.queryByTestId('capital-allocation-undetailed')).not.toBeInTheDocument()
     expect(screen.getAllByTestId('capital-allocation-donut-chart').length).toBeGreaterThanOrEqual(1)
-    expect(screen.getAllByTestId('capital-allocation-wallet-placeholder').length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByTestId('wallet-balances-table').length).toBeGreaterThanOrEqual(1)
   })
 
-  it('detailed view shows loading placeholder when isLoading is true', async () => {
+  it('detailed view shows loading placeholders when isLoading is true', async () => {
     mockedUseCapitalAllocation.mockReturnValue({
       data: undefined,
       isLoading: true,
@@ -185,6 +202,8 @@ describe('CapitalAllocationSection', () => {
     expect(screen.getByTestId('capital-allocation-detailed')).toBeInTheDocument()
     expect(screen.getAllByTestId('detailed-loading').length).toBeGreaterThanOrEqual(1)
     expect(screen.queryByTestId('capital-allocation-donut-chart')).not.toBeInTheDocument()
+    expect(screen.getAllByTestId('wallet-loading').length).toBeGreaterThanOrEqual(1)
+    expect(screen.queryByTestId('wallet-balances-table')).not.toBeInTheDocument()
   })
 
   it('returns null when hook returns an error', () => {
