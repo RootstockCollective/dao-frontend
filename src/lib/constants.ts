@@ -1,5 +1,6 @@
-import { Feature } from '@/config/features.conf'
 import { Address } from 'viem'
+
+import { Feature } from '@/config/features.conf'
 
 export const GITHUB_ORG = 'RootstockCollective'
 export const ENV = process.env.NEXT_PUBLIC_ENV as 'mainnet' | 'testnet' | 'fork'
@@ -49,6 +50,13 @@ export const BACKERS_MANAGER_ADDRESS = process.env.NEXT_PUBLIC_BACKERS_MANAGER_A
 export const BUILDER_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_BUILDER_REGISTRY_ADDRESS as Address
 export const REWARD_DISTRIBUTOR_ADDRESS = process.env.NEXT_PUBLIC_REWARD_DISTRIBUTOR_ADDRESS as Address
 export const NFT_BOOSTER_DATA_URL = (process.env.NEXT_PUBLIC_NFT_BOOSTER_DATA_URL as string) ?? ''
+
+export const PERMISSIONS_MANAGER_ADDRESS = process.env.NEXT_PUBLIC_PERMISSIONS_MANAGER_ADDRESS as Address
+
+// keccak256('WHITELISTING_OPERATOR_ROLE')
+export const ADMIN_ROLE = '0x7865ee6a85d4460dad7043a6436d34e32aa9ecd622990b81417e4af5b06fe9d0'
+// keccak256('MANAGER_ROLE')
+export const FUND_MANAGER_ROLE = '0x241ecf16d79d0f8dbfb92cbc07fe17840425976cf0667f022fe9877caa831b08'
 
 export const AVERAGE_BLOCKTIME = 60_000
 export const CACHE_REVALIDATE_SECONDS = 20

@@ -1,4 +1,8 @@
 import { zeroAddress } from 'viem'
+
+import { PermissionsManagerAbi } from '@/lib/abis/PermissionsManagerAbi'
+import { VaultAbi } from '@/lib/abis/VaultAbi'
+
 import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'
 import { GovernorAbi } from './abis/Governor'
 import { RootlingsS1ABI } from './abis/RootlingsS1'
@@ -18,6 +22,7 @@ import {
   OG_CONTRIBUTORS_NFT_ADDRESS,
   OG_FOUNDERS_NFT_ADDRESS,
   OG_PARTNERS_NFT_ADDRESS,
+  PERMISSIONS_MANAGER_ADDRESS,
   RBTC,
   REWARD_DISTRIBUTOR_ADDRESS,
   RIF,
@@ -32,7 +37,6 @@ import {
   USDT0_ADDRESS,
   VANGUARD_NFT_ADDRESS,
 } from './constants'
-import { VaultAbi } from '@/lib/abis/VaultAbi'
 
 const tokenContracts = {
   [RIF]: RIF_ADDRESS,
@@ -113,4 +117,9 @@ export const stRif = {
 export const vault = {
   address: USDRIF_VAULT_ADDRESS,
   abi: VaultAbi,
+} as const
+
+export const permissionsManager = {
+  address: PERMISSIONS_MANAGER_ADDRESS,
+  abi: PermissionsManagerAbi,
 } as const
