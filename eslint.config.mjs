@@ -69,6 +69,7 @@ const config = [
       'unicorn/no-lonely-if': 'warn',
       // 'unicorn/prefer-optional-catch-binding': 'warn',
       'unicorn/prefer-string-replace-all': 'warn',
+      'unicorn/error-message': 'warn',
     },
   },
 

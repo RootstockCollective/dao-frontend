@@ -1,20 +1,22 @@
-import { Header, Span } from '@/components/Typography'
-import { ReactNode } from 'react'
-import { useBackerRewardsContext } from '@/app/collective-rewards/rewards/backers/context/BackerRewardsContext'
-import { UnclaimedRewards } from './UnclaimedRewards'
-import { BackerEstimatedRewards } from './BackerEstimatedRewards'
-import { BackerABI } from './BackerABI'
-import { TotalEarned } from './TotalEarned'
-import { RBI } from './RBI'
-import { Switch, SwitchThumb } from '@/components/Switch'
-import { Address } from 'viem'
-import { TOKENS } from '@/lib/tokens'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { Collapsible } from '@/components/Collapsible'
-import { Button } from '@/components/Button'
-import { HistoryIcon } from '@/components/Icons/HistoryIcon'
 import { useRouter } from 'next/navigation'
+import { ReactNode } from 'react'
+import { Address } from 'viem'
+
+import { useBackerRewardsContext } from '@/app/collective-rewards/rewards/backers/context/BackerRewardsContext'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { Button } from '@/components/Button'
+import { Collapsible } from '@/components/Collapsible'
+import { HistoryIcon } from '@/components/Icons/HistoryIcon'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { Switch, SwitchThumb } from '@/components/Switch'
+import { Header, Span } from '@/components/Typography'
+import { TOKENS } from '@/lib/tokens'
+
+import { BackerABI } from './BackerABI'
+import { BackerEstimatedRewards } from './BackerEstimatedRewards'
+import { RBI as RewardsBalanceIndex } from './RBI'
+import { TotalEarned } from './TotalEarned'
+import { UnclaimedRewards } from './UnclaimedRewards'
 
 const Container = ({ children, className }: { children: ReactNode; className?: string }) => {
   return (
@@ -83,7 +85,7 @@ export const BackerRewardsMetrics = ({ backer }: { backer: Address }) => {
                     See Rewards History
                   </Button>
                 </div>
-                <RBI backer={backer} tokens={TOKENS} />
+                <RewardsBalanceIndex backer={backer} tokens={TOKENS} />
               </InnerContainer>
             </Container>
           </div>
@@ -101,7 +103,7 @@ export const BackerRewardsMetrics = ({ backer }: { backer: Address }) => {
                     See Rewards History
                   </Button>
                 </div>
-                <RBI backer={backer} tokens={TOKENS} />
+                <RewardsBalanceIndex backer={backer} tokens={TOKENS} />
               </InnerContainer>
             </Container>
           </Collapsible.Content>
