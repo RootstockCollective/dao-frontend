@@ -70,6 +70,7 @@ const config = [
       // 'unicorn/prefer-optional-catch-binding': 'warn',
       'unicorn/prefer-string-replace-all': 'warn',
       'unicorn/error-message': 'warn',
+      // 'unicorn/no-typeof-undefined': 'warn', // disabled: flags legitimate `typeof window` SSR checks
     },
   },
 
