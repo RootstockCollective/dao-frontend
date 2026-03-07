@@ -1,10 +1,11 @@
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { TransactionDetailPage } from './TransactionDetailPage'
 
 const mockUseAccount = vi.fn()
 const mockUseRequestById = vi.fn()
+const mockShowToast = vi.fn()
 
 vi.mock('wagmi', () => ({
   useAccount: () => mockUseAccount(),
@@ -12,6 +13,10 @@ vi.mock('wagmi', () => ({
 
 vi.mock('../../hooks/useRequestById', () => ({
   useRequestById: (id: string | undefined) => mockUseRequestById(id),
+}))
+
+vi.mock('@/shared/notification', () => ({
+  showToast: (args: unknown) => mockShowToast(args),
 }))
 
 vi.mock('@/shared/walletConnection/connection/useAppKitFlow', () => ({
@@ -120,5 +125,25 @@ describe('TransactionDetailPage', () => {
     render(<TransactionDetailPage id="req-withdrawal-pending" />)
     expect(screen.getByTestId('loading-spinner')).toBeInTheDocument()
     expect(screen.queryByTestId('transaction-detail-page')).not.toBeInTheDocument()
+  })
+
+  it('opens cancel confirmation modal when cancel button is clicked', () => {
+    render(<TransactionDetailPage id="req-withdrawal-pending" />)
+    expect(screen.queryByTestId('CancelRequestModal')).not.toBeInTheDocument()
+    fireEvent.click(screen.getByTestId('cancel-request-button'))
+    expect(screen.getByTestId('CancelRequestModal')).toBeInTheDocument()
+    expect(screen.getByText('Are you sure you want to cancel this request?')).toBeInTheDocument()
+  })
+
+  it('shows success toast and closes modal when "Yes, cancel" is clicked', () => {
+    render(<TransactionDetailPage id="req-withdrawal-pending" />)
+    fireEvent.click(screen.getByTestId('cancel-request-button'))
+    fireEvent.click(screen.getByTestId('CancelRequestConfirm'))
+    expect(mockShowToast).toHaveBeenCalledWith({
+      severity: 'success',
+      title: 'Request canceled',
+      content: 'Your request has been canceled successfully.',
+    })
+    expect(screen.queryByTestId('CancelRequestModal')).not.toBeInTheDocument()
   })
 })
