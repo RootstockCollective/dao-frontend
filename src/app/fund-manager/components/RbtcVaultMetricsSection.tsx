@@ -2,12 +2,23 @@
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Paragraph } from '@/components/Typography'
+import { RBTC } from '@/lib/constants'
 
+import { useRbtcPendingCapitalMetrics } from '../hooks/useRbtcPendingCapitalMetrics'
+import { RbtcVaultMetricCard } from './RbtcVaultMetricCard'
 import { RbtcVaultMetricsRow } from './RbtcVaultMetricsRow'
 
 export const RbtcVaultMetricsSection = () => {
-  const isLoading = false
-  const error = null
+  const {
+    pendingDepositCapital,
+    pendingWithdrawalCapital,
+    netPendingCapital,
+    isLoading: isLoadingPendingCapitalMetrics,
+    error: errorPendingCapitalMetrics,
+  } = useRbtcPendingCapitalMetrics()
+
+  const isLoading = isLoadingPendingCapitalMetrics
+  const error = errorPendingCapitalMetrics
 
   if (isLoading) {
     return (
@@ -41,7 +52,28 @@ export const RbtcVaultMetricsSection = () => {
 
       {/* Row 3 */}
       <RbtcVaultMetricsRow>
-        <></>
+        <RbtcVaultMetricCard
+          title="Pending Deposit Capital"
+          tooltipContent=""
+          amount={pendingDepositCapital.amount}
+          tokenSymbol={RBTC}
+          fiatAmount={pendingDepositCapital.fiatAmount}
+        />
+        <RbtcVaultMetricCard
+          title="Pending Withdrawal Capital"
+          tooltipContent=""
+          amount={pendingWithdrawalCapital.amount}
+          tokenSymbol={RBTC}
+          fiatAmount={pendingWithdrawalCapital.fiatAmount}
+        />
+        <RbtcVaultMetricCard
+          title="Net Pending Capital"
+          tooltipContent=""
+          amount={netPendingCapital.amount}
+          tokenSymbol={RBTC}
+          fiatAmount={netPendingCapital.fiatAmount}
+        />
+        <div className="flex-1" />
       </RbtcVaultMetricsRow>
     </div>
   )
