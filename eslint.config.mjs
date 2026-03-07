@@ -3,6 +3,7 @@ import prettierConfig from 'eslint-config-prettier'
 import prettierPlugin from 'eslint-plugin-prettier'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import storybookPlugin from 'eslint-plugin-storybook'
+import unicorn from 'eslint-plugin-unicorn'
 import tseslint from 'typescript-eslint'
 
 const config = [
@@ -55,6 +56,22 @@ const config = [
     },
   },
 
+  // -----------------------------------------------------------------------
+  // Unicorn – modern JS/TS best-practice rules (eslint-plugin-unicorn)
+  // [TechDebt] Starting at 'warn' to avoid breaking CI.
+  //            Promote individual rules to 'error' once violations are fixed.
+  // -----------------------------------------------------------------------
+  {
+    plugins: { unicorn },
+    rules: {
+      'unicorn/no-useless-undefined': 'warn',
+      // 'unicorn/no-negated-condition': 'warn',
+      'unicorn/no-lonely-if': 'warn',
+      // 'unicorn/prefer-optional-catch-binding': 'warn',
+      'unicorn/prefer-string-replace-all': 'warn',
+    },
+  },
+
   {
     files: ['**/*.ts', '**/*.tsx'],
     plugins: {
@@ -85,6 +102,14 @@ const config = [
           typeLiterals: {
             optionalityOrder: 'required-first',
           },
+        },
+      ],
+      // Enforce PascalCase or camelCase on function declarations (blocks ALLCAPS names like RANDOMCOMPONENT)
+      '@typescript-eslint/naming-convention': [
+        'warn',
+        {
+          selector: 'function',
+          format: ['camelCase', 'PascalCase'],
         },
       ],
       '@typescript-eslint/no-restricted-types': [
