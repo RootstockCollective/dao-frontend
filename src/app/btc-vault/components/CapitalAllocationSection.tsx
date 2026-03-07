@@ -11,6 +11,8 @@ import { RBTC } from '@/lib/constants'
 
 import { useCapitalAllocation } from '../hooks/useCapitalAllocation'
 import { CAPITAL_ALLOCATION_TOOLTIP_MAP } from './CapitalAllocationSection.constants'
+import { ContractAddressesSection } from './ContractAddressesSection'
+import { FeesInfoSection } from './FeesInfoSection'
 
 export function CapitalAllocationSection() {
   const [isDetailed, setIsDetailed] = useState(false)
@@ -36,47 +38,52 @@ export function CapitalAllocationSection() {
         headerVariant="h3"
         rightContent={toggleControl}
       >
-        {isDetailed ? (
-          <div data-testid="capital-allocation-detailed" className="min-h-[200px]" />
-        ) : (
-          <div
-            data-testid="capital-allocation-undetailed"
-            className="flex flex-row flex-wrap gap-x-6 gap-y-6 md:gap-x-20"
-          >
-            {isLoading
-              ? Array.from({ length: 3 }, (_, i) => (
-                  <BalanceInfo
-                    key={i}
-                    className="w-[224px] min-w-[180px]"
-                    amount="..."
-                    data-testid={`metric-loading-${i}`}
-                  />
-                ))
-              : data?.categories.map(cat => (
-                  <BalanceInfo
-                    key={cat.label}
-                    className="w-[224px] min-w-[180px]"
-                    title={cat.label}
-                    amount={
-                      <span className="flex flex-nowrap items-center gap-2">
-                        <span className="shrink-0">{cat.amountFormatted}</span>
-                        <span className="flex shrink-0 items-center gap-1">
-                          <TokenImage symbol={RBTC} size={24} />
-                          <Span variant="body-l" bold>
-                            {RBTC}
-                          </Span>
+        <div className="flex flex-col gap-8">
+          {isDetailed ? (
+            <div data-testid="capital-allocation-detailed" className="min-h-[200px]" />
+          ) : (
+            <div
+              data-testid="capital-allocation-undetailed"
+              className="flex flex-row flex-wrap gap-x-6 gap-y-6 md:gap-x-20"
+            >
+              {isLoading
+                ? Array.from({ length: 3 }, (_, i) => (
+                    <BalanceInfo
+                      key={i}
+                      className="w-[224px] min-w-[180px]"
+                      amount="..."
+                      data-testid={`metric-loading-${i}`}
+                    />
+                  ))
+                : data?.categories.map(cat => (
+                    <BalanceInfo
+                      key={cat.label}
+                      className="w-[224px] min-w-[180px]"
+                      title={cat.label}
+                      amount={
+                        <span className="flex flex-nowrap items-center gap-2">
+                          <span className="shrink-0">{cat.amountFormatted}</span>
+                          <span className="flex shrink-0 items-center gap-1">
+                            <TokenImage symbol={RBTC} size={24} />
+                            <Span variant="body-l" bold>
+                              {RBTC}
+                            </Span>
+                          </span>
+                          <span className="min-w-[1.25rem] shrink-0 text-center text-white/40">|</span>
+                          <span className="shrink-0">{cat.percentFormatted}</span>
                         </span>
-                        <span className="min-w-[1.25rem] shrink-0 text-center text-white/40">|</span>
-                        <span className="shrink-0">{cat.percentFormatted}</span>
-                      </span>
-                    }
-                    fiatAmount={cat.fiatAmountFormatted}
-                    tooltipContent={CAPITAL_ALLOCATION_TOOLTIP_MAP[cat.label]}
-                    data-testid={`metric-${cat.label.toLowerCase().replace(/\s+/g, '-')}`}
-                  />
-                ))}
-          </div>
-        )}
+                      }
+                      fiatAmount={cat.fiatAmountFormatted}
+                      tooltipContent={CAPITAL_ALLOCATION_TOOLTIP_MAP[cat.label]}
+                      data-testid={`metric-${cat.label.toLowerCase().replace(/\s+/g, '-')}`}
+                    />
+                  ))}
+            </div>
+          )}
+
+          <ContractAddressesSection />
+          <FeesInfoSection />
+        </div>
       </SectionContainer>
     </section>
   )
