@@ -96,6 +96,56 @@ export const WithUsdEquivalent: Story = {
   },
 }
 
+export const PendingWithdrawal: Story = {
+  args: {
+    request: makeRequest({
+      type: 'withdrawal',
+      status: 'pending',
+      amountFormatted: '0.75',
+      sharesFormatted: '0.75',
+      lastUpdatedFormatted: '10 Jan 2025',
+    }),
+  },
+}
+
+export const ClaimableDeposit: Story = {
+  args: {
+    request: makeRequest({
+      type: 'deposit',
+      status: 'claimable',
+      amountFormatted: '1',
+      sharesFormatted: '0.98',
+      lastUpdatedFormatted: '18 Feb 2025',
+      claimable: true,
+    }),
+  },
+}
+
+export const DoneWithdrawal: Story = {
+  args: {
+    request: makeRequest({
+      type: 'withdrawal',
+      status: 'done',
+      amountFormatted: '3',
+      sharesFormatted: '2.94',
+      lastUpdatedFormatted: '12 Jun 2025',
+    }),
+  },
+}
+
+export const NoUsdEquivalent: Story = {
+  args: {
+    request: makeRequest({
+      type: 'deposit',
+      status: 'pending',
+      amountFormatted: '0.5',
+      sharesFormatted: '—',
+      usdEquivalentFormatted: null,
+      lastUpdatedFormatted: '14 Nov 2023',
+    }),
+  },
+}
+
 export const LargeAmount: Story = {
   args: {
     request: makeRequest({

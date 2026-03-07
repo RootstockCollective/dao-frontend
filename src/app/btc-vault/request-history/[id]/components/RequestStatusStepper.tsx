@@ -1,19 +1,20 @@
 'use client'
 
-import { ProgressBar } from '@/components/ProgressBarNew'
-import { Span } from '@/components/Typography'
-import { cn } from '@/lib/utils'
+import { ProgressStepper } from '@/components/ProgressBarNew'
 
 import type { RequestStatus, RequestType } from '../../../services/types'
 
-const WITHDRAWAL_STAGES = ['Submitted', 'Pending', 'Approved', 'Shares Claimed'] as const
-const DEPOSIT_STAGES = ['Submitted', 'Pending', 'Approved', 'Redeemed'] as const
+const WITHDRAWAL_STAGES = ['Submitted', 'Pending', 'Approved', 'Redeemed'] as const
+const DEPOSIT_STAGES = ['Submitted', 'Pending', 'Approved', 'Shares claimed'] as const
+const CANCELLED_STAGES = ['Submitted', 'Pending', 'Cancelled by user'] as const
 
-function getStages(type: RequestType) {
+function getStages(type: RequestType, status: RequestStatus) {
+  if (status === 'cancelled') return CANCELLED_STAGES
   return type === 'withdrawal' ? WITHDRAWAL_STAGES : DEPOSIT_STAGES
 }
 
-function getCurrentStage(status: RequestStatus): number {
+// TODO: failed requests show a notification instead of a stepper stage
+function getCurrentStage(status: RequestStatus): number | null {
   switch (status) {
     case 'pending':
       return 2
@@ -22,7 +23,9 @@ function getCurrentStage(status: RequestStatus): number {
     case 'done':
       return 4
     case 'failed':
-      return 0
+      return null
+    case 'cancelled':
+      return 3
     default: {
       const _exhaustive: never = status
       return _exhaustive
@@ -36,42 +39,14 @@ interface RequestStatusStepperProps {
 }
 
 export function RequestStatusStepper({ status, type }: RequestStatusStepperProps) {
-  const stages = getStages(type)
-  const isFailed = status === 'failed'
-  const currentStage = isFailed ? 1 : getCurrentStage(status)
-  const progressPercent = isFailed ? 0 : currentStage * 25
+  const currentStage = getCurrentStage(status)
+  if (currentStage === null) return null
+
+  const stages = getStages(type, status)
 
   return (
-    <div data-testid="request-status-stepper" className="flex flex-col gap-2">
-      <div className="flex justify-between gap-2">
-        {stages.map((label, i) => {
-          const stageNum = i + 1
-          const isActive = !isFailed && stageNum <= currentStage
-          const isCurrent = !isFailed && stageNum === currentStage
-          return (
-            <Span
-              key={label}
-              variant="tag"
-              caps
-              data-stage={stageNum}
-              className={cn(
-                'transition-colors',
-                isCurrent && 'font-semibold text-primary',
-                isActive && !isCurrent && 'text-100',
-                !isActive && 'text-200',
-              )}
-            >
-              {label}
-            </Span>
-          )
-        })}
-      </div>
-      <ProgressBar progress={progressPercent} className="w-full" />
-      {isFailed && (
-        <Span variant="tag" caps data-testid="failed-indicator" className="font-semibold text-destructive">
-          Failed
-        </Span>
-      )}
+    <div data-testid="request-status-stepper">
+      <ProgressStepper stages={stages} currentStage={currentStage} showSeparators />
     </div>
   )
 }
