@@ -64,12 +64,13 @@ const config = [
   {
     plugins: { unicorn },
     rules: {
-      'unicorn/no-useless-undefined': 'warn',
+      'unicorn/no-useless-undefined': 'warn', // TODO: fix violations and promote to 'error' in a separate PR
       // 'unicorn/no-negated-condition': 'warn',
-      'unicorn/no-lonely-if': 'warn',
+      'unicorn/no-lonely-if': 'warn', // TODO: fix violations and promote to 'error' in a separate PR
       // 'unicorn/prefer-optional-catch-binding': 'warn',
-      'unicorn/prefer-string-replace-all': 'warn',
-      'unicorn/error-message': 'warn',
+      'unicorn/prefer-string-replace-all': 'warn', // TODO: fix violations and promote to 'error' in a separate PR
+      'unicorn/error-message': 'warn', // TODO: fix violations and promote to 'error' in a separate PR
+      'unicorn/no-for-loop': 'warn', // TODO: fix violations and promote to 'error' in a separate PR
       // 'unicorn/no-typeof-undefined': 'warn', // disabled: flags legitimate `typeof window` SSR checks
     },
   },
