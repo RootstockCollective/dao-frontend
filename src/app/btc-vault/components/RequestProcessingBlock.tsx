@@ -4,29 +4,14 @@ import { Clock } from 'lucide-react'
 import Link from 'next/link'
 import type { ComponentPropsWithoutRef } from 'react'
 
-import { ProgressBar } from '@/components/ProgressBarNew'
 import { TokenImage } from '@/components/TokenImage'
 import { Label, Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { btcVaultRequestDetail } from '@/shared/constants/routes'
 
+import { RequestStatusStepper } from '../request-history/[id]/components/RequestStatusStepper'
 import type { ActiveRequestDisplay } from '../services/ui/types'
-
-const STAGES = ['Submitted', 'Pending', 'Approved', 'Successful'] as const
-
-function getCurrentStage(status: ActiveRequestDisplay['status']): number {
-  switch (status) {
-    case 'pending':
-      return 2
-    case 'claimable':
-      return 3
-    case 'done':
-      return 4
-    default:
-      return 2
-  }
-}
 
 function getRequestTypeLabel(type: ActiveRequestDisplay['type']): string {
   return type === 'deposit' ? 'Deposit' : 'Withdrawal'
@@ -54,41 +39,13 @@ export interface RequestProcessingBlockProps extends ComponentPropsWithoutRef<'s
  * ```
  */
 export function RequestProcessingBlock({ request, className, ...props }: RequestProcessingBlockProps) {
-  const currentStage = getCurrentStage(request.status)
-  const progressPercent = currentStage * 25
-
   return (
     <section
       data-testid="request-processing-block"
       className={cn('flex flex-col gap-6 w-full', className)}
       {...props}
     >
-      <div className="flex flex-col gap-2">
-        <div className="flex justify-between gap-2">
-          {STAGES.map((label, i) => {
-            const stageNum = i + 1
-            const isActive = stageNum <= currentStage
-            const isCurrent = stageNum === currentStage
-            return (
-              <Span
-                key={label}
-                variant="tag"
-                caps
-                data-stage={stageNum}
-                className={cn(
-                  'transition-colors',
-                  isCurrent && 'font-semibold text-primary',
-                  isActive && !isCurrent && 'text-100',
-                  !isActive && 'text-200',
-                )}
-              >
-                {label}
-              </Span>
-            )
-          })}
-        </div>
-        <ProgressBar progress={progressPercent} className="w-full" />
-      </div>
+      <RequestStatusStepper status={request.status} type={request.type} />
 
       <div className="flex gap-6 self-stretch">
         <div className="flex flex-1 min-w-0 flex-col gap-2">
