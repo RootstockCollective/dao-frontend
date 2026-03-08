@@ -93,6 +93,7 @@ export const TALLY_DESCRIPTION_SEPARATOR = '  ' // Tally uses double spaces to s
 export const WeiPerEther = 10n ** 18n
 export const VAULT_BASIS_POINTS = 10n ** 9n // 1e9 = 100% for vault APY calculations
 export const VAULT_SHARE_MULTIPLIER = 10n ** 6n // 1e6 multiplier for vault shares (used in vault contract to prevent inflation attacks)
+export const SECONDS_PER_YEAR = 31_557_600n // 365.25 days — matches SyntheticYield.sol
 // address(uint160(uint256(keccak256("COINBASE_ADDRESS"))))
 export const COINBASE_ADDRESS = '0xf7ab6cfaebbadfe8b5494022c4c6db776bd63b6b' as Address
 
