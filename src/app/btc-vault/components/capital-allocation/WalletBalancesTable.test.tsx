@@ -86,14 +86,15 @@ describe('WalletBalancesTable', () => {
     cleanup()
   })
 
-  it('renders table with column headers', () => {
+  it('renders table with column headers showing totals for balance and percentage', () => {
     render(<WalletBalancesTable wallets={MOCK_WALLETS} />)
 
     expect(screen.getByTestId('wallet-balances-table')).toBeInTheDocument()
     expect(screen.getByText('On-chain wallets')).toBeInTheDocument()
     expect(screen.getByText('Tracking')).toBeInTheDocument()
-    expect(screen.getByText('Balance')).toBeInTheDocument()
-    expect(screen.getByText('Percentage')).toBeInTheDocument()
+    expect(screen.getByText('1069.99992')).toBeInTheDocument()
+    expect(screen.getByText('$2256.00')).toBeInTheDocument()
+    expect(screen.getByText('100.00%')).toBeInTheDocument()
   })
 
   it('displays the first 5 wallets by default', () => {
@@ -105,14 +106,13 @@ describe('WalletBalancesTable', () => {
     expect(screen.queryByText('Fordefi 8')).not.toBeInTheDocument()
   })
 
-  it('renders summary row with aggregated totals', () => {
+  it('shows aggregated totals in column headers', () => {
     render(<WalletBalancesTable wallets={MOCK_WALLETS} />)
 
-    const summary = screen.getByTestId('wallet-summary-row')
-    expect(summary).toBeInTheDocument()
-    expect(within(summary).getByText('100.00%')).toBeInTheDocument()
-    expect(within(summary).getByText('1069.99992')).toBeInTheDocument()
-    expect(within(summary).getByText('$2256.00 USD')).toBeInTheDocument()
+    expect(screen.queryByTestId('wallet-summary-row')).not.toBeInTheDocument()
+    expect(screen.getByText('1069.99992')).toBeInTheDocument()
+    expect(screen.getByText('$2256.00')).toBeInTheDocument()
+    expect(screen.getByText('100.00%')).toBeInTheDocument()
   })
 
   it('shows "Show all wallets" button when wallets exceed default visible count', () => {
@@ -147,7 +147,6 @@ describe('WalletBalancesTable', () => {
 
     expect(screen.getByTestId('wallet-balances-table')).toBeInTheDocument()
     expect(screen.getByText('No wallets configured')).toBeInTheDocument()
-    expect(screen.queryByTestId('wallet-summary-row')).not.toBeInTheDocument()
     expect(screen.queryByTestId('wallet-grid-table')).not.toBeInTheDocument()
   })
 
@@ -167,7 +166,107 @@ describe('WalletBalancesTable', () => {
     render(<WalletBalancesTable wallets={MOCK_WALLETS.slice(0, 1)} />)
 
     expect(screen.getAllByText('999.99999').length).toBeGreaterThanOrEqual(1)
-    expect(screen.getAllByText('$282.00 USD').length).toBeGreaterThanOrEqual(1)
+    expect(screen.getAllByText('$282.00').length).toBeGreaterThanOrEqual(1)
     expect(screen.getAllByText('96.49%').length).toBeGreaterThanOrEqual(1)
+  })
+
+  describe('sorting', () => {
+    const SORT_WALLETS: WalletBalanceDisplay[] = [
+      {
+        label: 'Charlie Wallet',
+        trackingPlatform: 'Nimbus',
+        trackingUrl: 'https://app.nimbus.io',
+        amountFormatted: '50.5',
+        fiatAmountFormatted: '$5050.00 USD',
+        percentFormatted: '30%',
+      },
+      {
+        label: 'Alpha Wallet',
+        trackingPlatform: 'Suivision',
+        trackingUrl: 'https://suivision.xyz',
+        amountFormatted: '200.0',
+        fiatAmountFormatted: '$20000.00 USD',
+        percentFormatted: '60%',
+      },
+      {
+        label: 'Bravo Wallet',
+        trackingPlatform: 'Nimbus',
+        trackingUrl: 'https://app.nimbus.io',
+        amountFormatted: '9.99',
+        fiatAmountFormatted: '$999.00 USD',
+        percentFormatted: '10%',
+      },
+    ]
+
+    const getRowLabels = () =>
+      screen.getAllByRole('row').map(row => within(row).queryByText(/Wallet/)?.textContent)
+        .filter(Boolean)
+
+    it('clicking "On-chain wallets" header sorts rows alphabetically', async () => {
+      const user = userEvent.setup()
+      render(<WalletBalancesTable wallets={SORT_WALLETS} />)
+
+      await user.click(screen.getByTestId('ColumnHeader-wallet'))
+
+      const labelsAsc = getRowLabels()
+      expect(labelsAsc).toEqual(['Alpha Wallet', 'Bravo Wallet', 'Charlie Wallet'])
+
+      await user.click(screen.getByTestId('ColumnHeader-wallet'))
+
+      const labelsDesc = getRowLabels()
+      expect(labelsDesc).toEqual(['Charlie Wallet', 'Bravo Wallet', 'Alpha Wallet'])
+    })
+
+    it('clicking "Balance" header sorts rows by numeric amount', async () => {
+      const user = userEvent.setup()
+      render(<WalletBalancesTable wallets={SORT_WALLETS} />)
+
+      await user.click(screen.getByTestId('ColumnHeader-balance'))
+
+      const labelsAsc = getRowLabels()
+      expect(labelsAsc).toEqual(['Bravo Wallet', 'Charlie Wallet', 'Alpha Wallet'])
+
+      await user.click(screen.getByTestId('ColumnHeader-balance'))
+
+      const labelsDesc = getRowLabels()
+      expect(labelsDesc).toEqual(['Alpha Wallet', 'Charlie Wallet', 'Bravo Wallet'])
+    })
+
+    it('clicking "Percentage" header sorts rows by numeric percentage', async () => {
+      const user = userEvent.setup()
+      render(<WalletBalancesTable wallets={SORT_WALLETS} />)
+
+      await user.click(screen.getByTestId('ColumnHeader-percentage'))
+
+      const labelsAsc = getRowLabels()
+      expect(labelsAsc).toEqual(['Bravo Wallet', 'Charlie Wallet', 'Alpha Wallet'])
+
+      await user.click(screen.getByTestId('ColumnHeader-percentage'))
+
+      const labelsDesc = getRowLabels()
+      expect(labelsDesc).toEqual(['Alpha Wallet', 'Charlie Wallet', 'Bravo Wallet'])
+    })
+
+    it('sorting applies to all wallets, not just the visible subset', async () => {
+      const user = userEvent.setup()
+      const manyWallets: WalletBalanceDisplay[] = [
+        ...MOCK_WALLETS.slice(0, 5),
+        {
+          label: 'AAA First',
+          trackingPlatform: 'Nimbus',
+          trackingUrl: 'https://app.nimbus.io',
+          amountFormatted: '0.001',
+          fiatAmountFormatted: '$0.10 USD',
+          percentFormatted: '0.01%',
+        },
+      ]
+      render(<WalletBalancesTable wallets={manyWallets} />)
+
+      expect(screen.queryByText('AAA First')).not.toBeInTheDocument()
+
+      await user.click(screen.getByTestId('ColumnHeader-wallet'))
+
+      expect(screen.getByText('AAA First')).toBeInTheDocument()
+    })
   })
 })
