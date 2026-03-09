@@ -1,4 +1,5 @@
 import type { ClassValue } from 'clsx'
+
 import { getEnvFlag } from '@/shared/context/FeatureFlag/flags.utils'
 
 export interface MenuData {
@@ -13,20 +14,70 @@ export interface MenuData {
   iconUrl?: string
 }
 
-const betaTools = [
-  {
-    href: '-',
-    text: 'BETA TOOLS',
-    buttonProps: { id: 'Button_Beta_Tools', name: 'beta-tools', className: 'mt-5' },
-    type: 'category',
-  },
-  {
-    href: 'vault',
-    text: 'USD Vault Sandbox',
-    buttonProps: { id: 'Button_Vault', name: 'vault' },
-    iconUrl: '/images/sidemenukoto/Holdings.svg',
-  },
-] as const satisfies MenuData[]
+function getBetaToolsSection(): MenuData[] {
+  const vaultOn = getEnvFlag('vault')
+  const btcVaultOn = getEnvFlag('btc_vault')
+  if (!vaultOn && !btcVaultOn) return []
+  const items: MenuData[] = []
+  if (vaultOn || btcVaultOn) {
+    items.push({
+      href: '-',
+      text: 'BETA TOOLS',
+      buttonProps: { id: 'Button_Beta_Tools', name: 'beta-tools', className: 'mt-5' },
+      type: 'category',
+    })
+  }
+  if (vaultOn) {
+    items.push({
+      href: 'vault',
+      text: 'USD Vault Sandbox',
+      buttonProps: { id: 'Button_Vault', name: 'vault' },
+      iconUrl: '/images/sidemenukoto/Holdings.svg',
+    })
+  }
+  if (btcVaultOn) {
+    items.push({
+      href: 'btc-vault',
+      text: 'BTC Vault Sandbox',
+      buttonProps: { id: 'Button_Btc_Vault', name: 'btc-vault' },
+      iconUrl: '/images/sidemenukoto/Holdings.svg',
+    })
+  }
+  return items
+}
+
+function getBetaToolsSectionNotConnected(): MenuData[] {
+  const vaultOn = getEnvFlag('vault')
+  const btcVaultOn = getEnvFlag('btc_vault')
+  if (!vaultOn && !btcVaultOn) return []
+  const items: MenuData[] = []
+  if (vaultOn || btcVaultOn) {
+    items.push({
+      href: '-',
+      text: 'BETA TOOLS',
+      buttonProps: { id: 'Button_Beta_Tools_Not_Connected', name: 'beta-tools', className: 'mt-5' },
+      type: 'category',
+    })
+  }
+  if (vaultOn) {
+    items.push({
+      href: 'vault',
+      text: 'USD Vault Sandbox',
+      buttonProps: { id: 'Button_Vault_Not_Connected', name: 'vault' },
+      iconUrl: '/images/sidemenukoto/Holdings.svg',
+    })
+  }
+  if (btcVaultOn) {
+    items.push({
+      href: 'btc-vault',
+      text: 'BTC Vault Sandbox',
+      buttonProps: { id: 'Button_Btc_Vault_Not_Connected', name: 'btc-vault' },
+      iconUrl: '/images/sidemenukoto/Holdings.svg',
+    })
+  }
+  return items
+}
+
 export const menuData = [
   {
     href: '',
@@ -94,23 +145,9 @@ export const menuData = [
     buttonProps: { id: 'Button_Builders', name: 'builders' },
     iconUrl: '/images/sidemenukoto/Builders.svg',
   },
-  ...(getEnvFlag('vault') ? betaTools : []),
+  ...getBetaToolsSection(),
 ] as const satisfies MenuData[]
 
-const betaToolsNotConnected = [
-  {
-    href: '-',
-    text: 'BETA TOOLS',
-    buttonProps: { id: 'Button_Beta_Tools_Not_Connected', name: 'beta-tools', className: 'mt-5' },
-    type: 'category',
-  },
-  {
-    href: 'vault',
-    text: 'USD Vault Sandbox',
-    buttonProps: { id: 'Button_Vault_Not_Connected', name: 'vault' },
-    iconUrl: '/images/sidemenukoto/Holdings.svg',
-  },
-] as const satisfies MenuData[]
 export const menuDataNotConnected = [
   {
     href: '',
@@ -172,5 +209,5 @@ export const menuDataNotConnected = [
     buttonProps: { id: 'Button_Builders', name: 'builders' },
     iconUrl: '/images/sidemenukoto/Builders.svg',
   },
-  ...(getEnvFlag('vault') ? betaToolsNotConnected : []),
+  ...getBetaToolsSectionNotConnected(),
 ] as const satisfies MenuData[]

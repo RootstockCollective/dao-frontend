@@ -3,13 +3,9 @@ import { describe, it, expect, vi, beforeAll } from 'vitest'
 import { RequestProcessingBlock } from './components/RequestProcessingBlock'
 import type { ActiveRequestDisplay } from './services/ui/types'
 
-vi.mock('@/components/ProgressBarNew', () => {
-  const React = require('react')
-  return {
-    ProgressBar: ({ progress }: { progress: number }) =>
-      React.createElement('div', { 'data-testid': 'progress-bar', 'data-progress': progress }),
-  }
-})
+vi.mock('next/image', () => ({
+  default: (props: Record<string, unknown>) => require('react').createElement('img', props),
+}))
 
 vi.mock('next/link', () => ({
   default: ({ children, href }: { children: unknown; href: string }) =>
@@ -48,19 +44,30 @@ function makeRequest(overrides: Partial<ActiveRequestDisplay> = {}): ActiveReque
 }
 
 describe('RequestProcessingBlock', () => {
-  it('renders four stage labels', () => {
+  it('renders deposit stage labels', () => {
     const { container } = render(<RequestProcessingBlock request={makeRequest()} />)
     const block = getBlock(container)
     expect(within(block).getByText('Submitted')).toBeInTheDocument()
     expect(within(block).getByText('Pending')).toBeInTheDocument()
     expect(within(block).getByText('Approved')).toBeInTheDocument()
-    expect(within(block).getByText('Successful')).toBeInTheDocument()
+    expect(within(block).getByText('Shares claimed')).toBeInTheDocument()
   })
 
-  it('renders progress bar', () => {
+  it('renders withdrawal stage labels', () => {
+    const { container } = render(
+      <RequestProcessingBlock request={makeRequest({ type: 'withdrawal' })} />,
+    )
+    const block = getBlock(container)
+    expect(within(block).getByText('Submitted')).toBeInTheDocument()
+    expect(within(block).getByText('Pending')).toBeInTheDocument()
+    expect(within(block).getByText('Approved')).toBeInTheDocument()
+    expect(within(block).getByText('Redeemed')).toBeInTheDocument()
+  })
+
+  it('renders progress stepper', () => {
     const { container } = render(<RequestProcessingBlock request={makeRequest()} />)
     const block = getBlock(container)
-    expect(within(block).getByTestId('progress-bar')).toBeInTheDocument()
+    expect(within(block).getByTestId('progress-stepper')).toBeInTheDocument()
   })
 
   it('renders request details grid', () => {

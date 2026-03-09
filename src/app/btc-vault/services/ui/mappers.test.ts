@@ -4,6 +4,7 @@ import { WeiPerEther } from '@/lib/constants'
 
 import {
   toVaultMetricsDisplay,
+  toEpochDisplay,
   toUserPositionDisplay,
   toActionEligibility,
   toActiveRequestDisplay,
@@ -11,6 +12,27 @@ import {
   toPaginatedHistoryDisplay,
   toCapitalAllocationDisplay,
 } from './mappers'
+
+describe('toEpochDisplay', () => {
+  it('maps epoch state and includes endTime and closesAtFormatted', () => {
+    const endTime = 1740182400 // 23 Feb 2025 00:00:00 UTC
+    const result = toEpochDisplay({
+      epochId: '1',
+      status: 'open',
+      startTime: endTime - 86400,
+      endTime,
+      settledAt: null,
+      navPerShare: null,
+      totalDepositAssets: 0n,
+      totalRedemptionShares: 0n,
+    })
+    expect(result.epochId).toBe('1')
+    expect(result.status).toBe('open')
+    expect(result.isAcceptingRequests).toBe(true)
+    expect(result.endTime).toBe(endTime)
+    expect(result.closesAtFormatted).toMatch(/\d{2} \w{3} \d{4}/)
+  })
+})
 
 describe('toVaultMetricsDisplay', () => {
   it('formats raw metrics', () => {
