@@ -12,6 +12,8 @@ import { RBTC } from '@/lib/constants'
 import { useCapitalAllocation } from '../../hooks/useCapitalAllocation'
 import { CapitalAllocationDonutChart } from './CapitalAllocationDonutChart'
 import { CAPITAL_ALLOCATION_TOOLTIP_MAP } from './CapitalAllocationSection.constants'
+import { ContractAddressesSection } from './ContractAddressesSection'
+import { FeesInfoSection } from './FeesInfoSection'
 
 export function CapitalAllocationSection() {
   const [isDetailed, setIsDetailed] = useState(false)
@@ -87,6 +89,9 @@ export function CapitalAllocationSection() {
                 ))}
           </div>
         )}
+
+        <ContractAddressesSection />
+        <FeesInfoSection />
       </SectionContainer>
     </section>
   )
