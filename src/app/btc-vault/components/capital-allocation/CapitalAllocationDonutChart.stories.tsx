@@ -27,6 +27,7 @@ const data50_25_25: CapitalAllocationDisplay = {
     { label: 'Liquidity reserve', amountFormatted: '0.26', percentFormatted: '25%', fiatAmountFormatted: '$13,000.00 USD' },
     { label: 'Unallocated capital', amountFormatted: '0.26', percentFormatted: '25%', fiatAmountFormatted: '$13,000.00 USD' },
   ],
+  wallets: [],
 }
 
 const data80_10_10: CapitalAllocationDisplay = {
@@ -35,6 +36,7 @@ const data80_10_10: CapitalAllocationDisplay = {
     { label: 'Liquidity reserve', amountFormatted: '0.10', percentFormatted: '10%', fiatAmountFormatted: '$5,000.00 USD' },
     { label: 'Unallocated capital', amountFormatted: '0.10', percentFormatted: '10%', fiatAmountFormatted: '$5,000.00 USD' },
   ],
+  wallets: [],
 }
 
 const dataEqualThirds: CapitalAllocationDisplay = {
@@ -43,6 +45,7 @@ const dataEqualThirds: CapitalAllocationDisplay = {
     { label: 'Liquidity reserve', amountFormatted: '0.33', percentFormatted: '33.33%', fiatAmountFormatted: '$16,500.00 USD' },
     { label: 'Unallocated capital', amountFormatted: '0.33', percentFormatted: '33.34%', fiatAmountFormatted: '$16,500.00 USD' },
   ],
+  wallets: [],
 }
 
 export const Default: Story = {

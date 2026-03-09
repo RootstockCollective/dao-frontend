@@ -10,7 +10,7 @@ import { Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
-import type { WalletBalanceDisplay } from '../services/ui/types'
+import type { WalletBalanceDisplay } from '../../services/ui/types'
 import { DEFAULT_VISIBLE_WALLETS } from './WalletBalancesTable.constants'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {

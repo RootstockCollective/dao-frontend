@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 
-import type { WalletBalanceDisplay } from '../services/ui/types'
+import type { WalletBalanceDisplay } from '../../services/ui/types'
 
 import { WalletBalancesTable } from './WalletBalancesTable'
 
