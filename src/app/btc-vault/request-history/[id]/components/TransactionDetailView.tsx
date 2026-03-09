@@ -12,9 +12,10 @@ export interface TransactionDetailViewProps {
   detail: RequestDetailDisplay
   status: RequestStatus
   type: RequestType
+  onCancel?: () => void
 }
 
-export function TransactionDetailView({ detail, status, type }: TransactionDetailViewProps) {
+export function TransactionDetailView({ detail, status, type, onCancel }: TransactionDetailViewProps) {
   return (
     <div data-testid="transaction-detail-page" className="flex flex-col items-start w-full gap-6">
       <Header variant="h2" caps className="text-100">
@@ -30,7 +31,7 @@ export function TransactionDetailView({ detail, status, type }: TransactionDetai
           </Button>
         )}
         {detail.canCancel && (
-          <Button variant="secondary-outline" data-testid="cancel-request-button" onClick={() => {}}>
+          <Button variant="secondary-outline" data-testid="cancel-request-button" onClick={onCancel}>
             Cancel request
           </Button>
         )}
