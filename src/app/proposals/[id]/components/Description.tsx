@@ -1,9 +1,9 @@
-import { Header } from '@/components/Typography'
-import { Expandable, ExpandableHeader } from '@/components/Expandable'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { parseProposalDescription } from '@/app/proposals/shared/utils'
-import { MD } from '@/components/MD'
+import { Expandable, ExpandableHeader } from '@/components/Expandable'
 import { useExpandableContext } from '@/components/Expandable/ExpandableContext'
+import { MD as Markdown } from '@/components/MD'
+import { Header } from '@/components/Typography'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface DescriptionProps {
   description?: string
@@ -30,7 +30,7 @@ interface DescriptionContentProps {
 }
 
 const DesktopDescriptionContent = ({ descriptionText }: DescriptionContentProps) => {
-  return <MD className="mt-10 [&>*:first-child]:mt-0">{descriptionText}</MD>
+  return <Markdown className="mt-10 [&>*:first-child]:mt-0">{descriptionText}</Markdown>
 }
 
 const MobileDescriptionContent = ({ descriptionText }: DescriptionContentProps) => {
@@ -41,7 +41,7 @@ const MobileDescriptionContent = ({ descriptionText }: DescriptionContentProps) 
     <>
       {!isExpanded && (
         <div className="mt-2 relative">
-          <MD className="line-clamp-3 [&>*:first-child]:mt-0">{previewText}</MD>
+          <Markdown className="line-clamp-3 [&>*:first-child]:mt-0">{previewText}</Markdown>
         </div>
       )}
       <div
@@ -49,7 +49,7 @@ const MobileDescriptionContent = ({ descriptionText }: DescriptionContentProps) 
           isExpanded ? 'max-h-[2500px] opacity-100 mt-2' : 'max-h-0 opacity-0'
         }`}
       >
-        <MD className="[&>*:first-child]:mt-0">{descriptionText}</MD>
+        <Markdown className="[&>*:first-child]:mt-0">{descriptionText}</Markdown>
       </div>
     </>
   )

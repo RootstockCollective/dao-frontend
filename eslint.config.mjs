@@ -3,6 +3,7 @@ import prettierConfig from 'eslint-config-prettier'
 import prettierPlugin from 'eslint-plugin-prettier'
 import simpleImportSort from 'eslint-plugin-simple-import-sort'
 import storybookPlugin from 'eslint-plugin-storybook'
+import unicorn from 'eslint-plugin-unicorn'
 import tseslint from 'typescript-eslint'
 
 const config = [
@@ -38,6 +39,7 @@ const config = [
       'react-hooks/incompatible-library': 'off',
       'react-hooks/static-components': 'off',
       'react-hooks/immutability': 'off',
+      'react/jsx-pascal-case': 'error',
     },
   },
 
@@ -51,6 +53,25 @@ const config = [
     rules: {
       'simple-import-sort/imports': 'warn',
       'simple-import-sort/exports': 'warn',
+    },
+  },
+
+  // -----------------------------------------------------------------------
+  // Unicorn – modern JS/TS best-practice rules (eslint-plugin-unicorn)
+  // [TechDebt] Starting at 'warn' to avoid breaking CI.
+  //            Promote individual rules to 'error' once violations are fixed.
+  // -----------------------------------------------------------------------
+  {
+    plugins: { unicorn },
+    rules: {
+      'unicorn/no-useless-undefined': 'warn', // TODO: fix violations and promote to 'error' in a separate PR
+      // 'unicorn/no-negated-condition': 'warn',
+      'unicorn/no-lonely-if': 'warn', // TODO: fix violations and promote to 'error' in a separate PR
+      // 'unicorn/prefer-optional-catch-binding': 'warn',
+      'unicorn/prefer-string-replace-all': 'warn', // TODO: fix violations and promote to 'error' in a separate PR
+      'unicorn/error-message': 'warn', // TODO: fix violations and promote to 'error' in a separate PR
+      'unicorn/no-for-loop': 'warn', // TODO: fix violations and promote to 'error' in a separate PR
+      // 'unicorn/no-typeof-undefined': 'warn', // disabled: flags legitimate `typeof window` SSR checks
     },
   },
 
@@ -83,6 +104,29 @@ const config = [
           },
           typeLiterals: {
             optionalityOrder: 'required-first',
+          },
+        },
+      ],
+      // Enforce PascalCase or camelCase on function declarations (blocks ALLCAPS names like RANDOMCOMPONENT)
+      '@typescript-eslint/naming-convention': [
+        'warn',
+        {
+          selector: 'function',
+          format: ['camelCase', 'PascalCase'],
+        },
+      ],
+      '@typescript-eslint/no-restricted-types': [
+        'warn',
+        {
+          types: {
+            FC: {
+              message:
+                'Do not use FC. Type the component as (props: Props) => JSX.Element and use (props: Props) in the parameter.',
+            },
+            FunctionComponent: {
+              message:
+                'Do not use FunctionComponent. Type the component as (props: Props) => JSX.Element and use (props: Props) in the parameter.',
+            },
           },
         },
       ],
