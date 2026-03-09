@@ -53,6 +53,7 @@ describe('segmentsFromDisplay', () => {
       amountFormatted: '0',
       fiatAmountFormatted: '$0.00 USD',
     })),
+    wallets: [],
   })
 
   it('returns segments that sum to 100 for normal input', () => {

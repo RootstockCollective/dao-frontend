@@ -18,6 +18,7 @@ import type {
   UserPosition,
   VaultMetrics,
   VaultRequest,
+  WalletBalance,
 } from '../types'
 import {
   formatApyPercent,
@@ -39,6 +40,7 @@ import type {
   RequestDetailDisplay,
   UserPositionDisplay,
   VaultMetricsDisplay,
+  WalletBalanceDisplay,
 } from './types'
 import { DISPLAY_STATUS_LABELS } from './types'
 
@@ -210,6 +212,7 @@ export function mapRequestDisplayStatus(
       displayStatus = 'successful'
       break
     case 'failed':
+    default:
       displayStatus = failureReason === 'rejected' ? 'rejected' : 'cancelled'
       break
     case 'cancelled':
@@ -295,10 +298,30 @@ export function toPaginatedHistoryDisplay(
 }
 
 /**
+ * Maps a single raw wallet balance into display-ready formatted strings.
+ * @param wallet - Raw wallet balance with bigint amount
+ * @param rbtcPrice - Current rBTC price in USD (0 if unavailable)
+ * @returns Display object with formatted balance, fiat, and percentage
+ */
+export function toWalletBalanceDisplay(wallet: WalletBalance, rbtcPrice: number): WalletBalanceDisplay {
+  const amountEther = formatEther(wallet.amount)
+  const fiatAmountFormatted =
+    rbtcPrice > 0 ? formatCurrencyWithLabel(Big(amountEther).mul(rbtcPrice)) : '$0.00 USD'
+  return {
+    label: wallet.label,
+    trackingPlatform: wallet.trackingPlatform,
+    trackingUrl: wallet.trackingUrl,
+    amountFormatted: amountEther,
+    fiatAmountFormatted,
+    percentFormatted: `${wallet.percentOfTotal}%`,
+  }
+}
+
+/**
  * Maps raw capital allocation data into display-ready formatted strings.
  * @param raw - Raw capital allocation with bigint amounts
  * @param rbtcPrice - Current rBTC price in USD (0 if unavailable)
- * @returns Display object with formatted categories
+ * @returns Display object with formatted categories and wallets
  */
 export function toCapitalAllocationDisplay(
   raw: CapitalAllocation,
@@ -317,5 +340,6 @@ export function toCapitalAllocationDisplay(
         fiatAmountFormatted,
       }
     }),
+    wallets: raw.wallets.map(w => toWalletBalanceDisplay(w, rbtcPrice)),
   }
 }
