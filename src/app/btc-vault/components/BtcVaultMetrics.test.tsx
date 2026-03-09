@@ -38,6 +38,8 @@ describe('BtcVaultMetrics', () => {
     status: 'open' as const,
     statusSummary: 'Closes in 5m',
     isAcceptingRequests: true,
+    endTime: Math.floor(Date.now() / 1000) + 86400,
+    closesAtFormatted: '23 Feb 2025',
   }
 
   beforeEach(() => {

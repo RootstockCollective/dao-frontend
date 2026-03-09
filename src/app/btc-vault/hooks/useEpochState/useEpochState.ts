@@ -1,15 +1,18 @@
 import { useQuery } from '@tanstack/react-query'
-import { toEpochDisplay } from '../../services/ui/mappers'
+
 import type { EpochState } from '../../services/types'
+import { toEpochDisplay } from '../../services/ui/mappers'
 
 const ONE_BTC = 10n ** 18n
 const now = Math.floor(Date.now() / 1000)
+
+const SIX_DAYS_SEC = 6 * 24 * 3600
 
 const MOCK_EPOCH: EpochState = {
   epochId: '1',
   status: 'open',
   startTime: now,
-  endTime: now + 10,
+  endTime: now + SIX_DAYS_SEC,
   settledAt: null,
   navPerShare: null,
   totalDepositAssets: 5n * ONE_BTC,
