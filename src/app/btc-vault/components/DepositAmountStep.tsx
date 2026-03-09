@@ -4,28 +4,29 @@ import Image from 'next/image'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 
 import { Button } from '@/components/Button'
+import { Divider } from '@/components/Divider'
 import { Input } from '@/components/Input'
-import { PercentageButtonItem, PercentageButtons } from '@/components/PercentageButtons'
-import { Label } from '@/components/Typography'
+import { PercentageButtons } from '@/components/PercentageButtons'
+import { TokenImage } from '@/components/TokenImage'
+import { Label, Paragraph } from '@/components/Typography'
 import Big from '@/lib/big'
 import { RBTC } from '@/lib/constants'
-import { cn, handleAmountInput } from '@/lib/utils'
+import { cn, formatCurrency, handleAmountInput } from '@/lib/utils'
+import { usePricesContext } from '@/shared/context'
+
+import { BTC_VAULT_DEPOSIT_DISCLAIMER } from '../services/constants'
+import { ReviewRow } from './ReviewRow'
 
 /** Conservative gas reserve for native rBTC deposits (0.001 rBTC ≈ $0.10) */
 const GAS_RESERVE_WEI = 1_000_000_000_000_000n // 0.001 rBTC
-
-const PERCENTAGE_OPTIONS: PercentageButtonItem<number>[] = [
-  { value: 0.25, label: '25%', testId: '25Button' },
-  { value: 0.5, label: '50%', testId: '50Button' },
-  { value: 0.75, label: '75%', testId: '75Button' },
-  { value: 1, label: 'Max', testId: 'MaxButton' },
-]
 
 interface DepositAmountStepProps {
   amount: string
   setAmount: (value: string) => void
   rbtcBalanceFormatted: string
   rbtcBalanceRaw: bigint
+  estimatedShares: string
+  depositFee: string
   onNext: () => void
 }
 
@@ -34,13 +35,28 @@ export const DepositAmountStep = ({
   setAmount,
   rbtcBalanceFormatted,
   rbtcBalanceRaw,
+  estimatedShares,
+  depositFee,
   onNext,
 }: DepositAmountStepProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
+  const { prices } = usePricesContext()
 
+  // Focus input on mount
   useEffect(() => {
     inputRef.current?.focus()
   }, [])
+
+  const rbtcPrice = prices[RBTC]?.price ?? 0
+
+  const usdEquivalent = useMemo(() => {
+    if (!amount || !rbtcPrice) return ''
+    try {
+      return formatCurrency(Big(rbtcPrice).mul(amount), { showCurrencyLabel: true })
+    } catch {
+      return ''
+    }
+  }, [amount, rbtcPrice])
 
   const handleAmountChange = useCallback(
     (value: string) => {
@@ -52,7 +68,6 @@ export const DepositAmountStep = ({
   const handlePercentageClick = useCallback(
     (percentage: number) => {
       if (percentage === 1) {
-        // Reserve gas for the native rBTC transaction
         const maxWei = rbtcBalanceRaw > GAS_RESERVE_WEI ? rbtcBalanceRaw - GAS_RESERVE_WEI : 0n
         const maxStr = Big(maxWei.toString()).div(Big(10).pow(18)).toString()
         setAmount(maxStr)
@@ -93,6 +108,7 @@ export const DepositAmountStep = ({
 
   return (
     <div className="flex-1 flex flex-col" data-testid="DepositAmountStep">
+      {/* --- Amount Input Card --- */}
       <div className="flex flex-col py-3 px-4 rounded-1 w-full bg-bg-60">
         <Label className="mb-3" data-testid="LabelText">
           Amount to deposit
@@ -110,11 +126,18 @@ export const DepositAmountStep = ({
             inputProps={{ decimalScale: 18 }}
           />
           <div className="flex items-center gap-1 shrink-0">
+            <TokenImage symbol="RBTC" size={24} />
             <Label variant="body-l" bold data-testid="Symbol">
               {RBTC}
             </Label>
           </div>
         </div>
+
+        {usdEquivalent && (
+          <Label variant="body-s" className="text-text-60 mt-2" data-testid="UsdEquivalent">
+            {usdEquivalent}
+          </Label>
+        )}
 
         {errorMessage && (
           <div className="flex items-start gap-2 mt-2 max-w-full">
@@ -125,32 +148,37 @@ export const DepositAmountStep = ({
               height={24}
               className="shrink-0 mt-1"
             />
-            <Label className="text-error break-words" data-testid="ErrorText">
+            <Label className="text-error wrap-break-word" data-testid="ErrorText">
               {errorMessage}
             </Label>
           </div>
         )}
       </div>
 
-      <div className="flex flex-col justify-between mx-3 my-2 gap-2">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-1">
-            <Label variant="body-s" className="text-text-60" data-testid="WalletBalanceLabel">
-              Your Wallet Balance: {rbtcBalanceFormatted} {RBTC}
-            </Label>
-          </div>
+      {/* --- Balance + Percentage Buttons --- */}
+      <div className="flex justify-between items-center mx-3 my-2">
+        <div className="flex items-center gap-1">
+          <TokenImage symbol="RBTC" size={16} />
+          <Label variant="body-s" className="text-text-60" data-testid="WalletBalanceLabel">
+            {RBTC} balance: {rbtcBalanceFormatted}
+          </Label>
         </div>
-        <div className="flex gap-1 self-end">
-          <PercentageButtons
-            onPercentageClick={handlePercentageClick}
-            options={PERCENTAGE_OPTIONS}
-            testId="PercentageButtons"
-          />
-        </div>
+        <PercentageButtons onPercentageClick={handlePercentageClick} testId="PercentageButtons" />
       </div>
 
+      {/* --- Shares Estimate + Fee --- */}
+      <div className="flex gap-10 mt-4 px-3">
+        <ReviewRow label="No. of shares to receive (est.)" value={estimatedShares} testId="review-shares" />
+        <ReviewRow label="Deposit fee" value={`${depositFee}%`} testId="review-fee" />
+      </div>
+
+      {/* --- Footer: Disclaimer + Continue --- */}
       <div className="mt-auto pt-4">
-        <div className="flex justify-end">
+        <Divider />
+        <div className="flex justify-between items-center gap-4 pt-4">
+          <Paragraph variant="body-s" className="text-text-60 text-xs max-w-[440px]" data-testid="Disclaimer">
+            {BTC_VAULT_DEPOSIT_DISCLAIMER}
+          </Paragraph>
           <Button variant="primary" onClick={onNext} disabled={!isValid} data-testid="ContinueButton">
             Continue
           </Button>

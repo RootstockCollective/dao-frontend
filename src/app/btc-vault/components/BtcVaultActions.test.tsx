@@ -1,7 +1,7 @@
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { BtcVaultActions } from './BtcVaultActions'
 
 const mockUseAccount = vi.fn()
@@ -11,12 +11,10 @@ const mockUseVaultMetrics = vi.fn()
 const mockOnRequestDeposit = vi.fn()
 const mockInvalidateQueries = vi.fn()
 
-let capturedOnSuccess: (() => void) | undefined
-let capturedOnError: ((txHash: string | undefined, err: Error) => void) | undefined
+let capturedOnSuccess: ((txHash: string) => void) | undefined
 
-const mockExecuteTxFlow = vi.fn().mockImplementation(({ onSuccess, onError }) => {
+const mockExecuteTxFlow = vi.fn().mockImplementation(({ onSuccess }) => {
   capturedOnSuccess = onSuccess
-  capturedOnError = onError
   return Promise.resolve('0xmockhash')
 })
 
@@ -60,6 +58,18 @@ vi.mock('@/shared/hooks/useIsDesktop', () => ({
   useIsDesktop: () => true,
 }))
 
+vi.mock('@/shared/context', () => ({
+  usePricesContext: () => ({ prices: {} }),
+}))
+
+beforeAll(() => {
+  global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+  }))
+})
+
 const renderWithProviders = () =>
   render(
     <TooltipProvider>
@@ -70,7 +80,6 @@ const renderWithProviders = () =>
 describe('BtcVaultActions', () => {
   beforeEach(() => {
     capturedOnSuccess = undefined
-    capturedOnError = undefined
     mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
     mockUseUserPosition.mockReturnValue({
       data: {
@@ -128,20 +137,6 @@ describe('BtcVaultActions', () => {
     expect(screen.getByTestId('DepositButton')).toBeDisabled()
   })
 
-  it('disables the Deposit button when user has active request', () => {
-    mockUseActionEligibility.mockReturnValue({
-      data: {
-        canDeposit: false,
-        canWithdraw: false,
-        depositBlockReason: 'You already have an active request',
-        withdrawBlockReason: 'You already have an active request',
-      },
-    })
-    renderWithProviders()
-
-    expect(screen.getByTestId('DepositButton')).toBeDisabled()
-  })
-
   it('disables the Deposit button when eligibility data is not yet loaded', () => {
     mockUseActionEligibility.mockReturnValue({ data: undefined })
     renderWithProviders()
@@ -188,10 +183,8 @@ describe('BtcVaultActions', () => {
     const user = userEvent.setup()
     renderWithProviders()
 
-    // Open modal
     await user.click(screen.getByTestId('DepositButton'))
 
-    // Fill in amount and submit
     const input = screen.getByTestId('Input_amount-btc-vault')
     await user.type(input, '1')
     await user.click(screen.getByTestId('ContinueButton'))
@@ -208,53 +201,24 @@ describe('BtcVaultActions', () => {
     })
   })
 
-  it('closes modal and shows success banner on successful submission', async () => {
+  it('closes modal and invalidates queries on successful submission', async () => {
     const user = userEvent.setup()
     renderWithProviders()
 
-    // Open modal and submit
     await user.click(screen.getByTestId('DepositButton'))
     const input = screen.getByTestId('Input_amount-btc-vault')
     await user.type(input, '1')
     await user.click(screen.getByTestId('ContinueButton'))
     await user.click(screen.getByTestId('SubmitRequestButton'))
 
-    // Wait for executeTxFlow to be called
     await waitFor(() => {
       expect(capturedOnSuccess).toBeDefined()
     })
 
-    // Simulate success callback
-    capturedOnSuccess!()
+    capturedOnSuccess!('0xmockhash')
 
     await waitFor(() => {
       expect(screen.queryByTestId('BtcDepositModal')).not.toBeInTheDocument()
-      expect(screen.getByTestId('DepositSuccessBanner')).toBeInTheDocument()
-      expect(screen.getByText('Deposit request submitted')).toBeInTheDocument()
-      expect(screen.getByText('Pending Fund Manager approval')).toBeInTheDocument()
-      expect(screen.getByTestId('ViewRequestStatusCTA')).toBeInTheDocument()
-      expect(screen.getByTestId('GoToPositionCTA')).toBeInTheDocument()
-    })
-  })
-
-  it('invalidates queries on successful submission', async () => {
-    const user = userEvent.setup()
-    renderWithProviders()
-
-    // Open modal and submit
-    await user.click(screen.getByTestId('DepositButton'))
-    const input = screen.getByTestId('Input_amount-btc-vault')
-    await user.type(input, '1')
-    await user.click(screen.getByTestId('ContinueButton'))
-    await user.click(screen.getByTestId('SubmitRequestButton'))
-
-    await waitFor(() => {
-      expect(capturedOnSuccess).toBeDefined()
-    })
-
-    capturedOnSuccess!()
-
-    await waitFor(() => {
       expect(mockInvalidateQueries).toHaveBeenCalledWith({
         queryKey: ['btc-vault', 'active-requests', '0x123'],
       })
@@ -262,31 +226,5 @@ describe('BtcVaultActions', () => {
         queryKey: ['btc-vault', 'action-eligibility', '0x123'],
       })
     })
-  })
-
-  it('hides success banner when Deposit button is clicked again', async () => {
-    const user = userEvent.setup()
-    renderWithProviders()
-
-    // Open modal and submit
-    await user.click(screen.getByTestId('DepositButton'))
-    const input = screen.getByTestId('Input_amount-btc-vault')
-    await user.type(input, '1')
-    await user.click(screen.getByTestId('ContinueButton'))
-    await user.click(screen.getByTestId('SubmitRequestButton'))
-
-    await waitFor(() => {
-      expect(capturedOnSuccess).toBeDefined()
-    })
-
-    capturedOnSuccess!()
-
-    await waitFor(() => {
-      expect(screen.getByTestId('DepositSuccessBanner')).toBeInTheDocument()
-    })
-
-    // Opening modal again should hide the success banner
-    await user.click(screen.getByTestId('DepositButton'))
-    expect(screen.queryByTestId('DepositSuccessBanner')).not.toBeInTheDocument()
   })
 })

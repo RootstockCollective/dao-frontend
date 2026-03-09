@@ -1,24 +1,23 @@
 'use client'
 
+import { useMemo } from 'react'
+
 import { Button } from '@/components/Button'
 import { Divider } from '@/components/Divider'
-import { Paragraph, Span } from '@/components/Typography'
+import { TokenImage } from '@/components/TokenImage'
+import { Label, Paragraph } from '@/components/Typography'
+import Big from '@/lib/big'
 import { RBTC } from '@/lib/constants'
+import { formatCurrency } from '@/lib/utils'
+import { usePricesContext } from '@/shared/context'
 
-import { formatTimestamp } from '../services/ui/formatters'
+import { BTC_VAULT_DEPOSIT_DISCLAIMER } from '../services/constants'
 import { ReviewRow } from './ReviewRow'
-
-const DISCLOSURES = [
-  'This is a request and requires approval',
-  'Shares are minted at the NAV confirmed at epoch close',
-  'Once the epoch is closed, deposit requests cannot be canceled',
-] as const
 
 interface DepositReviewStepProps {
   amount: string
   estimatedShares: string
   navFormatted: string
-  navTimestamp: number
   depositFee: string
   onBack: () => void
   onSubmit: () => void
@@ -29,51 +28,85 @@ export const DepositReviewStep = ({
   amount,
   estimatedShares,
   navFormatted,
-  navTimestamp,
   depositFee,
-  onBack,
   onSubmit,
   isSubmitting,
 }: DepositReviewStepProps) => {
+  const { prices } = usePricesContext()
+  const rbtcPrice = prices[RBTC]?.price ?? 0
+
+  const usdEquivalent = useMemo(() => {
+    if (!amount || !rbtcPrice) return ''
+    try {
+      return formatCurrency(Big(rbtcPrice).mul(amount), { showCurrencyLabel: true })
+    } catch {
+      return ''
+    }
+  }, [amount, rbtcPrice])
+
   return (
     <div className="flex-1 flex flex-col" data-testid="DepositReviewStep">
-      <div className="flex flex-col gap-3 py-3 px-4 rounded-1 w-full bg-bg-60">
-        <ReviewRow label="Deposit amount" value={`${amount} ${RBTC}`} testId="review-amount" />
-        <ReviewRow label="Estimated vault shares" value={estimatedShares} testId="review-shares" />
-        <ReviewRow
-          label="Last confirmed NAV"
-          value={`${navFormatted} ${RBTC}/share`}
-          subValue={`Updated ${formatTimestamp(navTimestamp)}`}
-          testId="review-nav"
-        />
-        <ReviewRow label="Deposit fee" value={`${depositFee}%`} testId="review-fee" />
-      </div>
+      <Paragraph variant="body" className="mb-8">
+        Make sure that everything is correct before continuing:
+      </Paragraph>
 
-      <Divider className="my-4" />
-
-      <div className="flex flex-col gap-2 px-4" data-testid="review-disclosures">
-        {DISCLOSURES.map((disclosure, i) => (
-          <div key={i} className="flex items-start gap-2 p-3 rounded-1 bg-bg-60">
-            <Span className="text-primary shrink-0">i</Span>
-            <Paragraph variant="body-s" className="text-text-60">
-              {disclosure}
-            </Paragraph>
+      <div className="flex flex-col gap-6">
+        {/* --- Amount to deposit (horizontal, with USD) --- */}
+        <div className="flex flex-col gap-1" data-testid="review-amount">
+          <Label variant="body-s" className="text-text-60">
+            Amount to deposit
+          </Label>
+          <div className="flex items-center gap-2">
+            <TokenImage symbol="RBTC" size={20} />
+            <Label variant="body-l" bold>
+              {amount} {RBTC}
+            </Label>
           </div>
-        ))}
+          {usdEquivalent && (
+            <Label variant="body-s" className="text-text-60">
+              {usdEquivalent}
+            </Label>
+          )}
+        </div>
+
+        {/* --- Shares + Fee side by side --- */}
+        <div className="flex gap-10">
+          <div className="flex-1 flex flex-col gap-1" data-testid="review-shares">
+            <Label variant="body-s" className="text-text-60">
+              No. of shares to receive (est.)
+            </Label>
+            <Label variant="body-l" bold>
+              {estimatedShares}
+            </Label>
+          </div>
+          <div className="flex-1 flex flex-col gap-1" data-testid="review-fee">
+            <Label variant="body-s" className="text-text-60">
+              Deposit fee
+            </Label>
+            <Label variant="body-l" bold>
+              {depositFee}%
+            </Label>
+          </div>
+        </div>
+
+        {/* --- NAV --- */}
+        <ReviewRow label="Last confirmed NAV" value={`${navFormatted} ${RBTC}/share`} testId="review-nav" />
       </div>
 
+      {/* --- Footer: Disclaimer + Send request --- */}
       <div className="mt-auto pt-4">
-        <div className="flex justify-between gap-4">
-          <Button variant="secondary" onClick={onBack} data-testid="BackButton" disabled={isSubmitting}>
-            Back
-          </Button>
+        <Divider />
+        <div className="flex justify-between items-center gap-4 pt-4">
+          <Paragraph variant="body-s" className="text-text-60 text-xs max-w-[440px]" data-testid="Disclaimer">
+            {BTC_VAULT_DEPOSIT_DISCLAIMER}
+          </Paragraph>
           <Button
             variant="primary"
             onClick={onSubmit}
             disabled={isSubmitting}
             data-testid="SubmitRequestButton"
           >
-            {isSubmitting ? 'Submitting...' : 'Submit Request'}
+            {isSubmitting ? 'Submitting...' : 'Send request'}
           </Button>
         </div>
       </div>

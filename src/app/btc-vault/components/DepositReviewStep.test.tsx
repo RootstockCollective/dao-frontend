@@ -3,11 +3,14 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { DepositReviewStep } from './DepositReviewStep'
 
+vi.mock('@/shared/context', () => ({
+  usePricesContext: () => ({ prices: {} }),
+}))
+
 const defaultProps = {
-  amount: '1.5',
-  estimatedShares: '1.470588235294117647',
+  amount: '1',
+  estimatedShares: '980.39',
   navFormatted: '1.02',
-  navTimestamp: 1709000000,
   depositFee: '0',
   onBack: vi.fn(),
   onSubmit: vi.fn(),
@@ -20,86 +23,63 @@ describe('DepositReviewStep', () => {
     vi.clearAllMocks()
   })
 
-  it('renders all review fields', () => {
+  it('renders instruction text', () => {
     render(<DepositReviewStep {...defaultProps} />)
 
-    expect(screen.getByTestId('DepositReviewStep')).toBeInTheDocument()
-    expect(screen.getByTestId('review-amount')).toBeInTheDocument()
-    expect(screen.getByTestId('review-shares')).toBeInTheDocument()
-    expect(screen.getByTestId('review-nav')).toBeInTheDocument()
-    expect(screen.getByTestId('review-fee')).toBeInTheDocument()
+    expect(
+      screen.getByText('Make sure that everything is correct before continuing:'),
+    ).toBeInTheDocument()
   })
 
-  it('displays the correct deposit amount', () => {
+  it('displays amount with rBTC label', () => {
     render(<DepositReviewStep {...defaultProps} />)
 
-    const amountRow = screen.getByTestId('review-amount')
-    expect(amountRow).toHaveTextContent('Deposit amount')
-    expect(amountRow).toHaveTextContent('1.5')
+    expect(screen.getByTestId('review-amount')).toHaveTextContent('1')
   })
 
-  it('displays estimated vault shares', () => {
+  it('displays estimated shares', () => {
     render(<DepositReviewStep {...defaultProps} />)
 
-    const sharesRow = screen.getByTestId('review-shares')
-    expect(sharesRow).toHaveTextContent('Estimated vault shares')
-    expect(sharesRow).toHaveTextContent('1.470588235294117647')
-  })
-
-  it('displays NAV with timestamp', () => {
-    render(<DepositReviewStep {...defaultProps} />)
-
-    const navRow = screen.getByTestId('review-nav')
-    expect(navRow).toHaveTextContent('Last confirmed NAV')
-    expect(navRow).toHaveTextContent('1.02')
-    expect(navRow).toHaveTextContent('Updated')
+    expect(screen.getByTestId('review-shares')).toHaveTextContent('980.39')
   })
 
   it('displays deposit fee', () => {
     render(<DepositReviewStep {...defaultProps} />)
 
-    const feeRow = screen.getByTestId('review-fee')
-    expect(feeRow).toHaveTextContent('Deposit fee')
-    expect(feeRow).toHaveTextContent('0%')
+    expect(screen.getByTestId('review-fee')).toHaveTextContent('0%')
   })
 
-  it('displays all three disclosures', () => {
+  it('displays NAV', () => {
     render(<DepositReviewStep {...defaultProps} />)
 
-    const disclosures = screen.getByTestId('review-disclosures')
-    expect(disclosures).toHaveTextContent('This is a request and requires approval')
-    expect(disclosures).toHaveTextContent('Shares are minted at the NAV confirmed at epoch close')
-    expect(disclosures).toHaveTextContent('Once the epoch is closed, deposit requests cannot be canceled')
+    expect(screen.getByTestId('review-nav')).toHaveTextContent('1.02')
   })
 
-  it('calls onBack when Back button is clicked', async () => {
-    const user = userEvent.setup()
-    const onBack = vi.fn()
-    render(<DepositReviewStep {...defaultProps} onBack={onBack} />)
+  it('shows the disclaimer text', () => {
+    render(<DepositReviewStep {...defaultProps} />)
 
-    await user.click(screen.getByTestId('BackButton'))
-    expect(onBack).toHaveBeenCalledOnce()
+    expect(screen.getByTestId('ParagraphDisclaimer')).toHaveTextContent('Subject to approval by fund manager')
   })
 
-  it('calls onSubmit when Submit Request button is clicked', async () => {
+  it('renders Send request button', () => {
+    render(<DepositReviewStep {...defaultProps} />)
+
+    expect(screen.getByTestId('SubmitRequestButton')).toHaveTextContent('Send request')
+  })
+
+  it('shows Submitting... when isSubmitting is true', () => {
+    render(<DepositReviewStep {...defaultProps} isSubmitting />)
+
+    expect(screen.getByTestId('SubmitRequestButton')).toHaveTextContent('Submitting...')
+    expect(screen.getByTestId('SubmitRequestButton')).toBeDisabled()
+  })
+
+  it('calls onSubmit when Send request is clicked', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn()
     render(<DepositReviewStep {...defaultProps} onSubmit={onSubmit} />)
 
     await user.click(screen.getByTestId('SubmitRequestButton'))
     expect(onSubmit).toHaveBeenCalledOnce()
-  })
-
-  it('disables Submit Request button when isSubmitting is true', () => {
-    render(<DepositReviewStep {...defaultProps} isSubmitting={true} />)
-
-    expect(screen.getByTestId('SubmitRequestButton')).toBeDisabled()
-    expect(screen.getByTestId('SubmitRequestButton')).toHaveTextContent('Submitting...')
-  })
-
-  it('disables Back button when isSubmitting is true', () => {
-    render(<DepositReviewStep {...defaultProps} isSubmitting={true} />)
-
-    expect(screen.getByTestId('BackButton')).toBeDisabled()
   })
 })

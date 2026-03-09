@@ -35,6 +35,20 @@ vi.mock('./hooks/useActionEligibility', () => ({
   useActionEligibility: (address: string | undefined) => mockUseActionEligibility(address),
 }))
 
+vi.mock('./hooks/useSubmitDeposit', () => ({
+  useSubmitDeposit: () => ({
+    onRequestDeposit: vi.fn(),
+    isRequesting: false,
+    isTxPending: false,
+    isTxFailed: false,
+    depositTxHash: undefined,
+  }),
+}))
+
+vi.mock('@/shared/notification', () => ({
+  executeTxFlow: vi.fn(),
+}))
+
 vi.mock('@/shared/walletConnection/connection/useAppKitFlow', () => ({
   useAppKitFlow: vi.fn(() => ({
     onConnectWalletButtonClick: vi.fn(),
@@ -45,6 +59,10 @@ vi.mock('@/shared/walletConnection/connection/useAppKitFlow', () => ({
 
 vi.mock('@/shared/hooks/useIsDesktop', () => ({
   useIsDesktop: () => true,
+}))
+
+vi.mock('@/shared/context', () => ({
+  usePricesContext: () => ({ prices: {} }),
 }))
 
 vi.mock('@/app/backing/components/DecorativeSquares', () => ({

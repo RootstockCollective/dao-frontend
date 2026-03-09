@@ -1,6 +1,6 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { BtcDepositModal } from './BtcDepositModal'
 
 const mockUseAccount = vi.fn()
@@ -22,6 +22,18 @@ vi.mock('../hooks/useVaultMetrics', () => ({
 vi.mock('@/shared/hooks/useIsDesktop', () => ({
   useIsDesktop: () => true,
 }))
+
+vi.mock('@/shared/context', () => ({
+  usePricesContext: () => ({ prices: {} }),
+}))
+
+beforeAll(() => {
+  global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+  }))
+})
 
 const defaultProps = {
   onClose: vi.fn(),
@@ -59,11 +71,18 @@ describe('BtcDepositModal', () => {
     vi.clearAllMocks()
   })
 
-  it('renders the modal with DEPOSIT rBTC header', () => {
+  it('renders the modal with DEPOSIT RBTC header', () => {
     render(<BtcDepositModal {...defaultProps} />)
 
     expect(screen.getByTestId('BtcDepositModal')).toBeInTheDocument()
-    expect(screen.getByText('DEPOSIT rBTC')).toBeInTheDocument()
+    expect(screen.getByText('DEPOSIT RBTC')).toBeInTheDocument()
+  })
+
+  it('shows step indicator with SELECT AMOUNT and CONFIRM REQUEST', () => {
+    render(<BtcDepositModal {...defaultProps} />)
+
+    expect(screen.getByText('SELECT AMOUNT')).toBeInTheDocument()
+    expect(screen.getByText('CONFIRM REQUEST')).toBeInTheDocument()
   })
 
   it('starts on the amount step', () => {
@@ -79,29 +98,26 @@ describe('BtcDepositModal', () => {
 
     const input = screen.getByTestId('Input_amount-btc-vault')
     await user.type(input, '1')
-
     await user.click(screen.getByTestId('ContinueButton'))
 
     expect(screen.getByTestId('DepositReviewStep')).toBeInTheDocument()
     expect(screen.queryByTestId('DepositAmountStep')).not.toBeInTheDocument()
-    expect(screen.getByText('REVIEW DEPOSIT')).toBeInTheDocument()
   })
 
-  it('navigates back to amount step from review', async () => {
+  it('shows disclaimer on both steps', async () => {
     const user = userEvent.setup()
     render(<BtcDepositModal {...defaultProps} />)
+
+    // Disclaimer on amount step
+    expect(screen.getByTestId('ParagraphDisclaimer')).toHaveTextContent('Subject to approval by fund manager')
 
     // Navigate to review
     const input = screen.getByTestId('Input_amount-btc-vault')
     await user.type(input, '1')
     await user.click(screen.getByTestId('ContinueButton'))
-    expect(screen.getByTestId('DepositReviewStep')).toBeInTheDocument()
 
-    // Navigate back
-    await user.click(screen.getByTestId('BackButton'))
-    expect(screen.getByTestId('DepositAmountStep')).toBeInTheDocument()
-    expect(screen.queryByTestId('DepositReviewStep')).not.toBeInTheDocument()
-    expect(screen.getByText('DEPOSIT rBTC')).toBeInTheDocument()
+    // Disclaimer on review step
+    expect(screen.getByTestId('ParagraphDisclaimer')).toHaveTextContent('Subject to approval by fund manager')
   })
 
   it('displays review fields with correct values', async () => {
@@ -112,14 +128,13 @@ describe('BtcDepositModal', () => {
     await user.type(input, '1')
     await user.click(screen.getByTestId('ContinueButton'))
 
-    // Check review fields
     expect(screen.getByTestId('review-amount')).toHaveTextContent('1')
     expect(screen.getByTestId('review-nav')).toHaveTextContent('1.02')
     expect(screen.getByTestId('review-fee')).toHaveTextContent('0%')
     expect(screen.getByTestId('review-shares')).toBeInTheDocument()
   })
 
-  it('displays all three disclosures on review step', async () => {
+  it('shows instruction text on review step', async () => {
     const user = userEvent.setup()
     render(<BtcDepositModal {...defaultProps} />)
 
@@ -127,13 +142,10 @@ describe('BtcDepositModal', () => {
     await user.type(input, '1')
     await user.click(screen.getByTestId('ContinueButton'))
 
-    const disclosures = screen.getByTestId('review-disclosures')
-    expect(disclosures).toHaveTextContent('This is a request and requires approval')
-    expect(disclosures).toHaveTextContent('Shares are minted at the NAV confirmed at epoch close')
-    expect(disclosures).toHaveTextContent('Once the epoch is closed, deposit requests cannot be canceled')
+    expect(screen.getByText('Make sure that everything is correct before continuing:')).toBeInTheDocument()
   })
 
-  it('calls onSubmit with correct params when Submit Request is clicked', async () => {
+  it('calls onSubmit with correct params when Send request is clicked', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn().mockResolvedValue(undefined)
     render(<BtcDepositModal {...defaultProps} onSubmit={onSubmit} />)
@@ -161,5 +173,12 @@ describe('BtcDepositModal', () => {
     render(<BtcDepositModal {...defaultProps} />)
 
     expect(screen.getByTestId('WalletBalanceLabel')).toHaveTextContent('2.0')
+  })
+
+  it('shows shares estimate and fee on amount step', () => {
+    render(<BtcDepositModal {...defaultProps} />)
+
+    expect(screen.getByTestId('review-shares')).toBeInTheDocument()
+    expect(screen.getByTestId('review-fee')).toBeInTheDocument()
   })
 })

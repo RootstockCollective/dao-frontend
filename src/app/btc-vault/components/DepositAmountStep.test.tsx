@@ -7,6 +7,10 @@ vi.mock('@/shared/hooks/useIsDesktop', () => ({
   useIsDesktop: () => true,
 }))
 
+vi.mock('@/shared/context', () => ({
+  usePricesContext: () => ({ prices: {} }),
+}))
+
 const TWO_RBTC = 2000000000000000000n
 
 const defaultProps = {
@@ -14,6 +18,8 @@ const defaultProps = {
   setAmount: vi.fn(),
   rbtcBalanceFormatted: '2.0',
   rbtcBalanceRaw: TWO_RBTC,
+  estimatedShares: '0',
+  depositFee: '0',
   onNext: vi.fn(),
 }
 
@@ -31,13 +37,26 @@ describe('DepositAmountStep', () => {
     expect(screen.getByTestId('WalletBalanceLabel')).toHaveTextContent('2.0')
   })
 
-  it('renders percentage buttons with 25%, 50%, 75%, Max options', () => {
+  it('renders default percentage buttons (10%, 20%, 50%, Max)', () => {
     render(<DepositAmountStep {...defaultProps} />)
 
-    expect(screen.getByTestId('25Button')).toBeInTheDocument()
+    expect(screen.getByTestId('10Button')).toBeInTheDocument()
+    expect(screen.getByTestId('20Button')).toBeInTheDocument()
     expect(screen.getByTestId('50Button')).toBeInTheDocument()
-    expect(screen.getByTestId('75Button')).toBeInTheDocument()
     expect(screen.getByTestId('MaxButton')).toBeInTheDocument()
+  })
+
+  it('shows shares estimate and deposit fee metrics', () => {
+    render(<DepositAmountStep {...defaultProps} estimatedShares="1000" depositFee="0" />)
+
+    expect(screen.getByTestId('review-shares')).toHaveTextContent('1000')
+    expect(screen.getByTestId('review-fee')).toHaveTextContent('0%')
+  })
+
+  it('shows the disclaimer text', () => {
+    render(<DepositAmountStep {...defaultProps} />)
+
+    expect(screen.getByTestId('ParagraphDisclaimer')).toHaveTextContent('Subject to approval by fund manager')
   })
 
   it('disables Continue button when amount is empty', () => {
@@ -74,15 +93,6 @@ describe('DepositAmountStep', () => {
     expect(onNext).toHaveBeenCalledOnce()
   })
 
-  it('does not call onNext when Continue is clicked with invalid amount', async () => {
-    const user = userEvent.setup()
-    const onNext = vi.fn()
-    render(<DepositAmountStep {...defaultProps} amount="" onNext={onNext} />)
-
-    await user.click(screen.getByTestId('ContinueButton'))
-    expect(onNext).not.toHaveBeenCalled()
-  })
-
   it('calls setAmount when percentage button is clicked', async () => {
     const user = userEvent.setup()
     const setAmount = vi.fn()
@@ -98,14 +108,13 @@ describe('DepositAmountStep', () => {
     render(<DepositAmountStep {...defaultProps} setAmount={setAmount} />)
 
     await user.click(screen.getByTestId('MaxButton'))
-    // 2.0 rBTC - 0.001 rBTC gas reserve = 1.999 rBTC
     expect(setAmount).toHaveBeenCalledWith('1.999')
   })
 
   it('calls setAmount with 0 when Max is clicked and balance is less than gas reserve', async () => {
     const user = userEvent.setup()
     const setAmount = vi.fn()
-    const tinyBalance = 500_000_000_000_000n // 0.0005 rBTC < gas reserve
+    const tinyBalance = 500_000_000_000_000n
     render(<DepositAmountStep {...defaultProps} rbtcBalanceRaw={tinyBalance} setAmount={setAmount} />)
 
     await user.click(screen.getByTestId('MaxButton'))
