@@ -1,22 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 
-import type { RequestDetailDisplay } from '../../services/ui/types'
-import { TransactionDetailView } from './components/TransactionDetailView'
+import type { RequestDetailDisplay } from '../../../services/ui/types'
+import { RequestDetailGrid } from './RequestDetailGrid'
 
 const meta = {
-  title: 'BTC Vault/TransactionDetailPage',
-  component: TransactionDetailView,
+  title: 'BTC Vault/TransactionDetail/RequestDetailGrid',
+  component: RequestDetailGrid,
   parameters: {
-    layout: 'fullscreen',
+    layout: 'padded',
   },
   decorators: [
     Story => (
-      <div className="w-full p-6">
+      <div className="bg-bg-80 rounded p-6 max-w-2xl">
         <Story />
       </div>
     ),
   ],
-} satisfies Meta<typeof TransactionDetailView>
+} satisfies Meta<typeof RequestDetailGrid>
 
 export default meta
 
@@ -47,52 +47,32 @@ function makeDetail(overrides: Partial<RequestDetailDisplay> = {}): RequestDetai
   }
 }
 
-export const PendingDeposit: Story = {
+export const DepositPending: Story = {
   args: {
     detail: makeDetail({
       type: 'deposit',
       typeLabel: 'Deposit',
       status: 'pending',
-      canCancel: true,
+      amountFormatted: '0.5',
+      sharesFormatted: '—',
     }),
-    status: 'pending',
-    type: 'deposit',
   },
 }
 
-export const PendingWithdrawal: Story = {
+export const DepositClaimable: Story = {
   args: {
     detail: makeDetail({
-      type: 'withdrawal',
-      typeLabel: 'Withdrawal',
-      status: 'pending',
-      amountFormatted: '1.25',
-      sharesFormatted: '1.25',
-      canCancel: true,
-    }),
-    status: 'pending',
-    type: 'withdrawal',
-  },
-}
-
-export const ClaimableWithdrawal: Story = {
-  args: {
-    detail: makeDetail({
-      type: 'withdrawal',
-      typeLabel: 'Withdrawal',
+      type: 'deposit',
+      typeLabel: 'Deposit',
       status: 'claimable',
-      amountFormatted: '1.25',
-      sharesFormatted: '1.25',
-      lastUpdatedFormatted: '21 May 2025',
-      claimable: true,
-      lockedSharePriceFormatted: '1.02/share',
+      amountFormatted: '1',
+      sharesFormatted: '0.98',
+      lastUpdatedFormatted: '18 Feb 2025',
     }),
-    status: 'claimable',
-    type: 'withdrawal',
   },
 }
 
-export const DoneDeposit: Story = {
+export const DepositDone: Story = {
   args: {
     detail: makeDetail({
       type: 'deposit',
@@ -102,58 +82,10 @@ export const DoneDeposit: Story = {
       sharesFormatted: '1.96',
       lastUpdatedFormatted: '30 May 2025',
     }),
-    status: 'done',
-    type: 'deposit',
   },
 }
 
-export const FailedWithdrawal: Story = {
-  args: {
-    detail: makeDetail({
-      type: 'withdrawal',
-      typeLabel: 'Withdrawal',
-      status: 'failed',
-      amountFormatted: '0.25',
-      sharesFormatted: '0.25',
-      lastUpdatedFormatted: '15 Jun 2025',
-    }),
-    status: 'failed',
-    type: 'withdrawal',
-  },
-}
-
-export const ClaimableDeposit: Story = {
-  args: {
-    detail: makeDetail({
-      type: 'deposit',
-      typeLabel: 'Deposit',
-      status: 'claimable',
-      amountFormatted: '1',
-      sharesFormatted: '0.98',
-      lastUpdatedFormatted: '18 Feb 2025',
-      claimable: true,
-    }),
-    status: 'claimable',
-    type: 'deposit',
-  },
-}
-
-export const DoneWithdrawal: Story = {
-  args: {
-    detail: makeDetail({
-      type: 'withdrawal',
-      typeLabel: 'Withdrawal',
-      status: 'done',
-      amountFormatted: '3',
-      sharesFormatted: '2.94',
-      lastUpdatedFormatted: '12 Jun 2025',
-    }),
-    status: 'done',
-    type: 'withdrawal',
-  },
-}
-
-export const FailedDeposit: Story = {
+export const DepositFailed: Story = {
   args: {
     detail: makeDetail({
       type: 'deposit',
@@ -163,8 +95,58 @@ export const FailedDeposit: Story = {
       sharesFormatted: '—',
       lastUpdatedFormatted: '5 Jul 2025',
     }),
-    status: 'failed',
-    type: 'deposit',
+  },
+}
+
+export const WithdrawalPending: Story = {
+  args: {
+    detail: makeDetail({
+      type: 'withdrawal',
+      typeLabel: 'Withdrawal',
+      status: 'pending',
+      amountFormatted: '1.25',
+      sharesFormatted: '1.25',
+    }),
+  },
+}
+
+export const WithdrawalClaimable: Story = {
+  args: {
+    detail: makeDetail({
+      type: 'withdrawal',
+      typeLabel: 'Withdrawal',
+      status: 'claimable',
+      amountFormatted: '1.25',
+      sharesFormatted: '1.25',
+      lastUpdatedFormatted: '21 May 2025',
+      claimable: true,
+    }),
+  },
+}
+
+export const WithdrawalDone: Story = {
+  args: {
+    detail: makeDetail({
+      type: 'withdrawal',
+      typeLabel: 'Withdrawal',
+      status: 'done',
+      amountFormatted: '3',
+      sharesFormatted: '2.94',
+      lastUpdatedFormatted: '12 Jun 2025',
+    }),
+  },
+}
+
+export const WithdrawalFailed: Story = {
+  args: {
+    detail: makeDetail({
+      type: 'withdrawal',
+      typeLabel: 'Withdrawal',
+      status: 'failed',
+      amountFormatted: '0.25',
+      sharesFormatted: '0.25',
+      lastUpdatedFormatted: '15 Jun 2025',
+    }),
   },
 }
 
@@ -176,10 +158,7 @@ export const NoTxHash: Story = {
       status: 'pending',
       submitTxShort: null,
       submitTxFull: null,
-      canCancel: true,
     }),
-    status: 'pending',
-    type: 'deposit',
   },
 }
 
@@ -192,29 +171,24 @@ export const NoUsdEquivalent: Story = {
       amountFormatted: '0.5',
       sharesFormatted: '0.5',
       usdEquivalentFormatted: null,
-      canCancel: true,
     }),
-    status: 'pending',
-    type: 'withdrawal',
   },
 }
 
-export const WithCancelButton: Story = {
+export const WithUsdEquivalent: Story = {
   args: {
     detail: makeDetail({
       type: 'withdrawal',
       typeLabel: 'Withdrawal',
-      status: 'pending',
-      amountFormatted: '2',
-      sharesFormatted: '1.96',
-      canCancel: true,
+      status: 'claimable',
+      amountFormatted: '1.5',
+      sharesFormatted: '1.5',
+      usdEquivalentFormatted: '$142,500 USD',
     }),
-    status: 'pending',
-    type: 'withdrawal',
   },
 }
 
-export const CancelledDeposit: Story = {
+export const DepositCancelled: Story = {
   args: {
     detail: makeDetail({
       type: 'deposit',
@@ -224,12 +198,10 @@ export const CancelledDeposit: Story = {
       sharesFormatted: '—',
       lastUpdatedFormatted: '20 Aug 2025',
     }),
-    status: 'cancelled',
-    type: 'deposit',
   },
 }
 
-export const CancelledWithdrawal: Story = {
+export const WithdrawalCancelled: Story = {
   args: {
     detail: makeDetail({
       type: 'withdrawal',
@@ -239,7 +211,5 @@ export const CancelledWithdrawal: Story = {
       sharesFormatted: '1.25',
       lastUpdatedFormatted: '20 Aug 2025',
     }),
-    status: 'cancelled',
-    type: 'withdrawal',
   },
 }

@@ -11,9 +11,11 @@ vi.mock('./hooks/useActiveRequests', () => ({
   useActiveRequests: vi.fn(),
 }))
 
-vi.mock('@/components/ProgressBarNew', () => {
+vi.mock('@/components/ProgressBarNew', async (importOriginal) => {
   const React = require('react')
+  const actual = await importOriginal<typeof import('@/components/ProgressBarNew')>()
   return {
+    ...actual,
     ProgressBar: ({ progress }: { progress: number }) =>
       React.createElement('div', { 'data-testid': 'progress-bar', 'data-progress': progress }),
   }
