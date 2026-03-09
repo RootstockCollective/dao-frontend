@@ -4,11 +4,11 @@ import { SectionContainer } from '@/app/communities/components/SectionContainer'
 
 import { ActiveRequestSection } from './ActiveRequestSection'
 import { BtcVaultBanners } from './BtcVaultBanners'
-import { CapitalAllocationSection } from './components/CapitalAllocationSection'
 import { BtcVaultDashboard } from './components/BtcVaultDashboard'
 import { BtcVaultDisclosureSection } from './components/BtcVaultDisclosureSection'
 import { BtcVaultMetrics } from './components/BtcVaultMetrics'
 import { BtcVaultWalletDisconnectedSection } from './components/BtcVaultWalletDisconnectedSection'
+import { CapitalAllocationSection } from './components/capital-allocation/CapitalAllocationSection'
 
 const NAME = 'BTC Vault'
 

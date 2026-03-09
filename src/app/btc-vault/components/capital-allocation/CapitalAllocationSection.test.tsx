@@ -6,9 +6,9 @@ import { afterEach, describe, it, expect, vi, beforeAll, beforeEach } from 'vite
 
 import { RBTC } from '@/lib/constants'
 
-import type { CapitalAllocationDisplay } from '../services/ui/types'
+import type { CapitalAllocationDisplay } from '../../services/ui/types'
 
-vi.mock('../hooks/useCapitalAllocation', () => ({
+vi.mock('../../hooks/useCapitalAllocation', () => ({
   useCapitalAllocation: vi.fn(),
 }))
 
@@ -48,7 +48,7 @@ beforeAll(() => {
   }))
 })
 
-import { useCapitalAllocation } from '../hooks/useCapitalAllocation'
+import { useCapitalAllocation } from '../../hooks/useCapitalAllocation'
 import { CapitalAllocationSection } from './CapitalAllocationSection'
 
 const mockedUseCapitalAllocation = vi.mocked(useCapitalAllocation)

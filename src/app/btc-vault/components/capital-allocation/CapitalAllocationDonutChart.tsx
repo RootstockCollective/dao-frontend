@@ -3,8 +3,6 @@
 import { type HTMLAttributes, useMemo } from 'react'
 import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
 
-import { CAPITAL_ALLOCATION_TOOLTIP_MAP } from '@/app/btc-vault/components/CapitalAllocationSection.constants'
-import type { CapitalAllocationDisplay } from '@/app/btc-vault/services/ui/types'
 import { KotoQuestionMarkIcon } from '@/components/Icons/KotoQuestionMarkIcon'
 import { TokenImage } from '@/components/TokenImage'
 import { Tooltip } from '@/components/Tooltip'
@@ -12,40 +10,20 @@ import { Label, Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
+import type { CapitalAllocationDisplay } from '../../services/ui/types'
 import {
   CAPITAL_ALLOCATION_CHART_COLORS,
   DONUT_CHART_SIZE,
   DONUT_INNER_RADIUS_PERCENT,
   DONUT_OUTER_RADIUS_PERCENT,
 } from './CapitalAllocationDonutChart.constants'
+import { segmentsFromDisplay } from './CapitalAllocationDonutChart.utils'
+import { CAPITAL_ALLOCATION_TOOLTIP_MAP } from './CapitalAllocationSection.constants'
 
 export interface CapitalAllocationDonutChartProps extends HTMLAttributes<HTMLDivElement> {
   data: CapitalAllocationDisplay
   /** Disable animation (e.g. in tests for stable DOM). */
   isAnimationActive?: boolean
-}
-
-/** Parses "50%" -> 50. Returns 0 for invalid or missing input. */
-function parsePercent(s: string): number {
-  if (!s || typeof s !== 'string') return 0
-  const match = s.trim().match(/^([\d.]+)\s*%?$/)
-  if (!match) return 0
-  const n = parseFloat(match[1])
-  return Number.isFinite(n) ? n : 0
-}
-
-/** Builds segment values that sum to 100 from percentFormatted strings. Last segment gets remainder. */
-function segmentsFromDisplay(data: CapitalAllocationDisplay): { name: string; value: number }[] {
-  const raw = data.categories.map(cat => ({
-    name: cat.label,
-    value: parsePercent(cat.percentFormatted),
-  }))
-  const sum = raw.reduce((acc, s) => acc + s.value, 0)
-  if (sum <= 0 || raw.length === 0) return raw.map(s => ({ ...s, value: 0 }))
-  const result = raw.map(s => ({ name: s.name, value: s.value }))
-  const exceptLast = result.slice(0, -1).reduce((a, x) => a + x.value, 0)
-  result[result.length - 1].value = Math.max(0, 100 - exceptLast)
-  return result
 }
 
 export function CapitalAllocationDonutChart({

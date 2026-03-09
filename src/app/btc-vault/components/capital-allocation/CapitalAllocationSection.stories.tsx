@@ -1,23 +1,25 @@
-'use client'
-
+import type { Meta, StoryObj } from '@storybook/nextjs'
 import { useState } from 'react'
-
-import { SectionContainer } from '@/app/communities/components/SectionContainer'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { Switch, SwitchThumb } from '@/components/Switch'
 import { TokenImage } from '@/components/TokenImage'
 import { Label, Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
+import { SectionContainer } from '@/app/communities/components/SectionContainer'
+import type { CapitalAllocationDisplay, CapitalCategoryDisplay } from '../../services/ui/types'
 
-import { useCapitalAllocation } from '../hooks/useCapitalAllocation'
 import { CapitalAllocationDonutChart } from './CapitalAllocationDonutChart'
 import { CAPITAL_ALLOCATION_TOOLTIP_MAP } from './CapitalAllocationSection.constants'
 
-export function CapitalAllocationSection() {
-  const [isDetailed, setIsDetailed] = useState(false)
-  const { data, isLoading, isError } = useCapitalAllocation()
+interface StoryProps {
+  categories: CapitalCategoryDisplay[]
+  isLoading?: boolean
+}
 
-  if (isError || (!isLoading && !data)) return null
+function CapitalAllocationStory({ categories, isLoading = false }: StoryProps) {
+  const [isDetailed, setIsDetailed] = useState(false)
+
+  const displayData: CapitalAllocationDisplay = { categories }
 
   const toggleControl = (
     <div className="flex items-center gap-2 md:justify-end">
@@ -32,18 +34,14 @@ export function CapitalAllocationSection() {
 
   return (
     <section data-testid="capital-allocation-section" className="w-full">
-      <SectionContainer
-        title="CAPITAL ALLOCATION TRANSPARENCY"
-        headerVariant="h3"
-        rightContent={toggleControl}
-      >
+      <SectionContainer title="CAPITAL ALLOCATION TRANSPARENCY" headerVariant="h3" rightContent={toggleControl}>
         {isDetailed ? (
           <div data-testid="capital-allocation-detailed" className="flex flex-col gap-6 md:flex-row">
             <div className="w-full md:w-auto md:max-w-[480px] md:shrink-0">
               {isLoading ? (
                 <div data-testid="detailed-loading" className="min-h-[200px]" />
               ) : (
-                data && <CapitalAllocationDonutChart data={data} />
+                <CapitalAllocationDonutChart data={displayData} />
               )}
             </div>
             <div data-testid="capital-allocation-wallet-placeholder" className="min-h-[200px] flex-1" />
@@ -55,14 +53,9 @@ export function CapitalAllocationSection() {
           >
             {isLoading
               ? Array.from({ length: 3 }, (_, i) => (
-                  <BalanceInfo
-                    key={i}
-                    className="w-[224px] min-w-[180px]"
-                    amount="..."
-                    data-testid={`metric-loading-${i}`}
-                  />
+                  <BalanceInfo key={i} className="w-[214px] min-w-[180px]" amount="..." />
                 ))
-              : data?.categories.map(cat => (
+              : categories.map(cat => (
                   <BalanceInfo
                     key={cat.label}
                     className="w-[224px] min-w-[180px]"
@@ -82,7 +75,6 @@ export function CapitalAllocationSection() {
                     }
                     fiatAmount={cat.fiatAmountFormatted}
                     tooltipContent={CAPITAL_ALLOCATION_TOOLTIP_MAP[cat.label]}
-                    data-testid={`metric-${cat.label.toLowerCase().replace(/\s+/g, '-')}`}
                   />
                 ))}
           </div>
@@ -90,4 +82,80 @@ export function CapitalAllocationSection() {
       </SectionContainer>
     </section>
   )
+}
+
+const meta = {
+  title: 'BTC Vault/CapitalAllocationSection',
+  component: CapitalAllocationStory,
+  parameters: {
+    layout: 'fullscreen',
+  },
+  decorators: [
+    Story => (
+      <div className="w-full p-6">
+        <Story />
+      </div>
+    ),
+  ],
+} satisfies Meta<typeof CapitalAllocationStory>
+
+export default meta
+
+type Story = StoryObj<typeof meta>
+
+export const Default: Story = {
+  args: {
+    categories: [
+      {
+        label: 'Deployed capital',
+        amountFormatted: '0.52',
+        percentFormatted: '50%',
+        fiatAmountFormatted: '$26,000.00 USD',
+      },
+      {
+        label: 'Liquidity reserve',
+        amountFormatted: '0.26',
+        percentFormatted: '25%',
+        fiatAmountFormatted: '$13,000.00 USD',
+      },
+      {
+        label: 'Unallocated capital',
+        amountFormatted: '0.26',
+        percentFormatted: '25%',
+        fiatAmountFormatted: '$13,000.00 USD',
+      },
+    ],
+  },
+}
+
+export const EqualSplit: Story = {
+  args: {
+    categories: [
+      {
+        label: 'Deployed capital',
+        amountFormatted: '0.34',
+        percentFormatted: '33.33%',
+        fiatAmountFormatted: '$17,000.00 USD',
+      },
+      {
+        label: 'Liquidity reserve',
+        amountFormatted: '0.34',
+        percentFormatted: '33.33%',
+        fiatAmountFormatted: '$17,000.00 USD',
+      },
+      {
+        label: 'Unallocated capital',
+        amountFormatted: '0.34',
+        percentFormatted: '33.33%',
+        fiatAmountFormatted: '$17,000.00 USD',
+      },
+    ],
+  },
+}
+
+export const Loading: Story = {
+  args: {
+    categories: [],
+    isLoading: true,
+  },
 }
