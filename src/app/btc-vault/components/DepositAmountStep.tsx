@@ -15,7 +15,6 @@ import { cn, formatCurrency, handleAmountInput } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 
 import { BTC_VAULT_DEPOSIT_DISCLAIMER } from '../services/constants'
-import { ReviewRow } from './ReviewRow'
 
 /** Conservative gas reserve for native rBTC deposits (0.001 rBTC ≈ $0.10) */
 const GAS_RESERVE_WEI = 1_000_000_000_000_000n // 0.001 rBTC
@@ -168,8 +167,22 @@ export const DepositAmountStep = ({
 
       {/* --- Shares Estimate + Fee --- */}
       <div className="flex gap-10 mt-4 px-3">
-        <ReviewRow label="No. of shares to receive (est.)" value={estimatedShares} testId="review-shares" />
-        <ReviewRow label="Deposit fee" value={`${depositFee}%`} testId="review-fee" />
+        <div className="flex flex-col gap-1" data-testid="review-shares">
+          <Label variant="body-s" className="text-text-60">
+            No. of shares to receive (est.)
+          </Label>
+          <Label variant="body-s" bold>
+            {estimatedShares}
+          </Label>
+        </div>
+        <div className="flex flex-col gap-1" data-testid="review-fee">
+          <Label variant="body-s" className="text-text-60">
+            Deposit fee
+          </Label>
+          <Label variant="body-s" bold>
+            {depositFee}%
+          </Label>
+        </div>
       </div>
 
       {/* --- Footer: Disclaimer + Continue --- */}
