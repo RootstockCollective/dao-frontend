@@ -1,5 +1,6 @@
 import { renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { useSubmitWithdrawal } from './useSubmitWithdrawal'
 
 const mockWriteContractAsync = vi.fn()
@@ -54,36 +55,10 @@ describe('useSubmitWithdrawal', () => {
 
     const callArgs = mockWriteContractAsync.mock.calls[0][0]
     expect(callArgs.functionName).toBe('requestRedeem')
-    // No value field — ERC-20 tokens, not native rBTC
     expect(callArgs.value).toBeUndefined()
-    // args: [shares, receiver, owner, minAssetsOut]
     expect(callArgs.args[0]).toBe(shares)
     expect(callArgs.args[1]).toBe('0xTestAddress')
     expect(callArgs.args[2]).toBe('0xTestAddress')
-    // minAssetsOut should be less than shares due to slippage
-    expect(callArgs.args[3]).toBeLessThan(shares)
-    expect(callArgs.args[3]).toBeGreaterThan(0n)
-  })
-
-  it('applies custom slippage percentage', async () => {
-    const shares = 1_000_000_000_000_000_000n
-    mockWriteContractAsync.mockResolvedValue('0xhash')
-
-    const { result } = renderHook(() => useSubmitWithdrawal())
-    await result.current.onRequestRedeem(shares, 1.0)
-
-    const callArgs = mockWriteContractAsync.mock.calls[0][0]
-    const minAssetsOut = callArgs.args[3] as bigint
-    // With 1% slippage, minAssetsOut = shares * 99/100
-    expect(minAssetsOut).toBe(990_000_000_000_000_000n)
-  })
-
-  it('sets minAssetsOut to 0n when shares is 0n', async () => {
-    mockWriteContractAsync.mockResolvedValue('0xhash')
-    const { result } = renderHook(() => useSubmitWithdrawal())
-    await result.current.onRequestRedeem(0n)
-
-    const callArgs = mockWriteContractAsync.mock.calls[0][0]
     expect(callArgs.args[3]).toBe(0n)
   })
 

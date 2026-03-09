@@ -3,56 +3,55 @@
 import Image from 'next/image'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 
-import { SlippageInput } from '@/app/vault/components/SlippageInput'
 import { Button } from '@/components/Button'
+import { Divider } from '@/components/Divider'
 import { Input } from '@/components/Input'
-import { PercentageButtonItem, PercentageButtons } from '@/components/PercentageButtons'
-import { Label } from '@/components/Typography'
+import { PercentageButtons } from '@/components/PercentageButtons'
+import { TokenImage } from '@/components/TokenImage'
+import { Label, Paragraph } from '@/components/Typography'
 import Big from '@/lib/big'
 import { RBTC } from '@/lib/constants'
-import { cn, handleAmountInput } from '@/lib/utils'
+import { cn, formatCurrency, handleAmountInput } from '@/lib/utils'
+import { usePricesContext } from '@/shared/context'
 
-export type WithdrawType = 'partial' | 'full'
-
-const PERCENTAGE_OPTIONS: PercentageButtonItem<number>[] = [
-  { value: 0.25, label: '25%', testId: '25Button' },
-  { value: 0.5, label: '50%', testId: '50Button' },
-  { value: 0.75, label: '75%', testId: '75Button' },
-  { value: 1, label: 'Max', testId: 'MaxButton' },
-]
+import { BTC_VAULT_WITHDRAWAL_DISCLAIMER } from '../services/constants'
 
 interface WithdrawAmountStepProps {
   amount: string
   setAmount: (value: string) => void
-  slippage: string
-  setSlippage: (value: string) => void
-  withdrawType: WithdrawType
-  setWithdrawType: (type: WithdrawType) => void
   vaultTokensFormatted: string
   vaultTokensRaw: bigint
   rbtcEquivalent: string
+  withdrawalFee: string
   onNext: () => void
 }
 
 export const WithdrawAmountStep = ({
   amount,
   setAmount,
-  slippage,
-  setSlippage,
-  withdrawType,
-  setWithdrawType,
   vaultTokensFormatted,
   vaultTokensRaw,
   rbtcEquivalent,
+  withdrawalFee,
   onNext,
 }: WithdrawAmountStepProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
+  const { prices } = usePricesContext()
 
   useEffect(() => {
-    if (withdrawType === 'partial') {
-      inputRef.current?.focus()
+    inputRef.current?.focus()
+  }, [])
+
+  const rbtcPrice = prices[RBTC]?.price ?? 0
+
+  const usdEquivalent = useMemo(() => {
+    if (!rbtcEquivalent || rbtcEquivalent === '0' || !rbtcPrice) return ''
+    try {
+      return formatCurrency(Big(rbtcPrice).mul(rbtcEquivalent), { showCurrencyLabel: true })
+    } catch {
+      return ''
     }
-  }, [withdrawType])
+  }, [rbtcEquivalent, rbtcPrice])
 
   const handleAmountChange = useCallback(
     (value: string) => {
@@ -61,21 +60,8 @@ export const WithdrawAmountStep = ({
     [setAmount],
   )
 
-  const handleSelectPartial = useCallback(() => {
-    setWithdrawType('partial')
-    setAmount('')
-  }, [setWithdrawType, setAmount])
-
-  const handleSelectFull = useCallback(() => {
-    setWithdrawType('full')
-    // Auto-fill with full vault token balance (no gas reserve — ERC-20)
-    const maxStr = Big(vaultTokensRaw.toString()).div(Big(10).pow(18)).toString()
-    setAmount(maxStr)
-  }, [setWithdrawType, setAmount, vaultTokensRaw])
-
   const handlePercentageClick = useCallback(
     (percentage: number) => {
-      // No gas reserve needed for ERC-20 vault tokens
       const balanceStr = Big(vaultTokensRaw.toString()).div(Big(10).pow(18)).toString()
       const calculatedAmount = Big(balanceStr).mul(percentage).toString()
       setAmount(calculatedAmount)
@@ -95,7 +81,7 @@ export const WithdrawAmountStep = ({
 
   const errorMessage = useMemo(() => {
     if (isAmountOverBalance) {
-      return 'This is more than your available vault token balance. Please update the amount.'
+      return 'This is more than your available shares balance. Please update the amount.'
     }
     return ''
   }, [isAmountOverBalance])
@@ -111,27 +97,10 @@ export const WithdrawAmountStep = ({
 
   return (
     <div className="flex-1 flex flex-col" data-testid="WithdrawAmountStep">
-      {/* Partial / Full toggle */}
-      <div className="flex gap-2 mb-4" data-testid="WithdrawTypeToggle">
-        <Button
-          variant={withdrawType === 'partial' ? 'primary' : 'secondary'}
-          onClick={handleSelectPartial}
-          data-testid="PartialButton"
-        >
-          Partial
-        </Button>
-        <Button
-          variant={withdrawType === 'full' ? 'primary' : 'secondary'}
-          onClick={handleSelectFull}
-          data-testid="FullButton"
-        >
-          Full
-        </Button>
-      </div>
-
+      {/* --- Amount Input Card --- */}
       <div className="flex flex-col py-3 px-4 rounded-1 w-full bg-bg-60">
         <Label className="mb-3" data-testid="LabelText">
-          Amount to withdraw
+          No. of shares to withdraw
         </Label>
         <div className="flex gap-2">
           <Input
@@ -144,22 +113,14 @@ export const WithdrawAmountStep = ({
             data-testid="AmountInput"
             placeholder="0"
             inputProps={{ decimalScale: 18 }}
-            readonly={withdrawType === 'full'}
           />
-          <div className="flex items-center gap-1 shrink-0">
-            <Label variant="body-l" bold data-testid="Symbol">
-              Vault Tokens
-            </Label>
-          </div>
         </div>
 
-        {amount && (
-          <Label variant="body-s" className="text-text-60 mt-1" data-testid="RbtcEquivalent">
-            ≈ {rbtcEquivalent} {RBTC}
+        {usdEquivalent && (
+          <Label variant="body-s" className="text-text-60 mt-2" data-testid="UsdEquivalent">
+            {usdEquivalent}
           </Label>
         )}
-
-        <SlippageInput value={slippage} onChange={setSlippage} name="slippage-btc-withdraw-input" />
 
         {errorMessage && (
           <div className="flex items-start gap-2 mt-2 max-w-full">
@@ -170,34 +131,56 @@ export const WithdrawAmountStep = ({
               height={24}
               className="shrink-0 mt-1"
             />
-            <Label className="text-error break-words" data-testid="ErrorText">
+            <Label className="text-error wrap-break-word" data-testid="ErrorText">
               {errorMessage}
             </Label>
           </div>
         )}
       </div>
 
-      <div className="flex flex-col justify-between mx-3 my-2 gap-2">
-        <div className="flex flex-col gap-1">
-          <div className="flex items-center gap-1">
-            <Label variant="body-s" className="text-text-60" data-testid="VaultBalanceLabel">
-              Your Vault Balance: {vaultTokensFormatted} Vault Tokens
-            </Label>
-          </div>
-        </div>
-        {withdrawType === 'partial' && (
-          <div className="flex gap-1 self-end">
-            <PercentageButtons
-              onPercentageClick={handlePercentageClick}
-              options={PERCENTAGE_OPTIONS}
-              testId="PercentageButtons"
-            />
-          </div>
-        )}
+      {/* --- Balance + Percentage Buttons --- */}
+      <div className="flex justify-between items-center mx-3 my-2">
+        <Label variant="body-s" className="text-text-60" data-testid="SharesBalanceLabel">
+          Shares balance: {vaultTokensFormatted}
+        </Label>
+        <PercentageButtons onPercentageClick={handlePercentageClick} testId="PercentageButtons" />
       </div>
 
+      {/* --- Redemption Value + Fee --- */}
+      <div className="flex gap-10 mt-4 px-3">
+        <div className="flex flex-col gap-1" data-testid="review-redemption-value">
+          <Label variant="body-s" className="text-text-60">
+            Redemption value (est.)
+          </Label>
+          <div className="flex items-center gap-2">
+            <TokenImage symbol="RBTC" size={16} />
+            <Label variant="body-s" bold>
+              {rbtcEquivalent} {RBTC}
+            </Label>
+          </div>
+          {usdEquivalent && (
+            <Label variant="body-s" className="text-text-60">
+              {usdEquivalent}
+            </Label>
+          )}
+        </div>
+        <div className="flex flex-col gap-1" data-testid="review-fee">
+          <Label variant="body-s" className="text-text-60">
+            Redemption fee
+          </Label>
+          <Label variant="body-s" bold>
+            {withdrawalFee}%
+          </Label>
+        </div>
+      </div>
+
+      {/* --- Footer: Disclaimer + Continue --- */}
       <div className="mt-auto pt-4">
-        <div className="flex justify-end">
+        <Divider />
+        <div className="flex justify-between items-center gap-4 pt-4">
+          <Paragraph variant="body-s" className="text-text-60 text-xs max-w-[440px]" data-testid="Disclaimer">
+            {BTC_VAULT_WITHDRAWAL_DISCLAIMER}
+          </Paragraph>
           <Button variant="primary" onClick={onNext} disabled={!isValid} data-testid="ContinueButton">
             Continue
           </Button>

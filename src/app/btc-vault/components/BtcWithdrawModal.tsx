@@ -4,21 +4,21 @@ import { useCallback, useMemo, useState } from 'react'
 import { formatEther, parseEther } from 'viem'
 import { useAccount } from 'wagmi'
 
-import { DEFAULT_SLIPPAGE_PERCENTAGE } from '@/app/vault/utils/slippage'
-import { Divider } from '@/components/Divider'
 import { Modal } from '@/components/Modal'
+import { ProgressBar } from '@/components/ProgressBarNew'
 import { Header } from '@/components/Typography'
 
 import { useUserPosition } from '../hooks/useUserPosition'
 import { useVaultMetrics } from '../hooks/useVaultMetrics'
+import { BTC_VAULT_WITHDRAWAL_FEE, WITHDRAWAL_STEP_PROGRESS } from '../services/constants'
 import type { WithdrawalRequestParams } from '../services/types'
-import { WithdrawAmountStep, WithdrawType } from './WithdrawAmountStep'
+import { WithdrawAmountStep } from './WithdrawAmountStep'
 import { WithdrawReviewStep } from './WithdrawReviewStep'
-
-// No fee at launch per contract spec
-const BTC_VAULT_WITHDRAWAL_FEE = '0'
+import { WithdrawSteps } from './WithdrawSteps'
 
 type WithdrawStep = 'amount' | 'review'
+
+const STEP_INDEX: Record<WithdrawStep, number> = { amount: 0, review: 1 }
 
 interface BtcWithdrawModalProps {
   onClose: () => void
@@ -33,17 +33,12 @@ export const BtcWithdrawModal = ({ onClose, onSubmit, isSubmitting }: BtcWithdra
 
   const [step, setStep] = useState<WithdrawStep>('amount')
   const [amount, setAmount] = useState('')
-  const [slippage, setSlippage] = useState(DEFAULT_SLIPPAGE_PERCENTAGE.toString())
-  const [withdrawType, setWithdrawType] = useState<WithdrawType>('partial')
 
   const vaultTokensFormatted = userPosition?.vaultTokensFormatted ?? '0'
   const vaultTokensRaw = userPosition?.vaultTokensRaw ?? 0n
 
-  const navFormatted = vaultMetrics?.navFormatted ?? '0'
-  const navTimestamp = vaultMetrics?.timestamp ?? 0
   const navRaw = vaultMetrics?.navRaw ?? 0n
 
-  // rBTC equivalent: shares * navPerShare / 1e18
   const rbtcEquivalent = useMemo(() => {
     if (!amount || navRaw === 0n) return '0'
     try {
@@ -55,44 +50,38 @@ export const BtcWithdrawModal = ({ onClose, onSubmit, isSubmitting }: BtcWithdra
     }
   }, [amount, navRaw])
 
-  const handleNext = () => {
-    setStep('review')
-  }
-
-  const handleBack = () => {
-    setStep('amount')
-  }
+  const handleNext = () => setStep('review')
 
   const handleSubmit = useCallback(() => {
     if (!amount) return
     try {
       const sharesWei = parseEther(amount)
-      const slippageDecimal = parseFloat(slippage) / 100
-      onSubmit({ amount: sharesWei, slippage: slippageDecimal })
+      onSubmit({ amount: sharesWei })
     } catch {
       // parseEther may throw on invalid input — noop
     }
-  }, [amount, slippage, onSubmit])
+  }, [amount, onSubmit])
+
+  const stepIndex = STEP_INDEX[step]
 
   return (
     <Modal onClose={onClose} data-testid="BtcWithdrawModal">
       <div className="h-full flex flex-col p-4 md:p-6">
-        <Header className="mt-16 mb-4">
-          {step === 'amount' ? 'WITHDRAW VAULT TOKENS' : 'REVIEW WITHDRAWAL'}
-        </Header>
-        <Divider className="mb-4" />
+        <Header className="mt-16 mb-4">SHARES WITHDRAWAL</Header>
+
+        <div className="mb-12">
+          <WithdrawSteps currentStep={stepIndex} />
+          <ProgressBar progress={WITHDRAWAL_STEP_PROGRESS[stepIndex]} className="mt-3" />
+        </div>
 
         {step === 'amount' && (
           <WithdrawAmountStep
             amount={amount}
             setAmount={setAmount}
-            slippage={slippage}
-            setSlippage={setSlippage}
-            withdrawType={withdrawType}
-            setWithdrawType={setWithdrawType}
             vaultTokensFormatted={vaultTokensFormatted}
             vaultTokensRaw={vaultTokensRaw}
             rbtcEquivalent={rbtcEquivalent}
+            withdrawalFee={BTC_VAULT_WITHDRAWAL_FEE}
             onNext={handleNext}
           />
         )}
@@ -101,11 +90,7 @@ export const BtcWithdrawModal = ({ onClose, onSubmit, isSubmitting }: BtcWithdra
           <WithdrawReviewStep
             amount={amount}
             rbtcEquivalent={rbtcEquivalent}
-            slippage={slippage}
-            navFormatted={navFormatted}
-            navTimestamp={navTimestamp}
             withdrawalFee={BTC_VAULT_WITHDRAWAL_FEE}
-            onBack={handleBack}
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
           />

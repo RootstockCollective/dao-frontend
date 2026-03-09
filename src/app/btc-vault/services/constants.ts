@@ -12,3 +12,16 @@ export const BTC_VAULT_DEPOSIT_DISCLAIMER =
 
 /** Step progress values for the 2-step deposit flow (amount → review) */
 export const DEPOSIT_STEP_PROGRESS = [50, 100] as const
+
+/** No fee at launch per contract spec */
+export const BTC_VAULT_WITHDRAWAL_FEE = '0'
+
+/** Disclaimer shown at the bottom of the withdrawal modal on both steps */
+export const BTC_VAULT_WITHDRAWAL_DISCLAIMER =
+  'Subject to approval by fund manager. Cancelable until deposit window close.'
+
+/** Step progress values for the 2-step withdrawal flow (amount → review) */
+export const WITHDRAWAL_STEP_PROGRESS = [50, 100] as const
+
+/** Qualitative expected completion time for withdrawal requests */
+export const WITHDRAWAL_EXPECTED_COMPLETION = '5 days'

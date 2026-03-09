@@ -1,6 +1,7 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+
 import { BtcWithdrawModal } from './BtcWithdrawModal'
 
 const mockUseAccount = vi.fn()
@@ -22,6 +23,18 @@ vi.mock('../hooks/useVaultMetrics', () => ({
 vi.mock('@/shared/hooks/useIsDesktop', () => ({
   useIsDesktop: () => true,
 }))
+
+vi.mock('@/shared/context', () => ({
+  usePricesContext: () => ({ prices: {} }),
+}))
+
+beforeAll(() => {
+  global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+  }))
+})
 
 const defaultProps = {
   onClose: vi.fn(),
@@ -59,11 +72,11 @@ describe('BtcWithdrawModal', () => {
     vi.clearAllMocks()
   })
 
-  it('renders the modal with WITHDRAW VAULT TOKENS header', () => {
+  it('renders the modal with SHARES WITHDRAWAL header', () => {
     render(<BtcWithdrawModal {...defaultProps} />)
 
     expect(screen.getByTestId('BtcWithdrawModal')).toBeInTheDocument()
-    expect(screen.getByText('WITHDRAW VAULT TOKENS')).toBeInTheDocument()
+    expect(screen.getByText('SHARES WITHDRAWAL')).toBeInTheDocument()
   })
 
   it('starts on the amount step', () => {
@@ -84,24 +97,6 @@ describe('BtcWithdrawModal', () => {
 
     expect(screen.getByTestId('WithdrawReviewStep')).toBeInTheDocument()
     expect(screen.queryByTestId('WithdrawAmountStep')).not.toBeInTheDocument()
-    expect(screen.getByText('REVIEW WITHDRAWAL')).toBeInTheDocument()
-  })
-
-  it('navigates back to amount step from review', async () => {
-    const user = userEvent.setup()
-    render(<BtcWithdrawModal {...defaultProps} />)
-
-    // Navigate to review
-    const input = screen.getByTestId('Input_amount-btc-vault-withdraw')
-    await user.type(input, '2')
-    await user.click(screen.getByTestId('ContinueButton'))
-    expect(screen.getByTestId('WithdrawReviewStep')).toBeInTheDocument()
-
-    // Navigate back
-    await user.click(screen.getByTestId('BackButton'))
-    expect(screen.getByTestId('WithdrawAmountStep')).toBeInTheDocument()
-    expect(screen.queryByTestId('WithdrawReviewStep')).not.toBeInTheDocument()
-    expect(screen.getByText('WITHDRAW VAULT TOKENS')).toBeInTheDocument()
   })
 
   it('displays review fields with correct values', async () => {
@@ -112,36 +107,13 @@ describe('BtcWithdrawModal', () => {
     await user.type(input, '2')
     await user.click(screen.getByTestId('ContinueButton'))
 
-    // Check review fields
-    expect(screen.getByTestId('review-amount')).toHaveTextContent('2')
-    expect(screen.getByTestId('review-rbtc')).toBeInTheDocument()
-    expect(screen.getByTestId('review-nav')).toHaveTextContent('1.02')
+    expect(screen.getByTestId('review-shares')).toHaveTextContent('2')
+    expect(screen.getByTestId('review-redemption-value')).toBeInTheDocument()
     expect(screen.getByTestId('review-fee')).toHaveTextContent('0%')
-    expect(screen.getByTestId('review-slippage')).toHaveTextContent('0.5%')
+    expect(screen.getByTestId('review-expected-completion')).toHaveTextContent('5 days')
   })
 
-  it('displays all four disclosures on review step', async () => {
-    const user = userEvent.setup()
-    render(<BtcWithdrawModal {...defaultProps} />)
-
-    const input = screen.getByTestId('Input_amount-btc-vault-withdraw')
-    await user.type(input, '2')
-    await user.click(screen.getByTestId('ContinueButton'))
-
-    const disclosures = screen.getByTestId('review-disclosures')
-    expect(disclosures).toHaveTextContent('This is a request and does not transfer assets immediately')
-    expect(disclosures).toHaveTextContent(
-      'Redemption value is calculated at the NAV confirmed at epoch close',
-    )
-    expect(disclosures).toHaveTextContent(
-      'Withdrawal is a two-step process: request now, claim after epoch settles',
-    )
-    expect(disclosures).toHaveTextContent(
-      'Once the epoch is closed, withdrawal requests cannot be canceled',
-    )
-  })
-
-  it('calls onSubmit with correct params when Submit Request is clicked', async () => {
+  it('calls onSubmit with correct params when Send request is clicked', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn().mockResolvedValue(undefined)
     render(<BtcWithdrawModal {...defaultProps} onSubmit={onSubmit} />)
@@ -153,7 +125,6 @@ describe('BtcWithdrawModal', () => {
 
     expect(onSubmit).toHaveBeenCalledWith({
       amount: 2_000_000_000_000_000_000n,
-      slippage: 0.005,
     })
   })
 
@@ -166,9 +137,20 @@ describe('BtcWithdrawModal', () => {
     expect(onClose).toHaveBeenCalledOnce()
   })
 
-  it('shows vault token balance from useUserPosition', () => {
+  it('shows shares balance from useUserPosition', () => {
     render(<BtcWithdrawModal {...defaultProps} />)
 
-    expect(screen.getByTestId('VaultBalanceLabel')).toHaveTextContent('5.0')
+    expect(screen.getByTestId('SharesBalanceLabel')).toHaveTextContent('5.0')
+  })
+
+  it('keeps SHARES WITHDRAWAL title on review step', async () => {
+    const user = userEvent.setup()
+    render(<BtcWithdrawModal {...defaultProps} />)
+
+    const input = screen.getByTestId('Input_amount-btc-vault-withdraw')
+    await user.type(input, '2')
+    await user.click(screen.getByTestId('ContinueButton'))
+
+    expect(screen.getByText('SHARES WITHDRAWAL')).toBeInTheDocument()
   })
 })
