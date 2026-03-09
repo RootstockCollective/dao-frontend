@@ -14,7 +14,10 @@ import { CONTRACT_ADDRESSES_TOOLTIP_MAP } from './CapitalAllocationSection.const
  */
 export function ContractAddressesSection() {
   return (
-    <div data-testid="capital-allocation-contract-addresses" className="flex flex-col gap-4">
+    <div
+      data-testid="capital-allocation-contract-addresses"
+      className="flex flex-col gap-4 mt-10 border-t border-bg-60 pt-8"
+    >
       <Header variant="h4" className="text-text-100">
         CONTRACT ADDRESSES
       </Header>

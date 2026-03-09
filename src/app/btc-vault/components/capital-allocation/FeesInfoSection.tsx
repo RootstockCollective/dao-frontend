@@ -11,7 +11,10 @@ import { FEES_INFO_PLACEHOLDER, FEES_INFO_TOOLTIP_MAP } from './CapitalAllocatio
  */
 export function FeesInfoSection() {
   return (
-    <div data-testid="capital-allocation-fees-info" className="flex flex-col gap-4">
+    <div
+      data-testid="capital-allocation-fees-info"
+      className="flex flex-col gap-4 mt-10 border-t border-bg-60 pt-8"
+    >
       <Header variant="h4" className="text-text-100">
         FEES INFO
       </Header>
