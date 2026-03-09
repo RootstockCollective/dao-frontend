@@ -14,6 +14,10 @@ export interface EpochDisplay {
   status: EpochStatus
   statusSummary: string
   isAcceptingRequests: boolean
+  /** Unix timestamp (seconds) when the epoch stops accepting requests. Used for countdown and "until" date. */
+  endTime: number
+  /** Date-only string for "deposits can be made until [date]" (e.g. "23 Feb 2025"). */
+  closesAtFormatted: string
 }
 
 export interface UserPositionDisplay {

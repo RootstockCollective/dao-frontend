@@ -9,7 +9,8 @@ import { TokenImage } from '@/components/TokenImage'
 import { Label, Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 
-import { useCapitalAllocation } from '../hooks/useCapitalAllocation'
+import { useCapitalAllocation } from '../../hooks/useCapitalAllocation'
+import { CapitalAllocationDonutChart } from './CapitalAllocationDonutChart'
 import { CAPITAL_ALLOCATION_TOOLTIP_MAP } from './CapitalAllocationSection.constants'
 
 export function CapitalAllocationSection() {
@@ -37,7 +38,16 @@ export function CapitalAllocationSection() {
         rightContent={toggleControl}
       >
         {isDetailed ? (
-          <div data-testid="capital-allocation-detailed" className="min-h-[200px]" />
+          <div data-testid="capital-allocation-detailed" className="flex flex-col gap-6 md:flex-row">
+            <div className="w-full md:w-auto md:max-w-[480px] md:shrink-0">
+              {isLoading ? (
+                <div data-testid="detailed-loading" className="min-h-[200px]" />
+              ) : (
+                data && <CapitalAllocationDonutChart data={data} />
+              )}
+            </div>
+            <div data-testid="capital-allocation-wallet-placeholder" className="min-h-[200px] flex-1" />
+          </div>
         ) : (
           <div
             data-testid="capital-allocation-undetailed"

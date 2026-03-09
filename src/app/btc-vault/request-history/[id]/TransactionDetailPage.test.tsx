@@ -39,6 +39,11 @@ vi.mock('@/components/ProgressBarNew', () => ({
   ProgressBar: ({ progress }: { progress: number }) => (
     <div data-testid="progress-bar" data-progress={progress} />
   ),
+  ProgressStepper: () => <div data-testid="progress-stepper" />,
+}))
+
+vi.mock('@/shared/context/PricesContext', () => ({
+  usePricesContext: () => ({ prices: {} }),
 }))
 
 const ONE_BTC = 10n ** 18n

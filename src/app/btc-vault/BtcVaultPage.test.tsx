@@ -41,7 +41,7 @@ vi.mock('./ActiveRequestSection', () => ({
   ActiveRequestSection: () => null,
 }))
 
-vi.mock('./components/CapitalAllocationSection', () => ({
+vi.mock('./components/capital-allocation/CapitalAllocationSection', () => ({
   CapitalAllocationSection: () => null,
 }))
 
@@ -72,9 +72,15 @@ vi.mock('./hooks/useEpochState', () => ({
       status: 'open',
       statusSummary: 'Closes in 5m',
       isAcceptingRequests: true,
+      endTime: Math.floor(Date.now() / 1000) + 86400,
+      closesAtFormatted: '23 Feb 2025',
     },
     isLoading: false,
   }),
+}))
+
+vi.mock('./components/DepositWindowBanner', () => ({
+  DepositWindowBanner: () => <div data-testid="DepositWindowBanner" />,
 }))
 
 function Wrapper({ children }: { children: ReactNode }) {

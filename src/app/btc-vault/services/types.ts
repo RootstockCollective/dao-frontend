@@ -150,17 +150,20 @@ export type RequestType = 'deposit' | 'withdrawal'
  * pending → claimable → done
  *    ↓          ↓
  *  failed     failed
+ *    ↓
+ *  cancelled
  * ```
  *
  * - `pending`   — Request submitted, waiting for epoch settlement.
  * - `claimable` — Epoch settled, user can call finalize to claim.
  * - `done`      — Finalized. Shares minted (deposit) or rBTC returned (withdrawal).
  * - `failed`    — Transaction reverted or rejected at any point.
+ * - `cancelled` — User cancelled the request while it was pending.
  *
  * "Active" statuses (block new requests): `pending`, `claimable`.
- * "Terminal" statuses (allow new requests): `done`, `failed`.
+ * "Terminal" statuses (allow new requests): `done`, `failed`, `cancelled`.
  */
-export type RequestStatus = 'pending' | 'claimable' | 'done' | 'failed'
+export type RequestStatus = 'pending' | 'claimable' | 'done' | 'failed' | 'cancelled'
 
 /**
  * A single deposit or withdrawal request through the vault's two-step lifecycle.
