@@ -14,11 +14,39 @@ vi.mock('wagmi', async importOriginal => {
   return {
     ...actual,
     useAccount: () => mockUseAccount(),
+    useWriteContract: () => ({
+      writeContractAsync: vi.fn(),
+      data: undefined,
+      isPending: false,
+    }),
+    useWaitForTransactionReceipt: () => ({ isPending: false, failureReason: null }),
+  }
+})
+
+vi.mock('@tanstack/react-query', async importOriginal => {
+  const actual = await importOriginal<typeof import('@tanstack/react-query')>()
+  return {
+    ...actual,
+    useQueryClient: () => ({ invalidateQueries: vi.fn() }),
   }
 })
 
 vi.mock('./hooks/useActionEligibility', () => ({
   useActionEligibility: (address: string | undefined) => mockUseActionEligibility(address),
+}))
+
+vi.mock('./hooks/useSubmitDeposit', () => ({
+  useSubmitDeposit: () => ({
+    onRequestDeposit: vi.fn(),
+    isRequesting: false,
+    isTxPending: false,
+    isTxFailed: false,
+    depositTxHash: undefined,
+  }),
+}))
+
+vi.mock('@/shared/notification', () => ({
+  executeTxFlow: vi.fn(),
 }))
 
 vi.mock('@/shared/walletConnection/connection/useAppKitFlow', () => ({
@@ -31,6 +59,10 @@ vi.mock('@/shared/walletConnection/connection/useAppKitFlow', () => ({
 
 vi.mock('@/shared/hooks/useIsDesktop', () => ({
   useIsDesktop: () => true,
+}))
+
+vi.mock('@/shared/context', () => ({
+  usePricesContext: () => ({ prices: {} }),
 }))
 
 vi.mock('@/app/backing/components/DecorativeSquares', () => ({
@@ -60,6 +92,7 @@ vi.mock('./hooks/useVaultMetrics', () => ({
       apyFormatted: '8.50',
       navFormatted: '1.02',
       timestamp: 1709000000,
+      navRaw: 1_020_000_000_000_000_000n,
     },
     isLoading: false,
   }),
@@ -191,7 +224,7 @@ describe('BtcVaultPage', () => {
     expect(screen.getByTestId('BTC Vault')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-metrics')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-dashboard')).toBeInTheDocument()
-    expect(screen.getByTestId('btc-vault-actions-zone')).toBeInTheDocument()
+    expect(screen.getByTestId('btc-vault-actions')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-request-queue')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-history')).toBeInTheDocument()
     expect(screen.queryByTestId('NotAuthorizedBanner')).not.toBeInTheDocument()

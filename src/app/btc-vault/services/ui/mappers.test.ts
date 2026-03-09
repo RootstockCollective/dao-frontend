@@ -48,6 +48,7 @@ describe('toVaultMetricsDisplay', () => {
     expect(result.apyFormatted).toBe('8.50')
     expect(result.navFormatted).toBe('1.02')
     expect(result.timestamp).toBe(1700000000)
+    expect(result.navRaw).toBe(1_020_000_000_000_000_000n)
   })
 })
 

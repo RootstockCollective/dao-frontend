@@ -1,4 +1,4 @@
-// ─── Vault-Level State ───────────────────────────────────────────────
+// --- Vault-Level State ---
 
 /**
  * Aggregate metrics for the entire BTC vault. Same data for every user.
@@ -97,7 +97,7 @@ export interface PauseState {
   withdrawals: 'active' | 'paused'
 }
 
-// ─── User-Level State ────────────────────────────────────────────────
+// --- User-Level State ---
 
 /**
  * A single user's position within the vault.
@@ -241,7 +241,7 @@ export interface ClaimableInfo {
   lockedSharePrice: bigint
 }
 
-// ─── Write Operation Types ───────────────────────────────────────────
+// --- Write Operation Types ---
 
 /**
  * Blockchain transaction status, aligned with the wagmi/viem lifecycle.
@@ -285,9 +285,6 @@ export interface TxResult {
 export interface DepositRequestParams {
   /** Amount of rBTC to deposit. Wei, 18 decimals. Must be > 0. */
   amount: bigint
-
-  /** Maximum acceptable slippage as a decimal (e.g. 0.01 = 1%). Optional. */
-  slippage?: number
 }
 
 /**
@@ -302,12 +299,9 @@ export interface DepositRequestParams {
 export interface WithdrawalRequestParams {
   /** Amount of vault tokens to redeem. Wei, 18 decimals. Must be > 0 and <= user's vaultTokens. */
   amount: bigint
-
-  /** Maximum acceptable slippage as a decimal (e.g. 0.01 = 1%). Optional. */
-  slippage?: number
 }
 
-// ─── Pagination ──────────────────────────────────────────────────────
+// --- Pagination ---
 
 /**
  * Parameters for paginated queries (request history).
