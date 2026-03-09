@@ -10,43 +10,69 @@ import { executeTxFlow } from '@/shared/notification'
 
 import { useActionEligibility } from '../hooks/useActionEligibility'
 import { useSubmitDeposit } from '../hooks/useSubmitDeposit'
-import type { DepositRequestParams } from '../services/types'
+import { useSubmitWithdrawal } from '../hooks/useSubmitWithdrawal'
+import type { DepositRequestParams, WithdrawalRequestParams } from '../services/types'
 import { BtcDepositModal } from './BtcDepositModal'
+import { BtcWithdrawModal } from './BtcWithdrawModal'
 
 export const BtcVaultActions = () => {
   const queryClient = useQueryClient()
   const { address } = useAccount()
   const { data: actionEligibility } = useActionEligibility(address)
-  const [isModalOpen, setIsModalOpen] = useState(false)
+
+  const [isDepositModalOpen, setIsDepositModalOpen] = useState(false)
+  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false)
 
   const canDeposit = actionEligibility?.canDeposit ?? false
   const depositBlockReason = actionEligibility?.depositBlockReason ?? ''
+  const canWithdraw = actionEligibility?.canWithdraw ?? false
+  const withdrawBlockReason = actionEligibility?.withdrawBlockReason ?? ''
 
-  const { onRequestDeposit, isRequesting, isTxPending } = useSubmitDeposit()
+  const {
+    onRequestDeposit,
+    isRequesting: isDepositRequesting,
+    isTxPending: isDepositTxPending,
+  } = useSubmitDeposit()
+  const {
+    onRequestRedeem,
+    isRequesting: isWithdrawRequesting,
+    isTxPending: isWithdrawTxPending,
+  } = useSubmitWithdrawal()
 
-  const isSubmitting = isRequesting || isTxPending
+  const isDepositSubmitting = isDepositRequesting || isDepositTxPending
+  const isWithdrawSubmitting = isWithdrawRequesting || isWithdrawTxPending
 
-  const handleOpenModal = useCallback(() => {
-    setIsModalOpen(true)
-  }, [])
+  const invalidateAfterSubmit = useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: ['btc-vault', 'active-requests', address] })
+    queryClient.invalidateQueries({ queryKey: ['btc-vault', 'action-eligibility', address] })
+  }, [queryClient, address])
 
-  const handleCloseModal = useCallback(() => {
-    setIsModalOpen(false)
-  }, [])
-
-  const handleSubmit = useCallback(
+  const handleDepositSubmit = useCallback(
     async (params: DepositRequestParams) => {
       executeTxFlow({
         action: 'btcVaultDepositRequest',
         onRequestTx: () => onRequestDeposit(params.amount),
         onSuccess: () => {
-          setIsModalOpen(false)
-          queryClient.invalidateQueries({ queryKey: ['btc-vault', 'active-requests', address] })
-          queryClient.invalidateQueries({ queryKey: ['btc-vault', 'action-eligibility', address] })
+          setIsDepositModalOpen(false)
+          invalidateAfterSubmit()
         },
       })
     },
-    [onRequestDeposit, queryClient, address],
+    [onRequestDeposit, invalidateAfterSubmit],
+  )
+
+  const handleWithdrawSubmit = useCallback(
+    async (params: WithdrawalRequestParams) => {
+      executeTxFlow({
+        action: 'btcVaultWithdrawRequest',
+        onRequestTx: () => onRequestRedeem(params.amount),
+        onSuccess: () => {
+          setIsWithdrawModalOpen(false)
+          invalidateAfterSubmit()
+        },
+      })
+    },
+    [onRequestRedeem, invalidateAfterSubmit],
   )
 
   return (
@@ -55,17 +81,39 @@ export const BtcVaultActions = () => {
         <Tooltip text={depositBlockReason} disabled={canDeposit || !depositBlockReason}>
           <Button
             variant="primary"
-            onClick={handleOpenModal}
+            onClick={() => setIsDepositModalOpen(true)}
             disabled={!canDeposit}
             data-testid="DepositButton"
           >
             Deposit
           </Button>
         </Tooltip>
+        <Tooltip text={withdrawBlockReason} disabled={canWithdraw || !withdrawBlockReason}>
+          <Button
+            variant="primary"
+            onClick={() => setIsWithdrawModalOpen(true)}
+            disabled={!canWithdraw}
+            data-testid="WithdrawButton"
+          >
+            Withdraw
+          </Button>
+        </Tooltip>
       </div>
 
-      {isModalOpen && (
-        <BtcDepositModal onClose={handleCloseModal} onSubmit={handleSubmit} isSubmitting={isSubmitting} />
+      {isDepositModalOpen && (
+        <BtcDepositModal
+          onClose={() => setIsDepositModalOpen(false)}
+          onSubmit={handleDepositSubmit}
+          isSubmitting={isDepositSubmitting}
+        />
+      )}
+
+      {isWithdrawModalOpen && (
+        <BtcWithdrawModal
+          onClose={() => setIsWithdrawModalOpen(false)}
+          onSubmit={handleWithdrawSubmit}
+          isSubmitting={isWithdrawSubmitting}
+        />
       )}
     </div>
   )
