@@ -11,6 +11,7 @@ import {
   toRequestDetailDisplay,
   toPaginatedHistoryDisplay,
   toCapitalAllocationDisplay,
+  mapRequestDisplayStatus,
 } from './mappers'
 
 describe('toEpochDisplay', () => {
@@ -50,7 +51,6 @@ describe('toVaultMetricsDisplay', () => {
 })
 
 describe('toUserPositionDisplay', () => {
-
   it('includes formatted strings and raw bigints', () => {
     const result = toUserPositionDisplay({
       rbtcBalance: 2n * WeiPerEther,
@@ -312,81 +312,52 @@ describe('toActiveRequestDisplay', () => {
   })
 })
 
-describe('toRequestDetailDisplay', () => {
-  const userAddress = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb29266'
-
-  it('maps a pending withdrawal with canCancel true', () => {
-    const req = {
-      id: 'w1',
-      type: 'withdrawal' as const,
-      amount: 1_000_000_000_000_000_000n,
-      status: 'pending' as const,
-      epochId: null,
-      batchRedeemId: 'batch-1',
-      timestamps: { created: 1700000000 },
-      txHashes: { submit: '0x' + 'a'.repeat(64) },
-    }
-    const result = toRequestDetailDisplay(req, null, 50000, userAddress)
-    expect(result.typeLabel).toBe('Withdrawal')
-    expect(result.canCancel).toBe(true)
-    expect(result.submitTxShort).toBe('0xaaaa...aaaa')
-    expect(result.submitTxFull).toBe('0x' + 'a'.repeat(64))
-    expect(result.addressFull).toBe(userAddress)
-    expect(result.addressShort.length).toBeGreaterThan(0)
-    expect(result.sharesFormatted).toBe('1')
+describe('mapRequestDisplayStatus', () => {
+  it('maps pending to "Pending"', () => {
+    const result = mapRequestDisplayStatus('pending', 'deposit')
+    expect(result.displayStatus).toBe('pending')
+    expect(result.displayStatusLabel).toBe('Pending')
   })
 
-  it('maps a done deposit with canCancel false', () => {
-    const req = {
-      id: 'd1',
-      type: 'deposit' as const,
-      amount: 2_000_000_000_000_000_000n,
-      status: 'done' as const,
-      epochId: '1',
-      batchRedeemId: null,
-      timestamps: { created: 1700000000, finalized: 1700003600 },
-      txHashes: { submit: '0x' + 'b'.repeat(64), finalize: '0x' + 'c'.repeat(64) },
-    }
-    const result = toRequestDetailDisplay(req, null, 50000, userAddress)
-    expect(result.typeLabel).toBe('Deposit')
-    expect(result.canCancel).toBe(false)
-    expect(result.amountFormatted).toBe('2')
+  it('maps claimable deposit to "Open to claim"', () => {
+    const result = mapRequestDisplayStatus('claimable', 'deposit')
+    expect(result.displayStatus).toBe('open_to_claim')
+    expect(result.displayStatusLabel).toBe('Open to claim')
   })
 
-  it('handles missing submit tx hash', () => {
-    const req = {
-      id: 'd2',
-      type: 'deposit' as const,
-      amount: 1n,
-      status: 'pending' as const,
-      epochId: '1',
-      batchRedeemId: null,
-      timestamps: { created: 1700000000 },
-      txHashes: {},
-    }
-    const result = toRequestDetailDisplay(req, null, 0, userAddress)
-    expect(result.submitTxShort).toBeNull()
-    expect(result.submitTxFull).toBeNull()
+  it('maps claimable withdrawal to "Claim pending"', () => {
+    const result = mapRequestDisplayStatus('claimable', 'withdrawal')
+    expect(result.displayStatus).toBe('claim_pending')
+    expect(result.displayStatusLabel).toBe('Claim pending')
   })
 
-  it('sets canCancel false for claimable and failed statuses', () => {
-    const makeReq = (status: 'claimable' | 'failed') => ({
-      id: `req-${status}`,
-      type: 'withdrawal' as const,
-      amount: 1n,
-      status,
-      epochId: null,
-      batchRedeemId: 'batch-0',
-      timestamps: { created: 1700000000 },
-      txHashes: {},
-    })
-    expect(toRequestDetailDisplay(makeReq('claimable'), null, 0, userAddress).canCancel).toBe(false)
-    expect(toRequestDetailDisplay(makeReq('failed'), null, 0, userAddress).canCancel).toBe(false)
+  it('maps done to "Successful"', () => {
+    const result = mapRequestDisplayStatus('done', 'deposit')
+    expect(result.displayStatus).toBe('successful')
+    expect(result.displayStatusLabel).toBe('Successful')
+  })
+
+  it('maps failed without reason to "Cancelled"', () => {
+    const result = mapRequestDisplayStatus('failed', 'deposit')
+    expect(result.displayStatus).toBe('cancelled')
+    expect(result.displayStatusLabel).toBe('Cancelled')
+  })
+
+  it('maps failed with cancelled reason to "Cancelled"', () => {
+    const result = mapRequestDisplayStatus('failed', 'withdrawal', 'cancelled')
+    expect(result.displayStatus).toBe('cancelled')
+    expect(result.displayStatusLabel).toBe('Cancelled')
+  })
+
+  it('maps failed with rejected reason to "Rejected"', () => {
+    const result = mapRequestDisplayStatus('failed', 'deposit', 'rejected')
+    expect(result.displayStatus).toBe('rejected')
+    expect(result.displayStatusLabel).toBe('Rejected')
   })
 })
 
 describe('toPaginatedHistoryDisplay', () => {
-  it('formats paginated results with tx hashes', () => {
+  it('formats paginated results with tx hashes and display status', () => {
     const raw = {
       data: [
         {
@@ -410,6 +381,10 @@ describe('toPaginatedHistoryDisplay', () => {
     expect(result.rows[0].submitTxShort).toBe('0xaaaa...aaaa')
     expect(result.rows[0].submitTxFull).toBe('0x' + 'a'.repeat(64))
     expect(result.rows[0].finalizedAtFormatted).not.toBeNull()
+    expect(result.rows[0].displayStatus).toBe('successful')
+    expect(result.rows[0].displayStatusLabel).toBe('Successful')
+    expect(result.rows[0].claimTokenType).toBe('rbtc')
+    expect(result.rows[0].fiatAmountFormatted).not.toBeNull()
     expect(result.total).toBe(1)
     expect(result.totalPages).toBe(1)
   })
@@ -437,6 +412,81 @@ describe('toPaginatedHistoryDisplay', () => {
     expect(result.rows[0].submitTxShort).toBeNull()
     expect(result.rows[0].finalizeTxShort).toBeNull()
     expect(result.rows[0].finalizedAtFormatted).toBeNull()
+    expect(result.rows[0].displayStatus).toBe('pending')
+  })
+
+  it('sets claimTokenType to shares for withdrawals and null fiat amount', () => {
+    const raw = {
+      data: [
+        {
+          id: 'req-3',
+          type: 'withdrawal' as const,
+          amount: 600_000_000_000_000_000_000n,
+          status: 'done' as const,
+          epochId: null,
+          batchRedeemId: 'batch-1',
+          timestamps: { created: 1700000000, finalized: 1700003600 },
+          txHashes: { submit: '0x' + 'c'.repeat(64) },
+        },
+      ],
+      total: 1,
+      page: 1,
+      limit: 10,
+      totalPages: 1,
+    }
+    const result = toPaginatedHistoryDisplay(raw)
+    expect(result.rows[0].claimTokenType).toBe('shares')
+    expect(result.rows[0].fiatAmountFormatted).toBeNull()
+    expect(result.rows[0].displayStatus).toBe('successful')
+  })
+
+  it('maps claimable deposit to open_to_claim display status', () => {
+    const raw = {
+      data: [
+        {
+          id: 'req-4',
+          type: 'deposit' as const,
+          amount: 1_000_000_000_000_000_000n,
+          status: 'claimable' as const,
+          epochId: '2',
+          batchRedeemId: null,
+          timestamps: { created: 1700000000 },
+          txHashes: { submit: '0x' + 'a'.repeat(64) },
+        },
+      ],
+      total: 1,
+      page: 1,
+      limit: 10,
+      totalPages: 1,
+    }
+    const result = toPaginatedHistoryDisplay(raw)
+    expect(result.rows[0].displayStatus).toBe('open_to_claim')
+    expect(result.rows[0].displayStatusLabel).toBe('Open to claim')
+  })
+
+  it('maps failed with failureReason to correct display status', () => {
+    const raw = {
+      data: [
+        {
+          id: 'req-5',
+          type: 'deposit' as const,
+          amount: 1n,
+          status: 'failed' as const,
+          failureReason: 'rejected' as const,
+          epochId: '0',
+          batchRedeemId: null,
+          timestamps: { created: 1700000000 },
+          txHashes: {},
+        },
+      ],
+      total: 1,
+      page: 1,
+      limit: 10,
+      totalPages: 1,
+    }
+    const result = toPaginatedHistoryDisplay(raw)
+    expect(result.rows[0].displayStatus).toBe('rejected')
+    expect(result.rows[0].displayStatusLabel).toBe('Rejected')
   })
 })
 

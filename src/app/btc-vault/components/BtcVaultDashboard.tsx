@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { type ReactNode } from 'react'
 import { useAccount } from 'wagmi'
 
@@ -8,6 +9,7 @@ import { BalanceInfo } from '@/components/BalanceInfo'
 import { HistoryIcon } from '@/components/Icons'
 import { Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
+import { btcVaultRequestHistory } from '@/shared/constants/routes'
 
 import { useUserPosition } from '../hooks/useUserPosition/useUserPosition'
 import { BtcVaultActions } from './BtcVaultActions'
@@ -76,15 +78,14 @@ export const BtcVaultDashboard = () => {
               data-testid="metric-principal"
             />
             {hasHistory && (
-              // TODO(DAO-1999): replace href with route to transaction history page
-              <a
-                href="#"
+              <Link
+                href={btcVaultRequestHistory}
                 className="mt-6 flex items-center gap-x-1 text-sm font-medium underline underline-offset-2"
                 data-testid="btc-vault-history-link"
               >
                 <HistoryIcon />
                 <Span variant="body-s">View history</Span>
-              </a>
+              </Link>
             )}
           </div>
           <BalanceInfo
@@ -113,23 +114,20 @@ export const BtcVaultDashboard = () => {
               data-testid="metric-yield-percent"
             />
             {hasHistory && (
-              // TODO(DAO-1999): replace href with route to yield history page
-              <a
-                href="#"
-                className="mt-6 flex items-center gap-x-1 text-sm font-medium underline underline-offset-2"
+              <span
+                aria-disabled="true"
+                className="mt-6 flex items-center gap-x-1 text-sm font-medium text-text-60 cursor-not-allowed opacity-50"
                 data-testid="btc-vault-yield-history-link"
               >
                 <HistoryIcon />
                 <Span variant="body-s">View yield history</Span>
-              </a>
+              </span>
             )}
           </div>
         </div>
       </div>
 
-      <div className="mt-10">
-        <BtcVaultActions address={address} />
-      </div>
+      <BtcVaultActions address={address} />
     </SectionContainer>
   )
 }

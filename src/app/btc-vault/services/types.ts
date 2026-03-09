@@ -219,6 +219,15 @@ export interface VaultRequest {
     /** Transaction hash from the finalize/claim call. Hex string. Only set for finalized requests. */
     finalize?: string
   }
+
+  /**
+   * Reason for failure when `status` is `'failed'`.
+   * - `cancelled` — User voluntarily cancelled the request before settlement.
+   * - `rejected`  — The system/contract rejected the request (e.g. insufficient liquidity, revert).
+   * Defaults to `'cancelled'` in display layer when absent.
+   * Feature 9 (data layer) will provide this from on-chain events.
+   */
+  failureReason?: 'cancelled' | 'rejected'
 }
 
 /**

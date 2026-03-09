@@ -28,6 +28,7 @@ const breadcrumbsMap = {
   '/staking-history': 'Staking History',
   '/vault/history': 'USD Vault History',
   '/btc-vault': 'BTC Vault',
+  '/btc-vault/request-history': 'Transactions History',
   // community URLs
   ...Object.fromEntries(
     communitiesToRender.map(({ nftAddress, title }) => [`/communities/nft/${nftAddress}`, title]),
@@ -69,14 +70,14 @@ export function Breadcrumbs() {
   }, [pathname])
 
   return (
-    <nav aria-label="breadcrumb" className="ml-5 min-w-0" data-testid="Breadcrumbs">
+    <nav aria-label="breadcrumb" className="ml-5 min-w-0" data-testid="breadcrumbs">
       <ol className="flex gap-2">
         {breadcrumbs.map(({ title, href }, idx) => {
           const isLast = idx === breadcrumbs.length - 1
           return (
             <li key={href} className={isLast ? 'min-w-0 truncate' : 'flex items-center gap-2 shrink-0'}>
               {isLast ? (
-                <span className="text-sm text-text-100" data-testid="BreadcrumbCurrent">
+                <span className="text-sm text-text-100" data-testid="breadcrumb-current">
                   {title}
                 </span>
               ) : (
@@ -84,7 +85,7 @@ export function Breadcrumbs() {
                   <Link
                     href={href}
                     className="text-sm text-warm-gray hover:underline"
-                    data-testid="BreadcrumbLink"
+                    data-testid="breadcrumb-link"
                   >
                     {title}
                   </Link>
