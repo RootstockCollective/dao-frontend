@@ -212,6 +212,9 @@ export function mapRequestDisplayStatus(
     case 'failed':
       displayStatus = failureReason === 'rejected' ? 'rejected' : 'cancelled'
       break
+    case 'cancelled':
+      displayStatus = 'cancelled'
+      break
   }
 
   return { displayStatus, displayStatusLabel: DISPLAY_STATUS_LABELS[displayStatus] }
