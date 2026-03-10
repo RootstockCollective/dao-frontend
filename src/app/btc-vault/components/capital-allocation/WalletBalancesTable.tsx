@@ -29,7 +29,7 @@ const { accessor } = createColumnHelper<WalletBalanceDisplay>()
 
 export function WalletBalancesTable({ wallets, className, 'data-testid': testId, ...props }: Props) {
   const [showAll, setShowAll] = useState(false)
-  const [sorting, setSorting] = useState<SortingState>([])
+  const [sorting, setSorting] = useState<SortingState>([{ id: 'percentage', desc: true }])
 
   const totals = useMemo(() => {
     const totalAmount = wallets.reduce((sum, w) => sum + parseFloat(w.amountFormatted), 0)

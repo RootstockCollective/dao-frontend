@@ -97,13 +97,23 @@ describe('WalletBalancesTable', () => {
     expect(screen.getByText('100.00%')).toBeInTheDocument()
   })
 
-  it('displays the first 5 wallets by default', () => {
+  it('sorts by percentage descending by default', () => {
     render(<WalletBalancesTable wallets={MOCK_WALLETS} />)
 
+    const rows = screen.getAllByRole('row')
+    const firstDataRow = rows[0]
+    expect(within(firstDataRow).getByText('Fordefi 1')).toBeInTheDocument()
+  })
+
+  it('displays the first 5 wallets by default (sorted by % desc)', () => {
+    render(<WalletBalancesTable wallets={MOCK_WALLETS} />)
+
+    // Default sort: Fordefi 1 (96.49%), Fordefi 8 (0.51%), Fordefi 2-4 (0.5%)
     expect(screen.getByText('Fordefi 1')).toBeInTheDocument()
-    expect(screen.getByText('Fordefi 5')).toBeInTheDocument()
+    expect(screen.getByText('Fordefi 8')).toBeInTheDocument()
+    expect(screen.getByText('Fordefi 2')).toBeInTheDocument()
+    expect(screen.queryByText('Fordefi 5')).not.toBeInTheDocument()
     expect(screen.queryByText('Fordefi 6')).not.toBeInTheDocument()
-    expect(screen.queryByText('Fordefi 8')).not.toBeInTheDocument()
   })
 
   it('shows aggregated totals in column headers', () => {
@@ -132,13 +142,14 @@ describe('WalletBalancesTable', () => {
     render(<WalletBalancesTable wallets={MOCK_WALLETS} />)
     const user = userEvent.setup()
 
-    expect(screen.queryByText('Fordefi 8')).not.toBeInTheDocument()
+    // With default % desc sort, Fordefi 5 is outside first 5
+    expect(screen.queryByText('Fordefi 5')).not.toBeInTheDocument()
 
     await user.click(screen.getByTestId('show-all-wallets-button'))
 
+    expect(screen.getByText('Fordefi 5')).toBeInTheDocument()
     expect(screen.getByText('Fordefi 6')).toBeInTheDocument()
     expect(screen.getByText('Fordefi 7')).toBeInTheDocument()
-    expect(screen.getByText('Fordefi 8')).toBeInTheDocument()
     expect(screen.getByText('Show fewer wallets')).toBeInTheDocument()
   })
 
@@ -236,6 +247,8 @@ describe('WalletBalancesTable', () => {
       const user = userEvent.setup()
       render(<WalletBalancesTable wallets={SORT_WALLETS} />)
 
+      // Default state is already desc — first click clears, second click → asc
+      await user.click(screen.getByTestId('ColumnHeader-percentage'))
       await user.click(screen.getByTestId('ColumnHeader-percentage'))
 
       const labelsAsc = getRowLabels()
