@@ -137,7 +137,6 @@ describe('CapitalAllocationSection', () => {
     const deployed = screen.getByTestId('metric-deployed-capital')
     expect(deployed).toHaveTextContent('0.52')
     expect(deployed).toHaveTextContent(RBTC)
-    expect(deployed).toHaveTextContent('|')
     expect(deployed).toHaveTextContent('50%')
     expect(deployed).toHaveTextContent('$26,000.00 USD')
 

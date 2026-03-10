@@ -24,8 +24,13 @@ export function CapitalAllocationSection() {
 
   const toggleControl = (
     <div className="flex items-center gap-2 md:justify-end">
-      <Switch checked={isDetailed} onCheckedChange={setIsDetailed} data-testid="detailed-view-toggle">
-        <SwitchThumb />
+      <Switch
+        checked={isDetailed}
+        onCheckedChange={setIsDetailed}
+        data-testid="detailed-view-toggle"
+        className="h-[32px] w-[64px]"
+      >
+        <SwitchThumb className="size-[26px] data-[state=checked]:translate-x-[34px]" />
       </Switch>
       <Label variant="body-s" className="text-100">
         Detailed view
@@ -85,13 +90,13 @@ export function CapitalAllocationSection() {
                             {RBTC}
                           </Span>
                         </span>
-                        <span className="min-w-[1.25rem] shrink-0 text-center text-white/40">|</span>
+                        <span className="inline-block h-1.5 w-0.5 shrink-0 rounded-full bg-bg-20" />
                         <span className="shrink-0">{cat.percentFormatted}</span>
                       </span>
                     }
                     fiatAmount={cat.fiatAmountFormatted}
                     tooltipContent={CAPITAL_ALLOCATION_TOOLTIP_MAP[cat.label]}
-                    data-testid={`metric-${cat.label.toLowerCase().replace(/\s+/g, '-')}`}
+                    data-testid={`metric-${cat.label.toLowerCase().replaceAll(/\s+/g, '-')}`}
                   />
                 ))}
           </div>
