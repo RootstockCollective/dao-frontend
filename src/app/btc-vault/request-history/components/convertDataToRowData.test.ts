@@ -20,7 +20,7 @@ const MOCK_ROW: RequestHistoryRowDisplay = {
   claimTokenType: 'rbtc',
   updatedAtFormatted: '15 Jan 2025',
   stateHistory: [
-    { date: '10 Jan 2025', displayStatus: 'pending', displayStatusLabel: 'Pending' },
+    { date: '10 Jan 2025', displayStatus: 'pending', displayStatusLabel: 'Pending', actionLabel: null },
   ],
 }
 
@@ -72,8 +72,8 @@ describe('convertDataToRowData', () => {
     const rowWithHistory: RequestHistoryRowDisplay = {
       ...MOCK_ROW,
       stateHistory: [
-        { date: '10 Jan 2025', displayStatus: 'pending', displayStatusLabel: 'Pending' },
-        { date: '12 Jan 2025', displayStatus: 'open_to_claim', displayStatusLabel: 'Open to claim' },
+        { date: '10 Jan 2025', displayStatus: 'pending', displayStatusLabel: 'Pending', actionLabel: null },
+        { date: '12 Jan 2025', displayStatus: 'open_to_claim', displayStatusLabel: 'Open to claim', actionLabel: 'Claimed shares' },
       ],
     }
     const [row] = convertDataToRowData([rowWithHistory])
@@ -82,11 +82,13 @@ describe('convertDataToRowData', () => {
       date: '10 Jan 2025',
       displayStatus: 'pending',
       displayStatusLabel: 'Pending',
+      actionLabel: null,
     })
     expect(row.data.stateHistory[1]).toEqual({
       date: '12 Jan 2025',
       displayStatus: 'open_to_claim',
       displayStatusLabel: 'Open to claim',
+      actionLabel: 'Claimed shares',
     })
   })
 

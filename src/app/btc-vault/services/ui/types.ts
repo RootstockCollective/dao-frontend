@@ -38,6 +38,7 @@ export interface StateHistoryEntry {
   date: string
   displayStatus: DisplayStatus
   displayStatusLabel: DisplayStatusLabel
+  actionLabel: string | null
 }
 
 export interface DisplayStatusResult {

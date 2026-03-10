@@ -246,6 +246,7 @@ export function deriveStateHistory(req: VaultRequest): StateHistoryEntry[] {
     date: formatTimestamp(created),
     displayStatus: 'pending',
     displayStatusLabel: DISPLAY_STATUS_LABELS.pending,
+    actionLabel: null,
   }
 
   switch (status) {
@@ -255,10 +256,12 @@ export function deriveStateHistory(req: VaultRequest): StateHistoryEntry[] {
       return [pendingEntry]
     case 'done': {
       const claimableDisplayStatus: DisplayStatus = type === 'deposit' ? 'open_to_claim' : 'claim_pending'
+      const actionLabel = type === 'deposit' ? 'Claimed shares' : 'Claimed rBTC'
       const claimableEntry: StateHistoryEntry = {
         date: formatTimestamp(updated ?? created),
         displayStatus: claimableDisplayStatus,
         displayStatusLabel: DISPLAY_STATUS_LABELS[claimableDisplayStatus],
+        actionLabel,
       }
       return [pendingEntry, claimableEntry]
     }
