@@ -768,8 +768,11 @@ The app links out to several external services for user-facing actions that happ
 
 ## Code Conventions
 
+> **Canonical source:** `.cursor/rules/coding-conventions.mdc` and `.cursor/rules/architecture-patterns.mdc`
+> The sections below provide project-specific context and code examples. For naming, imports, exports, types, error handling, and state management rules, refer to the cursor rules.
+
 - **Node.js**: Version 24 LTS
-- **Formatting**: Prettier (no semicolons, single quotes disabled)
+- **Formatting**: Prettier (no semicolons, single quotes, 110 char width)
 - **Linting**: ESLint with Next.js + Storybook plugins
 - **Git Hooks**: Husky pre-commit
 - **Z-Index**: Semantic classes only (`z-base=1`, `z-dropdown=100`, `z-sticky=200`, `z-modal=500`, `z-tooltip=1000`)
@@ -811,13 +814,18 @@ These rules are enforced by Prettier, ESLint, and Husky pre-commit hooks. Code t
 
 ## Import Conventions
 
-- **Always** use `@/` path aliases. Never use relative imports.
+> **Canonical source:** `.cursor/rules/coding-conventions.mdc` (Import Ordering section)
+
+- Use `@/` for cross-feature imports, relative (`./`, `../`) for same-feature/same-directory.
   ```typescript
-  // CORRECT
+  // Cross-feature: always use @/
   import { Button } from '@/components/Button'
   import { STRIF_ADDRESS } from '@/lib/constants'
 
-  // WRONG — never do this
+  // Same directory: relative is fine
+  import { MyComponent } from './MyComponent'
+
+  // Cross-feature relative: never do this
   import { Button } from '../../../components/Button'
   ```
 - **Type imports** use `import type` or inline `type` keyword:
@@ -828,6 +836,9 @@ These rules are enforced by Prettier, ESLint, and Husky pre-commit hooks. Code t
 - **Barrel exports are selective** — not all modules re-export from `index.ts`. If a hook isn't in `@/shared/hooks`, import directly from its file: `@/shared/hooks/useVoteOnProposal`.
 
 ## Data Fetching Patterns
+
+> **Canonical source:** `.cursor/rules/architecture-patterns.mdc` (Data Fetching and State Management sections)
+> The code examples below show project-specific implementations.
 
 | Layer | When to Use | Key File(s) |
 |-------|-------------|-------------|
@@ -925,6 +936,9 @@ updateToast(toastId, { severity: 'success', title: 'Done', content: 'Vote record
 **Key rule:** Never show error toast for user-rejected wallet transactions — `executeTxFlow` handles this automatically.
 
 ## Component Conventions
+
+> **Canonical source:** `.cursor/rules/architecture-patterns.mdc` (Component Conventions section)
+> The patterns below are project-specific conventions not covered by the cursor rules.
 
 Beyond PascalCase naming and co-located tests/stories:
 

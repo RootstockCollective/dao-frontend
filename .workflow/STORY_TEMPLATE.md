@@ -45,6 +45,16 @@ Copy this file to `stories/STORY-XXX.md` and fill in the details.
 
 ---
 
+## Orchestration Checklist
+
+> Filled by the human orchestrator before invoking the first agent.
+
+- **Track:** [ ] Quick | [ ] Standard | [ ] Complex
+- **Agents to invoke:** [ ] Story Creator | [ ] Workload Analyst | [ ] Architect | [ ] Developer | [ ] Code Review | [ ] QA | [ ] Retro
+- **Context notes:** [any domain context, related stories, or constraints the orchestrator wants agents to know]
+
+---
+
 ## Workflow Artifacts
 
 ### Architecture Plan

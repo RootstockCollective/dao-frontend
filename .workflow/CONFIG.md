@@ -28,6 +28,29 @@ hitl:
 
 ---
 
+## Workflow Tracks
+
+Defines the three workflow tracks. The human orchestrator selects a track based on the scope of the change.
+
+```yaml
+workflow_tracks:
+  quick:
+    criteria: "Bug fix or chore, < 3 files, no new APIs or components"
+    steps: [developer, code-review]
+    skip: [user-story-creator, workload-analyst, architect, qa]
+    artifacts: "No story file, no plan, no QA report"
+
+  standard:
+    criteria: "Feature or refactor, 1-2 phases"
+    steps: [story, architect, developer, code-review, qa, retro]
+    artifacts: "Story, plan, review(s), QA report(s), retro"
+
+  complex:
+    criteria: "Multi-phase feature, 3+ phases, or unfamiliar domain"
+    steps: [story, workload-analyst, architect, developer, code-review, qa, retro]
+    artifacts: "Story, workload analysis, plan, review(s), QA report(s), devlog(s), retro"
+```
+
 ---
 
 ## Validation Gates
@@ -133,4 +156,24 @@ coverage:
     target: null
     blocking: false
     rationale: "Test files are not measured"
+```
+
+---
+
+## Context Management
+
+Defines how agents manage context to prevent degradation over long sessions.
+
+```yaml
+context_management:
+  fresh_session_per_phase: true
+  description: "Each phase starts in a fresh session to prevent context degradation"
+
+  sharding_strategy:
+    architect: "Reads full PROJECT.md (only agent that needs everything)"
+    developer: "Reads story, current phase from plan, and relevant PROJECT.md sections (Data Fetching, Component Conventions, domain glossary)"
+    code_review: "Reads phase diff, devlog, plan; references PROJECT.md on-demand"
+    qa: "Reads phase ACs from story, QA template; references PROJECT.md on-demand"
+
+  paste_policy: "NEVER paste full documents. Use file-read tool calls to load only relevant sections."
 ```

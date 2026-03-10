@@ -75,6 +75,19 @@ const config = [
     },
   },
 
+  // -----------------------------------------------------------------------
+  // Import sorting (auto-fixable via `eslint --fix` or editor save)
+  // [TechDebt] Set to 'warn' to avoid breaking CI on existing files.
+  //            Promote to 'error' once cleanup epic is complete.
+  // -----------------------------------------------------------------------
+  {
+    plugins: { 'simple-import-sort': simpleImportSort },
+    rules: {
+      'simple-import-sort/imports': 'warn',
+      'simple-import-sort/exports': 'warn',
+    },
+  },
+
   {
     files: ['**/*.ts', '**/*.tsx'],
     plugins: {

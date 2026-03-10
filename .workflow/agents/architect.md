@@ -20,13 +20,19 @@ Read the project context file to understand:
 - Key files for reference
 
 **Project Context:**
-[PASTE THE CONTENTS OF .workflow/PROJECT.md HERE]
+Use the file-read tool to load `.workflow/PROJECT.md`.
+
+**Coding Standards:**
+Read the following coding standards — your plan must align with these rules:
+- `.cursor/rules/architecture-patterns.mdc` — data fetching, state management, hook & component conventions
+- `.cursor/rules/coding-conventions.mdc` — file naming, exports, imports, types, folder structure
+- `.cursor/rules/responsive-mobile-first.mdc` — mobile-first layouts, breakpoints, touch targets
 
 ## Your Task
 Analyze this user story and create an implementation plan.
 
 **User Story:**
-[PASTE THE CONTENTS OF .workflow/stories/STORY-XXX.md HERE]
+Use the file-read tool to load `.workflow/stories/STORY-XXX.md`.
 
 ## Instructions
 
@@ -42,7 +48,9 @@ Analyze this user story and create an implementation plan.
    - Map dependencies between requirements
 
 3. **Design the Solution with PHASES**
-   - Follow existing patterns (see PROJECT.md Architecture Patterns)
+   - Follow existing patterns (see PROJECT.md and `.cursor/rules/architecture-patterns.mdc`)
+   - Use correct data fetching pattern per scenario (useQuery, wagmi hooks, server actions — see architecture-patterns)
+   - Apply file naming conventions from `.cursor/rules/coding-conventions.mdc` when specifying new files
    - Minimize changes to existing code
    - **Divide work into logical phases** (each phase should be independently testable)
    - Map each acceptance criterion to a specific phase
@@ -64,13 +72,41 @@ Use the plan template at the end of this document.
 
 ## Phase Design Guidelines
 
-- Each phase should deliver testable, working functionality
-- Phases should build on each other logically
-- Earlier phases should establish foundations (types, hooks, utilities)
-- Later phases should add UI components and integration
-- Each phase should cover specific acceptance criteria
-- Consider the component hierarchy: shared hooks/utils → components → pages
+### Sizing — small, blame-friendly phases
+
+- **Target 1–3 ACs per phase.** If a phase covers 4+ ACs, split it unless all ACs are trivially related.
+- **One layer per phase.** Each phase should touch one concern: data layer (types, mappers, formatters) OR UI component OR integration/wiring. Mixing layers makes blame ambiguous.
+- **Aim for fewer than 5 source files changed per phase** (excluding co-located test files). If a phase touches 8+ files, it's likely doing too much.
+- Each commit message must answer **"why does this exist?"** when read in `git blame` one year from now.
+
+### Ordering — foundations first
+
+- Earlier phases should establish foundations (types, hooks, utilities).
+- Later phases should add UI components and page integration.
+- It is OK for multiple phases to modify the same file incrementally — blame will show which phase added which lines.
+
+### Testability
+
+- Each phase should deliver testable, working functionality.
+- Each phase should cover specific acceptance criteria.
+- Phases should build on each other logically.
+- Consider the component hierarchy: shared hooks/utils → components → pages.
 ```
+
+---
+
+## Context Budget
+
+The Architect is the **only agent that reads the full project context**. This is intentional — it needs the complete picture to design phases.
+
+| Document | Read strategy |
+|----------|---------------|
+| `PROJECT.md` | Full read (only agent that does this) |
+| `.cursor/rules/*.mdc` | Full read of architecture-patterns, coding-conventions, responsive-mobile-first |
+| Story file | Full read |
+| Codebase | Explore referenced files as needed |
+
+**Session rule:** Start each story in a fresh session to prevent context bleed between stories.
 
 ---
 
@@ -79,6 +115,7 @@ Use the plan template at the end of this document.
 | Item | Source |
 |------|--------|
 | Project Context | `.workflow/PROJECT.md` |
+| Coding Standards | `.cursor/rules/architecture-patterns.mdc`, `.cursor/rules/coding-conventions.mdc` |
 | User Story | `.workflow/stories/STORY-XXX.md` |
 | Codebase | Full repository access |
 
@@ -183,11 +220,16 @@ Before handing off, ensure:
 
 ## 5. Implementation Phases
 
-Each phase goes through the complete cycle: Developer → Code Review → QA
+Each phase goes through the complete cycle: Developer → Code Review → QA.
+Target: 1–3 ACs per phase, one layer per phase, < 5 source files changed.
 
 ### Phase 1: [Phase Name]
 
 **Acceptance Criteria Covered:** AC-1, AC-2
+**Layer:** [data | UI | integration]
+**Commit message:** `type(scope): description`
+**Confidence:** High / Medium / Low
+**Decision point:** [Any question the developer may need the orchestrator to decide — leave blank if none]
 
 **Files to Create/Modify:**
 - [ ] [File path and description]
@@ -206,6 +248,10 @@ Each phase goes through the complete cycle: Developer → Code Review → QA
 ### Phase 2: [Phase Name]
 
 **Acceptance Criteria Covered:** AC-3
+**Layer:** [data | UI | integration]
+**Commit message:** `type(scope): description`
+**Confidence:** High / Medium / Low
+**Decision point:** [Any question the developer may need the orchestrator to decide — leave blank if none]
 
 **Files to Create/Modify:**
 - [ ] [File path and description]
@@ -242,6 +288,16 @@ Reference: `.workflow/CONFIG.md`
 | Risk | Likelihood | Impact | Mitigation |
 |------|------------|--------|------------|
 | [Risk] | Low/Medium/High | Low/Medium/High | [How to mitigate] |
+
+---
+
+## Plan Amendments
+
+> This section is maintained by the Developer Agent during implementation. The Architect creates the plan; amendments are recorded here when reality diverges from design.
+
+| Phase | Amendment | Reason | Date |
+|-------|-----------|--------|------|
+| — | (none yet) | — | — |
 
 ---
 

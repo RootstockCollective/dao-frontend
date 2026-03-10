@@ -16,15 +16,20 @@ A structured workflow for AI agents to collaborate on software development with 
 | [agents/developer.md](./agents/developer.md) | Implements the code |
 | [agents/code-review.md](./agents/code-review.md) | Reviews code quality |
 | [agents/qa.md](./agents/qa.md) | Validates acceptance criteria |
+| [agents/retro.md](./agents/retro.md) | Retrospective and rule improvement |
+| [agents/user-story-creator.md](./agents/user-story-creator.md) | Creates user stories from requirements |
+| [agents/workload-analyst.md](./agents/workload-analyst.md) | Analyzes workload and effort |
 
 ---
 
 ## Workflow Overview
 
-This workflow uses **phase-by-phase completion** with **co-located tests**:
+This workflow uses **phase-by-phase completion** with **co-located tests**. Three **workflow tracks** control how much ceremony each change needs — see [CONFIG.md](./CONFIG.md#workflow-tracks) for track definitions.
+
 - The Architect analyzes everything upfront and creates a phased plan
 - Each phase completes the full cycle (Dev → Review → QA) before the next begins
 - The Developer implements code alongside co-located unit tests (Vitest + React Testing Library)
+- After ALL phases, a Retrospective captures learnings and proposes rule improvements
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
@@ -145,6 +150,18 @@ The [QA Agent](./agents/qa.md) validates ONE phase:
 **Output:** Merged to main
 **Human Action:** Merge the PR
 
+### 7. Retrospective (Retro Agent)
+
+**Input:** Story file, plan, all reviews, all QA reports, devlog(s)
+**Output:** `.workflow/_retros/STORY-XXX-retro.md`
+**Human Action:** Approve or reject proposed rule changes
+
+The [Retro Agent](./agents/retro.md) runs after merge and captures:
+- What went well and what didn't
+- Deviations from the plan and their causes
+- Proposed changes to `.cursor/rules/` files (the **agentic flywheel** — each story's retro makes the rules better, which makes the next story's agent output better, which produces fewer retro findings; this is human-supervised improvement, not autonomous)
+- Actionable items for future workflow improvement
+
 ---
 
 ## Directory Structure
@@ -153,27 +170,36 @@ The [QA Agent](./agents/qa.md) validates ONE phase:
 .workflow/
 ├── README.md                 # This file - workflow overview
 ├── PROJECT.md                # Project-specific context (tech stack, patterns)
-├── CONFIG.md                 # Workflow configuration (HITL, coverage targets)
+├── CONFIG.md                 # Workflow configuration (HITL, tracks, coverage, context)
 ├── STORY_TEMPLATE.md         # Template for new stories
+├── WORKFLOW_AUDIT_REPORT.md  # Audit report (reference)
 │
 ├── agents/                   # Agent definitions
 │   ├── architect.md          # Architecture planning
 │   ├── developer.md          # Implementation
 │   ├── code-review.md        # Code review
-│   └── qa.md                 # QA validation
+│   ├── qa.md                 # QA validation
+│   ├── retro.md              # Retrospective + rule improvement
+│   ├── user-story-creator.md # Story creation from requirements
+│   └── workload-analyst.md   # Workload analysis
 │
 ├── stories/                  # User stories
-│   ├── STORY-001.md
-│   └── STORY-002.md
+│   └── STORY-XXX.md
 │
 ├── plans/                    # Architecture plans
 │   └── STORY-XXX-plan.md
 │
-├── reviews/                  # Code review reports
-│   └── STORY-XXX-review.md
+├── devlogs/                  # Developer implementation logs
+│   └── STORY-XXX-phase-N-devlog.md
 │
-└── qa-reports/               # QA reports
-    └── STORY-XXX-qa.md
+├── reviews/                  # Code review reports
+│   └── STORY-XXX-phase-N-review.md
+│
+├── qa-reports/               # QA reports
+│   └── STORY-XXX-phase-N-qa.md
+│
+└── _retros/                  # Retrospective reports
+    └── STORY-XXX-retro.md
 ```
 
 ---
@@ -193,6 +219,20 @@ The workflow requires human approval at key points:
 **Configuring HITL:** See [CONFIG.md](./CONFIG.md#human-in-the-loop-hitl-integration)
 
 Future integrations (Slack, etc.) can be configured in CONFIG.md.
+
+---
+
+## Orchestrator Role
+
+The **human orchestrator** drives the workflow. There is no automated pipeline — the human decides:
+
+1. **Which track** to use for a given change (quick / standard / complex — see [CONFIG.md](./CONFIG.md#workflow-tracks))
+2. **When to invoke** each agent (copy the prompt, paste context, run)
+3. **When to approve** and move to the next stage
+4. **When to deviate** from the plan (document deviations in the devlog)
+5. **When to stop** — not every story needs every agent
+
+The orchestrator is responsible for context management: starting fresh sessions per phase and providing only the context each agent needs (see [CONFIG.md](./CONFIG.md#context-management)).
 
 ---
 
