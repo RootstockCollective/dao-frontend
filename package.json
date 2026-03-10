@@ -115,10 +115,12 @@
     "eslint-config-next": "16.1.6",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-simple-import-sort": "12.1.1",
     "eslint-plugin-storybook": "10.2.10",
     "http-proxy-middleware": "^3.0.5",
     "husky": "9.1.7",
     "jsdom": "^26.1.0",
+    "lint-staged": "16.2.7",
     "mock-knex": "^0.4.13",
     "pino-pretty": "^13.1.2",
     "postcss": "^8",
@@ -144,6 +146,9 @@
     "@reown/appkit-adapter-wagmi": {
       "@wagmi/connectors": "6.2.0"
     }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "eslint --fix"
   },
   "engines": {
     "node": "^24.0.0"

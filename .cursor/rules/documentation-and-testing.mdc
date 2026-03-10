@@ -1,0 +1,69 @@
+---
+description: Enforces JSDoc, comment standards, TODO format, and testing requirements
+alwaysApply: true
+---
+
+# Documentation & Testing
+
+Apply to ALL new code. When editing existing code, add missing documentation to touched functions.
+
+## JSDoc Requirements
+
+| Target                                                                     | Required?        | Include                                                     |
+| -------------------------------------------------------------------------- | ---------------- | ----------------------------------------------------------- |
+| Exported hooks with non-obvious behavior, side effects, or complex returns | Yes              | What it does, lifecycle, side effects                       |
+| Shared hooks in `src/shared/hooks/` used across 3+ features                | Yes + `@example` | Usage example with destructured return                      |
+| API route handlers (`route.ts`)                                            | Yes              | HTTP method, path, auth requirement, request/response shape |
+| Exported utilities in `src/lib/`                                           | Yes              | `@param`, `@returns`, `@throws` if applicable               |
+| Simple hooks with self-documenting return types (e.g., `useModal`)         | No               | —                                                           |
+| Internal/private functions                                                 | No               | —                                                           |
+
+## Inline Comments
+
+- **Explain WHY, not WHAT.** If the comment restates the next line, delete it.
+- DO comment: non-obvious side effects, business rules, workarounds, "this looks wrong but is intentional because..."
+- Phase/section comments (`// Phase 1: ...`) are acceptable in long multi-stage functions.
+- **No ASCII banner dividers** (`// =====`). If a file needs sections, prefer splitting into files. If not possible, use `// --- Section Name ---`.
+
+## TODO Format
+
+- **`// TODO(DAO-XXXX): description`** — every TODO must have a Jira ticket.
+- `// FIXME:` only for broken code that must be addressed before merge.
+- No `@TODO`, `//TODO:`, or TODOs without ticket numbers.
+
+## AI-Generated Code
+
+- Review all AI-generated code for correctness, edge cases, and test coverage before committing.
+- Remove narration comments that AI tools tend to generate (e.g., `// Import the module`, `// Set the value`).
+- Do not accept speculative abstractions — apply YAGNI. If it's not needed now, don't build it.
+
+## Testing Requirements
+
+### Must test (new code)
+
+| What                                                                                    | Tool                                               |
+| --------------------------------------------------------------------------------------- | -------------------------------------------------- |
+| API route handlers                                                                      | Vitest                                             |
+| Shared hooks with business logic (`src/shared/hooks/`)                                  | Vitest + `renderHook`                              |
+| Feature hooks with complex logic (state machines, optimistic updates, multi-step flows) | Vitest + `renderHook`                              |
+| Utility functions with branching logic (`src/lib/`)                                     | Vitest                                             |
+| Zustand stores                                                                          | Vitest (access state directly, no React rendering) |
+
+### Recommended
+
+| What                                          | Tool      |
+| --------------------------------------------- | --------- |
+| Shared UI components                          | Storybook |
+| E2E critical paths (auth, proposals, staking) | Cypress   |
+
+### Do NOT test
+
+- Simple pass-through hooks (e.g., `useIsDesktop`)
+- Pure presentational components with no conditional logic
+- Storybook stories themselves
+
+### Conventions
+
+- Test files co-located with source: `useVaultBalance.test.ts` next to `useVaultBalance.ts`.
+- Test structure: `describe('[unit name]', () => { it('should [behavior]', ...) })`.
+- No `as any` in test mocks without `// SAFETY:` comment.
