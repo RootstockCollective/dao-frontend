@@ -52,7 +52,7 @@ const VISIBLE_COLUMN_TRANSFORMS: Record<VisibleColumnId, string> = {
   date: 'flex-[1_1_8rem] min-w-[8rem]',
   amount: 'flex-[1.5_1_10rem] min-w-[10rem]',
   status: 'flex-[1_1_7rem] min-w-[7rem]',
-  actions: 'flex-[1_1_9rem] min-w-[9rem]',
+  actions: 'flex-[1_1_9rem] min-w-[9rem] justify-end pr-4',
 }
 
 export const COLUMN_TRANSFORMS: Record<ColumnId, string> = {

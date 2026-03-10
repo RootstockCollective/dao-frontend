@@ -246,7 +246,7 @@ export function deriveStateHistory(req: VaultRequest): StateHistoryEntry[] {
     date: formatTimestamp(created),
     displayStatus: 'pending',
     displayStatusLabel: DISPLAY_STATUS_LABELS.pending,
-    actionLabel: null,
+    actionLabel: 'Cancel request',
   }
 
   switch (status) {

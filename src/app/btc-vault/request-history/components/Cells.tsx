@@ -161,10 +161,30 @@ interface DetailActionsCellProps {
   actionLabel: string | null
 }
 
-export const DetailActionsCell = ({ actionLabel }: DetailActionsCellProps) => (
-  <TableCell columnId="actions">
-    <Paragraph variant="body-s" className="text-black">
-      {actionLabel ?? '-'}
-    </Paragraph>
-  </TableCell>
-)
+/** Renders the action label for a lifecycle sub-row with matching icon, or "-" when none. */
+export const DetailActionsCell = ({ actionLabel }: DetailActionsCellProps) => {
+  if (!actionLabel) {
+    return (
+      <TableCell columnId="actions">
+        <Paragraph variant="body-s" className="text-black">
+          -
+        </Paragraph>
+      </TableCell>
+    )
+  }
+
+  const isCancelAction = actionLabel === 'Cancel request'
+  const isClaimAction = actionLabel.startsWith('Claim')
+  const Icon = isCancelAction ? TrashIcon : isClaimAction ? MoneyIconKoto : null
+
+  return (
+    <TableCell columnId="actions">
+      <div className="flex items-center gap-1">
+        <Paragraph variant="body-s" className="font-medium text-black">
+          {actionLabel}
+        </Paragraph>
+        {Icon && <Icon size={16} color="black" />}
+      </div>
+    </TableCell>
+  )
+}

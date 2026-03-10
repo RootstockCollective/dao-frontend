@@ -349,7 +349,7 @@ describe('deriveStateHistory', () => {
     expect(result).toHaveLength(1)
     expect(result[0].displayStatus).toBe('pending')
     expect(result[0].displayStatusLabel).toBe('Pending')
-    expect(result[0].actionLabel).toBeNull()
+    expect(result[0].actionLabel).toBe('Cancel request')
     expect(result[0].date).toMatch(/\d{2} \w{3} \d{4}/)
   })
 
@@ -368,7 +368,7 @@ describe('deriveStateHistory', () => {
     expect(result).toHaveLength(2)
     expect(result[0].displayStatus).toBe('pending')
     expect(result[0].displayStatusLabel).toBe('Pending')
-    expect(result[0].actionLabel).toBeNull()
+    expect(result[0].actionLabel).toBe('Cancel request')
     expect(result[1].displayStatus).toBe('open_to_claim')
     expect(result[1].displayStatusLabel).toBe('Open to claim')
     expect(result[1].actionLabel).toBe('Claimed shares')
@@ -391,7 +391,7 @@ describe('deriveStateHistory', () => {
     expect(result).toHaveLength(2)
     expect(result[0].displayStatus).toBe('pending')
     expect(result[0].displayStatusLabel).toBe('Pending')
-    expect(result[0].actionLabel).toBeNull()
+    expect(result[0].actionLabel).toBe('Cancel request')
     expect(result[1].displayStatus).toBe('claim_pending')
     expect(result[1].displayStatusLabel).toBe('Claim pending')
     expect(result[1].actionLabel).toBe('Claimed rBTC')
@@ -412,7 +412,7 @@ describe('deriveStateHistory', () => {
     expect(result).toHaveLength(1)
     expect(result[0].displayStatus).toBe('pending')
     expect(result[0].displayStatusLabel).toBe('Pending')
-    expect(result[0].actionLabel).toBeNull()
+    expect(result[0].actionLabel).toBe('Cancel request')
   })
 
   it('returns 1 entry for failed status — Pending @ created', () => {
@@ -430,7 +430,7 @@ describe('deriveStateHistory', () => {
     expect(result).toHaveLength(1)
     expect(result[0].displayStatus).toBe('pending')
     expect(result[0].displayStatusLabel).toBe('Pending')
-    expect(result[0].actionLabel).toBeNull()
+    expect(result[0].actionLabel).toBe('Cancel request')
   })
 
   it('uses formatTimestamp for dates (same format as createdAtFormatted)', () => {

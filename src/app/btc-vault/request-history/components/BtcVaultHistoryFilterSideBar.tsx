@@ -8,7 +8,6 @@ import { TokenImage } from '@/components/TokenImage'
 import { RBTC } from '@/lib/constants'
 
 import type { DisplayStatus } from '../../services/ui/types'
-import { RBTC } from '@/lib/constants'
 
 /**
  * Filter-specific status labels per design spec.

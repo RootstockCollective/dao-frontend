@@ -4,7 +4,11 @@ import type { RequestHistoryRowDisplay } from '../../services/ui/types'
 import { DISPLAY_REQUEST_TYPE_LABELS } from '../../services/ui/types'
 import type { BtcVaultHistoryCellDataMap, ColumnId } from './BtcVaultHistoryTable.config'
 
-/** Maps display DTOs to table row format expected by TableContext. */
+/**
+ * Maps display DTOs to table row format expected by TableContext.
+ * @param data - Array of request history display objects from the mapper layer
+ * @returns Array of typed table rows with all visible and data-only columns populated
+ */
 export function convertDataToRowData(
   data: RequestHistoryRowDisplay[] | undefined,
 ): Row<ColumnId, string, BtcVaultHistoryCellDataMap>[] {

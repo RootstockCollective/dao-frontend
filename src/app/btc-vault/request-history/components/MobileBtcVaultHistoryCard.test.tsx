@@ -24,7 +24,7 @@ const DONE_DEPOSIT_ROW = {
     finalizedAtFormatted: '15 Jan 2025',
     requestType: 'deposit' as const,
     stateHistory: [
-      { date: '10 Jan 2025', displayStatus: 'pending' as const, displayStatusLabel: 'Pending' as const, actionLabel: null },
+      { date: '10 Jan 2025', displayStatus: 'pending' as const, displayStatusLabel: 'Pending' as const, actionLabel: 'Cancel request' },
       { date: '12 Jan 2025', displayStatus: 'open_to_claim' as const, displayStatusLabel: 'Open to claim' as const, actionLabel: 'Claimed shares' },
     ],
   },
@@ -47,7 +47,7 @@ const CLAIMABLE_DEPOSIT_ROW = {
     finalizedAtFormatted: null,
     requestType: 'deposit' as const,
     stateHistory: [
-      { date: '10 Jan 2025', displayStatus: 'pending' as const, displayStatusLabel: 'Pending' as const, actionLabel: null },
+      { date: '10 Jan 2025', displayStatus: 'pending' as const, displayStatusLabel: 'Pending' as const, actionLabel: 'Cancel request' },
     ],
   },
 }
@@ -91,7 +91,7 @@ describe('MobileBtcVaultHistoryCard', () => {
 
     expect(entries[0]).toHaveTextContent('10 Jan 2025')
     expect(entries[0]).toHaveTextContent('Pending')
-    expect(entries[0]).toHaveTextContent('-')
+    expect(entries[0]).toHaveTextContent('Cancel request')
 
     expect(entries[1]).toHaveTextContent('12 Jan 2025')
     expect(entries[1]).toHaveTextContent('Open to claim')
@@ -111,10 +111,10 @@ describe('MobileBtcVaultHistoryCard', () => {
   it('hides actions when collapsed and shows them when expanded', () => {
     render(<MobileBtcVaultHistoryCard row={CLAIMABLE_DEPOSIT_ROW} />)
 
-    expect(screen.queryByText('Claim shares')).toBeNull()
+    expect(screen.queryByText('Claim shares')).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId('mobile-btc-vault-history-card'))
 
-    expect(screen.getByText('Claim shares')).toBeTruthy()
+    expect(screen.getByText('Claim shares')).toBeInTheDocument()
   })
 })

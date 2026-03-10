@@ -29,7 +29,7 @@ const DONE_DEPOSIT_ROW = {
     finalizedAtFormatted: '15 Jan 2025',
     requestType: 'deposit' as const,
     stateHistory: [
-      { date: '10 Jan 2025', displayStatus: 'pending' as const, displayStatusLabel: 'Pending' as const, actionLabel: null },
+      { date: '10 Jan 2025', displayStatus: 'pending' as const, displayStatusLabel: 'Pending' as const, actionLabel: 'Cancel request' },
       { date: '12 Jan 2025', displayStatus: 'open_to_claim' as const, displayStatusLabel: 'Open to claim' as const, actionLabel: 'Claimed shares' },
     ],
   },
@@ -52,7 +52,7 @@ const CLAIMABLE_DEPOSIT_ROW = {
     finalizedAtFormatted: null,
     requestType: 'deposit' as const,
     stateHistory: [
-      { date: '10 Jan 2025', displayStatus: 'pending' as const, displayStatusLabel: 'Pending' as const, actionLabel: null },
+      { date: '10 Jan 2025', displayStatus: 'pending' as const, displayStatusLabel: 'Pending' as const, actionLabel: 'Cancel request' },
     ],
   },
 }
@@ -131,13 +131,13 @@ describe('BtcVaultHistoryDataRow', () => {
     expect(detailRows[1]).toHaveTextContent('Open to claim')
   })
 
-  it('shows action label in detail rows when present, "-" when null', () => {
+  it('shows action label in detail rows', () => {
     render(<TestTable row={DONE_DEPOSIT_ROW} />)
 
     fireEvent.click(screen.getByTestId('btc-vault-history-data-row'))
 
     const detailRows = screen.getAllByTestId('btc-vault-history-detail-row')
-    expect(detailRows[0]).toHaveTextContent('-')
+    expect(detailRows[0]).toHaveTextContent('Cancel request')
     expect(detailRows[1]).toHaveTextContent('Claimed shares')
   })
 
@@ -154,10 +154,10 @@ describe('BtcVaultHistoryDataRow', () => {
   it('hides actions when collapsed and shows them when expanded', () => {
     render(<TestTable row={CLAIMABLE_DEPOSIT_ROW} />)
 
-    expect(screen.queryByText('Claim shares')).toBeNull()
+    expect(screen.queryByText('Claim shares')).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByTestId('btc-vault-history-data-row'))
 
-    expect(screen.getByText('Claim shares')).toBeTruthy()
+    expect(screen.getByText('Claim shares')).toBeInTheDocument()
   })
 })

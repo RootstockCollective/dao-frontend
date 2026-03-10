@@ -24,8 +24,8 @@ export const MobileBtcVaultHistoryCard: FC<Props> = memo(({ row }) => {
   const hasHistory = (data.stateHistory?.length ?? 0) > 0
 
   const handleToggleExpand = useCallback(() => {
-    setIsExpanded(prev => !prev)
-  }, [])
+    if (hasHistory) setIsExpanded(prev => !prev)
+  }, [hasHistory])
 
   const textColor = isExpanded ? 'text-black' : 'text-v3-text-100'
   const mutedTextColor = isExpanded ? 'text-black/60' : 'text-v3-text-60'
@@ -139,9 +139,13 @@ export const MobileBtcVaultHistoryCard: FC<Props> = memo(({ row }) => {
                 )}
               </div>
               <RequestStatusBadge displayStatus={entry.displayStatus} label={entry.displayStatusLabel} />
-              <Paragraph variant="body-s" className="text-black">
-                {entry.actionLabel ?? '-'}
-              </Paragraph>
+              <div className="flex items-center gap-1">
+                <Paragraph variant="body-s" className="font-medium text-black">
+                  {entry.actionLabel ?? '-'}
+                </Paragraph>
+                {entry.actionLabel === 'Cancel request' && <TrashIcon size={16} color="black" />}
+                {entry.actionLabel?.startsWith('Claim') && <MoneyIconKoto size={16} color="black" />}
+              </div>
             </div>
           ))}
         </div>
