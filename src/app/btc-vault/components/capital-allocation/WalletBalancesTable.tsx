@@ -34,7 +34,7 @@ export function WalletBalancesTable({ wallets, className, 'data-testid': testId,
   const totals = useMemo(() => {
     const totalAmount = wallets.reduce((sum, w) => sum + parseFloat(w.amountFormatted), 0)
     const totalFiat = wallets.reduce((sum, w) => {
-      const num = parseFloat(w.fiatAmountFormatted.replace(/[^0-9.-]/g, ''))
+      const num = parseFloat(w.fiatAmountFormatted.replaceAll(/[^0-9.-]/g, ''))
       return sum + (isNaN(num) ? 0 : num)
     }, 0)
     const totalPercent = wallets.reduce((sum, w) => sum + parseFloat(w.percentFormatted), 0)
@@ -158,8 +158,18 @@ export function WalletBalancesTable({ wallets, className, 'data-testid': testId,
   }
 
   return (
-    <div data-testid={testId ?? 'wallet-balances-table'} className={cn('w-full', className)} {...props}>
-      <GridTable table={table} rowStyles="py-2" data-testid="wallet-grid-table" />
+    <div
+      data-testid={testId ?? 'wallet-balances-table'}
+      className={cn('w-full overflow-x-auto', className)}
+      {...props}
+    >
+      <GridTable
+        table={table}
+        rowStyles="py-2"
+        headerClassName="pb-[5px]"
+        className="min-w-[540px]"
+        data-testid="wallet-grid-table"
+      />
       {wallets.length > DEFAULT_VISIBLE_WALLETS && (
         <div className="flex justify-start pt-4">
           <button

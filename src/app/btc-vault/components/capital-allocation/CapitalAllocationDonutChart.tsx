@@ -37,8 +37,8 @@ export function CapitalAllocationDonutChart({
 
   return (
     <div
-      className={cn('relative mx-auto', className)}
-      style={{ width: DONUT_CHART_SIZE, height: DONUT_CHART_SIZE }}
+      className={cn('relative mx-auto w-full aspect-square', className)}
+      style={{ maxWidth: DONUT_CHART_SIZE }}
       data-testid="capital-allocation-donut-chart"
       {...props}
     >
@@ -78,7 +78,7 @@ export function CapitalAllocationDonutChart({
             <li
               key={cat.label}
               className="flex flex-col gap-0.5"
-              data-testid={`legend-${cat.label.toLowerCase().replace(/\s+/g, '-')}`}
+              data-testid={`legend-${cat.label.toLowerCase().replaceAll(/\s+/g, '-')}`}
             >
               <span className="flex items-center gap-1.5">
                 <span
@@ -86,7 +86,7 @@ export function CapitalAllocationDonutChart({
                   style={{ backgroundColor: CAPITAL_ALLOCATION_CHART_COLORS[index] ?? '#888' }}
                   aria-hidden
                 />
-                <Label variant="tag" className="text-100 font-normal">
+                <Label variant="tag" className="font-normal" style={{ color: '#ACA39D' }}>
                   {cat.label}
                 </Label>
                 {CAPITAL_ALLOCATION_TOOLTIP_MAP[cat.label] && (
@@ -101,7 +101,7 @@ export function CapitalAllocationDonutChart({
                 </Span>
                 <TokenImage symbol={RBTC} size={18} />
                 <Span variant="body-s">{RBTC}</Span>
-                <span className="text-white/40">|</span>
+                <span className="inline-block h-1.5 w-0.5 shrink-0 rounded-full bg-bg-20" />
                 <Span variant="body-l" bold>
                   {cat.percentFormatted}
                 </Span>

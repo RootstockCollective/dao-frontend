@@ -6,5 +6,5 @@ export const CAPITAL_ALLOCATION_CHART_COLORS: [string, string, string] = [
 ]
 
 export const DONUT_CHART_SIZE = 480
-export const DONUT_INNER_RADIUS_PERCENT = 85
+export const DONUT_INNER_RADIUS_PERCENT = 90
 export const DONUT_OUTER_RADIUS_PERCENT = 95
