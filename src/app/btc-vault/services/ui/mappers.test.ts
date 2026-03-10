@@ -11,6 +11,7 @@ import {
   toRequestDetailDisplay,
   toPaginatedHistoryDisplay,
   toCapitalAllocationDisplay,
+  deriveStateHistory,
   mapRequestDisplayStatus,
   toWalletBalanceDisplay,
 } from './mappers'
@@ -314,6 +315,133 @@ describe('toActiveRequestDisplay', () => {
   })
 })
 
+describe('deriveStateHistory', () => {
+  const created = 1700000000
+  const updated = 1700086400
+  const finalized = 1700172800
+
+  it('returns empty array for pending status', () => {
+    const req = {
+      id: 'req-1',
+      type: 'deposit' as const,
+      amount: 1n,
+      status: 'pending' as const,
+      epochId: '1',
+      batchRedeemId: null,
+      timestamps: { created },
+      txHashes: {},
+    }
+    expect(deriveStateHistory(req)).toEqual([])
+  })
+
+  it('returns 1 entry for claimable status — Pending @ created', () => {
+    const req = {
+      id: 'req-2',
+      type: 'deposit' as const,
+      amount: 1n,
+      status: 'claimable' as const,
+      epochId: '1',
+      batchRedeemId: null,
+      timestamps: { created },
+      txHashes: {},
+    }
+    const result = deriveStateHistory(req)
+    expect(result).toHaveLength(1)
+    expect(result[0].displayStatus).toBe('pending')
+    expect(result[0].displayStatusLabel).toBe('Pending')
+    expect(result[0].date).toMatch(/\d{2} \w{3} \d{4}/)
+  })
+
+  it('returns 2 entries for done status — Pending @ created, Open to claim @ updated (deposit)', () => {
+    const req = {
+      id: 'req-3',
+      type: 'deposit' as const,
+      amount: 1n,
+      status: 'done' as const,
+      epochId: '1',
+      batchRedeemId: null,
+      timestamps: { created, updated, finalized },
+      txHashes: {},
+    }
+    const result = deriveStateHistory(req)
+    expect(result).toHaveLength(2)
+    expect(result[0].displayStatus).toBe('pending')
+    expect(result[0].displayStatusLabel).toBe('Pending')
+    expect(result[1].displayStatus).toBe('open_to_claim')
+    expect(result[1].displayStatusLabel).toBe('Open to claim')
+    expect(result[0].date).toMatch(/\d{2} \w{3} \d{4}/)
+    expect(result[1].date).toMatch(/\d{2} \w{3} \d{4}/)
+  })
+
+  it('returns 2 entries for done status — Pending @ created, Claim pending @ updated (withdrawal)', () => {
+    const req = {
+      id: 'req-4',
+      type: 'withdrawal' as const,
+      amount: 1n,
+      status: 'done' as const,
+      epochId: null,
+      batchRedeemId: 'batch-1',
+      timestamps: { created, updated, finalized },
+      txHashes: {},
+    }
+    const result = deriveStateHistory(req)
+    expect(result).toHaveLength(2)
+    expect(result[0].displayStatus).toBe('pending')
+    expect(result[0].displayStatusLabel).toBe('Pending')
+    expect(result[1].displayStatus).toBe('claim_pending')
+    expect(result[1].displayStatusLabel).toBe('Claim pending')
+  })
+
+  it('returns 1 entry for cancelled status — Pending @ created', () => {
+    const req = {
+      id: 'req-5',
+      type: 'deposit' as const,
+      amount: 1n,
+      status: 'cancelled' as const,
+      epochId: '1',
+      batchRedeemId: null,
+      timestamps: { created },
+      txHashes: {},
+    }
+    const result = deriveStateHistory(req)
+    expect(result).toHaveLength(1)
+    expect(result[0].displayStatus).toBe('pending')
+    expect(result[0].displayStatusLabel).toBe('Pending')
+  })
+
+  it('returns 1 entry for failed status — Pending @ created', () => {
+    const req = {
+      id: 'req-6',
+      type: 'withdrawal' as const,
+      amount: 1n,
+      status: 'failed' as const,
+      epochId: null,
+      batchRedeemId: null,
+      timestamps: { created },
+      txHashes: {},
+    }
+    const result = deriveStateHistory(req)
+    expect(result).toHaveLength(1)
+    expect(result[0].displayStatus).toBe('pending')
+    expect(result[0].displayStatusLabel).toBe('Pending')
+  })
+
+  it('uses formatTimestamp for dates (same format as createdAtFormatted)', () => {
+    const req = {
+      id: 'req-7',
+      type: 'deposit' as const,
+      amount: 1n,
+      status: 'claimable' as const,
+      epochId: '1',
+      batchRedeemId: null,
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    const result = deriveStateHistory(req)
+    expect(result[0].date).toMatch(/\d{2} \w{3} \d{4}/)
+  })
+})
+
 describe('mapRequestDisplayStatus', () => {
   it('maps pending to "Pending"', () => {
     const result = mapRequestDisplayStatus('pending', 'deposit')
@@ -359,6 +487,42 @@ describe('mapRequestDisplayStatus', () => {
 })
 
 describe('toPaginatedHistoryDisplay', () => {
+  it('includes stateHistory from deriveStateHistory in each row', () => {
+    const raw = {
+      data: [
+        {
+          id: 'req-pending',
+          type: 'deposit' as const,
+          amount: 1n,
+          status: 'pending' as const,
+          epochId: '1',
+          batchRedeemId: null,
+          timestamps: { created: 1700000000 },
+          txHashes: {},
+        },
+        {
+          id: 'req-done',
+          type: 'deposit' as const,
+          amount: 1n,
+          status: 'done' as const,
+          epochId: '1',
+          batchRedeemId: null,
+          timestamps: { created: 1700000000, updated: 1700086400, finalized: 1700172800 },
+          txHashes: {},
+        },
+      ],
+      total: 2,
+      page: 1,
+      limit: 10,
+      totalPages: 1,
+    }
+    const result = toPaginatedHistoryDisplay(raw)
+    expect(result.rows[0].stateHistory).toEqual([])
+    expect(result.rows[1].stateHistory).toHaveLength(2)
+    expect(result.rows[1].stateHistory[0].displayStatus).toBe('pending')
+    expect(result.rows[1].stateHistory[1].displayStatus).toBe('open_to_claim')
+  })
+
   it('formats paginated results with tx hashes and display status', () => {
     const raw = {
       data: [

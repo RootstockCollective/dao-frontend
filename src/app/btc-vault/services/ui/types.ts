@@ -33,6 +33,13 @@ export const DISPLAY_STATUS_LABELS = {
 
 export type DisplayStatusLabel = (typeof DISPLAY_STATUS_LABELS)[DisplayStatus]
 
+/** Single entry in the lifecycle state history for expandable sub-rows. */
+export interface StateHistoryEntry {
+  date: string
+  displayStatus: DisplayStatus
+  displayStatusLabel: DisplayStatusLabel
+}
+
 export interface DisplayStatusResult {
   displayStatus: DisplayStatus
   displayStatusLabel: DisplayStatusLabel
@@ -142,6 +149,8 @@ export interface RequestHistoryRowDisplay {
   claimTokenType: 'rbtc' | 'shares'
   /** Date-only string for status transition timestamp in expanded sub-rows (e.g. "21 May 2025"). */
   updatedAtFormatted: string
+  /** Previous lifecycle states for expandable sub-rows. Empty for pending requests. */
+  stateHistory: StateHistoryEntry[]
 }
 
 export interface PaginatedHistoryDisplay {

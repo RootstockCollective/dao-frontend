@@ -1,7 +1,12 @@
 import type { Column, TypedTable } from '@/shared/context'
 
 import type { RequestStatus, RequestType } from '../../services/types'
-import type { DisplayRequestType, DisplayStatus, DisplayStatusLabel } from '../../services/ui/types'
+import type {
+  DisplayRequestType,
+  DisplayStatus,
+  DisplayStatusLabel,
+  StateHistoryEntry,
+} from '../../services/ui/types'
 
 /** Columns rendered as visible table headers. */
 export type VisibleColumnId = 'type' | 'date' | 'amount' | 'status' | 'actions'
@@ -16,6 +21,7 @@ type DataColumnId =
   | 'createdAtFormatted'
   | 'finalizedAtFormatted'
   | 'requestType'
+  | 'stateHistory'
 
 export type ColumnId = VisibleColumnId | DataColumnId
 
@@ -28,6 +34,7 @@ const DATA_COLUMN_IDS: DataColumnId[] = [
   'createdAtFormatted',
   'finalizedAtFormatted',
   'requestType',
+  'stateHistory',
 ]
 
 export const PAGE_SIZE = 20
@@ -80,6 +87,7 @@ export interface BtcVaultHistoryCellDataMap {
   createdAtFormatted: string
   finalizedAtFormatted: string | null
   requestType: RequestType
+  stateHistory: StateHistoryEntry[]
 }
 
 export type BtcVaultHistoryTable = TypedTable<ColumnId, BtcVaultHistoryCellDataMap>

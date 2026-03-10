@@ -38,6 +38,7 @@ import type {
   EpochDisplay,
   PaginatedHistoryDisplay,
   RequestDetailDisplay,
+  StateHistoryEntry,
   UserPositionDisplay,
   VaultMetricsDisplay,
   WalletBalanceDisplay,
@@ -225,6 +226,51 @@ export function mapRequestDisplayStatus(
 }
 
 /**
+ * Derives previous lifecycle states from a vault request's timestamps.
+ * Produces an array of StateHistoryEntry for expandable sub-rows.
+ *
+ * Lifecycle mapping:
+ * - pending: none (not expandable)
+ * - claimable: 1 sub-row — Pending @ created
+ * - done: 2 sub-rows — Pending @ created, Open to claim/Claim pending @ updated
+ * - failed/cancelled: 1 sub-row — Pending @ created
+ *
+ * @param req - Raw vault request from the adapter
+ * @returns Array of state history entries (0–2 items)
+ */
+export function deriveStateHistory(req: VaultRequest): StateHistoryEntry[] {
+  const { status, type, timestamps } = req
+  const { created, updated } = timestamps
+
+  const pendingEntry: StateHistoryEntry = {
+    date: formatTimestamp(created),
+    displayStatus: 'pending',
+    displayStatusLabel: DISPLAY_STATUS_LABELS.pending,
+  }
+
+  switch (status) {
+    case 'pending':
+      return []
+    case 'claimable':
+      return [pendingEntry]
+    case 'done': {
+      const claimableDisplayStatus: DisplayStatus = type === 'deposit' ? 'open_to_claim' : 'claim_pending'
+      const claimableEntry: StateHistoryEntry = {
+        date: formatTimestamp(updated ?? created),
+        displayStatus: claimableDisplayStatus,
+        displayStatusLabel: DISPLAY_STATUS_LABELS[claimableDisplayStatus],
+      }
+      return [pendingEntry, claimableEntry]
+    }
+    case 'failed':
+    case 'cancelled':
+      return [pendingEntry]
+    default:
+      return []
+  }
+}
+
+/**
  * Maps a vault request into a detail-page display object, extending the active request display
  * with address, tx hash, and cancel eligibility fields.
  * @param req - Raw vault request from the adapter
@@ -292,6 +338,7 @@ export function toPaginatedHistoryDisplay(
         fiatAmountFormatted,
         claimTokenType: isDeposit ? ('rbtc' as const) : ('shares' as const),
         updatedAtFormatted: formatDateShort(updatedAt),
+        stateHistory: deriveStateHistory(req),
       }
     }),
     total: raw.total,
