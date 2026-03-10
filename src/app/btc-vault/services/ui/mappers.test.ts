@@ -387,6 +387,7 @@ describe('toPaginatedHistoryDisplay', () => {
     expect(result.rows[0].displayStatusLabel).toBe('Successful')
     expect(result.rows[0].claimTokenType).toBe('rbtc')
     expect(result.rows[0].fiatAmountFormatted).not.toBeNull()
+    expect(result.rows[0].updatedAtFormatted).toMatch(/\d{2} \w{3} \d{4}/)
     expect(result.total).toBe(1)
     expect(result.totalPages).toBe(1)
   })
@@ -464,6 +465,29 @@ describe('toPaginatedHistoryDisplay', () => {
     const result = toPaginatedHistoryDisplay(raw)
     expect(result.rows[0].displayStatus).toBe('open_to_claim')
     expect(result.rows[0].displayStatusLabel).toBe('Open to claim')
+  })
+
+  it('includes updatedAtFormatted from updated when present, else created', () => {
+    const withUpdated = {
+      data: [
+        {
+          id: 'req-updated',
+          type: 'deposit' as const,
+          amount: 1n,
+          status: 'pending' as const,
+          epochId: '1',
+          batchRedeemId: null,
+          timestamps: { created: 1700000000, updated: 1700086400 },
+          txHashes: {},
+        },
+      ],
+      total: 1,
+      page: 1,
+      limit: 10,
+      totalPages: 1,
+    }
+    const result = toPaginatedHistoryDisplay(withUpdated)
+    expect(result.rows[0].updatedAtFormatted).toContain('2023')
   })
 
   it('maps failed with failureReason to correct display status', () => {

@@ -274,6 +274,8 @@ export function toPaginatedHistoryDisplay(
       const fiatAmountFormatted =
         isDeposit && rbtcPrice > 0 ? formatCurrencyWithLabel(Big(amountNumber).mul(rbtcPrice)) : null
 
+      const updatedAt = req.timestamps.updated ?? req.timestamps.created
+
       return {
         id: req.id,
         type: req.type,
@@ -289,6 +291,7 @@ export function toPaginatedHistoryDisplay(
         displayStatusLabel,
         fiatAmountFormatted,
         claimTokenType: isDeposit ? ('rbtc' as const) : ('shares' as const),
+        updatedAtFormatted: formatDateShort(updatedAt),
       }
     }),
     total: raw.total,

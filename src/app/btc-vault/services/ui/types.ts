@@ -140,6 +140,8 @@ export interface RequestHistoryRowDisplay {
   fiatAmountFormatted: string | null
   /** Whether the row represents rBTC (deposits) or vault share tokens (withdrawals). */
   claimTokenType: 'rbtc' | 'shares'
+  /** Date-only string for status transition timestamp in expanded sub-rows (e.g. "21 May 2025"). */
+  updatedAtFormatted: string
 }
 
 export interface PaginatedHistoryDisplay {

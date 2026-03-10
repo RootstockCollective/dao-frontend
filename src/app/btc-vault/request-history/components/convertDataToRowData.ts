@@ -22,6 +22,10 @@ export function convertDataToRowData(
       claimTokenType: row.claimTokenType,
       displayStatusLabel: row.displayStatusLabel,
       requestStatus: row.status,
+      updatedAtFormatted: row.updatedAtFormatted,
+      createdAtFormatted: row.createdAtFormatted,
+      finalizedAtFormatted: row.finalizedAtFormatted,
+      requestType: row.type,
     },
   }))
 }
