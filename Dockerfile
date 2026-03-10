@@ -1,4 +1,4 @@
-FROM node:24-alpine@sha256:e8e882c692a08878d55ec8ff6c5a4a71b3edca25eda0af4406e2a160d8a93cf2 AS builder
+FROM node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03 AS builder
 
 # Install required dependencies for Trezor (and possibly Ledger)
 RUN apk add --no-cache \
@@ -50,7 +50,7 @@ RUN --mount=type=cache,target=/app/.next/cache npm run build
 # Clean node_modules for production after build
 RUN npm prune --production
 
-FROM node:24-alpine@sha256:e8e882c692a08878d55ec8ff6c5a4a71b3edca25eda0af4406e2a160d8a93cf2 AS runner
+FROM node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03 AS runner
 
 # Set the working directory
 WORKDIR /app
