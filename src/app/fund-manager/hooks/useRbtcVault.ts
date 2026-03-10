@@ -15,6 +15,7 @@ function parseEpochSnapshot(tuple: readonly [bigint, bigint, bigint, bigint] | u
 
 const vaultConfigs = [
   { functionName: 'asset' },
+  { functionName: 'totalAssets' },
   { functionName: 'currentEpoch' },
   { functionName: 'reportedOffchainAssets' },
   { functionName: 'freeOnchainLiquidity' },
@@ -30,7 +31,13 @@ export const useRbtcVault = () => {
     error: batchError,
   } = useReadRbtcVaultBatch(vaultConfigs)
 
-  const [assetAddress, currentEpoch, reportedOffchainAssets = 0n, freeOnchainLiquidity = 0n] = batchData
+  const [
+    assetAddress,
+    currentEpoch,
+    reportedOffchainAssets = 0n,
+    freeOnchainLiquidity = 0n,
+    totalAssets = 0n,
+  ] = batchData
 
   const {
     data: vaultAssetBalance = 0n,
@@ -82,6 +89,7 @@ export const useRbtcVault = () => {
       freeOnchainLiquidity,
       lastClosedEpoch,
       previousClosedEpoch,
+      totalAssets,
       isLoading,
       error,
     }
@@ -89,6 +97,7 @@ export const useRbtcVault = () => {
     vaultAssetBalance,
     reportedOffchainAssets,
     freeOnchainLiquidity,
+    totalAssets,
     lastEpochId,
     prevEpochId,
     epochSnapshots,
