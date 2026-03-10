@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from 'react'
 
+import { DepositWindowRequestsTable } from '@/app/fund-manager/components/DepositWindowRequestsTable'
 import { SolidTabs } from '@/components/Tabs'
 
 const FUND_MANAGER_TABS = ['Transactions', 'NAV History', 'Ongoing'] as const
@@ -27,7 +28,7 @@ export function TabsSection() {
       variant="muted"
     >
       <div className="mt-6 p-6 pt-4 bg-bg-80 rounded-sm">
-        {activeTab === 'Transactions' && 'Transactions table'}
+        {activeTab === 'Transactions' && <DepositWindowRequestsTable />}
         {activeTab === 'NAV History' && 'NAV History table'}
         {activeTab === 'Ongoing' && 'Ongoing table'}
       </div>
