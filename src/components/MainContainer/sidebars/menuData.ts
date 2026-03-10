@@ -31,12 +31,28 @@ function getBetaToolsSection(): MenuData[] {
     })
   }
   if (vaultOn) {
-    items.push({
-      href: 'vault',
-      text: 'USD Vault Sandbox',
-      buttonProps: { id: 'Button_Vault', name: 'vault' },
-      iconUrl: '/images/sidemenukoto/Holdings.svg',
-    })
+    items.push(
+      {
+        href: 'vault',
+        text: 'USD Vault Sandbox',
+        buttonProps: { id: 'Button_Vault', name: 'vault' },
+        iconUrl: '/images/sidemenukoto/Holdings.svg',
+      },
+      {
+        href: 'fund-manager',
+        text: 'Fund Manager',
+        buttonProps: { id: 'Button_Fund_Manager', name: 'fund-manager' },
+        iconUrl: '/images/sidemenukoto/FundManager.svg',
+        requiredRole: 'fundManager',
+      },
+      {
+        href: 'admin',
+        text: 'Admin',
+        buttonProps: { id: 'Button_Admin', name: 'admin' },
+        iconUrl: '/images/sidemenukoto/Admin.svg',
+        requiredRole: 'admin',
+      },
+    )
   }
   if (btcVaultOn) {
     items.push({
