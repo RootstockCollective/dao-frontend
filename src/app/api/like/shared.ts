@@ -15,5 +15,5 @@ export const ProposalIdSchema = z
 export function bigIntToBuffer(value: string): Uint8Array<ArrayBuffer> {
   let hex = BigInt(value).toString(16)
   hex = hex.padStart(64, '0')
-  return new Uint8Array(Buffer.from(hex, 'hex'))
+  return Buffer.from(hex, 'hex')
 }

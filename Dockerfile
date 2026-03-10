@@ -47,9 +47,6 @@ RUN cp .env.${PROFILE} .env.local
 ENV NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}
 ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 
-# Generate Prisma client
-RUN npx prisma generate
-
 # Build the Next.js application
 RUN --mount=type=cache,target=/app/.next/cache npm run build
 
@@ -71,9 +68,6 @@ COPY --from=builder /app/node_modules ./node_modules
 # Copy Prisma schema and migrations
 COPY --from=builder /app/prisma ./prisma
 
-# Copy database migration scripts (state-sync)
-COPY --from=builder /app/src/db ./src/db
-
 
 # Download AWS RDS CA certificate
 RUN apk add --no-cache wget && \
@@ -83,6 +77,5 @@ RUN apk add --no-cache wget && \
 # Expose the port that Next.js will run on
 EXPOSE 3000
 
-# Run database migrations and start the Next.js application
-# Migration errors are logged but won't prevent startup (as per requirements)
-CMD ["sh", "-c", "npx prisma migrate deploy; node src/db/migrate.js; npm start"]
+# Run Prisma migrations and start the Next.js application
+CMD ["sh", "-c", "npx prisma migrate deploy; npm start"]

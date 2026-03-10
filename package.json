@@ -21,7 +21,6 @@
     "fork:stop": "pkill -f anvil || true",
     "fork:anvil": "anvil --fork-url $ROOTSTOCK_RPC_URL --chain-id 31337",
     "postinstall": "prisma generate",
-    "db:migrate": "node src/db/migrate.js",
     "db:migrate:dao": "prisma migrate deploy",
     "db:studio": "prisma studio",
     "db:up": "docker compose up dao-data-db -d",
