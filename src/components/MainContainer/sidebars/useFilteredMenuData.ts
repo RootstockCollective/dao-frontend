@@ -17,9 +17,6 @@ export function useFilteredMenuData(): MenuData[] {
       fundManager: isFundManager,
     }
 
-    return (baseMenu as readonly MenuData[]).filter(item => {
-      if (!item.requiredRole) return true
-      return roleMap[item.requiredRole]
-    })
+    return (baseMenu as readonly MenuData[]).filter(item => !item.requiredRole || roleMap[item.requiredRole])
   }, [baseMenu, isAdmin, isFundManager])
 }
