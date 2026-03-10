@@ -14,6 +14,9 @@ const vaultConfigs = [
   { functionName: 'currentEpoch' as const },
   { functionName: 'reportedOffchainAssets' as const },
   { functionName: 'freeOnchainLiquidity' as const },
+  { functionName: 'totalPendingDepositAssets' as const },
+  { functionName: 'totalRedeemRequiredAssets' as const },
+  { functionName: 'totalRedeemPaidAssets' as const },
 ] as const
 
 /**
@@ -26,7 +29,15 @@ export const useRbtcVault = () => {
     error: batchError,
   } = useReadRbtcVaultBatch(vaultConfigs)
 
-  const [totalAssets = 0n, currentEpoch, reportedOffchainAssets = 0n, freeOnchainLiquidity = 0n] = batchData
+  const [
+    totalAssets = 0n,
+    currentEpoch,
+    reportedOffchainAssets = 0n,
+    freeOnchainLiquidity = 0n,
+    totalPendingDepositAssets = 0n,
+    totalRedeemRequiredAssets = 0n,
+    totalRedeemPaidAssets = 0n,
+  ] = batchData
 
   const lastEpochId = currentEpoch && currentEpoch >= 2n ? currentEpoch - 1n : undefined
   const prevEpochId = currentEpoch && currentEpoch >= 3n ? currentEpoch - 2n : undefined
@@ -62,6 +73,9 @@ export const useRbtcVault = () => {
       freeOnchainLiquidity,
       lastClosedEpoch,
       previousClosedEpoch,
+      totalPendingDepositAssets,
+      totalRedeemRequiredAssets,
+      totalRedeemPaidAssets,
       isLoading,
       error,
     }
@@ -69,6 +83,9 @@ export const useRbtcVault = () => {
     totalAssets,
     reportedOffchainAssets,
     freeOnchainLiquidity,
+    totalPendingDepositAssets,
+    totalRedeemRequiredAssets,
+    totalRedeemPaidAssets,
     lastEpochId,
     prevEpochId,
     epochSnapshots,
