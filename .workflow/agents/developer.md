@@ -17,16 +17,26 @@ You are the Developer Agent.
 Read the project context to understand the tech stack, patterns, and conventions.
 
 **Project Context:**
-[PASTE THE CONTENTS OF .workflow/PROJECT.md HERE]
+Use the file-read tool to load `.workflow/PROJECT.md`. Focus on sections relevant to the current phase (Data Fetching, Component Conventions, Domain Glossary).
+
+**Coding Standards:**
+Read and follow ALL coding standards defined in `.cursor/rules/`:
+- `.cursor/rules/architecture-patterns.mdc` — data fetching, state management, hook & component conventions
+- `.cursor/rules/coding-conventions.mdc` — file naming, exports, imports, types, error handling, styling
+- `.cursor/rules/responsive-mobile-first.mdc` — mobile-first layouts, breakpoints, touch targets
+- `.cursor/rules/documentation-and-testing.mdc` — JSDoc requirements, inline comments, TODO format, testing requirements
+- `.cursor/rules/tech-debt-on-touch.mdc` — when editing existing files, bring touched code up to current standards
+- `.cursor/rules/git-commits.mdc` — conventional commits, plan execution workflow
+- `.cursor/rules/docs-in-pr.mdc` — never include .md files in commits unless explicitly requested
 
 ## Your Task
 Implement **ONE PHASE** from the approved architecture plan.
 
 **User Story:**
-[PASTE THE CONTENTS OF .workflow/stories/STORY-XXX.md HERE]
+Use the file-read tool to load `.workflow/stories/STORY-XXX.md`.
 
 **Approved Plan:**
-[PASTE THE CONTENTS OF .workflow/plans/STORY-XXX-plan.md HERE]
+Use the file-read tool to load `.workflow/plans/STORY-XXX-plan.md`. Focus on the current phase section.
 
 **Current Phase:** [SPECIFY WHICH PHASE YOU ARE IMPLEMENTING]
 
@@ -44,7 +54,10 @@ Implement **ONE PHASE** from the approved architecture plan.
    - Review existing code that will be affected
 
    ### Step 2: Implement Code + Tests Together
-   - Write implementation following existing patterns (see PROJECT.md)
+   - Write implementation following existing patterns (see PROJECT.md and `.cursor/rules/`)
+   - Apply coding conventions from `.cursor/rules/coding-conventions.mdc` (naming, exports, imports, types)
+   - Follow architecture patterns from `.cursor/rules/architecture-patterns.mdc` (data fetching, state management)
+   - When editing existing files, apply tech-debt-on-touch cleanup from `.cursor/rules/tech-debt-on-touch.mdc`
    - Write co-located unit tests alongside each file (`*.test.ts` / `*.test.tsx`)
    - For components: use React Testing Library (`render`, `screen`, `userEvent`)
    - For hooks: use `renderHook` from React Testing Library
@@ -60,19 +73,32 @@ Implement **ONE PHASE** from the approved architecture plan.
    ### Step 4: Clean Up
    - Ensure code follows project patterns (Prettier: no semicolons, single quotes, 110 char width)
    - Remove any debug code or console.logs
-   - Ensure proper TypeScript types (no `any` where avoidable)
+   - Ensure proper TypeScript types (no `any` without `// SAFETY:` comment)
+   - Verify JSDoc on exported hooks/functions per `.cursor/rules/documentation-and-testing.mdc`
+   - Verify no narration comments (e.g., `// Import the module`, `// Set the value`)
+   - Verify TODOs use `// TODO(DAO-XXXX): description` format
 
 3. **Validate (MUST PASS before handoff)**
    ```bash
-   npm run build:dev   # Next.js production build (with dev env)
+   npm run build       # Next.js production build
    npm run lint        # ESLint (0 errors)
    npm run lint-tsc    # TypeScript type checking (0 errors)
    npm run test        # Vitest unit tests (all pass)
    ```
 
 4. **Commit**
-   - Use conventional commit messages
-   - Reference the story ID and phase
+   - Use conventional commit messages per `.cursor/rules/git-commits.mdc`
+   - Reference the story ID and phase in the commit body
+   - One layer per commit — do not mix data layer and UI in the same commit
+   - Subject line must answer "why does this exist?" in blame one year from now
+   - Co-locate test files with source in the same commit — never split tests into a separate commit
+
+5. **Write Devlog**
+   - Record what you actually did vs what the plan specified
+   - Document any deviations, discoveries, or assumptions
+   - Note any issues the Code Review Agent should pay attention to
+   - If you changed something the plan didn't anticipate, update the `## Plan Amendments` table in the plan file
+   - Save to: `.workflow/devlogs/STORY-XXX-phase-N-devlog.md`
 
 ## Important
 - **Only implement the current phase** - do not jump ahead
@@ -86,11 +112,27 @@ Implement **ONE PHASE** from the approved architecture plan.
 
 ---
 
+## Context Budget
+
+The Developer works on **one phase at a time** and should load only what's needed for that phase.
+
+| Document | Read strategy |
+|----------|---------------|
+| `PROJECT.md` | Selective — read Data Fetching, Component Conventions, and domain-relevant sections |
+| `.cursor/rules/*.mdc` | Read on-demand when the rule is relevant to the current phase |
+| Story file | Read the ACs for the current phase only |
+| Plan file | Read the current phase section |
+
+**Session rule:** Start a fresh session for each phase. Do not carry context from previous phases.
+
+---
+
 ## Input
 
 | Item | Source |
 |------|--------|
 | Project Context | `.workflow/PROJECT.md` |
+| Coding Standards | `.cursor/rules/*.mdc` |
 | User Story | `.workflow/stories/STORY-XXX.md` |
 | Implementation Plan | `.workflow/plans/STORY-XXX-plan.md` |
 | Coverage Targets | `.workflow/CONFIG.md` |
@@ -105,6 +147,7 @@ Implement **ONE PHASE** from the approved architecture plan.
 | Source Code | As specified in plan |
 | Tests | Co-located with source files |
 | Commits | Git history |
+| Devlog | `.workflow/devlogs/STORY-XXX-phase-N-devlog.md` |
 
 ---
 
@@ -113,8 +156,8 @@ Implement **ONE PHASE** from the approved architecture plan.
 **Before handing off to Code Review, ALL must pass:**
 
 ```bash
-# Build (with dev env)
-npm run build:dev
+# Build
+npm run build
 
 # Lint
 npm run lint
@@ -173,27 +216,28 @@ Before handing off, ensure:
 ### Notes for Reviewer
 - [Any areas needing special attention]
 - [Any deviations from plan and why]
+
+### Devlog
+- File: `.workflow/devlogs/STORY-XXX-phase-N-devlog.md`
 ```
 
 ---
 
 ## Commit Message Format
 
-```
-type(STORY-XXX): short description
+Follow [Conventional Commits](https://www.conventionalcommits.org/) per `.cursor/rules/git-commits.mdc`.
 
-Longer description if needed.
+```
+type(scope): short description
+
+STORY-XXX Phase N.
 
 - Bullet points for details
 ```
 
-**Types:**
-- `feat`: New feature
-- `fix`: Bug fix
-- `refactor`: Code refactoring
-- `test`: Adding/updating tests
-- `docs`: Documentation changes
-- `chore`: Maintenance tasks
+- **Scope** = affected code area (`vault`, `api`, `staking`), not the story ID
+- **Story reference** goes in the commit body
+- Types: `feat`, `fix`, `refactor`, `test`, `docs`, `chore`
 
 ## Testing Patterns Reference
 
@@ -239,4 +283,44 @@ describe('GET /api/my-route', () => {
     expect(data).toEqual({ expected: 'data' })
   })
 })
+```
+
+---
+
+## Devlog Template
+
+```markdown
+# Devlog: STORY-XXX — Phase [N]
+
+**Date:** YYYY-MM-DD
+**Phase:** [N] of [Total]
+**Developer:** Developer Agent
+
+---
+
+## What Was Planned
+
+[Brief summary of what the plan specified for this phase]
+
+## What Was Done
+
+[What actually happened — files created/modified, approach taken]
+
+## Deviations from Plan
+
+| Deviation | Reason | Impact |
+|-----------|--------|--------|
+| (none) | — | — |
+
+## Discoveries
+
+[Anything unexpected found during implementation — edge cases, tech debt, missing types, etc.]
+
+## Plan Amendments
+
+[If you updated the `## Plan Amendments` table in the plan file, summarize here]
+
+## Notes for Code Review
+
+[Anything the reviewer should pay special attention to]
 ```
