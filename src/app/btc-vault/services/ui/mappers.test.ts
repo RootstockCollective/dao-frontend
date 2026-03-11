@@ -41,14 +41,14 @@ describe('toVaultMetricsDisplay', () => {
     const result = toVaultMetricsDisplay({
       tvl: 50_000_000_000_000_000_000n,
       apy: 85_000_000n,
-      nav: 1_020_000_000_000_000_000n,
+      pricePerShare: 1_020_000_000_000_000_000n,
       timestamp: 1700000000,
     })
     expect(result.tvlFormatted).toBe('50')
     expect(result.apyFormatted).toBe('8.50')
-    expect(result.navFormatted).toBe('1.02')
+    expect(result.pricePerShareFormatted).toBe('1.02')
     expect(result.timestamp).toBe(1700000000)
-    expect(result.navRaw).toBe(1_020_000_000_000_000_000n)
+    expect(result.pricePerShareRaw).toBe(1_020_000_000_000_000_000n)
   })
 })
 

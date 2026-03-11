@@ -47,15 +47,15 @@ import { DISPLAY_STATUS_LABELS } from './types'
 /**
  * Maps raw vault metrics from the adapter into display-ready formatted strings.
  * @param raw - Raw vault metrics with bigint values
- * @returns Display object with formatted TVL, APY, and NAV strings
+ * @returns Display object with formatted TVL, APY, and Price Per Share strings
  */
 export function toVaultMetricsDisplay(raw: VaultMetrics): VaultMetricsDisplay {
   return {
     tvlFormatted: formatEther(raw.tvl),
     apyFormatted: formatApyPercent(raw.apy),
-    navFormatted: formatEther(raw.nav),
+    pricePerShareFormatted: formatEther(raw.pricePerShare),
     timestamp: raw.timestamp,
-    navRaw: raw.nav,
+    pricePerShareRaw: raw.pricePerShare,
   }
 }
 

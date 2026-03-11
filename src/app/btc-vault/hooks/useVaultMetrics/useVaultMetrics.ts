@@ -1,21 +1,40 @@
 import { useQuery } from '@tanstack/react-query'
-import { toVaultMetricsDisplay } from '../../services/ui/mappers'
+
 import type { VaultMetrics } from '../../services/types'
+import { toVaultMetricsDisplay } from '../../services/ui/mappers'
 
-const ONE_BTC = 10n ** 18n
-const BASIS_POINTS_100_PERCENT = 10n ** 9n
+interface VaultMetricsResponse {
+  tvl: string
+  apy: string
+  pricePerShare: string
+  totalSupply: string
+  timestamp: number
+}
 
-const MOCK_METRICS: VaultMetrics = {
-  tvl: 50n * ONE_BTC,
-  apy: (BASIS_POINTS_100_PERCENT * 85n) / 1000n,
-  nav: (ONE_BTC * 102n) / 100n,
-  timestamp: Math.floor(Date.now() / 1000),
+async function fetchVaultMetrics(): Promise<VaultMetrics> {
+  const res = await fetch('/api/btc-vault/metrics')
+  if (!res.ok) throw new Error(`Failed to fetch vault metrics: ${res.status}`)
+  const json: VaultMetricsResponse = await res.json()
+  return {
+    tvl: BigInt(json.tvl),
+    apy: BigInt(json.apy),
+    pricePerShare: BigInt(json.pricePerShare),
+    timestamp: json.timestamp,
+  }
 }
 
 export function useVaultMetrics() {
-  return useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['btc-vault', 'metrics'],
-    queryFn: () => toVaultMetricsDisplay(MOCK_METRICS),
-    staleTime: Infinity,
+    queryFn: fetchVaultMetrics,
+    refetchInterval: 20_000,
   })
+
+  return {
+    data: data ? toVaultMetricsDisplay(data) : null,
+    raw: data ?? null,
+    isLoading,
+    error,
+    refetch,
+  }
 }

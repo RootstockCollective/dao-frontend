@@ -1,91 +1,104 @@
 'use client'
 
+import Link from 'next/link'
+import { useMemo } from 'react'
+
 import { BalanceInfo } from '@/components/BalanceInfo'
-import { Label } from '@/components/Typography'
+import { HistoryIcon } from '@/components/Icons'
+import { Span } from '@/components/Typography'
+import Big from '@/lib/big'
+import { RBTC } from '@/lib/constants'
+import { formatCurrency } from '@/lib/utils'
+import { btcVaultRequestHistory } from '@/shared/constants/routes'
+import { usePricesContext } from '@/shared/context'
 
 import { useEpochState } from '../hooks/useEpochState'
 import { useVaultMetrics } from '../hooks/useVaultMetrics'
-import { formatTimestamp } from '../services/ui/formatters'
 
 const PLACEHOLDER = '—'
-const AUTO_COMPOUND_DISCLOSURE = 'Yield is automatically compounded into the vault NAV.'
-const APY_DISCLAIMER = 'estimated / non-guaranteed'
+const APY_TOOLTIP = 'Annual Percentage Yield — the annualized return on deposited rBTC'
 
 export const BtcVaultMetrics = () => {
   const { data: metrics, isLoading: metricsLoading } = useVaultMetrics()
-  const { data: epoch, isLoading: epochLoading } = useEpochState()
+  const { data: epoch } = useEpochState()
+  const { prices } = usePricesContext()
+  const rbtcPrice = prices[RBTC]?.price ?? 0
 
   const tvlFormatted = metrics?.tvlFormatted ?? PLACEHOLDER
   const apyFormatted = metrics?.apyFormatted ?? PLACEHOLDER
-  const navFormatted = metrics?.navFormatted ?? PLACEHOLDER
-  const timestamp = metrics?.timestamp
+  const pricePerShareFormatted = metrics?.pricePerShareFormatted ?? PLACEHOLDER
   const isMetricsLoading = metricsLoading || !metrics
-  const isEpochLoading = epochLoading || !epoch
 
-  const epochStatus = epoch?.status
-  const isAcceptingRequests = epoch?.isAcceptingRequests ?? false
-  const statusSummary = epoch?.statusSummary ?? ''
-  const isNavPending = epochStatus === 'closed' || epochStatus === 'settling'
+  const tvlUsd = useMemo(() => {
+    if (!metrics?.tvlFormatted || !rbtcPrice) return null
+    try {
+      return formatCurrency(Big(rbtcPrice).mul(metrics.tvlFormatted), { showCurrencyLabel: true })
+    } catch {
+      return null
+    }
+  }, [metrics?.tvlFormatted, rbtcPrice])
+
+  const pricePerShareUsd = useMemo(() => {
+    if (!metrics?.pricePerShareFormatted || !rbtcPrice) return null
+    try {
+      return formatCurrency(Big(rbtcPrice).mul(metrics.pricePerShareFormatted), {
+        showCurrencyLabel: true,
+      })
+    } catch {
+      return null
+    }
+  }, [metrics?.pricePerShareFormatted, rbtcPrice])
 
   return (
     <div className="flex flex-col gap-6 w-full" data-testid="btc-vault-metrics-content">
-      <div className="flex flex-row flex-wrap gap-x-6 gap-y-6 md:gap-x-20">
+      <div className="flex flex-row flex-wrap gap-6" data-testid="btc-vault-metrics-row">
         <BalanceInfo
           className="w-[214px] min-w-[180px]"
           title="TVL"
           amount={isMetricsLoading ? '...' : tvlFormatted}
-          symbol="rBTC"
+          symbol={RBTC}
+          fiatAmount={isMetricsLoading ? null : tvlUsd}
+          tooltipContent="Total Value Locked — aggregate rBTC held by the vault"
           data-testid="btc-vault-tvl"
         />
-        <div className="w-[214px] min-w-[180px]" data-testid="btc-vault-apy">
-          <BalanceInfo
-            title="APY"
-            amount={isMetricsLoading ? '...' : apyFormatted}
-            symbol="%"
-            tooltipContent={APY_DISCLAIMER}
-            data-testid="BalanceInfo"
-          />
-          <Label variant="body-s" className="text-bg-0 mt-1 block" data-testid="apy-disclaimer">
-            {APY_DISCLAIMER}
-          </Label>
-        </div>
-        <div className="w-[214px] min-w-[180px]" data-testid="btc-vault-nav">
-          <BalanceInfo
-            title="NAV"
-            amount={isMetricsLoading ? '...' : navFormatted}
-            symbol="rBTC"
-            data-testid="BalanceInfo"
-          />
-          {!isMetricsLoading && timestamp != null && (
-            <Label variant="body-s" className="text-bg-0 mt-1 block" data-testid="nav-last-updated">
-              Updated {formatTimestamp(timestamp, { includeTime: true })}
-            </Label>
-          )}
-          {!isEpochLoading && isNavPending && (
-            <Label variant="body-s" className="text-bg-0 mt-0.5 block" data-testid="nav-pending-indicator">
-              Pending
-            </Label>
-          )}
-        </div>
+        <BalanceInfo
+          className="w-[214px] min-w-[180px]"
+          title="APY"
+          amount={isMetricsLoading ? '...' : apyFormatted}
+          symbol="%"
+          tooltipContent={APY_TOOLTIP}
+          data-testid="btc-vault-apy"
+        />
+        <BalanceInfo
+          className="w-[214px] min-w-[180px]"
+          title={`Deposit window ${epoch?.epochId ?? ''}`}
+          amount="closing on -"
+          tooltipContent="Current epoch deposit window and its closing date"
+          data-testid="btc-vault-deposit-window"
+        />
+        {/* Price Per Share = NAV per share (convertToAssets(1e18)) renamed for clarity */}
+        <BalanceInfo
+          className="w-[214px] min-w-[180px]"
+          title="Price Per Share"
+          amount={isMetricsLoading ? '...' : pricePerShareFormatted}
+          symbol={RBTC}
+          fiatAmount={isMetricsLoading ? null : pricePerShareUsd}
+          tooltipContent="Price of one vault share in rBTC terms (NAV per share)"
+          data-testid="btc-vault-price-per-share"
+        />
       </div>
 
-      <div data-testid="btc-vault-apy-disclosure">
-        <Label variant="body-s" className="text-bg-0">
-          {AUTO_COMPOUND_DISCLOSURE}
-        </Label>
-      </div>
-
-      <div data-testid="btc-vault-epoch-state">
-        <Label variant="tag" className="text-bg-0" data-testid="epoch-state-label">
-          Epoch:
-        </Label>
-        <Label variant="body-s" className="text-bg-0 mt-1 block" data-testid="epoch-state-value">
-          {isEpochLoading
-            ? '...'
-            : isAcceptingRequests
-              ? `Open – accepting requests${statusSummary ? ` (${statusSummary})` : ''}`
-              : `Closed – settling${statusSummary ? ` (${statusSummary})` : ''}`}
-        </Label>
+      <div data-testid="btc-vault-history-link-section">
+        <Link
+          href={btcVaultRequestHistory}
+          className="flex items-center gap-x-1 text-sm font-medium text-text-100 underline underline-offset-2"
+          data-testid="btc-vault-metrics-history-link"
+        >
+          <HistoryIcon />
+          <Span variant="body-s" bold>
+            View history
+          </Span>
+        </Link>
       </div>
     </div>
   )
