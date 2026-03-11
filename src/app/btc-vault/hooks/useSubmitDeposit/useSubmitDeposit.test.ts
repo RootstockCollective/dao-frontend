@@ -55,10 +55,10 @@ describe('useSubmitDeposit', () => {
     const callArgs = mockWriteContractAsync.mock.calls[0][0]
     expect(callArgs.functionName).toBe('requestDeposit')
     expect(callArgs.value).toBe(amount)
-    // args: [amount, receiver, minSharesOut]
+    // args: [amount, receiver, controller]
     expect(callArgs.args[0]).toBe(amount)
     expect(callArgs.args[1]).toBe('0xTestAddress')
-    expect(callArgs.args[2]).toBe(0n)
+    expect(callArgs.args[2]).toBe('0xTestAddress')
   })
 
   it('rejects when wallet is disconnected', async () => {

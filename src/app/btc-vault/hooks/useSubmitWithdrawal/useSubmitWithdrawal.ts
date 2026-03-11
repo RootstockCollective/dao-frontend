@@ -5,7 +5,7 @@ import { Hash } from 'viem'
 import { useAccount, useWriteContract } from 'wagmi'
 
 import { useTransactionStatus } from '@/app/user/Stake/hooks/useTransactionStatus'
-import { btcVault } from '@/lib/contracts'
+import { rbtcVault } from '@/lib/contracts'
 
 /**
  * Hook wrapping the `requestRedeem()` contract call on the BTC Vault.
@@ -24,9 +24,9 @@ export function useSubmitWithdrawal() {
     (shares: bigint): Promise<Hash> => {
       if (!address) return Promise.reject(new Error('Wallet not connected'))
       return writeContractAsync({
-        ...btcVault,
+        ...rbtcVault,
         functionName: 'requestRedeem',
-        args: [shares, address, address, 0n],
+        args: [shares, address, address],
       })
     },
     [writeContractAsync, address],

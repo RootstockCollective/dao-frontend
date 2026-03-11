@@ -59,7 +59,6 @@ describe('useSubmitWithdrawal', () => {
     expect(callArgs.args[0]).toBe(shares)
     expect(callArgs.args[1]).toBe('0xTestAddress')
     expect(callArgs.args[2]).toBe('0xTestAddress')
-    expect(callArgs.args[3]).toBe(0n)
   })
 
   it('rejects when wallet is disconnected', async () => {

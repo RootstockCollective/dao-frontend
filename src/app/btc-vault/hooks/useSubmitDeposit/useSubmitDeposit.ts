@@ -5,7 +5,7 @@ import { Hash } from 'viem'
 import { useAccount, useWriteContract } from 'wagmi'
 
 import { useTransactionStatus } from '@/app/user/Stake/hooks/useTransactionStatus'
-import { btcVault } from '@/lib/contracts'
+import { rbtcVault } from '@/lib/contracts'
 
 /**
  * Hook wrapping the `requestDeposit()` contract call on the BTC Vault.
@@ -29,9 +29,9 @@ export function useSubmitDeposit() {
     (amount: bigint): Promise<Hash> => {
       if (!address) return Promise.reject(new Error('Wallet not connected'))
       return writeContractAsync({
-        ...btcVault,
+        ...rbtcVault,
         functionName: 'requestDeposit',
-        args: [amount, address, 0n],
+        args: [amount, address, address],
         value: amount,
       })
     },
