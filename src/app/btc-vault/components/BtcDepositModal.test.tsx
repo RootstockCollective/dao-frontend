@@ -58,9 +58,9 @@ describe('BtcDepositModal', () => {
       data: {
         tvlFormatted: '50',
         apyFormatted: '8.50',
-        navFormatted: '1.02',
+        pricePerShareFormatted: '1.02',
         timestamp: 1709000000,
-        navRaw: 1_020_000_000_000_000_000n,
+        pricePerShareRaw: 1_020_000_000_000_000_000n,
       },
       isLoading: false,
     })
@@ -129,7 +129,7 @@ describe('BtcDepositModal', () => {
     await user.click(screen.getByTestId('ContinueButton'))
 
     expect(screen.getByTestId('review-amount')).toHaveTextContent('1')
-    expect(screen.getByTestId('review-nav')).toHaveTextContent('1.02')
+    expect(screen.getByTestId('review-price-per-share')).toHaveTextContent('1.02')
     expect(screen.getByTestId('review-fee')).toHaveTextContent('0%')
     expect(screen.getByTestId('review-shares')).toBeInTheDocument()
   })

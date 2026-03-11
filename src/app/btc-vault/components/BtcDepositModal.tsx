@@ -37,19 +37,20 @@ export const BtcDepositModal = ({ onClose, onSubmit, isSubmitting }: BtcDepositM
   const rbtcBalanceFormatted = userPosition?.rbtcBalanceFormatted ?? '0'
   const rbtcBalanceRaw = userPosition?.rbtcBalanceRaw ?? 0n
 
-  const navFormatted = vaultMetrics?.navFormatted ?? '0'
-  const navRaw = vaultMetrics?.navRaw ?? 0n
+  // Price Per Share = NAV per share (convertToAssets(1e18)) renamed for clarity
+  const pricePerShareFormatted = vaultMetrics?.pricePerShareFormatted ?? '0'
+  const pricePerShareRaw = vaultMetrics?.pricePerShareRaw ?? 0n
 
   const estimatedShares = useMemo(() => {
-    if (!amount || navRaw === 0n) return '0'
+    if (!amount || pricePerShareRaw === 0n) return '0'
     try {
       const amountWei = parseEther(amount)
-      const sharesWei = (amountWei * 10n ** 18n) / navRaw
+      const sharesWei = (amountWei * 10n ** 18n) / pricePerShareRaw
       return formatEther(sharesWei)
     } catch {
       return '0'
     }
-  }, [amount, navRaw])
+  }, [amount, pricePerShareRaw])
 
   const handleNext = () => setStep('review')
   const handleBack = () => setStep('amount')
@@ -92,7 +93,7 @@ export const BtcDepositModal = ({ onClose, onSubmit, isSubmitting }: BtcDepositM
           <DepositReviewStep
             amount={amount}
             estimatedShares={estimatedShares}
-            navFormatted={navFormatted}
+            pricePerShareFormatted={pricePerShareFormatted}
             depositFee={BTC_VAULT_DEPOSIT_FEE}
             onBack={handleBack}
             onSubmit={handleSubmit}
