@@ -1,3 +1,5 @@
+import { FC, ReactNode } from 'react'
+
 import { ConditionalTooltip } from '@/app/components'
 import { formatSymbol } from '@/app/shared/formatter'
 import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
@@ -9,7 +11,7 @@ import { Header, Paragraph } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { formatCurrencyWithLabel } from '@/lib/utils'
-import { FC, ReactNode } from 'react'
+
 import { ClaimRewardRadioGroup } from './ClaimRewardRadioGroup'
 import { ClaimRewardType } from './types'
 
@@ -86,9 +88,12 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
         <Divider className="mb-4 mt-14" />
 
         <div className="flex justify-end gap-4">
-          <Button variant="secondary-outline" onClick={onClose}>
-            Cancel
-          </Button>
+          {!isTxPending && (
+            <Button variant="secondary-outline" onClick={onClose}>
+              Cancel
+            </Button>
+          )}
+
           {isTxPending ? (
             <TransactionInProgressButton />
           ) : (
