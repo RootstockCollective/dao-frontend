@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from 'vitest'
 import { parseUnits, encodeFunctionData } from 'viem'
-import { uniswapProvider } from './uniswap'
+import { uniswapProvider, getAvailableFeeTiers, UNISWAP_FEE_TIERS } from './uniswap'
 import { ROUTER_ADDRESSES, SWAP_TOKEN_ADDRESSES } from '../constants'
 import { getTokenDecimals } from '../utils'
 import { UniswapQuoterV2Abi } from '@/lib/abis/UniswapQuoterV2Abi'
@@ -81,11 +81,11 @@ describe('uniswap provider - integration tests', () => {
     )
 
     it.skipIf(!hasRealAddresses)(
-      'should ignore invalid feeTier parameter and fallback to find working tier',
+      'should fall through to auto mode when invalid feeTier is passed',
       async () => {
-        // Request fee tier 200 which is not a valid Uniswap V3 fee tier
-        // Valid Uniswap V3 fee tiers are: 100, 500, 3000, 10000
-        // Implementation should fallback to try other tiers and succeed
+        // Fee tier 200 is not a valid Uniswap V3 fee tier (valid: 100, 500, 3000, 10000)
+        // isValidUniswapFeeTier rejects it, so the provider skips the explicit-tier path
+        // and enters auto mode (multicall all tiers, pick best)
         const amountIn = parseUnits('1', tokenInDecimals)
         const invalidFeeTier = 200
 
@@ -525,6 +525,121 @@ describe('uniswap provider - integration tests', () => {
         expect(result).toHaveProperty('error')
         expect(typeof result.error).toBe('string')
         expect(result.error!.length).toBeGreaterThan(0)
+      },
+      10000,
+    )
+  })
+
+  describe('getAvailableFeeTiers', () => {
+    it.skipIf(!hasRealAddresses)(
+      'should return at least one available fee tier for USDT0/USDRIF',
+      async () => {
+        const result = await getAvailableFeeTiers(realTokenIn, realTokenOut, tokenInDecimals)
+
+        expect(Array.isArray(result)).toBe(true)
+        expect(result.length).toBeGreaterThan(0)
+        result.forEach(tier => {
+          expect(UNISWAP_FEE_TIERS).toContain(tier)
+        })
+      },
+      10000,
+    )
+
+    it.skipIf(!hasRealAddresses)(
+      'should return empty array for token pair with no pools',
+      async () => {
+        const invalidTokenIn = '0x0000000000000000000000000000000000000001' as const
+        const invalidTokenOut = '0x0000000000000000000000000000000000000002' as const
+
+        const result = await getAvailableFeeTiers(invalidTokenIn, invalidTokenOut, 18)
+
+        expect(Array.isArray(result)).toBe(true)
+        expect(result.length).toBe(0)
+      },
+      10000,
+    )
+
+    it.skipIf(!hasRealAddresses)(
+      'should return same tiers for both directions of a token pair',
+      async () => {
+        const forward = await getAvailableFeeTiers(realTokenIn, realTokenOut, tokenInDecimals)
+        const reverse = await getAvailableFeeTiers(realTokenOut, realTokenIn, tokenOutDecimals)
+
+        expect(forward.sort()).toEqual(reverse.sort())
+      },
+      20000,
+    )
+  })
+
+  describe('explicit fee tier selection (no fallback)', () => {
+    it.skipIf(!hasRealAddresses)(
+      'should return error when requesting a specific tier with no liquidity',
+      async () => {
+        const availableTiers = await getAvailableFeeTiers(realTokenIn, realTokenOut, tokenInDecimals)
+        const unavailableTier = UNISWAP_FEE_TIERS.find(t => !availableTiers.includes(t))
+        if (!unavailableTier) return // All tiers have liquidity, skip
+
+        const amountIn = parseUnits('1', tokenInDecimals)
+        const result = await uniswapProvider.getQuote({
+          tokenIn: realTokenIn,
+          tokenOut: realTokenOut,
+          amountIn,
+          tokenInDecimals,
+          tokenOutDecimals,
+          feeTier: unavailableTier,
+        })
+
+        expect(result.error).toBeDefined()
+        expect(result.amountOut).toBe('0')
+        expect(result.feeTier).toBe(unavailableTier)
+      },
+      10000,
+    )
+
+    it.skipIf(!hasRealAddresses)(
+      'should succeed when requesting a specific tier that has liquidity',
+      async () => {
+        const availableTiers = await getAvailableFeeTiers(realTokenIn, realTokenOut, tokenInDecimals)
+        expect(availableTiers.length).toBeGreaterThan(0)
+
+        const amountIn = parseUnits('1', tokenInDecimals)
+        const result = await uniswapProvider.getQuote({
+          tokenIn: realTokenIn,
+          tokenOut: realTokenOut,
+          amountIn,
+          tokenInDecimals,
+          tokenOutDecimals,
+          feeTier: availableTiers[0],
+        })
+
+        expect(result.error).toBeUndefined()
+        expect(result.amountOut).not.toBe('0')
+        expect(result.feeTier).toBe(availableTiers[0])
+      },
+      10000,
+    )
+
+    it.skipIf(!hasRealAddresses)(
+      'should not fallback to other tiers when explicit tier fails',
+      async () => {
+        const availableTiers = await getAvailableFeeTiers(realTokenIn, realTokenOut, tokenInDecimals)
+        const unavailableTier = UNISWAP_FEE_TIERS.find(t => !availableTiers.includes(t))
+        if (!unavailableTier) return // All tiers have liquidity, skip
+
+        const amountIn = parseUnits('1', tokenInDecimals)
+        const result = await uniswapProvider.getQuote({
+          tokenIn: realTokenIn,
+          tokenOut: realTokenOut,
+          amountIn,
+          tokenInDecimals,
+          tokenOutDecimals,
+          feeTier: unavailableTier,
+        })
+
+        // Must return error with the requested tier, not silently fallback
+        expect(result.error).toBeDefined()
+        expect(result.feeTier).toBe(unavailableTier)
+        expect(result.error).toContain('No liquidity available')
       },
       10000,
     )
