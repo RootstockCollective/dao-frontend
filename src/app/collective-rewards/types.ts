@@ -1,7 +1,9 @@
-import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
-import { ProposalState } from '@/shared/types'
 import { Dispatch, SetStateAction } from 'react'
 import { AbiFunction, Address } from 'viem'
+
+import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
+import { ProposalState } from '@/shared/types'
+
 import { TokenRewards } from './rewards'
 
 // API Response Types
@@ -15,8 +17,6 @@ export interface CycleRewardsItem {
   id: string
   currentCycleStart: string
   currentCycleDuration: string
-  previousCycleStart: string
-  previousCycleDuration: string
   distributionDuration: string
   onDistributionPeriod: boolean
   rewardPerToken: Record<string, string>
