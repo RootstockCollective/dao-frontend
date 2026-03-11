@@ -20,24 +20,25 @@ export interface MenuData {
 function getBetaToolsSection(): MenuData[] {
   const vaultOn = getEnvFlag('vault')
   const btcVaultOn = getEnvFlag('btc_vault')
-  if (!vaultOn && !btcVaultOn) return []
+  const vaultManagementOn = getEnvFlag('vault_management')
+  if (!vaultOn && !btcVaultOn && !vaultManagementOn) return []
   const items: MenuData[] = []
-  if (vaultOn || btcVaultOn) {
+  items.push({
+    href: '-',
+    text: 'BETA TOOLS',
+    buttonProps: { id: 'Button_Beta_Tools', name: 'beta-tools', className: 'mt-5' },
+    type: 'category',
+  })
+  if (vaultOn) {
     items.push({
-      href: '-',
-      text: 'BETA TOOLS',
-      buttonProps: { id: 'Button_Beta_Tools', name: 'beta-tools', className: 'mt-5' },
-      type: 'category',
+      href: 'vault',
+      text: 'USD Vault Sandbox',
+      buttonProps: { id: 'Button_Vault', name: 'vault' },
+      iconUrl: '/images/sidemenukoto/Holdings.svg',
     })
   }
-  if (vaultOn) {
+  if (vaultManagementOn) {
     items.push(
-      {
-        href: 'vault',
-        text: 'USD Vault Sandbox',
-        buttonProps: { id: 'Button_Vault', name: 'vault' },
-        iconUrl: '/images/sidemenukoto/Holdings.svg',
-      },
       {
         href: 'fund-manager',
         text: 'Fund Manager',
@@ -68,16 +69,15 @@ function getBetaToolsSection(): MenuData[] {
 function getBetaToolsSectionNotConnected(): MenuData[] {
   const vaultOn = getEnvFlag('vault')
   const btcVaultOn = getEnvFlag('btc_vault')
-  if (!vaultOn && !btcVaultOn) return []
+  const rbtcVaultOn = getEnvFlag('vault_management')
+  if (!vaultOn && !btcVaultOn && !rbtcVaultOn) return []
   const items: MenuData[] = []
-  if (vaultOn || btcVaultOn) {
-    items.push({
-      href: '-',
-      text: 'BETA TOOLS',
-      buttonProps: { id: 'Button_Beta_Tools_Not_Connected', name: 'beta-tools', className: 'mt-5' },
-      type: 'category',
-    })
-  }
+  items.push({
+    href: '-',
+    text: 'BETA TOOLS',
+    buttonProps: { id: 'Button_Beta_Tools_Not_Connected', name: 'beta-tools', className: 'mt-5' },
+    type: 'category',
+  })
   if (vaultOn) {
     items.push({
       href: 'vault',

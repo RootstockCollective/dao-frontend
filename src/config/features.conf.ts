@@ -10,6 +10,7 @@ const features = {
   debug_logs: 'Enable debug logs',
   vault: 'USDRIF Vault page',
   btc_vault: 'BTC Vault page',
+  vault_management: 'Vault fund manager and admin pages',
   sentry_error_tracking: 'Enable Sentry error tracking',
   sentry_replay: 'Enable Sentry session replay',
 } as const
@@ -17,4 +18,4 @@ const features = {
 type Feature = keyof typeof features
 const getFeatures = (): Feature[] => [...Object.keys(features)] as Feature[]
 
-export { getFeatures, USER_FLAGS_FEATURE, type Feature }
+export { type Feature, getFeatures, USER_FLAGS_FEATURE }
