@@ -34,10 +34,6 @@ const meta: Meta<typeof SwapInputComponent> = {
       control: 'text',
       description: 'User balance for the selected token',
     },
-    onPercentageClick: {
-      action: 'percentageClicked',
-      description: 'Callback when percentage button is clicked',
-    },
     isLoading: {
       control: 'boolean',
       description: 'Show skeleton loading state',
@@ -89,12 +85,6 @@ const DefaultWrapper = () => {
   const [selectedToken, setSelectedToken] = useState<SwapInputToken>(mockTokens[0])
   const [amount, setAmount] = useState('')
 
-  const handlePercentageClick = (percentage: number) => {
-    const balance = '1000.0'
-    const newAmount = (parseFloat(balance) * percentage).toString()
-    setAmount(newAmount)
-  }
-
   return (
     <div className="w-[500px]">
       <SwapInputComponent
@@ -104,7 +94,6 @@ const DefaultWrapper = () => {
         amount={amount}
         onAmountChange={setAmount}
         balance="1000.0"
-        onPercentageClick={handlePercentageClick}
         labelText="Amount to swap"
       />
     </div>
@@ -219,12 +208,6 @@ const SingleTokenWrapper = () => {
   const [selectedToken] = useState<SwapInputToken>(singleToken[0])
   const [amount, setAmount] = useState('')
 
-  const handlePercentageClick = (percentage: number) => {
-    const balance = '1000.0'
-    const newAmount = (parseFloat(balance) * percentage).toString()
-    setAmount(newAmount)
-  }
-
   return (
     <div className="w-[500px]">
       <SwapInputComponent
@@ -234,7 +217,6 @@ const SingleTokenWrapper = () => {
         amount={amount}
         onAmountChange={setAmount}
         balance="1000.0"
-        onPercentageClick={handlePercentageClick}
         labelText="Amount to swap"
       />
     </div>

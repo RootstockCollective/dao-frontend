@@ -1,9 +1,11 @@
+import type { Address, Hex } from 'viem'
 import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
-import { USDT0, USDRIF, USDT0_USDRIF_POOL_ADDRESS } from '@/lib/constants'
-import type { SwapStore, SwapState, SwapMode, SwapTokenSymbol } from './types'
+
+import { USDRIF, USDT0, USDT0_USDRIF_POOL_ADDRESS } from '@/lib/constants'
 import type { PermitSingle } from '@/lib/swap/permit2'
-import type { Address, Hex } from 'viem'
+
+import type { SwapMode, SwapState, SwapStore, SwapTokenSymbol } from './types'
 
 // Default pool fee - 0.01% is most common for stablecoin pairs
 const DEFAULT_POOL_FEE = 100
@@ -32,6 +34,7 @@ const initialState: SwapState = {
   // Pool configuration
   poolAddress: USDT0_USDRIF_POOL_ADDRESS,
   poolFee: DEFAULT_POOL_FEE,
+  selectedFeeTier: null,
 }
 
 export const useSwapStore = create<SwapStore>()(
@@ -72,6 +75,7 @@ export const useSwapStore = create<SwapStore>()(
             tokenOut: state.tokenIn,
             typedAmount: '',
             swapError: null,
+            selectedFeeTier: null,
           }),
           false,
           'toggleTokens',
@@ -168,6 +172,9 @@ export const useSwapStore = create<SwapStore>()(
       setPoolFee: (fee: number) => set({ poolFee: fee }, false, 'setPoolFee'),
 
       setPoolAddress: (address: Address) => set({ poolAddress: address }, false, 'setPoolAddress'),
+
+      setSelectedFeeTier: (feeTier: number | null) =>
+        set({ selectedFeeTier: feeTier }, false, 'setSelectedFeeTier'),
 
       // ─────────────────────────────────────────────────────────────────────
       // Reset
