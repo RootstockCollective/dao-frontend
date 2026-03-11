@@ -37,7 +37,7 @@ export function ContractAddressesSection() {
             {RBTC_VAULT_ADDRESS ? (
               <ShortenAndCopy
                 value={RBTC_VAULT_ADDRESS}
-                className="text-bg-0"
+                className="text-text-100"
                 data-testid="vault-address-copy"
               />
             ) : (
@@ -60,7 +60,7 @@ export function ContractAddressesSection() {
             {RBTC_VAULT_ADDRESS ? (
               <ShortenAndCopy
                 value={RBTC_VAULT_ADDRESS}
-                className="text-bg-0"
+                className="text-text-100"
                 data-testid="share-token-address-copy"
               />
             ) : (
