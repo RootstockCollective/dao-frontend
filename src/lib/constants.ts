@@ -107,7 +107,6 @@ const FEATURE_FLAGS: Record<Feature, string> = {
   debug_logs: process.env.NEXT_PUBLIC_ENABLE_FEATURE_DEBUG_LOGS ?? '',
   vault: process.env.NEXT_PUBLIC_ENABLE_FEATURE_VAULT ?? '',
   btc_vault: process.env.NEXT_PUBLIC_ENABLE_FEATURE_BTC_VAULT ?? '',
-  vault_management: process.env.NEXT_PUBLIC_ENABLE_FEATURE_VAULT_MANAGEMENT ?? '',
   sentry_error_tracking: process.env.NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_ERROR_TRACKING ?? '',
   sentry_replay: process.env.NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY ?? '',
 }

@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
 
-import { usePermissionsManager } from '@/app/vault/hooks/usePermissionsManager'
+import { usePermissionsManager } from '@/shared/hooks/contracts'
 
 import { MenuData, menuData, menuDataNotConnected, RequiredRole } from './menuData'
 

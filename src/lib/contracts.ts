@@ -1,9 +1,6 @@
 import { zeroAddress } from 'viem'
 
-import { BufferAbi } from '@/lib/abis/BufferAbi'
-import { PermissionsManagerAbi } from '@/lib/abis/PermissionsManagerAbi'
-import { RBTCAsyncVaultAbi } from '@/lib/abis/RbtcAsyncVaultAbi'
-import { SyntheticYieldAbi } from '@/lib/abis/SyntheticYieldAbi'
+import { RBTCAsyncVaultAbi, BufferAbi, PermissionsManagerAbi, SyntheticYieldAbi } from '@/lib/abis/btc-vault'
 import { VaultAbi } from '@/lib/abis/VaultAbi'
 
 import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'

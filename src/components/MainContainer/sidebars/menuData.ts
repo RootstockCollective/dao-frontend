@@ -20,8 +20,7 @@ export interface MenuData {
 function getBetaToolsSection(): MenuData[] {
   const vaultOn = getEnvFlag('vault')
   const btcVaultOn = getEnvFlag('btc_vault')
-  const vaultManagementOn = getEnvFlag('vault_management')
-  if (!vaultOn && !btcVaultOn && !vaultManagementOn) return []
+  if (!vaultOn && !btcVaultOn) return []
   const items: MenuData[] = []
   items.push({
     href: '-',
@@ -37,31 +36,29 @@ function getBetaToolsSection(): MenuData[] {
       iconUrl: '/images/sidemenukoto/Holdings.svg',
     })
   }
-  if (vaultManagementOn) {
+  if (btcVaultOn) {
     items.push(
       {
+        href: 'btc-vault',
+        text: 'BTC Vault Sandbox',
+        buttonProps: { id: 'Button_Btc_Vault', name: 'btc-vault' },
+        iconUrl: '/images/sidemenukoto/Holdings.svg',
+      },
+      {
         href: 'fund-manager',
-        text: 'Fund Manager',
+        text: 'Fund Manager Sandbox',
         buttonProps: { id: 'Button_Fund_Manager', name: 'fund-manager' },
         iconUrl: '/images/sidemenukoto/FundManager.svg',
         requiredRole: 'fundManager',
       },
       {
-        href: 'admin',
-        text: 'Admin',
-        buttonProps: { id: 'Button_Admin', name: 'admin' },
+        href: 'fund-admin',
+        text: 'Admin Sandbox',
+        buttonProps: { id: 'Button_Admin', name: 'fund-admin' },
         iconUrl: '/images/sidemenukoto/Admin.svg',
         requiredRole: 'admin',
       },
     )
-  }
-  if (btcVaultOn) {
-    items.push({
-      href: 'btc-vault',
-      text: 'BTC Vault Sandbox',
-      buttonProps: { id: 'Button_Btc_Vault', name: 'btc-vault' },
-      iconUrl: '/images/sidemenukoto/Holdings.svg',
-    })
   }
   return items
 }
@@ -69,8 +66,7 @@ function getBetaToolsSection(): MenuData[] {
 function getBetaToolsSectionNotConnected(): MenuData[] {
   const vaultOn = getEnvFlag('vault')
   const btcVaultOn = getEnvFlag('btc_vault')
-  const rbtcVaultOn = getEnvFlag('vault_management')
-  if (!vaultOn && !btcVaultOn && !rbtcVaultOn) return []
+  if (!vaultOn && !btcVaultOn) return []
   const items: MenuData[] = []
   items.push({
     href: '-',

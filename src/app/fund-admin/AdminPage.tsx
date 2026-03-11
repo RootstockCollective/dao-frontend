@@ -1,24 +1,28 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import { useAccount } from 'wagmi'
 
-import { usePermissionsManager } from '@/app/vault/hooks/usePermissionsManager'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { NoPermissionsSection } from '@/components/NoPermissionsSection/NoPermissionsSection'
 import { Header } from '@/components/Typography'
+import { usePermissionsManager } from '@/shared/hooks/contracts'
 
 const NAME = 'Admin'
 
 export const AdminPage = () => {
   const { isConnected } = useAccount()
   const { isAdmin, isLoading } = usePermissionsManager()
+  const router = useRouter()
 
-  if (!isConnected || isLoading) {
+  useEffect(() => {
+    if (!isLoading && (!isConnected || !isAdmin)) {
+      router.push('/')
+    }
+  }, [isConnected, isAdmin, isLoading, router])
+
+  if (!isConnected || isLoading || !isAdmin) {
     return <LoadingSpinner />
-  }
-
-  if (!isAdmin) {
-    return <NoPermissionsSection data-testid="AdminNoPermissions" />
   }
 
   return (

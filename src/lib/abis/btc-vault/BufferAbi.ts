@@ -1,9 +1,5 @@
 export const BufferAbi = [
-  {
-    inputs: [],
-    stateMutability: 'nonpayable',
-    type: 'constructor',
-  },
+  { inputs: [], stateMutability: 'nonpayable', type: 'constructor' },
   {
     inputs: [
       {
@@ -389,13 +385,7 @@ export const BufferAbi = [
     stateMutability: 'nonpayable',
     type: 'function',
   },
-  {
-    inputs: [],
-    name: 'injectNative',
-    outputs: [],
-    stateMutability: 'payable',
-    type: 'function',
-  },
+  { inputs: [], name: 'injectNative', outputs: [], stateMutability: 'payable', type: 'function' },
   {
     inputs: [],
     name: 'permissionsManager',
@@ -496,4 +486,5 @@ export const BufferAbi = [
     stateMutability: 'payable',
     type: 'receive',
   },
+  { stateMutability: 'payable', type: 'receive' },
 ] as const

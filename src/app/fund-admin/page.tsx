@@ -3,7 +3,7 @@ import { withServerFeatureFlag } from '@/shared/context/FeatureFlag'
 import { AdminPage } from './AdminPage'
 
 const AdminPageWithFeature = withServerFeatureFlag(AdminPage, {
-  feature: 'vault',
+  feature: 'btc_vault',
   redirectTo: '/',
 })
 

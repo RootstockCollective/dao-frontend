@@ -1,24 +1,28 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 import { useAccount } from 'wagmi'
 
-import { usePermissionsManager } from '@/app/vault/hooks/usePermissionsManager'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { NoPermissionsSection } from '@/components/NoPermissionsSection/NoPermissionsSection'
 import { Header } from '@/components/Typography'
+import { usePermissionsManager } from '@/shared/hooks/contracts'
 
 const NAME = 'Fund Manager Dashboard'
 
 export const FundManagerPage = () => {
   const { isConnected } = useAccount()
   const { isFundManager, isLoading } = usePermissionsManager()
+  const router = useRouter()
 
-  if (!isConnected || isLoading) {
+  useEffect(() => {
+    if (!isLoading && (!isConnected || !isFundManager)) {
+      router.push('/')
+    }
+  }, [isConnected, isFundManager, isLoading, router])
+
+  if (!isConnected || isLoading || !isFundManager) {
     return <LoadingSpinner />
-  }
-
-  if (!isFundManager) {
-    return <NoPermissionsSection data-testid="FundManagerNoPermissions" />
   }
 
   return (
