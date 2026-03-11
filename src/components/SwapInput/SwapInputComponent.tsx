@@ -1,20 +1,20 @@
+import Image from 'next/image'
+import { forwardRef, useEffect, useMemo, useRef } from 'react'
+
 import { Input } from '@/components/Input'
+import {
+  Dropdown,
+  DropdownContent,
+  DropdownItem,
+  DropdownTrigger,
+  DropdownValue,
+} from '@/components/SingleSelectDropdown/SingleSelectDropdown'
 import { TokenImage } from '@/components/TokenImage'
 import { Label, Paragraph } from '@/components/Typography'
 import { variantClasses } from '@/components/Typography/Typography'
-import { formatCurrency } from '@/lib/utils'
 import Big from '@/lib/big'
-import { forwardRef, useRef, useEffect, useMemo } from 'react'
+import { formatCurrency } from '@/lib/utils'
 import { cn } from '@/lib/utils'
-import Image from 'next/image'
-import {
-  Dropdown,
-  DropdownTrigger,
-  DropdownContent,
-  DropdownItem,
-  DropdownValue,
-} from '@/components/SingleSelectDropdown/SingleSelectDropdown'
-import { PercentageButtons } from '@/components/PercentageButtons'
 
 /**
  * Token information for swap input
@@ -35,7 +35,6 @@ interface Props {
   onAmountChange: (value: string) => void
   onFocus?: () => void
   balance?: string
-  onPercentageClick?: (percentage: number) => void
   isLoading?: boolean
   readonly?: boolean
   autoFocus?: boolean
@@ -53,7 +52,6 @@ export const SwapInputComponent = forwardRef<HTMLInputElement, Props>(
       onAmountChange,
       onFocus,
       balance,
-      onPercentageClick,
       isLoading = false,
       readonly = false,
       autoFocus = true,
@@ -77,7 +75,7 @@ export const SwapInputComponent = forwardRef<HTMLInputElement, Props>(
       if (tokenPrice && tokenPrice > 0 && amount) {
         return formatCurrency(Big(tokenPrice).mul(amount || 0))
       }
-      return undefined
+      return
     }, [selectedToken.price, amount])
 
     const handleTokenSelect = (symbol: string) => {
@@ -162,21 +160,12 @@ export const SwapInputComponent = forwardRef<HTMLInputElement, Props>(
           </div>
         </div>
 
-        {(balance !== undefined || onPercentageClick) && (
-          <div className="flex flex-col justify-between mx-3 mt-2 gap-2">
-            {balance !== undefined && (
-              <div className="flex items-center gap-1" data-testid="swap-balance-label">
-                <TokenImage symbol={selectedToken.symbol} size={12} />
-                <Label variant="body-s" className="text-text-60">
-                  {selectedToken.symbol} balance: {balance}
-                </Label>
-              </div>
-            )}
-            {onPercentageClick && balance && !readonly && (
-              <div className="self-end">
-                <PercentageButtons onPercentageClick={onPercentageClick} testId="swap-percentage-buttons" />
-              </div>
-            )}
+        {balance !== undefined && (
+          <div className="flex items-center gap-1 mx-3 mt-2" data-testid="swap-balance-label">
+            <TokenImage symbol={selectedToken.symbol} size={12} />
+            <Label variant="body-s" className="text-text-60">
+              {selectedToken.symbol} balance: {balance}
+            </Label>
           </div>
         )}
       </div>

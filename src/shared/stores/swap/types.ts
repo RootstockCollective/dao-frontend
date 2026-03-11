@@ -1,6 +1,7 @@
 import { Address, Hex } from 'viem'
-import { PermitSingle } from '@/lib/swap/permit2'
+
 import { USDRIF, USDT0 } from '@/lib/constants'
+import { PermitSingle } from '@/lib/swap/permit2'
 
 /**
  * Supported swap tokens
@@ -58,6 +59,8 @@ export interface SwapState {
   // Pool configuration
   poolAddress: Address | null
   poolFee: number | null
+  /** User-selected fee tier override. null = auto (multicall all tiers, pick best). */
+  selectedFeeTier: number | null
 }
 
 /**
@@ -89,6 +92,7 @@ export interface SwapActions {
   // Pool configuration
   setPoolFee: (fee: number) => void
   setPoolAddress: (address: Address) => void
+  setSelectedFeeTier: (feeTier: number | null) => void
 
   // Reset entire store
   reset: () => void

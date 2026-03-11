@@ -1,13 +1,28 @@
-import { SwapInputComponent, SwapInputToken } from '@/components/SwapInput'
-import { ArrowsUpDown } from '@/components/Icons'
-import { handleAmountInput, formatForDisplay } from '@/lib/utils'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
-import { SwapStepProps } from '../types'
-import { useSwapInput, useTokenSelection, useTokenAllowance } from '@/shared/stores/swap'
+import { Hash, parseUnits } from 'viem'
+
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { useExecuteTxFlow } from '@/shared/notification'
-import { parseUnits, Hash } from 'viem'
+import { ArrowsUpDown } from '@/components/Icons'
+import { PercentageButtonItem, PercentageButtons } from '@/components/PercentageButtons'
+import { SwapInputComponent, SwapInputToken } from '@/components/SwapInput'
+import { Label } from '@/components/Typography'
 import Big from '@/lib/big'
+import { feeTierToPercent } from '@/lib/swap/constants'
+import { formatForDisplay, handleAmountInput } from '@/lib/utils'
+import { useExecuteTxFlow } from '@/shared/notification'
+import { useSwapInput, useTokenAllowance, useTokenSelection } from '@/shared/stores/swap'
+
+import { SwapStepProps } from '../types'
+
+const AUTO_FEE_TIER = 'auto' as const
+
+const FEE_TIER_OPTIONS: PercentageButtonItem<string>[] = [
+  { value: AUTO_FEE_TIER, label: 'Auto', testId: 'fee-tier-auto' },
+  { value: '100', label: '0.01%', testId: 'fee-tier-100' },
+  { value: '500', label: '0.05%', testId: 'fee-tier-500' },
+  { value: '3000', label: '0.3%', testId: 'fee-tier-3000' },
+  { value: '10000', label: '1%', testId: 'fee-tier-10000' },
+]
 
 export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   const {
@@ -20,6 +35,10 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     quoteError,
     quote,
     mode,
+    selectedFeeTier,
+    setSelectedFeeTier,
+    activeFeeTier,
+    availableFeeTiers,
   } = useSwapInput()
   const { tokenIn, tokenOut, tokenInData, tokenOutData, toggleTokenSelection } = useTokenSelection()
   const { balances, prices } = useBalancesContext()
@@ -187,6 +206,14 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     [tokenInBalance, setAmountIn],
   )
 
+  const feeTierOptions = useMemo(
+    () =>
+      FEE_TIER_OPTIONS.filter(
+        option => option.value === AUTO_FEE_TIER || availableFeeTiers.includes(Number(option.value)),
+      ),
+    [availableFeeTiers],
+  )
+
   // Prepare tokens for SwapInputComponent
   const tokens: SwapInputToken[] = useMemo(
     () => [
@@ -237,7 +264,6 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
           onAmountChange={handleAmountChange}
           onFocus={handleInputFocus}
           balance={formatForDisplay(tokenInBalance)}
-          onPercentageClick={handlePercentageClick}
           labelText="Amount to swap"
           isLoading={isQuoting && mode === 'exactOut'}
           errorText={
@@ -246,6 +272,33 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
               : ''
           }
         />
+
+        {tokenInBalance && Big(tokenInBalance).gt(0) && (
+          <div className="flex flex-col gap-3 mx-3 -mt-2 md:flex-row md:items-end md:justify-between">
+            <div className="flex flex-col gap-1">
+              <Label variant="body-s" className="text-text-60">
+                % of balance
+              </Label>
+              <PercentageButtons onPercentageClick={handlePercentageClick} testId="swap-percentage-buttons" />
+            </div>
+            <div className="flex flex-col gap-1 md:items-end">
+              <Label variant="body-s" className="text-text-60">
+                Pool fee
+                {selectedFeeTier === null &&
+                  activeFeeTier !== null &&
+                  ` (${feeTierToPercent(activeFeeTier)}%)`}
+              </Label>
+              <PercentageButtons
+                options={feeTierOptions}
+                value={selectedFeeTier === null ? AUTO_FEE_TIER : String(selectedFeeTier)}
+                onPercentageClick={(value: string) =>
+                  setSelectedFeeTier(value === AUTO_FEE_TIER ? null : Number(value))
+                }
+                testId="swap-fee-tier-buttons"
+              />
+            </div>
+          </div>
+        )}
 
         <div className="flex justify-center -my-2">
           <button

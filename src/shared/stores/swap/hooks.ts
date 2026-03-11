@@ -1,21 +1,23 @@
 'use client'
 
-import { useCallback, useEffect, useMemo } from 'react'
-import { formatUnits, parseUnits, Hex } from 'viem'
-import { useAccount, useReadContract, useWriteContract, useSignTypedData } from 'wagmi'
 import { useQuery } from '@tanstack/react-query'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useDebounce } from 'use-debounce'
+import { formatUnits, Hex, parseUnits } from 'viem'
+import { useAccount, useReadContract, useSignTypedData, useWriteContract } from 'wagmi'
 import { useShallow } from 'zustand/shallow'
+
+import { Permit2Abi } from '@/lib/abis/Permit2Abi'
+import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
+import { UniswapUniversalRouterAbi } from '@/lib/abis/UniswapUniversalRouterAbi'
+import { PERMIT2_ADDRESS, UNISWAP_UNIVERSAL_ROUTER_ADDRESS } from '@/lib/constants'
+import { sentryClient } from '@/lib/sentry/sentry-client'
+import { createSecurePermit } from '@/lib/swap/permit2'
+import { getAvailableFeeTiers, getPermitSwapEncodedData, uniswapProvider } from '@/lib/swap/providers/uniswap'
+
+import type { QuoteResult } from './types'
 import { useSwapStore } from './useSwapStore'
 import { useSwapTokens } from './useSwapTokens'
-import { UNISWAP_UNIVERSAL_ROUTER_ADDRESS, PERMIT2_ADDRESS } from '@/lib/constants'
-import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
-import { Permit2Abi } from '@/lib/abis/Permit2Abi'
-import { uniswapProvider, getPermitSwapEncodedData } from '@/lib/swap/providers/uniswap'
-import { UniswapUniversalRouterAbi } from '@/lib/abis/UniswapUniversalRouterAbi'
-import { createSecurePermit } from '@/lib/swap/permit2'
-import { sentryClient } from '@/lib/sentry/sentry-client'
-import type { QuoteResult } from './types'
 
 const QUOTE_DEBOUNCE_MS = 500
 const QUOTE_TIMEOUT_MS = 10_000
@@ -38,23 +40,48 @@ const withTimeout = <T>(promise: Promise<T>, timeoutMs: number, errorMessage: st
  * The opposite amount is computed from the quote on each render. This avoids
  * circular state updates that would cause infinite re-renders.
  *
- * @returns Display values for both fields, setters that switch mode, and quote state
+ * @returns Display values for both fields, setters that switch mode, quote state,
+ *   fee tier selection (`selectedFeeTier` / `setSelectedFeeTier`),
+ *   the resolved fee tier from the latest quote (`activeFeeTier`),
+ *   and the list of tiers with liquidity (`availableFeeTiers`)
  */
 export const useSwapInput = () => {
   const { tokens } = useSwapTokens()
-  const { mode, typedAmount, tokenIn, tokenOut, setSwapInput, setPoolFee } = useSwapStore(
+  const {
+    mode,
+    typedAmount,
+    tokenIn,
+    tokenOut,
+    selectedFeeTier,
+    setSwapInput,
+    setPoolFee,
+    setSelectedFeeTier,
+  } = useSwapStore(
     useShallow(state => ({
       mode: state.mode,
       typedAmount: state.typedAmount,
       tokenIn: state.tokenIn,
       tokenOut: state.tokenOut,
+      selectedFeeTier: state.selectedFeeTier,
       setSwapInput: state.setSwapInput,
       setPoolFee: state.setPoolFee,
+      setSelectedFeeTier: state.setSelectedFeeTier,
     })),
   )
 
   // Wait for user to stop typing before fetching quote (avoids excessive API calls)
   const [debouncedTypedAmount] = useDebounce(typedAmount, QUOTE_DEBOUNCE_MS)
+
+  // Probe which fee tiers have liquidity (cached for the token pair, rarely changes)
+  const { data: availableFeeTiers } = useQuery({
+    queryKey: ['availableFeeTiers', tokenIn, tokenOut],
+    // SAFETY: enabled guard ensures decimals are defined before queryFn runs
+    queryFn: () =>
+      getAvailableFeeTiers(tokens[tokenIn].address, tokens[tokenOut].address, tokens[tokenIn].decimals!),
+    enabled: !!tokens[tokenIn].decimals && !!tokens[tokenOut].decimals,
+    staleTime: 5 * 60_000,
+    retry: false,
+  })
 
   // React Query handles caching, refetching, and loading states
   const {
@@ -63,7 +90,7 @@ export const useSwapInput = () => {
     isFetching: isQuoteFetching,
     error: quoteError,
   } = useQuery({
-    queryKey: ['swapQuote', tokenIn, tokenOut, mode, debouncedTypedAmount],
+    queryKey: ['swapQuote', tokenIn, tokenOut, mode, debouncedTypedAmount, selectedFeeTier],
     queryFn: async () => {
       const tokenInDecimals = tokens[tokenIn].decimals
       const tokenOutDecimals = tokens[tokenOut].decimals
@@ -87,6 +114,7 @@ export const useSwapInput = () => {
             amountOut: amountOutBigInt,
             tokenInDecimals,
             tokenOutDecimals,
+            feeTier: selectedFeeTier ?? undefined,
           }),
           QUOTE_TIMEOUT_MS,
           'Quote request timed out.',
@@ -115,6 +143,7 @@ export const useSwapInput = () => {
           amountIn: amountInBigInt,
           tokenInDecimals,
           tokenOutDecimals,
+          feeTier: selectedFeeTier ?? undefined,
         }),
         QUOTE_TIMEOUT_MS,
         'Quote request timed out.',
@@ -136,12 +165,15 @@ export const useSwapInput = () => {
     retry: false,
   })
 
-  // Update pool fee in store when quote arrives
+  // Update pool fee in store when quote arrives (used for swap execution)
   useEffect(() => {
     if (quote?.feeTier) {
       setPoolFee(quote.feeTier)
     }
   }, [quote?.feeTier, setPoolFee])
+
+  // The actual fee tier from the latest quote (may differ from selectedFeeTier when in auto mode)
+  const activeFeeTier = quote?.feeTier ?? null
 
   /**
    * Amount values with full precision.
@@ -183,6 +215,10 @@ export const useSwapInput = () => {
     isQuoting: isQuoteLoading || isQuoteFetching,
     quoteError,
     isQuoteExpired,
+    selectedFeeTier,
+    setSelectedFeeTier,
+    activeFeeTier,
+    availableFeeTiers: availableFeeTiers ?? [],
   }
 }
 
