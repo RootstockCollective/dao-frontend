@@ -4,7 +4,7 @@ import { KotoQuestionMarkIcon } from '@/components/Icons'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
 import { Tooltip } from '@/components/Tooltip'
 import { Header, Label } from '@/components/Typography'
-import { BTC_VAULT_ADDRESS } from '@/lib/constants'
+import { RBTC_VAULT_ADDRESS } from '@/lib/constants'
 
 import { CONTRACT_ADDRESSES_TOOLTIP_MAP } from './CapitalAllocationSection.constants'
 
@@ -34,9 +34,9 @@ export function ContractAddressesSection() {
                 </span>
               </Tooltip>
             </div>
-            {BTC_VAULT_ADDRESS ? (
+            {RBTC_VAULT_ADDRESS ? (
               <ShortenAndCopy
-                value={BTC_VAULT_ADDRESS}
+                value={RBTC_VAULT_ADDRESS}
                 className="text-bg-0"
                 data-testid="vault-address-copy"
               />
@@ -57,9 +57,9 @@ export function ContractAddressesSection() {
                 </span>
               </Tooltip>
             </div>
-            {BTC_VAULT_ADDRESS ? (
+            {RBTC_VAULT_ADDRESS ? (
               <ShortenAndCopy
-                value={BTC_VAULT_ADDRESS}
+                value={RBTC_VAULT_ADDRESS}
                 className="text-bg-0"
                 data-testid="share-token-address-copy"
               />

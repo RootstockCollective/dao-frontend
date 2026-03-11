@@ -1,5 +1,6 @@
-import { Feature } from '@/config/features.conf'
 import { Address } from 'viem'
+
+import { Feature } from '@/config/features.conf'
 
 export const GITHUB_ORG = 'RootstockCollective'
 export const ENV = process.env.NEXT_PUBLIC_ENV as 'mainnet' | 'testnet' | 'fork'
@@ -12,7 +13,10 @@ export const RIF_ADDRESS = process.env.NEXT_PUBLIC_RIF_ADDRESS as Address
 export const STRIF_ADDRESS = process.env.NEXT_PUBLIC_STRIF_ADDRESS as Address
 export const USDRIF_ADDRESS = process.env.NEXT_PUBLIC_USDRIF_ADDRESS as Address
 export const USDRIF_VAULT_ADDRESS = process.env.NEXT_PUBLIC_USDRIF_VAULT_ADDRESS as Address
-export const BTC_VAULT_ADDRESS = process.env.NEXT_PUBLIC_BTC_VAULT_ADDRESS as Address
+export const RBTC_VAULT_ADDRESS = process.env.NEXT_PUBLIC_RBTC_VAULT_ADDRESS as Address
+export const BUFFER_ADDRESS = process.env.NEXT_PUBLIC_BUFFER_ADDRESS as Address
+export const PERMISSIONS_MANAGER_ADDRESS = process.env.NEXT_PUBLIC_PERMISSIONS_MANAGER_ADDRESS as Address
+export const SYNTHETIC_YIELD_ADDRESS = process.env.NEXT_PUBLIC_SYNTHETIC_YIELD_ADDRESS as Address
 export const USDT0_ADDRESS = process.env.NEXT_PUBLIC_USDT0_ADDRESS as Address
 
 // DEX Router Addresses
