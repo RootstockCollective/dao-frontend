@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { Contributor } from '@/app/proposals/shared/types'
 import { fetchContributors } from '@/app/delegate/actions/delegateAction'
 
@@ -23,7 +24,7 @@ export async function GET() {
     })
     return Response.json(mappedContributors)
   } catch (error) {
-    console.error(error)
+    logger.error({ err: error, route: '/api/contributors/v1' }, 'Cannot fetch contributors')
     const message = error instanceof Error ? error.message : 'Unknown error'
     const keyStatus = getApiKeyStatus(process.env.DAO_GRAPH_API_KEY)
     const debugInfo = `url: ${process.env.DAO_GRAPH_URL}, id: ${process.env.DAO_GRAPH_ID}${keyStatus ? `, ${keyStatus}` : ''}`

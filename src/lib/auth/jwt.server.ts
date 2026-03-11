@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { SignJWT, jwtVerify } from 'jose'
 import { NextRequest } from 'next/server'
 import { JWTPayload } from './jwt'
@@ -68,7 +69,7 @@ export async function verifyJWT(token: string): Promise<JWTPayload | null> {
       userAddress: payload.userAddress.toLowerCase(),
     }
   } catch (error) {
-    console.error('JWT verification failed:', error)
+    logger.error({ err: error }, 'JWT verification failed')
     return null
   }
 }
