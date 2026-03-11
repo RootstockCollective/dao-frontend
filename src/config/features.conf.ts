@@ -10,7 +10,6 @@ const features = {
   debug_logs: 'Enable debug logs',
   vault: 'USDRIF Vault page',
   btc_vault: 'BTC Vault page',
-  vault_management: 'Vault fund manager and admin pages',
   sentry_error_tracking: 'Enable Sentry error tracking',
   sentry_replay: 'Enable Sentry session replay',
   cultivator: 'Cultivator badge in Clubs section',

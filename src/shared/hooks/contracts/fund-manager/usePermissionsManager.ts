@@ -33,8 +33,6 @@ export function usePermissionsManager() {
   } = useReadContracts({
     contracts,
     query: {
-      staleTime: Infinity,
-      gcTime: Infinity,
       enabled: !!connectedAddress && !!permissionsManager.address,
     },
   })
