@@ -20,7 +20,8 @@ export interface MenuData {
 function getBetaToolsSection(): MenuData[] {
   const vaultOn = getEnvFlag('vault')
   const btcVaultOn = getEnvFlag('btc_vault')
-  if (!vaultOn && !btcVaultOn) return []
+  const vaultManagementOn = getEnvFlag('vault_management')
+  if (!vaultOn && !btcVaultOn && !vaultManagementOn) return []
   const items: MenuData[] = []
   items.push({
     href: '-',
@@ -66,7 +67,8 @@ function getBetaToolsSection(): MenuData[] {
 function getBetaToolsSectionNotConnected(): MenuData[] {
   const vaultOn = getEnvFlag('vault')
   const btcVaultOn = getEnvFlag('btc_vault')
-  if (!vaultOn && !btcVaultOn) return []
+  const rbtcVaultOn = getEnvFlag('vault_management')
+  if (!vaultOn && !btcVaultOn && !rbtcVaultOn) return []
   const items: MenuData[] = []
   items.push({
     href: '-',
