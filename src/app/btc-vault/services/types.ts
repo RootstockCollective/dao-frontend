@@ -13,8 +13,8 @@ export interface VaultMetrics {
   /** Annual Percentage Yield. Basis points where `VAULT_BASIS_POINTS = 1e9 = 100%`. */
   apy: bigint
 
-  /** Net Asset Value per share — current price of one vault token in rBTC terms. Wei, 18 decimals. */
-  nav: bigint
+  /** Price per share — current price of one vault token in rBTC terms via convertToAssets(1e18). Wei, 18 decimals. */
+  pricePerShare: bigint
 
   /** Unix timestamp (seconds) of when these metrics were last computed. */
   timestamp: number

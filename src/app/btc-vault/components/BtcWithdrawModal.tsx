@@ -37,18 +37,19 @@ export const BtcWithdrawModal = ({ onClose, onSubmit, isSubmitting }: BtcWithdra
   const vaultTokensFormatted = userPosition?.vaultTokensFormatted ?? '0'
   const vaultTokensRaw = userPosition?.vaultTokensRaw ?? 0n
 
-  const navRaw = vaultMetrics?.navRaw ?? 0n
+  // Price Per Share = NAV per share (convertToAssets(1e18)) renamed for clarity
+  const pricePerShareRaw = vaultMetrics?.pricePerShareRaw ?? 0n
 
   const rbtcEquivalent = useMemo(() => {
-    if (!amount || navRaw === 0n) return '0'
+    if (!amount || pricePerShareRaw === 0n) return '0'
     try {
       const sharesWei = parseEther(amount)
-      const rbtcWei = (sharesWei * navRaw) / 10n ** 18n
+      const rbtcWei = (sharesWei * pricePerShareRaw) / 10n ** 18n
       return formatEther(rbtcWei)
     } catch {
       return '0'
     }
-  }, [amount, navRaw])
+  }, [amount, pricePerShareRaw])
 
   const handleNext = () => setStep('review')
 
