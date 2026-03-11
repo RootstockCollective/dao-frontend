@@ -1,22 +1,18 @@
-import { publicClient } from '@/lib/viemPublicClient'
+import { Address, encodeAbiParameters, formatUnits, Hex } from 'viem'
+
 import { UniswapQuoterV2Abi } from '@/lib/abis/UniswapQuoterV2Abi'
-import { ROUTER_ADDRESSES, SWAP_PROVIDERS } from '../constants'
-import { formatUnits, encodeAbiParameters, Address, Hex } from 'viem'
-import type { SwapProvider, SwapQuote, QuoteParams, QuoteExactOutputParams } from './'
-import type { PermitSingle } from '../permit2'
 import Big from '@/lib/big'
+import { publicClient } from '@/lib/viemPublicClient'
+
+import { feeTierToPercent, ROUTER_ADDRESSES, SWAP_PROVIDERS } from '../constants'
+import type { PermitSingle } from '../permit2'
+import type { QuoteExactOutputParams, QuoteParams, SwapProvider, SwapQuote } from './'
 
 /**
  * Uniswap V3 Pool Fee Tiers (in basis points)
  * 100 = 0.01%, 500 = 0.05%, 3000 = 0.3%, 10000 = 1%
  */
-const UNISWAP_FEE_TIERS: readonly number[] = [3000, 500, 10000, 100]
-
-/**
- * Default fee tier to use when no specific tier is requested
- * This is the fee tier for the USDT0/USDRIF pool on Rootstock mainnet
- */
-const DEFAULT_FEE_TIER = 100
+export const UNISWAP_FEE_TIERS: readonly number[] = [100, 500, 3000, 10000]
 
 function isValidUniswapFeeTier(fee: number): boolean {
   return UNISWAP_FEE_TIERS.includes(fee)
@@ -42,76 +38,53 @@ function isValidQuoteResult(result: unknown): result is [bigint, bigint, number,
 }
 
 /**
- * Get a quote for a specific fee tier
+ * Get a quote for a specific fee tier (single RPC call)
  */
-async function getQuoteForFee(
+async function getQuoteForSingleTier(
   params: QuoteParams,
   fee: number,
   providerName: SwapProvider['name'],
 ): Promise<SwapQuote> {
   const { tokenIn, tokenOut, amountIn, tokenOutDecimals } = params
 
-  // Call QuoterV2 quoteExactInputSingle
   const rawResult = await publicClient.readContract({
     address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
     abi: UniswapQuoterV2Abi,
     functionName: 'quoteExactInputSingle',
-    args: [
-      {
-        tokenIn,
-        tokenOut,
-        amountIn,
-        fee,
-        sqrtPriceLimitX96: 0n, // 0 means no price limit
-      },
-    ],
+    args: [{ tokenIn, tokenOut, amountIn, fee, sqrtPriceLimitX96: 0n }],
   })
 
-  // Validate result structure using type predicate
   if (!isValidQuoteResult(rawResult)) {
     throw new Error(
       `Invalid quote result structure: expected tuple [bigint, bigint, number, bigint], got ${typeof rawResult}`,
     )
   }
 
-  // TypeScript now knows rawResult is [bigint, bigint, number, bigint]
   const [amountOut, , , gasEstimate] = rawResult
-
-  // Format the output amount
-  const amountOutFormatted = formatUnits(amountOut, tokenOutDecimals)
-
   return {
     provider: providerName,
-    amountOut: amountOutFormatted,
+    amountOut: formatUnits(amountOut, tokenOutDecimals),
     amountOutRaw: amountOut.toString(),
     gasEstimate: gasEstimate?.toString(),
+    feeTier: fee,
   }
 }
 
 /**
- * Get an exact output quote for a specific fee tier
+ * Get an exact output quote for a specific fee tier (single RPC call)
  */
-async function getExactOutputQuoteForFee(
+async function getExactOutputQuoteForSingleTier(
   params: QuoteExactOutputParams,
   fee: number,
   providerName: SwapProvider['name'],
 ): Promise<SwapQuote> {
   const { tokenIn, tokenOut, amountOut, tokenOutDecimals } = params
 
-  // Call QuoterV2 quoteExactOutputSingle
   const rawResult = await publicClient.readContract({
     address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
     abi: UniswapQuoterV2Abi,
     functionName: 'quoteExactOutputSingle',
-    args: [
-      {
-        tokenIn,
-        tokenOut,
-        amountOut,
-        fee,
-        sqrtPriceLimitX96: 0n,
-      },
-    ],
+    args: [{ tokenIn, tokenOut, amountOut, fee, sqrtPriceLimitX96: 0n }],
   })
 
   if (!isValidQuoteResult(rawResult)) {
@@ -121,66 +94,63 @@ async function getExactOutputQuoteForFee(
   }
 
   const [amountIn, , , gasEstimate] = rawResult
-  const amountOutFormatted = formatUnits(amountOut, tokenOutDecimals)
-
   return {
     provider: providerName,
-    amountOut: amountOutFormatted,
+    amountOut: formatUnits(amountOut, tokenOutDecimals),
     amountOutRaw: amountOut.toString(),
     amountInRaw: amountIn.toString(),
     gasEstimate: gasEstimate?.toString(),
+    feeTier: fee,
   }
 }
 
-/**
- * Try to get a quote from a specific fee tier, returning the tier info on success
- */
-async function tryGetQuoteWithTier(
-  params: QuoteParams,
-  fee: number,
-  providerName: SwapProvider['name'],
-): Promise<SwapQuote | null> {
-  try {
-    const quote = await getQuoteForFee(params, fee, providerName)
-    return { ...quote, feeTier: fee }
-  } catch {
-    return null
-  }
+function buildExactInputContracts(tokenIn: Address, tokenOut: Address, amountIn: bigint) {
+  return UNISWAP_FEE_TIERS.map(fee => ({
+    address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
+    abi: UniswapQuoterV2Abi,
+    functionName: 'quoteExactInputSingle' as const,
+    args: [{ tokenIn, tokenOut, amountIn, fee, sqrtPriceLimitX96: 0n }] as const,
+  }))
+}
+
+function buildExactOutputContracts(tokenIn: Address, tokenOut: Address, amountOut: bigint) {
+  return UNISWAP_FEE_TIERS.map(fee => ({
+    address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
+    abi: UniswapQuoterV2Abi,
+    functionName: 'quoteExactOutputSingle' as const,
+    args: [{ tokenIn, tokenOut, amountOut, fee, sqrtPriceLimitX96: 0n }] as const,
+  }))
 }
 
 /**
- * Try to get an exact output quote from a specific fee tier
- */
-async function tryGetExactOutputWithTier(
-  params: QuoteExactOutputParams,
-  fee: number,
-  providerName: SwapProvider['name'],
-): Promise<SwapQuote | null> {
-  try {
-    const quote = await getExactOutputQuoteForFee(params, fee, providerName)
-    return { ...quote, feeTier: fee }
-  } catch {
-    return null
-  }
-}
-
-/**
- * Get the best quote from all available fee tiers
- * Tries all tiers in parallel and returns the one with highest output
+ * Batch-quote all fee tiers for exactIn via a single multicall RPC request.
+ * Returns the best quote (highest amountOut) or null if all tiers failed.
  */
 async function getBestQuoteFromAllTiers(
   params: QuoteParams,
   providerName: SwapProvider['name'],
 ): Promise<SwapQuote | null> {
-  const quotePromises = UNISWAP_FEE_TIERS.map(fee => tryGetQuoteWithTier(params, fee, providerName))
-  const quotes = await Promise.all(quotePromises)
+  const { tokenIn, tokenOut, amountIn, tokenOutDecimals } = params
 
-  // Filter successful quotes and find the best one (highest amountOut)
-  const validQuotes = quotes.filter((q): q is SwapQuote => q !== null)
+  const results = await publicClient.multicall({
+    contracts: buildExactInputContracts(tokenIn, tokenOut, amountIn),
+  })
 
-  if (validQuotes.length === 0) {
-    return null
-  }
+  const validQuotes: SwapQuote[] = []
+
+  results.forEach((result, index) => {
+    if (result.status !== 'success' || !isValidQuoteResult(result.result)) return
+    const [amountOut, , , gasEstimate] = result.result
+    validQuotes.push({
+      provider: providerName,
+      amountOut: formatUnits(amountOut, tokenOutDecimals),
+      amountOutRaw: amountOut.toString(),
+      gasEstimate: gasEstimate?.toString(),
+      feeTier: UNISWAP_FEE_TIERS[index],
+    })
+  })
+
+  if (validQuotes.length === 0) return null
 
   return validQuotes.reduce((best, current) =>
     new Big(current.amountOut).gt(best.amountOut) ? current : best,
@@ -188,24 +158,38 @@ async function getBestQuoteFromAllTiers(
 }
 
 /**
- * Get the best exact output quote from all available fee tiers
+ * Batch-quote all fee tiers for exactOut via a single multicall RPC request.
+ * Returns the best quote (lowest amountIn) or null if all tiers failed.
  */
 async function getBestExactOutputFromAllTiers(
   params: QuoteExactOutputParams,
   providerName: SwapProvider['name'],
 ): Promise<SwapQuote | null> {
-  const quotePromises = UNISWAP_FEE_TIERS.map(fee => tryGetExactOutputWithTier(params, fee, providerName))
-  const quotes = await Promise.all(quotePromises)
+  const { tokenIn, tokenOut, amountOut, tokenOutDecimals } = params
 
-  const validQuotes = quotes.filter((q): q is SwapQuote => q !== null)
-  if (validQuotes.length === 0) {
-    return null
-  }
+  const results = await publicClient.multicall({
+    contracts: buildExactOutputContracts(tokenIn, tokenOut, amountOut),
+  })
+
+  const validQuotes: SwapQuote[] = []
+
+  results.forEach((result, index) => {
+    if (result.status !== 'success' || !isValidQuoteResult(result.result)) return
+    const [amountIn, , , gasEstimate] = result.result
+    validQuotes.push({
+      provider: providerName,
+      amountOut: formatUnits(amountOut, tokenOutDecimals),
+      amountOutRaw: amountOut.toString(),
+      amountInRaw: amountIn.toString(),
+      gasEstimate: gasEstimate?.toString(),
+      feeTier: UNISWAP_FEE_TIERS[index],
+    })
+  })
+
+  if (validQuotes.length === 0) return null
 
   return validQuotes.reduce((best, current) => {
-    if (!best.amountInRaw || !current.amountInRaw) {
-      return best
-    }
+    if (!best.amountInRaw || !current.amountInRaw) return best
     return new Big(current.amountInRaw).lt(best.amountInRaw) ? current : best
   })
 }
@@ -213,48 +197,36 @@ async function getBestExactOutputFromAllTiers(
 /**
  * Get a quote from Uniswap
  * Strategy:
- * - If a valid feeTier is specified: try that tier first, then fallback to all tiers
- * - Otherwise: try default tier first, fallback to all tiers
+ * - If a valid feeTier is specified: try ONLY that tier, no fallback (user explicitly chose it)
+ * - Otherwise (auto): multicall all tiers and pick the best quote
  *
- * Note: Fee tiers are different Uniswap V3 pools (0.01%, 0.05%, 0.3%, 1% fees).
- * This is NOT slippage - slippage tolerance should be handled at swap execution time.
+ * Fee tiers are different Uniswap V3 pools (0.01%, 0.05%, 0.3%, 1% fees).
+ * This is NOT slippage -- slippage tolerance is handled at swap execution time.
  */
 async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
   const providerName = SWAP_PROVIDERS.UNISWAP
 
-  // If a specific, valid fee tier is requested, try it first, then fallback
+  // User explicitly selected a fee tier - single RPC call, no fallback
   if (params.feeTier !== undefined && isValidUniswapFeeTier(params.feeTier)) {
-    const quote = await tryGetQuoteWithTier(params, params.feeTier, providerName)
-    if (quote) {
-      return quote
-    }
-
-    const bestQuote = await getBestQuoteFromAllTiers(params, providerName)
-    if (bestQuote) {
-      return bestQuote
-    }
-
-    return {
-      provider: providerName,
-      amountOut: '0',
-      amountOutRaw: '0',
-      error: 'No liquidity available. All pool fee tiers failed to provide a quote.',
+    try {
+      return await getQuoteForSingleTier(params, params.feeTier, providerName)
+    } catch {
+      return {
+        provider: providerName,
+        amountOut: '0',
+        amountOutRaw: '0',
+        feeTier: params.feeTier,
+        error: `No liquidity available in the ${feeTierToPercent(params.feeTier)}% fee pool.`,
+      }
     }
   }
 
-  // No specific tier - try default tier first (fast path for most common case)
-  const defaultQuote = await tryGetQuoteWithTier(params, DEFAULT_FEE_TIER, providerName)
-  if (defaultQuote) {
-    return defaultQuote
-  }
-
-  // Default tier failed - try all tiers to find one with liquidity
+  // Auto mode - single multicall probes all tiers and picks the best
   const bestQuote = await getBestQuoteFromAllTiers(params, providerName)
   if (bestQuote) {
     return bestQuote
   }
 
-  // All tiers failed - no liquidity available
   return {
     provider: providerName,
     amountOut: '0',
@@ -266,38 +238,28 @@ async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
 /**
  * Get an exact output quote from Uniswap
  * Strategy:
- * - If a valid feeTier is specified: try that tier first, then fallback to all tiers
- * - Otherwise: try default tier first, fallback to all tiers
+ * - If a valid feeTier is specified: try ONLY that tier, no fallback (user explicitly chose it)
+ * - Otherwise (auto): multicall all tiers and pick the best quote (lowest amountIn)
  */
 async function getUniswapExactOutputQuote(params: QuoteExactOutputParams): Promise<SwapQuote> {
   const providerName = SWAP_PROVIDERS.UNISWAP
 
-  // If a specific, valid fee tier is requested, try it first, then fallback
+  // User explicitly selected a fee tier - single RPC call, no fallback
   if (params.feeTier !== undefined && isValidUniswapFeeTier(params.feeTier)) {
-    const quote = await tryGetExactOutputWithTier(params, params.feeTier, providerName)
-    if (quote) {
-      return quote
-    }
-
-    const bestQuote = await getBestExactOutputFromAllTiers(params, providerName)
-    if (bestQuote) {
-      return bestQuote
-    }
-
-    return {
-      provider: providerName,
-      amountOut: '0',
-      amountOutRaw: '0',
-      error: 'No liquidity available. All pool fee tiers failed to provide a quote.',
+    try {
+      return await getExactOutputQuoteForSingleTier(params, params.feeTier, providerName)
+    } catch {
+      return {
+        provider: providerName,
+        amountOut: '0',
+        amountOutRaw: '0',
+        feeTier: params.feeTier,
+        error: `No liquidity available in the ${feeTierToPercent(params.feeTier)}% fee pool.`,
+      }
     }
   }
 
-  // No specific tier - try default tier first
-  const defaultQuote = await tryGetExactOutputWithTier(params, DEFAULT_FEE_TIER, providerName)
-  if (defaultQuote) {
-    return defaultQuote
-  }
-
+  // Auto mode - single multicall probes all tiers and picks the best
   const bestQuote = await getBestExactOutputFromAllTiers(params, providerName)
   if (bestQuote) {
     return bestQuote
@@ -478,9 +440,32 @@ export function getPermitSwapEncodedData(params: PermitSwapParams): {
 }
 
 /**
- * Uniswap swap provider implementation
- * Uses QuoterV2 contract to get quotes
+ * Check which fee tiers have liquidity for a given token pair.
+ * Uses a single multicall with a small test amount to probe all pools at once.
+ * Returned tiers are in the same order as UNISWAP_FEE_TIERS.
+ * @param tokenIn - Address of the input token
+ * @param tokenOut - Address of the output token
+ * @param tokenInDecimals - Decimal places for the input token (used to build a test amount)
+ * @returns Fee tier numbers with liquidity (e.g. [100, 500]), empty if none
  */
+export async function getAvailableFeeTiers(
+  tokenIn: Address,
+  tokenOut: Address,
+  tokenInDecimals: number,
+): Promise<number[]> {
+  const testAmount = 10n ** BigInt(tokenInDecimals)
+
+  const results = await publicClient.multicall({
+    contracts: buildExactInputContracts(tokenIn, tokenOut, testAmount),
+  })
+
+  return results
+    .map((result, index) =>
+      result.status === 'success' && isValidQuoteResult(result.result) ? UNISWAP_FEE_TIERS[index] : null,
+    )
+    .filter((fee): fee is number => fee !== null)
+}
+
 export const uniswapProvider: SwapProvider = {
   name: SWAP_PROVIDERS.UNISWAP,
   getQuote: getUniswapQuote,

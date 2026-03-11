@@ -1,12 +1,12 @@
-import { tokenContracts } from '@/lib/contracts'
 import {
-  USDT0,
-  USDRIF,
-  UNISWAP_UNIVERSAL_ROUTER_ADDRESS,
-  UNISWAP_QUOTER_V2_ADDRESS,
   ICECREAMSWAP_ROUTER_ADDRESS,
+  UNISWAP_QUOTER_V2_ADDRESS,
+  UNISWAP_UNIVERSAL_ROUTER_ADDRESS,
+  USDRIF,
+  USDT0,
   USDT0_USDRIF_POOL_ADDRESS,
 } from '@/lib/constants'
+import { tokenContracts } from '@/lib/contracts'
 
 /**
  * Token addresses for swap operations
@@ -45,3 +45,10 @@ export const SWAP_PROVIDERS = {
 } as const
 
 export type SwapProviderName = (typeof SWAP_PROVIDERS)[keyof typeof SWAP_PROVIDERS]
+
+/**
+ * Convert a Uniswap V3 fee tier to a percentage.
+ * @param tier - Fee tier in basis points (e.g. 3000)
+ * @returns Percentage as decimal (e.g. 0.3)
+ */
+export const feeTierToPercent = (tier: number): number => tier / 10_000
