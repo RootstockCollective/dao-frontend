@@ -1,7 +1,9 @@
-import { type HTMLAttributes } from 'react'
 import { flexRender, type Table as ReactTable } from '@tanstack/react-table'
-import { SortIndicator } from './components/SortIndicator'
+import { type HTMLAttributes } from 'react'
+
 import { cn } from '@/lib/utils'
+
+import { SortIndicator } from './components/SortIndicator'
 
 interface Props<T> extends HTMLAttributes<HTMLDivElement> {
   table: ReactTable<T>
@@ -13,6 +15,10 @@ interface Props<T> extends HTMLAttributes<HTMLDivElement> {
    * This is used to additionally style table rows
    */
   rowStyles?: string
+  /**
+   * Additional classes applied to the header row (merged via cn, so they can override defaults).
+   */
+  headerClassName?: string
 }
 
 /**
@@ -20,7 +26,14 @@ interface Props<T> extends HTMLAttributes<HTMLDivElement> {
  * Columns can specify width via `columnDef.meta.width` (e.g. '2fr', '150px').
  * When `hasStackedColumn` is true, the first column expands to full width.
  */
-export function GridTable<T>({ className, table, stackFirstColumn = false, rowStyles, ...props }: Props<T>) {
+export function GridTable<T>({
+  className,
+  table,
+  stackFirstColumn = false,
+  rowStyles,
+  headerClassName,
+  ...props
+}: Props<T>) {
   // Build grid template from column definitions' meta.width (fallback to 1fr)
   // Slice off the first column if it's stacked
   const headers = table.getHeaderGroups()[0].headers.slice(Number(stackFirstColumn))
@@ -30,7 +43,7 @@ export function GridTable<T>({ className, table, stackFirstColumn = false, rowSt
       {/* Table head */}
       <div
         role="rowheader"
-        className="grid gap-4 px-4 pb-[18px] border-b border-b-text-60 select-none"
+        className={cn('grid gap-4 px-4 pb-[18px] border-b border-b-text-60 select-none', headerClassName)}
         style={{ gridTemplateColumns }}
       >
         {/* Head cells */}
