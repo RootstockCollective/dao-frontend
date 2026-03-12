@@ -12,29 +12,6 @@ afterEach(() => {
   cleanup()
 })
 
-const DONE_DEPOSIT_ROW = {
-  id: 'req-done',
-  data: {
-    type: 'Deposit' as const,
-    date: '15 Jan 2025',
-    amount: '1.5',
-    actions: '',
-    fiatAmount: '$98,500',
-    claimTokenType: 'rbtc' as const,
-    status: 'successful' as const,
-    displayStatusLabel: 'Successful' as const,
-    requestStatus: 'done' as const,
-    updatedAtFormatted: '15 Jan 2025',
-    createdAtFormatted: '10 Jan 2025',
-    finalizedAtFormatted: '15 Jan 2025',
-    requestType: 'deposit' as const,
-    stateHistory: [
-      { date: '10 Jan 2025', displayStatus: 'pending' as const, displayStatusLabel: 'Pending' as const, actionLabel: 'Cancel request' },
-      { date: '12 Jan 2025', displayStatus: 'open_to_claim' as const, displayStatusLabel: 'Open to claim' as const, actionLabel: 'Claimed shares' },
-    ],
-  },
-}
-
 const CLAIMABLE_DEPOSIT_ROW = {
   id: 'req-claimable',
   data: {
@@ -51,9 +28,6 @@ const CLAIMABLE_DEPOSIT_ROW = {
     createdAtFormatted: '10 Jan 2025',
     finalizedAtFormatted: null,
     requestType: 'deposit' as const,
-    stateHistory: [
-      { date: '10 Jan 2025', displayStatus: 'pending' as const, displayStatusLabel: 'Pending' as const, actionLabel: 'Cancel request' },
-    ],
   },
 }
 
@@ -73,11 +47,29 @@ const PENDING_ROW = {
     createdAtFormatted: '15 Jan 2025',
     finalizedAtFormatted: null,
     requestType: 'deposit' as const,
-    stateHistory: [],
   },
 }
 
-function TableWrapper({ row }: { row: (typeof DONE_DEPOSIT_ROW) | (typeof PENDING_ROW) | (typeof CLAIMABLE_DEPOSIT_ROW) }) {
+const DONE_ROW = {
+  id: 'req-done',
+  data: {
+    type: 'Deposit' as const,
+    date: '15 Jan 2025',
+    amount: '1.5',
+    actions: '',
+    fiatAmount: '$98,500',
+    claimTokenType: 'rbtc' as const,
+    status: 'successful' as const,
+    displayStatusLabel: 'Successful' as const,
+    requestStatus: 'done' as const,
+    updatedAtFormatted: '15 Jan 2025',
+    createdAtFormatted: '10 Jan 2025',
+    finalizedAtFormatted: '15 Jan 2025',
+    requestType: 'deposit' as const,
+  },
+}
+
+function TableWrapper({ row }: { row: typeof CLAIMABLE_DEPOSIT_ROW | typeof PENDING_ROW | typeof DONE_ROW }) {
   const dispatch = useTableActionsContext<ColumnId, BtcVaultHistoryCellDataMap>()
 
   useEffect(() => {
@@ -93,7 +85,7 @@ function TableWrapper({ row }: { row: (typeof DONE_DEPOSIT_ROW) | (typeof PENDIN
   )
 }
 
-function TestTable({ row }: { row: (typeof DONE_DEPOSIT_ROW) | (typeof PENDING_ROW) | (typeof CLAIMABLE_DEPOSIT_ROW) }) {
+function TestTable({ row }: { row: typeof CLAIMABLE_DEPOSIT_ROW | typeof PENDING_ROW | typeof DONE_ROW }) {
   return (
     <TableProvider<ColumnId, BtcVaultHistoryCellDataMap>>
       <TableWrapper row={row} />
@@ -102,62 +94,55 @@ function TestTable({ row }: { row: (typeof DONE_DEPOSIT_ROW) | (typeof PENDING_R
 }
 
 describe('BtcVaultHistoryDataRow', () => {
-  it('does not expand when pending row (empty stateHistory) is clicked', () => {
-    render(<TestTable row={PENDING_ROW} />)
+  it('renders row data (type, date, amount, status)', () => {
+    render(<TestTable row={CLAIMABLE_DEPOSIT_ROW} />)
 
-    fireEvent.click(screen.getByTestId('btc-vault-history-data-row'))
-
-    expect(screen.queryAllByTestId('btc-vault-history-detail-row')).toHaveLength(0)
-  })
-
-  it('is not clickable when row has no stateHistory', () => {
-    render(<TestTable row={PENDING_ROW} />)
     const row = screen.getByTestId('btc-vault-history-data-row')
-
-    expect(row.className).not.toContain('cursor-pointer')
+    expect(row).toHaveTextContent('Deposit')
+    expect(row).toHaveTextContent('15 Jan 2025')
+    expect(row).toHaveTextContent('1.5')
+    expect(row).toHaveTextContent('Open to claim')
   })
 
-  it('renders detail rows with correct dates and statuses when expanded', () => {
-    render(<TestTable row={DONE_DEPOSIT_ROW} />)
-
-    fireEvent.click(screen.getByTestId('btc-vault-history-data-row'))
-
-    const detailRows = screen.getAllByTestId('btc-vault-history-detail-row')
-    expect(detailRows).toHaveLength(2)
-
-    expect(detailRows[0]).toHaveTextContent('10 Jan 2025')
-    expect(detailRows[0]).toHaveTextContent('Pending')
-    expect(detailRows[1]).toHaveTextContent('12 Jan 2025')
-    expect(detailRows[1]).toHaveTextContent('Open to claim')
-  })
-
-  it('shows action label in detail rows', () => {
-    render(<TestTable row={DONE_DEPOSIT_ROW} />)
-
-    fireEvent.click(screen.getByTestId('btc-vault-history-data-row'))
-
-    const detailRows = screen.getAllByTestId('btc-vault-history-detail-row')
-    expect(detailRows[0]).toHaveTextContent('Cancel request')
-    expect(detailRows[1]).toHaveTextContent('Claimed shares')
-  })
-
-  it('collapses detail rows on second click', () => {
-    render(<TestTable row={DONE_DEPOSIT_ROW} />)
-
-    fireEvent.click(screen.getByTestId('btc-vault-history-data-row'))
-    expect(screen.getAllByTestId('btc-vault-history-detail-row')).toHaveLength(2)
-
-    fireEvent.click(screen.getByTestId('btc-vault-history-data-row'))
-    expect(screen.queryAllByTestId('btc-vault-history-detail-row')).toHaveLength(0)
-  })
-
-  it('hides actions when collapsed and shows them when expanded', () => {
+  it('does not show actions when not hovered', () => {
     render(<TestTable row={CLAIMABLE_DEPOSIT_ROW} />)
 
     expect(screen.queryByText('Claim shares')).not.toBeInTheDocument()
+  })
 
-    fireEvent.click(screen.getByTestId('btc-vault-history-data-row'))
+  it('shows "Claim shares" on hover for claimable deposit', () => {
+    render(<TestTable row={CLAIMABLE_DEPOSIT_ROW} />)
+
+    fireEvent.mouseEnter(screen.getByTestId('btc-vault-history-data-row'))
 
     expect(screen.getByText('Claim shares')).toBeInTheDocument()
+  })
+
+  it('shows "Cancel request" on hover for pending row', () => {
+    render(<TestTable row={PENDING_ROW} />)
+
+    fireEvent.mouseEnter(screen.getByTestId('btc-vault-history-data-row'))
+
+    expect(screen.getByText('Cancel request')).toBeInTheDocument()
+  })
+
+  it('hides actions on mouse leave', () => {
+    render(<TestTable row={CLAIMABLE_DEPOSIT_ROW} />)
+    const row = screen.getByTestId('btc-vault-history-data-row')
+
+    fireEvent.mouseEnter(row)
+    expect(screen.getByText('Claim shares')).toBeInTheDocument()
+
+    fireEvent.mouseLeave(row)
+    expect(screen.queryByText('Claim shares')).not.toBeInTheDocument()
+  })
+
+  it('does not show actions on hover for completed rows', () => {
+    render(<TestTable row={DONE_ROW} />)
+
+    fireEvent.mouseEnter(screen.getByTestId('btc-vault-history-data-row'))
+
+    expect(screen.queryByText('Claim shares')).not.toBeInTheDocument()
+    expect(screen.queryByText('Cancel request')).not.toBeInTheDocument()
   })
 })

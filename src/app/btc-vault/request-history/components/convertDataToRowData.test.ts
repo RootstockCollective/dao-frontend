@@ -19,9 +19,6 @@ const MOCK_ROW: RequestHistoryRowDisplay = {
   fiatAmountFormatted: '$98,500',
   claimTokenType: 'rbtc',
   updatedAtFormatted: '15 Jan 2025',
-  stateHistory: [
-    { date: '10 Jan 2025', displayStatus: 'pending', displayStatusLabel: 'Pending', actionLabel: 'Cancel request' },
-  ],
 }
 
 describe('convertDataToRowData', () => {
@@ -66,30 +63,6 @@ describe('convertDataToRowData', () => {
     expect(row.data.fiatAmount).toBeNull()
     expect(row.data.claimTokenType).toBe('shares')
     expect(row.data.requestType).toBe('withdrawal')
-  })
-
-  it('maps stateHistory to row data', () => {
-    const rowWithHistory: RequestHistoryRowDisplay = {
-      ...MOCK_ROW,
-      stateHistory: [
-        { date: '10 Jan 2025', displayStatus: 'pending', displayStatusLabel: 'Pending', actionLabel: 'Cancel request' },
-        { date: '12 Jan 2025', displayStatus: 'open_to_claim', displayStatusLabel: 'Open to claim', actionLabel: 'Claimed shares' },
-      ],
-    }
-    const [row] = convertDataToRowData([rowWithHistory])
-    expect(row.data.stateHistory).toHaveLength(2)
-    expect(row.data.stateHistory[0]).toEqual({
-      date: '10 Jan 2025',
-      displayStatus: 'pending',
-      displayStatusLabel: 'Pending',
-      actionLabel: 'Cancel request',
-    })
-    expect(row.data.stateHistory[1]).toEqual({
-      date: '12 Jan 2025',
-      displayStatus: 'open_to_claim',
-      displayStatusLabel: 'Open to claim',
-      actionLabel: 'Claimed shares',
-    })
   })
 
   it('maps multiple rows preserving order', () => {

@@ -30,7 +30,6 @@ export function convertDataToRowData(
       createdAtFormatted: row.createdAtFormatted,
       finalizedAtFormatted: row.finalizedAtFormatted,
       requestType: row.type,
-      stateHistory: row.stateHistory,
     },
   }))
 }

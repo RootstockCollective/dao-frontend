@@ -118,17 +118,14 @@ interface ActionsCellProps {
 
 /**
  * Renders action buttons for actionable rows (claimable/pending).
- * Actions are only visible when the row is hovered or expanded.
+ * Actions are only visible on hover (desktop) to keep the table clutter-free.
  */
 export const ActionsCell = ({ requestStatus, type, isHovered }: ActionsCellProps) => {
   if (!isHovered) {
     return <TableCell columnId="actions" />
   }
 
-  const isClaimable = requestStatus === 'claimable'
-  const isPending = requestStatus === 'pending'
-
-  if (isClaimable) {
+  if (requestStatus === 'claimable') {
     return (
       <TableCell columnId="actions">
         <div className="flex items-center gap-1">
@@ -141,7 +138,7 @@ export const ActionsCell = ({ requestStatus, type, isHovered }: ActionsCellProps
     )
   }
 
-  if (isPending) {
+  if (requestStatus === 'pending') {
     return (
       <TableCell columnId="actions">
         <div className="flex items-center gap-1">
@@ -155,36 +152,4 @@ export const ActionsCell = ({ requestStatus, type, isHovered }: ActionsCellProps
   }
 
   return <TableCell columnId="actions" />
-}
-
-interface DetailActionsCellProps {
-  actionLabel: string | null
-}
-
-/** Renders the action label for a lifecycle sub-row with matching icon, or "-" when none. */
-export const DetailActionsCell = ({ actionLabel }: DetailActionsCellProps) => {
-  if (!actionLabel) {
-    return (
-      <TableCell columnId="actions">
-        <Paragraph variant="body-s" className="text-black">
-          -
-        </Paragraph>
-      </TableCell>
-    )
-  }
-
-  const isCancelAction = actionLabel === 'Cancel request'
-  const isClaimAction = actionLabel.startsWith('Claim')
-  const Icon = isCancelAction ? TrashIcon : isClaimAction ? MoneyIconKoto : null
-
-  return (
-    <TableCell columnId="actions">
-      <div className="flex items-center gap-1">
-        <Paragraph variant="body-s" className="font-medium text-black">
-          {actionLabel}
-        </Paragraph>
-        {Icon && <Icon size={16} color="black" />}
-      </div>
-    </TableCell>
-  )
 }
