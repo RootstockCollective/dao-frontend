@@ -8,6 +8,7 @@ import { usePricesContext } from '@/shared/context/PricesContext'
 import { useModal } from '@/shared/hooks/useModal'
 import { showToast } from '@/shared/notification'
 
+import { useCancelRequest } from '../../hooks/useCancelRequest'
 import { useRequestById } from '../../hooks/useRequestById'
 import { toRequestDetailDisplay } from '../../services/ui/mappers'
 import { CancelRequestModal, TransactionDetailOops, TransactionDetailView } from './components'
@@ -22,6 +23,7 @@ export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
   const { prices } = usePricesContext()
   const rbtcPrice = prices[RBTC]?.price ?? 0
   const { isModalOpened, openModal, closeModal } = useModal()
+  const { onCancelRequest, isRequesting: isCancelling } = useCancelRequest(request?.type ?? 'deposit')
 
   if (!address || !isConnected) {
     return <TransactionDetailOops variant="not-connected" />
@@ -37,14 +39,23 @@ export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
 
   const detail = toRequestDetailDisplay(request, null, rbtcPrice, address)
 
-  const handleConfirmCancel = () => {
-    closeModal()
-    showToast({
-      severity: 'success',
-      title: 'Request canceled',
-      content: 'Your request has been canceled successfully.',
-    })
-    // TODO(DAO-XXXX): Wire up contract cancellation logic here
+  const handleConfirmCancel = async () => {
+    try {
+      await onCancelRequest(BigInt(request.id))
+      closeModal()
+      showToast({
+        severity: 'success',
+        title: 'Request canceled',
+        content: 'Your request has been canceled successfully.',
+      })
+    } catch (error) {
+      closeModal()
+      showToast({
+        severity: 'error',
+        title: 'Cancellation failed',
+        content: error instanceof Error ? error.message : 'Something went wrong.',
+      })
+    }
   }
 
   return (
@@ -55,7 +66,9 @@ export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
         type={request.type}
         onCancel={openModal}
       />
-      {isModalOpened && <CancelRequestModal onClose={closeModal} onConfirm={handleConfirmCancel} />}
+      {isModalOpened && (
+        <CancelRequestModal onClose={closeModal} onConfirm={handleConfirmCancel} isLoading={isCancelling} />
+      )}
     </>
   )
 }
