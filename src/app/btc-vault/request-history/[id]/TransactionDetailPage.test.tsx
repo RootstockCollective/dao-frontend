@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { TransactionDetailPage } from './TransactionDetailPage'
@@ -6,6 +6,7 @@ import { TransactionDetailPage } from './TransactionDetailPage'
 const mockUseAccount = vi.fn()
 const mockUseRequestById = vi.fn()
 const mockShowToast = vi.fn()
+const mockOnCancelRequest = vi.fn()
 
 vi.mock('wagmi', () => ({
   useAccount: () => mockUseAccount(),
@@ -13,6 +14,16 @@ vi.mock('wagmi', () => ({
 
 vi.mock('../../hooks/useRequestById', () => ({
   useRequestById: (id: string | undefined) => mockUseRequestById(id),
+}))
+
+vi.mock('../../hooks/useCancelRequest', () => ({
+  useCancelBtcVaultRequest: () => ({
+    onCancelRequest: mockOnCancelRequest,
+    isRequesting: false,
+    isTxPending: false,
+    isTxFailed: false,
+    cancelTxHash: undefined,
+  }),
 }))
 
 vi.mock('@/shared/notification', () => ({
@@ -54,7 +65,7 @@ const MOCK_WITHDRAWAL_PENDING = {
   amount: ONE_BTC / 2n,
   status: 'pending' as const,
   epochId: null,
-  batchRedeemId: 'batch-1',
+  batchRedeemId: '1',
   timestamps: { created: 1700000000 },
   txHashes: { submit: '0x' + 'a'.repeat(64) },
 }
@@ -140,14 +151,17 @@ describe('TransactionDetailPage', () => {
     expect(screen.getByText('Are you sure you want to cancel this request?')).toBeInTheDocument()
   })
 
-  it('shows success toast and closes modal when "Yes, cancel" is clicked', () => {
+  it('shows success toast and closes modal when "Yes, cancel" is clicked', async () => {
+    mockOnCancelRequest.mockResolvedValue('0xmockhash')
     render(<TransactionDetailPage id="req-withdrawal-pending" />)
     fireEvent.click(screen.getByTestId('cancel-request-button'))
     fireEvent.click(screen.getByTestId('CancelRequestConfirm'))
-    expect(mockShowToast).toHaveBeenCalledWith({
-      severity: 'success',
-      title: 'Request canceled',
-      content: 'Your request has been canceled successfully.',
+    await waitFor(() => {
+      expect(mockShowToast).toHaveBeenCalledWith({
+        severity: 'success',
+        title: 'Request canceled',
+        content: 'Your request has been canceled successfully.',
+      })
     })
     expect(screen.queryByTestId('CancelRequestModal')).not.toBeInTheDocument()
   })

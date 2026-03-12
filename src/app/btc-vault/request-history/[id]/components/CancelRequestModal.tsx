@@ -9,9 +9,10 @@ import { Paragraph } from '@/components/Typography'
 interface CancelRequestModalProps {
   onClose: () => void
   onConfirm: () => void
+  isLoading?: boolean
 }
 
-export function CancelRequestModal({ onClose, onConfirm }: CancelRequestModalProps) {
+export function CancelRequestModal({ onClose, onConfirm, isLoading }: CancelRequestModalProps) {
   return (
     <Modal onClose={onClose} data-testid="CancelRequestModal">
       <div className="h-full p-6 flex flex-col !w-full">
@@ -39,9 +40,10 @@ export function CancelRequestModal({ onClose, onConfirm }: CancelRequestModalPro
               onClick={onConfirm}
               variant="primary"
               className="whitespace-nowrap"
+              disabled={isLoading}
               data-testid="CancelRequestConfirm"
             >
-              Yes, cancel
+              {isLoading ? 'Canceling...' : 'Yes, cancel'}
             </Button>
           </div>
         </div>
