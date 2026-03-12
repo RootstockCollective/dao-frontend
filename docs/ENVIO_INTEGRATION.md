@@ -161,7 +161,7 @@ The indexer returned fewer than 10 proposals. This typically means the indexer i
 | `ENVIO_SYNC_CHECK_RPC_URL` | Yes | Rootstock RPC node for chain tip (`eth_blockNumber`). **Not** the Envio URL. |
 | `ENVIO_SYNC_CHECK_SYNC_PROGRESS_ID` | No | SyncProgress entity id. Default `chain-31`. Leave empty for mainnet. |
 | `ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL` | No | Slack Incoming Webhook URL. |
-| `ENVIO_SYNC_CHECK_LAG_THRESHOLD_BLOCKS` | No | Alert threshold in blocks. Default 500. |
+| `ENVIO_SYNC_CHECK_LAG_THRESHOLD_BLOCKS` | No | Alert threshold in blocks. Default 1000. Must be > 500 (SyncProgress writes every 500 blocks). |
 | `ENVIO_SYNC_CHECK_SECRET` | No | Bearer token for auth. |
 
 ### Scheduling
@@ -197,7 +197,7 @@ curl -s http://localhost:3000/api/envio-sync-check | jq
 # Check Slack channel for the lag alert.
 ```
 
-**4. Clean up:** Remove `ENVIO_SYNC_CHECK_LAG_THRESHOLD_BLOCKS=0` from `.env.dev` (defaults back to 500).
+**4. Clean up:** Remove `ENVIO_SYNC_CHECK_LAG_THRESHOLD_BLOCKS=0` from `.env.dev` (defaults back to 1000).
 
 ### Slack webhook setup
 

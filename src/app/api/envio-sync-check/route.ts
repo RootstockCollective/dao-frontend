@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-const DEFAULT_LAG_THRESHOLD_BLOCKS = 500
+const DEFAULT_LAG_THRESHOLD_BLOCKS = 1000
 
 async function fetchLastSyncedBlock(graphqlUrl: string, syncProgressId: string): Promise<number> {
   const syncProgressQuery = `
@@ -86,10 +86,10 @@ async function fetchChainTip(rpcUrl: string): Promise<number> {
 
 async function postSlackAlert(
   webhookUrl: string,
-  payload: { lastBlock: number; chainTip: number; lag: number; threshold: number },
+  payload: { instanceName: string; lastBlock: number; chainTip: number; lag: number; threshold: number },
 ): Promise<void> {
   const text = [
-    `:warning: Envio indexer sync lag exceeds threshold.`,
+    `:warning: *[${payload.instanceName}]* Envio indexer sync lag exceeds threshold.`,
     `Last synced block: ${payload.lastBlock}`,
     `Chain tip: ${payload.chainTip}`,
     `Lag: ${payload.lag} blocks (threshold: ${payload.threshold})`,
@@ -130,9 +130,10 @@ export async function GET(request: NextRequest) {
   const graphqlUrl = process.env.ENVIO_GRAPHQL_URL
   const rpcUrl = process.env.ENVIO_SYNC_CHECK_RPC_URL
   const slackWebhookUrl = process.env.ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL
-  const lagThresholdBlocks =
-    Number(process.env.ENVIO_SYNC_CHECK_LAG_THRESHOLD_BLOCKS) || DEFAULT_LAG_THRESHOLD_BLOCKS
+  const parsedThreshold = Number(process.env.ENVIO_SYNC_CHECK_LAG_THRESHOLD_BLOCKS)
+  const lagThresholdBlocks = Number.isNaN(parsedThreshold) ? DEFAULT_LAG_THRESHOLD_BLOCKS : parsedThreshold
   const syncProgressChainId = process.env.ENVIO_SYNC_CHECK_SYNC_PROGRESS_ID ?? 'chain-31'
+  const instanceName = process.env.ENVIO_SYNC_CHECK_INSTANCE_NAME ?? 'unknown'
 
   if (secret) {
     const auth = request.headers.get('authorization')
@@ -177,6 +178,7 @@ export async function GET(request: NextRequest) {
   if (alerted && slackWebhookUrl) {
     try {
       await postSlackAlert(slackWebhookUrl, {
+        instanceName,
         lastBlock,
         chainTip,
         lag,

@@ -89,7 +89,7 @@ describe('GET /api/envio-sync-check', () => {
     expect(data.lastBlock).toBe(6000000)
     expect(data.chainTip).toBe(6000000)
     expect(data.lag).toBe(0)
-    expect(data.threshold).toBe(500)
+    expect(data.threshold).toBe(1000)
     expect(data.alerted).toBeUndefined()
   })
 
