@@ -1,20 +1,7 @@
 import { useMemo } from 'react'
-import { type Abi, erc20Abi } from 'viem'
-import { useReadContracts } from 'wagmi'
 
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { rbtcAsyncVault } from '@/lib/contracts'
-
-// SAFETY: ABI omits `inputs` on parameterless entries,
-// which is valid JSON-ABI but violates abitype's strict shape.
-const vaultAbi = rbtcAsyncVault.abi as unknown as Abi
-
-const primaryContracts = [
-  { address: rbtcAsyncVault.address, abi: vaultAbi, functionName: 'asset' },
-  { address: rbtcAsyncVault.address, abi: vaultAbi, functionName: 'currentEpoch' },
-  { address: rbtcAsyncVault.address, abi: vaultAbi, functionName: 'reportedOffchainAssets' },
-  { address: rbtcAsyncVault.address, abi: vaultAbi, functionName: 'freeOnchainLiquidity' },
-] as const
+import { rbtcVault } from '@/lib/contracts'
+import { useReadRbtcVault, useReadRbtcVaultForMultipleArgs } from '@/shared/hooks/contracts/btc-vault'
 
 function parseEpochSnapshot(result: unknown) {
   const tuple = result as readonly [bigint, bigint, bigint, bigint] | undefined
@@ -25,102 +12,96 @@ function parseEpochSnapshot(result: unknown) {
 }
 
 /**
- * Reads on-chain data from the RBTCAsyncVault contract.
- *
- * Two-phase fetch:
- *  1. Primary: asset address, currentEpoch, reportedOffchainAssets, freeOnchainLiquidity.
- *  2. Dependent: asset balanceOf(vault), epochSnapshot(last), epochSnapshot(previous).
+ * Hook for reading on-chain data from the RBTCAsyncVault contract.
  */
 export function useRbtcVault() {
   const {
-    data: primaryData,
-    isLoading: isPrimaryLoading,
-    error: primaryError,
-  } = useReadContracts({
-    contracts: primaryContracts,
-    query: { refetchInterval: AVERAGE_BLOCKTIME },
-  })
-
-  const assetAddress = primaryData?.[0]?.result as `0x${string}` | undefined
-  const currentEpoch = primaryData?.[1]?.result as bigint | undefined
+    data: assetAddress,
+    isLoading: isAssetLoading,
+    error: assetError,
+  } = useReadRbtcVault({ functionName: 'asset' })
+  const {
+    data: currentEpoch,
+    isLoading: isCurrentEpochLoading,
+    error: currentEpochError,
+  } = useReadRbtcVault({ functionName: 'currentEpoch' })
+  const {
+    data: reportedOffchainAssets,
+    isLoading: isReportedOffchainAssetsLoading,
+    error: reportedOffchainAssetsError,
+  } = useReadRbtcVault({ functionName: 'reportedOffchainAssets' })
+  const {
+    data: freeOnchainLiquidity,
+    isLoading: isFreeOnchainLiquidityLoading,
+    error: freeOnchainLiquidityError,
+  } = useReadRbtcVault({ functionName: 'freeOnchainLiquidity' })
 
   const lastEpochId = currentEpoch && currentEpoch >= 2n ? currentEpoch - 1n : undefined // most recent closed epoch
   const prevEpochId = currentEpoch && currentEpoch >= 3n ? currentEpoch - 2n : undefined // second most recent closed epoch
 
-  const dependentContracts = useMemo(() => {
-    if (!assetAddress) return []
-    return [
-      {
-        address: assetAddress,
-        abi: erc20Abi,
-        functionName: 'balanceOf' as const,
-        args: [rbtcAsyncVault.address],
-      },
-      ...(lastEpochId
-        ? [
-            {
-              address: rbtcAsyncVault.address,
-              abi: vaultAbi,
-              functionName: 'epochSnapshot',
-              args: [lastEpochId],
-            },
-          ]
-        : []),
-      ...(prevEpochId
-        ? [
-            {
-              address: rbtcAsyncVault.address,
-              abi: vaultAbi,
-              functionName: 'epochSnapshot',
-              args: [prevEpochId],
-            },
-          ]
-        : []),
-    ]
-  }, [assetAddress, lastEpochId, prevEpochId])
+  const {
+    data: vaultBalance,
+    isLoading: isVaultBalanceLoading,
+    error: vaultBalanceError,
+  } = useReadRbtcVault({ functionName: 'balanceOf', args: [rbtcVault.address] }, { enabled: !!assetAddress })
+
+  const epochArgs = useMemo((): [bigint][] => {
+    if (lastEpochId && prevEpochId) {
+      return [[lastEpochId], [prevEpochId]]
+    }
+    if (lastEpochId) {
+      return [[lastEpochId]]
+    }
+    return []
+  }, [lastEpochId, prevEpochId])
 
   const {
-    data: depData,
-    isLoading: isDepLoading,
-    error: depError,
-  } = useReadContracts({
-    contracts: dependentContracts,
-    query: {
-      enabled: dependentContracts.length > 0,
-      refetchInterval: AVERAGE_BLOCKTIME,
-    },
-  })
+    data: epochSnapshots,
+    isLoading: isSnapshotLoading,
+    error: snapshotError,
+  } = useReadRbtcVaultForMultipleArgs(
+    { functionName: 'epochSnapshot', args: epochArgs },
+    { enabled: epochArgs.length > 0 },
+  )
+
+  const isLoading =
+    isAssetLoading ||
+    isCurrentEpochLoading ||
+    isReportedOffchainAssetsLoading ||
+    isFreeOnchainLiquidityLoading ||
+    isVaultBalanceLoading ||
+    (epochArgs.length > 0 && isSnapshotLoading)
+
+  const error =
+    assetError ??
+    currentEpochError ??
+    reportedOffchainAssetsError ??
+    freeOnchainLiquidityError ??
+    vaultBalanceError ??
+    snapshotError ??
+    null
 
   return useMemo(() => {
-    const reportedOffchainAssets = (primaryData?.[2]?.result as bigint | undefined) ?? 0n
-    const freeOnchainLiquidity = (primaryData?.[3]?.result as bigint | undefined) ?? 0n
-
-    const vaultBalance = (depData?.[0]?.result as bigint | undefined) ?? 0n
-
-    let snapshotIdx = 1
-    const lastClosedEpoch = lastEpochId ? parseEpochSnapshot(depData?.[snapshotIdx++]?.result) : null
-    const previousClosedEpoch = prevEpochId ? parseEpochSnapshot(depData?.[snapshotIdx]?.result) : null
-
-    const error = primaryError ?? depError ?? null
+    const lastClosedEpoch = lastEpochId ? parseEpochSnapshot(epochSnapshots?.[0]) : null
+    const previousClosedEpoch = prevEpochId ? parseEpochSnapshot(epochSnapshots?.[1]) : null
 
     return {
-      vaultBalance,
-      reportedOffchainAssets,
-      freeOnchainLiquidity,
+      vaultBalance: vaultBalance ?? 0n,
+      reportedOffchainAssets: reportedOffchainAssets ?? 0n,
+      freeOnchainLiquidity: freeOnchainLiquidity ?? 0n,
       lastClosedEpoch,
       previousClosedEpoch,
-      isLoading: isPrimaryLoading || (dependentContracts.length > 0 && isDepLoading),
+      isLoading,
       error,
     }
   }, [
-    primaryData,
-    depData,
+    vaultBalance,
+    reportedOffchainAssets,
+    freeOnchainLiquidity,
     lastEpochId,
     prevEpochId,
-    primaryError,
-    depError,
-    isPrimaryLoading,
-    isDepLoading,
-    dependentContracts.length,
+    epochSnapshots,
+    isLoading,
+    error,
   ])
 }
