@@ -17,7 +17,7 @@ vi.mock('../../hooks/useRequestById', () => ({
 }))
 
 vi.mock('../../hooks/useCancelRequest', () => ({
-  useCancelRequest: () => ({
+  useCancelBtcVaultRequest: () => ({
     onCancelRequest: mockOnCancelRequest,
     isRequesting: false,
     isTxPending: false,
