@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest'
-
 import { growthFactorToApy, ratePerSecondToApy } from './apy'
+import { SECONDS_PER_YEAR } from './constants'
 
-const SECONDS_PER_YEAR = 31_557_600
 const SECONDS_PER_DAY = 86_400
 const SECONDS_PER_MONTH = SECONDS_PER_YEAR / 12
 const SECONDS_PER_QUARTER = SECONDS_PER_YEAR / 4
