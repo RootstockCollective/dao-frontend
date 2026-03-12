@@ -1,1 +1,1 @@
-export { useCancelRequest } from './useCancelRequest'
+export { useCancelBtcVaultRequest } from './useCancelRequest'

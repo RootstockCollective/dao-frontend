@@ -8,7 +8,7 @@ import { usePricesContext } from '@/shared/context/PricesContext'
 import { useModal } from '@/shared/hooks/useModal'
 import { showToast } from '@/shared/notification'
 
-import { useCancelRequest } from '../../hooks/useCancelRequest'
+import { useCancelBtcVaultRequest } from '../../hooks/useCancelRequest'
 import { useRequestById } from '../../hooks/useRequestById'
 import { toRequestDetailDisplay } from '../../services/ui/mappers'
 import { CancelRequestModal, TransactionDetailOops, TransactionDetailView } from './components'
@@ -23,7 +23,7 @@ export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
   const { prices } = usePricesContext()
   const rbtcPrice = prices[RBTC]?.price ?? 0
   const { isModalOpened, openModal, closeModal } = useModal()
-  const { onCancelRequest, isRequesting: isCancelling } = useCancelRequest(request?.type ?? 'deposit')
+  const { onCancelRequest, isRequesting: isCancelling } = useCancelBtcVaultRequest(request?.type ?? 'deposit')
 
   if (!address || !isConnected) {
     return <TransactionDetailOops variant="not-connected" />
@@ -40,7 +40,7 @@ export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
   const detail = toRequestDetailDisplay(request, null, rbtcPrice, address)
 
   const handleConfirmCancel = async () => {
-    // TODO(DAO-2071): VaultRequest.id is a UI string ("req-deposit-pending"), but the
+    // TODO: VaultRequest.id is a UI string ("req-deposit-pending"), but the
     // contract expects a numeric requestId (uint256). Once useRequestById returns real
     // on-chain data, replace this with the actual numeric requestId field.
     const numericId = Number(request.epochId ?? request.batchRedeemId ?? '0')

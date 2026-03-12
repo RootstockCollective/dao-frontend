@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { useCancelRequest } from './useCancelRequest'
+import { useCancelBtcVaultRequest } from './useCancelRequest'
 
 const mockWriteContractAsync = vi.fn()
 const mockUseAccount = vi.fn()
@@ -28,7 +28,7 @@ describe('useCancelRequest', () => {
   })
 
   it('returns the expected interface', () => {
-    const { result } = renderHook(() => useCancelRequest('deposit'))
+    const { result } = renderHook(() => useCancelBtcVaultRequest('deposit'))
 
     expect(result.current).toEqual(
       expect.objectContaining({
@@ -46,7 +46,7 @@ describe('useCancelRequest', () => {
     const txHash = '0xmockhash'
     mockWriteContractAsync.mockResolvedValue(txHash)
 
-    const { result } = renderHook(() => useCancelRequest('deposit'))
+    const { result } = renderHook(() => useCancelBtcVaultRequest('deposit'))
     const hash = await result.current.onCancelRequest(requestId)
 
     expect(hash).toBe(txHash)
@@ -64,7 +64,7 @@ describe('useCancelRequest', () => {
     const txHash = '0xmockhash'
     mockWriteContractAsync.mockResolvedValue(txHash)
 
-    const { result } = renderHook(() => useCancelRequest('withdrawal'))
+    const { result } = renderHook(() => useCancelBtcVaultRequest('withdrawal'))
     const hash = await result.current.onCancelRequest(requestId)
 
     expect(hash).toBe(txHash)
@@ -79,7 +79,7 @@ describe('useCancelRequest', () => {
   it('does not pass value (no rBTC sent when cancelling)', async () => {
     mockWriteContractAsync.mockResolvedValue('0xhash')
 
-    const { result } = renderHook(() => useCancelRequest('deposit'))
+    const { result } = renderHook(() => useCancelBtcVaultRequest('deposit'))
     await result.current.onCancelRequest(1n)
 
     const callArgs = mockWriteContractAsync.mock.calls[0][0]
@@ -88,7 +88,7 @@ describe('useCancelRequest', () => {
 
   it('rejects when wallet is disconnected', async () => {
     mockUseAccount.mockReturnValue({ address: undefined })
-    const { result } = renderHook(() => useCancelRequest('deposit'))
+    const { result } = renderHook(() => useCancelBtcVaultRequest('deposit'))
     await expect(result.current.onCancelRequest(1n)).rejects.toThrow('Wallet not connected')
   })
 })

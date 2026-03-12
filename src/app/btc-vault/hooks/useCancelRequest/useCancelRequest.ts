@@ -15,7 +15,7 @@ import type { RequestType } from '../../services/types'
  * - Deposits:    `cancelDepositRequestNative(requestId, receiver, controller)` — returns native rBTC.
  * - Withdrawals: `cancelRedeemRequest(requestId, receiver, controller)` — returns vault shares.
  */
-export function useCancelRequest(requestType: RequestType) {
+export function useCancelBtcVaultRequest(requestType: RequestType) {
   const { address } = useAccount()
   const { writeContractAsync, data: cancelTxHash, isPending: isRequesting } = useWriteContract()
   const { isTxPending, isTxFailed } = useTransactionStatus(cancelTxHash)
