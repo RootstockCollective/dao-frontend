@@ -63,7 +63,7 @@ export const WithdrawReviewStep = ({
             Redemption value (est.)
           </Label>
           <div className="flex items-center gap-2">
-            <TokenImage symbol="RBTC" size={20} />
+            <TokenImage symbol={RBTC} size={20} />
             <Label variant="body-l" bold>
               {rbtcEquivalent} {RBTC}
             </Label>

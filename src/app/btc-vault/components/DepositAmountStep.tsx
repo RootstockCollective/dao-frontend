@@ -125,7 +125,7 @@ export const DepositAmountStep = ({
             inputProps={{ decimalScale: 18 }}
           />
           <div className="flex items-center gap-1 shrink-0">
-            <TokenImage symbol="RBTC" size={24} />
+            <TokenImage symbol={RBTC} size={24} />
             <Label variant="body-l" bold data-testid="Symbol">
               {RBTC}
             </Label>
@@ -157,7 +157,7 @@ export const DepositAmountStep = ({
       {/* --- Balance + Percentage Buttons --- */}
       <div className="flex justify-between items-center mx-3 my-2">
         <div className="flex items-center gap-1">
-          <TokenImage symbol="RBTC" size={16} />
+          <TokenImage symbol={RBTC} size={16} />
           <Label variant="body-s" className="text-text-60" data-testid="WalletBalanceLabel">
             {RBTC} balance: {rbtcBalanceFormatted}
           </Label>

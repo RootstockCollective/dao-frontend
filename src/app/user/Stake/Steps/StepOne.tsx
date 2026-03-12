@@ -1,10 +1,13 @@
+import { useCallback, useEffect, useMemo, useRef } from 'react'
+
 import { StakeInput } from '@/app/user/Stake/StakeInput'
 import { Button } from '@/components/Button'
 import { TokenImage } from '@/components/TokenImage'
 import { Label, Span } from '@/components/Typography'
 import Big from '@/lib/big'
+import { RIF } from '@/lib/constants'
 import { formatCurrency, handleAmountInput } from '@/lib/utils'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+
 import { useStakingContext } from '../StakingContext'
 import { StepProps } from '../types'
 
@@ -69,7 +72,7 @@ export const StepOne = ({ onGoNext }: StepProps) => {
 
       <div className="flex items-center justify-between mx-3 mt-2">
         <div className="flex items-center gap-1">
-          <TokenImage symbol="RIF" size={12} />
+          <TokenImage symbol={RIF} size={12} />
           <Label variant="body-s" className="text-text-60" data-testid="totalBalanceLabel">
             RIF Balance: {totalBalance}
           </Label>

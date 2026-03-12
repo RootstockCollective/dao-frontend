@@ -1,14 +1,16 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { cn } from '@/lib/utils'
-import { Paragraph } from '@/components/Typography'
-import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
+import { useCallback, useState } from 'react'
+
 import { ArrowDownIcon } from '@/components/Icons/ArrowDownIcon'
+import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
 import { ChevronDownIcon } from '@/components/Icons/ChevronDownIcon'
 import { ChevronUpIcon } from '@/components/Icons/ChevronUpIcon'
 import { TokenImage } from '@/components/TokenImage'
-import { STRIF } from '@/lib/constants'
+import { Paragraph } from '@/components/Typography'
+import { RIF, STRIF } from '@/lib/constants'
+import { cn } from '@/lib/utils'
+
 import { StakingHistoryTable } from './StakingHistoryTable.config'
 
 interface MobileStakingHistoryCardProps {
@@ -72,7 +74,7 @@ export const MobileStakingHistoryCard = ({ row }: MobileStakingHistoryCardProps)
           <Paragraph variant="body" className={cn(isStake ? 'text-v3-success' : 'text-error')}>
             {amount}
           </Paragraph>
-          <TokenImage symbol={'RIF'} size={16} />
+          <TokenImage symbol={RIF} size={16} />
           <Paragraph variant="body" className="text-v3-text-100">
             {STRIF}
           </Paragraph>
@@ -124,7 +126,7 @@ export const MobileStakingHistoryCard = ({ row }: MobileStakingHistoryCardProps)
                   >
                     {detail.amount}
                   </Paragraph>
-                  <TokenImage symbol={'RIF'} size={16} />
+                  <TokenImage symbol={RIF} size={16} />
                   <Paragraph variant="body" className="text-v3-text-100">
                     {STRIF}
                   </Paragraph>

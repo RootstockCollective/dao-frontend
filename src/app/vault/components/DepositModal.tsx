@@ -1,31 +1,32 @@
+import Image from 'next/image'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+
+import { formatSymbol } from '@/app/shared/formatter'
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
+import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
+import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
+import { Button } from '@/components/Button'
+import { Divider } from '@/components/Divider'
+import { Input } from '@/components/Input'
+import { ExternalLink } from '@/components/Link'
 import { Modal } from '@/components/Modal'
+import { PercentageButtons } from '@/components/PercentageButtons'
+import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Paragraph, Span } from '@/components/Typography'
 import Big from '@/lib/big'
-import { cn, handleAmountInput, formatCurrency } from '@/lib/utils'
-import { formatSymbol } from '@/app/shared/formatter'
+import { USDRIF, VAULT_KYC_URL } from '@/lib/constants'
+import { cn, formatCurrency, handleAmountInput } from '@/lib/utils'
+import { usePricesContext } from '@/shared/context'
 import { executeTxFlow } from '@/shared/notification'
-import { useCallback, useMemo, useState, useEffect, useRef } from 'react'
+
+import { useCanDepositToVault } from '../hooks/useCanDepositToVault'
 import { useDepositToVault } from '../hooks/useDepositToVault'
 import { useVaultAllowance } from '../hooks/useVaultAllowance'
-import { useCanDepositToVault } from '../hooks/useCanDepositToVault'
-import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
-import { Divider } from '@/components/Divider'
-import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
-import { Button } from '@/components/Button'
-import { TokenImage } from '@/components/TokenImage'
-import { PercentageButtons } from '@/components/PercentageButtons'
-import { USDRIF } from '@/lib/constants'
-import { usePricesContext } from '@/shared/context'
-import { TermsAndConditionsModal } from './TermsAndConditionsModal'
-import { useVaultTermsAcceptance } from '../hooks/useVaultTermsAcceptance'
 import { useVaultDepositLimiter } from '../hooks/useVaultDepositLimiter'
-import { ExternalLink } from '@/components/Link'
-import { VAULT_KYC_URL } from '@/lib/constants'
+import { useVaultTermsAcceptance } from '../hooks/useVaultTermsAcceptance'
 import { DEFAULT_SLIPPAGE_PERCENTAGE } from '../utils/slippage'
-import { Input } from '@/components/Input'
 import { SlippageInput } from './SlippageInput'
-import Image from 'next/image'
+import { TermsAndConditionsModal } from './TermsAndConditionsModal'
 
 interface Props {
   onCloseModal: () => void
@@ -224,7 +225,7 @@ export const DepositModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
                   inputProps={{ decimalScale: 18 }}
                 />
                 <div className="flex items-center gap-1 shrink-0">
-                  <TokenImage symbol="USDRIF" size={24} />
+                  <TokenImage symbol={USDRIF} size={24} />
                   <Label variant="body-l" bold data-testid="Symbol">
                     USDRIF
                   </Label>
@@ -254,7 +255,7 @@ export const DepositModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
                     height={24}
                     className="shrink-0 mt-1"
                   />
-                  <Label className="text-error break-words" data-testid="ErrorText">
+                  <Label className="text-error wrap-break-words" data-testid="ErrorText">
                     {errorMessage}
                   </Label>
                 </div>
@@ -264,7 +265,7 @@ export const DepositModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
             <div className="flex flex-col justify-between mx-3 my-2 gap-2">
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-1">
-                  <TokenImage symbol="USDRIF" size={16} />
+                  <TokenImage symbol={USDRIF} size={16} />
                   <Label variant="body-s" className="text-text-60" data-testid="totalBalanceLabel">
                     Your Wallet Balance: {usdrifBalance.formattedBalance}
                   </Label>

@@ -4,6 +4,7 @@ import type { FC } from 'react'
 
 import { TokenImage } from '@/components/TokenImage'
 import { Paragraph } from '@/components/Typography'
+import { RBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
 import type { BtcVaultHistoryTable } from './BtcVaultHistoryTable.config'
@@ -41,7 +42,7 @@ export const MobileBtcVaultHistoryCard: FC<Props> = ({ row }) => {
         </Paragraph>
         {data.claimTokenType === 'rbtc' ? (
           <>
-            <TokenImage symbol="RBTC" size={16} />
+            <TokenImage symbol={RBTC} size={16} />
             <Paragraph variant="body-s" className="text-v3-text-60">
               rBTC
             </Paragraph>

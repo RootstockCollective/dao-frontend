@@ -5,6 +5,7 @@ import { useMemo } from 'react'
 import { FilterSideBar } from '@/components/FilterSideBar'
 import type { ActiveFilter, FilterGroup } from '@/components/FilterSideBar/types'
 import { TokenImage } from '@/components/TokenImage'
+import { RBTC } from '@/lib/constants'
 
 import type { DisplayStatus } from '../../services/ui/types'
 
@@ -64,7 +65,7 @@ export function BtcVaultHistoryFilterSideBar({ isOpen, onClose, activeFilters, o
         allTestId: 'all-tokens',
         isMultiSelect: false,
         options: [
-          { label: 'rBTC', value: 'rbtc', icon: <TokenImage symbol="RBTC" size={16} /> },
+          { label: 'rBTC', value: 'rbtc', icon: <TokenImage symbol={RBTC} size={16} /> },
           { label: 'Shares', value: 'shares' },
         ],
       },
