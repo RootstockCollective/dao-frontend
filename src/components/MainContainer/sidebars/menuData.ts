@@ -53,7 +53,7 @@ function getBetaToolsSection(): MenuData[] {
       },
       {
         href: 'fund-admin',
-        text: 'Admin Sandbox',
+        text: 'Fund Admin Sandbox',
         buttonProps: { id: 'Button_Admin', name: 'fund-admin' },
         iconUrl: '/images/sidemenukoto/Admin.svg',
         requiredRole: 'admin',
