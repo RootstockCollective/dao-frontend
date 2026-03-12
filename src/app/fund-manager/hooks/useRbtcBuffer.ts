@@ -3,7 +3,7 @@ import { useReadRbtcBuffer } from '@/shared/hooks/contracts/btc-vault'
 /**
  * Hook for reading on-chain data from the RBTC Buffer contract.
  */
-export function useRbtcBuffer() {
+export const useRbtcBuffer = () => {
   const {
     data: bufferAssets,
     isLoading: isLoadingBufferAssets,

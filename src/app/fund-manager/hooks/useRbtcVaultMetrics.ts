@@ -18,7 +18,7 @@ import { useReadSyntheticYield } from '@/shared/hooks/contracts/btc-vault'
  *
  * Row 1: TVL, Vault APY, Synthetic Yield APY, Liquidity Reserve.
  */
-export function useRbtcVaultMetrics() {
+export const useRbtcVaultMetrics = () => {
   const { prices } = usePricesContext()
   const rbtcPrice = prices[RBTC]?.price ?? 0
 
