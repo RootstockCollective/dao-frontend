@@ -1,4 +1,5 @@
 import { Address, getAddress } from 'viem'
+
 import { COINBASE_ADDRESS, RBTC, RIF, STRIF, USDRIF, USDT0 } from './constants'
 import { tokenContracts } from './contracts'
 
@@ -35,14 +36,15 @@ export const TOKENS = {
   },
 } as const
 
-/** Find token by symbol (checks current env symbol and testnet variant if exists) */
+/** Find token by symbol (checks object key, current env symbol, and testnet variant) */
 export const findTokenBySymbol = (symbol: string) => {
   const upperSymbol = symbol.toUpperCase()
-  return Object.values(TOKENS).find(
-    t =>
+  return Object.entries(TOKENS).find(
+    ([key, t]) =>
+      key.toUpperCase() === upperSymbol ||
       t.symbol.toUpperCase() === upperSymbol ||
-      ('testnetSymbol' in t && t.testnetSymbol.toUpperCase() === upperSymbol),
-  )
+      t.testnetSymbol.toUpperCase() === upperSymbol,
+  )?.[1]
 }
 
 export const REWARD_TOKEN_KEYS = ['rif', 'rbtc', 'usdrif'] as Array<

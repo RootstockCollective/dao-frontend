@@ -1,7 +1,9 @@
-import { TokenImage } from '@/components/TokenImage'
-import { Paragraph, Span } from '@/components/Typography'
 import Image from 'next/image'
 import { formatEther } from 'viem'
+
+import { TokenImage } from '@/components/TokenImage'
+import { Paragraph, Span } from '@/components/Typography'
+import { STRIF } from '@/lib/constants'
 
 interface Props {
   backerTotalAllocation: bigint
@@ -21,7 +23,7 @@ export const AllocationWarning = ({ backerTotalAllocation, stRifBalance }: Props
       </Paragraph>
     </div>
     <div className="flex items-center gap-2 mb-6 ml-12">
-      <TokenImage symbol="stRIF" size={16} />
+      <TokenImage symbol={STRIF} size={16} />
       <Span variant="body-s" className="text-text-60">
         stRIF balance: {stRifBalance}
       </Span>

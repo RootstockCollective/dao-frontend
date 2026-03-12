@@ -1,20 +1,23 @@
-import { FC, HtmlHTMLAttributes, ReactElement, ReactNode } from 'react'
-import { cn } from '@/lib/utils'
-import { useTableContext } from '@/shared/context'
-import {
-  ColumnId,
-  COLUMN_TRANSFORMS,
-  COLUMN_CONTENT_ALIGN,
-  VaultHistoryCellDataMap,
-  TOKEN_SYMBOL,
-  formatActionLabel,
-} from './VaultHistoryTable.config'
-import { Paragraph } from '@/components/Typography'
-import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
+import { HtmlHTMLAttributes, ReactNode } from 'react'
+
 import { ArrowDownIcon } from '@/components/Icons/ArrowDownIcon'
+import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
 import { ChevronDownIcon } from '@/components/Icons/ChevronDownIcon'
 import { ChevronUpIcon } from '@/components/Icons/ChevronUpIcon'
 import { TokenImage } from '@/components/TokenImage'
+import { Paragraph } from '@/components/Typography'
+import { USDRIF } from '@/lib/constants'
+import { cn } from '@/lib/utils'
+import { useTableContext } from '@/shared/context'
+
+import {
+  COLUMN_CONTENT_ALIGN,
+  COLUMN_TRANSFORMS,
+  ColumnId,
+  formatActionLabel,
+  TOKEN_SYMBOL,
+  VaultHistoryCellDataMap,
+} from './VaultHistoryTable.config'
 
 /** Base props for TableCell component */
 interface TableCellProps extends HtmlHTMLAttributes<HTMLTableCellElement> {
@@ -54,7 +57,7 @@ interface PeriodCellProps extends CellStateProps {
   period: string
 }
 
-export const PeriodCell: FC<PeriodCellProps> = ({ period, isHovered }): ReactElement => {
+export const PeriodCell = ({ period, isHovered }: PeriodCellProps) => {
   return (
     <TableCell columnId="period">
       <Paragraph variant="body-s" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
@@ -68,7 +71,7 @@ interface ActionCellProps extends CellStateProps {
   action: 'DEPOSIT' | 'WITHDRAW'
 }
 
-export const ActionCell: FC<ActionCellProps> = ({ action, isHovered, isDetailRow }): ReactElement => {
+export const ActionCell = ({ action, isHovered, isDetailRow }: ActionCellProps) => {
   const showContent = !isDetailRow
 
   return (
@@ -87,13 +90,7 @@ interface AssetsCellProps extends CellStateProps {
   action: 'DEPOSIT' | 'WITHDRAW'
 }
 
-export const AssetsCell: FC<AssetsCellProps> = ({
-  assets,
-  action,
-  isHovered,
-  isExpanded,
-  isDetailRow,
-}): ReactElement => {
+export const AssetsCell = ({ assets, action, isHovered, isExpanded, isDetailRow }: AssetsCellProps) => {
   const showContent = !isExpanded || isDetailRow
   const increased = action === 'DEPOSIT'
   return (
@@ -106,7 +103,7 @@ export const AssetsCell: FC<AssetsCellProps> = ({
           <Paragraph variant="body" className={cn(increased ? 'text-v3-success' : 'text-error')}>
             {assets}
           </Paragraph>
-          <TokenImage symbol={'USDRIF'} size={16} />
+          <TokenImage symbol={USDRIF} size={16} />
           <Paragraph variant="body" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
             {TOKEN_SYMBOL}
           </Paragraph>
@@ -125,7 +122,7 @@ interface ActionsCellProps extends CellStateProps {
   onToggle?: () => void
 }
 
-export const TotalUsdCell: FC<TotalUsdCellProps> = ({ usd, isHovered }): ReactElement => {
+export const TotalUsdCell = ({ usd, isHovered }: TotalUsdCellProps) => {
   return (
     <TableCell columnId="total_usd">
       <Paragraph variant="body" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
@@ -135,12 +132,7 @@ export const TotalUsdCell: FC<TotalUsdCellProps> = ({ usd, isHovered }): ReactEl
   )
 }
 
-export const ActionsCell: FC<ActionsCellProps> = ({
-  isGrouped,
-  isExpanded,
-  isHovered,
-  onToggle,
-}): ReactElement => {
+export const ActionsCell = ({ isGrouped, isExpanded, isHovered, onToggle }: ActionsCellProps) => {
   if (isGrouped) {
     return (
       <TableCell columnId="actions" className="justify-center">

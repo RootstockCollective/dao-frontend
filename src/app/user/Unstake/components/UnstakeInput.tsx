@@ -1,11 +1,13 @@
+import { forwardRef, useEffect, useRef } from 'react'
+
 import { StakeInput } from '@/app/user/Stake/StakeInput'
+import { StakingToken } from '@/app/user/Stake/types'
+import { PercentageButtons } from '@/components/PercentageButtons'
 import { TokenImage } from '@/components/TokenImage'
 import { Label } from '@/components/Typography'
-import { StakingToken } from '@/app/user/Stake/types'
-import { formatCurrency } from '@/lib/utils'
 import Big from '@/lib/big'
-import { forwardRef, useEffect, useRef } from 'react'
-import { PercentageButtons } from '@/components/PercentageButtons'
+import { RIF } from '@/lib/constants'
+import { formatCurrency } from '@/lib/utils'
 
 interface Props {
   amount: string
@@ -39,7 +41,7 @@ export const UnstakeInput = forwardRef<HTMLInputElement, Props>(
 
         <div className="flex flex-col justify-between mx-3 mt-2 gap-2">
           <div className="flex items-center gap-1">
-            <TokenImage symbol="RIF" size={12} />
+            <TokenImage symbol={RIF} size={12} />
             <Label variant="body-s" className="text-text-60" data-testid="totalBalanceLabel">
               stRIF available to unstake: {availableToUnstake}
             </Label>

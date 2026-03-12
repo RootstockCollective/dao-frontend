@@ -1,14 +1,16 @@
-import { FC, HtmlHTMLAttributes, ReactElement, ReactNode } from 'react'
-import { cn } from '@/lib/utils'
-import { useTableContext } from '@/shared/context'
-import { ColumnId, COLUMN_TRANSFORMS, StakingHistoryCellDataMap } from './StakingHistoryTable.config'
-import { Paragraph } from '@/components/Typography'
-import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
+import { HtmlHTMLAttributes, ReactNode } from 'react'
+
 import { ArrowDownIcon } from '@/components/Icons/ArrowDownIcon'
+import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
 import { ChevronDownIcon } from '@/components/Icons/ChevronDownIcon'
 import { ChevronUpIcon } from '@/components/Icons/ChevronUpIcon'
 import { TokenImage } from '@/components/TokenImage'
-import { STRIF } from '@/lib/constants'
+import { Paragraph } from '@/components/Typography'
+import { RIF, STRIF } from '@/lib/constants'
+import { cn } from '@/lib/utils'
+import { useTableContext } from '@/shared/context'
+
+import { COLUMN_TRANSFORMS, ColumnId, StakingHistoryCellDataMap } from './StakingHistoryTable.config'
 
 const TableCellBase = ({
   children,
@@ -56,7 +58,7 @@ interface PeriodCellProps {
   isDetailRow?: boolean
 }
 
-export const PeriodCell: FC<PeriodCellProps> = ({ period, isHovered }): ReactElement => {
+export const PeriodCell = ({ period, isHovered }: PeriodCellProps) => {
   return (
     <TableCell columnId="period">
       <Paragraph variant="body-s" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
@@ -73,7 +75,7 @@ interface ActionCellProps {
   isDetailRow?: boolean
 }
 
-export const ActionCell: FC<ActionCellProps> = ({ action, isHovered, isDetailRow }): ReactElement => {
+export const ActionCell = ({ action, isHovered, isDetailRow }: ActionCellProps) => {
   const showContent = !isDetailRow
   const formattedAction = action.charAt(0).toUpperCase() + action.slice(1).toLowerCase()
 
@@ -97,13 +99,7 @@ interface AmountCellProps {
   isDetailRow?: boolean
 }
 
-export const AmountCell: FC<AmountCellProps> = ({
-  amount,
-  action,
-  isHovered,
-  isExpanded,
-  isDetailRow,
-}): ReactElement => {
+export const AmountCell = ({ amount, action, isHovered, isExpanded, isDetailRow }: AmountCellProps) => {
   const showContent = !isExpanded || isDetailRow
   const increased = action === 'STAKE'
   return (
@@ -116,7 +112,7 @@ export const AmountCell: FC<AmountCellProps> = ({
           <Paragraph variant="body" className={cn(increased ? 'text-v3-success' : 'text-error')}>
             {amount}
           </Paragraph>
-          <TokenImage symbol={'RIF'} size={16} />
+          <TokenImage symbol={RIF} size={16} />
           <Paragraph variant="body" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
             {STRIF}
           </Paragraph>
@@ -135,7 +131,7 @@ interface TotalAmountCellProps {
   onToggle?: () => void
 }
 
-export const TotalAmountCell: FC<TotalAmountCellProps> = ({ usd, isHovered }): ReactElement => {
+export const TotalAmountCell = ({ usd, isHovered }: TotalAmountCellProps) => {
   // For normal rows and detail rows: always show USD
   return (
     <TableCell columnId="total_amount" className="justify-center">
@@ -146,12 +142,7 @@ export const TotalAmountCell: FC<TotalAmountCellProps> = ({ usd, isHovered }): R
   )
 }
 
-export const ActionsCell: FC<TotalAmountCellProps> = ({
-  isGrouped,
-  isExpanded,
-  isHovered,
-  onToggle,
-}): ReactElement => {
+export const ActionsCell = ({ isGrouped, isExpanded, isHovered, onToggle }: TotalAmountCellProps) => {
   // For grouped rows: show USD when not hovered and not expanded
   if (isGrouped) {
     return (

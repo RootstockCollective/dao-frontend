@@ -1,12 +1,15 @@
 'use client'
 
 import { useMemo } from 'react'
-import { FilterSideBar } from '@/components/FilterSideBar'
-import { FilterGroup, ActiveFilter } from '@/components/FilterSideBar/types'
-import { TokenImage } from '@/components/TokenImage'
-import { TOKENS } from '@/lib/tokens'
-import { useGetBackedBuilders } from '../../hooks/useGetBackedBuilders'
 import { useAccount } from 'wagmi'
+
+import { FilterSideBar } from '@/components/FilterSideBar'
+import { ActiveFilter, FilterGroup } from '@/components/FilterSideBar/types'
+import { TokenImage } from '@/components/TokenImage'
+import { RBTC, RIF, USDRIF } from '@/lib/constants'
+import { TOKENS } from '@/lib/tokens'
+
+import { useGetBackedBuilders } from '../../hooks/useGetBackedBuilders'
 
 interface Props {
   isOpen: boolean
@@ -43,9 +46,9 @@ export function TransactionHistoryFilterSideBar({ isOpen, onClose, activeFilters
         allTestId: 'AllClaimTokens',
         isMultiSelect: true,
         options: [
-          { label: 'RIF', value: TOKENS.rif.address, icon: <TokenImage symbol="RIF" size={16} /> },
-          { label: 'USDRIF', value: TOKENS.usdrif.address, icon: <TokenImage symbol="USDRIF" size={16} /> },
-          { label: 'rBTC', value: TOKENS.rbtc.address, icon: <TokenImage symbol="RBTC" size={16} /> },
+          { label: RIF, value: TOKENS.rif.address, icon: <TokenImage symbol={RIF} size={16} /> },
+          { label: USDRIF, value: TOKENS.usdrif.address, icon: <TokenImage symbol={USDRIF} size={16} /> },
+          { label: 'rBTC', value: TOKENS.rbtc.address, icon: <TokenImage symbol={RBTC} size={16} /> },
         ],
       },
       {

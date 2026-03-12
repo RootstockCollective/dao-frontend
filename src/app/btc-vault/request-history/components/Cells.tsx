@@ -1,9 +1,10 @@
 'use client'
 
-import type { FC, HtmlHTMLAttributes, ReactNode } from 'react'
+import type { HtmlHTMLAttributes, ReactNode } from 'react'
 
 import { TokenImage } from '@/components/TokenImage'
 import { Paragraph } from '@/components/Typography'
+import { RBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { useTableContext } from '@/shared/context'
 
@@ -40,7 +41,7 @@ interface TypeCellProps extends CellStateProps {
   type: DisplayRequestType
 }
 
-export const TypeCell: FC<TypeCellProps> = ({ type, isHovered }) => (
+export const TypeCell = ({ type, isHovered }: TypeCellProps) => (
   <TableCell columnId="type">
     <Paragraph variant="body" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
       {type}
@@ -52,7 +53,7 @@ interface DateCellProps extends CellStateProps {
   date: string
 }
 
-export const DateCell: FC<DateCellProps> = ({ date, isHovered }) => (
+export const DateCell = ({ date, isHovered }: DateCellProps) => (
   <TableCell columnId="date">
     <Paragraph variant="body-s" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
       {date}
@@ -66,7 +67,7 @@ interface AmountCellProps extends CellStateProps {
   claimTokenType: 'rbtc' | 'shares'
 }
 
-export const AmountCell: FC<AmountCellProps> = ({ amount, fiatAmount, claimTokenType, isHovered }) => {
+export const AmountCell = ({ amount, fiatAmount, claimTokenType, isHovered }: AmountCellProps) => {
   if (claimTokenType === 'shares') {
     return (
       <TableCell columnId="amount">
@@ -84,7 +85,7 @@ export const AmountCell: FC<AmountCellProps> = ({ amount, fiatAmount, claimToken
           <Paragraph variant="body" className={cn(isHovered ? 'text-black' : 'text-v3-text-100')}>
             {amount}
           </Paragraph>
-          <TokenImage symbol="RBTC" size={16} />
+          <TokenImage symbol={RBTC} size={16} />
         </div>
         {fiatAmount && (
           <Paragraph variant="body-xs" className={cn(isHovered ? 'text-black/60' : 'text-v3-text-60')}>
@@ -101,7 +102,7 @@ interface StatusCellProps extends CellStateProps {
   displayStatusLabel: DisplayStatusLabel
 }
 
-export const StatusCell: FC<StatusCellProps> = ({ displayStatus, displayStatusLabel }) => (
+export const StatusCell = ({ displayStatus, displayStatusLabel }: StatusCellProps) => (
   <TableCell columnId="status">
     <RequestStatusBadge displayStatus={displayStatus} label={displayStatusLabel} />
   </TableCell>
@@ -116,7 +117,7 @@ interface ActionsCellProps extends CellStateProps {
  * Renders action buttons for actionable rows (claimable/pending).
  * Buttons are visual stubs — interaction wiring is a follow-up story (expandable rows + finalization CTA).
  */
-export const ActionsCell: FC<ActionsCellProps> = ({ requestStatus, type, isHovered }) => {
+export const ActionsCell = ({ requestStatus, type, isHovered }: ActionsCellProps) => {
   const isClaimable = requestStatus === 'claimable'
   const isPending = requestStatus === 'pending'
 

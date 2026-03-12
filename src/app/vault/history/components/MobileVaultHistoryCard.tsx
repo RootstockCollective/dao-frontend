@@ -1,14 +1,17 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { cn } from '@/lib/utils'
-import { Paragraph } from '@/components/Typography'
-import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
+import { useCallback, useState } from 'react'
+
 import { ArrowDownIcon } from '@/components/Icons/ArrowDownIcon'
+import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
 import { ChevronDownIcon } from '@/components/Icons/ChevronDownIcon'
 import { ChevronUpIcon } from '@/components/Icons/ChevronUpIcon'
 import { TokenImage } from '@/components/TokenImage'
-import { VaultHistoryTable, TOKEN_SYMBOL, formatActionLabel } from './VaultHistoryTable.config'
+import { Paragraph } from '@/components/Typography'
+import { USDRIF } from '@/lib/constants'
+import { cn } from '@/lib/utils'
+
+import { formatActionLabel, TOKEN_SYMBOL, VaultHistoryTable } from './VaultHistoryTable.config'
 
 interface MobileVaultHistoryCardProps {
   row: VaultHistoryTable['Row']
@@ -70,7 +73,7 @@ export const MobileVaultHistoryCard = ({ row }: MobileVaultHistoryCardProps) => 
           <Paragraph variant="body" className={cn(isDeposit ? 'text-v3-success' : 'text-error')}>
             {assets}
           </Paragraph>
-          <TokenImage symbol={'USDRIF'} size={16} />
+          <TokenImage symbol={USDRIF} size={16} />
           <Paragraph variant="body" className="text-v3-text-100">
             {TOKEN_SYMBOL}
           </Paragraph>
@@ -124,7 +127,7 @@ export const MobileVaultHistoryCard = ({ row }: MobileVaultHistoryCardProps) => 
                     >
                       {detail.assets}
                     </Paragraph>
-                    <TokenImage symbol={'USDRIF'} size={16} />
+                    <TokenImage symbol={USDRIF} size={16} />
                     <Paragraph variant="body" className="text-v3-text-100">
                       {TOKEN_SYMBOL}
                     </Paragraph>

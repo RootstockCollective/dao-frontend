@@ -1,6 +1,7 @@
-import { cn } from '@/lib/utils'
-import { findTokenBySymbol, TOKENS } from '@/lib/tokens'
 import Image from 'next/image'
+
+import { findTokenBySymbol, TOKENS } from '@/lib/tokens'
+import { cn } from '@/lib/utils'
 
 /** All supported token symbols */
 export type TokenSymbol = (typeof TOKENS)[keyof typeof TOKENS]['symbol']
