@@ -8,6 +8,8 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header } from '@/components/Typography'
 import { usePermissionsManager } from '@/shared/hooks/contracts'
 
+import { TabsSection } from './sections/TabsSection'
+
 const NAME = 'Fund Manager Dashboard'
 
 export const FundManagerPage = () => {
@@ -33,6 +35,8 @@ export const FundManagerPage = () => {
       <Header caps variant="h1" className="text-3xl leading-10 pb-10">
         {NAME}
       </Header>
+
+      <TabsSection />
     </div>
   )
 }
