@@ -146,3 +146,72 @@ The indexer returned data that doesn't match the expected Zod schema. This usual
 **`Envio: Insufficient proposals`**
 
 The indexer returned fewer than 10 proposals. This typically means the indexer is still syncing. Check the indexer's sync progress or lower the `ENVIO_START_BLOCK` in the indexer configuration.
+
+---
+
+## Envio Sync-Check (Indexer Lag Alerts)
+
+**Endpoint:** `GET /api/envio-sync-check` — compares Envio's last synced block to the Rootstock chain tip and posts to Slack when the indexer falls behind.
+
+### Environment variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `ENVIO_GRAPHQL_URL` | Yes | Envio GraphQL endpoint. |
+| `ENVIO_SYNC_CHECK_RPC_URL` | Yes | Rootstock RPC node for chain tip (`eth_blockNumber`). **Not** the Envio URL. |
+| `ENVIO_SYNC_CHECK_SYNC_PROGRESS_ID` | No | SyncProgress entity id. Default `chain-31`. Leave empty for mainnet. |
+| `ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL` | No | Slack Incoming Webhook URL. |
+| `ENVIO_SYNC_CHECK_LAG_THRESHOLD_BLOCKS` | No | Alert threshold in blocks. Default 500. |
+| `ENVIO_SYNC_CHECK_SECRET` | No | Bearer token for auth. |
+
+### Scheduling
+
+The route runs once per request. Wire it to a scheduler (Vercel Cron, external cron, GitHub Actions) to poll every N minutes.
+
+### Manual QA procedure
+
+**Goal:** Verify end-to-end that the sync-check reaches Envio, reaches Rootstock RPC, and delivers a Slack notification.
+
+**1. Set up Slack webhook (one-time):**
+
+If `ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL` is already configured, skip to step 2. Otherwise create a webhook once — see [Slack webhook setup](#slack-webhook-setup) below.
+
+**2. Configure `.env.dev`:**
+
+```bash
+ENVIO_SYNC_CHECK_RPC_URL=https://public-node.testnet.rsk.co
+ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+ENVIO_SYNC_CHECK_LAG_THRESHOLD_BLOCKS=0
+```
+
+Threshold `0` forces the alert to fire (any lag > 0 triggers it).
+
+**3. Restart dev server and run:**
+
+```bash
+PROFILE=dev npm run dev
+
+curl -s http://localhost:3000/api/envio-sync-check | jq
+# Expected: { "success": true, "lastBlock": ..., "chainTip": ..., "lag": ..., "threshold": 0, "alerted": true }
+# lastBlock > 0 = Envio reachable. chainTip > 0 = RPC reachable. alerted = true = Slack sent.
+# Check Slack channel for the lag alert.
+```
+
+**4. Clean up:** Remove `ENVIO_SYNC_CHECK_LAG_THRESHOLD_BLOCKS=0` from `.env.dev` (defaults back to 500).
+
+### Slack webhook setup
+
+One-time setup. The resulting URL is reused across all environments and QA runs.
+
+1. Open [api.slack.com/apps](https://api.slack.com/apps) (sign in to your company workspace).
+2. **Create New App** → **From scratch** → name it (e.g. `Envio Indexer Alerts`) → pick your workspace → **Create App**.
+3. In the left sidebar click **Incoming Webhooks** → toggle **Activate Incoming Webhooks** to **On**.
+4. Click **Add New Webhook to Workspace** → select the channel (e.g. `#envio-indexer-alerts`) → **Allow**.
+5. Copy the **Webhook URL** — it looks like `https://hooks.slack.com/services/T.../B.../xxxx`.
+6. Paste it into `.env.dev` (and any other environment that needs alerts):
+
+```bash
+ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/T.../B.../xxxx
+```
+
+That's it. The URL does not expire and works for all future requests.
