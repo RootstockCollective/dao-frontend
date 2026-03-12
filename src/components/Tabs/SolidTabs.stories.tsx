@@ -33,3 +33,32 @@ export const Default: Story = {
     )
   },
 }
+
+const mutedTabs = ['Transactions', 'NAV History', 'On going']
+
+export const Muted: Story = {
+  args: {
+    variant: 'muted',
+    activeTab: 'Transactions',
+    onTabChange: () => {},
+    tabs: mutedTabs,
+  },
+  render: () => {
+    const [activeTab, setActiveTab] = useState<string>('Transactions')
+
+    return (
+      <div className="bg-bg-80 p-4">
+        <SolidTabs
+          variant="muted"
+          tabs={mutedTabs}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+        >
+          <div className="py-4">
+            <p className="text-white">Content for {activeTab} tab</p>
+          </div>
+        </SolidTabs>
+      </div>
+    )
+  },
+}
