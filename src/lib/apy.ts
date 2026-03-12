@@ -1,4 +1,4 @@
-import { SECONDS_PER_YEAR } from '@/lib/constants'
+import { SECONDS_PER_YEAR } from './constants'
 
 /**
  * Computes the annual percentage yield (APY) from a growth factor over a period.
@@ -15,7 +15,7 @@ export function growthFactorToApy(growthFactor: number, periodSeconds: number): 
   if (growthPerPeriod <= 0) {
     return NaN
   }
-  const periodsPerYear = Number(SECONDS_PER_YEAR) / periodSeconds
+  const periodsPerYear = SECONDS_PER_YEAR / periodSeconds
   return Math.exp(periodsPerYear * Math.log(growthPerPeriod)) - 1
 }
 

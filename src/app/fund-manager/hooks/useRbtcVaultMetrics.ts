@@ -8,7 +8,7 @@ import { usePricesContext } from '@/shared/context/PricesContext'
 import { computeIndicativeApy } from '../utils'
 import { useRbtcBuffer } from './useRbtcBuffer'
 import { useRbtcVault } from './useRbtcVault'
-import { useSyntheticYield } from './useSyntheticYield'
+import { useReadSyntheticYield } from '@/shared/hooks/contracts/btc-vault'
 
 /**
  * Aggregates all RBTC vault metrics for the fund-manager dashboard.
@@ -32,7 +32,12 @@ export function useRbtcVaultMetrics() {
     error: vaultError,
   } = useRbtcVault()
 
-  const { syntheticRatePerSecond, isLoading: isLoadingSynthetic, error: syntheticError } = useSyntheticYield()
+  const {
+    data: syntheticRatePerSecond,
+    isLoading: isLoadingSynthetic,
+    error: syntheticError,
+  } = useReadSyntheticYield({ functionName: 'syntheticRatePerSecond' })
+
   const { bufferAssets, bufferDebt, isLoading: isLoadingBuffer, error: bufferError } = useRbtcBuffer()
 
   const isLoading = isLoadingVault || isLoadingSynthetic || isLoadingBuffer
@@ -49,9 +54,9 @@ export function useRbtcVaultMetrics() {
 
     return {
       tvl: formatMetrics(tvlRaw, rbtcPrice, RBTC),
-      liquidityReserve: formatMetrics(liquidityReserveRaw, rbtcPrice, RBTC),
-      syntheticYieldApy,
       vaultApy,
+      syntheticYieldApy,
+      liquidityReserve: formatMetrics(liquidityReserveRaw, rbtcPrice, RBTC),
       isLoading,
       error,
     }
