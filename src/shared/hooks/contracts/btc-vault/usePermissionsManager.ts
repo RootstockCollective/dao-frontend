@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useAccount, useReadContracts } from 'wagmi'
 
+import { getAbi } from '@/lib/abis/btc-vault'
 import { ADMIN_ROLE, FUND_MANAGER_ROLE } from '@/lib/constants'
 import { permissionsManager } from '@/lib/contracts'
 
@@ -13,13 +14,13 @@ export function usePermissionsManager() {
     return [
       {
         address: permissionsManager.address,
-        abi: permissionsManager.abi,
+        abi: getAbi('PermissionsManagerAbi'),
         functionName: 'hasRole',
         args: [ADMIN_ROLE, connectedAddress],
       } as const,
       {
         address: permissionsManager.address,
-        abi: permissionsManager.abi,
+        abi: getAbi('PermissionsManagerAbi'),
         functionName: 'hasRole',
         args: [FUND_MANAGER_ROLE, connectedAddress],
       } as const,
