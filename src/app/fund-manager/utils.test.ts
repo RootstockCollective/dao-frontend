@@ -1,8 +1,6 @@
+import { SECONDS_PER_YEAR } from '@/lib/constants'
 import { describe, expect, it } from 'vitest'
-
 import { computeIndicativeApy } from './utils'
-
-const SECONDS_PER_YEAR = 31_557_600
 
 function epoch(closedAt: number, assetsAtClose: number, supplyAtClose: number) {
   return {
