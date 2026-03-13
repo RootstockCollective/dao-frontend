@@ -18,6 +18,7 @@ const MOCK_ROW: RequestHistoryRowDisplay = {
   displayStatusLabel: 'Open to claim',
   fiatAmountFormatted: '$98,500',
   claimTokenType: 'rbtc',
+  updatedAtFormatted: '15 Jan 2025',
 }
 
 describe('convertDataToRowData', () => {
@@ -41,6 +42,8 @@ describe('convertDataToRowData', () => {
     expect(row.data.fiatAmount).toBe('$98,500')
     expect(row.data.claimTokenType).toBe('rbtc')
     expect(row.data.requestStatus).toBe('claimable')
+    expect(row.data.updatedAtFormatted).toBe('15 Jan 2025')
+    expect(row.data.requestType).toBe('deposit')
   })
 
   it('maps withdrawal row correctly', () => {
@@ -59,6 +62,7 @@ describe('convertDataToRowData', () => {
     expect(row.data.type).toBe('Withdrawal')
     expect(row.data.fiatAmount).toBeNull()
     expect(row.data.claimTokenType).toBe('shares')
+    expect(row.data.requestType).toBe('withdrawal')
   })
 
   it('maps multiple rows preserving order', () => {

@@ -1,6 +1,5 @@
 'use client'
 
-import type { FC } from 'react'
 import { memo, useCallback, useState } from 'react'
 
 import { cn } from '@/lib/utils'
@@ -12,7 +11,7 @@ interface Props {
   row: BtcVaultHistoryTable['Row']
 }
 
-export const BtcVaultHistoryDataRow: FC<Props> = memo(({ row }) => {
+export const BtcVaultHistoryDataRow = memo(({ row }: Props) => {
   const { data } = row
   const [isHovered, setIsHovered] = useState(false)
 
@@ -22,7 +21,7 @@ export const BtcVaultHistoryDataRow: FC<Props> = memo(({ row }) => {
   return (
     <tr
       className={cn(
-        'flex border-b-v3-bg-accent-60 border-b-1 gap-4 pl-4 py-3 min-h-[65px]',
+        'flex border-b-v3-bg-accent-60 border-b gap-4 pl-4 py-3 min-h-[65px]',
         isHovered && 'bg-v3-text-100',
       )}
       onMouseEnter={handleMouseEnter}

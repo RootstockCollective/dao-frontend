@@ -1,9 +1,9 @@
 import { formatEther } from 'viem'
 
-import { getFiatAmount } from '@/app/shared/formatter'
+import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import Big from '@/lib/big'
-import { formatCurrencyWithLabel } from '@/lib/utils'
-import { shortAddress } from '@/lib/utils'
+import { RBTC } from '@/lib/constants'
+import { formatCurrencyWithLabel, shortAddress } from '@/lib/utils'
 
 import { ACTIVE_REQUEST_REASON, DEPOSIT_PAUSED_REASON, WITHDRAWAL_PAUSED_REASON } from '../constants'
 import type {
@@ -98,17 +98,17 @@ export function toUserPositionDisplay(raw: UserPosition): UserPositionDisplay {
   const yieldPercent = Number(yieldBps) / 100
 
   return {
-    rbtcBalanceFormatted: formatEther(raw.rbtcBalance),
-    vaultTokensFormatted: formatEther(raw.vaultTokens),
-    positionValueFormatted: formatEther(raw.positionValue),
+    rbtcBalanceFormatted: formatSymbol(raw.rbtcBalance, RBTC),
+    vaultTokensFormatted: formatSymbol(raw.vaultTokens, RBTC),
+    positionValueFormatted: formatSymbol(raw.positionValue, RBTC),
     percentOfVaultFormatted: formatPercent(raw.percentOfVault),
     vaultTokensRaw: raw.vaultTokens,
     rbtcBalanceRaw: raw.rbtcBalance,
 
-    totalDepositedPrincipalFormatted: formatEther(raw.totalDepositedPrincipal),
+    totalDepositedPrincipalFormatted: formatSymbol(raw.totalDepositedPrincipal, RBTC),
     totalDepositedPrincipalRaw: raw.totalDepositedPrincipal,
-    currentEarningsFormatted: formatEther(currentEarnings),
-    totalBalanceFormatted: formatEther(raw.positionValue),
+    currentEarningsFormatted: formatSymbol(currentEarnings, RBTC),
+    totalBalanceFormatted: formatSymbol(raw.positionValue, RBTC),
     totalBalanceRaw: raw.positionValue,
     yieldPercentToDateFormatted: formatPercent(yieldPercent),
 
@@ -274,6 +274,8 @@ export function toPaginatedHistoryDisplay(
       const fiatAmountFormatted =
         isDeposit && rbtcPrice > 0 ? formatCurrencyWithLabel(Big(amountNumber).mul(rbtcPrice)) : null
 
+      const updatedAt = req.timestamps.updated ?? req.timestamps.created
+
       return {
         id: req.id,
         type: req.type,
@@ -289,6 +291,7 @@ export function toPaginatedHistoryDisplay(
         displayStatusLabel,
         fiatAmountFormatted,
         claimTokenType: isDeposit ? ('rbtc' as const) : ('shares' as const),
+        updatedAtFormatted: formatDateShort(updatedAt),
       }
     }),
     total: raw.total,

@@ -14,6 +14,9 @@ import { btcVaultRequestHistory } from '@/shared/constants/routes'
 import { useUserPosition } from '../hooks/useUserPosition/useUserPosition'
 import { BtcVaultActions } from './BtcVaultActions'
 
+const IS_MOCK_ENABLED =
+  process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_MOCK_BTC_VAULT === 'true'
+
 const LoadingValue = () => <Span className="animate-pulse text-text-60">0</Span>
 
 /** Resolves the display value for a metric based on query state. */
@@ -33,7 +36,7 @@ export const BtcVaultDashboard = () => {
 
   if (!address || !isConnected) return null
 
-  const hasHistory = !!data && data.vaultTokensRaw > 0n
+  const hasHistory = IS_MOCK_ENABLED || (!!data && data.vaultTokensRaw > 0n)
 
   return (
     <SectionContainer title="MY METRICS" className="w-full">

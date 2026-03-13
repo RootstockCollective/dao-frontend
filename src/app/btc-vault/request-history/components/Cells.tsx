@@ -2,6 +2,8 @@
 
 import type { HtmlHTMLAttributes, ReactNode } from 'react'
 
+import { MoneyIconKoto } from '@/components/Icons'
+import { TrashIcon } from '@/components/Icons/v3design'
 import { TokenImage } from '@/components/TokenImage'
 import { Paragraph } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
@@ -108,43 +110,43 @@ export const StatusCell = ({ displayStatus, displayStatusLabel }: StatusCellProp
   </TableCell>
 )
 
-interface ActionsCellProps extends CellStateProps {
+interface ActionsCellProps {
   requestStatus: RequestStatus
   type: DisplayRequestType
+  isHovered: boolean
 }
 
 /**
  * Renders action buttons for actionable rows (claimable/pending).
- * Buttons are visual stubs — interaction wiring is a follow-up story (expandable rows + finalization CTA).
+ * Actions are only visible on hover (desktop) to keep the table clutter-free.
  */
 export const ActionsCell = ({ requestStatus, type, isHovered }: ActionsCellProps) => {
-  const isClaimable = requestStatus === 'claimable'
-  const isPending = requestStatus === 'pending'
+  if (!isHovered) {
+    return <TableCell columnId="actions" />
+  }
 
-  if (isClaimable) {
+  if (requestStatus === 'claimable') {
     return (
       <TableCell columnId="actions">
-        <Paragraph
-          variant="body-s"
-          className={cn('font-medium', isHovered ? 'text-black' : 'text-primary')}
-          data-testid="btc-vault-history-claim-action"
-        >
-          {type === 'Deposit' ? 'Claim shares' : 'Claim rBTC'}
-        </Paragraph>
+        <div className="flex items-center gap-1">
+          <Paragraph variant="body-s" className="font-medium text-black">
+            {type === 'Deposit' ? 'Claim shares' : 'Claim rBTC'}
+          </Paragraph>
+          <MoneyIconKoto size={16} color="black" />
+        </div>
       </TableCell>
     )
   }
 
-  if (isPending) {
+  if (requestStatus === 'pending') {
     return (
       <TableCell columnId="actions">
-        <Paragraph
-          variant="body-s"
-          className={cn('font-medium', isHovered ? 'text-black' : 'text-v3-text-60')}
-          data-testid="btc-vault-history-cancel-action"
-        >
-          Cancel request
-        </Paragraph>
+        <div className="flex items-center gap-1">
+          <Paragraph variant="body-s" className="font-medium text-black">
+            Cancel request
+          </Paragraph>
+          <TrashIcon size={16} color="black" />
+        </div>
       </TableCell>
     )
   }

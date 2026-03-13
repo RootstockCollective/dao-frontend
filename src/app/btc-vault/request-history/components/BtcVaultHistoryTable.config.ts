@@ -1,13 +1,21 @@
 import type { Column, TypedTable } from '@/shared/context'
 
-import type { RequestStatus } from '../../services/types'
+import type { RequestStatus, RequestType } from '../../services/types'
 import type { DisplayRequestType, DisplayStatus, DisplayStatusLabel } from '../../services/ui/types'
 
 /** Columns rendered as visible table headers. */
 export type VisibleColumnId = 'type' | 'date' | 'amount' | 'status' | 'actions'
 
 /** Data-only keys carried on each row but not rendered as columns. */
-type DataColumnId = 'fiatAmount' | 'claimTokenType' | 'displayStatusLabel' | 'requestStatus'
+type DataColumnId =
+  | 'fiatAmount'
+  | 'claimTokenType'
+  | 'displayStatusLabel'
+  | 'requestStatus'
+  | 'updatedAtFormatted'
+  | 'createdAtFormatted'
+  | 'finalizedAtFormatted'
+  | 'requestType'
 
 export type ColumnId = VisibleColumnId | DataColumnId
 
@@ -16,6 +24,10 @@ const DATA_COLUMN_IDS: DataColumnId[] = [
   'claimTokenType',
   'displayStatusLabel',
   'requestStatus',
+  'updatedAtFormatted',
+  'createdAtFormatted',
+  'finalizedAtFormatted',
+  'requestType',
 ]
 
 export const PAGE_SIZE = 20
@@ -33,7 +45,7 @@ const VISIBLE_COLUMN_TRANSFORMS: Record<VisibleColumnId, string> = {
   date: 'flex-[1_1_8rem] min-w-[8rem]',
   amount: 'flex-[1.5_1_10rem] min-w-[10rem]',
   status: 'flex-[1_1_7rem] min-w-[7rem]',
-  actions: 'flex-[1_1_9rem] min-w-[9rem]',
+  actions: 'flex-[1_1_9rem] min-w-[9rem] justify-end pr-4',
 }
 
 export const COLUMN_TRANSFORMS: Record<ColumnId, string> = {
@@ -64,6 +76,10 @@ export interface BtcVaultHistoryCellDataMap {
   claimTokenType: 'rbtc' | 'shares'
   displayStatusLabel: DisplayStatusLabel
   requestStatus: RequestStatus
+  updatedAtFormatted: string
+  createdAtFormatted: string
+  finalizedAtFormatted: string | null
+  requestType: RequestType
 }
 
 export type BtcVaultHistoryTable = TypedTable<ColumnId, BtcVaultHistoryCellDataMap>
