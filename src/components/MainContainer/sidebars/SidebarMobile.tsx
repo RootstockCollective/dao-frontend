@@ -1,20 +1,22 @@
-import { Fragment, useMemo } from 'react'
 import { motion, type Variants } from 'motion/react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useLayoutContext } from '../LayoutProvider'
-import { UsefulLinks } from './UsefulLinks'
-import { NavIcon } from '../icons/NavIcon'
-import { MenuData, menuData, menuDataNotConnected } from './menuData'
-import { cn } from '@/lib/utils'
-import styles from './styles.module.css'
-import { useAccount } from 'wagmi'
-import Image from 'next/image'
+import { Fragment, useMemo } from 'react'
+
 import { Span } from '@/components/Typography'
+import { cn } from '@/lib/utils'
+
+import { NavIcon } from '../icons/NavIcon'
+import { useLayoutContext } from '../LayoutProvider'
+import { MenuData } from './menuData'
+import styles from './styles.module.css'
+import { useFilteredMenuData } from './useFilteredMenuData'
+import { UsefulLinks } from './UsefulLinks'
 
 export function SidebarMobile() {
   const { isSidebarOpen, closeSidebar } = useLayoutContext()
-  const { isConnected } = useAccount()
+  const menuDataToUse = useFilteredMenuData()
   const variants = useMemo<Variants>(
     () => ({
       drawer: {
@@ -23,8 +25,6 @@ export function SidebarMobile() {
     }),
     [isSidebarOpen],
   )
-
-  const menuDataToUse = isConnected ? menuData : menuDataNotConnected
   return (
     <motion.div
       variants={variants}
@@ -32,7 +32,7 @@ export function SidebarMobile() {
       animate="drawer"
       className={cn(
         'w-full pl-10 py-12',
-        'fixed left-0 right-0 bottom-0 top-[var(--header-height)] z-sticky bg-l-black',
+        'fixed left-0 right-0 bottom-0 top-(--header-height) z-sticky bg-l-black',
       )}
       transition={{ duration: 0.3, ease: 'circOut' }}
       onClick={closeSidebar}

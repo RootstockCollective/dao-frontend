@@ -10,10 +10,8 @@ import { rbtcVault } from '@/lib/contracts'
 /**
  * Hook wrapping the `requestRedeem()` contract call on the BTC Vault.
  *
- * Key difference from deposit: vault tokens are ERC-20, so no `msg.value`
- * is needed. `minAssetsOut` is hardcoded to `0n` because this is a
- * request-based vault — the final redemption value is determined at
- * epoch settlement, not at request time.
+ * Vault tokens are ERC-20, so no `msg.value` is needed. The final
+ * redemption value is determined at epoch settlement, not at request time.
  */
 export function useSubmitWithdrawal() {
   const { address } = useAccount()

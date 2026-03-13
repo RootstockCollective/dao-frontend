@@ -17,4 +17,4 @@ const features = {
 type Feature = keyof typeof features
 const getFeatures = (): Feature[] => [...Object.keys(features)] as Feature[]
 
-export { getFeatures, USER_FLAGS_FEATURE, type Feature }
+export { type Feature, getFeatures, USER_FLAGS_FEATURE }

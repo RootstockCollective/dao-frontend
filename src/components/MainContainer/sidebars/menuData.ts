@@ -2,6 +2,8 @@ import type { ClassValue } from 'clsx'
 
 import { getEnvFlag } from '@/shared/context/FeatureFlag/flags.utils'
 
+export type RequiredRole = 'admin' | 'fundManager'
+
 export interface MenuData {
   text: string
   href: string
@@ -12,6 +14,7 @@ export interface MenuData {
   }
   type?: 'link' | 'category'
   iconUrl?: string
+  requiredRole?: RequiredRole
 }
 
 function getBetaToolsSection(): MenuData[] {
@@ -19,14 +22,12 @@ function getBetaToolsSection(): MenuData[] {
   const btcVaultOn = getEnvFlag('btc_vault')
   if (!vaultOn && !btcVaultOn) return []
   const items: MenuData[] = []
-  if (vaultOn || btcVaultOn) {
-    items.push({
-      href: '-',
-      text: 'BETA TOOLS',
-      buttonProps: { id: 'Button_Beta_Tools', name: 'beta-tools', className: 'mt-5' },
-      type: 'category',
-    })
-  }
+  items.push({
+    href: '-',
+    text: 'BETA TOOLS',
+    buttonProps: { id: 'Button_Beta_Tools', name: 'beta-tools', className: 'mt-5' },
+    type: 'category',
+  })
   if (vaultOn) {
     items.push({
       href: 'vault',
@@ -36,12 +37,28 @@ function getBetaToolsSection(): MenuData[] {
     })
   }
   if (btcVaultOn) {
-    items.push({
-      href: 'btc-vault',
-      text: 'BTC Vault Sandbox',
-      buttonProps: { id: 'Button_Btc_Vault', name: 'btc-vault' },
-      iconUrl: '/images/sidemenukoto/Holdings.svg',
-    })
+    items.push(
+      {
+        href: 'btc-vault',
+        text: 'BTC Vault Sandbox',
+        buttonProps: { id: 'Button_Btc_Vault', name: 'btc-vault' },
+        iconUrl: '/images/sidemenukoto/Holdings.svg',
+      },
+      {
+        href: 'fund-manager',
+        text: 'Fund Manager Sandbox',
+        buttonProps: { id: 'Button_Fund_Manager', name: 'fund-manager' },
+        iconUrl: '/images/sidemenukoto/FundManager.svg',
+        requiredRole: 'fundManager',
+      },
+      {
+        href: 'fund-admin',
+        text: 'Fund Admin Sandbox',
+        buttonProps: { id: 'Button_Admin', name: 'fund-admin' },
+        iconUrl: '/images/sidemenukoto/Admin.svg',
+        requiredRole: 'admin',
+      },
+    )
   }
   return items
 }
@@ -51,14 +68,12 @@ function getBetaToolsSectionNotConnected(): MenuData[] {
   const btcVaultOn = getEnvFlag('btc_vault')
   if (!vaultOn && !btcVaultOn) return []
   const items: MenuData[] = []
-  if (vaultOn || btcVaultOn) {
-    items.push({
-      href: '-',
-      text: 'BETA TOOLS',
-      buttonProps: { id: 'Button_Beta_Tools_Not_Connected', name: 'beta-tools', className: 'mt-5' },
-      type: 'category',
-    })
-  }
+  items.push({
+    href: '-',
+    text: 'BETA TOOLS',
+    buttonProps: { id: 'Button_Beta_Tools_Not_Connected', name: 'beta-tools', className: 'mt-5' },
+    type: 'category',
+  })
   if (vaultOn) {
     items.push({
       href: 'vault',
