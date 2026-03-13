@@ -1,14 +1,17 @@
-import { Header, Paragraph } from '@/components/Typography'
-import { ProgressBar } from '@/components/ProgressBarNew'
-import { useMemo, useState, useCallback } from 'react'
-import { SwapSteps } from './Steps/SwapSteps'
-import { Modal } from '@/components/Modal'
-import { swapStepConfig } from './Steps/swapStepConfig'
-import { useSteps } from '@/app/user/Stake/hooks/useSteps'
+import { useCallback, useMemo, useState } from 'react'
+
 import { StepActionButtons } from '@/app/user/Stake/components/StepActionButtons'
+import { useSteps } from '@/app/user/Stake/hooks/useSteps'
 import { Divider } from '@/components/Divider'
-import { ButtonActions } from './types'
+import { Modal } from '@/components/Modal'
+import { ProgressBar } from '@/components/ProgressBarNew'
+import { Header, Paragraph } from '@/components/Typography'
 import { useSwapStore } from '@/shared/stores/swap'
+
+import { useSwapSmartDefault } from './hooks/useSwapSmartDefault'
+import { swapStepConfig } from './Steps/swapStepConfig'
+import { SwapSteps } from './Steps/SwapSteps'
+import { ButtonActions } from './types'
 
 interface Props {
   onCloseModal: () => void
@@ -27,6 +30,7 @@ const DEFAULT_BUTTON_ACTIONS: ButtonActions = {
 export const SwappingFlow = ({ onCloseModal }: Props) => {
   const [buttonActions, setButtonActions] = useState<ButtonActions>(DEFAULT_BUTTON_ACTIONS)
   const resetSwapStore = useSwapStore(state => state.reset)
+  useSwapSmartDefault()
 
   const { step, ...stepFunctions } = useSteps(swapStepConfig.length)
 
