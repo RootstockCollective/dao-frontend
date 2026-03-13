@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
 
-import { rbtcVault } from '@/lib/contracts'
 import { useReadRbtcVaultBatch, useReadRbtcVaultForMultipleArgs } from '@/shared/hooks/contracts/btc-vault'
 
 function parseEpochSnapshot(tuple: readonly [bigint, bigint, bigint, bigint] | undefined) {
@@ -11,7 +10,7 @@ function parseEpochSnapshot(tuple: readonly [bigint, bigint, bigint, bigint] | u
 }
 
 const vaultConfigs = [
-  { functionName: 'asset' as const },
+  { functionName: 'totalAssets' as const },
   { functionName: 'currentEpoch' as const },
   { functionName: 'reportedOffchainAssets' as const },
   { functionName: 'freeOnchainLiquidity' as const },
@@ -27,18 +26,10 @@ export const useRbtcVault = () => {
     error: batchError,
   } = useReadRbtcVaultBatch(vaultConfigs)
 
-  const [assetAddress, currentEpoch, reportedOffchainAssets = 0n, freeOnchainLiquidity = 0n] = batchData
+  const [totalAssets = 0n, currentEpoch, reportedOffchainAssets = 0n, freeOnchainLiquidity = 0n] = batchData
 
   const lastEpochId = currentEpoch && currentEpoch >= 2n ? currentEpoch - 1n : undefined
   const prevEpochId = currentEpoch && currentEpoch >= 3n ? currentEpoch - 2n : undefined
-
-  const {
-    data: [vaultBalance = 0n],
-    isLoading: isVaultBalanceLoading,
-    error: vaultBalanceError,
-  } = useReadRbtcVaultBatch([{ functionName: 'balanceOf', args: [rbtcVault.address] }], {
-    enabled: !!assetAddress,
-  })
 
   const epochArgs = useMemo((): [bigint][] => {
     if (lastEpochId && prevEpochId) {
@@ -62,11 +53,11 @@ export const useRbtcVault = () => {
   return useMemo(() => {
     const lastClosedEpoch = lastEpochId ? parseEpochSnapshot(epochSnapshots?.[0]) : null
     const previousClosedEpoch = prevEpochId ? parseEpochSnapshot(epochSnapshots?.[1]) : null
-    const isLoading = isBatchLoading || isVaultBalanceLoading || (epochArgs.length > 0 && isSnapshotLoading)
-    const error = batchError ?? vaultBalanceError ?? snapshotError ?? null
+    const isLoading = isBatchLoading || (epochArgs.length > 0 && isSnapshotLoading)
+    const error = batchError ?? snapshotError ?? null
 
     return {
-      vaultBalance,
+      totalAssets,
       reportedOffchainAssets,
       freeOnchainLiquidity,
       lastClosedEpoch,
@@ -75,17 +66,16 @@ export const useRbtcVault = () => {
       error,
     }
   }, [
-    vaultBalance,
+    totalAssets,
     reportedOffchainAssets,
     freeOnchainLiquidity,
     lastEpochId,
     prevEpochId,
     epochSnapshots,
     isBatchLoading,
-    isVaultBalanceLoading,
     isSnapshotLoading,
     batchError,
-    vaultBalanceError,
     snapshotError,
+    epochArgs.length,
   ])
 }
