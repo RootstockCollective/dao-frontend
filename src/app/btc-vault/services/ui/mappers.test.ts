@@ -48,6 +48,7 @@ describe('toVaultMetricsDisplay', () => {
     expect(result.apyFormatted).toBe('8.50')
     expect(result.pricePerShareFormatted).toBe('1.02')
     expect(result.timestamp).toBe(1700000000)
+    expect(result.tvlRaw).toBe(50_000_000_000_000_000_000n)
     expect(result.pricePerShareRaw).toBe(1_020_000_000_000_000_000n)
   })
 })

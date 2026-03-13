@@ -1,7 +1,8 @@
 import { formatEther } from 'viem'
 
-import { getFiatAmount } from '@/app/shared/formatter'
+import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import Big from '@/lib/big'
+import { RBTC } from '@/lib/constants'
 import { formatCurrencyWithLabel } from '@/lib/utils'
 import { shortAddress } from '@/lib/utils'
 
@@ -51,10 +52,11 @@ import { DISPLAY_STATUS_LABELS } from './types'
  */
 export function toVaultMetricsDisplay(raw: VaultMetrics): VaultMetricsDisplay {
   return {
-    tvlFormatted: formatEther(raw.tvl),
+    tvlFormatted: formatSymbol(raw.tvl, RBTC),
     apyFormatted: formatApyPercent(raw.apy),
-    pricePerShareFormatted: formatEther(raw.pricePerShare),
+    pricePerShareFormatted: formatSymbol(raw.pricePerShare, RBTC),
     timestamp: raw.timestamp,
+    tvlRaw: raw.tvl,
     pricePerShareRaw: raw.pricePerShare,
   }
 }

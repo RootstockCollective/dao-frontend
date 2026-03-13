@@ -3,12 +3,12 @@
 import Link from 'next/link'
 import { useMemo } from 'react'
 
+import { getFiatAmount } from '@/app/shared/formatter'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { HistoryIcon } from '@/components/Icons'
 import { Span } from '@/components/Typography'
-import Big from '@/lib/big'
 import { RBTC } from '@/lib/constants'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrencyWithLabel } from '@/lib/utils'
 import { btcVaultRequestHistory } from '@/shared/constants/routes'
 import { usePricesContext } from '@/shared/context'
 
@@ -30,24 +30,14 @@ export const BtcVaultMetrics = () => {
   const isMetricsLoading = metricsLoading || !metrics
 
   const tvlUsd = useMemo(() => {
-    if (!metrics?.tvlFormatted || !rbtcPrice) return null
-    try {
-      return formatCurrency(Big(rbtcPrice).mul(metrics.tvlFormatted), { showCurrencyLabel: true })
-    } catch {
-      return null
-    }
-  }, [metrics?.tvlFormatted, rbtcPrice])
+    if (!metrics?.tvlRaw || !rbtcPrice) return null
+    return formatCurrencyWithLabel(getFiatAmount(metrics.tvlRaw, rbtcPrice))
+  }, [metrics?.tvlRaw, rbtcPrice])
 
   const pricePerShareUsd = useMemo(() => {
-    if (!metrics?.pricePerShareFormatted || !rbtcPrice) return null
-    try {
-      return formatCurrency(Big(rbtcPrice).mul(metrics.pricePerShareFormatted), {
-        showCurrencyLabel: true,
-      })
-    } catch {
-      return null
-    }
-  }, [metrics?.pricePerShareFormatted, rbtcPrice])
+    if (!metrics?.pricePerShareRaw || !rbtcPrice) return null
+    return formatCurrencyWithLabel(getFiatAmount(metrics.pricePerShareRaw, rbtcPrice))
+  }, [metrics?.pricePerShareRaw, rbtcPrice])
 
   return (
     <div className="flex flex-col gap-6 w-full" data-testid="btc-vault-metrics-content">

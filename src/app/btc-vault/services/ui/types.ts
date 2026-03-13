@@ -53,6 +53,8 @@ export interface VaultMetricsDisplay {
   apyFormatted: string
   pricePerShareFormatted: string
   timestamp: number
+  /** Raw tvl bigint kept for fiat conversion calculations */
+  tvlRaw: bigint
   /** Raw pricePerShare bigint kept for form calculations (e.g. estimated shares = amount / pricePerShare) */
   pricePerShareRaw: bigint
 }
