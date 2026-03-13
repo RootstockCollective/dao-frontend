@@ -158,11 +158,13 @@ The indexer returned fewer than 10 proposals. This typically means the indexer i
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `ENVIO_GRAPHQL_URL` | Yes | Envio GraphQL endpoint. |
-| `ENVIO_SYNC_CHECK_RPC_URL` | No | Override RPC for chain tip. Falls back to `NEXT_PUBLIC_NODE_URL`. |
 | `ENVIO_SYNC_CHECK_SYNC_PROGRESS_ID` | No | SyncProgress entity id. Default `chain-31`. Leave empty for mainnet. |
-| `ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL` | No | Slack Incoming Webhook URL. |
+| `ENVIO_SYNC_CHECK_INSTANCE_NAME` | No | Label shown in Slack alerts (e.g. `dev`, `rc-testnet`). Default `unknown`. |
+| `ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL` | No | Slack Incoming Webhook URL. Injected via GitHub Secrets at build time. |
 | `ENVIO_SYNC_CHECK_LAG_THRESHOLD_BLOCKS` | No | Alert threshold in blocks. Default 1000. Must be > 500 (SyncProgress writes every 500 blocks). |
 | `ENVIO_SYNC_CHECK_SECRET` | No | Bearer token for auth. |
+
+Chain tip is fetched from `NEXT_PUBLIC_NODE_URL` (already configured in every environment).
 
 ### Scheduling
 
@@ -179,7 +181,6 @@ If `ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL` is already configured, skip to step 2. O
 **2. Configure `.env.dev`:**
 
 ```bash
-ENVIO_SYNC_CHECK_RPC_URL=https://public-node.testnet.rsk.co
 ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
 ENVIO_SYNC_CHECK_LAG_THRESHOLD_BLOCKS=0
 ```
