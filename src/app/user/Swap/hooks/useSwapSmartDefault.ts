@@ -1,0 +1,46 @@
+'use client'
+
+import { useEffect, useRef } from 'react'
+import { useShallow } from 'zustand/shallow'
+
+import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { USDRIF, USDT0 } from '@/lib/constants'
+import { useSwapStore } from '@/shared/stores/swap'
+
+import { getSmartDefaultSwapDirection } from '../utils/smart-default-direction'
+
+/**
+ * Applies a smart default swap direction when the modal opens.
+ *
+ * When the user has 0 USDT0 and >0 USDRIF, it sets USDRIF as the "From" token
+ * so the user can swap immediately. Runs once per modal mount after balances load.
+ * Does not re-apply on balance refetches, preserving any manual toggle the user makes.
+ */
+export const useSwapSmartDefault = () => {
+  const hasAppliedRef = useRef(false)
+  const { balances, isBalancesLoading } = useBalancesContext()
+  const { tokenIn, tokenOut, setTokenIn, setTokenOut } = useSwapStore(
+    useShallow(state => ({
+      tokenIn: state.tokenIn,
+      tokenOut: state.tokenOut,
+      setTokenIn: state.setTokenIn,
+      setTokenOut: state.setTokenOut,
+    })),
+  )
+
+  // Apply smart default once when balances finish loading on modal mount
+  useEffect(() => {
+    if (isBalancesLoading || hasAppliedRef.current) return
+
+    hasAppliedRef.current = true
+
+    const usdt0Balance = balances[USDT0]?.balance ?? '0'
+    const usdrifBalance = balances[USDRIF]?.balance ?? '0'
+    const smartDefault = getSmartDefaultSwapDirection(usdt0Balance, usdrifBalance)
+
+    if (smartDefault.tokenIn !== tokenIn || smartDefault.tokenOut !== tokenOut) {
+      setTokenIn(smartDefault.tokenIn)
+      setTokenOut(smartDefault.tokenOut)
+    }
+  }, [isBalancesLoading, balances, tokenIn, tokenOut, setTokenIn, setTokenOut])
+}
