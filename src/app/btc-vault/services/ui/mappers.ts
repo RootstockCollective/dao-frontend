@@ -51,10 +51,11 @@ import { DISPLAY_STATUS_LABELS } from './types'
  */
 export function toVaultMetricsDisplay(raw: VaultMetrics): VaultMetricsDisplay {
   return {
-    tvlFormatted: formatEther(raw.tvl),
+    tvlFormatted: formatSymbol(raw.tvl, RBTC),
     apyFormatted: formatApyPercent(raw.apy),
-    pricePerShareFormatted: formatEther(raw.pricePerShare),
+    pricePerShareFormatted: formatSymbol(raw.pricePerShare, RBTC),
     timestamp: raw.timestamp,
+    tvlRaw: raw.tvl,
     pricePerShareRaw: raw.pricePerShare,
   }
 }

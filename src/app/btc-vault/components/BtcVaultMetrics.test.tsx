@@ -43,6 +43,7 @@ describe('BtcVaultMetrics', () => {
     apyFormatted: '8.50',
     pricePerShareFormatted: '1.02',
     timestamp: 1709000000,
+    tvlRaw: 50_000_000_000_000_000_000n,
     pricePerShareRaw: 1_020_000_000_000_000_000n,
   }
 
