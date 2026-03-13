@@ -158,7 +158,7 @@ The indexer returned fewer than 10 proposals. This typically means the indexer i
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `ENVIO_GRAPHQL_URL` | Yes | Envio GraphQL endpoint. |
-| `ENVIO_SYNC_CHECK_RPC_URL` | Yes | Rootstock RPC node for chain tip (`eth_blockNumber`). **Not** the Envio URL. |
+| `ENVIO_SYNC_CHECK_RPC_URL` | No | Override RPC for chain tip. Falls back to `NEXT_PUBLIC_NODE_URL`. |
 | `ENVIO_SYNC_CHECK_SYNC_PROGRESS_ID` | No | SyncProgress entity id. Default `chain-31`. Leave empty for mainnet. |
 | `ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL` | No | Slack Incoming Webhook URL. |
 | `ENVIO_SYNC_CHECK_LAG_THRESHOLD_BLOCKS` | No | Alert threshold in blocks. Default 1000. Must be > 500 (SyncProgress writes every 500 blocks). |

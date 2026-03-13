@@ -35,10 +35,12 @@ ENV NEXT_TELEMETRY_DISABLED 1
 ARG PROFILE
 ARG NEXT_PUBLIC_BUILD_ID
 ARG SENTRY_AUTH_TOKEN
+ARG ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL
 
-# Inject the NEXT_PUBLIC_BUILD_ID into the profile env file BEFORE copying
+# Inject build args into the profile env file BEFORE copying
 # This is critical because next.config.mjs loads from .env.${PROFILE} with override: true
-RUN sed -i "s/^NEXT_PUBLIC_BUILD_ID=.*/NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}/" .env.${PROFILE}
+RUN sed -i "s/^NEXT_PUBLIC_BUILD_ID=.*/NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}/" .env.${PROFILE} && \
+    if [ -n "$ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL" ]; then sed -i "s|^ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL=.*|ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL=${ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL}|" .env.${PROFILE}; fi
 
 # Rename environment files based on PROFILE 
 RUN cp .env.${PROFILE} .env.local
