@@ -275,7 +275,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
           isLoading={isQuoting && mode === 'exactOut'}
           errorText={
             isAmountOverBalance
-              ? `This is more than the available ${tokenInData.symbol} balance. Please update the amount.`
+              ? `This is more than your available ${tokenInData.symbol} balance. Please adjust the amount to swap, or transfer more ${tokenInData.symbol} into your wallet so you can swap it.`
               : ''
           }
         />
