@@ -34,8 +34,11 @@ export const RbtcVaultMetricCard = ({
             <Span variant="tag" className="text-bg-0">
               {title}
             </Span>
-            {tooltipContent !== undefined && (
-              <InfoIconButton info={tooltipContent} className="cursor-pointer" />
+            {tooltipContent && (
+              <InfoIconButton
+                info={<span className="block max-w-[20rem] wrap-break-word">{tooltipContent}</span>}
+                className="cursor-pointer"
+              />
             )}
           </div>
           <div className="flex items-center gap-2">

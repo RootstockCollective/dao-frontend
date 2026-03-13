@@ -132,7 +132,10 @@ export function Tooltip({
             className={cn('z-tooltip rounded-sm bg-v3-text-80 px-2 py-1 shadow-lg', className)}
             {...props}
           >
-            <Span variant="body-s" className="max-w-[calc(100vw-64px)] text-v3-bg-accent-60">
+            <Span
+              variant="body-s"
+              className="max-w-[min(20rem,calc(100vw-64px))] wrap-break-word text-v3-bg-accent-60"
+            >
               {text}
             </Span>
           </RadixTooltip.Content>
