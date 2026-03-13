@@ -4,11 +4,11 @@ import { formatMetrics } from '@/app/shared/formatter'
 import { ratePerSecondToApy } from '@/lib/apy'
 import { RBTC, WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
+import { useReadSyntheticYield } from '@/shared/hooks/contracts/btc-vault'
 
 import { computeIndicativeApy } from '../utils'
 import { useRbtcBuffer } from './useRbtcBuffer'
 import { useRbtcVault } from './useRbtcVault'
-import { useReadSyntheticYield } from '@/shared/hooks/contracts/btc-vault'
 
 /**
  * Aggregates all RBTC vault metrics for the fund-manager dashboard.
@@ -23,7 +23,7 @@ export const useRbtcVaultMetrics = () => {
   const rbtcPrice = prices[RBTC]?.price ?? 0
 
   const {
-    vaultBalance,
+    totalAssets,
     reportedOffchainAssets,
     freeOnchainLiquidity,
     lastClosedEpoch,
@@ -44,7 +44,7 @@ export const useRbtcVaultMetrics = () => {
   const error = vaultError ?? syntheticError ?? bufferError ?? null
 
   return useMemo(() => {
-    const totalVaultAssets = vaultBalance + reportedOffchainAssets
+    const totalVaultAssets = totalAssets + reportedOffchainAssets
     const tvlRaw = totalVaultAssets >= bufferDebt ? totalVaultAssets - bufferDebt : 0n
     const liquidityReserveRaw = freeOnchainLiquidity + bufferAssets
     const ratePerSecondDecimal = Number(syntheticRatePerSecond) / Number(WeiPerEther)
@@ -61,7 +61,7 @@ export const useRbtcVaultMetrics = () => {
       error,
     }
   }, [
-    vaultBalance,
+    totalAssets,
     reportedOffchainAssets,
     freeOnchainLiquidity,
     bufferAssets,
