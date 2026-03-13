@@ -11,7 +11,7 @@ describe('GET /api/envio-sync-check', () => {
     vi.restoreAllMocks()
     vi.unstubAllEnvs()
     vi.stubEnv('ENVIO_GRAPHQL_URL', graphqlUrl)
-    vi.stubEnv('ENVIO_SYNC_CHECK_RPC_URL', rpcUrl)
+    vi.stubEnv('NEXT_PUBLIC_NODE_URL', rpcUrl)
   })
 
   it('should return 401 when ENVIO_SYNC_CHECK_SECRET is set and request has no Bearer token', async () => {
@@ -48,14 +48,15 @@ describe('GET /api/envio-sync-check', () => {
     expect(data.error).toContain('ENVIO_GRAPHQL_URL')
   })
 
-  it('should return 503 when ENVIO_SYNC_CHECK_RPC_URL is not set', async () => {
+  it('should return 503 when neither ENVIO_SYNC_CHECK_RPC_URL nor NEXT_PUBLIC_NODE_URL is set', async () => {
     vi.stubEnv('ENVIO_SYNC_CHECK_RPC_URL', '')
+    vi.stubEnv('NEXT_PUBLIC_NODE_URL', '')
     const req = new NextRequest('http://localhost/api/envio-sync-check')
     const res = await GET(req)
     expect(res.status).toBe(503)
     const data = await res.json()
     expect(data.success).toBe(false)
-    expect(data.error).toContain('ENVIO_SYNC_CHECK_RPC_URL')
+    expect(data.error).toContain('No RPC URL')
   })
 
   it('should return 200 with success, lastBlock, chainTip, lag when Envio and RPC respond', async () => {

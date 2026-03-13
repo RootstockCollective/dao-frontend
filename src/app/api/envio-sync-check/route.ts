@@ -120,7 +120,7 @@ async function postSlackAlert(
  * 401 { success: false, error }; 502 { success: false, error }; 503 { success: false, error };
  * 500 { success: false, error, lastBlock?, chainTip?, lag? } (Slack failure).
  *
- * Env: ENVIO_GRAPHQL_URL, ENVIO_SYNC_CHECK_RPC_URL (Rootstock Testnet RPC for chain tip),
+ * Env: ENVIO_GRAPHQL_URL, ENVIO_SYNC_CHECK_RPC_URL (optional, falls back to NEXT_PUBLIC_NODE_URL),
  * ENVIO_SYNC_CHECK_SYNC_PROGRESS_ID (optional, default "chain-31"),
  * ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL (optional),
  * ENVIO_SYNC_CHECK_LAG_THRESHOLD_BLOCKS (default 500), ENVIO_SYNC_CHECK_SECRET (optional).
@@ -128,7 +128,7 @@ async function postSlackAlert(
 export async function GET(request: NextRequest) {
   const secret = process.env.ENVIO_SYNC_CHECK_SECRET
   const graphqlUrl = process.env.ENVIO_GRAPHQL_URL
-  const rpcUrl = process.env.ENVIO_SYNC_CHECK_RPC_URL
+  const rpcUrl = process.env.NEXT_PUBLIC_NODE_URL
   const slackWebhookUrl = process.env.ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL
   const parsedThreshold = Number(process.env.ENVIO_SYNC_CHECK_LAG_THRESHOLD_BLOCKS)
   const lagThresholdBlocks = Number.isNaN(parsedThreshold) ? DEFAULT_LAG_THRESHOLD_BLOCKS : parsedThreshold
@@ -149,7 +149,7 @@ export async function GET(request: NextRequest) {
 
   if (!rpcUrl) {
     return NextResponse.json(
-      { success: false, error: 'ENVIO_SYNC_CHECK_RPC_URL not configured' },
+      { success: false, error: 'No RPC URL: set ENVIO_SYNC_CHECK_RPC_URL or NEXT_PUBLIC_NODE_URL' },
       { status: 503 },
     )
   }
