@@ -1,14 +1,18 @@
 import { useMemo } from 'react'
+import { keccak256, stringToBytes } from 'viem'
 import { useReadContracts } from 'wagmi'
 
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { rbtcVault } from '@/lib/contracts'
+import { permissionsManager, rbtcVault } from '@/lib/contracts'
 
+import { NOT_WHITELISTED_REASON } from '../../services/constants'
 import type { EligibilityStatus, PauseState, VaultRequest } from '../../services/types'
 import { toActionEligibility } from '../../services/ui/mappers'
 
+const WHITELISTED_USER_ROLE = keccak256(stringToBytes('WHITELISTED_USER_ROLE'))
+
 /**
- * Reads on-chain pause state and active request data from the RbtcAsyncVault contract,
+ * Reads on-chain pause state, whitelist eligibility, and active request data,
  * then derives action eligibility via `toActionEligibility`.
  *
  * Polls every `AVERAGE_BLOCKTIME` (one RSK block) to stay in sync with contract state.
@@ -29,6 +33,11 @@ export function useActionEligibility(address: `0x${string}` | undefined) {
     if (address) {
       return [
         ...base,
+        {
+          ...permissionsManager,
+          functionName: 'hasRoleOrAdmin',
+          args: [WHITELISTED_USER_ROLE, address],
+        } as const,
         {
           ...rbtcVault,
           functionName: 'depositReq',
@@ -64,14 +73,16 @@ export function useActionEligibility(address: `0x${string}` | undefined) {
       withdrawals: redeemsPaused ? 'paused' : 'active',
     }
 
-    // TODO(DAO-XXXX): wire to contract when eligibility check is available
-    const eligibility: EligibilityStatus = { eligible: true, reason: '' }
+    const isWhitelisted = data.length > 2 ? ((data[2]?.result as boolean | undefined) ?? false) : true
+    const eligibility: EligibilityStatus = isWhitelisted
+      ? { eligible: true, reason: '' }
+      : { eligible: false, reason: NOT_WHITELISTED_REASON }
 
     const activeRequests: VaultRequest[] = []
 
-    if (data.length > 2) {
-      const depositResult = data[2]?.result as readonly [bigint, bigint] | undefined
-      const redeemResult = data[3]?.result as readonly [bigint, bigint] | undefined
+    if (data.length > 3) {
+      const depositResult = data[3]?.result as readonly [bigint, bigint] | undefined
+      const redeemResult = data[4]?.result as readonly [bigint, bigint] | undefined
 
       if (depositResult) {
         const [epochId, assets] = depositResult
@@ -105,7 +116,6 @@ export function useActionEligibility(address: `0x${string}` | undefined) {
         }
       }
     }
-
     return toActionEligibility(pause, eligibility, activeRequests)
   }, [data, address])
 

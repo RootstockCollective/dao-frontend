@@ -17,12 +17,14 @@ function successResult<T>(value: T) {
 function buildMulticallData({
   depositsPaused = false,
   redeemsPaused = false,
+  isWhitelisted = true,
   depositReq = [0n, 0n] as readonly [bigint, bigint],
   redeemReq = [0n, 0n] as readonly [bigint, bigint],
 } = {}) {
   return [
     successResult(depositsPaused),
     successResult(redeemsPaused),
+    successResult(isWhitelisted),
     successResult(depositReq),
     successResult(redeemReq),
   ]
@@ -100,6 +102,20 @@ describe('useActionEligibility', () => {
     expect(result.current.data?.canWithdraw).toBe(false)
     expect(result.current.data?.depositBlockReason).toBe('You already have an active request')
     expect(result.current.data?.withdrawBlockReason).toBe('You already have an active request')
+  })
+
+  it('blocks deposits when user is not whitelisted', () => {
+    mockUseReadContracts.mockReturnValue({
+      data: buildMulticallData({ isWhitelisted: false }),
+      isLoading: false,
+      error: null,
+    })
+
+    const { result } = renderHook(() => useActionEligibility(ADDRESS))
+
+    expect(result.current.data?.canDeposit).toBe(false)
+    expect(result.current.data?.depositBlockReason).toBe('You are not whitelisted to use this vault')
+    expect(result.current.data?.canWithdraw).toBe(true)
   })
 
   it('allows both actions when nothing is paused and no active requests', () => {
