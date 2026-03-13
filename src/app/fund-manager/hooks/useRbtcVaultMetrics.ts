@@ -23,7 +23,7 @@ export const useRbtcVaultMetrics = () => {
   const rbtcPrice = prices[RBTC]?.price ?? 0
 
   const {
-    totalAssets,
+    vaultAssetBalance,
     reportedOffchainAssets,
     freeOnchainLiquidity,
     lastClosedEpoch,
@@ -44,8 +44,8 @@ export const useRbtcVaultMetrics = () => {
   const error = vaultError ?? syntheticError ?? bufferError ?? null
 
   return useMemo(() => {
-    const totalVaultAssets = totalAssets + reportedOffchainAssets
-    const tvlRaw = totalVaultAssets >= bufferDebt ? totalVaultAssets - bufferDebt : 0n
+    const tvlSum = vaultAssetBalance + reportedOffchainAssets - bufferDebt
+    const tvlRaw = tvlSum < 0n ? 0n : tvlSum
     const liquidityReserveRaw = freeOnchainLiquidity + bufferAssets
     const ratePerSecondDecimal = Number(syntheticRatePerSecond) / Number(WeiPerEther)
     const syntheticApyDecimal = ratePerSecondToApy(ratePerSecondDecimal)
@@ -61,7 +61,7 @@ export const useRbtcVaultMetrics = () => {
       error,
     }
   }, [
-    totalAssets,
+    vaultAssetBalance,
     reportedOffchainAssets,
     freeOnchainLiquidity,
     bufferAssets,
