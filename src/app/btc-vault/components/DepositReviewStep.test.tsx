@@ -10,7 +10,7 @@ vi.mock('@/shared/context', () => ({
 const defaultProps = {
   amount: '1',
   estimatedShares: '980.39',
-  navFormatted: '1.02',
+  pricePerShareFormatted: '1.02',
   depositFee: '0',
   onBack: vi.fn(),
   onSubmit: vi.fn(),
@@ -49,10 +49,10 @@ describe('DepositReviewStep', () => {
     expect(screen.getByTestId('review-fee')).toHaveTextContent('0%')
   })
 
-  it('displays NAV', () => {
+  it('displays Price Per Share', () => {
     render(<DepositReviewStep {...defaultProps} />)
 
-    expect(screen.getByTestId('review-nav')).toHaveTextContent('1.02')
+    expect(screen.getByTestId('review-price-per-share')).toHaveTextContent('1.02')
   })
 
   it('shows the disclaimer text', () => {

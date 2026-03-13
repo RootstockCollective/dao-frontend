@@ -17,7 +17,7 @@ import { ReviewRow } from './ReviewRow'
 interface DepositReviewStepProps {
   amount: string
   estimatedShares: string
-  navFormatted: string
+  pricePerShareFormatted: string
   depositFee: string
   onBack: () => void
   onSubmit: () => void
@@ -27,7 +27,7 @@ interface DepositReviewStepProps {
 export const DepositReviewStep = ({
   amount,
   estimatedShares,
-  navFormatted,
+  pricePerShareFormatted,
   depositFee,
   onSubmit,
   isSubmitting,
@@ -89,8 +89,12 @@ export const DepositReviewStep = ({
           </div>
         </div>
 
-        {/* --- NAV --- */}
-        <ReviewRow label="Last confirmed NAV" value={`${navFormatted} ${RBTC}/share`} testId="review-nav" />
+        {/* Price Per Share = NAV per share (convertToAssets(1e18)) renamed for clarity */}
+        <ReviewRow
+          label="Price Per Share"
+          value={`${pricePerShareFormatted} ${RBTC}/share`}
+          testId="review-price-per-share"
+        />
       </div>
 
       {/* --- Footer: Disclaimer + Send request --- */}

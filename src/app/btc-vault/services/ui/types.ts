@@ -51,10 +51,10 @@ export interface HistoryFilterParams {
 export interface VaultMetricsDisplay {
   tvlFormatted: string
   apyFormatted: string
-  navFormatted: string
+  pricePerShareFormatted: string
   timestamp: number
-  /** Raw NAV bigint kept for form calculations (e.g. estimated shares = amount / nav) */
-  navRaw: bigint
+  /** Raw pricePerShare bigint kept for form calculations (e.g. estimated shares = amount / pricePerShare) */
+  pricePerShareRaw: bigint
 }
 
 export interface EpochDisplay {
