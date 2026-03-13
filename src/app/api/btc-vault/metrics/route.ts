@@ -1,3 +1,4 @@
+import { NextResponse } from 'next/server'
 import { parseEther } from 'viem'
 
 import { rbtcVault, syntheticYield } from '@/lib/contracts'
@@ -38,7 +39,7 @@ export async function GET() {
       apy = syntheticApyBps * SYNTHETIC_TO_VAULT_BPS
     }
 
-    return Response.json({
+    return NextResponse.json({
       tvl: totalAssetsResult.result?.toString() ?? '0',
       apy: apy.toString(),
       pricePerShare: convertToAssetsResult.result?.toString() ?? '0',
@@ -48,6 +49,6 @@ export async function GET() {
   } catch (error) {
     console.error('[btc-vault/metrics]', error)
     const message = error instanceof Error ? error.message : 'Unknown error'
-    return Response.json({ error: `Cannot fetch vault metrics: ${message}` }, { status: 500 })
+    return NextResponse.json({ error: `Cannot fetch vault metrics: ${message}` }, { status: 500 })
   }
 }
