@@ -1,13 +1,15 @@
-import { SwapInputComponent, SwapInputToken } from '@/components/SwapInput'
-import { ArrowsUpDown } from '@/components/Icons'
-import { handleAmountInput, formatForDisplay } from '@/lib/utils'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
-import { SwapStepProps } from '../types'
-import { useSwapInput, useTokenSelection, useTokenAllowance } from '@/shared/stores/swap'
+import { Hash, parseUnits } from 'viem'
+
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { useExecuteTxFlow } from '@/shared/notification'
-import { parseUnits, Hash } from 'viem'
+import { ArrowsUpDown } from '@/components/Icons'
+import { SwapInputComponent, SwapInputToken } from '@/components/SwapInput'
 import Big from '@/lib/big'
+import { formatForDisplay, handleAmountInput } from '@/lib/utils'
+import { useExecuteTxFlow } from '@/shared/notification'
+import { useSwapInput, useTokenAllowance, useTokenSelection } from '@/shared/stores/swap'
+
+import { SwapStepProps } from '../types'
 
 export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   const {
@@ -242,7 +244,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
           isLoading={isQuoting && mode === 'exactOut'}
           errorText={
             isAmountOverBalance
-              ? `This is more than the available ${tokenInData.symbol} balance. Please update the amount.`
+              ? `This is more than your available ${tokenInData.symbol} balance. Please adjust the amount to swap, or transfer more ${tokenInData.symbol} into your wallet so you can swap it.`
               : ''
           }
         />
