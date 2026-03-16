@@ -12,7 +12,9 @@ import { formatForDisplay, handleAmountInput } from '@/lib/utils'
 import { useExecuteTxFlow } from '@/shared/notification'
 import { useSwapInput, useTokenAllowance, useTokenSelection } from '@/shared/stores/swap'
 
+import { SwapStepWarning } from '../components/SwapStepWarning'
 import { SwapStepProps } from '../types'
+import { LOW_LIQUIDITY_WARNING_MESSAGE, shouldShowLowLiquidityWarning } from '../utils/low-liquidity-warning'
 
 const AUTO_FEE_TIER = 'auto' as const
 
@@ -251,6 +253,11 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     [tokenOutData, tokenOutPrice],
   )
 
+  const showLowLiquidityWarning = useMemo(
+    () => shouldShowLowLiquidityWarning(amountIn ?? '', amountOut ?? ''),
+    [amountIn, amountOut],
+  )
+
   return (
     <>
       <div className="flex flex-col gap-4">
@@ -330,6 +337,14 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
           errorText={quoteError ? 'Failed to get quote. Pool may have insufficient liquidity.' : ''}
           autoFocus={false}
         />
+
+        {showLowLiquidityWarning && (
+          <SwapStepWarning
+            message={LOW_LIQUIDITY_WARNING_MESSAGE}
+            className="mt-2"
+            testId="swap-low-liquidity-warning"
+          />
+        )}
       </div>
     </>
   )

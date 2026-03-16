@@ -1,18 +1,21 @@
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { formatUnits, Hash } from 'viem'
+
+import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
-import { useExecuteTxFlow } from '@/shared/notification'
-import { useState, useEffect, useCallback, useMemo } from 'react'
-import { SwapStepProps } from '../types'
 import { StakeTokenAmountDisplay } from '@/app/user/Stake/components/StakeTokenAmountDisplay'
 import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
-import { useSwapInput, useTokenSelection, useSwapExecution } from '@/shared/stores/swap'
-import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { formatForDisplay } from '@/lib/utils'
-import { Hash, formatUnits } from 'viem'
-import Big from '@/lib/big'
-import { Label, Paragraph } from '@/components/Typography'
-import Image from 'next/image'
+import { PercentageButtonItem, PercentageButtons } from '@/components/PercentageButtons'
 import { SwapInputComponent, SwapInputToken } from '@/components/SwapInput'
-import { PercentageButtons, PercentageButtonItem } from '@/components/PercentageButtons'
+import { Label } from '@/components/Typography'
+import Big from '@/lib/big'
+import { formatForDisplay } from '@/lib/utils'
+import { useExecuteTxFlow } from '@/shared/notification'
+import { useSwapExecution, useSwapInput, useTokenSelection } from '@/shared/stores/swap'
+
+import { LowLiquidityWarning, SwapStepWarning } from '../components/SwapStepWarning'
+import { SwapStepProps } from '../types'
+import { shouldShowLowLiquidityWarning } from '../utils/low-liquidity-warning'
 
 // Slippage tolerance options (in percentage)
 const SLIPPAGE_OPTIONS: PercentageButtonItem<number>[] = [
@@ -87,6 +90,11 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
       price: tokenOutPrice || undefined,
     }),
     [tokenOutData, tokenOutPrice],
+  )
+
+  const showLowLiquidityWarning = useMemo(
+    () => shouldShowLowLiquidityWarning(amountIn ?? '', amountOut ?? ''),
+    [amountIn, amountOut],
   )
 
   const handleConfirmSwap = useCallback(() => {
@@ -174,12 +182,7 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
           testId="slippage-buttons"
         />
         {slippageTolerance === null && (
-          <div className="flex items-center gap-2 mt-2 py-3 bg-st-info/20 rounded-sm">
-            <Image src="/images/warning-icon.svg" alt="Warning" width={24} height={24} />
-            <Paragraph variant="body-s" className="text-st-info">
-              Select a slippage option to swap
-            </Paragraph>
-          </div>
+          <SwapStepWarning message="Select a slippage option to swap" className="mt-2" />
         )}
       </div>
 
@@ -197,6 +200,8 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
           />
         </div>
       )}
+
+      {showLowLiquidityWarning && <LowLiquidityWarning className="mt-2 mb-6" />}
 
       <TransactionStatus
         txHash={swapTxHash || undefined}
