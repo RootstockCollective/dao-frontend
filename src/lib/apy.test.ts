@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { growthFactorToApy, ratePerSecondToApy } from './apy'
+import { growthFactorToApy } from './apy'
 import { SECONDS_PER_YEAR } from './constants'
 
 const SECONDS_PER_DAY = 86_400
@@ -146,29 +146,5 @@ describe('growthFactorToApy', () => {
       expect(growthFactorToApy(NaN, 1)).toBeNaN()
       expect(growthFactorToApy(1, NaN)).toBeNaN()
     })
-  })
-})
-
-describe('ratePerSecondToApy', () => {
-  it('is equivalent to growthFactorToApy with periodSeconds=1', () => {
-    const rates = [0, 1e-10, 0.001 / SECONDS_PER_YEAR, 0.05 / SECONDS_PER_YEAR, 0.5 / SECONDS_PER_YEAR]
-    for (const rate of rates) {
-      expect(ratePerSecondToApy(rate)).toEqual(growthFactorToApy(rate, 1))
-    }
-  })
-
-  it('propagates NaN for invalid inputs', () => {
-    expect(ratePerSecondToApy(NaN)).toBeNaN()
-    expect(ratePerSecondToApy(Infinity)).toBeNaN()
-  })
-
-  it('produces the continuous compounding result for a realistic vault rate', () => {
-    // Simulate a vault earning ~3.5% APR
-    const apr = 0.035
-    const ratePerSecond = apr / SECONDS_PER_YEAR
-    const apy = ratePerSecondToApy(ratePerSecond)
-    const expected = Math.exp(apr) - 1
-    expect(apy).toBeCloseTo(expected, 8)
-    expect(apy).toBeGreaterThan(apr) // compound effect
   })
 })

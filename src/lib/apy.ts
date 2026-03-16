@@ -18,12 +18,3 @@ export function growthFactorToApy(growthFactor: number, periodSeconds: number): 
   const periodsPerYear = SECONDS_PER_YEAR / periodSeconds
   return Math.exp(periodsPerYear * Math.log(growthPerPeriod)) - 1
 }
-
-/**
- * Computes the annual percentage yield (APY) from a rate per second.
- * @param ratePerSecond - The rate per second
- * @returns The APY as a decimal (e.g. 0.05 for 5%), or NaN if inputs are invalid (non-finite or negative growth, non-positive period)
- */
-export function ratePerSecondToApy(ratePerSecond: number): number {
-  return growthFactorToApy(ratePerSecond, 1)
-}

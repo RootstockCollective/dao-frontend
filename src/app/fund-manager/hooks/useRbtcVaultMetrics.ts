@@ -1,8 +1,7 @@
 import { useMemo } from 'react'
 
 import { formatMetrics } from '@/app/shared/formatter'
-import { ratePerSecondToApy } from '@/lib/apy'
-import { RBTC, WeiPerEther } from '@/lib/constants'
+import { RBTC, SECONDS_PER_YEAR, WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadSyntheticYield } from '@/shared/hooks/contracts/btc-vault'
 
@@ -48,7 +47,7 @@ export const useRbtcVaultMetrics = () => {
     const tvlRaw = tvlSum < 0n ? 0n : tvlSum
     const liquidityReserveRaw = freeOnchainLiquidity + bufferAssets
     const ratePerSecondDecimal = Number(syntheticRatePerSecond) / Number(WeiPerEther)
-    const syntheticApyDecimal = ratePerSecondToApy(ratePerSecondDecimal)
+    const syntheticApyDecimal = ratePerSecondDecimal * SECONDS_PER_YEAR
     const syntheticYieldApy = isNaN(syntheticApyDecimal) ? '—' : `${(syntheticApyDecimal * 100).toFixed(2)}%`
     const vaultApy = computeIndicativeApy(lastClosedEpoch, previousClosedEpoch)
 
