@@ -6,25 +6,41 @@ This file defines how the workflow integrates with external systems and how huma
 
 ## Human-in-the-Loop (HITL) Integration
 
-Defines how humans receive notifications and provide approvals at each workflow stage.
+Defines how humans receive notifications and provide approvals at each workflow stage. The human orchestrator is the permission giver; agents do not proceed to the next stage without explicit approval.
 
-### Current Configuration
+### Interaction modes
+
+Support multiple ways of interacting depending on the tool in use:
 
 ```yaml
 hitl:
-  type: cli
-  description: "Direct CLI interaction with Claude Code"
+  modes:
+    cli:
+      description: "Terminal-based interaction (Claude Code, Codex)"
+      tools: ["Claude Code", "Codex"]
+      notifications:
+        story_ready: "Agent outputs message in CLI"
+        review_complete: "Agent outputs message in CLI"
+        qa_complete: "Agent outputs message in CLI"
+      approvals:
+        plan_approval: "User types approval in CLI (e.g. 'approved' or 'proceed')"
+        review_approval: "User types approval in CLI"
+        merge_approval: "User types approval in CLI or executes merge in GitHub"
 
-  notifications:
-    story_ready: "Agent outputs message in CLI"
-    review_complete: "Agent outputs message in CLI"
-    qa_complete: "Agent outputs message in CLI"
-
-  approvals:
-    plan_approval: "User types approval in CLI"
-    review_approval: "User types approval in CLI"
-    merge_approval: "User types approval in CLI"
+    inline_chat:
+      description: "Chat/UI-based interaction (Cursor, Copilot)"
+      tools: ["Cursor", "Copilot"]
+      notifications:
+        story_ready: "Agent posts summary or link to artifact in chat"
+        review_complete: "Agent posts review summary in chat"
+        qa_complete: "Agent posts QA report summary in chat"
+      approvals:
+        plan_approval: "User replies in chat to approve (e.g. 'approved', 'looks good') before next step"
+        review_approval: "User replies in chat to approve or request changes"
+        merge_approval: "User approves in chat and merges PR in GitHub (or CI) when ready"
 ```
+
+**Orchestrator role:** Regardless of mode, the human decides when to invoke each agent, when to approve, and when to deviate from the plan. There is no automated handoff—the orchestrator runs the next step after approval.
 
 ---
 
