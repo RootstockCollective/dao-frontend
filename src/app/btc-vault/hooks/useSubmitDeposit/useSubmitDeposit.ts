@@ -8,17 +8,12 @@ import { useTransactionStatus } from '@/app/user/Stake/hooks/useTransactionStatu
 import { rbtcVault } from '@/lib/contracts'
 
 /**
- * Hook wrapping the `requestDeposit()` contract call on the BTC Vault.
+ * Hook wrapping the `requestDepositNative()` contract call on the BTC Vault.
  *
- * Key difference from USDRIF vault: rBTC is the native currency so
- * `msg.value` carries the deposit amount (no ERC-20 approve step needed).
- * This requires passing `value` to `writeContractAsync`, which the shared
- * `useContractWrite` hook's type doesn't support — so we compose wagmi
- * primitives directly.
- *
- * `minSharesOut` is hardcoded to `0n` because this is a request-based vault:
- * shares are minted at the NAV confirmed at epoch close, not at request time,
- * so slippage protection on the request is not applicable.
+ * rBTC is the native currency so `msg.value` carries the deposit amount
+ * (no ERC-20 approve step needed). This requires passing `value` to
+ * `writeContractAsync`, which the shared `useContractWrite` hook's type
+ * doesn't support — so we compose wagmi primitives directly.
  */
 export function useSubmitDeposit() {
   const { address } = useAccount()
@@ -30,8 +25,8 @@ export function useSubmitDeposit() {
       if (!address) return Promise.reject(new Error('Wallet not connected'))
       return writeContractAsync({
         ...rbtcVault,
-        functionName: 'requestDeposit',
-        args: [amount, address, address],
+        functionName: 'requestDepositNative',
+        args: [address, address],
         value: amount,
       })
     },

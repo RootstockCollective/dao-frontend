@@ -1,9 +1,6 @@
 import { zeroAddress } from 'viem'
 
-import { BufferAbi } from '@/lib/abis/BufferAbi'
-import { PermissionsManagerAbi } from '@/lib/abis/PermissionsManagerAbi'
-import { RbtcAsyncVaultAbi } from '@/lib/abis/RbtcAsyncVaultAbi'
-import { SyntheticYieldAbi } from '@/lib/abis/SyntheticYieldAbi'
+import { getAbi } from '@/lib/abis/btc-vault'
 import { VaultAbi } from '@/lib/abis/VaultAbi'
 
 import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'
@@ -127,20 +124,20 @@ export const vault = {
 
 export const rbtcVault = {
   address: RBTC_VAULT_ADDRESS,
-  abi: RbtcAsyncVaultAbi,
+  abi: getAbi('RBTCAsyncVaultAbi'),
 } as const
 
 export const buffer = {
   address: BUFFER_ADDRESS,
-  abi: BufferAbi,
+  abi: getAbi('BufferAbi'),
 } as const
 
 export const permissionsManager = {
   address: PERMISSIONS_MANAGER_ADDRESS,
-  abi: PermissionsManagerAbi,
+  abi: getAbi('PermissionsManagerAbi'),
 } as const
 
 export const syntheticYield = {
   address: SYNTHETIC_YIELD_ADDRESS,
-  abi: SyntheticYieldAbi,
+  abi: getAbi('SyntheticYieldAbi'),
 } as const
