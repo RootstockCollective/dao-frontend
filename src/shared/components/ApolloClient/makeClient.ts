@@ -1,6 +1,11 @@
-import { fetchCrTheGraphEndpoint, fetchDaoTheGraphEndpoint } from '@/lib/the-graph'
 import { HttpLink } from '@apollo/client/link/http'
 import { ApolloClient, InMemoryCache } from '@apollo/client-integration-nextjs'
+
+import {
+  fetchBtcVaultTheGraphEndpoint,
+  fetchCrTheGraphEndpoint,
+  fetchDaoTheGraphEndpoint,
+} from '@/lib/the-graph'
 
 function makeClient(uri: string) {
   const httpLink = new HttpLink({ uri })
@@ -13,3 +18,4 @@ function makeClient(uri: string) {
 
 export const client = makeClient(fetchCrTheGraphEndpoint)
 export const daoClient = makeClient(fetchDaoTheGraphEndpoint)
+export const btcVaultClient = makeClient(fetchBtcVaultTheGraphEndpoint)
