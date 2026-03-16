@@ -57,6 +57,7 @@ bun.lockb
 # Sentry Config File
 .env.sentry-build-plugin
 
-# AI workflow artifacts
-.workflow/
+# AI workflow — only canonical .workflow/ is committed; adapters are generated
+# Track .workflow/ (model-agnostic source). Generated adapter files stay ignored:
 CLAUDE.md
+.github/copilot-instructions.md

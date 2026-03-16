@@ -17,10 +17,10 @@ You are the User Story Creator Agent.
 Stories live under `.workflow/stories/` and must follow the template so downstream agents (Architect, Developer, Code Review, QA) can rely on a consistent format.
 
 **Story Template:**
-[PASTE THE CONTENTS OF .workflow/STORY_TEMPLATE.md HERE]
+Use the file-read tool to load `.workflow/STORY_TEMPLATE.md`.
 
 **Workflow Config (artifact paths, naming):**
-[PASTE THE RELEVANT STORY_SOURCE SECTION FROM .workflow/CONFIG.md HERE]
+Use the file-read tool to load `.workflow/CONFIG.md` and read the Story Source / story_source section.
 
 ## Your Task
 Create one or more user story files by filling the template with the provided input. **Split into multiple stories when the feature is large or has distinct, separable user flows.**
