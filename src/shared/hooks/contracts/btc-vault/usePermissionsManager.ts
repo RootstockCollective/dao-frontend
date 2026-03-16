@@ -1,61 +1,50 @@
 import { useMemo } from 'react'
-import { useAccount, useReadContracts } from 'wagmi'
+import { useAccount } from 'wagmi'
 
-import { getAbi } from '@/lib/abis/btc-vault'
 import { ADMIN_ROLE, FUND_MANAGER_ROLE } from '@/lib/constants'
 import { permissionsManager } from '@/lib/contracts'
+
+import { useReadPermissionsManager } from './useReadPermissionsManager'
 
 export function usePermissionsManager() {
   const { address: connectedAddress } = useAccount()
 
-  const contracts = useMemo(() => {
-    if (!connectedAddress || !permissionsManager.address) return []
-
-    return [
-      {
-        address: permissionsManager.address,
-        abi: getAbi('PermissionsManagerAbi'),
-        functionName: 'hasRole',
-        args: [ADMIN_ROLE, connectedAddress],
-      } as const,
-      {
-        address: permissionsManager.address,
-        abi: getAbi('PermissionsManagerAbi'),
-        functionName: 'hasRole',
-        args: [FUND_MANAGER_ROLE, connectedAddress],
-      } as const,
-    ]
-  }, [connectedAddress])
+  const queryEnabled = !!connectedAddress && !!permissionsManager.address
 
   const {
-    data,
-    isLoading: isContractsLoading,
-    error: contractsError,
-  } = useReadContracts({
-    contracts,
-    query: {
-      enabled: !!connectedAddress && !!permissionsManager.address,
+    data: isAdmin,
+    isLoading: isAdminLoading,
+    error: adminError,
+  } = useReadPermissionsManager(
+    {
+      functionName: 'hasRole',
+      args: [ADMIN_ROLE, connectedAddress!],
     },
-  })
+    { enabled: queryEnabled },
+  )
 
-  return useMemo(() => {
-    if (isContractsLoading || contractsError || !connectedAddress) {
-      return {
-        isAdmin: false,
-        isFundManager: false,
-        isLoading: isContractsLoading,
-        error: contractsError,
-      }
-    }
+  const {
+    data: isFundManager,
+    isLoading: isFundManagerLoading,
+    error: fundManagerError,
+  } = useReadPermissionsManager(
+    {
+      functionName: 'hasRole',
+      args: [FUND_MANAGER_ROLE, connectedAddress!],
+    },
+    { enabled: queryEnabled },
+  )
 
-    const isAdmin = (data?.[0]?.result as boolean | undefined) ?? false
-    const isFundManager = (data?.[1]?.result as boolean | undefined) ?? false
+  const isLoading = isAdminLoading || isFundManagerLoading
+  const error = adminError || fundManagerError
 
-    return {
-      isAdmin,
-      isFundManager,
-      isLoading: isContractsLoading,
-      error: contractsError,
-    }
-  }, [data, connectedAddress, isContractsLoading, contractsError])
+  return useMemo(
+    () => ({
+      isAdmin: isAdmin ?? false,
+      isFundManager: isFundManager ?? false,
+      isLoading,
+      error,
+    }),
+    [isAdmin, isFundManager, isLoading, error],
+  )
 }
