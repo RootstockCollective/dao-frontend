@@ -1,6 +1,6 @@
 import { formatMetrics, formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import Big from '@/lib/big'
-import { RBTC } from '@/lib/constants'
+import { RBTC, RIF } from '@/lib/constants'
 import { formatCurrency } from '@/lib/utils'
 import { parseEther } from 'viem'
 import { describe, expect, test } from 'vitest'
@@ -307,5 +307,68 @@ describe('formatter', () => {
     ])('should format $symbol properly with $value', ({ symbol, value, expected }) => {
       expect(formatSymbol(value, symbol)).toBe(expected)
     })
+
+    test.each([
+      { symbol: RBTC, value: -parseEther('1.3'), expected: '-1.3' },
+      { symbol: RBTC, value: -parseEther('0.5'), expected: '-0.5' },
+      { symbol: RBTC, value: -parseEther('100'), expected: '-100' },
+      { symbol: RIF, value: -parseEther('1000'), expected: '-1,000' },
+      { symbol: RIF, value: -halfEther, expected: '-<1' },
+      { symbol: RBTC, value: -1000000000000n, expected: '-<0.00001' },
+    ])('should format negative $symbol properly with $value', ({ symbol, value, expected }) => {
+      expect(formatSymbol(value, symbol)).toBe(expected)
+    })
+  })
+
+  describe('formatMetrics with negative values', () => {
+    const currency = 'USD'
+
+    test.each([
+      {
+        amount: -parseEther('1.3'),
+        price: 100_000,
+        symbol: RBTC,
+        currency,
+        expected: {
+          amount: '-1.3',
+          fiatAmount: '-$130,000.00 USD',
+        },
+      },
+      {
+        amount: -parseEther('0.5'),
+        price: 100_000,
+        symbol: RBTC,
+        currency,
+        expected: {
+          amount: '-0.5',
+          fiatAmount: '-$50,000.00 USD',
+        },
+      },
+      {
+        amount: -1000000000000n,
+        price: 100_000,
+        symbol: RBTC,
+        currency,
+        expected: {
+          amount: '-<0.00001',
+          fiatAmount: '-$0.10 USD',
+        },
+      },
+      {
+        amount: -1n,
+        price: 100_000,
+        symbol: RBTC,
+        currency,
+        expected: {
+          amount: '-<0.00001',
+          fiatAmount: '-<$0.01 USD',
+        },
+      },
+    ])(
+      'formatMetrics($amount, $price, $symbol, $currency) -> $expected.amount, $expected.fiatAmount',
+      ({ amount, price, symbol, currency, expected }) => {
+        expect(formatMetrics(amount, price, symbol, currency)).toEqual(expected)
+      },
+    )
   })
 })

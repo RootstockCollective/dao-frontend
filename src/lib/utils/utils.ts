@@ -113,17 +113,18 @@ export const formatCurrency = (
     return ''
   }
 
-  let isBelowMinimumDisplay = amount.gt(0) && amount.lt(0.01)
-  amount = isBelowMinimumDisplay ? 0.01 : amount
+  const isBelowMinimumPositive = amount.gt(0) && amount.lt(0.01)
+  const isBelowMinimumNegative = amount.lt(0) && amount.gt(-0.01)
 
   const formattedAmount = new Intl.NumberFormat('en-US', {
     style: showCurrencySymbol ? 'currency' : 'decimal',
     currency,
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
-  }).format(amount.toString() as never)
+  }).format((isBelowMinimumPositive || isBelowMinimumNegative ? 0.01 : amount).toString() as never)
 
-  const result = isBelowMinimumDisplay ? `<${formattedAmount}` : formattedAmount
+  const prefix = isBelowMinimumPositive ? '<' : isBelowMinimumNegative ? '-<' : ''
+  const result = `${prefix}${formattedAmount}`
   return showCurrencyLabel ? `${result} ${currency}` : result
 }
 
