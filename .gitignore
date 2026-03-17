@@ -44,9 +44,8 @@ next-env.d.ts
 # PHPStorm
 .idea
 
-# Cursor — share rules, ignore user-specific config
-.cursor/*
-!.cursor/rules/
+# Cursor — generated from .workflow via scripts/export-workflow-adapters.sh (local only)
+.cursor/
 
 # bun lock file
 bun.lockb
@@ -57,8 +56,8 @@ bun.lockb
 # Sentry Config File
 .env.sentry-build-plugin
 
-# AI workflow — only canonical .workflow/ is committed; adapters are generated
-# Track .workflow/ (model-agnostic source). Generated adapter files stay ignored:
+# AI workflow — only canonical .workflow/ is committed; adapters generated locally
+.claude/
 CLAUDE.md
 .github/copilot-instructions.md
 
