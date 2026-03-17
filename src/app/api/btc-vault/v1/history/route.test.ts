@@ -2,12 +2,19 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { GET } from './route'
 
 vi.mock('@/app/api/btc-vault/v1/history/action', () => ({
+  enrichHistoryWithRequestStatus: vi.fn((history: unknown) => Promise.resolve(history)),
   getGlobalBtcVaultHistory: vi.fn(),
   getBtcVaultHistoryCount: vi.fn(),
 }))
 
-import { getBtcVaultHistoryCount, getGlobalBtcVaultHistory, type BtcVaultHistoryItem } from './action'
+import {
+  enrichHistoryWithRequestStatus,
+  getBtcVaultHistoryCount,
+  getGlobalBtcVaultHistory,
+  type BtcVaultHistoryItem,
+} from './action'
 
+const mockEnrich = vi.mocked(enrichHistoryWithRequestStatus)
 const mockGetHistory = vi.mocked(getGlobalBtcVaultHistory)
 const mockGetCount = vi.mocked(getBtcVaultHistoryCount)
 

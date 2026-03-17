@@ -23,10 +23,7 @@ const baseHistoryQuerySchema = z.object({
   type: z.array(ActionTypeEnum).optional(),
 })
 
-/** Query schema for GET /api/btc-vault/v1/addresses/:address/history */
-export const BtcVaultAddressHistoryQuerySchema = baseHistoryQuerySchema
-
-/** Query schema for GET /api/btc-vault/v1/history (optional address for global vs filtered) */
+/** Query schema for GET /api/btc-vault/v1/history (no address = global, ?address= = filtered by address). */
 export const BtcVaultGlobalHistoryQuerySchema = baseHistoryQuerySchema.extend({
   address: AddressSchema.optional(),
 })
