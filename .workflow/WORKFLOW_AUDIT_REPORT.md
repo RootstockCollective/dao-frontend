@@ -1,7 +1,7 @@
 # Workflow Audit Report
 
 **Date:** 2026-03-05
-**Scope:** `.workflow/` system + `.cursor/rules/` integration
+**Scope:** `.workflow/` system + `.workflow/rules/` integration
 **Purpose:** Identify structural gaps and conceptual issues in the current AI-assisted development workflow, grounded in authoritative industry sources.
 
 ---
@@ -15,11 +15,11 @@ Story → Workload Analyst → Architect → [Developer → Code Review → QA] 
 ```
 
 Key properties:
-- `.cursor/rules/*.mdc` files serve as canonical coding standards (auto-loaded by Cursor IDE)
+- `.workflow/rules/*.md` files serve as canonical coding standards (auto-loaded by Cursor IDE)
 - `.workflow/agents/` contains prompt templates for each role
 - Human approval gates at 4 points: story, plan, review, QA
 - Phases are sized small (1-3 ACs, one layer, <5 files)
-- Agents reference `.cursor/rules/` rather than duplicating standards
+- Agents reference `.workflow/rules/` rather than duplicating standards
 
 ---
 
@@ -27,7 +27,7 @@ Key properties:
 
 ### 2.1 Two-layer standards architecture
 
-`.cursor/rules/` files are always-applied by Cursor for every AI interaction (chat, composer, agent). The workflow agents reference them as canonical source. This means standards are enforced even outside the formal workflow -- quick fixes, ad-hoc changes, and code reviews all benefit.
+`.workflow/rules/` files are always-applied by Cursor for every AI interaction (chat, composer, agent). The workflow agents reference them as canonical source. This means standards are enforced even outside the formal workflow -- quick fixes, ad-hoc changes, and code reviews all benefit.
 
 > **Supporting evidence:** ThoughtWorks identifies "context engineering" as the practice of curating what the model sees to get better results, with rules files being the foundational layer.
 > — Fowler, M. (2026). "Context Engineering for Coding Agents." martinfowler.com
@@ -142,7 +142,7 @@ The 900-line PROJECT.md provides domain glossary, user personas, smart contract 
 > The BMAD Method includes `bmad-bmm-retrospective` as a standard workflow step after epic completion.
 > — BMAD Method (2026). docs.bmad-method.org/reference/workflow-map
 
-**Recommendation:** Add a lightweight retro step after merge. Record: phases that needed rework, agent failure modes, `.cursor/rules/` gaps discovered, plan accuracy vs. reality. Store in `.workflow/retros/STORY-XXX-retro.md`. Periodically review retros to update rules and agent prompts.
+**Recommendation:** Add a lightweight retro step after merge. Record: phases that needed rework, agent failure modes, `.workflow/rules/` gaps discovered, plan accuracy vs. reality. Store in `.workflow/retros/STORY-XXX-retro.md`. Periodically review retros to update rules and agent prompts.
 
 ---
 
@@ -155,7 +155,7 @@ The 900-line PROJECT.md provides domain glossary, user personas, smart contract 
 > Anthropic's custom sub-agents feature allows defining agents as markdown files with YAML frontmatter in `.claude/agents/`, automatically loaded with their own context window, tool restrictions, and model selection. Sub-agents can be invoked by name and run in isolated context.
 > — Anthropic (2026). "Create Custom Subagents." docs.anthropic.com/en/docs/claude-code/sub-agents
 
-> Cursor supports `.cursor/rules/` with auto-injection. Cursor also now supports sub-agents (as of early 2026).
+> Cursor supports `.workflow/rules/` with auto-injection. Cursor also now supports sub-agents (as of early 2026).
 > — Fowler, M. (2026). "Context Engineering for Coding Agents." martinfowler.com
 
 **Recommendation (near-term):** Replace "[PASTE HERE]" instructions with explicit file-reading tool calls in agent prompts (e.g., "Read `.workflow/PROJECT.md` and `.workflow/stories/STORY-XXX.md`").
@@ -168,7 +168,7 @@ The 900-line PROJECT.md provides domain glossary, user personas, smart contract 
 
 ### 4.1 Duplicative agent responsibilities
 
-**Problem:** The Code Review agent checks things that `.cursor/rules/` already enforces in real-time (import ordering, naming conventions), and re-runs the same validation gate (`npm run build/lint/test`) the Developer already passed. This is redundant token spend.
+**Problem:** The Code Review agent checks things that `.workflow/rules/` already enforces in real-time (import ordering, naming conventions), and re-runs the same validation gate (`npm run build/lint/test`) the Developer already passed. This is redundant token spend.
 
 **Evidence:**
 

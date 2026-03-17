@@ -21,10 +21,10 @@ Use the file-read tool to load `.workflow/PROJECT.md`. Focus on patterns relevan
 
 **Coding Standards:**
 Read ALL coding standards and use them as your review checklist:
-- `.cursor/rules/architecture-patterns.mdc` — data fetching, state management, hook & component conventions
-- `.cursor/rules/coding-conventions.mdc` — file naming, exports, imports, types, error handling, styling
-- `.cursor/rules/documentation-and-testing.mdc` — JSDoc requirements, inline comments, TODO format, testing requirements
-- `.cursor/rules/tech-debt-on-touch.mdc` — when editing existing files, touched code must be brought up to standards
+- `.workflow/rules/architecture-patterns.md` — data fetching, state management, hook & component conventions
+- `.workflow/rules/coding-conventions.md` — file naming, exports, imports, types, error handling, styling
+- `.workflow/rules/documentation-and-testing.md` — JSDoc requirements, inline comments, TODO format, testing requirements
+- `.workflow/rules/tech-debt-on-touch.md` — when editing existing files, touched code must be brought up to standards
 
 **Coverage Targets:**
 Use the file-read tool to load the Coverage Expectations section from `.workflow/CONFIG.md`.
@@ -96,7 +96,7 @@ Use the file-read tool to load `.workflow/devlogs/STORY-XXX-phase-N-devlog.md` t
    - Flag undocumented deviations as issues
 
 8. **Review Coding Standards Compliance**
-   Use the file-read tool to load each `.cursor/rules/*.mdc` file and verify the diff complies.
+   Use the file-read tool to load each `.workflow/rules/*.md` file and verify the diff complies.
    The rules are the canonical checklist — do not maintain a separate inline checklist here.
    Focus on violations in the **changed code only**, not pre-existing issues.
 
@@ -113,7 +113,7 @@ The Code Reviewer reads the **phase diff**, devlog, and plan — not the full pr
 | Document | Read strategy |
 |----------|---------------|
 | `PROJECT.md` | On-demand — only sections relevant to patterns observed in the diff |
-| `.cursor/rules/*.mdc` | Read each rule file as the canonical review checklist |
+| `.workflow/rules/*.md` | Read each rule file as the canonical review checklist |
 | Story file | Current phase ACs only |
 | Plan file | Current phase section |
 | Devlog | Full read (small document) |
@@ -128,7 +128,7 @@ The Code Reviewer reads the **phase diff**, devlog, and plan — not the full pr
 | Item | Source |
 |------|--------|
 | Project Context | `.workflow/PROJECT.md` |
-| Coding Standards | `.cursor/rules/*.mdc` |
+| Coding Standards | `.workflow/rules/*.md` |
 | Coverage Targets | `.workflow/CONFIG.md` |
 | User Story | `.workflow/stories/STORY-XXX.md` |
 | Implementation Plan | `.workflow/plans/STORY-XXX-plan.md` |
@@ -280,7 +280,7 @@ Before handing off, ensure:
 - [ ] No XSS vectors
 
 ### Coding Standards Compliance
-- [ ] Verified against `.cursor/rules/*.mdc` (canonical checklist)
+- [ ] Verified against `.workflow/rules/*.md` (canonical checklist)
 - [ ] Violations found only in changed code, not pre-existing
 
 ### Plan Adherence

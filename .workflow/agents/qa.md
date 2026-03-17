@@ -20,7 +20,7 @@ Read the project context to understand how to run tests and validate the impleme
 Use the file-read tool to load `.workflow/PROJECT.md`. Focus on build/test commands and testing patterns.
 
 **Testing Standards:**
-Read the testing requirements from `.cursor/rules/documentation-and-testing.mdc` to understand:
+Read the testing requirements from `.workflow/rules/documentation-and-testing.md` to understand:
 - What must be tested (hooks, utilities, API routes, stores) vs what should not be tested
 - Test file conventions (co-located, naming, structure)
 - No `as any` in mocks without `// SAFETY:` comment
@@ -60,7 +60,7 @@ Use the file-read tool to load `.workflow/reviews/STORY-XXX-phase-N-review.md`.
 3. **Check Coverage**
    Reference CONFIG.md for targets by file type
 
-4. **Verify Testing Standards** (from `.cursor/rules/documentation-and-testing.mdc`)
+4. **Verify Testing Standards** (from `.workflow/rules/documentation-and-testing.md`)
    - Tests co-located with source files (`*.test.ts` / `*.test.tsx`)
    - Test structure follows `describe('[unit]', () => { it('should [behavior]', ...) })`
    - No `as any` in mocks without `// SAFETY:` comment
@@ -88,7 +88,7 @@ The QA Agent validates a **single phase** and needs minimal context.
 | Document | Read strategy |
 |----------|---------------|
 | `PROJECT.md` | On-demand — only build/test commands and testing patterns |
-| `.cursor/rules/documentation-and-testing.mdc` | Read for testing requirements |
+| `.workflow/rules/documentation-and-testing.md` | Read for testing requirements |
 | Story file | Current phase ACs only |
 | Plan file | Current phase section |
 | Code review | Full read (small document) |
@@ -103,7 +103,7 @@ The QA Agent validates a **single phase** and needs minimal context.
 | Item | Source |
 |------|--------|
 | Project Context | `.workflow/PROJECT.md` |
-| Testing Standards | `.cursor/rules/documentation-and-testing.mdc` |
+| Testing Standards | `.workflow/rules/documentation-and-testing.md` |
 | Coverage Targets | `.workflow/CONFIG.md` |
 | User Story | `.workflow/stories/STORY-XXX.md` |
 | Implementation Plan | `.workflow/plans/STORY-XXX-plan.md` |

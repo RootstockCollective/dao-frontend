@@ -2,7 +2,7 @@
 
 ## Role
 
-Run a lightweight retrospective after a story is merged. Capture learnings, surface systemic issues, and propose improvements to `.cursor/rules/` — the **agentic flywheel**.
+Run a lightweight retrospective after a story is merged. Capture learnings, surface systemic issues, and propose improvements to `.workflow/rules/` — the **agentic flywheel**.
 
 **Key Principle:** Each story's retro makes the rules better, which makes the next story's agent output better, which produces fewer retro findings. This is **human-supervised improvement**, not autonomous rule changes.
 
@@ -31,7 +31,7 @@ Use the file-read tool to load all `.workflow/qa-reports/STORY-XXX-phase-*-qa.md
 Use the file-read tool to load all `.workflow/devlogs/STORY-XXX-phase-*-devlog.md` files.
 
 **Current Rules:**
-Use the file-read tool to load `.cursor/rules/*.mdc` files (skim for sections relevant to findings).
+Use the file-read tool to load `.workflow/rules/*.md` files (skim for sections relevant to findings).
 
 ## Your Task
 
@@ -55,7 +55,7 @@ Run a retrospective for the completed story. Analyze all artifacts to identify p
    - Are there rules that agents consistently misapply or ignore?
 
 4. **Propose Rule Changes**
-   - For each finding, determine if a `.cursor/rules/` change would prevent recurrence
+   - For each finding, determine if a `.workflow/rules/` change would prevent recurrence
    - Write the proposed diff (what to add/change/remove)
    - Classify each proposal: `add-rule`, `amend-rule`, `remove-rule`
    - Every proposal requires a justification tied to a specific finding
@@ -68,7 +68,7 @@ Run a retrospective for the completed story. Analyze all artifacts to identify p
 - Be specific — vague findings like "improve testing" are not actionable
 - Tie every proposed rule change to a concrete finding from THIS story
 - The human orchestrator decides which rule changes to accept
-- Do NOT modify `.cursor/rules/` files directly — only propose changes
+- Do NOT modify `.workflow/rules/` files directly — only propose changes
 ```
 
 ---
@@ -84,7 +84,7 @@ The Retro Agent reads **all artifacts for a single story** but nothing else.
 | Reviews | Full read of all phase reviews |
 | QA Reports | Full read of all phase QA reports |
 | Devlogs | Full read of all phase devlogs |
-| `.cursor/rules/*.mdc` | Skim — only sections relevant to findings |
+| `.workflow/rules/*.md` | Skim — only sections relevant to findings |
 | `PROJECT.md` | Not needed |
 
 **Session rule:** Run once per story, after merge. Fresh session.
@@ -100,7 +100,7 @@ The Retro Agent reads **all artifacts for a single story** but nothing else.
 | Code Reviews | `.workflow/reviews/STORY-XXX-phase-*-review.md` |
 | QA Reports | `.workflow/qa-reports/STORY-XXX-phase-*-qa.md` |
 | Devlogs | `.workflow/devlogs/STORY-XXX-phase-*-devlog.md` |
-| Current Rules | `.cursor/rules/*.mdc` |
+| Current Rules | `.workflow/rules/*.md` |
 
 ---
 
@@ -174,7 +174,7 @@ The Retro Agent reads **all artifacts for a single story** but nothing else.
 ### Proposal 1: [Short title]
 
 **Type:** `add-rule` | `amend-rule` | `remove-rule`
-**Target file:** `.cursor/rules/[filename].mdc`
+**Target file:** `.workflow/rules/[filename].md`
 **Finding:** [What happened in this story that this change would prevent]
 **Justification:** [Why a rule change is the right fix, not just a one-off correction]
 

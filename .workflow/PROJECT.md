@@ -768,8 +768,8 @@ The app links out to several external services for user-facing actions that happ
 
 ## Code Conventions
 
-> **Canonical source:** `.cursor/rules/coding-conventions.mdc` and `.cursor/rules/architecture-patterns.mdc`
-> The sections below provide project-specific context and code examples. For naming, imports, exports, types, error handling, and state management rules, refer to the cursor rules.
+> **Canonical source:** `.workflow/rules/coding-conventions.md` and `.workflow/rules/architecture-patterns.md`
+> The sections below provide project-specific context and code examples. For naming, imports, exports, types, error handling, and state management rules, refer to `.workflow/rules/`.
 
 - **Node.js**: Version 24 LTS
 - **Formatting**: Prettier (no semicolons, single quotes, 110 char width)
@@ -814,7 +814,7 @@ These rules are enforced by Prettier, ESLint, and Husky pre-commit hooks. Code t
 
 ## Import Conventions
 
-> **Canonical source:** `.cursor/rules/coding-conventions.mdc` (Import Ordering section)
+> **Canonical source:** `.workflow/rules/coding-conventions.md` (Import Ordering section)
 
 - Use `@/` for cross-feature imports, relative (`./`, `../`) for same-feature/same-directory.
   ```typescript
@@ -837,7 +837,7 @@ These rules are enforced by Prettier, ESLint, and Husky pre-commit hooks. Code t
 
 ## Data Fetching Patterns
 
-> **Canonical source:** `.cursor/rules/architecture-patterns.mdc` (Data Fetching and State Management sections)
+> **Canonical source:** `.workflow/rules/architecture-patterns.md` (Data Fetching and State Management sections)
 > The code examples below show project-specific implementations.
 
 | Layer | When to Use | Key File(s) |
@@ -937,8 +937,8 @@ updateToast(toastId, { severity: 'success', title: 'Done', content: 'Vote record
 
 ## Component Conventions
 
-> **Canonical source:** `.cursor/rules/architecture-patterns.mdc` (Component Conventions section)
-> The patterns below are project-specific conventions not covered by the cursor rules.
+> **Canonical source:** `.workflow/rules/architecture-patterns.md` (Component Conventions section)
+> The patterns below are project-specific conventions not covered by `.workflow/rules/`.
 
 Beyond PascalCase naming and co-located tests/stories:
 

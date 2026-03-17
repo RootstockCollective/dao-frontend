@@ -1,0 +1,63 @@
+---
+description: Enforces data fetching, state management, component structure, and hook conventions
+---
+
+# Architecture Patterns
+
+Apply to ALL new code. When editing existing code that violates these, update the touched code to comply.
+
+## Data Fetching
+
+| Scenario                                    | Pattern                                                           |
+| ------------------------------------------- | ----------------------------------------------------------------- |
+| Client-side data from API routes            | `useQuery` + `fetch`                                              |
+| Client-side blockchain reads                | wagmi hooks (`useReadContract`, `useReadContracts`, `useBalance`) |
+| Server-side data (GraphQL)                  | Server actions (`'use server'`) + Apollo `client.query()`         |
+| Server-side data (REST/DB)                  | API route handlers (`src/app/api/`) or server actions             |
+| One-off imperative fetches (event handlers) | Direct `fetch` — no React Query needed                            |
+
+### Hard rules
+
+- **No new `axios` or `axiosInstance` usage.** Use `fetch`. Existing axios tracked in DAO-1148.
+- `useQuery` keys MUST include ALL parameters: `['tokenData', address]`, never just `['tokenData']`.
+- Hook wrappers around `useQuery` follow naming: `use[Feature][Action]`.
+
+## State Management
+
+| Need                                                           | Pattern                                                            |
+| -------------------------------------------------------------- | ------------------------------------------------------------------ |
+| Server/blockchain data                                         | React Query / wagmi. **Never** duplicate into Zustand or useState. |
+| UI state in one component                                      | `useState`                                                         |
+| UI state shared in a subtree                                   | React Context                                                      |
+| UI state across unrelated parts or persisted across navigation | Zustand                                                            |
+| Compound component state (Accordion, Table)                    | React Context, co-located                                          |
+
+### Hard rules
+
+- Never sync server state into local state via useEffect. The query cache IS the state. Transform with `select` or `useMemo`.
+- One Zustand store per feature domain. Follow `src/shared/stores/README.md`.
+- Context providers: as narrow as possible — don't wrap the app if only one route needs it.
+
+## Hook Conventions
+
+- **Naming:** `use[Feature][Action]` — e.g., `useVaultBalance`, `useSwapExecution`.
+- **One exported hook per file.** Exception: tightly coupled hooks sharing private helpers, but split if file exceeds ~200 lines.
+- **File name = primary export name.** No mismatches.
+- **Explicit return types** on hooks exported from `src/shared/hooks/`. Feature-internal hooks may use inference.
+- **useEffect comments:** every `useEffect` should have a comment explaining what it reacts to and why.
+
+## Component Conventions
+
+- **Server component by default.** Add `'use client'` only when needed (browser APIs, hooks, event handlers).
+- **Push `'use client'` as deep as possible** — extract client-only parts into child components.
+- Never import wagmi hooks without `'use client'` in the file.
+- Presentational components: receive all data via props. No data fetching, no store access.
+- Container components: wire data to presentational components.
+- **Mobile-first layouts.** See `responsive-mobile-first.md` for full rules. Base Tailwind classes = mobile; `md:` = desktop.
+
+## Folder Structure
+
+- `src/components/` — shared reusable primitives (no business logic, no data fetching)
+- `src/app/[feature]/components/` — feature-specific UI
+- `src/shared/` — hooks, stores, context, types used across 2+ features
+- `src/lib/` — pure utilities, constants, configs. No React imports.

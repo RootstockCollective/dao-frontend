@@ -11,6 +11,7 @@ A structured workflow for AI agents to collaborate on software development with 
 | [PROJECT.md](./PROJECT.md) | **Project-specific context** (tech stack, patterns, domain) |
 | [CONFIG.md](./CONFIG.md) | Workflow config (HITL, story sources, coverage targets) |
 | [STORY_TEMPLATE.md](./STORY_TEMPLATE.md) | Template for creating new user stories |
+| [rules/](./rules/) | **Coding standards** (architecture, conventions, testing, git — model-agnostic) |
 | **Agents** | |
 | [agents/architect.md](./agents/architect.md) | Creates implementation plans |
 | [agents/developer.md](./agents/developer.md) | Implements the code |
@@ -159,7 +160,7 @@ The [QA Agent](./agents/qa.md) validates ONE phase:
 The [Retro Agent](./agents/retro.md) runs after merge and captures:
 - What went well and what didn't
 - Deviations from the plan and their causes
-- Proposed changes to `.cursor/rules/` files (the **agentic flywheel** — each story's retro makes the rules better, which makes the next story's agent output better, which produces fewer retro findings; this is human-supervised improvement, not autonomous)
+- Proposed changes to `.workflow/rules/` files (the **agentic flywheel** — each story's retro makes the rules better, which makes the next story's agent output better, which produces fewer retro findings; this is human-supervised improvement, not autonomous)
 - Actionable items for future workflow improvement
 
 ---
@@ -173,6 +174,15 @@ The [Retro Agent](./agents/retro.md) runs after merge and captures:
 ├── CONFIG.md                 # Workflow configuration (HITL, tracks, coverage, context)
 ├── STORY_TEMPLATE.md         # Template for new stories
 ├── WORKFLOW_AUDIT_REPORT.md  # Audit report (reference)
+│
+├── rules/                    # Coding standards (model-agnostic; agents load these)
+│   ├── architecture-patterns.md
+│   ├── coding-conventions.md
+│   ├── documentation-and-testing.md
+│   ├── git-commits.md
+│   ├── responsive-mobile-first.md
+│   ├── tech-debt-on-touch.md
+│   └── docs-in-pr.md
 │
 ├── agents/                   # Agent definitions
 │   ├── architect.md          # Architecture planning
@@ -201,6 +211,24 @@ The [Retro Agent](./agents/retro.md) runs after merge and captures:
 └── _retros/                  # Retrospective reports
     └── STORY-XXX-retro.md
 ```
+
+### What gets committed vs local-only
+
+Handoff artifacts (stories, plans, reviews, qa-reports) are **gitignored**. They are useful during the workflow for passing context between agents but are not needed in the repo after merge.
+
+| Path | Committed? | Why |
+|------|------------|-----|
+| `.workflow/stories/`, `plans/`, `reviews/`, `qa-reports/` | **No** | Handoff-only; no need to keep in repo once code is pushed |
+| `.workflow/devlogs/`, `.workflow/_retros/` | **Yes** | Used to improve the workflow (retros propose rule changes; devlogs document deviations) |
+| `.workflow/rules/`, `agents/`, `CONFIG.md`, `PROJECT.md`, etc. | **Yes** | Canonical workflow and project context |
+
+**Before push:** You don't need to do anything — handoff dirs are already ignored. Optionally, to remove them from disk (e.g. to avoid clutter or free space), run:
+
+```bash
+./scripts/clean-workflow-handoffs.sh
+```
+
+This deletes the contents of `stories/`, `plans/`, `reviews/`, and `qa-reports/` only; it does not touch devlogs or retros.
 
 ---
 
@@ -322,9 +350,9 @@ Then use the workflow as follows per tool.
 
 ### Cursor
 
-- **Auto-loaded:** `.cursor/rules/*.mdc` (project coding standards). Workflow agents are in `.cursor/agents/*.mdc` (generated).
-- **To run an agent:** @-mention the agent (e.g. `@architect.mdc`) or open the agent file; then ask it to run for a story/phase. The wrapper tells Cursor to read `.workflow/agents/<name>.md` and load the context listed there.
-- **Rules:** `.cursor/rules/` holds coding conventions; workflow logic stays in `.workflow/`.
+- **Auto-loaded:** When using Cursor, the export script can sync `.workflow/rules/` to `.cursor/rules/` so Cursor auto-loads them; otherwise agents read `.workflow/rules/*.md` per the workflow.
+- **To run an agent:** @-mention the agent (e.g. `@architect.mdc`) or open the agent file; then ask it to run for a story/phase. The wrapper tells Cursor to read `.workflow/agents/<name>.md` and load the context listed there (including `.workflow/rules/`).
+- **Rules:** Canonical coding conventions live in `.workflow/rules/`; workflow logic stays in `.workflow/`.
 
 ### Codex
 
