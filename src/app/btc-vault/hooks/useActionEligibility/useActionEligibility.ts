@@ -8,10 +8,20 @@ import { getAbi } from '@/lib/abis/btc-vault'
 import { WHITELISTED_USER_ROLE } from '@/lib/constants'
 import { rbtcVault } from '@/lib/contracts'
 
+import { NOT_WHITELISTED_REASON } from '../../services/constants'
 import type { EligibilityStatus, PauseState, VaultRequest } from '../../services/types'
 import { toActionEligibility } from '../../services/ui/mappers'
 
 const permissionsManagerAbi = getAbi('PermissionsManagerAbi')
+
+/** Narrow type for vault multicall result; status union allows fail-closed handling. */
+type VaultMulticallData = [
+  { status: 'success' | 'failure'; result?: boolean },
+  { status: 'success' | 'failure'; result?: boolean },
+  { status: 'success' | 'failure'; result?: readonly [bigint, bigint] },
+  { status: 'success' | 'failure'; result?: readonly [bigint, bigint] },
+  { status: 'success' | 'failure'; result?: Address },
+]
 
 /**
  * Reads vault pause state, user eligibility (whitelist), and active deposit/redeem
@@ -23,6 +33,9 @@ const permissionsManagerAbi = getAbi('PermissionsManagerAbi')
  *
  * WHITELISTED_USER_ROLE is `internal` in Roles.sol so there is no on-chain getter;
  * the frontend mirrors the same keccak256("WHITELISTED_USER_ROLE") computation.
+ *
+ * @param address - User wallet address, or undefined to disable queries
+ * @returns { data, isLoading, error, refetch } where data is action eligibility or undefined until both multicall and hasRole resolve
  */
 export function useActionEligibility(address: string | undefined) {
   const enabled = !!address
@@ -39,27 +52,16 @@ export function useActionEligibility(address: string | undefined) {
   }, [address])
 
   const {
-    data: vaultData,
+    data: rawVaultData,
     isLoading: isLoadingVault,
     error: vaultError,
     refetch: refetchVault,
   } = useReadContracts({
     contracts: vaultContracts,
     query: { enabled },
-  }) as {
-    data:
-      | [
-          { status: string; result?: boolean },
-          { status: string; result?: boolean },
-          { status: string; result?: readonly [bigint, bigint] },
-          { status: string; result?: readonly [bigint, bigint] },
-          { status: string; result?: Address },
-        ]
-      | undefined
-    isLoading: boolean
-    error: Error | null
-    refetch: () => void
-  }
+  })
+  // Wagmi returns ContractFunctionResult[]; we assert the known 5-slot vault shape for fail-closed handling.
+  const vaultData = rawVaultData as VaultMulticallData | undefined
 
   const pmAddress = vaultData?.[4]?.status === 'success' ? vaultData[4].result : undefined
 
@@ -85,8 +87,8 @@ export function useActionEligibility(address: string | undefined) {
     if (!address || !vaultData) return
     if (!pmAddress || hasRoleResult === undefined) return
 
-    const depositPaused = vaultData[0]?.status === 'success' ? vaultData[0].result : true
-    const redeemPaused = vaultData[1]?.status === 'success' ? vaultData[1].result : true
+    const depositPaused = vaultData[0]?.status === 'success' ? (vaultData[0].result ?? true) : true
+    const redeemPaused = vaultData[1]?.status === 'success' ? (vaultData[1].result ?? true) : true
     const depositReq = vaultData[2]?.status === 'success' ? vaultData[2].result : undefined
     const redeemReq = vaultData[3]?.status === 'success' ? vaultData[3].result : undefined
 
@@ -98,7 +100,7 @@ export function useActionEligibility(address: string | undefined) {
     const hasWhitelistedRole = hasRoleResult === true
     const eligibility: EligibilityStatus = {
       eligible: hasWhitelistedRole,
-      reason: hasWhitelistedRole ? '' : 'Address not whitelisted',
+      reason: hasWhitelistedRole ? '' : NOT_WHITELISTED_REASON,
     }
 
     const activeRequests: VaultRequest[] = []

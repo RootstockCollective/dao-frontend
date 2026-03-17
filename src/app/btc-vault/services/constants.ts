@@ -2,6 +2,7 @@
 export const DEPOSIT_PAUSED_REASON = 'Deposits are currently paused'
 export const WITHDRAWAL_PAUSED_REASON = 'Withdrawals are currently paused'
 export const ACTIVE_REQUEST_REASON = 'You already have an active request'
+export const NOT_WHITELISTED_REASON = 'Address not whitelisted'
 
 /** No fee at launch per contract spec */
 export const BTC_VAULT_DEPOSIT_FEE = '0'
