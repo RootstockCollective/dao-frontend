@@ -40,7 +40,7 @@ export const RbtcVaultMetricsSection = () => {
           tokenSymbol={RBTC}
           fiatAmount={tvl.fiatAmount}
         />
-        <RbtcVaultMetricCard title="Vault APY (Indicative)" tooltipContent="" amount={vaultApy} />
+        <RbtcVaultMetricCard title="Vault APY" tooltipContent="" amount={vaultApy} />
         <RbtcVaultMetricCard
           title="Synthetic Yield APY"
           tooltipContent=""
