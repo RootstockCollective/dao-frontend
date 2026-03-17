@@ -1,8 +1,8 @@
 import { NextRequest } from 'next/server'
 import { JWTPayload } from '@/lib/auth/jwt'
 import { withAuth } from '@/lib/auth/withAuth'
-import { daoDataDb } from '@/lib/daoDataDb'
-import { TABLE, ProposalIdSchema, bigIntToBuffer } from '../shared'
+import { prisma } from '@/lib/prisma'
+import { ProposalIdSchema, bigIntToBuffer } from '../shared'
 
 /**
  * GET /api/like/user?proposalId=<BigInt string>
@@ -13,7 +13,7 @@ import { TABLE, ProposalIdSchema, bigIntToBuffer } from '../shared'
  * { success: true, proposalId: string, reactions: string[] }
  */
 export const GET = withAuth(async (request: NextRequest, session: JWTPayload) => {
-  if (!daoDataDb) {
+  if (!prisma) {
     return Response.json({ success: false, error: 'Database not configured' }, { status: 503 })
   }
 
@@ -31,9 +31,10 @@ export const GET = withAuth(async (request: NextRequest, session: JWTPayload) =>
   const proposalIdBuffer = bigIntToBuffer(parsed.data)
 
   try {
-    const rows: { reaction: string }[] = await daoDataDb(TABLE)
-      .where({ proposalId: proposalIdBuffer, userAddress })
-      .select('reaction')
+    const rows = await prisma.proposalLike.findMany({
+      where: { proposalId: proposalIdBuffer, userAddress },
+      select: { reaction: true },
+    })
 
     const reactions = rows.map(row => row.reaction)
 

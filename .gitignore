@@ -54,6 +54,9 @@ bun.lockb
 #VSCode
 .vscode
 
+# Prisma
+node_modules/.prisma
+
 # Sentry Config File
 .env.sentry-build-plugin
 

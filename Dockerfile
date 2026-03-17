@@ -16,6 +16,9 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
+# Copy Prisma schema so postinstall hook (prisma generate) can find it
+COPY prisma/schema.prisma ./prisma/schema.prisma
+
 # Skip cypress install
 ENV CYPRESS_INSTALL_BINARY 0
 
@@ -62,8 +65,8 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/.env.local ./.env.local
 COPY --from=builder /app/node_modules ./node_modules
 
-# Copy database migration scripts
-COPY --from=builder /app/src/db ./src/db
+# Copy Prisma schema and migrations
+COPY --from=builder /app/prisma ./prisma
 
 
 # Download AWS RDS CA certificate
@@ -74,6 +77,5 @@ RUN apk add --no-cache wget && \
 # Expose the port that Next.js will run on
 EXPOSE 3000
 
-# Run database migrations and start the Next.js application
-# Migration errors are logged but won't prevent startup (as per requirements)
-CMD ["sh", "-c", "node src/db/migrate.js; npm start"]
+# Run Prisma migrations and start the Next.js application
+CMD ["sh", "-c", "npx prisma migrate deploy; npm start"]
