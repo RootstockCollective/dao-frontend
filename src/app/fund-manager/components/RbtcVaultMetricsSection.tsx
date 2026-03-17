@@ -1,7 +1,7 @@
 'use client'
 
+import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { Paragraph } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 
 import { useRbtcVaultMetrics } from '../hooks/useRbtcVaultMetrics'
@@ -22,9 +22,7 @@ export const RbtcVaultMetricsSection = () => {
   if (error) {
     return (
       <div className="flex items-center justify-center p-6 rounded-sm bg-v3-bg-accent-80 w-full min-h-[180px]">
-        <Paragraph variant="body" className="text-st-error">
-          Failed to load vault metrics. Please try again later.
-        </Paragraph>
+        <ErrorMessageAlert message="Failed to load vault metrics. Please try again later." />
       </div>
     )
   }
