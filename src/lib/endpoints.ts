@@ -79,3 +79,5 @@ export const fetchRewardDistributionRewardsLogsByAddress = withChainId(
   `/address/{{address}}/eventsByTopic0?topic0=${REWARD_DISTRIBUTION_REWARDS}&${FROM_BLOCK_PARAM}`,
 )
 export const getVaultHistoryEndpoint = `/api/vault/v1/addresses/{{address}}/history`
+
+export const getBtcVaultEpochHistoryEndpoint = `/api/btc-vault/v1/epoch-history`

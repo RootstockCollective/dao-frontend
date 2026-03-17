@@ -340,6 +340,42 @@ export interface PaginatedResult<T> {
   totalPages: number
 }
 
+// ─── Deposit History (Epoch Windows) ─────────────────────────────────
+
+/**
+ * A single row in the deposit history table. Each row represents one epoch
+ * (either settled or currently open).
+ *
+ * Data for settled epochs comes from `EpochSettled` event logs fetched via
+ * the Blockscout API. The open epoch row is assembled from contract reads
+ * (`currentEpoch()`, `openEpochPendingDepositAssets()`).
+ */
+export interface DepositWindowRow {
+  /** Monotonic epoch identifier (e.g. "0", "1", "2"). */
+  epochId: string
+
+  /** Unix timestamp (seconds) when this epoch opened — equal to the previous epoch's `closedAt`. `null` for epoch 0. */
+  startDate: number | null
+
+  /** Unix timestamp (seconds) when this epoch was settled. `null` if the epoch is still open. */
+  endDate: number | null
+
+  /** Total vault AUM at epoch close. Wei, 18 decimals. `null` for the open epoch. */
+  tvl: bigint | null
+
+  /** NAV per share at epoch close — `(assets + 1) * 1e18 / (supply + 1)`. Wei, 18 decimals. `null` for the open epoch. */
+  pricePerShare: bigint | null
+
+  /** Annualised yield derived from consecutive epochs. Percentage (e.g. `12.5` = 12.5%). `null` for the first epoch or the open epoch. */
+  apy: number | null
+
+  /** Whether this epoch has been settled or is the current open window. */
+  status: 'settled' | 'open'
+
+  /** Total assets waiting in the current open epoch. Only present when `status === 'open'`. Wei, 18 decimals. */
+  pendingDeposits?: bigint
+}
+
 // ─── Capital Allocation ──────────────────────────────────────────────
 
 /**
