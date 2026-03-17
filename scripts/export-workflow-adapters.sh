@@ -79,7 +79,7 @@ cursor_emit() {
       echo ""
       echo "## Context to load (use file-read / @)"
       echo "- \`.workflow/PROJECT.md\` (sections relevant to this agent)"
-      echo "- \`.cursor/rules/*.mdc\` (coding standards)"
+      echo "- \`.workflow/rules/*.md\` (coding standards)"
       echo "- Story/plan/review paths as specified in the agent file."
     } > "$mdc"
     echo "  wrote $mdc"
@@ -100,7 +100,7 @@ claude_emit() {
       [ -f "$agent_md" ] || continue
       name=$(basename "$agent_md" .md)
       display=$(agent_display_name "$agent_md")
-      echo "- **$display**: Read \`.workflow/agents/$name.md\`. Load context listed there (PROJECT.md, .cursor/rules, story/plan paths)."
+      echo "- **$display**: Read \`.workflow/agents/$name.md\`. Load context listed there (PROJECT.md, .workflow/rules, story/plan paths)."
     done
     echo ""
     echo "After clone, run \`./scripts/export-workflow-adapters.sh --claude\` to regenerate this file if needed."

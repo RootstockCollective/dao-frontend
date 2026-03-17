@@ -24,9 +24,9 @@ Use the file-read tool to load `.workflow/PROJECT.md`.
 
 **Coding Standards:**
 Read the following coding standards — your plan must align with these rules:
-- `.cursor/rules/architecture-patterns.mdc` — data fetching, state management, hook & component conventions
-- `.cursor/rules/coding-conventions.mdc` — file naming, exports, imports, types, folder structure
-- `.cursor/rules/responsive-mobile-first.mdc` — mobile-first layouts, breakpoints, touch targets
+- `.workflow/rules/architecture-patterns.md` — data fetching, state management, hook & component conventions
+- `.workflow/rules/coding-conventions.md` — file naming, exports, imports, types, folder structure
+- `.workflow/rules/responsive-mobile-first.md` — mobile-first layouts, breakpoints, touch targets
 
 ## Your Task
 Analyze this user story and create an implementation plan.
@@ -48,9 +48,9 @@ Use the file-read tool to load `.workflow/stories/STORY-XXX.md`.
    - Map dependencies between requirements
 
 3. **Design the Solution with PHASES**
-   - Follow existing patterns (see PROJECT.md and `.cursor/rules/architecture-patterns.mdc`)
+   - Follow existing patterns (see PROJECT.md and `.workflow/rules/architecture-patterns.md`)
    - Use correct data fetching pattern per scenario (useQuery, wagmi hooks, server actions — see architecture-patterns)
-   - Apply file naming conventions from `.cursor/rules/coding-conventions.mdc` when specifying new files
+   - Apply file naming conventions from `.workflow/rules/coding-conventions.md` when specifying new files
    - Minimize changes to existing code
    - **Divide work into logical phases** (each phase should be independently testable)
    - Map each acceptance criterion to a specific phase
@@ -102,7 +102,7 @@ The Architect is the **only agent that reads the full project context**. This is
 | Document | Read strategy |
 |----------|---------------|
 | `PROJECT.md` | Full read (only agent that does this) |
-| `.cursor/rules/*.mdc` | Full read of architecture-patterns, coding-conventions, responsive-mobile-first |
+| `.workflow/rules/*.md` | Full read of architecture-patterns, coding-conventions, responsive-mobile-first |
 | Story file | Full read |
 | Codebase | Explore referenced files as needed |
 
@@ -115,7 +115,7 @@ The Architect is the **only agent that reads the full project context**. This is
 | Item | Source |
 |------|--------|
 | Project Context | `.workflow/PROJECT.md` |
-| Coding Standards | `.cursor/rules/architecture-patterns.mdc`, `.cursor/rules/coding-conventions.mdc` |
+| Coding Standards | `.workflow/rules/architecture-patterns.md`, `.workflow/rules/coding-conventions.md` |
 | User Story | `.workflow/stories/STORY-XXX.md` |
 | Codebase | Full repository access |
 

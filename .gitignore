@@ -64,3 +64,10 @@ node_modules/.prisma
 # Track .workflow/ (model-agnostic source). Generated adapter files stay ignored:
 CLAUDE.md
 .github/copilot-instructions.md
+
+# Workflow handoff artifacts (local only; used between agents, not needed in repo after merge)
+# Retros and devlogs are NOT ignored — we commit them to improve the workflow
+.workflow/stories/
+.workflow/plans/
+.workflow/reviews/
+.workflow/qa-reports/

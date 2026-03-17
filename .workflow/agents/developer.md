@@ -20,14 +20,14 @@ Read the project context to understand the tech stack, patterns, and conventions
 Use the file-read tool to load `.workflow/PROJECT.md`. Focus on sections relevant to the current phase (Data Fetching, Component Conventions, Domain Glossary).
 
 **Coding Standards:**
-Read and follow ALL coding standards defined in `.cursor/rules/`:
-- `.cursor/rules/architecture-patterns.mdc` — data fetching, state management, hook & component conventions
-- `.cursor/rules/coding-conventions.mdc` — file naming, exports, imports, types, error handling, styling
-- `.cursor/rules/responsive-mobile-first.mdc` — mobile-first layouts, breakpoints, touch targets
-- `.cursor/rules/documentation-and-testing.mdc` — JSDoc requirements, inline comments, TODO format, testing requirements
-- `.cursor/rules/tech-debt-on-touch.mdc` — when editing existing files, bring touched code up to current standards
-- `.cursor/rules/git-commits.mdc` — conventional commits, plan execution workflow
-- `.cursor/rules/docs-in-pr.mdc` — never include .md files in commits unless explicitly requested
+Read and follow ALL coding standards defined in `.workflow/rules/`:
+- `.workflow/rules/architecture-patterns.md` — data fetching, state management, hook & component conventions
+- `.workflow/rules/coding-conventions.md` — file naming, exports, imports, types, error handling, styling
+- `.workflow/rules/responsive-mobile-first.md` — mobile-first layouts, breakpoints, touch targets
+- `.workflow/rules/documentation-and-testing.md` — JSDoc requirements, inline comments, TODO format, testing requirements
+- `.workflow/rules/tech-debt-on-touch.md` — when editing existing files, bring touched code up to current standards
+- `.workflow/rules/git-commits.md` — conventional commits, plan execution workflow
+- `.workflow/rules/docs-in-pr.md` — never include .md files in commits unless explicitly requested
 
 ## Your Task
 Implement **ONE PHASE** from the approved architecture plan.
@@ -54,10 +54,10 @@ Use the file-read tool to load `.workflow/plans/STORY-XXX-plan.md`. Focus on the
    - Review existing code that will be affected
 
    ### Step 2: Implement Code + Tests Together
-   - Write implementation following existing patterns (see PROJECT.md and `.cursor/rules/`)
-   - Apply coding conventions from `.cursor/rules/coding-conventions.mdc` (naming, exports, imports, types)
-   - Follow architecture patterns from `.cursor/rules/architecture-patterns.mdc` (data fetching, state management)
-   - When editing existing files, apply tech-debt-on-touch cleanup from `.cursor/rules/tech-debt-on-touch.mdc`
+   - Write implementation following existing patterns (see PROJECT.md and `.workflow/rules/`)
+   - Apply coding conventions from `.workflow/rules/coding-conventions.md` (naming, exports, imports, types)
+   - Follow architecture patterns from `.workflow/rules/architecture-patterns.md` (data fetching, state management)
+   - When editing existing files, apply tech-debt-on-touch cleanup from `.workflow/rules/tech-debt-on-touch.md`
    - Write co-located unit tests alongside each file (`*.test.ts` / `*.test.tsx`)
    - For components: use React Testing Library (`render`, `screen`, `userEvent`)
    - For hooks: use `renderHook` from React Testing Library
@@ -74,7 +74,7 @@ Use the file-read tool to load `.workflow/plans/STORY-XXX-plan.md`. Focus on the
    - Ensure code follows project patterns (Prettier: no semicolons, single quotes, 110 char width)
    - Remove any debug code or console.logs
    - Ensure proper TypeScript types (no `any` without `// SAFETY:` comment)
-   - Verify JSDoc on exported hooks/functions per `.cursor/rules/documentation-and-testing.mdc`
+   - Verify JSDoc on exported hooks/functions per `.workflow/rules/documentation-and-testing.md`
    - Verify no narration comments (e.g., `// Import the module`, `// Set the value`)
    - Verify TODOs use `// TODO(DAO-XXXX): description` format
 
@@ -87,7 +87,7 @@ Use the file-read tool to load `.workflow/plans/STORY-XXX-plan.md`. Focus on the
    ```
 
 4. **Commit**
-   - Use conventional commit messages per `.cursor/rules/git-commits.mdc`
+   - Use conventional commit messages per `.workflow/rules/git-commits.md`
    - Reference the story ID and phase in the commit body
    - One layer per commit — do not mix data layer and UI in the same commit
    - Subject line must answer "why does this exist?" in blame one year from now
@@ -119,7 +119,7 @@ The Developer works on **one phase at a time** and should load only what's neede
 | Document | Read strategy |
 |----------|---------------|
 | `PROJECT.md` | Selective — read Data Fetching, Component Conventions, and domain-relevant sections |
-| `.cursor/rules/*.mdc` | Read on-demand when the rule is relevant to the current phase |
+| `.workflow/rules/*.md` | Read on-demand when the rule is relevant to the current phase |
 | Story file | Read the ACs for the current phase only |
 | Plan file | Read the current phase section |
 
@@ -132,7 +132,7 @@ The Developer works on **one phase at a time** and should load only what's neede
 | Item | Source |
 |------|--------|
 | Project Context | `.workflow/PROJECT.md` |
-| Coding Standards | `.cursor/rules/*.mdc` |
+| Coding Standards | `.workflow/rules/*.md` |
 | User Story | `.workflow/stories/STORY-XXX.md` |
 | Implementation Plan | `.workflow/plans/STORY-XXX-plan.md` |
 | Coverage Targets | `.workflow/CONFIG.md` |
@@ -225,7 +225,7 @@ Before handing off, ensure:
 
 ## Commit Message Format
 
-Follow [Conventional Commits](https://www.conventionalcommits.org/) per `.cursor/rules/git-commits.mdc`.
+Follow [Conventional Commits](https://www.conventionalcommits.org/) per `.workflow/rules/git-commits.md`.
 
 ```
 type(scope): short description
