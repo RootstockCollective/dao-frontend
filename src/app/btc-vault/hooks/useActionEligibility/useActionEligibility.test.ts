@@ -14,8 +14,10 @@
 import { renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { WHITELISTED_USER_ROLE } from '@/lib/constants'
 import {
   DEPOSIT_PAUSED_REASON,
+  NOT_WHITELISTED_REASON,
   WITHDRAWAL_PAUSED_REASON,
 } from '../../services/constants'
 import { useActionEligibility } from './useActionEligibility'
@@ -120,7 +122,7 @@ describe('useActionEligibility', () => {
       expect(contracts).toHaveLength(5)
     })
 
-    it('requests hasRole on PermissionsManager with user address when PM address is available', () => {
+    it('requests hasRole on PermissionsManager with WHITELISTED_USER_ROLE and user address', () => {
       setupMocks(makeVaultResults())
       renderHook(() => useActionEligibility(USER_ADDRESS))
 
@@ -128,10 +130,18 @@ describe('useActionEligibility', () => {
         expect.objectContaining({
           address: PM_ADDRESS,
           functionName: 'hasRole',
-          args: expect.arrayContaining([expect.any(String), USER_ADDRESS]),
+          args: [WHITELISTED_USER_ROLE, USER_ADDRESS],
           query: expect.objectContaining({ enabled: true }),
         }),
       )
+    })
+
+    it('refetch calls both multicall and hasRole refetches', () => {
+      const { result } = renderHook(() => useActionEligibility(USER_ADDRESS))
+      result.current.refetch()
+
+      expect(vaultRefetch).toHaveBeenCalledOnce()
+      expect(roleRefetch).toHaveBeenCalledOnce()
     })
   })
 
@@ -168,6 +178,60 @@ describe('useActionEligibility', () => {
 
       expect(result.current.data).toBeUndefined()
     })
+
+    it('treats failed multicall slot as paused (fail-closed)', () => {
+      mockUseReadContracts.mockReturnValue({
+        data: [
+          { status: 'success', result: false },
+          { status: 'failure' },
+          { status: 'success', result: [0n, 0n] as readonly [bigint, bigint] },
+          { status: 'success', result: [0n, 0n] as readonly [bigint, bigint] },
+          { status: 'success', result: PM_ADDRESS },
+        ],
+        isLoading: false,
+        error: null,
+        refetch: vaultRefetch,
+      })
+      mockUseReadContract.mockReturnValue({
+        data: true,
+        isLoading: false,
+        error: null,
+        refetch: roleRefetch,
+      })
+
+      const { result } = renderHook(() => useActionEligibility(USER_ADDRESS))
+
+      expect(result.current.data).toBeDefined()
+      expect(result.current.data?.withdrawBlockReason).toBe(WITHDRAWAL_PAUSED_REASON)
+      expect(result.current.data?.canWithdraw).toBe(false)
+    })
+
+    it('treats failed deposit-pause slot as paused (fail-closed)', () => {
+      mockUseReadContracts.mockReturnValue({
+        data: [
+          { status: 'failure' },
+          { status: 'success', result: false },
+          { status: 'success', result: [0n, 0n] as readonly [bigint, bigint] },
+          { status: 'success', result: [0n, 0n] as readonly [bigint, bigint] },
+          { status: 'success', result: PM_ADDRESS },
+        ],
+        isLoading: false,
+        error: null,
+        refetch: vaultRefetch,
+      })
+      mockUseReadContract.mockReturnValue({
+        data: true,
+        isLoading: false,
+        error: null,
+        refetch: roleRefetch,
+      })
+
+      const { result } = renderHook(() => useActionEligibility(USER_ADDRESS))
+
+      expect(result.current.data).toBeDefined()
+      expect(result.current.data?.depositBlockReason).toBe(DEPOSIT_PAUSED_REASON)
+      expect(result.current.data?.canDeposit).toBe(false)
+    })
   })
 
   describe('derivation from contract results', () => {
@@ -199,12 +263,12 @@ describe('useActionEligibility', () => {
       expect(result.current.data?.withdrawBlockReason).toBe(WITHDRAWAL_PAUSED_REASON)
     })
 
-    it('disables deposit with Address not whitelisted when not whitelisted', () => {
+    it('disables deposit with NOT_WHITELISTED_REASON when not whitelisted', () => {
       setupMocks(makeVaultResults(), false)
       const { result } = renderHook(() => useActionEligibility(USER_ADDRESS))
 
       expect(result.current.data?.canDeposit).toBe(false)
-      expect(result.current.data?.depositBlockReason).toBe('Address not whitelisted')
+      expect(result.current.data?.depositBlockReason).toBe(NOT_WHITELISTED_REASON)
       expect(result.current.data?.canWithdraw).toBe(true)
     })
 
@@ -234,14 +298,6 @@ describe('useActionEligibility', () => {
 
       expect(result.current.data?.canDeposit).toBe(false)
       expect(result.current.data?.canWithdraw).toBe(false)
-    })
-
-    it('returns refetch that calls both multicall and hasRole refetches', () => {
-      const { result } = renderHook(() => useActionEligibility(USER_ADDRESS))
-      result.current.refetch()
-
-      expect(vaultRefetch).toHaveBeenCalledOnce()
-      expect(roleRefetch).toHaveBeenCalledOnce()
     })
   })
 })
