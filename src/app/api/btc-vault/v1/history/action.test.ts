@@ -30,7 +30,7 @@ const mockHistoryItems = [
   },
   {
     id: '0xabc-2',
-    user: '0xb29f5fbee88592bee3d51d90ba791e769a9b903g',
+    user: '0xb29f5fbee88592bee3d51d90ba791e769a9b903f',
     action: 'REDEEM_REQUEST',
     assets: '2000000000000000000',
     shares: '1000000000000000000',
@@ -177,7 +177,7 @@ describe('getGlobalBtcVaultHistory', () => {
 })
 
 describe('getBtcVaultHistoryCount (re-export)', () => {
-  it('is re-exported from STORY-001 action module', () => {
+  it('is re-exported from address history action module', () => {
     expect(getBtcVaultHistoryCount).toBeDefined()
     expect(typeof getBtcVaultHistoryCount).toBe('function')
   })

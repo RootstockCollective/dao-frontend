@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client'
 
+import { ALL_ACTION_TYPES } from '@/app/api/btc-vault/v1/schemas'
 import { btcVaultClient } from '@/shared/components/ApolloClient'
 
 export interface BtcVaultHistoryItem {
@@ -13,15 +14,6 @@ export interface BtcVaultHistoryItem {
   blockNumber: string
   transactionHash: string
 }
-
-const ALL_ACTION_TYPES = [
-  'DEPOSIT_REQUEST',
-  'DEPOSIT_CLAIMED',
-  'DEPOSIT_CANCELLED',
-  'REDEEM_REQUEST',
-  'REDEEM_CLAIMED',
-  'REDEEM_CANCELLED',
-] as const
 
 const BTC_VAULT_HISTORY_QUERY = gql`
   query BtcVaultHistory(

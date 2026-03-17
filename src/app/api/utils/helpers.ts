@@ -38,6 +38,7 @@ export const handleApiError = (err: unknown, context?: string): Response => {
 
   return Response.json(
     {
+      success: false,
       error: 'Internal server error',
       message: errorMessage,
       name: errorName,

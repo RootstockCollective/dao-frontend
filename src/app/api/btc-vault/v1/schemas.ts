@@ -1,0 +1,32 @@
+import { z } from 'zod'
+
+import { AddressSchema, SortDirectionEnum } from '@/app/api/utils/validators'
+
+export const SortFieldEnum = z.enum(['timestamp', 'assets'])
+export const ActionTypeEnum = z.enum([
+  'deposit_request',
+  'deposit_claimed',
+  'deposit_cancelled',
+  'redeem_request',
+  'redeem_claimed',
+  'redeem_cancelled',
+])
+
+/** Uppercase action type strings for subgraph/GraphQL (derived from ActionTypeEnum). */
+export const ALL_ACTION_TYPES: readonly string[] = ActionTypeEnum.options.map(t => t.toUpperCase())
+
+const baseHistoryQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(200).default(20),
+  page: z.coerce.number().int().min(1).default(1),
+  sort_field: SortFieldEnum.default('timestamp'),
+  sort_direction: SortDirectionEnum.default('desc'),
+  type: z.array(ActionTypeEnum).optional(),
+})
+
+/** Query schema for GET /api/btc-vault/v1/addresses/:address/history */
+export const BtcVaultAddressHistoryQuerySchema = baseHistoryQuerySchema
+
+/** Query schema for GET /api/btc-vault/v1/history (optional address for global vs filtered) */
+export const BtcVaultGlobalHistoryQuerySchema = baseHistoryQuerySchema.extend({
+  address: AddressSchema.optional(),
+})
