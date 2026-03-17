@@ -29,6 +29,7 @@ const breadcrumbsMap = {
   '/vault/history': 'USD Vault History',
   '/btc-vault': 'BTC Vault',
   '/btc-vault/request-history': 'Transactions History',
+  '/btc-vault/deposit-history': 'TVL History',
   // community URLs
   ...Object.fromEntries(
     communitiesToRender.map(({ nftAddress, title }) => [`/communities/nft/${nftAddress}`, title]),
