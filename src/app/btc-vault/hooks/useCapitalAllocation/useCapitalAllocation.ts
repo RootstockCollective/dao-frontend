@@ -1,87 +1,59 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import { useReadContracts } from 'wagmi'
 
 import { RBTC } from '@/lib/constants'
+import { rbtcVault } from '@/lib/contracts'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
 import type { CapitalAllocation } from '../../services/types'
 import { toCapitalAllocationDisplay } from '../../services/ui/mappers'
 
-const ONE_BTC = 10n ** 18n
+const CAPITAL_ALLOCATION_CONTRACTS = [
+  { ...rbtcVault, functionName: 'totalAssets' } as const,
+  { ...rbtcVault, functionName: 'freeOnchainLiquidity' } as const,
+  { ...rbtcVault, functionName: 'reservedOnchainAssets' } as const,
+  { ...rbtcVault, functionName: 'reportedOffchainAssets' } as const,
+] as const
 
-const MOCK_CAPITAL_ALLOCATION: CapitalAllocation = {
-  categories: [
-    { label: 'Deployed capital', amount: (ONE_BTC * 52n) / 100n },
-    { label: 'Liquidity reserve', amount: (ONE_BTC * 26n) / 100n },
-    { label: 'Unallocated capital', amount: (ONE_BTC * 26n) / 100n },
-  ],
-  totalCapital: (ONE_BTC * 104n) / 100n,
-  wallets: [
-    {
-      label: 'Fordefi 1',
-      trackingPlatform: 'Nimbus',
-      trackingUrl: 'https://app.nimbus.io',
-      amount: (ONE_BTC * 999_99999n) / 100_000n,
-      percentOfTotal: 96.49,
-    },
-    {
-      label: 'Fordefi 2',
-      trackingPlatform: 'Nimbus',
-      trackingUrl: 'https://app.nimbus.io',
-      amount: (ONE_BTC * 9_99999n) / 1_000_000n,
-      percentOfTotal: 0.5,
-    },
-    {
-      label: 'Fordefi 3',
-      trackingPlatform: 'Suivision',
-      trackingUrl: 'https://suivision.xyz',
-      amount: (ONE_BTC * 9_99999n) / 1_000_000n,
-      percentOfTotal: 0.5,
-    },
-    {
-      label: 'Fordefi 4',
-      trackingPlatform: 'Nimbus',
-      trackingUrl: 'https://app.nimbus.io',
-      amount: (ONE_BTC * 9_99999n) / 1_000_000n,
-      percentOfTotal: 0.5,
-    },
-    {
-      label: 'Fordefi 5',
-      trackingPlatform: 'Nimbus',
-      trackingUrl: 'https://app.nimbus.io',
-      amount: (ONE_BTC * 9_99999n) / 1_000_000n,
-      percentOfTotal: 0.5,
-    },
-    {
-      label: 'Fordefi 6',
-      trackingPlatform: 'Nimbus',
-      trackingUrl: 'https://app.nimbus.io',
-      amount: (ONE_BTC * 9_99999n) / 1_000_000n,
-      percentOfTotal: 0.5,
-    },
-    {
-      label: 'Fordefi 7',
-      trackingPlatform: 'Nimbus',
-      trackingUrl: 'https://app.nimbus.io',
-      amount: (ONE_BTC * 9_99999n) / 1_000_000n,
-      percentOfTotal: 0.5,
-    },
-    {
-      label: 'Fordefi 8',
-      trackingPlatform: 'Nimbus',
-      trackingUrl: 'https://app.nimbus.io',
-      amount: (ONE_BTC * 9_99999n) / 1_000_000n,
-      percentOfTotal: 0.51,
-    },
-  ],
-}
+// TODO: Wallet addresses and balances will be provided by a future backend/API integration.
+const MOCK_WALLETS: CapitalAllocation['wallets'] = []
 
 export function useCapitalAllocation() {
   const { prices } = usePricesContext()
   const rbtcPrice = prices[RBTC]?.price ?? 0
 
-  return useQuery({
-    queryKey: ['btc-vault', 'capital-allocation', rbtcPrice],
-    queryFn: () => toCapitalAllocationDisplay(MOCK_CAPITAL_ALLOCATION, rbtcPrice),
-    staleTime: Infinity,
+  const { data, isLoading, error } = useReadContracts({
+    contracts: CAPITAL_ALLOCATION_CONTRACTS,
+    query: {
+      refetchInterval: 60_000,
+    },
   })
+
+  const rawAllocation = useMemo((): CapitalAllocation => {
+    const totalAssets = (data?.[0]?.result as bigint | undefined) ?? 0n
+    const freeOnchainLiquidity = (data?.[1]?.result as bigint | undefined) ?? 0n
+    const reservedOnchainAssets = (data?.[2]?.result as bigint | undefined) ?? 0n
+    const reportedOffchainAssets = (data?.[3]?.result as bigint | undefined) ?? 0n
+
+    return {
+      categories: [
+        { label: 'Deployed capital', amount: reportedOffchainAssets },
+        { label: 'Liquidity reserve', amount: freeOnchainLiquidity },
+        { label: 'Unallocated capital', amount: reservedOnchainAssets },
+      ],
+      totalCapital: totalAssets,
+      wallets: MOCK_WALLETS,
+    }
+  }, [data])
+
+  const display = useMemo(() => {
+    if (isLoading || error) return
+    return toCapitalAllocationDisplay(rawAllocation, rbtcPrice)
+  }, [rawAllocation, rbtcPrice, isLoading, error])
+
+  return {
+    data: display,
+    isLoading,
+    isError: !!error,
+  }
 }
