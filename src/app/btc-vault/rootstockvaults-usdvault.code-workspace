@@ -1,0 +1,20 @@
+{
+	"folders": [
+		{
+			"path": "../../../../rootstockvaults-usdvault"
+		},
+		{
+			"path": "../../../../rbtc-vault-sc"
+		},
+		{
+			"path": "../../../../rootstock-collective-state-sync"
+		},
+		{
+			"path": "../../../../rootstock-collective-governance-subgraph"
+		},
+		{
+			"path": "../../.."
+		}
+	],
+	"settings": {}
+}

@@ -5,7 +5,7 @@ import { handleApiError, queryParam } from '@/app/api/utils/helpers'
 import type { PaginationResponse } from '@/app/api/utils/types'
 
 import { BtcVaultGlobalHistoryQuerySchema } from '../schemas'
-import { getBtcVaultHistoryCount, getGlobalBtcVaultHistory } from './action'
+import { enrichHistoryWithRequestStatus, getBtcVaultHistoryCount, getGlobalBtcVaultHistory } from './action'
 
 export const revalidate = 60
 
@@ -16,7 +16,8 @@ export const revalidate = 60
  *
  * Query params: limit (1–200, default 20), page (default 1), sort_field (timestamp | assets),
  * sort_direction (asc | desc), type[] (optional action filter), address (optional; when omitted, returns global history).
- * Response: { data: BtcVaultHistoryItem[], pagination: PaginationResponse }.
+ * Response: { data: BtcVaultHistoryItemWithStatus[], pagination: PaginationResponse }.
+ * Each item may include displayStatus for table display (open_to_claim, claim_pending, pending, successful, cancelled).
  * 400 on validation error (body includes error, details); 500 on server error.
  */
 export async function GET(req: NextRequest) {
@@ -37,7 +38,7 @@ export async function GET(req: NextRequest) {
 
     const address = parsed.address?.toLowerCase()
 
-    const data = await getGlobalBtcVaultHistory({
+    const rawData = await getGlobalBtcVaultHistory({
       limit: parsed.limit,
       page: parsed.page,
       sort_field: parsed.sort_field,
@@ -45,6 +46,7 @@ export async function GET(req: NextRequest) {
       type: parsed.type,
       address,
     })
+    const data = await enrichHistoryWithRequestStatus(rawData)
     const total = await getBtcVaultHistoryCount(address ?? 'global', parsed.type)
     const totalPages = Math.ceil(total / parsed.limit)
     const offset = (parsed.page - 1) * parsed.limit
