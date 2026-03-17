@@ -331,15 +331,15 @@ export function toCapitalAllocationDisplay(
   raw: CapitalAllocation,
   rbtcPrice: number,
 ): CapitalAllocationDisplay {
+  const sumCategories = raw.categories.reduce((acc, cat) => acc + cat.amount, 0n)
   return {
     categories: raw.categories.map(cat => {
-      const amountEther = formatEther(cat.amount)
-      const percent = raw.totalCapital > 0n ? Number((cat.amount * 10000n) / raw.totalCapital) / 100 : 0
+      const percent = sumCategories > 0n ? Number((cat.amount * 10000n) / sumCategories) / 100 : 0
       const fiatAmountFormatted =
-        rbtcPrice > 0 ? formatCurrencyWithLabel(Big(amountEther).mul(rbtcPrice)) : '$0.00 USD'
+        rbtcPrice > 0 ? formatCurrencyWithLabel(getFiatAmount(cat.amount, rbtcPrice)) : '$0.00 USD'
       return {
         label: cat.label,
-        amountFormatted: amountEther,
+        amountFormatted: formatSymbol(cat.amount, RBTC),
         percentFormatted: `${percent}%`,
         fiatAmountFormatted,
       }
