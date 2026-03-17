@@ -130,7 +130,7 @@ export const BtcVaultDashboard = () => {
         </div>
       </div>
 
-      <div className="mt-10">
+      <div className="mt-10" data-testid="btc-vault-actions">
         <BtcVaultActions />
       </div>
     </SectionContainer>
