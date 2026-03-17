@@ -11,6 +11,7 @@ import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 import { useDepositHistory } from '../../hooks/useDepositHistory'
 import { convertDataToRowData } from './convertDataToRowData'
+import { DepositHistoryCsvButton } from './DepositHistoryCsvButton'
 import type { ColumnId, DepositHistoryCellDataMap } from './DepositHistoryTable.config'
 import { DEFAULT_HEADERS, PAGE_SIZE } from './DepositHistoryTable.config'
 import { DesktopDepositHistory } from './DesktopDepositHistory'
@@ -50,9 +51,12 @@ function DepositHistoryTableInner() {
 
   return (
     <div className="w-full flex flex-col gap-6 md:gap-10">
-      <Header variant="h3" className="m-0 text-lg md:text-xl" data-testid="deposit-history-list-header">
-        DEPOSIT WINDOWS LIST
-      </Header>
+      <div className="flex items-center justify-between">
+        <Header variant="h3" className="m-0 text-lg md:text-xl" data-testid="deposit-history-list-header">
+          DEPOSIT WINDOWS LIST
+        </Header>
+        <DepositHistoryCsvButton rows={rowData} />
+      </div>
       {isDesktop ? <DesktopDepositHistory /> : <MobileDepositHistory />}
       <TablePager
         pageSize={PAGE_SIZE}
