@@ -4,6 +4,10 @@ export const WITHDRAWAL_PAUSED_REASON = 'Withdrawals are currently paused'
 export const ACTIVE_REQUEST_REASON = 'You already have an active request'
 /** Shown when deposit or withdraw is blocked because the address lacks the whitelisted role (DAO-2109). */
 export const NOT_WHITELISTED_REASON = 'Address not whitelisted.'
+/** Shown when deposit is blocked because the address is not on the BTC vault deposit whitelist (DAO-2075). */
+export const DEPOSIT_WHITELIST_BLOCK_REASON = 'Your address is not whitelisted for deposits'
+/** Shown while the deposit whitelist check is still in flight (DAO-2075). */
+export const DEPOSIT_ELIGIBILITY_LOADING_REASON = 'Checking deposit eligibility...'
 /** Shown when withdraw is blocked because the user has no vault share balance (DAO-2109). */
 export const NO_VAULT_SHARES_REASON = 'No vault shares to withdraw'
 /** Shown when actions are disabled while a deposit/withdraw transaction is still pending (DAO-2109). */

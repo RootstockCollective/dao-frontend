@@ -2,46 +2,38 @@
 
 import { useCallback, useMemo } from 'react'
 import type { Address } from 'viem'
-import { useReadContract, useReadContracts } from 'wagmi'
+import { useReadContracts } from 'wagmi'
 
-import { getAbi } from '@/lib/abis/btc-vault'
-import { WHITELISTED_USER_ROLE } from '@/lib/constants'
+import { useWhitelistCheck } from '@/app/btc-vault/hooks/useWhitelistCheck'
 import { rbtcVault } from '@/lib/contracts'
 
-import { NOT_WHITELISTED_REASON } from '../../services/constants'
 import type { EligibilityStatus, PauseState, VaultRequest } from '../../services/types'
 import { toActionEligibility } from '../../services/ui/mappers'
 
-const permissionsManagerAbi = getAbi('PermissionsManagerAbi')
-
 /**
  * Vault multicall result order (must match `vaultContracts`):
- * 0–1 pause flags, 2–3 deposit/redeem requests, 4 permissionsManager, 5 balanceOf(user).
+ * 0–1 pause flags, 2–3 deposit/redeem requests, 4 balanceOf(user).
  */
 type VaultMulticallData = [
   { status: 'success' | 'failure'; result?: boolean },
   { status: 'success' | 'failure'; result?: boolean },
   { status: 'success' | 'failure'; result?: readonly [bigint, bigint] },
   { status: 'success' | 'failure'; result?: readonly [bigint, bigint] },
-  { status: 'success' | 'failure'; result?: Address },
   { status: 'success' | 'failure'; result?: bigint },
 ]
 
 /**
- * Reads vault pause state, user eligibility (whitelist), and active deposit/redeem
- * requests via multicall, then maps to action eligibility for deposit/withdraw buttons.
+ * Reads vault pause state, active deposit/redeem requests, and vault share balance via multicall,
+ * and deposit whitelist status via {@link useWhitelistCheck}, then maps to action eligibility.
  *
- * Two RPC rounds:
- * 1. Multicall on vault: pause flags, deposit/redeem requests, permissionsManager address, `balanceOf(user)`
- * 2. hasRole on PermissionsManager (depends on address from step 1)
- *
- * WHITELISTED_USER_ROLE is `internal` in Roles.sol so there is no on-chain getter;
- * the frontend mirrors the same keccak256("WHITELISTED_USER_ROLE") computation.
+ * Withdrawal eligibility does not depend on the deposit whitelist; deposit is gated first by
+ * whitelist resolution (loading / not whitelisted), then pause, eligibility, and active requests.
  *
  * @param address - User wallet address, or undefined to disable queries
- * @returns { data, isLoading, error, refetch } where data is action eligibility or undefined until both multicall and hasRole resolve
+ * @returns { data, isLoading, error, refetch } where data is action eligibility or undefined until vault multicall resolves
  */
 export function useActionEligibility(address: string | undefined) {
+  const { isWhitelisted, isLoading: whitelistLoading, refetch: refetchWhitelist } = useWhitelistCheck()
   const enabled = !!address
 
   const vaultContracts = useMemo(() => {
@@ -51,7 +43,6 @@ export function useActionEligibility(address: string | undefined) {
       { ...rbtcVault, functionName: 'redeemRequestsPaused' as const },
       { ...rbtcVault, functionName: 'depositReq' as const, args: [address as Address] },
       { ...rbtcVault, functionName: 'redeemReq' as const, args: [address as Address] },
-      { ...rbtcVault, functionName: 'permissionsManager' as const },
       { ...rbtcVault, functionName: 'balanceOf' as const, args: [address as Address] },
     ] as const
   }, [address])
@@ -65,32 +56,19 @@ export function useActionEligibility(address: string | undefined) {
     contracts: vaultContracts,
     query: { enabled },
   })
-  // Wagmi returns ContractFunctionResult[]; we assert the known 6-slot vault shape for fail-closed handling.
+
+  // Wagmi returns ContractFunctionResult[]; we assert the known 5-slot vault shape for fail-closed handling.
   const vaultData = rawVaultData as VaultMulticallData | undefined
 
-  const pmAddress = vaultData?.[4]?.status === 'success' ? vaultData[4].result : undefined
-
-  const {
-    data: hasRoleResult,
-    isLoading: isLoadingHasRole,
-    error: errorHasRole,
-    refetch: refetchHasRole,
-  } = useReadContract({
-    address: pmAddress,
-    abi: permissionsManagerAbi,
-    functionName: 'hasRole',
-    args: pmAddress && address ? [WHITELISTED_USER_ROLE, address as Address] : undefined,
-    query: { enabled: !!pmAddress && !!address },
-  })
-
   const refetch = useCallback(() => {
-    refetchVault()
-    refetchHasRole()
-  }, [refetchVault, refetchHasRole])
+    void refetchVault()
+    void refetchWhitelist()
+  }, [refetchVault, refetchWhitelist])
+
+  const whitelistForMapper = whitelistLoading ? null : isWhitelisted
 
   const data = useMemo(() => {
     if (!address || !vaultData) return
-    if (!pmAddress || hasRoleResult === undefined) return
 
     const depositPaused = vaultData[0]?.status === 'success' ? (vaultData[0].result ?? true) : true
     const redeemPaused = vaultData[1]?.status === 'success' ? (vaultData[1].result ?? true) : true
@@ -102,11 +80,7 @@ export function useActionEligibility(address: string | undefined) {
       withdrawals: redeemPaused ? 'paused' : 'active',
     }
 
-    const hasWhitelistedRole = hasRoleResult === true
-    const eligibility: EligibilityStatus = {
-      eligible: hasWhitelistedRole,
-      reason: hasWhitelistedRole ? '' : NOT_WHITELISTED_REASON,
-    }
+    const eligibility: EligibilityStatus = { eligible: true, reason: '' }
 
     const activeRequests: VaultRequest[] = []
     if (depositReq && depositReq[1] > 0n) {
@@ -134,21 +108,20 @@ export function useActionEligibility(address: string | undefined) {
       })
     }
 
-    const balanceSlot = vaultData[5]
+    const balanceSlot = vaultData[4]
     const vaultTokenBalance =
       balanceSlot?.status === 'success' && typeof balanceSlot.result === 'bigint' ? balanceSlot.result : 0n
     const hasVaultShares = vaultTokenBalance > 0n
 
-    return toActionEligibility(pause, eligibility, activeRequests, hasVaultShares)
-  }, [address, vaultData, pmAddress, hasRoleResult])
+    return toActionEligibility(pause, eligibility, activeRequests, hasVaultShares, whitelistForMapper)
+  }, [address, vaultData, whitelistForMapper])
 
-  const isLoading = (enabled && isLoadingVault) || (!!pmAddress && isLoadingHasRole)
-  const error = vaultError ?? errorHasRole
+  const isLoading = enabled && isLoadingVault
 
   return {
     data,
     isLoading,
-    error: error ?? undefined,
+    error: vaultError ?? undefined,
     refetch,
   }
 }
