@@ -4,8 +4,8 @@ import { UseReadContractReturnType, useReadContracts } from 'wagmi'
 import { getAbi, type RBTCAsyncVaultAbi } from '@/lib/abis/btc-vault'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { rbtcVault } from '@/lib/contracts'
-import { UseReadContractConfig, ViewPureFunctionName } from '../types'
 
+import { UseReadContractConfig, ViewPureFunctionName } from '../types'
 import { ReadRbtcVaultQueryOverrides } from './types'
 
 type RbtcAsyncVaultFunctionName = ViewPureFunctionName<RBTCAsyncVaultAbi>
@@ -24,7 +24,7 @@ type AnyRbtcVaultConfig = {
 type RbtcVaultBatchDataTuple<T extends readonly AnyRbtcVaultConfig[]> = {
   [K in keyof T]: T[K] extends RbtcAsyncVaultConfig<infer Fn>
     ? UseReadContractReturnType<RBTCAsyncVaultAbi, Fn>['data']
-    : never
+    : { error: Error | null }
 }
 
 export type { RbtcAsyncVaultConfig, RbtcAsyncVaultFunctionName }
@@ -55,7 +55,7 @@ export function useReadRbtcVaultBatch<T extends readonly AnyRbtcVaultConfig[]>(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         ...(config as any),
       })),
-    [configs],
+    [abi, configs],
   )
 
   const {
@@ -73,7 +73,7 @@ export function useReadRbtcVaultBatch<T extends readonly AnyRbtcVaultConfig[]>(
   })
 
   const data = useMemo((): RbtcVaultBatchDataTuple<T> => {
-    if (!results) return configs.map(() => undefined) as RbtcVaultBatchDataTuple<T>
+    if (!results) return configs.map(() => {}) as RbtcVaultBatchDataTuple<T>
     return results.map(({ result, error: callError, status }) =>
       status === 'success' && !callError ? result : undefined,
     ) as RbtcVaultBatchDataTuple<T>

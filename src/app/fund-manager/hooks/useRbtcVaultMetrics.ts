@@ -40,7 +40,7 @@ export const useRbtcVaultMetrics = () => {
   const { bufferAssets, bufferDebt, isLoading: isLoadingBuffer, error: bufferError } = useRbtcBuffer()
 
   const isLoading = isLoadingVault || isLoadingSynthetic || isLoadingBuffer
-  const error = vaultError ?? syntheticError ?? bufferError ?? null
+  const error = vaultError || syntheticError || bufferError
 
   return useMemo(() => {
     const tvlSum = vaultAssetBalance + reportedOffchainAssets - bufferDebt

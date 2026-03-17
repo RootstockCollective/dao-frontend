@@ -13,7 +13,7 @@ function parseEpochSnapshot(tuple: readonly [bigint, bigint, bigint, bigint] | u
   return { closedAt, assetsAtClose, supplyAtClose }
 }
 
-const vaultConfigs = [
+const VAULT_CONFIGS = [
   { functionName: 'asset' },
   { functionName: 'currentEpoch' },
   { functionName: 'reportedOffchainAssets' },
@@ -28,7 +28,7 @@ export const useRbtcVault = () => {
     data: batchData,
     isLoading: isBatchLoading,
     error: batchError,
-  } = useReadRbtcVaultBatch(vaultConfigs)
+  } = useReadRbtcVaultBatch(VAULT_CONFIGS)
 
   const [assetAddress, currentEpoch, reportedOffchainAssets = 0n, freeOnchainLiquidity = 0n] = batchData
 
@@ -43,7 +43,6 @@ export const useRbtcVault = () => {
     args: [rbtcVault.address],
     query: {
       enabled: !!assetAddress,
-      retry: true,
       refetchInterval: AVERAGE_BLOCKTIME,
     },
   })

@@ -24,6 +24,12 @@ describe('computeIndicativeApy', () => {
       expect(computeIndicativeApy(current, prev)).toBe('0.00%')
     })
 
+    it('returns formatted negative APY when share price decreases', () => {
+      const prev = epoch(0, 1000, 1000) // share price 1.0
+      const current = epoch(SECONDS_PER_YEAR, 950, 1000) // share price 0.95 → -5%
+      expect(computeIndicativeApy(current, prev)).toBe('-5.00%')
+    })
+
     it('returns formatted APY for doubling over one year', () => {
       const prev = epoch(0, 1000, 1000)
       const current = epoch(SECONDS_PER_YEAR, 2000, 1000)

@@ -14,7 +14,7 @@ interface EpochSnapshot {
  * Share price per spec: sharePrice(n) = epochTotalAssets[n] / epochTotalSupply[n]
  * (i.e. assetsAtClose / supplyAtClose). APY = (priceNew / priceOld)^(SECONDS_PER_YEAR / elapsed) − 1.
  *
- * @returns Formatted APY string (e.g. "5.25%") or "—" when not computable.
+ * @returns Formatted APY string (e.g. "5.25%", "-2.50%") or "—" when not computable.
  */
 export function computeIndicativeApy(
   currentEpoch: EpochSnapshot | null,
@@ -34,6 +34,6 @@ export function computeIndicativeApy(
   const priceRatio = Number(sharePriceNow.div(sharePricePrev).toString())
   const apy = growthFactorToApy(priceRatio, Number(elapsed))
 
-  if (!Number.isFinite(apy) || apy < 0) return '—'
+  if (!Number.isFinite(apy)) return '—'
   return `${(apy * 100).toFixed(2)}%`
 }
