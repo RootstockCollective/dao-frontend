@@ -51,7 +51,7 @@ function DepositHistoryTableInner() {
   return (
     <div className="w-full flex flex-col gap-6 md:gap-10">
       <Header variant="h3" className="m-0 text-lg md:text-xl" data-testid="deposit-history-list-header">
-        DEPOSIT WINDOWS
+        DEPOSIT WINDOWS LIST
       </Header>
       {isDesktop ? <DesktopDepositHistory /> : <MobileDepositHistory />}
       <TablePager

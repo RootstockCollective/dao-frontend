@@ -3,7 +3,7 @@ import { Header } from '@/components/Typography'
 
 import { DepositHistoryTableWithContext } from './components/DepositHistoryTable'
 
-const PAGE_NAME = 'Deposit History'
+const PAGE_NAME = 'TVL History'
 
 export default function DepositHistoryPage() {
   return (
