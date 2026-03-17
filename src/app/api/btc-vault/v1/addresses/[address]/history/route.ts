@@ -1,33 +1,27 @@
-import { NextRequest } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 import {
   getBtcVaultHistory,
   getBtcVaultHistoryCount,
 } from '@/app/api/btc-vault/v1/addresses/[address]/history/action'
+import { BtcVaultAddressHistoryQuerySchema } from '@/app/api/btc-vault/v1/schemas'
 import { handleApiError, queryParam } from '@/app/api/utils/helpers'
 import type { PaginationResponse } from '@/app/api/utils/types'
-import { AddressSchema, SortDirectionEnum } from '@/app/api/utils/validators'
-
-const SortFieldEnum = z.enum(['timestamp', 'assets'])
-const ActionTypeEnum = z.enum([
-  'deposit_request',
-  'deposit_claimed',
-  'deposit_cancelled',
-  'redeem_request',
-  'redeem_claimed',
-  'redeem_cancelled',
-])
-const QuerySchema = z.object({
-  limit: z.coerce.number().int().min(1).max(200).default(20),
-  page: z.coerce.number().int().min(1).default(1),
-  sort_field: SortFieldEnum.default('timestamp'),
-  sort_direction: SortDirectionEnum.default('desc'),
-  type: z.array(ActionTypeEnum).optional(),
-})
+import { AddressSchema } from '@/app/api/utils/validators'
 
 export const revalidate = 60
 
+/**
+ * GET /api/btc-vault/v1/addresses/:address/history
+ * Returns paginated BTC vault history for the given address.
+ * No auth required.
+ *
+ * Path: address (ethereum address). Query params: limit (1–200, default 20), page (default 1),
+ * sort_field (timestamp | assets), sort_direction (asc | desc), type[] (optional action filter).
+ * Response: { data: BtcVaultHistoryItem[], pagination: PaginationResponse }.
+ * 400 on validation error (body includes error, details); 500 on server error.
+ */
 export async function GET(req: NextRequest, context: { params: Promise<{ address: string }> }) {
   try {
     const { address: addressParam } = await context.params
@@ -37,7 +31,7 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
 
     const typeParams = searchParams.getAll('type').filter(v => v !== '')
 
-    const parsed = QuerySchema.parse({
+    const parsed = BtcVaultAddressHistoryQuerySchema.parse({
       limit: qp('limit'),
       page: qp('page'),
       sort_field: qp('sort_field'),
@@ -66,11 +60,14 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
       sort_direction: parsed.sort_direction,
     }
 
-    return Response.json({ data, pagination })
-  } catch (err) {
-    if (err instanceof z.ZodError) {
-      return Response.json({ error: 'Validation failed', details: err.flatten() }, { status: 400 })
+    return NextResponse.json({ data, pagination })
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { success: false, error: 'Validation failed', details: error.flatten() },
+        { status: 400 },
+      )
     }
-    return handleApiError(err, 'btc vault history route')
+    return handleApiError(error, 'btc vault history route')
   }
 }

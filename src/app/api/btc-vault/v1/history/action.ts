@@ -2,19 +2,11 @@ import { gql } from '@apollo/client'
 
 import type { BtcVaultHistoryItem } from '@/app/api/btc-vault/v1/addresses/[address]/history/action'
 import { getBtcVaultHistoryCount } from '@/app/api/btc-vault/v1/addresses/[address]/history/action'
+import { ALL_ACTION_TYPES } from '@/app/api/btc-vault/v1/schemas'
 import { btcVaultClient } from '@/shared/components/ApolloClient'
 
 export type { BtcVaultHistoryItem }
 export { getBtcVaultHistoryCount }
-
-const ALL_ACTION_TYPES = [
-  'DEPOSIT_REQUEST',
-  'DEPOSIT_CLAIMED',
-  'DEPOSIT_CANCELLED',
-  'REDEEM_REQUEST',
-  'REDEEM_CLAIMED',
-  'REDEEM_CANCELLED',
-] as const
 
 const BTC_VAULT_GLOBAL_HISTORY_QUERY = gql`
   query BtcVaultGlobalHistory(
