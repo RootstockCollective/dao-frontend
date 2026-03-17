@@ -1,4 +1,4 @@
-import { Address } from 'viem'
+import { type Address } from 'viem'
 
 import { Feature } from '@/config/features.conf'
 
@@ -60,6 +60,8 @@ export const ADMIN_ROLE = '0x7865ee6a85d4460dad7043a6436d34e32aa9ecd622990b81417
 export const FUND_MANAGER_ROLE = '0x241ecf16d79d0f8dbfb92cbc07fe17840425976cf0667f022fe9877caa831b08'
 // From rbtc-vault-sc Roles.sol: keccak256("WHITELISTED_USER_ROLE") — role for whitelisted users allowed to interact with the vault
 export const DEPOSITOR_ROLE = '0x013e1f410e70025de956b8838ba99c3a9a9f7eb3e6d678062363333c8abd7ea0'
+// keccak256('WHITELISTED_USER_ROLE') — mirrors Roles.sol (internal constant, no on-chain getter)
+export const WHITELISTED_USER_ROLE = '0x013e1f410e70025de956b8838ba99c3a9a9f7eb3e6d678062363333c8abd7ea0'
 
 export const AVERAGE_BLOCKTIME = 60_000
 export const CACHE_REVALIDATE_SECONDS = 20
