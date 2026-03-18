@@ -258,14 +258,14 @@ export const rootlingsS1: CommunityItem = {
 }
 
 export const rootcampNft: CommunityItem = {
-  leftImageSrc: ipfsGatewayUrl('QmbYNH2VAvqdxu79ebXEWzP1P1uMUjiSBuUJN9U4ssvmna'),
+  leftImageSrc: ipfsGatewayUrl('QmXzCQ9B1XaHdsfxpPVkAQNTvFw5o7BD7H8XZ96FKyRPnb'),
   title: 'Rootcamp',
   subtitle: 'Rootcamp',
   description:
     'Rootcamp NFT is awarded to participants of the Rootstock Rootcamp program, recognizing their contributions to the ecosystem.',
   specialPower: 'Community badge + perks',
   nftAddress: ROOTCAMP_NFT_ADDRESS,
-  cover: ipfsGatewayUrl('QmbYNH2VAvqdxu79ebXEWzP1P1uMUjiSBuUJN9U4ssvmna'),
+  cover: ipfsGatewayUrl('QmXzCQ9B1XaHdsfxpPVkAQNTvFw5o7BD7H8XZ96FKyRPnb'),
   isMintable: true,
   numberOfMembers: 0,
   activation: 'March 2026',
