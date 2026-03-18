@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { GET } from './route'
 
-vi.mock('@/app/api/btc-vault/v1/history/action', () => ({
+vi.mock('./action', () => ({
   enrichHistoryWithRequestStatus: vi.fn((history: unknown) => Promise.resolve(history)),
   getGlobalBtcVaultHistory: vi.fn(),
   getBtcVaultHistoryCount: vi.fn(),
@@ -33,8 +33,8 @@ const mockHistory: BtcVaultHistoryItem[] = [
 ]
 
 beforeEach(() => {
-  mockGetHistory.mockReset()
-  mockGetCount.mockReset()
+  mockGetHistory.mockClear()
+  mockGetCount.mockClear()
 })
 
 describe('GET /api/btc-vault/v1/history', () => {

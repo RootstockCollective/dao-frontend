@@ -10,6 +10,8 @@ import { renderHook } from '@testing-library/react'
 import { useContext } from 'react'
 import { getVoteAllocations } from '../context/utils'
 
+const getVoteAllocationsMock = vi.mocked(getVoteAllocations)
+
 vi.mock(import('wagmi'), async importOriginal => {
   const actual = await importOriginal()
   return {
@@ -27,7 +29,7 @@ vi.mock(import('react'), async importOriginal => {
   }
 })
 
-vi.mock('@/app/collective-rewards/allocations/context/utils', () => ({
+vi.mock('../context/utils', () => ({
   getVoteAllocations: vi.fn(),
 }))
 
@@ -61,7 +63,7 @@ describe('useAllocateVotes', () => {
     })
 
     test('should call contract with allocate function in args', () => {
-      vi.mocked(getVoteAllocations).mockReturnValue([['0x123'], [1n]])
+      getVoteAllocationsMock.mockReturnValue([['0x123'], [1n]])
 
       renderHook(() => {
         const { saveAllocations } = useAllocateVotes()
@@ -77,7 +79,7 @@ describe('useAllocateVotes', () => {
     })
 
     test('should call contract with allocateBatch function in args', () => {
-      vi.mocked(getVoteAllocations).mockReturnValue([
+      getVoteAllocationsMock.mockReturnValue([
         ['0x123', '0x456'],
         [1n, 3n],
       ])
@@ -96,7 +98,7 @@ describe('useAllocateVotes', () => {
     })
 
     test('should not call contract if there are no allocations to save', () => {
-      vi.mocked(getVoteAllocations).mockReturnValue([[], []])
+      getVoteAllocationsMock.mockReturnValue([[], []])
 
       renderHook(async () => {
         const { saveAllocations } = useAllocateVotes()
@@ -116,7 +118,7 @@ describe('useAllocateVotes', () => {
         saveAllocations()
 
         expect(writeContractAsyncSpy).not.toBeCalled()
-        expect(getVoteAllocations).not.toBeCalled()
+        expect(getVoteAllocationsMock).not.toHaveBeenCalled()
       })
     })
   })

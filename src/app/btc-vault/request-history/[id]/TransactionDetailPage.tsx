@@ -19,7 +19,7 @@ interface TransactionDetailPageProps {
 
 export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
   const { address, isConnected } = useAccount()
-  const { data: request, isLoading, isError } = useRequestById(id)
+  const { data: request, isLoading, isError } = useRequestById(id, address ?? undefined)
   const { prices } = usePricesContext()
   const rbtcPrice = prices[RBTC]?.price ?? 0
   const { isModalOpened, openModal, closeModal } = useModal()

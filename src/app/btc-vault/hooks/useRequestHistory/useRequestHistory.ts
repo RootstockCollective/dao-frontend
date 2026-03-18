@@ -1,76 +1,77 @@
 import { useQuery } from '@tanstack/react-query'
 
-import type { PaginatedResult, PaginationParams, VaultRequest } from '../../services/types'
-import { mapRequestDisplayStatus, toPaginatedHistoryDisplay } from '../../services/ui/mappers'
+import type { PaginationParams } from '../../services/types'
+import type { BtcVaultHistoryApiResponse } from '../../services/ui/api-types'
+import { historyFiltersToApiTypes } from '../../services/ui/history-filter-mapping'
+import { apiHistoryToPaginatedDisplay } from '../../services/ui/mappers'
 import type { HistoryFilterParams } from '../../services/ui/types'
-import { MOCK_REQUESTS } from './mock-data'
 
-const IS_MOCK_ENABLED =
-  process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_MOCK_BTC_VAULT === 'true'
+const HISTORY_API_PATH = '/api/btc-vault/v1/history'
 
-/** @internal Exported for testing. Will be removed when Feature 9 wires real backend. */
-export function applyFilters(requests: VaultRequest[], filters?: HistoryFilterParams): VaultRequest[] {
-  if (!filters) return requests
-
-  let filtered = requests
-
-  const { type, claimToken, status } = filters
-
-  if (type?.length) {
-    filtered = filtered.filter(r => type.includes(r.type))
-  }
-
-  if (claimToken?.length) {
-    filtered = filtered.filter(r => {
-      const tokenType = r.type === 'deposit' ? 'rbtc' : 'shares'
-      return claimToken.includes(tokenType)
-    })
-  }
-
-  if (status?.length) {
-    filtered = filtered.filter(r => {
-      const { displayStatus } = mapRequestDisplayStatus(r.status, r.type, r.failureReason)
-      return status.includes(displayStatus)
-    })
-  }
-
-  return filtered
-}
-
-/** @internal Exported for testing. Will be removed when Feature 9 wires real backend. */
-export function paginate(requests: VaultRequest[], params: PaginationParams): PaginatedResult<VaultRequest> {
-  const sorted = [...requests].sort((a, b) => {
-    const dir = params.sortDirection === 'asc' ? 1 : -1
-    return dir * (a.timestamps.created - b.timestamps.created)
-  })
-  const start = (params.page - 1) * params.limit
-  return {
-    data: sorted.slice(start, start + params.limit),
-    total: requests.length,
-    page: params.page,
-    limit: params.limit,
-    totalPages: Math.ceil(requests.length / params.limit),
-  }
+/**
+ * Maps UI PaginationParams.sortField to API sort_field (timestamp | assets).
+ * Defaults to 'timestamp' when sortField is undefined or 'date'.
+ */
+function toApiSortField(sortField: string | undefined): 'timestamp' | 'assets' {
+  if (sortField === 'amount') return 'assets'
+  return 'timestamp'
 }
 
 /**
- * Fetches paginated, filtered, and sorted request history for the BTC vault.
- * Uses mock data when NEXT_PUBLIC_MOCK_BTC_VAULT=true in development;
- * otherwise returns empty results until the real data layer is wired (Feature 9).
+ * Builds query string for GET /api/btc-vault/v1/history.
+ * Params: address (required), page, limit, sort_field, sort_direction, type[] (when filters yield types).
+ */
+function buildHistoryUrl(
+  address: string,
+  params: PaginationParams,
+  filters: HistoryFilterParams | undefined,
+): string {
+  const sort_field = toApiSortField(params.sortField)
+  const sort_direction = params.sortDirection ?? 'desc'
+  const apiTypes = historyFiltersToApiTypes(filters)
+
+  const searchParams = new URLSearchParams()
+  searchParams.set('address', address)
+  searchParams.set('page', String(params.page))
+  searchParams.set('limit', String(params.limit))
+  searchParams.set('sort_field', sort_field)
+  searchParams.set('sort_direction', sort_direction)
+  apiTypes.forEach(t => searchParams.append('type', t))
+
+  return `${HISTORY_API_PATH}?${searchParams.toString()}`
+}
+
+/**
+ * Fetches paginated, filtered, and sorted request history from GET /api/btc-vault/v1/history.
+ * Maps API response to PaginatedHistoryDisplay and applies client-side status filter when filters.status is set.
+ *
  * @param address - Connected wallet address; query is disabled when undefined
- * @param params - Pagination and sort parameters
- * @param filters - Optional filter criteria (type, claim token, display status)
+ * @param params - Pagination and sort parameters (page, limit, sortField, sortDirection)
+ * @param filters - Optional filter criteria (type, claim token, display status); status is filtered client-side
  */
 export function useRequestHistory(
   address: string | undefined,
   params: PaginationParams,
   filters?: HistoryFilterParams,
 ) {
-  const source = IS_MOCK_ENABLED ? MOCK_REQUESTS : []
-
   return useQuery({
     queryKey: ['btc-vault', 'history', address, params, filters],
-    queryFn: () => toPaginatedHistoryDisplay(paginate(applyFilters(source, filters), params)),
+    queryFn: async () => {
+      if (!address) throw new Error('address is required')
+      const url = buildHistoryUrl(address, params, filters)
+      const res = await fetch(url)
+      if (!res.ok) throw new Error(`History API error: ${res.status}`)
+      const response = (await res.json()) as BtcVaultHistoryApiResponse
+      const result = apiHistoryToPaginatedDisplay(response)
+
+      if (filters?.status?.length) {
+        const statusSet = new Set(filters.status)
+        const filteredRows = result.rows.filter(row => statusSet.has(row.displayStatus))
+        return { ...result, rows: filteredRows }
+      }
+
+      return result
+    },
     enabled: !!address,
     staleTime: Infinity,
   })
