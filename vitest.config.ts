@@ -73,7 +73,7 @@ export default defineConfig({
         },
         test: {
           environment: 'jsdom',
-          setupFiles: './vitest.setup.ts',
+          setupFiles: path.join(__dirname, 'vitest.setup.ts'),
           // Use node environment for API route tests to avoid AbortSignal issues with Viem
           environmentMatchGlobs: [
             ['**/api/**/*.test.ts', 'node'],

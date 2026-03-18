@@ -12,22 +12,21 @@ import { formatCurrencyWithLabel } from '@/lib/utils'
 import { btcVaultRequestHistory } from '@/shared/constants/routes'
 import { usePricesContext } from '@/shared/context'
 
-import { useEpochState } from '../hooks/useEpochState'
 import { useVaultMetrics } from '../hooks/useVaultMetrics'
 
 const PLACEHOLDER = '—'
 const APY_TOOLTIP = 'Annual Percentage Yield — the annualized return on deposited rBTC'
 
 export const BtcVaultMetrics = () => {
-  const { data: metrics, isLoading: metricsLoading } = useVaultMetrics()
-  const { data: epoch } = useEpochState()
+  const { data: metrics, isLoading: metricsLoading, error: metricsError } = useVaultMetrics()
   const { prices } = usePricesContext()
   const rbtcPrice = prices[RBTC]?.price ?? 0
 
   const tvlFormatted = metrics?.tvlFormatted ?? PLACEHOLDER
   const apyFormatted = metrics?.apyFormatted ?? PLACEHOLDER
   const pricePerShareFormatted = metrics?.pricePerShareFormatted ?? PLACEHOLDER
-  const isMetricsLoading = metricsLoading || !metrics
+  const isMetricsLoading = metricsLoading || (!metrics && !metricsError)
+  const showMetricsError = Boolean(metricsError)
 
   const tvlUsd = useMemo(() => {
     if (!metrics?.tvlRaw || !rbtcPrice) return null
@@ -59,13 +58,6 @@ export const BtcVaultMetrics = () => {
           tooltipContent={APY_TOOLTIP}
           data-testid="btc-vault-apy"
         />
-        <BalanceInfo
-          className="w-[214px] min-w-[180px]"
-          title={`Deposit window ${epoch?.epochId ?? ''}`}
-          amount="closing on -"
-          tooltipContent="Current epoch deposit window and its closing date"
-          data-testid="btc-vault-deposit-window"
-        />
         {/* Price Per Share = NAV per share (convertToAssets(1e18)) renamed for clarity */}
         <BalanceInfo
           className="w-[214px] min-w-[180px]"
@@ -77,6 +69,12 @@ export const BtcVaultMetrics = () => {
           data-testid="btc-vault-price-per-share"
         />
       </div>
+
+      {showMetricsError && (
+        <p className="text-sm text-error" data-testid="btc-vault-metrics-error">
+          Failed to load metrics. Please try again.
+        </p>
+      )}
 
       <div data-testid="btc-vault-history-link-section">
         <Link

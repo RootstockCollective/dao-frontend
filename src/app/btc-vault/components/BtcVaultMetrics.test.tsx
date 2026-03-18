@@ -24,12 +24,6 @@ vi.mock('@/shared/context', () => ({
   usePricesContext: () => ({ prices: mockPrices }),
 }))
 
-vi.mock('../hooks/useEpochState', () => ({
-  useEpochState: () => ({
-    data: { epochId: '1', status: 'open', statusSummary: '', isAcceptingRequests: true },
-  }),
-}))
-
 describe('BtcVaultMetrics', () => {
   afterEach(() => {
     cleanup()
@@ -54,29 +48,15 @@ describe('BtcVaultMetrics', () => {
     })
   })
 
-  it('renders four metrics and the history link', () => {
+  it('renders exactly three metrics and the history link', () => {
     renderWithProviders()
 
     expect(screen.getByTestId('btc-vault-metrics-content')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-tvl')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-apy')).toBeInTheDocument()
-    expect(screen.getByTestId('btc-vault-deposit-window')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-price-per-share')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-metrics-history-link')).toBeInTheDocument()
-  })
-
-  it('displays deposit window with epoch ID and TBD closing', () => {
-    renderWithProviders()
-
-    const dw = screen.getByTestId('btc-vault-deposit-window')
-    expect(dw).toHaveTextContent('Deposit window 1')
-    expect(dw).toHaveTextContent('closing on -')
-  })
-
-  it('does not render epoch state section', () => {
-    renderWithProviders()
-
-    expect(screen.queryByTestId('btc-vault-epoch-state')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('btc-vault-deposit-window')).not.toBeInTheDocument()
   })
 
   it('displays TVL with token symbol', () => {
@@ -131,6 +111,20 @@ describe('BtcVaultMetrics', () => {
     const link = screen.getByTestId('btc-vault-metrics-history-link')
     expect(link).toHaveTextContent('View history')
     expect(link).toHaveAttribute('href', '/btc-vault/request-history')
+  })
+
+  it('shows error message when useVaultMetrics returns error', () => {
+    mockUseVaultMetrics.mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: new Error('Failed to load metrics'),
+    })
+
+    renderWithProviders()
+
+    const errorEl = screen.getByTestId('btc-vault-metrics-error')
+    expect(errorEl).toBeInTheDocument()
+    expect(errorEl).toHaveTextContent(/failed to load metrics/i)
   })
 
   it('shows placeholders when metrics are loading', () => {
