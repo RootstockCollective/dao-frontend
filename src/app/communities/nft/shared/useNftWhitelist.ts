@@ -50,7 +50,7 @@ export function useNftWhitelist({ address, abi, toastIdPrefix }: NftWhitelistCon
   const { address: accountAddress } = useAccount()
   const [enrichedData, setEnrichedData] = useState<EnrichedAddresses>(emptyEnrichedData)
 
-  const contract = { address, abi }
+  const contract = useMemo(() => ({ address, abi }), [address, abi])
 
   const {
     data,
@@ -150,7 +150,7 @@ export function useNftWhitelist({ address, abi, toastIdPrefix }: NftWhitelistCon
         args: [minterRole, minter],
       })
     },
-    [data?.hasGuardRole, writeContract, contract],
+    [data?.hasGuardRole, writeContract, address, abi],
   )
 
   const whitelistMinters = useCallback(
@@ -163,7 +163,7 @@ export function useNftWhitelist({ address, abi, toastIdPrefix }: NftWhitelistCon
         args: [minters],
       })
     },
-    [data?.hasGuardRole, writeContract, contract],
+    [data?.hasGuardRole, writeContract, address, abi],
   )
 
   useEffect(() => {
