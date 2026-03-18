@@ -75,10 +75,11 @@ function BtcVaultHistoryTableInner() {
   const historyFilters = useMemo(() => toHistoryFilters(activeFilters), [activeFilters])
 
   const sortDirection = sort?.direction || 'desc'
+  const sortField = sort?.columnId === 'date' ? 'date' : sort?.columnId === 'amount' ? 'amount' : undefined
 
   const { data, isLoading, error } = useRequestHistory(
     address,
-    { page: 1, limit: pageEnd, sortDirection },
+    { page: 1, limit: pageEnd, sortDirection, sortField },
     historyFilters,
   )
 

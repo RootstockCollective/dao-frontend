@@ -1,151 +1,188 @@
-import { describe, it, expect } from 'vitest'
+import React from 'react'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { renderHook, waitFor } from '@testing-library/react'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import type { VaultRequest } from '../../services/types'
-import { applyFilters, paginate } from './useRequestHistory'
+import { useRequestHistory } from './useRequestHistory'
 
-const ONE_BTC = 10n ** 18n
-
-function makeRequest(overrides: Partial<VaultRequest> & Pick<VaultRequest, 'id' | 'type' | 'status'>): VaultRequest {
-  return {
-    amount: ONE_BTC,
-    epochId: null,
-    batchRedeemId: null,
-    timestamps: { created: 1000 },
-    txHashes: { submit: '0x0' },
-    ...overrides,
-  }
+const API_RESPONSE = {
+  data: [
+    {
+      id: '0xuser1-1',
+      user: '0xuser1',
+      action: 'DEPOSIT_REQUEST',
+      assets: '1000000000000000000',
+      shares: '0',
+      epochId: '1',
+      timestamp: 1700000000,
+      blockNumber: '123',
+      transactionHash: '0x' + 'a'.repeat(64),
+      displayStatus: 'pending',
+    },
+    {
+      id: '0xuser2-2',
+      user: '0xuser2',
+      action: 'REDEEM_CLAIMED',
+      assets: '0',
+      shares: '2000000000000000000',
+      epochId: '2',
+      timestamp: 1700003600,
+      blockNumber: '456',
+      transactionHash: '0x' + 'b'.repeat(64),
+      displayStatus: 'successful',
+    },
+  ],
+  pagination: { page: 1, limit: 20, total: 42, totalPages: 3 },
 }
 
-const FIXTURES: VaultRequest[] = [
-  makeRequest({ id: 'dep-pending', type: 'deposit', status: 'pending', timestamps: { created: 400 } }),
-  makeRequest({ id: 'dep-claimable', type: 'deposit', status: 'claimable', timestamps: { created: 300 } }),
-  makeRequest({ id: 'wd-claimable', type: 'withdrawal', status: 'claimable', timestamps: { created: 200 } }),
-  makeRequest({ id: 'dep-done', type: 'deposit', status: 'done', timestamps: { created: 100 } }),
-  makeRequest({
-    id: 'dep-cancelled',
-    type: 'deposit',
-    status: 'failed',
-    failureReason: 'cancelled',
-    timestamps: { created: 50 },
-  }),
-  makeRequest({
-    id: 'dep-rejected',
-    type: 'deposit',
-    status: 'failed',
-    failureReason: 'rejected',
-    timestamps: { created: 25 },
-  }),
-]
+const defaultParams = { page: 1, limit: 20, sortDirection: 'desc' as const }
 
-describe('applyFilters', () => {
-  it('returns all requests when no filters provided', () => {
-    expect(applyFilters(FIXTURES)).toHaveLength(FIXTURES.length)
-    expect(applyFilters(FIXTURES, undefined)).toHaveLength(FIXTURES.length)
+function createTestQueryClient() {
+  return new QueryClient({
+    defaultOptions: {
+      queries: { retry: false },
+    },
+  })
+}
+
+function renderHookWithClient(hook: () => ReturnType<typeof useRequestHistory>) {
+  const queryClient = createTestQueryClient()
+  const Wrapper = ({ children }: { children: React.ReactNode }) =>
+    React.createElement(QueryClientProvider, { client: queryClient }, children)
+  return renderHook(hook, { wrapper: Wrapper })
+}
+
+describe('useRequestHistory', () => {
+  const mockFetch = vi.fn()
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+    globalThis.fetch = mockFetch
   })
 
-  it('filters by type: deposit', () => {
-    const result = applyFilters(FIXTURES, { type: ['deposit'] })
-    expect(result.every(r => r.type === 'deposit')).toBe(true)
-    expect(result).toHaveLength(5)
+  it('does not run query when address is undefined', async () => {
+    renderHookWithClient(() =>
+      useRequestHistory(undefined, defaultParams, undefined),
+    )
+    await waitFor(() => {})
+    expect(mockFetch).not.toHaveBeenCalled()
   })
 
-  it('filters by type: withdrawal', () => {
-    const result = applyFilters(FIXTURES, { type: ['withdrawal'] })
-    expect(result.every(r => r.type === 'withdrawal')).toBe(true)
-    expect(result).toHaveLength(1)
+  it('calls fetch with correct URL (address, page, limit, sort_field, sort_direction) when address is defined', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(API_RESPONSE),
+    })
+
+    const address = '0xabc'
+    const params = { page: 2, limit: 10, sortDirection: 'asc' as const }
+    const { result } = renderHookWithClient(() =>
+      useRequestHistory(address, params, undefined),
+    )
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
+
+    expect(mockFetch).toHaveBeenCalledTimes(1)
+    const [url] = mockFetch.mock.calls[0]
+    expect(url).toContain('/api/btc-vault/v1/history?')
+    expect(url).toContain('address=0xabc')
+    expect(url).toContain('page=2')
+    expect(url).toContain('limit=10')
+    expect(url).toContain('sort_field=timestamp')
+    expect(url).toContain('sort_direction=asc')
   })
 
-  it('filters by claimToken: rbtc (deposits)', () => {
-    const result = applyFilters(FIXTURES, { claimToken: ['rbtc'] })
-    expect(result.every(r => r.type === 'deposit')).toBe(true)
+  it('includes type[] in URL when filters provide type or claimToken', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(API_RESPONSE),
+    })
+
+    const address = '0xuser'
+    const filters = { type: ['deposit' as const] }
+    const { result } = renderHookWithClient(() =>
+      useRequestHistory(address, defaultParams, filters),
+    )
+
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
+
+    const [url] = mockFetch.mock.calls[0]
+    expect(url).toContain('type=deposit_request')
+    expect(url).toContain('type=deposit_claimed')
+    expect(url).toContain('type=deposit_cancelled')
   })
 
-  it('filters by claimToken: shares (withdrawals)', () => {
-    const result = applyFilters(FIXTURES, { claimToken: ['shares'] })
-    expect(result.every(r => r.type === 'withdrawal')).toBe(true)
+  it('returns PaginatedHistoryDisplay from API response', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(API_RESPONSE),
+    })
+
+    const { result } = renderHookWithClient(() =>
+      useRequestHistory('0xuser', defaultParams, undefined),
+    )
+
+    await waitFor(() => {
+      expect(result.current.data).toBeDefined()
+    })
+
+    const data = result.current.data!
+    expect(data.rows).toHaveLength(2)
+    expect(data.total).toBe(42)
+    expect(data.page).toBe(1)
+    expect(data.limit).toBe(20)
+    expect(data.totalPages).toBe(3)
+    expect(data.rows[0].displayStatus).toBe('pending')
+    expect(data.rows[0].amountFormatted).toBe('1')
+    expect(data.rows[0].claimTokenType).toBe('rbtc')
+    expect(data.rows[1].displayStatus).toBe('successful')
+    expect(data.rows[1].amountFormatted).toBe('2')
+    expect(data.rows[1].claimTokenType).toBe('shares')
   })
 
-  it('filters by display status: successful', () => {
-    const result = applyFilters(FIXTURES, { status: ['successful'] })
-    expect(result).toHaveLength(1)
-    expect(result[0].id).toBe('dep-done')
+  it('filters rows by displayStatus when filters.status is provided', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(API_RESPONSE),
+    })
+
+    const filters = { status: ['successful' as const] }
+    const { result } = renderHookWithClient(() =>
+      useRequestHistory('0xuser', defaultParams, filters),
+    )
+
+    await waitFor(() => {
+      expect(result.current.data).toBeDefined()
+    })
+
+    const data = result.current.data!
+    expect(data.rows).toHaveLength(1)
+    expect(data.rows[0].displayStatus).toBe('successful')
+    expect(data.rows[0].id).toBe('0xuser2-2')
+    expect(data.total).toBe(42)
+    expect(data.page).toBe(1)
   })
 
-  it('filters by display status: cancelled', () => {
-    const result = applyFilters(FIXTURES, { status: ['cancelled'] })
-    expect(result).toHaveLength(1)
-    expect(result[0].id).toBe('dep-cancelled')
-  })
+  it('uses sort_field=assets when params.sortField is amount', async () => {
+    mockFetch.mockResolvedValueOnce({
+      ok: true,
+      json: () => Promise.resolve(API_RESPONSE),
+    })
 
-  it('filters by display status: rejected', () => {
-    const result = applyFilters(FIXTURES, { status: ['rejected'] })
-    expect(result).toHaveLength(1)
-    expect(result[0].id).toBe('dep-rejected')
-  })
+    const params = { ...defaultParams, sortField: 'amount' }
+    const { result } = renderHookWithClient(() =>
+      useRequestHistory('0xuser', params, undefined),
+    )
 
-  it('filters by multiple display statuses', () => {
-    const result = applyFilters(FIXTURES, { status: ['cancelled', 'rejected'] })
-    expect(result).toHaveLength(2)
-  })
+    await waitFor(() => {
+      expect(result.current.isSuccess).toBe(true)
+    })
 
-  it('combines type and status filters', () => {
-    const result = applyFilters(FIXTURES, { type: ['deposit'], status: ['pending'] })
-    expect(result).toHaveLength(1)
-    expect(result[0].id).toBe('dep-pending')
-  })
-
-  it('returns empty when filters match nothing', () => {
-    const result = applyFilters(FIXTURES, { type: ['withdrawal'], status: ['pending'] })
-    expect(result).toHaveLength(0)
-  })
-
-  it('ignores empty filter arrays', () => {
-    const result = applyFilters(FIXTURES, { type: [], status: [] })
-    expect(result).toHaveLength(FIXTURES.length)
-  })
-})
-
-describe('paginate', () => {
-  it('returns first page with correct limit', () => {
-    const result = paginate(FIXTURES, { page: 1, limit: 2, sortDirection: 'desc' })
-    expect(result.data).toHaveLength(2)
-    expect(result.total).toBe(FIXTURES.length)
-    expect(result.page).toBe(1)
-    expect(result.limit).toBe(2)
-    expect(result.totalPages).toBe(3)
-  })
-
-  it('sorts descending when sortDirection is desc (newest first)', () => {
-    const result = paginate(FIXTURES, { page: 1, limit: 10, sortDirection: 'desc' })
-    const timestamps = result.data.map(r => r.timestamps.created)
-    for (let i = 1; i < timestamps.length; i++) {
-      expect(timestamps[i]).toBeLessThanOrEqual(timestamps[i - 1])
-    }
-  })
-
-  it('sorts ascending when requested', () => {
-    const result = paginate(FIXTURES, { page: 1, limit: 10, sortDirection: 'asc' })
-    const timestamps = result.data.map(r => r.timestamps.created)
-    for (let i = 1; i < timestamps.length; i++) {
-      expect(timestamps[i]).toBeGreaterThanOrEqual(timestamps[i - 1])
-    }
-  })
-
-  it('paginates to second page', () => {
-    const result = paginate(FIXTURES, { page: 2, limit: 2, sortDirection: 'desc' })
-    expect(result.data).toHaveLength(2)
-    expect(result.page).toBe(2)
-  })
-
-  it('returns empty data for page beyond total', () => {
-    const result = paginate(FIXTURES, { page: 100, limit: 10, sortDirection: 'desc' })
-    expect(result.data).toHaveLength(0)
-    expect(result.total).toBe(FIXTURES.length)
-  })
-
-  it('handles limit larger than total items', () => {
-    const result = paginate(FIXTURES, { page: 1, limit: 100, sortDirection: 'desc' })
-    expect(result.data).toHaveLength(FIXTURES.length)
-    expect(result.totalPages).toBe(1)
+    const [url] = mockFetch.mock.calls[0]
+    expect(url).toContain('sort_field=assets')
   })
 })
