@@ -1,13 +1,15 @@
 'use client'
 
+import Link from 'next/link'
 import type { HtmlHTMLAttributes, ReactNode } from 'react'
 
 import { MoneyIconKoto } from '@/components/Icons'
-import { TrashIcon } from '@/components/Icons/v3design'
+import { ArrowRight, TrashIcon } from '@/components/Icons/v3design'
 import { TokenImage } from '@/components/TokenImage'
 import { Paragraph } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+import { btcVaultRequestDetail } from '@/shared/constants/routes'
 import { useTableContext } from '@/shared/context'
 
 import type { RequestStatus } from '../../services/types'
@@ -111,29 +113,41 @@ export const StatusCell = ({ displayStatus, displayStatusLabel }: StatusCellProp
 )
 
 interface ActionsCellProps {
+  requestId: string
   requestStatus: RequestStatus
   type: DisplayRequestType
   isHovered: boolean
 }
 
+const actionLinkClass = 'flex items-center gap-1 font-medium text-black no-underline hover:underline'
+
 /**
- * Renders action buttons for actionable rows (claimable/pending).
- * Actions are only visible on hover (desktop) to keep the table clutter-free.
+ * Claimable: "Claim shares"/"Claim rBTC" links to detail. Pending: "Cancel request" links to detail.
+ * Done/failed/cancelled: "View Detail" only, links to detail. Actions visible on hover (desktop).
  */
-export const ActionsCell = ({ requestStatus, type, isHovered }: ActionsCellProps) => {
+export const ActionsCell = ({ requestId, requestStatus, type, isHovered }: ActionsCellProps) => {
   if (!isHovered) {
     return <TableCell columnId="actions" />
   }
 
+  const viewDetailLink = (
+    <Link href={btcVaultRequestDetail(requestId)} className={actionLinkClass}>
+      <Paragraph variant="body-s" className="font-medium text-black">
+        View Detail
+      </Paragraph>
+      <ArrowRight size={16} color="black" />
+    </Link>
+  )
+
   if (requestStatus === 'claimable') {
     return (
       <TableCell columnId="actions">
-        <div className="flex items-center gap-1">
+        <Link href={btcVaultRequestDetail(requestId)} className={actionLinkClass}>
           <Paragraph variant="body-s" className="font-medium text-black">
             {type === 'Deposit' ? 'Claim shares' : 'Claim rBTC'}
           </Paragraph>
           <MoneyIconKoto size={16} color="black" />
-        </div>
+        </Link>
       </TableCell>
     )
   }
@@ -141,14 +155,18 @@ export const ActionsCell = ({ requestStatus, type, isHovered }: ActionsCellProps
   if (requestStatus === 'pending') {
     return (
       <TableCell columnId="actions">
-        <div className="flex items-center gap-1">
+        <Link href={btcVaultRequestDetail(requestId)} className={actionLinkClass}>
           <Paragraph variant="body-s" className="font-medium text-black">
             Cancel request
           </Paragraph>
           <TrashIcon size={16} color="black" />
-        </div>
+        </Link>
       </TableCell>
     )
+  }
+
+  if (requestStatus === 'done' || requestStatus === 'failed' || requestStatus === 'cancelled') {
+    return <TableCell columnId="actions">{viewDetailLink}</TableCell>
   }
 
   return <TableCell columnId="actions" />

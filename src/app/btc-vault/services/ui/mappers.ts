@@ -25,6 +25,7 @@ import type { BtcVaultHistoryApiResponse, BtcVaultHistoryItemWithStatus } from '
 import {
   formatApyPercent,
   formatCountdown,
+  formatDateMonthFirst,
   formatDateShort,
   formatPercent,
   formatTimestamp,
@@ -380,7 +381,7 @@ export function apiHistoryToPaginatedDisplay(response: BtcVaultHistoryApiRespons
       type,
       amountFormatted: formatEther(amountWei),
       status,
-      createdAtFormatted: formatTimestamp(item.timestamp),
+      createdAtFormatted: formatDateMonthFirst(item.timestamp),
       finalizedAtFormatted: null,
       submitTxShort: txHash ? shortenTxHash(txHash) : null,
       finalizeTxShort: null,

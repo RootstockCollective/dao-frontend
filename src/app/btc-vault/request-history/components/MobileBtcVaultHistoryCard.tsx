@@ -1,13 +1,15 @@
 'use client'
 
+import Link from 'next/link'
 import type { FC } from 'react'
 import { memo } from 'react'
 
 import { MoneyIconKoto } from '@/components/Icons'
-import { TrashIcon } from '@/components/Icons/v3design'
+import { ArrowRight, TrashIcon } from '@/components/Icons/v3design'
 import { TokenImage } from '@/components/TokenImage'
 import { Paragraph } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
+import { btcVaultRequestDetail } from '@/shared/constants/routes'
 
 import type { BtcVaultHistoryTable } from './BtcVaultHistoryTable.config'
 import { RequestStatusBadge } from './RequestStatusBadge'
@@ -64,22 +66,41 @@ export const MobileBtcVaultHistoryCard: FC<Props> = memo(({ row }) => {
           </Paragraph>
         )}
 
-        {/* Actions — always visible on mobile (no hover on touch devices) */}
+        {/* Actions: claimable/pending = action label links to detail; done/failed/cancelled = View Detail only */}
         {data.requestStatus === 'claimable' && (
-          <div className="flex items-center gap-1">
+          <Link
+            href={btcVaultRequestDetail(String(row.id))}
+            className="flex items-center gap-1 font-medium text-v3-text-100 no-underline hover:underline"
+          >
             <Paragraph variant="body-s" className="font-medium text-v3-text-100">
               {data.type === 'Deposit' ? 'Claim shares' : 'Claim rBTC'}
             </Paragraph>
             <MoneyIconKoto size={16} />
-          </div>
+          </Link>
         )}
         {data.requestStatus === 'pending' && (
-          <div className="flex items-center gap-1">
+          <Link
+            href={btcVaultRequestDetail(String(row.id))}
+            className="flex items-center gap-1 font-medium text-v3-text-100 no-underline hover:underline"
+          >
             <Paragraph variant="body-s" className="font-medium text-v3-text-100">
               Cancel request
             </Paragraph>
             <TrashIcon size={16} />
-          </div>
+          </Link>
+        )}
+        {(data.requestStatus === 'done' ||
+          data.requestStatus === 'failed' ||
+          data.requestStatus === 'cancelled') && (
+          <Link
+            href={btcVaultRequestDetail(String(row.id))}
+            className="flex items-center gap-1 font-medium text-v3-text-100 no-underline hover:underline"
+          >
+            <Paragraph variant="body-s" className="font-medium text-v3-text-100">
+              View Detail
+            </Paragraph>
+            <ArrowRight size={16} />
+          </Link>
         )}
       </div>
     </div>
