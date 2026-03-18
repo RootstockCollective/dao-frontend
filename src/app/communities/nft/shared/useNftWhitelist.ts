@@ -150,7 +150,7 @@ export function useNftWhitelist({ address, abi, toastIdPrefix }: NftWhitelistCon
         args: [minterRole, minter],
       })
     },
-    [data?.hasGuardRole, writeContract, address, abi],
+    [contract, data?.hasGuardRole, writeContract],
   )
 
   const whitelistMinters = useCallback(
@@ -163,7 +163,7 @@ export function useNftWhitelist({ address, abi, toastIdPrefix }: NftWhitelistCon
         args: [minters],
       })
     },
-    [data?.hasGuardRole, writeContract, address, abi],
+    [contract, data?.hasGuardRole, writeContract],
   )
 
   useEffect(() => {
