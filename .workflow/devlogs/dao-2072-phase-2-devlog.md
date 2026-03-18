@@ -1,8 +1,8 @@
-# STORY-001 Phase 2 — Devlog
+# dao-2072 Phase 2 — Devlog
 
-**Story:** STORY-001  
+**Ticket:** dao-2072  
 **Phase:** 2 — useRequestHistory wires to GET /api/btc-vault/v1/history  
-**Branch:** feature/STORY-001-btc-vault-hooks-api  
+**Branch:** dao-2072  
 **Date:** 2025-03-18  
 
 ---
