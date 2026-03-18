@@ -20,7 +20,7 @@ import type {
   VaultRequest,
   WalletBalance,
 } from '../types'
-import type { BtcVaultHistoryApiResponse } from './api-types'
+import type { BtcVaultHistoryApiResponse, BtcVaultHistoryItemWithStatus } from './api-types'
 import {
   formatApyPercent,
   formatCountdown,
@@ -305,6 +305,37 @@ export function toPaginatedHistoryDisplay(
 
 /** API action is uppercase (e.g. DEPOSIT_REQUEST); deposit_* use assets, redeem_* use shares. */
 const DEPOSIT_ACTIONS = ['DEPOSIT_REQUEST', 'DEPOSIT_CLAIMED', 'DEPOSIT_CANCELLED']
+
+/**
+ * Maps a single API history item to VaultRequest for use by TransactionDetailPage.
+ * Enables toRequestDetailDisplay(request, null, rbtcPrice, address) without changing the detail UI.
+ */
+export function mapApiItemToVaultRequest(item: BtcVaultHistoryItemWithStatus): VaultRequest {
+  const actionUpper = item.action.toUpperCase()
+  const isDeposit = DEPOSIT_ACTIONS.includes(actionUpper)
+  const type: RequestType = isDeposit ? 'deposit' : 'withdrawal'
+  const amount = isDeposit ? BigInt(item.assets) : BigInt(item.shares)
+  const displayStatus: DisplayStatus = item.displayStatus ?? 'pending'
+  const status = displayStatusToRequestStatus(displayStatus)
+  const txHash = item.transactionHash?.trim() || undefined
+  const failureReason: VaultRequest['failureReason'] =
+    displayStatus === 'rejected' ? 'rejected' : displayStatus === 'cancelled' ? 'cancelled' : undefined
+
+  return {
+    id: item.id,
+    type,
+    amount,
+    status,
+    epochId: isDeposit ? item.epochId : null,
+    batchRedeemId: isDeposit ? null : item.epochId,
+    timestamps: {
+      created: item.timestamp,
+      updated: item.timestamp,
+    },
+    txHashes: { submit: txHash },
+    ...(failureReason && { failureReason }),
+  }
+}
 
 function displayStatusToRequestStatus(displayStatus: DisplayStatus): RequestStatus {
   switch (displayStatus) {
