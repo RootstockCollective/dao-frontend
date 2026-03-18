@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { GET } from './route'
 
-vi.mock('@/app/api/vault/v1/addresses/[address]/history/action', () => ({
+vi.mock('./action', () => ({
   getVaultHistoryFromDB: vi.fn(),
   getVaultHistoryCountFromDB: vi.fn(),
 }))
@@ -35,8 +35,8 @@ const mockVaultHistory: VaultHistoryByPeriodAndAction[] = [
 ]
 
 beforeEach(() => {
-  mockGetVaultHistoryFromDB.mockReset()
-  mockGetVaultHistoryCountFromDB.mockReset()
+  mockGetVaultHistoryFromDB.mockClear()
+  mockGetVaultHistoryCountFromDB.mockClear()
 })
 
 describe('GET /api/vault/v1/addresses/[address]/history', () => {
