@@ -33,7 +33,7 @@ function getBetaToolsSection(): MenuData[] {
       href: 'vault',
       text: 'USD Vault Sandbox',
       buttonProps: { id: 'Button_Vault', name: 'vault' },
-      iconUrl: '/images/sidemenukoto/Holdings.svg',
+      iconUrl: '/images/sidemenukoto/USD-Vault.svg',
     })
   }
   if (btcVaultOn) {
@@ -42,7 +42,7 @@ function getBetaToolsSection(): MenuData[] {
         href: 'btc-vault',
         text: 'BTC Vault Sandbox',
         buttonProps: { id: 'Button_Btc_Vault', name: 'btc-vault' },
-        iconUrl: '/images/sidemenukoto/Holdings.svg',
+        iconUrl: '/images/sidemenukoto/BTC-Vault.svg',
       },
       {
         href: 'fund-manager',
@@ -79,7 +79,7 @@ function getBetaToolsSectionNotConnected(): MenuData[] {
       href: 'vault',
       text: 'USD Vault Sandbox',
       buttonProps: { id: 'Button_Vault_Not_Connected', name: 'vault' },
-      iconUrl: '/images/sidemenukoto/Holdings.svg',
+      iconUrl: '/images/sidemenukoto/USD-Vault.svg',
     })
   }
   if (btcVaultOn) {
@@ -87,7 +87,7 @@ function getBetaToolsSectionNotConnected(): MenuData[] {
       href: 'btc-vault',
       text: 'BTC Vault Sandbox',
       buttonProps: { id: 'Button_Btc_Vault_Not_Connected', name: 'btc-vault' },
-      iconUrl: '/images/sidemenukoto/Holdings.svg',
+      iconUrl: '/images/sidemenukoto/BTC-Vault.svg',
     })
   }
   return items
