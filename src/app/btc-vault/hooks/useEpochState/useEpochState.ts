@@ -23,6 +23,14 @@ const BATCH_CONTRACTS = [
   { ...rbtcVault, functionName: 'epochTotalRedeemShares' as const, args: [0n] as const },
 ] as const
 
+/**
+ * Reads the current epoch state from the BTC vault contract and returns display-ready epoch data.
+ * Uses useReadContract for currentEpoch, then useReadContracts for snapshot, claimable flag,
+ * pending deposits, and redemption shares; optionally reads previous epoch snapshot for startTime.
+ * Derives status as open | settling | claimable and computes navPerShare for settled epochs.
+ *
+ * @returns { data: EpochDisplay | undefined, isLoading: boolean, error: Error | undefined, refetch: () => void }
+ */
 export function useEpochState() {
   const {
     data: currentEpochResult,
