@@ -4,7 +4,7 @@ import { formatCurrencyWithLabel } from '@/lib/utils'
 import type { Row } from '@/shared/context'
 
 import type { DepositWindowRow } from '../../services/types'
-import { formatDateShort } from '../../services/ui/formatters'
+import { formatDateMonthFirst } from '../../services/ui/formatters'
 import type { ColumnId, DepositHistoryCellDataMap } from './DepositHistoryTable.config'
 
 /**
@@ -23,8 +23,8 @@ export function convertDataToRowData(
     id: row.epochId,
     data: {
       depositWindow: row.epochId,
-      startDate: row.startDate !== null ? formatDateShort(row.startDate) : '—',
-      endDate: row.endDate !== null ? formatDateShort(row.endDate) : '—',
+      startDate: row.startDate !== null ? formatDateMonthFirst(row.startDate) : '—',
+      endDate: row.endDate !== null ? formatDateMonthFirst(row.endDate) : '—',
       tvl: row.tvl !== null ? formatSymbol(row.tvl, RBTC) : '—',
       apy: row.apy !== null ? `${row.apy.toFixed(2)}%` : '—',
       fiatTvl:

@@ -8,7 +8,7 @@ import { Label } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { useTableContext } from '@/shared/context'
 
-import type { ColumnId, DepositHistoryCellDataMap, VisibleColumnId } from './DepositHistoryTable.config'
+import type { ColumnId, DepositHistoryCellDataMap } from './DepositHistoryTable.config'
 import { COLUMN_TRANSFORMS, SORT_LABELS } from './DepositHistoryTable.config'
 
 interface HeaderCellProps {
@@ -31,7 +31,13 @@ const HeaderCell = ({ children, columnId }: HeaderCellProps) => {
   )
 }
 
-const VISIBLE_COLUMN_IDS: VisibleColumnId[] = ['depositWindow', 'startDate', 'endDate', 'tvl', 'apy']
+const VISIBLE_COLUMN_IDS: ('depositWindow' | 'startDate' | 'endDate' | 'tvl' | 'apy')[] = [
+  'depositWindow',
+  'startDate',
+  'endDate',
+  'tvl',
+  'apy',
+]
 
 export const DepositHistoryHeaderRow = () => (
   <Suspense fallback={<div>Loading...</div>}>
