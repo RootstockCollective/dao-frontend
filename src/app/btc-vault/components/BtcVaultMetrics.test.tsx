@@ -110,7 +110,7 @@ describe('BtcVaultMetrics', () => {
 
     const link = screen.getByTestId('btc-vault-metrics-history-link')
     expect(link).toHaveTextContent('View history')
-    expect(link).toHaveAttribute('href', '/btc-vault/request-history')
+    expect(link).toHaveAttribute('href', '/btc-vault/deposit-history')
   })
 
   it('shows error message when useVaultMetrics returns error', () => {

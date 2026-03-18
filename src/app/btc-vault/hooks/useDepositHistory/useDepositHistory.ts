@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 
 import type { EpochSettledEventDto } from '@/app/api/btc-vault/v1/epoch-history/action'
 import { getBtcVaultEpochHistoryEndpoint } from '@/lib/endpoints'
@@ -30,7 +30,7 @@ function paginate(rows: DepositWindowRow[], params: PaginationParams): Paginated
  */
 export function useDepositHistory(params: PaginationParams) {
   return useQuery({
-    queryKey: ['btc-vault', 'deposit-history'],
+    queryKey: ['btc-vault', 'deposit-history', params.page, params.limit],
     queryFn: async (): Promise<PaginatedResult<DepositWindowRow>> => {
       const response = await fetch(getBtcVaultEpochHistoryEndpoint)
       if (!response.ok) {
@@ -41,6 +41,7 @@ export function useDepositHistory(params: PaginationParams) {
       const rows = buildDepositWindowRows(dtos)
       return paginate(rows, params)
     },
+    placeholderData: keepPreviousData,
     staleTime: Infinity,
   })
 }

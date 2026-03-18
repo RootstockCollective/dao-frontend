@@ -48,6 +48,15 @@ export function formatDateShort(unix: number): string {
 }
 
 /**
+ * Formats a Unix timestamp (seconds) into a month-first date-only string with comma after day.
+ * @param unix - Unix timestamp in seconds
+ * @returns Formatted date string (e.g. "Mar 18, 2026")
+ */
+export function formatDateMonthFirst(unix: number): string {
+  return DateTime.fromSeconds(unix).toFormat('MMM d, yyyy')
+}
+
+/**
  * Shortens a transaction hash for display by keeping the first 6 and last 4 characters.
  * @param hash - Full transaction hash string
  * @returns Shortened hash (e.g. "0xabc1...def4") or original if too short

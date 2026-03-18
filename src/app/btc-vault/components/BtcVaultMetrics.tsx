@@ -9,7 +9,7 @@ import { HistoryIcon } from '@/components/Icons'
 import { Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { formatCurrencyWithLabel } from '@/lib/utils'
-import { btcVaultRequestHistory } from '@/shared/constants/routes'
+import { btcVaultDepositHistory } from '@/shared/constants/routes'
 import { usePricesContext } from '@/shared/context'
 
 import { useVaultMetrics } from '../hooks/useVaultMetrics'
@@ -78,7 +78,7 @@ export const BtcVaultMetrics = () => {
 
       <div data-testid="btc-vault-history-link-section">
         <Link
-          href={btcVaultRequestHistory}
+          href={btcVaultDepositHistory}
           className="flex items-center gap-x-1 text-sm font-medium text-text-100 underline underline-offset-2"
           data-testid="btc-vault-metrics-history-link"
         >
