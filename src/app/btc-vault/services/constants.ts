@@ -30,6 +30,6 @@ export const WITHDRAWAL_EXPECTED_COMPLETION = '5 days'
 /**
  * Duration of one epoch in seconds (deposit/withdrawal window).
  * Used to derive endTime from startTime when startTime is known.
- * TODO: align with product/config when final; countdown UI may show fallback when endTime is 0.
+ * TODO(DAO-2066): align with product/config when final; countdown UI may show fallback when endTime is 0.
  */
 export const EPOCH_DURATION_SEC = 6 * 24 * 3600 // 6 days
