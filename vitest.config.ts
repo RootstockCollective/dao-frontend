@@ -20,7 +20,7 @@ const forkProject = {
   },
   test: {
     environment: 'jsdom' as const,
-    setupFiles: './vitest.setup.ts',
+    setupFiles: path.join(__dirname, 'vitest.setup.ts'),
     // Use node environment for API route tests
     environmentMatchGlobs: [
       ['**/api/**/*.test.ts', 'node'],
