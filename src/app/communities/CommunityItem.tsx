@@ -1,12 +1,14 @@
-import { Paragraph, Header } from '@/components/Typography'
 import Image from 'next/image'
-import { BoostedBox } from './components/BoostedBox'
+
 import { BoostedLabel } from '@/app/communities/components/BoostedLabel'
+import { BoostedLabelKoto } from '@/app/communities/components/BoostedLabelKoto'
 import { CommunityItemButtonHandler } from '@/app/communities/components/CommunityItemButtonHandler'
+import { ImageDebris } from '@/app/communities/components/ImageDebris'
+import { Header, Paragraph } from '@/components/Typography'
 import { applyPinataImageOptions } from '@/lib/ipfs'
 import { cn } from '@/lib/utils'
-import { ImageDebris } from '@/app/communities/components/ImageDebris'
-import { BoostedLabelKoto } from '@/app/communities/components/BoostedLabelKoto'
+
+import { BoostedBox } from './components/BoostedBox'
 
 interface CommunityItemProps {
   leftImageSrc: string
@@ -26,7 +28,7 @@ interface CommunityItemProps {
  * Server Component: Renders a community card as part of the static communities page.
  * Dynamic highlighting of the 'Boosted' state is achieved through lightweight client components.
  */
-// prettier-ignore
+
 export const CommunityItem = ({
   leftImageSrc,
   title,
@@ -46,35 +48,48 @@ export const CommunityItem = ({
   return (
     <BoostedBox nftAddress={nftAddress}>
       <div
-        className={cn('rounded h-full bg-bg-60 flex p-4 gap-2', variant === 'portrait' ? 'flex-col' : 'flex-row gap-4')}
+        className={cn(
+          'rounded h-full bg-bg-60 flex p-4 gap-2',
+          variant === 'portrait' ? 'flex-col' : 'flex-row gap-4',
+        )}
         data-testid={`${title}Card`}
       >
         {/* image */}
         {image && (
-          <div className={cn('relative w-full h-auto', variant === 'portrait' ? 'aspect-square' : 'flex-1 aspect-[3/4] max-w-1/2')}>
+          <div
+            className={cn(
+              'relative w-full h-auto',
+              variant === 'portrait' ? 'aspect-square' : 'flex-1 aspect-3/4 max-w-1/2',
+            )}
+          >
             <Image
               crossOrigin={isExternalImage ? 'anonymous' : undefined}
               unoptimized={isExternalImage}
               src={image}
               alt={title}
               fill
-              className='object-cover'
+              className="object-cover"
             />
-            {enableDebris && <ImageDebris image={image} config={variant === 'landscape' ? 'topRightDiagonal' : 'bottomRightDiagonal'} />}
+            {enableDebris && (
+              <ImageDebris
+                image={image}
+                config={variant === 'landscape' ? 'topRightDiagonal' : 'bottomRightDiagonal'}
+              />
+            )}
           </div>
         )}
         <div className="flex gap-[20px] flex-col flex-1">
           {/* Title */}
           <div className={cn(variant === 'landscape' ? 'mt-[32px]' : 'mt-[16px]')}>
             <BoostedLabel nftAddress={nftAddress}>
-              <Header variant="h3" caps className="break-words pt-[5px]">
+              <Header variant="h3" caps className="wrap-break-words pt-[5px]">
                 {title}
               </Header>
             </BoostedLabel>
           </div>
           {specialPower && (
             <div>
-              <Paragraph className="text-bg-0 font-[500] mb-[8px]">Special power</Paragraph>
+              <Paragraph className="text-bg-0 font-medium mb-[8px]">Special power</Paragraph>
               <Header className="text-[20px]">{specialPower}</Header>
             </div>
           )}

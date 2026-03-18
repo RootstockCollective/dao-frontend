@@ -1,6 +1,8 @@
 import type { ComponentProps, HTMLAttributes } from 'react'
-import { CommunityItem } from '../CommunityItem'
+
 import { cn } from '@/lib/utils'
+
+import { CommunityItem } from '../CommunityItem'
 
 /**
  * Higher Order Component: decides either to show landscape or portrait Community card layout.
