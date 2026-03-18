@@ -601,7 +601,7 @@ describe('apiHistoryToPaginatedDisplay', () => {
     expect(row.claimTokenType).toBe('rbtc')
     expect(row.status).toBe('done')
     expect(row.type).toBe('deposit')
-    expect(row.createdAtFormatted).toMatch(/\d{2} \w{3} \d{4}/)
+    expect(row.createdAtFormatted).toMatch(/\w{3} \d{1,2}, \d{4}/) // e.g. "Mar 17, 2026"
     expect(row.updatedAtFormatted).toMatch(/\d{2} \w{3} \d{4}/)
     expect(row.fiatAmountFormatted).toBeNull()
     expect(row.finalizedAtFormatted).toBeNull()

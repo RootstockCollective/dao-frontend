@@ -37,7 +37,12 @@ export const BtcVaultHistoryDataRow = memo(({ row }: Props) => {
         isHovered={isHovered}
       />
       <StatusCell displayStatus={data.status} displayStatusLabel={data.displayStatusLabel} />
-      <ActionsCell requestStatus={data.requestStatus} type={data.type} isHovered={isHovered} />
+      <ActionsCell
+        requestId={String(row.id)}
+        requestStatus={data.requestStatus}
+        type={data.type}
+        isHovered={isHovered}
+      />
     </tr>
   )
 })
