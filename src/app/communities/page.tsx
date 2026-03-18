@@ -1,16 +1,18 @@
-import { SectionContainer } from './components/SectionContainer'
-import { ResponsiveCommunityItemHOC } from './components/ResponsiveCommunityItemHOC'
 import {
   betaBuilders,
   earlyAdoptersCommunity,
   ogFounders,
   ogFoundersEcosystemPartners,
   ogFoundersExternalContributors,
-  rootstockHacktivator,
+  rootcampNft,
   rootlingsS1,
+  rootstockHacktivator,
   vanguardCommunity,
 } from '@/app/communities/communityUtils'
 import { HeroCommunitiesComponent } from '@/app/communities/components'
+
+import { ResponsiveCommunityItemHOC } from './components/ResponsiveCommunityItemHOC'
+import { SectionContainer } from './components/SectionContainer'
 
 export const dynamic = 'force-static'
 
@@ -44,6 +46,7 @@ export default function Communities() {
             />
             <ResponsiveCommunityItemHOC className="lg:col-span-2" {...rootlingsS1} enableDebris />
             <ResponsiveCommunityItemHOC className="lg:col-span-2" {...vanguardCommunity} enableDebris />
+            <ResponsiveCommunityItemHOC className="lg:col-span-2" {...rootcampNft} enableDebris />
           </div>
         </SectionContainer>
         <SectionContainer

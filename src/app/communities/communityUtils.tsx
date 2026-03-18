@@ -1,8 +1,9 @@
-import { nftContracts } from '@/lib/contracts'
 import type { FC, ReactNode } from 'react'
+
 import { Header, Paragraph } from '@/components/Typography'
+import { ROOTCAMP_NFT_ADDRESS, ROOTLINGS_S1_NFT_ADDRESS } from '@/lib/constants'
+import { nftContracts } from '@/lib/contracts'
 import { ipfsGatewayUrl } from '@/lib/ipfs'
-import { ROOTLINGS_S1_NFT_ADDRESS } from '@/lib/constants'
 
 /**
  * Represents the result of a contract read operation.
@@ -256,6 +257,28 @@ export const rootlingsS1: CommunityItem = {
   ),
 }
 
+export const rootcampNft: CommunityItem = {
+  leftImageSrc: ipfsGatewayUrl('QmbYNH2VAvqdxu79ebXEWzP1P1uMUjiSBuUJN9U4ssvmna'),
+  title: 'Rootcamp',
+  subtitle: 'Rootcamp',
+  description:
+    'Rootcamp NFT is awarded to participants of the Rootstock Rootcamp program, recognizing their contributions to the ecosystem.',
+  specialPower: 'Community badge + perks',
+  nftAddress: ROOTCAMP_NFT_ADDRESS,
+  cover: ipfsGatewayUrl('QmbYNH2VAvqdxu79ebXEWzP1P1uMUjiSBuUJN9U4ssvmna'),
+  isMintable: true,
+  numberOfMembers: 0,
+  activation: 'March 2026',
+  requirement: 'Rootcamp participation, Self-Claim',
+  detailedDescription: (
+    <>
+      Rootcamp NFT is awarded to participants of the Rootstock Rootcamp program. Holders are recognized as
+      active contributors who have completed the program and demonstrated commitment to the Rootstock
+      ecosystem.
+    </>
+  ),
+}
+
 export const communitiesToRender = [
   earlyAdoptersCommunity,
   ogFounders,
@@ -264,6 +287,7 @@ export const communitiesToRender = [
   vanguardCommunity,
   betaBuilders,
   rootlingsS1,
+  rootcampNft,
 ]
 
 export const communitiesMapByContract = Object.fromEntries(
