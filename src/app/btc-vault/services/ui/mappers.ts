@@ -20,6 +20,7 @@ import type {
   VaultRequest,
   WalletBalance,
 } from '../types'
+import type { BtcVaultHistoryApiResponse } from './api-types'
 import {
   formatApyPercent,
   formatCountdown,
@@ -38,6 +39,7 @@ import type {
   EpochDisplay,
   PaginatedHistoryDisplay,
   RequestDetailDisplay,
+  RequestHistoryRowDisplay,
   UserPositionDisplay,
   VaultMetricsDisplay,
   WalletBalanceDisplay,
@@ -298,6 +300,76 @@ export function toPaginatedHistoryDisplay(
     page: raw.page,
     limit: raw.limit,
     totalPages: raw.totalPages,
+  }
+}
+
+/** API action is uppercase (e.g. DEPOSIT_REQUEST); deposit_* use assets, redeem_* use shares. */
+const DEPOSIT_ACTIONS = ['DEPOSIT_REQUEST', 'DEPOSIT_CLAIMED', 'DEPOSIT_CANCELLED']
+
+function displayStatusToRequestStatus(displayStatus: DisplayStatus): RequestStatus {
+  switch (displayStatus) {
+    case 'pending':
+      return 'pending'
+    case 'open_to_claim':
+    case 'claim_pending':
+      return 'claimable'
+    case 'successful':
+      return 'done'
+    case 'cancelled':
+      return 'cancelled'
+    case 'rejected':
+      return 'failed'
+    default:
+      return 'pending'
+  }
+}
+
+/**
+ * Maps GET /api/btc-vault/v1/history response (data + pagination) to PaginatedHistoryDisplay.
+ * Each row gets displayStatus, amountFormatted (assets for deposit_*, shares for redeem_*),
+ * submitTxShort/submitTxFull from transactionHash, claimTokenType, and formatted dates.
+ * Status filter is not applied here; the hook applies it client-side to rows.
+ *
+ * @param response - API response shape { data: BtcVaultHistoryItemWithStatus[], pagination }
+ * @returns Display-ready paginated history for the table
+ */
+export function apiHistoryToPaginatedDisplay(response: BtcVaultHistoryApiResponse): PaginatedHistoryDisplay {
+  const { data, pagination } = response
+  const rows: RequestHistoryRowDisplay[] = data.map(item => {
+    const actionUpper = item.action.toUpperCase()
+    const isDeposit = DEPOSIT_ACTIONS.includes(actionUpper)
+    const type: RequestType = isDeposit ? 'deposit' : 'withdrawal'
+    const amountWei = isDeposit ? BigInt(item.assets) : BigInt(item.shares)
+    const displayStatus: DisplayStatus = item.displayStatus ?? 'pending'
+    const displayStatusLabel = DISPLAY_STATUS_LABELS[displayStatus]
+    const status = displayStatusToRequestStatus(displayStatus)
+
+    const txHash = item.transactionHash?.trim() || null
+    return {
+      id: item.id,
+      type,
+      amountFormatted: formatEther(amountWei),
+      status,
+      createdAtFormatted: formatTimestamp(item.timestamp),
+      finalizedAtFormatted: null,
+      submitTxShort: txHash ? shortenTxHash(txHash) : null,
+      finalizeTxShort: null,
+      submitTxFull: txHash,
+      finalizeTxFull: null,
+      displayStatus,
+      displayStatusLabel,
+      fiatAmountFormatted: null,
+      claimTokenType: isDeposit ? ('rbtc' as const) : ('shares' as const),
+      updatedAtFormatted: formatDateShort(item.timestamp),
+    }
+  })
+
+  return {
+    rows,
+    total: pagination.total,
+    page: pagination.page,
+    limit: pagination.limit,
+    totalPages: pagination.totalPages,
   }
 }
 

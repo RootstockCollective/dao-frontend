@@ -10,6 +10,7 @@ import {
   toActiveRequestDisplay,
   toRequestDetailDisplay,
   toPaginatedHistoryDisplay,
+  apiHistoryToPaginatedDisplay,
   toCapitalAllocationDisplay,
   mapRequestDisplayStatus,
   toWalletBalanceDisplay,
@@ -513,6 +514,171 @@ describe('toPaginatedHistoryDisplay', () => {
     const result = toPaginatedHistoryDisplay(raw)
     expect(result.rows[0].displayStatus).toBe('rejected')
     expect(result.rows[0].displayStatusLabel).toBe('Rejected')
+  })
+})
+
+describe('apiHistoryToPaginatedDisplay', () => {
+  it('maps API response with multiple rows and pagination fields', () => {
+    const response = {
+      data: [
+        {
+          id: '0xuser1-1',
+          user: '0xuser1',
+          action: 'DEPOSIT_REQUEST',
+          assets: '1000000000000000000',
+          shares: '0',
+          epochId: '1',
+          timestamp: 1700000000,
+          blockNumber: '123',
+          transactionHash: '0x' + 'a'.repeat(64),
+          displayStatus: 'pending' as const,
+        },
+        {
+          id: '0xuser2-2',
+          user: '0xuser2',
+          action: 'REDEEM_CLAIMED',
+          assets: '0',
+          shares: '2000000000000000000',
+          epochId: '2',
+          timestamp: 1700003600,
+          blockNumber: '456',
+          transactionHash: '0x' + 'b'.repeat(64),
+          displayStatus: 'successful' as const,
+        },
+      ],
+      pagination: { page: 1, limit: 20, total: 42, totalPages: 3 },
+    }
+    const result = apiHistoryToPaginatedDisplay(response)
+    expect(result.rows).toHaveLength(2)
+    expect(result.total).toBe(42)
+    expect(result.page).toBe(1)
+    expect(result.limit).toBe(20)
+    expect(result.totalPages).toBe(3)
+  })
+
+  it('maps row fields: displayStatus, amountFormatted, submitTxShort, claimTokenType, status', () => {
+    const response = {
+      data: [
+        {
+          id: 'id-1',
+          user: '0xu',
+          action: 'DEPOSIT_CLAIMED',
+          assets: '1500000000000000000',
+          shares: '0',
+          epochId: '1',
+          timestamp: 1700000000,
+          blockNumber: '1',
+          transactionHash: '0xabcd1234567890',
+          displayStatus: 'successful' as const,
+        },
+      ],
+      pagination: { page: 1, limit: 10, total: 1, totalPages: 1 },
+    }
+    const result = apiHistoryToPaginatedDisplay(response)
+    const row = result.rows[0]
+    expect(row.displayStatus).toBe('successful')
+    expect(row.displayStatusLabel).toBe('Successful')
+    expect(row.amountFormatted).toBe('1.5')
+    expect(row.submitTxShort).toBe('0xabcd...7890')
+    expect(row.submitTxFull).toBe('0xabcd1234567890')
+    expect(row.claimTokenType).toBe('rbtc')
+    expect(row.status).toBe('done')
+    expect(row.type).toBe('deposit')
+    expect(row.createdAtFormatted).toMatch(/\d{2} \w{3} \d{4}/)
+    expect(row.updatedAtFormatted).toMatch(/\d{2} \w{3} \d{4}/)
+    expect(row.fiatAmountFormatted).toBeNull()
+    expect(row.finalizedAtFormatted).toBeNull()
+    expect(row.finalizeTxShort).toBeNull()
+    expect(row.finalizeTxFull).toBeNull()
+  })
+
+  it('maps redeem_* to withdrawal, shares amount, claimTokenType shares', () => {
+    const response = {
+      data: [
+        {
+          id: 'id-2',
+          user: '0xu',
+          action: 'REDEEM_REQUEST',
+          assets: '0',
+          shares: '3000000000000000000',
+          epochId: '2',
+          timestamp: 1700086400,
+          blockNumber: '2',
+          transactionHash: '',
+          displayStatus: 'claim_pending' as const,
+        },
+      ],
+      pagination: { page: 1, limit: 10, total: 1, totalPages: 1 },
+    }
+    const result = apiHistoryToPaginatedDisplay(response)
+    const row = result.rows[0]
+    expect(row.type).toBe('withdrawal')
+    expect(row.amountFormatted).toBe('3')
+    expect(row.claimTokenType).toBe('shares')
+    expect(row.displayStatus).toBe('claim_pending')
+    expect(row.displayStatusLabel).toBe('Claim pending')
+    expect(row.status).toBe('claimable')
+    expect(row.submitTxShort).toBeNull()
+    expect(row.submitTxFull).toBeNull()
+  })
+
+  it('defaults displayStatus to pending when missing', () => {
+    const response = {
+      data: [
+        {
+          id: 'id-3',
+          user: '0xu',
+          action: 'DEPOSIT_REQUEST',
+          assets: '0',
+          shares: '0',
+          epochId: '1',
+          timestamp: 1700000000,
+          blockNumber: '1',
+          transactionHash: '',
+          displayStatus: undefined,
+        },
+      ],
+      pagination: { page: 1, limit: 10, total: 1, totalPages: 1 },
+    }
+    const result = apiHistoryToPaginatedDisplay(response)
+    expect(result.rows[0].displayStatus).toBe('pending')
+    expect(result.rows[0].displayStatusLabel).toBe('Pending')
+    expect(result.rows[0].status).toBe('pending')
+  })
+
+  it('maps cancelled and rejected to correct RequestStatus', () => {
+    const response = {
+      data: [
+        {
+          id: 'c',
+          user: '0xu',
+          action: 'DEPOSIT_CANCELLED',
+          assets: '0',
+          shares: '0',
+          epochId: '1',
+          timestamp: 1700000000,
+          blockNumber: '1',
+          transactionHash: '',
+          displayStatus: 'cancelled' as const,
+        },
+        {
+          id: 'r',
+          user: '0xu',
+          action: 'REDEEM_REQUEST',
+          assets: '0',
+          shares: '0',
+          epochId: '1',
+          timestamp: 1700000000,
+          blockNumber: '1',
+          transactionHash: '',
+          displayStatus: 'rejected' as const,
+        },
+      ],
+      pagination: { page: 1, limit: 10, total: 2, totalPages: 1 },
+    }
+    const result = apiHistoryToPaginatedDisplay(response)
+    expect(result.rows[0].status).toBe('cancelled')
+    expect(result.rows[1].status).toBe('failed')
   })
 })
 
