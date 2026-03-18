@@ -254,7 +254,7 @@ describe('CapitalAllocationSection', () => {
     expect(screen.getByText('Detailed view')).toBeInTheDocument()
   })
 
-  it('renders Contract Addresses and Fees Info sections with labels', () => {
+  it('renders Contract Addresses section with labels', () => {
     mockedUseCapitalAllocation.mockReturnValue({
       data: MOCK_DATA,
       isLoading: false,
@@ -267,27 +267,5 @@ describe('CapitalAllocationSection', () => {
     expect(screen.getByText('CONTRACT ADDRESSES')).toBeInTheDocument()
     expect(screen.getByText('Vault address')).toBeInTheDocument()
     expect(screen.getByText('Share token contract')).toBeInTheDocument()
-
-    expect(screen.getByTestId('capital-allocation-fees-info')).toBeInTheDocument()
-    expect(screen.getByText('FEES INFO')).toBeInTheDocument()
-    expect(screen.getByText('Deposit fee')).toBeInTheDocument()
-    expect(screen.getByText('Redemption fee')).toBeInTheDocument()
-    expect(screen.getByText('Annual management fee')).toBeInTheDocument()
-    expect(screen.getByText('Performance fee')).toBeInTheDocument()
-  })
-
-  it('renders fee placeholder values in Fees Info section', () => {
-    mockedUseCapitalAllocation.mockReturnValue({
-      data: MOCK_DATA,
-      isLoading: false,
-      isError: false,
-    } as ReturnType<typeof useCapitalAllocation>)
-
-    render(<CapitalAllocationSection />, { wrapper: Wrapper })
-
-    expect(screen.getByTestId('fee-deposit')).toHaveTextContent('15%')
-    expect(screen.getByTestId('fee-redemption')).toHaveTextContent('15%')
-    expect(screen.getByTestId('fee-annual-management')).toHaveTextContent('15%')
-    expect(screen.getByTestId('fee-performance')).toHaveTextContent('15%')
   })
 })

@@ -13,7 +13,6 @@ import { useCapitalAllocation } from '../../hooks/useCapitalAllocation'
 import { CapitalAllocationDonutChart } from './CapitalAllocationDonutChart'
 import { CAPITAL_ALLOCATION_TOOLTIP_MAP } from './CapitalAllocationSection.constants'
 import { ContractAddressesSection } from './ContractAddressesSection'
-import { FeesInfoSection } from './FeesInfoSection'
 import { WalletBalancesTable } from './WalletBalancesTable'
 
 export function CapitalAllocationSection() {
@@ -65,13 +64,13 @@ export function CapitalAllocationSection() {
         ) : (
           <div
             data-testid="capital-allocation-undetailed"
-            className="flex flex-row flex-wrap gap-x-6 gap-y-6 md:gap-x-20"
+            className="grid grid-cols-1 gap-6 md:grid-cols-3 md:gap-10"
           >
             {isLoading
               ? Array.from({ length: 3 }, (_, i) => (
                   <BalanceInfo
                     key={i}
-                    className="w-[224px] min-w-[180px]"
+                    className="min-w-0 w-full"
                     amount="..."
                     data-testid={`metric-loading-${i}`}
                   />
@@ -79,7 +78,7 @@ export function CapitalAllocationSection() {
               : data?.categories.map(cat => (
                   <BalanceInfo
                     key={cat.label}
-                    className="w-[224px] min-w-[180px]"
+                    className="min-w-0 w-full"
                     title={cat.label}
                     amount={
                       <span className="flex flex-nowrap items-center gap-2">
@@ -103,7 +102,6 @@ export function CapitalAllocationSection() {
         )}
 
         <ContractAddressesSection />
-        <FeesInfoSection />
       </SectionContainer>
     </section>
   )
