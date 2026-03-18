@@ -12,6 +12,8 @@ import { useNftWhitelist } from '../shared/useNftWhitelist'
 function useRcNft() {
   return useNftWhitelist({
     address: ROOTCAMP_NFT_ADDRESS,
+    // SAFETY: RootcampABI is `readonly` const tuple which doesn't satisfy the generic `Abi` constraint;
+    // the runtime value is correct — this is a TypeScript structural limitation with deep const arrays.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     abi: RootcampABI as any,
     toastIdPrefix: 'rc-nft',

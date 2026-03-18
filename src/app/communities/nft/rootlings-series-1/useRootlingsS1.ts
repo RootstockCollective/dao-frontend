@@ -12,6 +12,8 @@ import { useNftWhitelist } from '../shared/useNftWhitelist'
 function useRootlingsS1() {
   return useNftWhitelist({
     address: ROOTLINGS_S1_NFT_ADDRESS,
+    // SAFETY: RootlingsS1ABI is `readonly` const tuple which doesn't satisfy the generic `Abi` constraint;
+    // the runtime value is correct — this is a TypeScript structural limitation with deep const arrays.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     abi: RootlingsS1ABI as any,
     toastIdPrefix: 'rootlings',

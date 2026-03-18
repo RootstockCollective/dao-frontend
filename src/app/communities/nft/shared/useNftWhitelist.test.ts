@@ -1,7 +1,8 @@
-import { renderHook, act } from '@testing-library/react'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { useNftWhitelist } from './useNftWhitelist'
+import { act, cleanup, renderHook } from '@testing-library/react'
 import type { Address } from 'viem'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { useNftWhitelist } from './useNftWhitelist'
 
 const mockRefetch = vi.fn()
 const mockWriteContract = vi.fn()
@@ -28,8 +29,7 @@ const mockWaitReturn = {
 
 vi.mock('wagmi', () => ({
   useAccount: () => ({ address: '0xUserAddress' as Address }),
-  useReadContracts: (opts: { query: { select: (data: unknown[]) => unknown } }) => {
-    // Simulate select transform if data is provided
+  useReadContracts: () => {
     if (mockReadContractsReturn.data) {
       return { ...mockReadContractsReturn, data: mockReadContractsReturn.data }
     }
@@ -39,8 +39,9 @@ vi.mock('wagmi', () => ({
   useWaitForTransactionReceipt: () => mockWaitReturn,
 }))
 
+const mockGetEnsDomainName = vi.fn().mockResolvedValue(undefined)
 vi.mock('@/lib/rns', () => ({
-  getEnsDomainName: vi.fn().mockResolvedValue(undefined),
+  getEnsDomainName: (...args: unknown[]) => mockGetEnsDomainName(...args),
 }))
 
 vi.mock('react-toastify', () => ({
@@ -65,6 +66,9 @@ const testConfig = {
   toastIdPrefix: 'test',
 }
 
+/** Flush pending microtasks so async effects (RNS enrichment) settle before teardown. */
+const flushPromises = () => act(() => new Promise(resolve => setTimeout(resolve, 0)))
+
 describe('useNftWhitelist', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -77,6 +81,11 @@ describe('useNftWhitelist', () => {
     mockWriteContractReturn.data = undefined
     mockWaitReturn.isSuccess = false
     mockWaitReturn.isLoading = false
+  })
+
+  afterEach(async () => {
+    await flushPromises()
+    cleanup()
   })
 
   it('returns empty minters and guards when no data', () => {
@@ -92,13 +101,25 @@ describe('useNftWhitelist', () => {
     expect(result.current.loading).toBe(true)
   })
 
-  it('returns minters and guards from contract data', () => {
+  it('returns loading true when isFetching is true', () => {
+    mockReadContractsReturn.isFetching = true
+    const { result } = renderHook(() => useNftWhitelist(testConfig))
+    expect(result.current.loading).toBe(true)
+  })
+
+  it('returns minters and guards from contract data', async () => {
     mockReadContractsReturn.data = makeSelectData(true)
     const { result } = renderHook(() => useNftWhitelist(testConfig))
     expect(result.current.hasGuardRole).toBe(true)
   })
 
-  it('calls writeContract for whitelistMinters when user has guard role', () => {
+  it('returns hasGuardRole false when user is not a guard', async () => {
+    mockReadContractsReturn.data = makeSelectData(false)
+    const { result } = renderHook(() => useNftWhitelist(testConfig))
+    expect(result.current.hasGuardRole).toBe(false)
+  })
+
+  it('calls writeContract for whitelistMinters when user has guard role', async () => {
     mockReadContractsReturn.data = makeSelectData(true)
     const { result } = renderHook(() => useNftWhitelist(testConfig))
 
@@ -127,7 +148,20 @@ describe('useNftWhitelist', () => {
     expect(toast.error).toHaveBeenCalledWith('You need guard permissions')
   })
 
-  it('calls writeContract for revokeMinterRole when user has guard role', () => {
+  it('shows error toast when revokeMinterRole called without guard role', async () => {
+    const { toast } = await import('react-toastify')
+    mockReadContractsReturn.data = makeSelectData(false)
+    const { result } = renderHook(() => useNftWhitelist(testConfig))
+
+    act(() => {
+      result.current.revokeMinterRole('0xMinter1' as Address)
+    })
+
+    expect(mockWriteContract).not.toHaveBeenCalled()
+    expect(toast.error).toHaveBeenCalledWith('You need guard permissions')
+  })
+
+  it('calls writeContract for revokeMinterRole when user has guard role', async () => {
     mockReadContractsReturn.data = makeSelectData(true)
     const { result } = renderHook(() => useNftWhitelist(testConfig))
 
@@ -146,5 +180,29 @@ describe('useNftWhitelist', () => {
     mockWriteContractReturn.isPending = true
     const { result } = renderHook(() => useNftWhitelist(testConfig))
     expect(result.current.pending).toBeDefined()
+  })
+
+  it('triggers RNS enrichment when data is available', async () => {
+    mockGetEnsDomainName.mockResolvedValue('alice.rsk')
+    mockReadContractsReturn.data = makeSelectData(true)
+
+    renderHook(() => useNftWhitelist(testConfig))
+
+    await vi.waitFor(() => {
+      expect(mockGetEnsDomainName).toHaveBeenCalled()
+    })
+  })
+
+  it('calls getEnsDomainName for all minter and guard addresses', async () => {
+    mockGetEnsDomainName.mockResolvedValue(undefined)
+    mockReadContractsReturn.data = makeSelectData(true)
+
+    renderHook(() => useNftWhitelist(testConfig))
+
+    await vi.waitFor(() => {
+      expect(mockGetEnsDomainName).toHaveBeenCalledWith('0xMinter1')
+      expect(mockGetEnsDomainName).toHaveBeenCalledWith('0xMinter2')
+      expect(mockGetEnsDomainName).toHaveBeenCalledWith('0xGuard1')
+    })
   })
 })

@@ -30,7 +30,7 @@ const AddressesSchema = z.object({
           .transform(value => getAddress(value)),
       }),
     )
-    .nonempty('One address is requires')
+    .nonempty('One address is required')
     .superRefine((addresses, ctx) => {
       const addressMap = new Map<string, number[]>()
 
@@ -122,10 +122,10 @@ export function AddAddressesForm(props: ComponentProps<'div'>) {
                         {field.value && (
                           <button
                             type="button"
-                            onClick={async () => {
+                            onClick={() => {
                               field.onChange('')
                               clearErrors('addresses')
-                              await trigger('addresses')
+                              void trigger('addresses')
                             }}
                             className="absolute right-2 top-1/2 -translate-y-1/2 p-1"
                             aria-label="Clear input"

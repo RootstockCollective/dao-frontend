@@ -73,6 +73,8 @@ export function useNftWhitelist({ address, abi, toastIdPrefix }: NftWhitelistCon
       refetchOnWindowFocus: false,
       select(data) {
         const [guards, minters, hasGuardRole] = data
+        // SAFETY: wagmi useReadContracts returns untyped results when using a generic Abi;
+        // these casts match the contract return types (address[] for guards/minters, bool for hasRole).
         return {
           guards: ((guards?.result as Address[] | undefined) ?? []).map(addr => ({ address: addr })),
           minters: ((minters?.result as Address[] | undefined) ?? []).map(addr => ({ address: addr })),
@@ -90,6 +92,8 @@ export function useNftWhitelist({ address, abi, toastIdPrefix }: NftWhitelistCon
 
     let isStale = false
 
+    /** Enrich both minters and guards with RNS domains.
+     *  Guards enrichment is kept for parity with the original hook and future admin UI improvements. */
     const enrichWithRns = async () => {
       setIsQueryingRns(true)
       try {

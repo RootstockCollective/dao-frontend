@@ -1,4 +1,3 @@
-/** biome-ignore-all assist/source/organizeImports: shut up */
 'use client'
 
 import {
