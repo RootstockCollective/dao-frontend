@@ -1,7 +1,7 @@
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vitest/config'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { defineConfig } from 'vitest/config'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -20,7 +20,7 @@ const forkProject = {
   },
   test: {
     environment: 'jsdom' as const,
-    setupFiles: './vitest.setup.ts',
+    setupFiles: path.join(__dirname, 'vitest.setup.ts'),
     // Use node environment for API route tests
     environmentMatchGlobs: [
       ['**/api/**/*.test.ts', 'node'],
@@ -73,7 +73,7 @@ export default defineConfig({
         },
         test: {
           environment: 'jsdom',
-          setupFiles: './vitest.setup.ts',
+          setupFiles: path.join(__dirname, 'vitest.setup.ts'),
           // Use node environment for API route tests to avoid AbortSignal issues with Viem
           environmentMatchGlobs: [
             ['**/api/**/*.test.ts', 'node'],
