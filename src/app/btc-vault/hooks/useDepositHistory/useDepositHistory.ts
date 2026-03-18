@@ -30,7 +30,7 @@ function paginate(rows: DepositWindowRow[], params: PaginationParams): Paginated
  */
 export function useDepositHistory(params: PaginationParams) {
   return useQuery({
-    queryKey: ['btc-vault', 'deposit-history'],
+    queryKey: ['btc-vault', 'deposit-history', params.page, params.limit],
     queryFn: async (): Promise<PaginatedResult<DepositWindowRow>> => {
       const response = await fetch(getBtcVaultEpochHistoryEndpoint)
       if (!response.ok) {
