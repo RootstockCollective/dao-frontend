@@ -1,20 +1,16 @@
-import 'server-only'
+'use client'
 
-import type { Metadata } from 'next'
-
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header } from '@/components/Typography'
 
 import { AddAddressesForm } from './AddAddressesForm'
-import { ContractsReadSpinner } from './ContractsReadSpinner'
-import { ContractWriteSpinner } from './ContractWriteSpinner'
 import { MintersTable } from './MintersTable'
-
-export const metadata: Metadata = {
-  title: 'Rootcamp NFT',
-}
+import { useRcNft } from './useRcNft'
 
 /** Admin page for managing Rootcamp NFT minting whitelist and permissions. */
-export default async function RcNft() {
+export default function RcNft() {
+  const { loading, pending } = useRcNft()
+
   return (
     <div>
       <div className="flex items-center gap-4 mb-6">
@@ -22,12 +18,16 @@ export default async function RcNft() {
           Rootcamp NFT
         </Header>
         <div className="w-6 h-6 flex items-center justify-center">
-          <ContractsReadSpinner />
+          {loading && <LoadingSpinner size="small" />}
         </div>
       </div>
       <AddAddressesForm className="mb-10" />
       <MintersTable />
-      <ContractWriteSpinner />
+      {pending && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/30 z-base">
+          <LoadingSpinner />
+        </div>
+      )}
     </div>
   )
 }
