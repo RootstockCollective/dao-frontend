@@ -1,5 +1,6 @@
 import { formatEther } from 'viem'
 
+import { DEPOSIT_ACTIONS } from '@/app/api/btc-vault/v1/schemas'
 import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import Big from '@/lib/big'
 import { RBTC } from '@/lib/constants'
@@ -303,9 +304,6 @@ export function toPaginatedHistoryDisplay(
   }
 }
 
-/** API action is uppercase (e.g. DEPOSIT_REQUEST); deposit_* use assets, redeem_* use shares. */
-const DEPOSIT_ACTIONS = ['DEPOSIT_REQUEST', 'DEPOSIT_CLAIMED', 'DEPOSIT_CANCELLED']
-
 /**
  * Maps a single API history item to VaultRequest for use by TransactionDetailPage.
  * Enables toRequestDetailDisplay(request, null, rbtcPrice, address) without changing the detail UI.
@@ -400,7 +398,7 @@ export function apiHistoryToPaginatedDisplay(response: BtcVaultHistoryApiRespons
     total: pagination.total,
     page: pagination.page,
     limit: pagination.limit,
-    totalPages: pagination.totalPages,
+    totalPages: pagination.totalPages ?? Math.ceil(pagination.total / pagination.limit),
   }
 }
 

@@ -1,11 +1,11 @@
-import type { HistoryFilterParams } from './types'
+import { DEPOSIT_ACTION_TYPES, REDEEM_ACTION_TYPES } from '@/app/api/btc-vault/v1/schemas'
 
-const DEPOSIT_API_TYPES: readonly string[] = ['deposit_request', 'deposit_claimed', 'deposit_cancelled']
-const REDEEM_API_TYPES: readonly string[] = ['redeem_request', 'redeem_claimed', 'redeem_cancelled']
+import type { HistoryFilterParams } from './types'
 
 /**
  * Maps UI history filters (type, claimToken) to API type[] for GET /api/btc-vault/v1/history.
- * Combines type (deposit/withdrawal) and claimToken (rbtc/shares) and deduplicates.
+ * Uses action types from API schemas (single source of truth). Combines type (deposit/withdrawal)
+ * and claimToken (rbtc/shares) and deduplicates.
  *
  * Note: Status filter is not sent to the API; it is applied client-side by the hook
  * to the returned page rows (filter by displayStatus).
@@ -21,16 +21,16 @@ export function historyFiltersToApiTypes(filters: HistoryFilterParams | undefine
   const types = new Set<string>()
 
   if (filters.type?.includes('deposit')) {
-    DEPOSIT_API_TYPES.forEach(t => types.add(t))
+    DEPOSIT_ACTION_TYPES.forEach(t => types.add(t))
   }
   if (filters.type?.includes('withdrawal')) {
-    REDEEM_API_TYPES.forEach(t => types.add(t))
+    REDEEM_ACTION_TYPES.forEach(t => types.add(t))
   }
   if (filters.claimToken?.includes('rbtc')) {
-    DEPOSIT_API_TYPES.forEach(t => types.add(t))
+    DEPOSIT_ACTION_TYPES.forEach(t => types.add(t))
   }
   if (filters.claimToken?.includes('shares')) {
-    REDEEM_API_TYPES.forEach(t => types.add(t))
+    REDEEM_ACTION_TYPES.forEach(t => types.add(t))
   }
 
   return types.size > 0 ? [...types] : []

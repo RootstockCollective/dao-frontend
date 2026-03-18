@@ -546,7 +546,15 @@ describe('apiHistoryToPaginatedDisplay', () => {
           displayStatus: 'successful' as const,
         },
       ],
-      pagination: { page: 1, limit: 20, total: 42, totalPages: 3 },
+      pagination: {
+        page: 1,
+        limit: 20,
+        total: 42,
+        totalPages: 3,
+        offset: 0,
+        sort_field: 'timestamp',
+        sort_direction: 'desc' as const,
+      },
     }
     const result = apiHistoryToPaginatedDisplay(response)
     expect(result.rows).toHaveLength(2)
@@ -572,7 +580,15 @@ describe('apiHistoryToPaginatedDisplay', () => {
           displayStatus: 'successful' as const,
         },
       ],
-      pagination: { page: 1, limit: 10, total: 1, totalPages: 1 },
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 1,
+        totalPages: 1,
+        offset: 0,
+        sort_field: 'timestamp',
+        sort_direction: 'desc' as const,
+      },
     }
     const result = apiHistoryToPaginatedDisplay(response)
     const row = result.rows[0]
@@ -608,7 +624,15 @@ describe('apiHistoryToPaginatedDisplay', () => {
           displayStatus: 'claim_pending' as const,
         },
       ],
-      pagination: { page: 1, limit: 10, total: 1, totalPages: 1 },
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 1,
+        totalPages: 1,
+        offset: 0,
+        sort_field: 'timestamp',
+        sort_direction: 'desc' as const,
+      },
     }
     const result = apiHistoryToPaginatedDisplay(response)
     const row = result.rows[0]
@@ -638,7 +662,15 @@ describe('apiHistoryToPaginatedDisplay', () => {
           displayStatus: undefined,
         },
       ],
-      pagination: { page: 1, limit: 10, total: 1, totalPages: 1 },
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 1,
+        totalPages: 1,
+        offset: 0,
+        sort_field: 'timestamp',
+        sort_direction: 'desc' as const,
+      },
     }
     const result = apiHistoryToPaginatedDisplay(response)
     expect(result.rows[0].displayStatus).toBe('pending')
@@ -674,7 +706,15 @@ describe('apiHistoryToPaginatedDisplay', () => {
           displayStatus: 'rejected' as const,
         },
       ],
-      pagination: { page: 1, limit: 10, total: 2, totalPages: 1 },
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 2,
+        totalPages: 1,
+        offset: 0,
+        sort_field: 'timestamp',
+        sort_direction: 'desc' as const,
+      },
     }
     const result = apiHistoryToPaginatedDisplay(response)
     expect(result.rows[0].status).toBe('cancelled')
