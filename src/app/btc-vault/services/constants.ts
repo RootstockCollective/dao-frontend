@@ -26,3 +26,10 @@ export const WITHDRAWAL_STEP_PROGRESS = [50, 100] as const
 
 /** Qualitative expected completion time for withdrawal requests */
 export const WITHDRAWAL_EXPECTED_COMPLETION = '5 days'
+
+/**
+ * Duration of one epoch in seconds (deposit/withdrawal window).
+ * Used to derive endTime from startTime when startTime is known.
+ * TODO: align with product/config when final; countdown UI may show fallback when endTime is 0.
+ */
+export const EPOCH_DURATION_SEC = 6 * 24 * 3600 // 6 days
