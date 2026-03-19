@@ -4,7 +4,7 @@ export const DEFAULT_VISIBLE_WALLETS = 5
 
 /** Custodial wallet shown in Capital Allocation transparency (Rootstock testnet). */
 export const TRANSPARENCY_WALLET_ADDRESS =
-  '0x8ea0E8c0552A3434a6055AEBdF49750CD71889de' as const satisfies Address
+  '0x8ea0e8c0552a3434a6055aebdf49750cd71889de' as const satisfies Address
 
 export const TRANSPARENCY_WALLET_LABEL = 'Foredefi 1'
 
