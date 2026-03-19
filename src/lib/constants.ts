@@ -14,6 +14,7 @@ export const STRIF_ADDRESS = process.env.NEXT_PUBLIC_STRIF_ADDRESS as Address
 export const USDRIF_ADDRESS = process.env.NEXT_PUBLIC_USDRIF_ADDRESS as Address
 export const USDRIF_VAULT_ADDRESS = process.env.NEXT_PUBLIC_USDRIF_VAULT_ADDRESS as Address
 export const RBTC_VAULT_ADDRESS = process.env.NEXT_PUBLIC_RBTC_VAULT_ADDRESS as Address
+export const WRBTC_ADDRESS = process.env.NEXT_PUBLIC_WRBTC_ADDRESS as Address
 export const BUFFER_ADDRESS = process.env.NEXT_PUBLIC_BUFFER_ADDRESS as Address
 export const PERMISSIONS_MANAGER_ADDRESS = process.env.NEXT_PUBLIC_PERMISSIONS_MANAGER_ADDRESS as Address
 export const SYNTHETIC_YIELD_ADDRESS = process.env.NEXT_PUBLIC_SYNTHETIC_YIELD_ADDRESS as Address

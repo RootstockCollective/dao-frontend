@@ -11,9 +11,9 @@ export type SelectedToken = typeof RBTC | typeof WRBTC
  * Manages native RBTC / WrBTC token selection and reads the balance for the selected token.
  * Used by any fund-manager CTA that supports both native and wrapped token inputs.
  *
- * @param wrbtcAddress - The WrBTC ERC-20 token address (from useVaultAsset)
+ * @param wrbtcAddress - The WrBTC ERC-20 token address (e.g. `WRBTC_ADDRESS` from env)
  */
-export const useTokenSelection = (wrbtcAddress: Address | undefined) => {
+export const useTokenSelection = (wrbtcAddress: Address) => {
   const [selectedToken, setSelectedToken] = useState<SelectedToken>(RBTC)
   const { address } = useAccount()
 
@@ -28,7 +28,6 @@ export const useTokenSelection = (wrbtcAddress: Address | undefined) => {
     functionName: 'balanceOf',
     args: [address!],
     query: {
-      enabled: !!wrbtcAddress && !!address,
       refetchInterval: AVERAGE_BLOCKTIME,
     },
   })
@@ -49,10 +48,10 @@ export const useTokenSelection = (wrbtcAddress: Address | undefined) => {
 
   return {
     selectedToken,
-    setSelectedToken: handleTokenChange,
     balance,
     balanceFormatted,
     isNative,
     requiresAllowance,
+    setSelectedToken: handleTokenChange,
   }
 }
