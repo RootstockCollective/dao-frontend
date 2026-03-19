@@ -33,20 +33,20 @@ export function DepositWindowSection({ epoch }: DepositWindowSectionProps) {
   return (
     <div
       data-testid="deposit-window-section"
-      className="flex w-full flex-row items-center justify-between gap-4"
+      className="flex w-full flex-row items-center justify-between gap-6"
     >
-      <div className="flex flex-col gap-2">
-        <Header variant="h3" className="text-v3-text-0 uppercase leading-[130%] tracking-[0.4px]">
+      <div className="flex min-w-0 flex-col gap-3">
+        <Header variant="h4" className="text-[#171412] font-bold uppercase leading-[130%] tracking-[0.4px]">
           DEPOSIT WINDOW {epoch.epochId}
         </Header>
-        <Label variant="body-l" className="text-v3-text-0 leading-[133%]">
+        <Label variant="body-l" className="text-[#171412] leading-[133%]">
           {DEPOSIT_WINDOW_SUBTITLE} {epoch.closesAtFormatted}.
         </Label>
       </div>
       <Countdown
         end={Big(epoch.endTime)}
         timeSource="timestamp"
-        className="text-v3-text-100 font-kk-topo font-normal text-[32px] leading-[125%]"
+        className="shrink-0 font-kk-topo font-semibold text-white text-[32px] leading-[125%]"
       />
     </div>
   )
