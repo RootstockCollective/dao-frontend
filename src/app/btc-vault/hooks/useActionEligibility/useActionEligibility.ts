@@ -14,21 +14,25 @@ import { toActionEligibility } from '../../services/ui/mappers'
 
 const permissionsManagerAbi = getAbi('PermissionsManagerAbi')
 
-/** Narrow type for vault multicall result; status union allows fail-closed handling. */
+/**
+ * Vault multicall result order (must match `vaultContracts`):
+ * 0–1 pause flags, 2–3 deposit/redeem requests, 4 permissionsManager, 5 balanceOf(user).
+ */
 type VaultMulticallData = [
   { status: 'success' | 'failure'; result?: boolean },
   { status: 'success' | 'failure'; result?: boolean },
   { status: 'success' | 'failure'; result?: readonly [bigint, bigint] },
   { status: 'success' | 'failure'; result?: readonly [bigint, bigint] },
   { status: 'success' | 'failure'; result?: Address },
+  { status: 'success' | 'failure'; result?: bigint },
 ]
 
 /**
  * Reads vault pause state, user eligibility (whitelist), and active deposit/redeem
  * requests via multicall, then maps to action eligibility for deposit/withdraw buttons.
  *
- * Two RPC calls total:
- * 1. Multicall on vault: pause flags, deposit/redeem requests, permissionsManager address
+ * Two RPC rounds:
+ * 1. Multicall on vault: pause flags, deposit/redeem requests, permissionsManager address, `balanceOf(user)`
  * 2. hasRole on PermissionsManager (depends on address from step 1)
  *
  * WHITELISTED_USER_ROLE is `internal` in Roles.sol so there is no on-chain getter;
@@ -48,6 +52,7 @@ export function useActionEligibility(address: string | undefined) {
       { ...rbtcVault, functionName: 'depositReq' as const, args: [address as Address] },
       { ...rbtcVault, functionName: 'redeemReq' as const, args: [address as Address] },
       { ...rbtcVault, functionName: 'permissionsManager' as const },
+      { ...rbtcVault, functionName: 'balanceOf' as const, args: [address as Address] },
     ] as const
   }, [address])
 
@@ -60,7 +65,7 @@ export function useActionEligibility(address: string | undefined) {
     contracts: vaultContracts,
     query: { enabled },
   })
-  // Wagmi returns ContractFunctionResult[]; we assert the known 5-slot vault shape for fail-closed handling.
+  // Wagmi returns ContractFunctionResult[]; we assert the known 6-slot vault shape for fail-closed handling.
   const vaultData = rawVaultData as VaultMulticallData | undefined
 
   const pmAddress = vaultData?.[4]?.status === 'success' ? vaultData[4].result : undefined
@@ -129,7 +134,12 @@ export function useActionEligibility(address: string | undefined) {
       })
     }
 
-    return toActionEligibility(pause, eligibility, activeRequests)
+    const balanceSlot = vaultData[5]
+    const vaultTokenBalance =
+      balanceSlot?.status === 'success' && typeof balanceSlot.result === 'bigint' ? balanceSlot.result : 0n
+    const hasVaultShares = vaultTokenBalance > 0n
+
+    return toActionEligibility(pause, eligibility, activeRequests, hasVaultShares)
   }, [address, vaultData, pmAddress, hasRoleResult])
 
   const isLoading = (enabled && isLoadingVault) || (!!pmAddress && isLoadingHasRole)

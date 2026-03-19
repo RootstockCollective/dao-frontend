@@ -6,7 +6,12 @@ import Big from '@/lib/big'
 import { RBTC } from '@/lib/constants'
 import { formatCurrencyWithLabel, shortAddress } from '@/lib/utils'
 
-import { ACTIVE_REQUEST_REASON, DEPOSIT_PAUSED_REASON, WITHDRAWAL_PAUSED_REASON } from '../constants'
+import {
+  ACTIVE_REQUEST_REASON,
+  DEPOSIT_PAUSED_REASON,
+  NO_VAULT_SHARES_REASON,
+  WITHDRAWAL_PAUSED_REASON,
+} from '../constants'
 import type {
   CapitalAllocation,
   ClaimableInfo,
@@ -128,33 +133,47 @@ export function toUserPositionDisplay(raw: UserPosition): UserPositionDisplay {
 }
 
 /**
- * Consolidates pause state, eligibility, and active requests into a single action eligibility result.
+ * Consolidates pause state, eligibility, active requests, and vault share balance into action eligibility.
  * Determines whether the user can deposit/withdraw and provides human-readable block reasons.
  * @param pause - Current pause state for deposits and withdrawals
- * @param eligibility - User's eligibility status (e.g. KYC, allowlist)
+ * @param eligibility - User's eligibility status (e.g. whitelist)
  * @param activeRequests - User's currently active vault requests
+ * @param hasVaultShares - Whether the user holds a non-zero vault share balance (`balanceOf` > 0)
  * @returns Object with canDeposit/canWithdraw booleans and block reason strings
  */
 export function toActionEligibility(
   pause: PauseState,
   eligibility: EligibilityStatus,
   activeRequests: VaultRequest[],
+  hasVaultShares: boolean,
 ): ActionEligibility {
   const hasActive = activeRequests.length > 0
   const canDeposit = pause.deposits === 'active' && eligibility.eligible && !hasActive
-  const canWithdraw = pause.withdrawals === 'active' && !hasActive
+  const canWithdraw = pause.withdrawals === 'active' && eligibility.eligible && !hasActive && hasVaultShares
+
+  const depositBlockReason = !eligibility.eligible
+    ? eligibility.reason
+    : pause.deposits === 'paused'
+      ? DEPOSIT_PAUSED_REASON
+      : hasActive
+        ? ACTIVE_REQUEST_REASON
+        : ''
+
+  const withdrawBlockReason = !eligibility.eligible
+    ? eligibility.reason
+    : pause.withdrawals === 'paused'
+      ? WITHDRAWAL_PAUSED_REASON
+      : hasActive
+        ? ACTIVE_REQUEST_REASON
+        : !hasVaultShares
+          ? NO_VAULT_SHARES_REASON
+          : ''
+
   return {
     canDeposit,
     canWithdraw,
-    depositBlockReason: !eligibility.eligible
-      ? eligibility.reason
-      : pause.deposits === 'paused'
-        ? DEPOSIT_PAUSED_REASON
-        : hasActive
-          ? ACTIVE_REQUEST_REASON
-          : '',
-    withdrawBlockReason:
-      pause.withdrawals === 'paused' ? WITHDRAWAL_PAUSED_REASON : hasActive ? ACTIVE_REQUEST_REASON : '',
+    depositBlockReason,
+    withdrawBlockReason,
   }
 }
 
