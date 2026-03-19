@@ -14,10 +14,15 @@ const renderWithProviders = () =>
   )
 
 const mockUseVaultMetrics = vi.fn()
+const mockUseEpochState = vi.fn()
 const mockPrices: Record<string, { price: number }> = {}
 
 vi.mock('../hooks/useVaultMetrics', () => ({
   useVaultMetrics: () => mockUseVaultMetrics(),
+}))
+
+vi.mock('../hooks/useEpochState', () => ({
+  useEpochState: () => mockUseEpochState(),
 }))
 
 vi.mock('@/shared/context', () => ({
@@ -41,38 +46,81 @@ describe('BtcVaultMetrics', () => {
     pricePerShareRaw: 1_020_000_000_000_000_000n,
   }
 
+  /** Epoch open with endTime 23 Feb 2025 00:00 UTC → "closing on February 23" */
+  const defaultEpochOpen = {
+    epochId: '1',
+    status: 'open' as const,
+    statusSummary: 'Closes in 1m 0s',
+    isAcceptingRequests: true,
+    endTime: 1740268800,
+    closesAtFormatted: '23 Feb 2025',
+  }
+
   beforeEach(() => {
     mockUseVaultMetrics.mockReturnValue({
       data: defaultMetrics,
       isLoading: false,
     })
+    mockUseEpochState.mockReturnValue({
+      data: defaultEpochOpen,
+      isLoading: false,
+    })
   })
 
-  it('renders exactly three metrics and the history link', () => {
+  it('renders exactly four metric columns and the history link', () => {
     renderWithProviders()
 
     expect(screen.getByTestId('btc-vault-metrics-content')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-tvl')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-apy')).toBeInTheDocument()
+    expect(screen.getByTestId('btc-vault-deposit-window')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-price-per-share')).toBeInTheDocument()
     expect(screen.getByTestId('btc-vault-metrics-history-link')).toBeInTheDocument()
-    expect(screen.queryByTestId('btc-vault-deposit-window')).not.toBeInTheDocument()
   })
 
-  it('displays TVL with token symbol', () => {
+  it('shows APY (est.) label', () => {
+    renderWithProviders()
+
+    expect(screen.getByTestId('btc-vault-apy')).toHaveTextContent('APY (est.)')
+  })
+
+  it('displays Deposit window with epochId and closing on date when epoch is open', () => {
+    renderWithProviders()
+
+    const depositWindow = screen.getByTestId('btc-vault-deposit-window')
+    expect(depositWindow).toHaveTextContent('Deposit window 1')
+    expect(depositWindow).toHaveTextContent('closing on February 23')
+  })
+
+  it('displays TVL with value, percentage (or placeholder), and rBTC', () => {
     renderWithProviders()
 
     const tvl = screen.getByTestId('btc-vault-tvl')
     expect(tvl).toHaveTextContent('50')
-    expect(tvl).toHaveTextContent(RBTC)
+    expect(tvl).toHaveTextContent('rBTC')
+    expect(tvl).toHaveTextContent('|')
+    expect(tvl).toHaveTextContent('—')
   })
 
-  it('displays Price Per Share with token symbol', () => {
+  it('displays TVL with tvlPercentFormatted when provided', () => {
+    mockUseVaultMetrics.mockReturnValue({
+      data: { ...defaultMetrics, tvlPercentFormatted: '12.34%' },
+      isLoading: false,
+    })
+
     renderWithProviders()
 
-    const pps = screen.getByTestId('btc-vault-price-per-share')
-    expect(pps).toHaveTextContent('1.02')
-    expect(pps).toHaveTextContent(RBTC)
+    const tvl = screen.getByTestId('btc-vault-tvl')
+    expect(tvl).toHaveTextContent('50')
+    expect(tvl).toHaveTextContent('12.34%')
+  })
+
+  it('shows Last updated on under APY from metrics timestamp', () => {
+    renderWithProviders()
+
+    const apy = screen.getByTestId('btc-vault-apy')
+    expect(apy).toHaveTextContent('Last updated on')
+    expect(apy).toHaveTextContent('Feb 27, 2024')
   })
 
   it('shows USD fiat amounts when rBTC price is available', () => {
@@ -89,6 +137,14 @@ describe('BtcVaultMetrics', () => {
     expect(pps).toHaveTextContent('USD')
   })
 
+  it('displays Price per Share with token symbol', () => {
+    renderWithProviders()
+
+    const pps = screen.getByTestId('btc-vault-price-per-share')
+    expect(pps).toHaveTextContent('1.02')
+    expect(pps).toHaveTextContent(RBTC)
+  })
+
   it('does not show fiat amounts when rBTC price is unavailable', () => {
     renderWithProviders()
 
@@ -99,13 +155,25 @@ describe('BtcVaultMetrics', () => {
     expect(pps).not.toHaveTextContent('USD')
   })
 
-  it('shows APY with tooltip disclaimer', () => {
+  it('shows deposit window placeholder when epoch is not open', () => {
+    mockUseEpochState.mockReturnValue({
+      data: {
+        ...defaultEpochOpen,
+        status: 'settling',
+        isAcceptingRequests: false,
+      },
+      isLoading: false,
+    })
+
     renderWithProviders()
 
-    expect(screen.getByTestId('btc-vault-apy')).toHaveTextContent('8.50')
+    const depositWindow = screen.getByTestId('btc-vault-deposit-window')
+    expect(depositWindow).toHaveTextContent('Deposit window 1')
+    expect(depositWindow).toHaveTextContent('—')
+    expect(depositWindow).not.toHaveTextContent('closing on')
   })
 
-  it('renders View request history link', () => {
+  it('renders View history link', () => {
     renderWithProviders()
 
     const link = screen.getByTestId('btc-vault-metrics-history-link')
