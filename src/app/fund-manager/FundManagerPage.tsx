@@ -9,6 +9,7 @@ import { Header } from '@/components/Typography'
 import { usePermissionsManager } from '@/shared/hooks/contracts'
 
 import { RbtcVaultMetricsSection } from './components'
+import { TabsSection } from './sections/TabsSection'
 
 const NAME = 'Fund Manager Dashboard'
 
@@ -28,11 +29,13 @@ export const FundManagerPage = () => {
   }
 
   return (
-    <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">
-      <Header caps variant="h1" className="text-3xl leading-10 pb-10">
+    <div data-testid={NAME} className="flex flex-col gap-10">
+      <Header caps variant="h1">
         {NAME}
       </Header>
+
       <RbtcVaultMetricsSection />
+      <TabsSection />
     </div>
   )
 }
