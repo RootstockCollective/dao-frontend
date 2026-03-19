@@ -1,6 +1,6 @@
 'use client'
 
-import { type Address } from 'viem'
+import { zeroAddress } from 'viem'
 
 import { RootcampABI } from '@/lib/abis/RootcampABI'
 import { ROOTCAMP_NFT_ADDRESS } from '@/lib/constants'
@@ -15,7 +15,7 @@ function useRcNft() {
   // Always call the hook in the same order (React Rules of Hooks).
   // Use a fallback address when the real one is undefined to avoid breaking the hook.
   const result = useNftWhitelist({
-    address: ROOTCAMP_NFT_ADDRESS || ('0x0000000000000000000000000000000000000000' as Address),
+    address: ROOTCAMP_NFT_ADDRESS || zeroAddress,
     // SAFETY: RootcampABI is `readonly` const tuple which doesn't satisfy the generic `Abi` constraint;
     // the runtime value is correct — this is a TypeScript structural limitation with deep const arrays.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
