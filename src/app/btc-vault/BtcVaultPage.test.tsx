@@ -69,6 +69,10 @@ vi.mock('@/app/backing/components/DecorativeSquares', () => ({
   DecorativeSquares: () => null,
 }))
 
+vi.mock('@/components/Countdown/Countdown', () => ({
+  Countdown: () => <span data-testid="countdown">5d 23h 59m</span>,
+}))
+
 vi.mock('./ActiveRequestSection', () => ({
   ActiveRequestSection: () => null,
 }))
