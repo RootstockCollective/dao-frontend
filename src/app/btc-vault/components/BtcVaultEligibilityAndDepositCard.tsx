@@ -1,7 +1,5 @@
 'use client'
 
-import type { ReactNode } from 'react'
-
 import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
 
 import { useEpochState } from '../hooks/useEpochState'
@@ -27,28 +25,20 @@ export function BtcVaultEligibilityAndDepositCard() {
     return null
   }
 
-  const children: ReactNode[] = []
-  if (showEligibility) {
-    children.push(
-      <EligibilityBannerContent
-        key="eligibility"
-        variant={status === 'rejected' ? 'rejected' : 'none'}
-        rejectionReason={rejectionReason}
-        onSubmitKyb={() => {}}
-        onCheckStatus={() => {}}
-      />,
-    )
-  }
-  if (showDepositWindow && epoch) {
-    children.push(<DepositWindowSection key="deposit-window" epoch={epoch} />)
-  }
-
   return (
     <StackableBanner
       testId="btc-vault-eligibility-and-deposit-card"
       background={ELIGIBILITY_DEPOSIT_CARD_GRADIENT}
     >
-      {children}
+      {showEligibility && (
+        <EligibilityBannerContent
+          variant={status === 'rejected' ? 'rejected' : 'none'}
+          rejectionReason={rejectionReason}
+          onSubmitKyb={() => {}}
+          onCheckStatus={() => {}}
+        />
+      )}
+      {showDepositWindow && epoch && <DepositWindowSection epoch={epoch} />}
     </StackableBanner>
   )
 }
