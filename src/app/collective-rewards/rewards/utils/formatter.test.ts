@@ -313,8 +313,8 @@ describe('formatter', () => {
       { symbol: RBTC, value: -parseEther('0.5'), expected: '-0.5' },
       { symbol: RBTC, value: -parseEther('100'), expected: '-100' },
       { symbol: RIF, value: -parseEther('1000'), expected: '-1,000' },
-      { symbol: RIF, value: -halfEther, expected: '-<1' },
-      { symbol: RBTC, value: -1000000000000n, expected: '-<0.00001' },
+      { symbol: RIF, value: -halfEther, expected: '>-1' },
+      { symbol: RBTC, value: -1000000000000n, expected: '>-0.00001' },
     ])('should format negative $symbol properly with $value', ({ symbol, value, expected }) => {
       expect(formatSymbol(value, symbol)).toBe(expected)
     })
@@ -350,7 +350,7 @@ describe('formatter', () => {
         symbol: RBTC,
         currency,
         expected: {
-          amount: '-<0.00001',
+          amount: '>-0.00001',
           fiatAmount: '-$0.10 USD',
         },
       },
@@ -360,8 +360,8 @@ describe('formatter', () => {
         symbol: RBTC,
         currency,
         expected: {
-          amount: '-<0.00001',
-          fiatAmount: '-<$0.01 USD',
+          amount: '>-0.00001',
+          fiatAmount: '>-$0.01 USD',
         },
       },
     ])(

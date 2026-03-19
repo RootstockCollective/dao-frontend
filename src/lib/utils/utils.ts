@@ -95,6 +95,7 @@ interface FormatCurrencyProps {
  * @example formatCurrency(123456.789) // '$123,456.79'
  * @example formatCurrency(123456.789, { currency: 'EUR' }) // '€123,456.79'
  * @example formatCurrency(0.0001) // '<$0.01'
+ * @example formatCurrency(-0.005) // '>-$0.01'
  * @example formatCurrency(0) // '$0.00'
  * @example formatCurrency(123456.789, { showCurrency: true }) // '$123,456.79 USD'
  */
@@ -123,7 +124,7 @@ export const formatCurrency = (
     maximumFractionDigits: 2,
   }).format((isBelowMinimumPositive || isBelowMinimumNegative ? 0.01 : amount).toString() as never)
 
-  const prefix = isBelowMinimumPositive ? '<' : isBelowMinimumNegative ? '-<' : ''
+  const prefix = isBelowMinimumPositive ? '<' : isBelowMinimumNegative ? '>-' : ''
   const result = `${prefix}${formattedAmount}`
   return showCurrencyLabel ? `${result} ${currency}` : result
 }

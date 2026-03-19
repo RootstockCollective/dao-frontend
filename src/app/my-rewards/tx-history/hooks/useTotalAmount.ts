@@ -7,10 +7,11 @@ export type TransactionRow = Row<ColumnId, Row['id'], TransactionHistoryCellData
 
 /**
  * Sanitizes a USD string value for numerical calculation.
- * Handles edge cases like empty values, "<" prefix for small amounts, and comma-separated numbers.
+ * Handles edge cases like empty values, "<" / ">-" prefixes for small magnitudes (matches formatCurrency), and commas.
  */
 const sanitizeUsdValue = (raw: string | null | undefined): number => {
   if (!raw) return 0
+  if (raw.startsWith('>-')) return -0.0001
   if (raw.startsWith('<')) return 0.0001
   const sanitized = raw.replace(/,/g, '')
   const parsed = Number(sanitized)

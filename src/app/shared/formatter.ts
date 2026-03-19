@@ -71,7 +71,11 @@ export const formatSymbol = (value: bigint | string, symbol: string): string => 
 
   const amount = Big(value.toString())
   if (amount.lt(0)) {
-    return `-${formatSymbol(amount.abs().toFixed(), symbol)}`
+    const positiveFormatted = formatSymbol(amount.abs().toFixed(), symbol)
+    if (positiveFormatted.startsWith('<')) {
+      return `>-${positiveFormatted.slice(1)}`
+    }
+    return `-${positiveFormatted}`
   }
 
   const symbolKey = symbol.toLocaleLowerCase()

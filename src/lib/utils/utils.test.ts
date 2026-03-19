@@ -72,9 +72,9 @@ describe('formatCurrency', () => {
   })
 
   it('formatCurrency with small negative value between -0.01 and 0', () => {
-    expect(formatCurrency(-0.005)).toBe('-<$0.01')
-    expect(formatCurrency(-0.001)).toBe('-<$0.01')
-    expect(formatCurrency(-0.005, { showCurrencyLabel: true })).toBe('-<$0.01 USD')
+    expect(formatCurrency(-0.005)).toBe('>-$0.01')
+    expect(formatCurrency(-0.001)).toBe('>-$0.01')
+    expect(formatCurrency(-0.005, { showCurrencyLabel: true })).toBe('>-$0.01 USD')
   })
 
   it('formatCurrency with negative value at or beyond -0.01', () => {
