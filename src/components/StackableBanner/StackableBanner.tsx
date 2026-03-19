@@ -57,10 +57,7 @@ export const StackableBanner = ({
         )}
       >
         {childrenArray.map((child, index) => (
-          <div
-            key={index}
-            className={cn('w-full', useGap ? 'py-0' : 'py-6 first:pt-0 last:pb-0')}
-          >
+          <div key={index} className={cn('w-full', useGap ? 'py-0' : 'py-6 first:pt-0 last:pb-0')}>
             {child}
           </div>
         ))}
