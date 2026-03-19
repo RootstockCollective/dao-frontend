@@ -93,6 +93,20 @@ Steps **do not** own the footer; they register actions via **`setButtonActions`*
 
 ---
 
+## Dashboard CTAs → Solidity entrypoints
+
+Wire each flow’s write hook to the matching contract and function (see `rbtc-vault-sc`: `RBTCAsyncVault`, `SyntheticYield`, `Buffer`). Labels match [`RbtcVaultMetricsSection.tsx`](./components/RbtcVaultMetricsSection.tsx).
+
+- **Update NAV** — `RBTCAsyncVault.reportOffchainAssetsAndProcessFunding(uint256 reportedOffchainAssets_)`.
+- **Deposit to Vault** — `RBTCAsyncVault.moveCapitalIn(uint256 assets)`; native: `RBTCAsyncVault.moveCapitalInNative()` (payable).
+- **Transfer to Manager Wallet** — `RBTCAsyncVault.moveCapitalOut(uint256 assets, address destination)`; native: `RBTCAsyncVault.moveCapitalOutNative(uint256 assets, address payable destination)`.
+- **Top Up Synthetic Yield APY** — rate: `SyntheticYield.setSyntheticYieldRate(uint256 newApyBasisPoints)`; add funds: `SyntheticYield.fund(uint256 assets_)` or `SyntheticYield.fundNative()` (payable). Epoch application is triggered from the vault via `onEpochFinalization` (vault-only), not from the dashboard.
+- **Top Up Buffer** (reference) — `Buffer.inject(uint256 assets)` or `Buffer.injectNative()` (payable).
+
+**Not dashboard CTAs:** `Buffer.draw` / `Buffer.repay` are **vault-only**. `RBTCAsyncVault.processFunding()` is permissionless (utility poke, not a labeled metric button). **`PermissionsManager`** holds roles (`grantRole` / `revokeRole` via OpenZeppelin AccessControl); it does not replace the NAV or capital-move calls above.
+
+---
+
 ## Checklist: implement a new CTA
 
 1. **Create `flows/<domain>/`** (short domain name).
