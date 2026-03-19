@@ -26,7 +26,7 @@ function parseKybParam(value: string | null): KybStatus | null {
  */
 export function useKybStatus(): KybStatusResult {
   const searchParams = useSearchParams()
-  const param = searchParams.get('kyb')
+  const param = searchParams == null ? null : searchParams.get('kyb')
   const status = parseKybParam(param) ?? DEFAULT_KYB_STATUS
 
   const result: KybStatusResult = { status }
