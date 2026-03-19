@@ -133,9 +133,9 @@ export function useNftWhitelist({ address, abi, toastIdPrefix }: NftWhitelistCon
     },
   })
 
-  const { enrichedAddresses, isEnriching } = useEnrichedAddresses(
-    data ? { minters: data.minters, guards: data.guards } : null,
-  )
+  const rawAddresses = useMemo(() => (data ? { minters: data.minters, guards: data.guards } : null), [data])
+
+  const { enrichedAddresses, isEnriching } = useEnrichedAddresses(rawAddresses)
 
   const { writeContract, isPending, error: writeError, data: txHash } = useWriteContract()
   const { isSuccess: isTxConfirmed, isLoading: isTxPending } = useWaitForTransactionReceipt({
