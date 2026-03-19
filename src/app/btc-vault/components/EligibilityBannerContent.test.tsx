@@ -23,7 +23,7 @@ describe('EligibilityBannerContent', () => {
     expect(
       screen.getByText('KYB already submitted? Check KYB status'),
     ).toBeInTheDocument()
-    expect(screen.getByTestId('EligibilityBannerContent')).toBeInTheDocument()
+    expect(screen.getByTestId('eligibility-banner-content')).toBeInTheDocument()
   })
 
   it('renders instructional text when variant is none', () => {
@@ -31,7 +31,7 @@ describe('EligibilityBannerContent', () => {
       <EligibilityBannerContent variant="none" onSubmitKyb={() => {}} onCheckStatus={() => {}} />,
     )
 
-    const section = screen.getByTestId('EligibilityBannerContent')
+    const section = screen.getByTestId('eligibility-banner-content')
     expect(
       within(section).getByText(
         /Deposits are locked until KYB is approved\. Submit KYB to unlock deposits once the review is complete\./,
@@ -54,8 +54,8 @@ describe('EligibilityBannerContent', () => {
         /We couldn't approve your KYB submission because of\.\.\. Update the information and resubmit to unlock deposits\./,
       ),
     ).toBeInTheDocument()
-    expect(screen.getByTestId('EligibilityBannerRejectedIcon')).toBeInTheDocument()
-    expect(screen.getByTestId('EligibilityBannerContent')).toBeInTheDocument()
+    expect(screen.getByTestId('eligibility-banner-rejected-icon')).toBeInTheDocument()
+    expect(screen.getByTestId('eligibility-banner-content')).toBeInTheDocument()
   })
 
   it('uses rejectionReason in message when variant is rejected and rejectionReason provided', () => {
@@ -97,6 +97,23 @@ describe('EligibilityBannerContent', () => {
     await user.click(screen.getByText('KYB already submitted? Check KYB status'))
 
     expect(onCheckStatus).toHaveBeenCalledTimes(1)
+  })
+
+  it('adds target="_blank" and rel="noopener noreferrer" to Check KYB status link when checkStatusHref is a real URL', () => {
+    const externalUrl = 'https://example.com/kyb-status'
+    render(
+      <EligibilityBannerContent
+        variant="none"
+        checkStatusHref={externalUrl}
+        onSubmitKyb={() => {}}
+        onCheckStatus={() => {}}
+      />,
+    )
+
+    const link = screen.getByTestId('eligibility-banner-check-status')
+    expect(link).toHaveAttribute('href', externalUrl)
+    expect(link).toHaveAttribute('target', '_blank')
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer')
   })
 
   it('calls onSubmitKyb when Re-submit KYB is clicked in rejected variant', async () => {

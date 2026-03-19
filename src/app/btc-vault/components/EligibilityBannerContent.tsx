@@ -1,8 +1,9 @@
 'use client'
 
 import { Button } from '@/components/Button'
-import { ExternalLinkIcon } from '@/components/Icons'
-import { Header, Label } from '@/components/Typography'
+import { ExternalLinkIcon, ShieldExclamationIcon } from '@/components/Icons'
+import { ExternalLink } from '@/components/Link'
+import { Header, Label, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
 const SECTION_HEADER = 'ELIGIBILITY'
@@ -13,6 +14,7 @@ const REJECTED_SUFFIX = ' Update the information and resubmit to unlock deposits
 const SUBMIT_KYB_LABEL = 'Submit KYB'
 const RESUBMIT_KYB_LABEL = 'Re-submit KYB'
 const CHECK_STATUS_LABEL = 'KYB already submitted? Check KYB status'
+const CHECK_STATUS_LINK_HREF_PLACEHOLDER = '#'
 
 export type EligibilityBannerVariant = 'none' | 'rejected'
 
@@ -20,29 +22,10 @@ export interface EligibilityBannerContentProps {
   variant: EligibilityBannerVariant
   onSubmitKyb: () => void
   onCheckStatus: () => void
+  /** When provided, used as href for "Check KYB status" link (e.g. external status page). Otherwise uses "#" and relies on onCheckStatus. */
+  checkStatusHref?: string
+  /** When supplied from a real API, caller must sanitize (e.g. DOMPurify) or escape to prevent XSS. */
   rejectionReason?: string
-}
-
-function ShieldExclamationIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      width={24}
-      height={24}
-      viewBox="0 0 24 24"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden
-      className={cn('shrink-0', className)}
-      data-testid="EligibilityBannerRejectedIcon"
-    >
-      <path
-        fillRule="evenodd"
-        clipRule="evenodd"
-        d="M12 2L4 5v6c0 5.55 3.84 10.74 8 12 4.16-1.26 8-6.45 8-12V5l-8-3zm0 10a1 1 0 01-1-1V8a1 1 0 112 0v3a1 1 0 01-1 1zm0 4a1.5 1.5 0 100-3 1.5 1.5 0 000 3z"
-        fill="currentColor"
-      />
-    </svg>
-  )
 }
 
 /**
@@ -55,13 +38,14 @@ export function EligibilityBannerContent({
   rejectionReason,
   onSubmitKyb,
   onCheckStatus,
+  checkStatusHref = CHECK_STATUS_LINK_HREF_PLACEHOLDER,
 }: EligibilityBannerContentProps) {
   const rejectionMessage = rejectionReason
     ? `${REJECTED_PREFIX} ${rejectionReason}.${REJECTED_SUFFIX}`
     : `${REJECTED_PREFIX}...${REJECTED_SUFFIX}`
 
   return (
-    <section data-testid="EligibilityBannerContent" className="flex flex-col gap-3">
+    <section data-testid="eligibility-banner-content" className="flex flex-col gap-3">
       <Header variant="h3" className="text-v3-text-0 uppercase leading-[130%] tracking-[0.4px]">
         {SECTION_HEADER}
       </Header>
@@ -72,21 +56,24 @@ export function EligibilityBannerContent({
             {NONE_INSTRUCTION}
           </Label>
           <div className="flex flex-col gap-3">
-            <Button variant="primary" onClick={onSubmitKyb} data-testid="EligibilityBannerSubmitKyb">
+            <Button variant="primary" onClick={onSubmitKyb} data-testid="eligibility-banner-submit-kyb">
               {SUBMIT_KYB_LABEL}
             </Button>
-            <button
-              type="button"
+            <ExternalLink
+              href={checkStatusHref}
               onClick={onCheckStatus}
-              className={cn(
-                'inline-flex w-fit items-center gap-1.5 font-sora text-sm leading-normal',
-                'underline underline-offset-2 underline-thick text-primary hover:cursor-pointer',
-              )}
-              data-testid="EligibilityBannerCheckStatus"
+              {...(checkStatusHref !== CHECK_STATUS_LINK_HREF_PLACEHOLDER && {
+                target: '_blank',
+                rel: 'noopener noreferrer',
+              })}
+              className="text-primary"
+              data-testid="eligibility-banner-check-status"
             >
-              {CHECK_STATUS_LABEL}
-              <ExternalLinkIcon size={14} aria-label="" />
-            </button>
+              <Span className="inline-flex items-center gap-1.5">
+                {CHECK_STATUS_LABEL}
+                <ExternalLinkIcon size={14} aria-label="" />
+              </Span>
+            </ExternalLink>
           </div>
         </>
       )}
@@ -94,27 +81,33 @@ export function EligibilityBannerContent({
       {variant === 'rejected' && (
         <>
           <div className="flex items-start gap-2">
-            <ShieldExclamationIcon className="text-v3-text-0 mt-0.5" />
+            <ShieldExclamationIcon
+              className={cn('shrink-0 text-v3-text-0 mt-0.5')}
+              data-testid="eligibility-banner-rejected-icon"
+            />
             <Label variant="body-l" className="text-v3-text-0 leading-[133%]">
               {rejectionMessage}
             </Label>
           </div>
           <div className="flex flex-col gap-3">
-            <Button variant="primary" onClick={onSubmitKyb} data-testid="EligibilityBannerSubmitKyb">
+            <Button variant="primary" onClick={onSubmitKyb} data-testid="eligibility-banner-submit-kyb">
               {RESUBMIT_KYB_LABEL}
             </Button>
-            <button
-              type="button"
+            <ExternalLink
+              href={checkStatusHref}
               onClick={onCheckStatus}
-              className={cn(
-                'inline-flex w-fit items-center gap-1.5 font-sora text-sm leading-normal',
-                'underline underline-offset-2 underline-thick text-primary hover:cursor-pointer',
-              )}
-              data-testid="EligibilityBannerCheckStatus"
+              {...(checkStatusHref !== CHECK_STATUS_LINK_HREF_PLACEHOLDER && {
+                target: '_blank',
+                rel: 'noopener noreferrer',
+              })}
+              className="text-primary"
+              data-testid="eligibility-banner-check-status"
             >
-              {CHECK_STATUS_LABEL}
-              <ExternalLinkIcon size={14} aria-label="" />
-            </button>
+              <Span className="inline-flex items-center gap-1.5">
+                {CHECK_STATUS_LABEL}
+                <ExternalLinkIcon size={14} aria-label="" />
+              </Span>
+            </ExternalLink>
           </div>
         </>
       )}
