@@ -419,4 +419,6 @@ export interface WalletBalance {
   amount: bigint
   /** Wallet's share of total capital as a percentage (e.g. 0.5 means 0.5%). */
   percentOfTotal: number
+  /** Optional link for the wallet label (e.g. Blockscout address page). */
+  labelUrl?: string
 }

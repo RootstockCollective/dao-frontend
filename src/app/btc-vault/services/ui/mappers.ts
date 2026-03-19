@@ -416,6 +416,7 @@ export function toWalletBalanceDisplay(wallet: WalletBalance, rbtcPrice: number)
     rbtcPrice > 0 ? formatCurrencyWithLabel(Big(amountEther).mul(rbtcPrice)) : '$0.00 USD'
   return {
     label: wallet.label,
+    ...(wallet.labelUrl != null && wallet.labelUrl !== '' ? { labelUrl: wallet.labelUrl } : {}),
     trackingPlatform: wallet.trackingPlatform,
     trackingUrl: wallet.trackingUrl,
     amountFormatted: amountEther,

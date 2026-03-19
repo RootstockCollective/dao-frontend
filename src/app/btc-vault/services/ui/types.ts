@@ -194,4 +194,6 @@ export interface WalletBalanceDisplay {
   fiatAmountFormatted: string
   /** Formatted percentage of total (e.g. "0.5%"). */
   percentFormatted: string
+  /** Optional link for the wallet label (e.g. Blockscout). */
+  labelUrl?: string
 }
