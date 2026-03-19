@@ -214,6 +214,9 @@ export function toActiveRequestDisplay(
 
 /**
  * Maps domain `RequestStatus` + `RequestType` + optional `failureReason` to a visual display status.
+ * Per AC3 spec:
+ *   - Deposit: pending → ready_to_claim (Claimable) → successful (Successful)
+ *   - Withdrawal: pending → approved (optional future state) → ready_to_withdraw (Claimable) → successful (Withdrawn)
  * @param status - Domain request lifecycle status
  * @param type - Whether this is a deposit or withdrawal
  * @param failureReason - Optional reason for failure (cancelled vs rejected)
@@ -231,7 +234,8 @@ export function mapRequestDisplayStatus(
       displayStatus = 'pending'
       break
     case 'claimable':
-      displayStatus = type === 'deposit' ? 'open_to_claim' : 'claim_pending'
+      // Deposit claimable → "Ready to claim", Withdrawal claimable → "Ready to withdraw"
+      displayStatus = type === 'deposit' ? 'ready_to_claim' : 'ready_to_withdraw'
       break
     case 'done':
       displayStatus = 'successful'
@@ -305,8 +309,10 @@ export function toPaginatedHistoryDisplay(
         type: req.type,
         amountFormatted: formatEther(req.amount),
         status: req.status,
-        createdAtFormatted: formatTimestamp(req.timestamps.created),
-        finalizedAtFormatted: req.timestamps.finalized ? formatTimestamp(req.timestamps.finalized) : null,
+        createdAtFormatted: formatDateMonthFirst(req.timestamps.created),
+        finalizedAtFormatted: req.timestamps.finalized
+          ? formatDateMonthFirst(req.timestamps.finalized)
+          : null,
         submitTxShort: req.txHashes.submit ? shortenTxHash(req.txHashes.submit) : null,
         finalizeTxShort: req.txHashes.finalize ? shortenTxHash(req.txHashes.finalize) : null,
         submitTxFull: req.txHashes.submit ?? null,
@@ -360,8 +366,9 @@ function displayStatusToRequestStatus(displayStatus: DisplayStatus): RequestStat
   switch (displayStatus) {
     case 'pending':
       return 'pending'
-    case 'open_to_claim':
-    case 'claim_pending':
+    case 'ready_to_claim':
+    case 'ready_to_withdraw':
+    case 'approved':
       return 'claimable'
     case 'successful':
       return 'done'

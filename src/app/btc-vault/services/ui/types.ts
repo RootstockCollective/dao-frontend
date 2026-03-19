@@ -13,19 +13,27 @@ export type DisplayRequestType = (typeof DISPLAY_REQUEST_TYPE_LABELS)[RequestTyp
 /**
  * Visual status shown in the transaction history table.
  * Maps from domain `RequestStatus` + `RequestType` + optional `failureReason`.
+ *
+ * Deposit flow:
+ *   pending → ready_to_claim → successful
+ *
+ * Withdrawal flow:
+ *   pending → approved (optional, future) → ready_to_withdraw → successful
  */
 export type DisplayStatus =
-  | 'open_to_claim'
+  | 'ready_to_claim' // Deposit claimable: "Ready to claim"
+  | 'ready_to_withdraw' // Withdrawal claimable: "Ready to withdraw"
   | 'pending'
-  | 'claim_pending'
+  | 'approved' // Withdrawal approved (future state from FM)
   | 'successful'
   | 'cancelled'
   | 'rejected'
 
 export const DISPLAY_STATUS_LABELS = {
-  open_to_claim: 'Open to claim',
+  ready_to_claim: 'Ready to claim',
+  ready_to_withdraw: 'Ready to withdraw',
   pending: 'Pending',
-  claim_pending: 'Claim pending',
+  approved: 'Approved',
   successful: 'Successful',
   cancelled: 'Cancelled',
   rejected: 'Rejected',

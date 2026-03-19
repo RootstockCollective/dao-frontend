@@ -122,8 +122,10 @@ interface ActionsCellProps {
 const actionLinkClass = 'flex items-center gap-1 font-medium text-black no-underline hover:underline'
 
 /**
- * Claimable: "Claim shares"/"Claim rBTC" links to detail. Pending: "Cancel request" links to detail.
- * Done/failed/cancelled: "View Detail" only, links to detail. Actions visible on hover (desktop).
+ * Claimable: "Claim shares"/"Claim rBTC" or "Withdraw" links to detail.
+ * Pending: "Cancel request" links to detail.
+ * Done/failed/cancelled: "View Detail" only, links to detail.
+ * Actions visible on hover (desktop) or mobile card state.
  */
 export const ActionsCell = ({ requestId, requestStatus, type, isHovered }: ActionsCellProps) => {
   if (!isHovered) {

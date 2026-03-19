@@ -44,7 +44,7 @@ const VISIBLE_COLUMN_TRANSFORMS: Record<VisibleColumnId, string> = {
   type: 'flex-[1_1_7rem] min-w-[7rem]',
   date: 'flex-[1_1_8rem] min-w-[8rem]',
   amount: 'flex-[1.5_1_10rem] min-w-[10rem]',
-  status: 'flex-[1_1_7rem] min-w-[7rem]',
+  status: 'flex-[1_1_7rem] min-w-[7rem] justify-center',
   actions: 'flex-[1_1_9rem] min-w-[9rem] justify-end pr-4',
 }
 

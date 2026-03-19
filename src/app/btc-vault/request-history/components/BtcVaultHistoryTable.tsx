@@ -25,9 +25,10 @@ import { MobileBtcVaultHistory } from './MobileBtcVaultHistory'
 const VALID_TYPES: readonly RequestType[] = ['deposit', 'withdrawal']
 const VALID_CLAIM_TOKENS: readonly ('shares' | 'rbtc')[] = ['shares', 'rbtc']
 const VALID_STATUSES: readonly DisplayStatus[] = [
-  'open_to_claim',
+  'ready_to_claim',
+  'ready_to_withdraw',
   'pending',
-  'claim_pending',
+  'approved',
   'successful',
   'cancelled',
   'rejected',
