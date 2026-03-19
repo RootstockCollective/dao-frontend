@@ -31,6 +31,10 @@ vi.mock('./hooks/useActionEligibility', () => ({
   useActionEligibility: () => ({ data: undefined }),
 }))
 
+vi.mock('./hooks/useActiveRequests', () => ({
+  useActiveRequests: () => ({ data: undefined }),
+}))
+
 vi.mock('./hooks/useEpochState', () => ({
   useEpochState: () => ({
     data: {
