@@ -51,3 +51,5 @@ None. The `## Plan Amendments` table in the plan file was not updated.
 - `rejectionReason` is only set when status is `'rejected'`; the plan allowed "optional rejectionReason (mock string)" and a single constant is used for all rejected cases.
 - Param parsing is case-insensitive and trims whitespace; tests cover `PASSED` → `passed`.
 - No barrel export (`index.ts`) for the hook; consumers can import from `./hooks/useKybStatus/useKybStatus` (same pattern as useEpochState in BtcVaultBanners).
+
+**Post-review:** Added `hooks/useKybStatus/index.ts` barrel export per STORY-004 Phase 1 code review recommendation; consumers can now import via `../hooks/useKybStatus` or `./hooks/useKybStatus`.
