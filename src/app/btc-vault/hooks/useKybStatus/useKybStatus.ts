@@ -1,37 +1,31 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
+import { useCallback, useState } from 'react'
 
-import type { KybStatus, KybStatusResult } from '../../types/kyb'
-
-const VALID_KYB_PARAMS: KybStatus[] = ['none', 'rejected', 'passed']
-
-const DEFAULT_KYB_STATUS: KybStatus = 'none'
+import type { KybStatus, UseKybStatusResult } from '../../types/kyb'
 
 const MOCK_REJECTION_REASON = 'Document verification could not be completed.'
 
-function parseKybParam(value: string | null): KybStatus | null {
-  if (value === null || value === '') return null
-  const normalized = value.toLowerCase().trim()
-  return VALID_KYB_PARAMS.includes(normalized as KybStatus) ? (normalized as KybStatus) : null
-}
-
 /**
- * Mock KYB status hook for BTC Vault eligibility banners.
- * Reads query param `kyb` (?kyb=none|rejected|passed) for deterministic testing;
- * when missing or invalid, returns default status 'none'.
- * Replace with real API (e.g. GET /api/kyb/status) later without changing UI contract.
+ * KYB status hook for BTC Vault eligibility banners.
+ * Mock: default status is 'none' (No KYB). 1st submit → rejected, 2nd submit → passed. Reload resets.
+ * Replace with real API (e.g. GET /api/kyb/status, submitKyb → POST) later without changing UI contract.
  *
- * @returns KybStatusResult — status and optional rejectionReason when status is 'rejected'
+ * @returns UseKybStatusResult — status, rejectionReason, submitKyb
  */
-export function useKybStatus(): KybStatusResult {
-  const searchParams = useSearchParams()
-  const param = searchParams == null ? null : searchParams.get('kyb')
-  const status = parseKybParam(param) ?? DEFAULT_KYB_STATUS
+export function useKybStatus(): UseKybStatusResult {
+  const [submitCount, setSubmitCount] = useState(0)
 
-  const result: KybStatusResult = { status }
-  if (status === 'rejected') {
-    result.rejectionReason = MOCK_REJECTION_REASON
+  const status: KybStatus = submitCount === 0 ? 'none' : submitCount === 1 ? 'rejected' : 'passed'
+  const rejectionReason = status === 'rejected' ? MOCK_REJECTION_REASON : undefined
+
+  const submitKyb = useCallback(() => {
+    setSubmitCount(c => c + 1)
+  }, [])
+
+  return {
+    status,
+    rejectionReason,
+    submitKyb,
   }
-  return result
 }
