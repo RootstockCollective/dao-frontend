@@ -18,6 +18,7 @@ const VAULT_CONFIGS = [
   { functionName: 'currentEpoch' },
   { functionName: 'reportedOffchainAssets' },
   { functionName: 'freeOnchainLiquidity' },
+  { functionName: 'totalAssets' },
 ] as const
 
 /**
@@ -30,7 +31,13 @@ export const useRbtcVault = () => {
     error: batchError,
   } = useReadRbtcVaultBatch(VAULT_CONFIGS)
 
-  const [assetAddress, currentEpoch, reportedOffchainAssets = 0n, freeOnchainLiquidity = 0n] = batchData
+  const [
+    assetAddress,
+    currentEpoch,
+    reportedOffchainAssets = 0n,
+    freeOnchainLiquidity = 0n,
+    totalAssets = 0n,
+  ] = batchData
 
   const {
     data: vaultAssetBalance = 0n,
@@ -81,6 +88,7 @@ export const useRbtcVault = () => {
       freeOnchainLiquidity,
       lastClosedEpoch,
       previousClosedEpoch,
+      totalAssets,
       isLoading,
       error,
     }
@@ -88,6 +96,7 @@ export const useRbtcVault = () => {
     vaultAssetBalance,
     reportedOffchainAssets,
     freeOnchainLiquidity,
+    totalAssets,
     lastEpochId,
     prevEpochId,
     epochSnapshots,

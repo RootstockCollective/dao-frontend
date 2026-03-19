@@ -16,6 +16,7 @@ import { useRbtcVault } from './useRbtcVault'
  * returning formatted metrics for all rows.
  *
  * Row 1: TVL, Vault APY, Synthetic Yield APY, Liquidity Reserve.
+ * Row 2: Current NAV, Deployed Capital, Unallocated Capital, Manual Buffer.
  */
 export const useRbtcVaultMetrics = () => {
   const { prices } = usePricesContext()
@@ -27,6 +28,7 @@ export const useRbtcVaultMetrics = () => {
     freeOnchainLiquidity,
     lastClosedEpoch,
     previousClosedEpoch,
+    totalAssets,
     isLoading: isLoadingVault,
     error: vaultError,
   } = useRbtcVault()
@@ -52,10 +54,18 @@ export const useRbtcVaultMetrics = () => {
     const vaultApy = computeIndicativeApy(lastClosedEpoch, previousClosedEpoch)
 
     return {
-      tvl: formatMetrics(tvlRaw, rbtcPrice, RBTC),
-      vaultApy,
-      syntheticYieldApy,
-      liquidityReserve: formatMetrics(liquidityReserveRaw, rbtcPrice, RBTC),
+      row1: {
+        tvl: formatMetrics(tvlRaw, rbtcPrice, RBTC),
+        vaultApy,
+        syntheticYieldApy,
+        liquidityReserve: formatMetrics(liquidityReserveRaw, rbtcPrice, RBTC),
+      },
+      row2: {
+        currentNav: formatMetrics(totalAssets, rbtcPrice, RBTC),
+        deployedCapital: formatMetrics(reportedOffchainAssets, rbtcPrice, RBTC),
+        unallocatedCapital: formatMetrics(freeOnchainLiquidity, rbtcPrice, RBTC),
+        manualBuffer: formatMetrics(bufferAssets, rbtcPrice, RBTC),
+      },
       isLoading,
       error,
     }
@@ -69,6 +79,7 @@ export const useRbtcVaultMetrics = () => {
     lastClosedEpoch,
     previousClosedEpoch,
     rbtcPrice,
+    totalAssets,
     isLoading,
     error,
   ])
