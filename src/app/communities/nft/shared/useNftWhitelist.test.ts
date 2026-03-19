@@ -1,3 +1,5 @@
+// @vitest-environment jsdom
+
 import { act, cleanup, renderHook } from '@testing-library/react'
 import type { Address } from 'viem'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -67,7 +69,7 @@ const testConfig = {
 }
 
 /** Flush pending microtasks so async effects (RNS enrichment) settle before teardown. */
-const flushPromises = () => act(() => new Promise(resolve => setTimeout(resolve, 0)))
+const flushPromises = () => act(() => new Promise(resolve => setTimeout(resolve, 50)))
 
 describe('useNftWhitelist', () => {
   beforeEach(() => {
@@ -84,8 +86,8 @@ describe('useNftWhitelist', () => {
   })
 
   afterEach(async () => {
-    await flushPromises()
     cleanup()
+    await flushPromises()
   })
 
   it('returns empty minters and guards when no data', () => {

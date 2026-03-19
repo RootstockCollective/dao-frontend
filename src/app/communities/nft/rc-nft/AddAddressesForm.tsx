@@ -4,8 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Trash2 } from 'lucide-react'
 import type { ComponentProps } from 'react'
 import { useEffect, useRef } from 'react'
-import { useFieldArray, useForm } from 'react-hook-form'
-import { Controller } from 'react-hook-form'
+import { Controller, useFieldArray, useForm } from 'react-hook-form'
 import { type Address, getAddress, isAddress } from 'viem'
 import { z } from 'zod'
 
@@ -73,6 +72,7 @@ export function AddAddressesForm(props: ComponentProps<'div'>) {
   const { append, remove, fields } = useFieldArray<AddressesForm>({ control, name: 'addresses' })
 
   useEffect(() => {
+    // Run once on mount: focus first input for keyboard users.
     firstInputRef.current?.focus()
   }, [])
 

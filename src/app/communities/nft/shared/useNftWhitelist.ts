@@ -25,14 +25,64 @@ export interface AddressWithRNS {
   rns?: string
 }
 
-interface EnrichedAddresses {
+interface RawAddresses {
   guards: AddressWithRNS[]
   minters: AddressWithRNS[]
 }
 
-const emptyEnrichedData: EnrichedAddresses = {
-  guards: [],
-  minters: [],
+/**
+ * Hook to enrich raw addresses (without RNS) with RNS domain names.
+ * Returns enriched addresses and loading state.
+ * This is a separate async derivation independent of server state.
+ */
+function useEnrichedAddresses(rawAddresses: RawAddresses | null) {
+  const [isEnriching, setIsEnriching] = useState(false)
+  const [enrichedAddresses, setEnrichedAddresses] = useState<RawAddresses>({
+    guards: [],
+    minters: [],
+  })
+
+  useEffect(() => {
+    if (!rawAddresses) {
+      setEnrichedAddresses({ guards: [], minters: [] })
+      return
+    }
+
+    let isStale = false
+
+    const enrichWithRns = async () => {
+      setIsEnriching(true)
+      try {
+        const [minters, guards] = await Promise.all(
+          [rawAddresses.minters, rawAddresses.guards].map(addresses =>
+            Promise.all(
+              addresses.map(async ({ address }: AddressWithRNS) => ({
+                address,
+                rns: await getEnsDomainName(address),
+              })),
+            ),
+          ),
+        )
+
+        if (!isStale) {
+          setEnrichedAddresses({ minters, guards })
+        }
+      } finally {
+        if (!isStale) {
+          setIsEnriching(false)
+        }
+      }
+    }
+
+    void enrichWithRns()
+
+    return () => {
+      isStale = true
+      setIsEnriching(false)
+    }
+  }, [rawAddresses])
+
+  return { enrichedAddresses, isEnriching }
 }
 
 interface NftWhitelistConfig {
@@ -44,11 +94,10 @@ interface NftWhitelistConfig {
 /**
  * Generic hook for managing NFT whitelist contracts that implement
  * the MINTER_ROLE / WHITELIST_GUARD_ROLE pattern (addToWhitelist, revokeRole, getMinters, etc.).
+ * Fetches contract state and enriches addresses with RNS domains.
  */
 export function useNftWhitelist({ address, abi, toastIdPrefix }: NftWhitelistConfig) {
-  const [isQueryingRns, setIsQueryingRns] = useState(false)
   const { address: accountAddress } = useAccount()
-  const [enrichedData, setEnrichedData] = useState<EnrichedAddresses>(emptyEnrichedData)
 
   const contract = useMemo(() => ({ address, abi }), [address, abi])
 
@@ -84,47 +133,9 @@ export function useNftWhitelist({ address, abi, toastIdPrefix }: NftWhitelistCon
     },
   })
 
-  useEffect(() => {
-    if (!data) {
-      setEnrichedData(emptyEnrichedData)
-      return
-    }
-
-    let isStale = false
-
-    /** Enrich both minters and guards with RNS domains.
-     *  Guards enrichment is kept for parity with the original hook and future admin UI improvements. */
-    const enrichWithRns = async () => {
-      setIsQueryingRns(true)
-      try {
-        const [minters, guards] = await Promise.all(
-          [data.minters, data.guards].map(addresses =>
-            Promise.all(
-              addresses.map(async ({ address }: AddressWithRNS) => ({
-                address,
-                rns: await getEnsDomainName(address),
-              })),
-            ),
-          ),
-        )
-
-        if (!isStale) {
-          setEnrichedData({ minters, guards })
-        }
-      } finally {
-        if (!isStale) {
-          setIsQueryingRns(false)
-        }
-      }
-    }
-
-    void enrichWithRns()
-
-    return () => {
-      isStale = true
-      setIsQueryingRns(false)
-    }
-  }, [data])
+  const { enrichedAddresses, isEnriching } = useEnrichedAddresses(
+    data ? { minters: data.minters, guards: data.guards } : null,
+  )
 
   const { writeContract, isPending, error: writeError, data: txHash } = useWriteContract()
   const { isSuccess: isTxConfirmed, isLoading: isTxPending } = useWaitForTransactionReceipt({
@@ -136,6 +147,7 @@ export function useNftWhitelist({ address, abi, toastIdPrefix }: NftWhitelistCon
 
   const { pending: globalPending, setPending } = useContractStore()
 
+  // React to write pending state: keep global overlay in sync so any whitelist write shows spinner.
   useEffect(() => {
     setPending(isPending || isTxPending)
   }, [isPending, isTxPending, setPending])
@@ -166,6 +178,7 @@ export function useNftWhitelist({ address, abi, toastIdPrefix }: NftWhitelistCon
     [contract, data?.hasGuardRole, writeContract],
   )
 
+  // React to read/write errors: show or dismiss toasts by toastId.
   useEffect(() => {
     if (readError) {
       toast.error(readError.message, {
@@ -185,6 +198,7 @@ export function useNftWhitelist({ address, abi, toastIdPrefix }: NftWhitelistCon
     }
   }, [readError, writeError, toastIdPrefix])
 
+  // React to tx confirmation: show success toast and refetch minters.
   useEffect(() => {
     if (isTxConfirmed && txHash) {
       toast.success(`Transaction successful! Hash: ${truncateMiddle(txHash, 5, 5)}`)
@@ -194,19 +208,19 @@ export function useNftWhitelist({ address, abi, toastIdPrefix }: NftWhitelistCon
 
   return useMemo(
     () => ({
-      ...enrichedData,
+      ...enrichedAddresses,
       hasGuardRole: data?.hasGuardRole,
-      loading: isFetching || isLoading || isQueryingRns,
+      loading: isFetching || isLoading || isEnriching,
       revokeMinterRole,
       whitelistMinters,
       pending: globalPending,
       reloadMinters,
     }),
     [
-      enrichedData,
+      enrichedAddresses,
       isFetching,
       isLoading,
-      isQueryingRns,
+      isEnriching,
       revokeMinterRole,
       whitelistMinters,
       globalPending,

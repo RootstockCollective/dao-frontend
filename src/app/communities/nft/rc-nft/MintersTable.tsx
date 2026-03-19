@@ -21,6 +21,8 @@ import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 import { useRcNft } from './useRcNft'
 
+const TRUNCATE_LENGTH = 10
+
 /** Table component displaying whitelisted minter addresses with ability to revoke minter roles. */
 export function MintersTable() {
   const isDesktop = useIsDesktop()
@@ -39,7 +41,7 @@ export function MintersTable() {
         const address = cell.getValue()
         return (
           <CopyButton className="whitespace-nowrap" copyText={address}>
-            {truncateMiddle(address, 10, 10)}
+            {truncateMiddle(address, TRUNCATE_LENGTH, TRUNCATE_LENGTH)}
           </CopyButton>
         )
       },
@@ -53,7 +55,13 @@ export function MintersTable() {
       cell: ({ row }) => {
         const { address } = row.original
         return (
-          <Tooltip text={hasGuardRole ? `Remove ${truncateMiddle(address)}` : 'You need guard permissions'}>
+          <Tooltip
+            text={
+              hasGuardRole
+                ? `Remove ${truncateMiddle(address, TRUNCATE_LENGTH, TRUNCATE_LENGTH)}`
+                : 'You need guard permissions'
+            }
+          >
             <Button
               disabled={!hasGuardRole}
               onClick={() => revokeMinterRole(address)}
