@@ -12,21 +12,6 @@ config({
   override: true, // Override existing environment variables
 })
 
-// Validate required environment variables at build time
-// Skip validation for mainnet/RC-mainnet (contract address may be pending)
-const isMainnetLike = envPath.includes('mainnet')
-if (!isMainnetLike) {
-  const requiredEnvVars = ['NEXT_PUBLIC_ROOTCAMP_NFT_ADDRESS']
-  const missingVars = requiredEnvVars.filter(varName => !process.env[varName])
-
-  if (missingVars.length > 0) {
-    console.error(
-      `❌ Build failed: Missing required environment variables:\n${missingVars.map(v => `  - ${v}`).join('\n')}\n\nEnsure these are set in your .env file for the target environment (${envPath}).`,
-    )
-    process.exit(1)
-  }
-}
-
 // Debug: Log which env file is being loaded (only in development)
 if (process.env.NODE_ENV !== 'production') {
   console.log(`📁 Loading environment from: ${envPath} (PROFILE: ${profile || 'not set'})`)
