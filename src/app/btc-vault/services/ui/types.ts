@@ -65,6 +65,8 @@ export interface VaultMetricsDisplay {
   tvlRaw: bigint
   /** Raw pricePerShare bigint kept for form calculations (e.g. estimated shares = amount / pricePerShare) */
   pricePerShareRaw: bigint
+  /** Optional TVL as percentage of total supply or similar; when absent UI shows "—". */
+  tvlPercentFormatted?: string
 }
 
 export interface EpochDisplay {

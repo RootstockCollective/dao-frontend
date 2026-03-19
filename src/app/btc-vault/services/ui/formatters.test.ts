@@ -4,6 +4,7 @@ import {
   formatPercent,
   formatTimestamp,
   formatDateShort,
+  formatDateClosingOn,
   shortenTxHash,
   formatCountdown,
 } from './formatters'
@@ -66,5 +67,17 @@ describe('formatDateShort', () => {
     const created = 1700000000
     const updated = 1700086400
     expect(formatDateShort(created)).not.toBe(formatDateShort(updated))
+  })
+})
+
+describe('formatDateClosingOn', () => {
+  it('formats unix timestamp to month and day (e.g. February 23)', () => {
+    // 23 Feb 2025 00:00:00 UTC
+    const result = formatDateClosingOn(1740268800)
+    expect(result).toBe('February 23')
+  })
+  it('formats March 19', () => {
+    const result = formatDateClosingOn(1742342400) // 19 Mar 2025 00:00:00 UTC
+    expect(result).toMatch(/March 19/)
   })
 })

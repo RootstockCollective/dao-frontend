@@ -57,6 +57,15 @@ export function formatDateMonthFirst(unix: number): string {
 }
 
 /**
+ * Formats a Unix timestamp (seconds) for "closing on [Month Day]" display (e.g. "February 23").
+ * @param unix - Unix timestamp in seconds
+ * @returns Formatted date string (e.g. "February 23")
+ */
+export function formatDateClosingOn(unix: number): string {
+  return DateTime.fromSeconds(unix, { zone: 'utc' }).toFormat('MMMM d')
+}
+
+/**
  * Shortens a transaction hash for display by keeping the first 6 and last 4 characters.
  * @param hash - Full transaction hash string
  * @returns Shortened hash (e.g. "0xabc1...def4") or original if too short
