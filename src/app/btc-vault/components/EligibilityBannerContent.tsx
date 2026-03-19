@@ -44,18 +44,21 @@ export function EligibilityBannerContent({
     ? `${REJECTED_PREFIX} ${rejectionReason}.${REJECTED_SUFFIX}`
     : `${REJECTED_PREFIX}...${REJECTED_SUFFIX}`
 
+  const linkClassName = 'text-[#171412] hover:opacity-80'
+  const contentMaxWidth = 'max-w-xl'
+
   return (
-    <section data-testid="eligibility-banner-content" className="flex flex-col gap-3">
-      <Header variant="h3" className="text-v3-text-0 uppercase leading-[130%] tracking-[0.4px]">
+    <section data-testid="eligibility-banner-content" className="flex flex-col gap-4">
+      <Header variant="h4" className="text-v3-text-0 font-bold uppercase leading-[130%] tracking-[0.4px]">
         {SECTION_HEADER}
       </Header>
 
       {variant === 'none' && (
         <>
-          <Label variant="body-l" className="text-v3-text-0 leading-[133%]">
+          <Label variant="body-l" className={cn('text-[#171412] leading-[133%]', contentMaxWidth)}>
             {NONE_INSTRUCTION}
           </Label>
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             <Button variant="primary" onClick={onSubmitKyb} data-testid="eligibility-banner-submit-kyb">
               {SUBMIT_KYB_LABEL}
             </Button>
@@ -66,7 +69,7 @@ export function EligibilityBannerContent({
                 target: '_blank',
                 rel: 'noopener noreferrer',
               })}
-              className="text-primary"
+              className={linkClassName}
               data-testid="eligibility-banner-check-status"
             >
               <Span className="inline-flex items-center gap-1.5">
@@ -80,35 +83,38 @@ export function EligibilityBannerContent({
 
       {variant === 'rejected' && (
         <>
-          <div className="flex items-start gap-2">
+          <div className={cn('flex items-start gap-3', contentMaxWidth)}>
             <ShieldExclamationIcon
-              className={cn('shrink-0 text-v3-text-0 mt-0.5')}
+              className="shrink-0 mt-0.5"
+              size={24}
               data-testid="eligibility-banner-rejected-icon"
             />
-            <Label variant="body-l" className="text-v3-text-0 leading-[133%]">
+            <Label variant="body-l" className="text-[#171412] leading-[133%] min-w-0">
               {rejectionMessage}
             </Label>
           </div>
-          <div className="flex flex-col gap-3">
+          {/* Button aligned with message text (icon 24px + gap-3 12px = 36px) */}
+          <div className="ml-9">
             <Button variant="primary" onClick={onSubmitKyb} data-testid="eligibility-banner-submit-kyb">
               {RESUBMIT_KYB_LABEL}
             </Button>
-            <ExternalLink
-              href={checkStatusHref}
-              onClick={onCheckStatus}
-              {...(checkStatusHref !== CHECK_STATUS_LINK_HREF_PLACEHOLDER && {
-                target: '_blank',
-                rel: 'noopener noreferrer',
-              })}
-              className="text-primary"
-              data-testid="eligibility-banner-check-status"
-            >
-              <Span className="inline-flex items-center gap-1.5">
-                {CHECK_STATUS_LABEL}
-                <ExternalLinkIcon size={14} aria-label="" />
-              </Span>
-            </ExternalLink>
           </div>
+          {/* Link aligned with shield icon (same left as icon) */}
+          <ExternalLink
+            href={checkStatusHref}
+            onClick={onCheckStatus}
+            {...(checkStatusHref !== CHECK_STATUS_LINK_HREF_PLACEHOLDER && {
+              target: '_blank',
+              rel: 'noopener noreferrer',
+            })}
+            className={linkClassName}
+            data-testid="eligibility-banner-check-status"
+          >
+            <Span className="inline-flex items-center gap-1.5">
+              {CHECK_STATUS_LABEL}
+              <ExternalLinkIcon size={14} aria-label="" />
+            </Span>
+          </ExternalLink>
         </>
       )}
     </section>
