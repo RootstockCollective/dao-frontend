@@ -92,13 +92,12 @@ describe('BtcVaultMetrics', () => {
     expect(depositWindow).toHaveTextContent('closing on February 23')
   })
 
-  it('displays TVL with value, percentage (or placeholder), and rBTC', () => {
+  it('displays TVL with value, percentage (or placeholder), and token symbol', () => {
     renderWithProviders()
 
     const tvl = screen.getByTestId('btc-vault-tvl')
     expect(tvl).toHaveTextContent('50')
-    expect(tvl).toHaveTextContent('rBTC')
-    expect(tvl).toHaveTextContent('|')
+    expect(tvl).toHaveTextContent(RBTC)
     expect(tvl).toHaveTextContent('—')
   })
 

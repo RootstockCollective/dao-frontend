@@ -1,8 +1,11 @@
+import { ReactNode } from 'react'
+
+import SeparatorBar from '@/components/SeparatorBar/SeparatorBar'
 import { TokenImage } from '@/components/TokenImage'
-import { Header, Label, Span } from '@/components/Typography'
-import { FC, ReactNode } from 'react'
-import { Tooltip } from '../Tooltip'
+import { Header, HeaderVariants, Label, Span } from '@/components/Typography'
+
 import { KotoQuestionMarkIcon } from '../Icons'
+import { Tooltip } from '../Tooltip'
 
 interface Props {
   amount: ReactNode
@@ -10,19 +13,24 @@ interface Props {
   title?: string
   tooltipContent?: ReactNode
   fiatAmount?: ReactNode
+  headerVariant?: HeaderVariants
+  /** Optional second value shown after a vertical separator (e.g. "99.99%" for TVL). Same visual weight as primary amount. */
+  secondaryValue?: ReactNode
   'data-testid'?: string
   className?: string
 }
 
-export const BalanceInfo: FC<Props> = ({
+export const BalanceInfo = ({
   title,
   tooltipContent,
   amount,
   symbol,
   fiatAmount,
+  secondaryValue,
+  headerVariant = 'h1',
   'data-testid': dataTestId = 'BalanceInfo',
   className,
-}) => {
+}: Props) => {
   return (
     <div className={className} data-testid={dataTestId}>
       <div className="flex items-center flex-row gap-2">
@@ -41,8 +49,8 @@ export const BalanceInfo: FC<Props> = ({
 
       <div className="flex items-center flex-row gap-2 md:mt-2 mt-4">
         <Header
-          variant="h1"
-          className="flex items-end flex-row gap-2 !leading-none"
+          variant={headerVariant}
+          className="flex items-end flex-row gap-2 leading-none!"
           data-testid={`Amount-${symbol}`}
         >
           {amount}
@@ -55,6 +63,14 @@ export const BalanceInfo: FC<Props> = ({
             </Span>
           </div>
         ) : null}
+        {secondaryValue != null && secondaryValue !== '' && (
+          <>
+            <SeparatorBar className="shrink-0 mx-1" aria-hidden />
+            <Header variant="h1" className="leading-none!" data-testid="SecondaryValue">
+              {secondaryValue}
+            </Header>
+          </>
+        )}
       </div>
       {fiatAmount && (
         <Label variant="body-s" className="text-bg-0" bold data-testid={`FiatAmount-${symbol}`}>

@@ -62,40 +62,48 @@ export const BtcVaultMetrics = () => {
     return `Last updated on ${formatDateMonthFirst(metrics.timestamp)}`
   }, [metrics?.timestamp])
 
+  const balanceStyle = 'w-[256px] min-w-[180px]'
+
   return (
     <div className="flex flex-col gap-6 w-full" data-testid="btc-vault-metrics-content">
       <div className="flex flex-row flex-wrap gap-x-6 gap-y-6 w-full" data-testid="btc-vault-metrics-row">
         <BalanceInfo
-          className="w-[256px] min-w-[180px]"
+          className={balanceStyle}
           title="TVL"
           tooltipContent={TVL_TOOLTIP}
-          amount={isMetricsLoading ? '...' : `${tvlFormatted} rBTC | ${tvlPercentFormatted}`}
+          amount={isMetricsLoading ? '...' : tvlFormatted}
+          symbol={isMetricsLoading ? undefined : RBTC}
+          secondaryValue={isMetricsLoading ? undefined : tvlPercentFormatted}
           fiatAmount={isMetricsLoading ? undefined : (tvlUsd ?? undefined)}
           data-testid="btc-vault-tvl"
+          headerVariant="h3"
         />
         <BalanceInfo
-          className="w-[256px] min-w-[180px]"
+          className={balanceStyle}
           title="APY (est.)"
           tooltipContent={APY_TOOLTIP}
           amount={isMetricsLoading ? '...' : `${apyFormatted}%`}
           fiatAmount={isMetricsLoading ? undefined : (lastUpdatedFormatted ?? undefined)}
           data-testid="btc-vault-apy"
+          headerVariant="h3"
         />
         <BalanceInfo
-          className="w-[280px] min-w-[180px]"
+          className={balanceStyle}
           title={depositWindowLabel}
           tooltipContent={DEPOSIT_WINDOW_TOOLTIP}
           amount={depositWindowValue}
           data-testid="btc-vault-deposit-window"
+          headerVariant="h3"
         />
         <BalanceInfo
-          className="w-[256px] min-w-[180px]"
+          className={balanceStyle}
           title="Price per Share"
           tooltipContent={PRICE_PER_SHARE_TOOLTIP}
           amount={isMetricsLoading ? '...' : pricePerShareFormatted}
           symbol={isMetricsLoading ? undefined : RBTC}
           fiatAmount={isMetricsLoading ? undefined : (pricePerShareUsd ?? undefined)}
           data-testid="btc-vault-price-per-share"
+          headerVariant="h3"
         />
       </div>
 
