@@ -1,22 +1,24 @@
 /**
  * useActionEligibility tests verify:
  *
- * 1. Contract wiring: the hook requests the right data (multicall with 5 vault reads,
+ * 1. Contract wiring: the hook requests the right data (multicall with 6 vault reads,
  *    then hasRole on PermissionsManager) and passes the right args (e.g. user address).
  * 2. Derivation: raw multicall + hasRole results are mapped to PauseState, EligibilityStatus,
- *    and activeRequests and fed to toActionEligibility — output matches expected UI state.
+ *    activeRequests, and vault share balance — output matches expected UI state.
  * 3. Guard clauses: when address is missing, or vault/hasRole data is not yet available,
  *    the hook returns undefined data (no partial or wrong state).
  *
- * The mapper toActionEligibility(pause, eligibility, activeRequests) is tested in
- * mappers.test.ts; here we test that the hook builds those inputs correctly from contract results.
+ * The mapper `toActionEligibility` is tested in mappers.test.ts; here we test that the hook
+ * builds those inputs correctly from contract results.
  */
 import { renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { WHITELISTED_USER_ROLE } from '@/lib/constants'
 import {
+  ACTIVE_REQUEST_REASON,
   DEPOSIT_PAUSED_REASON,
+  NO_VAULT_SHARES_REASON,
   NOT_WHITELISTED_REASON,
   WITHDRAWAL_PAUSED_REASON,
 } from '../../services/constants'
@@ -40,6 +42,9 @@ function makeVaultResults({
   depositEpochId = 0n,
   redeemShares = 0n,
   redeemEpochId = 0n,
+  /** Default 1 wei so `hasVaultShares` is true unless a test overrides. */
+  vaultBalance = 1n,
+  balanceSlotStatus = 'success' as 'success' | 'failure',
 }: {
   depositPaused?: boolean
   redeemPaused?: boolean
@@ -47,6 +52,8 @@ function makeVaultResults({
   depositEpochId?: bigint
   redeemShares?: bigint
   redeemEpochId?: bigint
+  vaultBalance?: bigint
+  balanceSlotStatus?: 'success' | 'failure'
 } = {}) {
   return [
     { status: 'success', result: depositPaused },
@@ -54,6 +61,9 @@ function makeVaultResults({
     { status: 'success', result: [depositEpochId, depositAssets] as readonly [bigint, bigint] },
     { status: 'success', result: [redeemEpochId, redeemShares] as readonly [bigint, bigint] },
     { status: 'success', result: PM_ADDRESS },
+    balanceSlotStatus === 'success'
+      ? { status: 'success' as const, result: vaultBalance }
+      : { status: 'failure' as const },
   ]
 }
 
@@ -97,7 +107,7 @@ describe('useActionEligibility', () => {
   })
 
   describe('contract wiring', () => {
-    it('requests multicall with 5 vault reads and user address for depositReq/redeemReq', () => {
+    it('requests multicall with 6 vault reads including balanceOf(user)', () => {
       renderHook(() => useActionEligibility(USER_ADDRESS))
 
       expect(mockUseReadContracts).toHaveBeenCalledWith(
@@ -114,12 +124,16 @@ describe('useActionEligibility', () => {
               args: [USER_ADDRESS],
             }),
             expect.objectContaining({ functionName: 'permissionsManager' }),
+            expect.objectContaining({
+              functionName: 'balanceOf',
+              args: [USER_ADDRESS],
+            }),
           ]),
           query: expect.objectContaining({ enabled: true }),
         }),
       )
       const { contracts } = mockUseReadContracts.mock.calls[0][0] as { contracts: unknown[] }
-      expect(contracts).toHaveLength(5)
+      expect(contracts).toHaveLength(6)
     })
 
     it('requests hasRole on PermissionsManager with WHITELISTED_USER_ROLE and user address', () => {
@@ -187,6 +201,7 @@ describe('useActionEligibility', () => {
           { status: 'success', result: [0n, 0n] as readonly [bigint, bigint] },
           { status: 'success', result: [0n, 0n] as readonly [bigint, bigint] },
           { status: 'success', result: PM_ADDRESS },
+          { status: 'success', result: 1n },
         ],
         isLoading: false,
         error: null,
@@ -214,6 +229,7 @@ describe('useActionEligibility', () => {
           { status: 'success', result: [0n, 0n] as readonly [bigint, bigint] },
           { status: 'success', result: [0n, 0n] as readonly [bigint, bigint] },
           { status: 'success', result: PM_ADDRESS },
+          { status: 'success', result: 1n },
         ],
         isLoading: false,
         error: null,
@@ -263,13 +279,31 @@ describe('useActionEligibility', () => {
       expect(result.current.data?.withdrawBlockReason).toBe(WITHDRAWAL_PAUSED_REASON)
     })
 
-    it('disables deposit with NOT_WHITELISTED_REASON when not whitelisted', () => {
+    it('disables deposit and withdraw with NOT_WHITELISTED_REASON when not whitelisted', () => {
       setupMocks(makeVaultResults(), false)
       const { result } = renderHook(() => useActionEligibility(USER_ADDRESS))
 
       expect(result.current.data?.canDeposit).toBe(false)
       expect(result.current.data?.depositBlockReason).toBe(NOT_WHITELISTED_REASON)
-      expect(result.current.data?.canWithdraw).toBe(true)
+      expect(result.current.data?.canWithdraw).toBe(false)
+      expect(result.current.data?.withdrawBlockReason).toBe(NOT_WHITELISTED_REASON)
+    })
+
+    it('disables withdraw with NO_VAULT_SHARES_REASON when balanceOf is zero', () => {
+      setupMocks(makeVaultResults({ vaultBalance: 0n }))
+      const { result } = renderHook(() => useActionEligibility(USER_ADDRESS))
+
+      expect(result.current.data?.canDeposit).toBe(true)
+      expect(result.current.data?.canWithdraw).toBe(false)
+      expect(result.current.data?.withdrawBlockReason).toBe(NO_VAULT_SHARES_REASON)
+    })
+
+    it('disables withdraw when balanceOf slot fails (fail-closed to no shares)', () => {
+      setupMocks(makeVaultResults({ balanceSlotStatus: 'failure' }))
+      const { result } = renderHook(() => useActionEligibility(USER_ADDRESS))
+
+      expect(result.current.data?.canWithdraw).toBe(false)
+      expect(result.current.data?.withdrawBlockReason).toBe(NO_VAULT_SHARES_REASON)
     })
 
     it('disables both buttons with active request reason when user has active deposit', () => {
@@ -278,8 +312,8 @@ describe('useActionEligibility', () => {
 
       expect(result.current.data?.canDeposit).toBe(false)
       expect(result.current.data?.canWithdraw).toBe(false)
-      expect(result.current.data?.depositBlockReason).toBe('You already have an active request')
-      expect(result.current.data?.withdrawBlockReason).toBe('You already have an active request')
+      expect(result.current.data?.depositBlockReason).toBe(ACTIVE_REQUEST_REASON)
+      expect(result.current.data?.withdrawBlockReason).toBe(ACTIVE_REQUEST_REASON)
     })
 
     it('disables both buttons with active request reason when user has active redeem', () => {
@@ -288,8 +322,8 @@ describe('useActionEligibility', () => {
 
       expect(result.current.data?.canDeposit).toBe(false)
       expect(result.current.data?.canWithdraw).toBe(false)
-      expect(result.current.data?.depositBlockReason).toBe('You already have an active request')
-      expect(result.current.data?.withdrawBlockReason).toBe('You already have an active request')
+      expect(result.current.data?.depositBlockReason).toBe(ACTIVE_REQUEST_REASON)
+      expect(result.current.data?.withdrawBlockReason).toBe(ACTIVE_REQUEST_REASON)
     })
 
     it('disables both when user has both active deposit and redeem', () => {

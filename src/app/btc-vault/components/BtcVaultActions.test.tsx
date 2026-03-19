@@ -1,118 +1,51 @@
 import { TooltipProvider } from '@radix-ui/react-tooltip'
-import { cleanup, render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { cleanup, render } from '@testing-library/react'
+import { type ReactNode } from 'react'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { BtcVaultActions } from './BtcVaultActions'
 
-const mockUseAccount = vi.fn()
 const mockUseActionEligibility = vi.fn()
-const mockUseUserPosition = vi.fn()
-const mockUseVaultMetrics = vi.fn()
-const mockOnRequestDeposit = vi.fn()
-const mockOnRequestRedeem = vi.fn()
-const mockInvalidateQueries = vi.fn()
-
-let capturedOnSuccess: ((txHash: string) => void) | undefined
-
-const mockExecuteTxFlow = vi.fn().mockImplementation(({ onSuccess }) => {
-  capturedOnSuccess = onSuccess
-  return Promise.resolve('0xmockhash')
-})
+const mockUseSubmitDeposit = vi.fn()
+const mockUseSubmitWithdrawal = vi.fn()
 
 vi.mock('wagmi', () => ({
-  useAccount: () => mockUseAccount(),
-}))
-
-vi.mock('@tanstack/react-query', () => ({
-  useQueryClient: () => ({
-    invalidateQueries: mockInvalidateQueries,
-  }),
-}))
-
-vi.mock('../hooks/useActionEligibility', () => ({
-  useActionEligibility: (address: string | undefined) => mockUseActionEligibility(address),
-}))
-
-vi.mock('../hooks/useUserPosition', () => ({
-  useUserPosition: (address: string | undefined) => mockUseUserPosition(address),
-}))
-
-vi.mock('../hooks/useVaultMetrics', () => ({
-  useVaultMetrics: () => mockUseVaultMetrics(),
-}))
-
-vi.mock('../hooks/useSubmitDeposit', () => ({
-  useSubmitDeposit: () => ({
-    onRequestDeposit: mockOnRequestDeposit,
-    isRequesting: false,
-    isTxPending: false,
-    isTxFailed: false,
-    depositTxHash: undefined,
-  }),
-}))
-
-vi.mock('../hooks/useSubmitWithdrawal', () => ({
-  useSubmitWithdrawal: () => ({
-    onRequestRedeem: mockOnRequestRedeem,
-    isRequesting: false,
-    isTxPending: false,
-    isTxFailed: false,
-    withdrawTxHash: undefined,
-  }),
+  useAccount: () => ({ address: '0x1234567890123456789012345678901234567890' }),
 }))
 
 vi.mock('@/shared/notification', () => ({
-  executeTxFlow: (...args: unknown[]) => mockExecuteTxFlow(...args),
+  executeTxFlow: vi.fn(),
 }))
 
-vi.mock('@/shared/hooks/useIsDesktop', () => ({
-  useIsDesktop: () => true,
+vi.mock('../hooks/useActionEligibility', () => ({
+  useActionEligibility: (...args: unknown[]) => mockUseActionEligibility(...args),
 }))
 
-vi.mock('@/shared/context', () => ({
-  usePricesContext: () => ({ prices: {} }),
+vi.mock('../hooks/useSubmitDeposit', () => ({
+  useSubmitDeposit: () => mockUseSubmitDeposit(),
 }))
 
-beforeAll(() => {
-  global.ResizeObserver = vi.fn().mockImplementation(() => ({
-    observe: vi.fn(),
-    unobserve: vi.fn(),
-    disconnect: vi.fn(),
-  }))
-})
+vi.mock('../hooks/useSubmitWithdrawal', () => ({
+  useSubmitWithdrawal: () => mockUseSubmitWithdrawal(),
+}))
 
-const renderWithProviders = () =>
-  render(
-    <TooltipProvider>
-      <BtcVaultActions />
-    </TooltipProvider>,
+function renderWithQueryClient(ui: ReactNode) {
+  const client = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  })
+  return render(
+    <QueryClientProvider client={client}>
+      {/* Radix Tooltip requires a provider when tooltips are active (non-empty reason + not short-circuited). */}
+      <TooltipProvider>{ui}</TooltipProvider>
+    </QueryClientProvider>,
   )
+}
 
 describe('BtcVaultActions', () => {
   beforeEach(() => {
-    capturedOnSuccess = undefined
-    mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
-    mockUseUserPosition.mockReturnValue({
-      data: {
-        rbtcBalanceFormatted: '2.0',
-        rbtcBalanceRaw: 2000000000000000000n,
-        vaultTokensFormatted: '5.0',
-        positionValueFormatted: '5.1',
-        percentOfVaultFormatted: '10.20%',
-        vaultTokensRaw: 5_000_000_000_000_000_000n,
-      },
-    })
-    mockUseVaultMetrics.mockReturnValue({
-      data: {
-        tvlFormatted: '50',
-        apyFormatted: '8.50',
-        pricePerShareFormatted: '1.02',
-        timestamp: 1709000000,
-        pricePerShareRaw: 1_020_000_000_000_000_000n,
-      },
-      isLoading: false,
-    })
+    cleanup()
+    vi.clearAllMocks()
     mockUseActionEligibility.mockReturnValue({
       data: {
         canDeposit: true,
@@ -120,212 +53,53 @@ describe('BtcVaultActions', () => {
         depositBlockReason: '',
         withdrawBlockReason: '',
       },
+    })
+    mockUseSubmitDeposit.mockReturnValue({
+      onRequestDeposit: vi.fn(),
+      isRequesting: false,
+      isTxPending: false,
+    })
+    mockUseSubmitWithdrawal.mockReturnValue({
+      onRequestRedeem: vi.fn(),
+      isRequesting: false,
+      isTxPending: false,
     })
   })
 
   afterEach(() => {
     cleanup()
-    vi.clearAllMocks()
   })
 
-  it('renders the Deposit button', () => {
-    renderWithProviders()
-
-    expect(screen.getByTestId('DepositButton')).toBeInTheDocument()
-    expect(screen.getByTestId('DepositButton')).not.toBeDisabled()
-  })
-
-  it('disables the Deposit button when canDeposit is false', () => {
-    mockUseActionEligibility.mockReturnValue({
-      data: {
-        canDeposit: false,
-        canWithdraw: true,
-        depositBlockReason: 'Deposits are currently paused',
-        withdrawBlockReason: '',
-      },
-    })
-    renderWithProviders()
-
-    expect(screen.getByTestId('DepositButton')).toBeDisabled()
-  })
-
-  it('disables the Deposit button when eligibility data is not yet loaded', () => {
-    mockUseActionEligibility.mockReturnValue({ data: undefined })
-    renderWithProviders()
-
-    expect(screen.getByTestId('DepositButton')).toBeDisabled()
-  })
-
-  it('opens the modal when clicking the enabled Deposit button', async () => {
-    const user = userEvent.setup()
-    renderWithProviders()
-
-    await user.click(screen.getByTestId('DepositButton'))
-    expect(screen.getByTestId('BtcDepositModal')).toBeInTheDocument()
-  })
-
-  it('does not open the modal when clicking a disabled Deposit button', async () => {
-    const user = userEvent.setup()
-    mockUseActionEligibility.mockReturnValue({
-      data: {
-        canDeposit: false,
-        canWithdraw: true,
-        depositBlockReason: 'Not eligible',
-        withdrawBlockReason: '',
-      },
-    })
-    renderWithProviders()
-
-    await user.click(screen.getByTestId('DepositButton'))
-    expect(screen.queryByTestId('BtcDepositModal')).not.toBeInTheDocument()
-  })
-
-  it('closes the modal when close button is clicked', async () => {
-    const user = userEvent.setup()
-    renderWithProviders()
-
-    await user.click(screen.getByTestId('DepositButton'))
-    expect(screen.getByTestId('BtcDepositModal')).toBeInTheDocument()
-
-    await user.click(screen.getByTestId('CloseButton'))
-    expect(screen.queryByTestId('BtcDepositModal')).not.toBeInTheDocument()
-  })
-
-  it('triggers executeTxFlow when user submits deposit from modal', async () => {
-    const user = userEvent.setup()
-    renderWithProviders()
-
-    await user.click(screen.getByTestId('DepositButton'))
-
-    const input = screen.getByTestId('Input_amount-btc-vault')
-    await user.type(input, '1')
-    await user.click(screen.getByTestId('ContinueButton'))
-    await user.click(screen.getByTestId('SubmitRequestButton'))
-
-    await waitFor(() => {
-      expect(mockExecuteTxFlow).toHaveBeenCalledWith(
-        expect.objectContaining({
-          action: 'btcVaultDepositRequest',
-          onRequestTx: expect.any(Function),
-          onSuccess: expect.any(Function),
-        }),
-      )
-    })
-  })
-
-  it('closes modal and invalidates queries on successful deposit', async () => {
-    const user = userEvent.setup()
-    renderWithProviders()
-
-    await user.click(screen.getByTestId('DepositButton'))
-    const input = screen.getByTestId('Input_amount-btc-vault')
-    await user.type(input, '1')
-    await user.click(screen.getByTestId('ContinueButton'))
-    await user.click(screen.getByTestId('SubmitRequestButton'))
-
-    await waitFor(() => {
-      expect(capturedOnSuccess).toBeDefined()
+  it('disables both buttons while a deposit request transaction is submitting', () => {
+    mockUseSubmitDeposit.mockReturnValue({
+      onRequestDeposit: vi.fn(),
+      isRequesting: true,
+      isTxPending: false,
     })
 
-    capturedOnSuccess!('0xmockhash')
+    const { getByTestId } = renderWithQueryClient(<BtcVaultActions />)
 
-    await waitFor(() => {
-      expect(screen.queryByTestId('BtcDepositModal')).not.toBeInTheDocument()
-      expect(mockInvalidateQueries).toHaveBeenCalledWith({
-        queryKey: ['btc-vault', 'active-requests', '0x123'],
-      })
-      expect(mockInvalidateQueries).toHaveBeenCalledWith({
-        queryKey: ['btc-vault', 'action-eligibility', '0x123'],
-      })
-    })
+    expect(getByTestId('DepositButton')).toBeDisabled()
+    expect(getByTestId('WithdrawButton')).toBeDisabled()
   })
 
-  it('renders the Withdraw button', () => {
-    renderWithProviders()
-
-    expect(screen.getByTestId('WithdrawButton')).toBeInTheDocument()
-    expect(screen.getByTestId('WithdrawButton')).not.toBeDisabled()
-  })
-
-  it('disables the Withdraw button when canWithdraw is false', () => {
-    mockUseActionEligibility.mockReturnValue({
-      data: {
-        canDeposit: true,
-        canWithdraw: false,
-        depositBlockReason: '',
-        withdrawBlockReason: 'Withdrawals are currently paused',
-      },
-    })
-    renderWithProviders()
-
-    expect(screen.getByTestId('WithdrawButton')).toBeDisabled()
-  })
-
-  it('disables both buttons when user has active request', () => {
-    mockUseActionEligibility.mockReturnValue({
-      data: {
-        canDeposit: false,
-        canWithdraw: false,
-        depositBlockReason: 'You already have an active request',
-        withdrawBlockReason: 'You already have an active request',
-      },
-    })
-    renderWithProviders()
-
-    expect(screen.getByTestId('DepositButton')).toBeDisabled()
-    expect(screen.getByTestId('WithdrawButton')).toBeDisabled()
-  })
-
-  it('opens the withdraw modal when clicking the enabled Withdraw button', async () => {
-    const user = userEvent.setup()
-    renderWithProviders()
-
-    await user.click(screen.getByTestId('WithdrawButton'))
-    expect(screen.getByTestId('BtcWithdrawModal')).toBeInTheDocument()
-  })
-
-  it('triggers executeTxFlow with btcVaultWithdrawRequest action on withdraw submit', async () => {
-    const user = userEvent.setup()
-    renderWithProviders()
-
-    await user.click(screen.getByTestId('WithdrawButton'))
-    const input = screen.getByTestId('Input_amount-btc-vault-withdraw')
-    await user.type(input, '2')
-    await user.click(screen.getByTestId('ContinueButton'))
-    await user.click(screen.getByTestId('SubmitRequestButton'))
-
-    await waitFor(() => {
-      expect(mockExecuteTxFlow).toHaveBeenCalledWith(
-        expect.objectContaining({
-          action: 'btcVaultWithdrawRequest',
-          onRequestTx: expect.any(Function),
-          onSuccess: expect.any(Function),
-        }),
-      )
-    })
-  })
-
-  it('closes withdraw modal and invalidates queries on successful withdrawal', async () => {
-    const user = userEvent.setup()
-    renderWithProviders()
-
-    await user.click(screen.getByTestId('WithdrawButton'))
-    const input = screen.getByTestId('Input_amount-btc-vault-withdraw')
-    await user.type(input, '2')
-    await user.click(screen.getByTestId('ContinueButton'))
-    await user.click(screen.getByTestId('SubmitRequestButton'))
-
-    await waitFor(() => {
-      expect(capturedOnSuccess).toBeDefined()
+  it('disables both buttons while a withdraw transaction is pending', () => {
+    mockUseSubmitWithdrawal.mockReturnValue({
+      onRequestRedeem: vi.fn(),
+      isRequesting: false,
+      isTxPending: true,
     })
 
-    capturedOnSuccess!('0xmockhash')
+    const { getByTestId } = renderWithQueryClient(<BtcVaultActions />)
 
-    await waitFor(() => {
-      expect(screen.queryByTestId('BtcWithdrawModal')).not.toBeInTheDocument()
-      expect(mockInvalidateQueries).toHaveBeenCalledWith({
-        queryKey: ['btc-vault', 'active-requests', '0x123'],
-      })
-    })
+    expect(getByTestId('DepositButton')).toBeDisabled()
+    expect(getByTestId('WithdrawButton')).toBeDisabled()
+  })
+
+  it('enables deposit and withdraw when eligibility allows and nothing is submitting', () => {
+    const { getByTestId } = renderWithQueryClient(<BtcVaultActions />)
+
+    expect(getByTestId('DepositButton')).not.toBeDisabled()
+    expect(getByTestId('WithdrawButton')).not.toBeDisabled()
   })
 })

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 
 import { WeiPerEther } from '@/lib/constants'
 
+import { NO_VAULT_SHARES_REASON } from '../constants'
 import {
   toVaultMetricsDisplay,
   toEpochDisplay,
@@ -156,12 +157,20 @@ describe('toActionEligibility', () => {
   const eligible = { eligible: true, reason: '' }
   const noActiveRequests: [] = []
 
-  it('happy path — all allowed', () => {
-    const result = toActionEligibility(activePause, eligible, noActiveRequests)
+  it('happy path — all allowed when user has vault shares', () => {
+    const result = toActionEligibility(activePause, eligible, noActiveRequests, true)
     expect(result.canDeposit).toBe(true)
     expect(result.canWithdraw).toBe(true)
     expect(result.depositBlockReason).toBe('')
     expect(result.withdrawBlockReason).toBe('')
+  })
+
+  it('disables withdraw when whitelisted but has no vault shares', () => {
+    const result = toActionEligibility(activePause, eligible, noActiveRequests, false)
+    expect(result.canDeposit).toBe(true)
+    expect(result.canWithdraw).toBe(false)
+    expect(result.depositBlockReason).toBe('')
+    expect(result.withdrawBlockReason).toBe(NO_VAULT_SHARES_REASON)
   })
 
   it('deposits paused', () => {
@@ -169,6 +178,7 @@ describe('toActionEligibility', () => {
       { deposits: 'paused', withdrawals: 'active' },
       eligible,
       noActiveRequests,
+      true,
     )
     expect(result.canDeposit).toBe(false)
     expect(result.depositBlockReason).toBe('Deposits are currently paused')
@@ -180,20 +190,24 @@ describe('toActionEligibility', () => {
       { deposits: 'active', withdrawals: 'paused' },
       eligible,
       noActiveRequests,
+      true,
     )
     expect(result.canDeposit).toBe(true)
     expect(result.canWithdraw).toBe(false)
     expect(result.withdrawBlockReason).toBe('Withdrawals are currently paused')
   })
 
-  it('ineligible user', () => {
+  it('ineligible user cannot deposit or withdraw', () => {
     const result = toActionEligibility(
       activePause,
       { eligible: false, reason: 'KYC required' },
       noActiveRequests,
+      true,
     )
     expect(result.canDeposit).toBe(false)
+    expect(result.canWithdraw).toBe(false)
     expect(result.depositBlockReason).toBe('KYC required')
+    expect(result.withdrawBlockReason).toBe('KYC required')
   })
 
   it('has active request', () => {
@@ -209,7 +223,7 @@ describe('toActionEligibility', () => {
         txHashes: {},
       },
     ]
-    const result = toActionEligibility(activePause, eligible, activeReq)
+    const result = toActionEligibility(activePause, eligible, activeReq, true)
     expect(result.canDeposit).toBe(false)
     expect(result.depositBlockReason).toBe('You already have an active request')
     expect(result.canWithdraw).toBe(false)

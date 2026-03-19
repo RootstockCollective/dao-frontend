@@ -11,6 +11,7 @@ import { executeTxFlow } from '@/shared/notification'
 import { useActionEligibility } from '../hooks/useActionEligibility'
 import { useSubmitDeposit } from '../hooks/useSubmitDeposit'
 import { useSubmitWithdrawal } from '../hooks/useSubmitWithdrawal'
+import { REQUEST_SUBMITTING_REASON } from '../services/constants'
 import type { DepositRequestParams, WithdrawalRequestParams } from '../services/types'
 import { BtcDepositModal } from './BtcDepositModal'
 import { BtcWithdrawModal } from './BtcWithdrawModal'
@@ -41,6 +42,13 @@ export const BtcVaultActions = () => {
 
   const isDepositSubmitting = isDepositRequesting || isDepositTxPending
   const isWithdrawSubmitting = isWithdrawRequesting || isWithdrawTxPending
+  const isAnySubmitting = isDepositSubmitting || isWithdrawSubmitting
+
+  const depositDisabled = !canDeposit || isAnySubmitting
+  const withdrawDisabled = !canWithdraw || isAnySubmitting
+
+  const depositTooltipText = isAnySubmitting ? REQUEST_SUBMITTING_REASON : depositBlockReason
+  const withdrawTooltipText = isAnySubmitting ? REQUEST_SUBMITTING_REASON : withdrawBlockReason
 
   const invalidateAfterSubmit = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ['btc-vault', 'active-requests', address] })
@@ -78,21 +86,21 @@ export const BtcVaultActions = () => {
   return (
     <div data-testid="BtcVaultActionsContent" className="flex flex-col gap-4">
       <div className="flex gap-4">
-        <Tooltip text={depositBlockReason} disabled={canDeposit || !depositBlockReason}>
+        <Tooltip text={depositTooltipText} disabled={!depositDisabled || !depositTooltipText}>
           <Button
             variant="primary"
             onClick={() => setIsDepositModalOpen(true)}
-            disabled={!canDeposit}
+            disabled={depositDisabled}
             data-testid="DepositButton"
           >
             Deposit
           </Button>
         </Tooltip>
-        <Tooltip text={withdrawBlockReason} disabled={canWithdraw || !withdrawBlockReason}>
+        <Tooltip text={withdrawTooltipText} disabled={!withdrawDisabled || !withdrawTooltipText}>
           <Button
             variant="primary"
             onClick={() => setIsWithdrawModalOpen(true)}
-            disabled={!canWithdraw}
+            disabled={withdrawDisabled}
             data-testid="WithdrawButton"
           >
             Withdraw
