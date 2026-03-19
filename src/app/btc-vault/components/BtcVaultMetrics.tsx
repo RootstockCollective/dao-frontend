@@ -4,10 +4,9 @@ import Link from 'next/link'
 import { useMemo } from 'react'
 
 import { getFiatAmount } from '@/app/shared/formatter'
-import { HistoryIcon, KotoQuestionMarkIcon } from '@/components/Icons'
-import { TokenImage } from '@/components/TokenImage'
-import { Tooltip } from '@/components/Tooltip'
-import { Header, Label, Span } from '@/components/Typography'
+import { BalanceInfo } from '@/components/BalanceInfo'
+import { HistoryIcon } from '@/components/Icons'
+import { Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { formatCurrencyWithLabel } from '@/lib/utils'
 import { btcVaultDepositHistory } from '@/shared/constants/routes'
@@ -22,57 +21,6 @@ const APY_TOOLTIP = 'Annual Percentage Yield — the annualized return on deposi
 const TVL_TOOLTIP = 'Total Value Locked — aggregate rBTC held by the vault'
 const DEPOSIT_WINDOW_TOOLTIP = 'Current deposit window closes at this date'
 const PRICE_PER_SHARE_TOOLTIP = 'Price of one vault share in rBTC terms (NAV per share)'
-
-interface MetricColumnProps {
-  label: string
-  tooltipContent: string
-  primary: React.ReactNode
-  'data-testid': string
-  className?: string
-  secondary?: React.ReactNode
-  symbol?: string
-}
-
-function MetricColumn({
-  label,
-  tooltipContent,
-  primary,
-  secondary,
-  symbol,
-  'data-testid': dataTestId,
-  className,
-}: MetricColumnProps) {
-  return (
-    <div className={className} data-testid={dataTestId}>
-      <div className="flex items-center flex-row gap-2">
-        <Label variant="tag" className="text-bg-0" data-testid="Title">
-          {label}
-        </Label>
-        <Tooltip text={tooltipContent}>
-          <KotoQuestionMarkIcon className="mb-1 hover:cursor-help" data-testid="TooltipIcon" />
-        </Tooltip>
-      </div>
-      <div className="flex items-center flex-row gap-2 md:mt-2 mt-4">
-        <Header variant="h1" className="flex items-end flex-row gap-2 leading-none! font-bold">
-          {primary}
-        </Header>
-        {symbol ? (
-          <div className="flex items-center flex-row gap-1">
-            <TokenImage symbol={symbol} size={24} />
-            <Span variant="body-l" bold>
-              {symbol}
-            </Span>
-          </div>
-        ) : null}
-      </div>
-      {secondary != null && secondary !== '' && (
-        <Label variant="body-s" className="text-bg-0 mt-1 block" data-testid="Secondary">
-          {secondary}
-        </Label>
-      )}
-    </div>
-  )
-}
 
 export const BtcVaultMetrics = () => {
   const { data: metrics, isLoading: metricsLoading, error: metricsError } = useVaultMetrics()
@@ -116,45 +64,37 @@ export const BtcVaultMetrics = () => {
 
   return (
     <div className="flex flex-col gap-6 w-full" data-testid="btc-vault-metrics-content">
-      <div className="flex flex-row flex-wrap gap-6" data-testid="btc-vault-metrics-row">
-        <MetricColumn
-          className="w-[214px] min-w-[180px]"
-          label="TVL"
+      <div className="flex flex-row flex-wrap gap-x-6 gap-y-6 w-full" data-testid="btc-vault-metrics-row">
+        <BalanceInfo
+          className="w-[256px] min-w-[180px]"
+          title="TVL"
           tooltipContent={TVL_TOOLTIP}
-          primary={
-            isMetricsLoading ? (
-              '...'
-            ) : (
-              <>
-                {tvlFormatted} rBTC | {tvlPercentFormatted}
-              </>
-            )
-          }
-          secondary={isMetricsLoading ? undefined : (tvlUsd ?? undefined)}
+          amount={isMetricsLoading ? '...' : `${tvlFormatted} rBTC | ${tvlPercentFormatted}`}
+          fiatAmount={isMetricsLoading ? undefined : (tvlUsd ?? undefined)}
           data-testid="btc-vault-tvl"
         />
-        <MetricColumn
-          className="w-[214px] min-w-[180px]"
-          label="APY (est.)"
+        <BalanceInfo
+          className="w-[256px] min-w-[180px]"
+          title="APY (est.)"
           tooltipContent={APY_TOOLTIP}
-          primary={isMetricsLoading ? '...' : `${apyFormatted}%`}
-          secondary={isMetricsLoading ? undefined : (lastUpdatedFormatted ?? undefined)}
+          amount={isMetricsLoading ? '...' : `${apyFormatted}%`}
+          fiatAmount={isMetricsLoading ? undefined : (lastUpdatedFormatted ?? undefined)}
           data-testid="btc-vault-apy"
         />
-        <MetricColumn
-          className="w-[214px] min-w-[180px]"
-          label={depositWindowLabel}
+        <BalanceInfo
+          className="w-[280px] min-w-[180px]"
+          title={depositWindowLabel}
           tooltipContent={DEPOSIT_WINDOW_TOOLTIP}
-          primary={depositWindowValue}
+          amount={depositWindowValue}
           data-testid="btc-vault-deposit-window"
         />
-        <MetricColumn
-          className="w-[214px] min-w-[180px]"
-          label="Price per Share"
+        <BalanceInfo
+          className="w-[256px] min-w-[180px]"
+          title="Price per Share"
           tooltipContent={PRICE_PER_SHARE_TOOLTIP}
-          primary={isMetricsLoading ? '...' : pricePerShareFormatted}
+          amount={isMetricsLoading ? '...' : pricePerShareFormatted}
           symbol={isMetricsLoading ? undefined : RBTC}
-          secondary={isMetricsLoading ? undefined : (pricePerShareUsd ?? undefined)}
+          fiatAmount={isMetricsLoading ? undefined : (pricePerShareUsd ?? undefined)}
           data-testid="btc-vault-price-per-share"
         />
       </div>
