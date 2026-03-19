@@ -1,9 +1,10 @@
+import { ReactNode } from 'react'
+
 import { CommonComponentProps } from '@/components/commonProps'
 import { TokenImage } from '@/components/TokenImage'
 import { Span } from '@/components/Typography'
 import { RIF } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import { ReactNode } from 'react'
 
 export interface BackingCellProps extends CommonComponentProps {
   amount: bigint
@@ -37,7 +38,7 @@ export const BackingCell = ({
           {formattedAmount}
         </Span>
         {showUsd && (
-          <Span variant="body-xs" className="text-right text-v3-bg-accent-40">
+          <Span variant="body-xs" className="text-right text-v3-bg-accent-0">
             {formattedUsdAmount}
           </Span>
         )}
@@ -50,7 +51,7 @@ export const BackingCell = ({
           {showTokenLabel && <Span variant="body-s">stRIF</Span>}
         </div>
         {showUsd && (
-          <Span variant="body-xs" className="text-v3-bg-accent-40">
+          <Span variant="body-xs" className="text-v3-bg-accent-0">
             USD
           </Span>
         )}
