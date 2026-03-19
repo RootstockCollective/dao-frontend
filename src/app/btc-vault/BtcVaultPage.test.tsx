@@ -175,26 +175,6 @@ describe('BtcVaultPage', () => {
     expect(screen.queryByTestId('BtcVaultWalletDisconnectedSection')).not.toBeInTheDocument()
   })
 
-  it('shows NotAuthorizedBanner when connected but not eligible', () => {
-    mockUseAccount.mockReturnValue({
-      address: '0x123',
-      isConnected: true,
-    })
-    mockUseActionEligibility.mockReturnValue({
-      data: {
-        canDeposit: false,
-        canWithdraw: false,
-        depositBlockReason: 'KYC required',
-        withdrawBlockReason: '',
-      },
-    })
-    render(<BtcVaultPage />, { wrapper: Wrapper })
-
-    expect(screen.getByTestId('BTC Vault')).toBeInTheDocument()
-    expect(screen.getByTestId('NotAuthorizedBanner')).toBeInTheDocument()
-    expect(screen.getByText('KYC required')).toBeInTheDocument()
-  })
-
   it('renders Vault Metrics section with section title', () => {
     mockUseAccount.mockReturnValue({
       address: '0x123',

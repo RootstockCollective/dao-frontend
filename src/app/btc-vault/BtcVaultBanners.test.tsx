@@ -5,7 +5,6 @@ import { cleanup, render, screen } from '@testing-library/react'
 import { BtcVaultBanners } from './BtcVaultBanners'
 
 const mockUseAccount = vi.fn()
-const mockUseActionEligibility = vi.fn()
 const mockUseEpochState = vi.fn()
 const mockUseKybStatus = vi.fn()
 
@@ -16,10 +15,6 @@ vi.mock('wagmi', async importOriginal => {
     useAccount: () => mockUseAccount(),
   }
 })
-
-vi.mock('./hooks/useActionEligibility', () => ({
-  useActionEligibility: (address: string | undefined) => mockUseActionEligibility(address),
-}))
 
 vi.mock('./hooks/useEpochState', () => ({
   useEpochState: () => mockUseEpochState(),
@@ -62,9 +57,11 @@ describe('BtcVaultBanners', () => {
 
   beforeEach(() => {
     mockUseAccount.mockReturnValue({ address: undefined, isConnected: false })
-    mockUseActionEligibility.mockReturnValue({ data: undefined })
     mockUseEpochState.mockReturnValue({ data: closedEpoch })
-    mockUseKybStatus.mockReturnValue({ status: 'passed' as const })
+    mockUseKybStatus.mockReturnValue({
+      status: 'passed' as const,
+      submitKyb: vi.fn(),
+    })
   })
 
   afterEach(() => {
@@ -81,37 +78,28 @@ describe('BtcVaultBanners', () => {
     expect(screen.getByTestId('DisclosureContent')).toBeInTheDocument()
   })
 
-  it('does not render combined card when wallet is connected, eligible, KYB passed, and epoch is closed', () => {
+  it('renders combined card with KYB-approved message when connected, KYB passed, and epoch is closed', () => {
     mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
-    mockUseActionEligibility.mockReturnValue({
-      data: {
-        canDeposit: true,
-        canWithdraw: true,
-        depositBlockReason: '',
-        withdrawBlockReason: '',
-      },
-    })
     mockUseEpochState.mockReturnValue({ data: closedEpoch })
-    mockUseKybStatus.mockReturnValue({ status: 'passed' as const })
+    mockUseKybStatus.mockReturnValue({
+      status: 'passed' as const,
+      submitKyb: vi.fn(),
+    })
     render(<BtcVaultBanners />)
 
     expect(screen.queryByTestId('DisclosureBanner')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('NotAuthorizedBanner')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('btc-vault-eligibility-and-deposit-card')).not.toBeInTheDocument()
+    expect(screen.getByTestId('btc-vault-eligibility-and-deposit-card')).toBeInTheDocument()
+    expect(screen.getByText('KYB approved. Deposit window is currently closed.')).toBeInTheDocument()
+    expect(screen.queryByTestId('deposit-window-section')).not.toBeInTheDocument()
   })
 
-  it('renders combined card with deposit window when connected, eligible, KYB passed, and epoch is open', () => {
+  it('renders combined card with deposit window when connected, KYB passed, and epoch is open', () => {
     mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
-    mockUseActionEligibility.mockReturnValue({
-      data: {
-        canDeposit: true,
-        canWithdraw: true,
-        depositBlockReason: '',
-        withdrawBlockReason: '',
-      },
-    })
     mockUseEpochState.mockReturnValue({ data: openEpoch })
-    mockUseKybStatus.mockReturnValue({ status: 'passed' as const })
+    mockUseKybStatus.mockReturnValue({
+      status: 'passed' as const,
+      submitKyb: vi.fn(),
+    })
     render(<BtcVaultBanners />)
 
     expect(screen.getByTestId('btc-vault-eligibility-and-deposit-card')).toBeInTheDocument()
@@ -119,37 +107,14 @@ describe('BtcVaultBanners', () => {
     expect(screen.getByText(/DEPOSIT WINDOW 2/)).toBeInTheDocument()
     expect(screen.queryByTestId('eligibility-banner-content')).not.toBeInTheDocument()
     expect(screen.queryByTestId('DisclosureBanner')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('NotAuthorizedBanner')).not.toBeInTheDocument()
   })
 
-  it('renders NotAuthorizedBanner when connected but not eligible', () => {
+  it('shows eligibility section when connected and KYB status is none', () => {
     mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
-    mockUseActionEligibility.mockReturnValue({
-      data: {
-        canDeposit: false,
-        canWithdraw: false,
-        depositBlockReason: 'KYC required',
-        withdrawBlockReason: '',
-      },
+    mockUseKybStatus.mockReturnValue({
+      status: 'none' as const,
+      submitKyb: vi.fn(),
     })
-    render(<BtcVaultBanners />)
-
-    expect(screen.getByTestId('NotAuthorizedBanner')).toBeInTheDocument()
-    expect(screen.getByText('KYC required')).toBeInTheDocument()
-    expect(screen.queryByTestId('DisclosureBanner')).not.toBeInTheDocument()
-  })
-
-  it('shows eligibility section when KYB status is none', () => {
-    mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
-    mockUseActionEligibility.mockReturnValue({
-      data: {
-        canDeposit: true,
-        canWithdraw: true,
-        depositBlockReason: '',
-        withdrawBlockReason: '',
-      },
-    })
-    mockUseKybStatus.mockReturnValue({ status: 'none' as const })
     render(<BtcVaultBanners />)
 
     expect(screen.getByTestId('btc-vault-eligibility-and-deposit-card')).toBeInTheDocument()
@@ -158,19 +123,12 @@ describe('BtcVaultBanners', () => {
     expect(screen.getByText('ELIGIBILITY')).toBeInTheDocument()
   })
 
-  it('shows eligibility section with Re-submit KYB when KYB status is rejected', () => {
+  it('shows eligibility section with Re-submit KYB when connected and KYB status is rejected', () => {
     mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
-    mockUseActionEligibility.mockReturnValue({
-      data: {
-        canDeposit: true,
-        canWithdraw: true,
-        depositBlockReason: '',
-        withdrawBlockReason: '',
-      },
-    })
     mockUseKybStatus.mockReturnValue({
       status: 'rejected' as const,
       rejectionReason: 'Document verification could not be completed.',
+      submitKyb: vi.fn(),
     })
     render(<BtcVaultBanners />)
 
@@ -180,18 +138,13 @@ describe('BtcVaultBanners', () => {
     expect(screen.getByTestId('eligibility-banner-rejected-icon')).toBeInTheDocument()
   })
 
-  it('shows both eligibility and deposit window when KYB is none and epoch is open', () => {
+  it('shows both eligibility and deposit window when connected, KYB is none, and epoch is open', () => {
     mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
-    mockUseActionEligibility.mockReturnValue({
-      data: {
-        canDeposit: true,
-        canWithdraw: true,
-        depositBlockReason: '',
-        withdrawBlockReason: '',
-      },
-    })
     mockUseEpochState.mockReturnValue({ data: openEpoch })
-    mockUseKybStatus.mockReturnValue({ status: 'none' as const })
+    mockUseKybStatus.mockReturnValue({
+      status: 'none' as const,
+      submitKyb: vi.fn(),
+    })
     render(<BtcVaultBanners />)
 
     expect(screen.getByTestId('btc-vault-eligibility-and-deposit-card')).toBeInTheDocument()
