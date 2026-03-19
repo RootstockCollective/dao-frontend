@@ -1,6 +1,7 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { DEPOSIT_EXPECTED_COMPLETION } from '../services/constants'
 import { BtcDepositModal } from './BtcDepositModal'
 
 const mockUseAccount = vi.fn()
@@ -129,9 +130,9 @@ describe('BtcDepositModal', () => {
     await user.click(screen.getByTestId('ContinueButton'))
 
     expect(screen.getByTestId('review-amount')).toHaveTextContent('1')
-    expect(screen.getByTestId('review-price-per-share')).toHaveTextContent('1.02')
     expect(screen.getByTestId('review-fee')).toHaveTextContent('0%')
     expect(screen.getByTestId('review-shares')).toBeInTheDocument()
+    expect(screen.getByTestId('review-expected-completion')).toHaveTextContent(DEPOSIT_EXPECTED_COMPLETION)
   })
 
   it('shows instruction text on review step', async () => {

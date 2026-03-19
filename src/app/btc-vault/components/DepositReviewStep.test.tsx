@@ -2,6 +2,7 @@ import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { DepositReviewStep } from './DepositReviewStep'
+import { DEPOSIT_EXPECTED_COMPLETION } from '../services/constants'
 
 vi.mock('@/shared/context', () => ({
   usePricesContext: () => ({ prices: {} }),
@@ -10,7 +11,6 @@ vi.mock('@/shared/context', () => ({
 const defaultProps = {
   amount: '1',
   estimatedShares: '980.39',
-  pricePerShareFormatted: '1.02',
   depositFee: '0',
   onBack: vi.fn(),
   onSubmit: vi.fn(),
@@ -37,10 +37,16 @@ describe('DepositReviewStep', () => {
     expect(screen.getByTestId('review-amount')).toHaveTextContent('1')
   })
 
-  it('displays estimated shares', () => {
+  it('displays estimated shares as whole number with comma formatting', () => {
     render(<DepositReviewStep {...defaultProps} />)
 
-    expect(screen.getByTestId('review-shares')).toHaveTextContent('980.39')
+    expect(screen.getByTestId('review-shares')).toHaveTextContent('980')
+  })
+
+  it('formats large share count with thousands separator', () => {
+    render(<DepositReviewStep {...defaultProps} estimatedShares="2000.5" />)
+
+    expect(screen.getByTestId('review-shares')).toHaveTextContent('2,001')
   })
 
   it('displays deposit fee', () => {
@@ -49,16 +55,31 @@ describe('DepositReviewStep', () => {
     expect(screen.getByTestId('review-fee')).toHaveTextContent('0%')
   })
 
-  it('displays Price Per Share', () => {
+  it('displays Expected completion with constant value', () => {
     render(<DepositReviewStep {...defaultProps} />)
 
-    expect(screen.getByTestId('review-price-per-share')).toHaveTextContent('1.02')
+    expect(screen.getByTestId('review-expected-completion')).toHaveTextContent(DEPOSIT_EXPECTED_COMPLETION)
   })
 
   it('shows the disclaimer text', () => {
     render(<DepositReviewStep {...defaultProps} />)
 
     expect(screen.getByTestId('ParagraphDisclaimer')).toHaveTextContent('Subject to approval by fund manager')
+  })
+
+  it('renders Back button', () => {
+    render(<DepositReviewStep {...defaultProps} />)
+
+    expect(screen.getByTestId('BackButton')).toHaveTextContent('Back')
+  })
+
+  it('calls onBack when Back is clicked', async () => {
+    const user = userEvent.setup()
+    const onBack = vi.fn()
+    render(<DepositReviewStep {...defaultProps} onBack={onBack} />)
+
+    await user.click(screen.getByTestId('BackButton'))
+    expect(onBack).toHaveBeenCalledOnce()
   })
 
   it('renders Send request button', () => {

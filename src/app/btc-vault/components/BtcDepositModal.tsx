@@ -38,7 +38,6 @@ export const BtcDepositModal = ({ onClose, onSubmit, isSubmitting }: BtcDepositM
   const rbtcBalanceRaw = userPosition?.rbtcBalanceRaw ?? 0n
 
   // Price Per Share = NAV per share (convertToAssets(1e18)) renamed for clarity
-  const pricePerShareFormatted = vaultMetrics?.pricePerShareFormatted ?? '0'
   const pricePerShareRaw = vaultMetrics?.pricePerShareRaw ?? 0n
 
   const estimatedShares = useMemo(() => {
@@ -93,7 +92,6 @@ export const BtcDepositModal = ({ onClose, onSubmit, isSubmitting }: BtcDepositM
           <DepositReviewStep
             amount={amount}
             estimatedShares={estimatedShares}
-            pricePerShareFormatted={pricePerShareFormatted}
             depositFee={BTC_VAULT_DEPOSIT_FEE}
             onBack={handleBack}
             onSubmit={handleSubmit}
