@@ -1,11 +1,11 @@
 import { useCallback, useMemo, useState } from 'react'
 
-import { StepActionButtons } from '@/app/user/Stake/components/StepActionButtons'
-import { useSteps } from '@/app/user/Stake/hooks/useSteps'
 import { Divider } from '@/components/Divider'
 import { Modal } from '@/components/Modal'
 import { ProgressBar } from '@/components/ProgressBarNew'
+import { StepActionButtons } from '@/components/StepActionButtons'
 import { Header, Paragraph } from '@/components/Typography'
+import { useSteps } from '@/shared/hooks/useSteps'
 import { useSwapStore } from '@/shared/stores/swap'
 
 import { useSwapSmartDefault } from './hooks/useSwapSmartDefault'
