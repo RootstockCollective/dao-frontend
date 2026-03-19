@@ -10,6 +10,20 @@ import { useNftWhitelist } from '../shared/useNftWhitelist'
  * Fetches minters, guards, and role info, and enriches minter data with RNS domains.
  */
 function useRcNft() {
+  if (!ROOTCAMP_NFT_ADDRESS) {
+    // Contract address not configured for this environment
+    return {
+      guards: [],
+      minters: [],
+      hasGuardRole: false,
+      loading: false,
+      revokeMinterRole: () => {},
+      whitelistMinters: () => {},
+      pending: false,
+      reloadMinters: () => {},
+    }
+  }
+
   return useNftWhitelist({
     address: ROOTCAMP_NFT_ADDRESS,
     // SAFETY: RootcampABI is `readonly` const tuple which doesn't satisfy the generic `Abi` constraint;

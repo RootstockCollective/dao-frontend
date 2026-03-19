@@ -13,14 +13,18 @@ config({
 })
 
 // Validate required environment variables at build time
-const requiredEnvVars = ['NEXT_PUBLIC_ROOTCAMP_NFT_ADDRESS']
-const missingVars = requiredEnvVars.filter(varName => !process.env[varName])
+// Skip validation for mainnet/RC-mainnet (contract address may be pending)
+const isMainnetLike = envPath.includes('mainnet')
+if (!isMainnetLike) {
+  const requiredEnvVars = ['NEXT_PUBLIC_ROOTCAMP_NFT_ADDRESS']
+  const missingVars = requiredEnvVars.filter(varName => !process.env[varName])
 
-if (missingVars.length > 0) {
-  console.error(
-    `❌ Build failed: Missing required environment variables:\n${missingVars.map(v => `  - ${v}`).join('\n')}\n\nEnsure these are set in your .env file for the target environment (${envPath}).`,
-  )
-  process.exit(1)
+  if (missingVars.length > 0) {
+    console.error(
+      `❌ Build failed: Missing required environment variables:\n${missingVars.map(v => `  - ${v}`).join('\n')}\n\nEnsure these are set in your .env file for the target environment (${envPath}).`,
+    )
+    process.exit(1)
+  }
 }
 
 // Debug: Log which env file is being loaded (only in development)
