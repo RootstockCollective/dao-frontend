@@ -15,11 +15,12 @@ export interface BtcVaultHistoryItem {
   transactionHash: string
 }
 
-/** Display status for history rows (Open to claim / Claim pending from request status). */
+/** Display status for history rows (Ready to claim / Ready to withdraw from request status). */
 export type BtcVaultHistoryDisplayStatus =
-  | 'open_to_claim'
+  | 'ready_to_claim'
   | 'pending'
-  | 'claim_pending'
+  | 'ready_to_withdraw'
+  | 'approved'
   | 'successful'
   | 'cancelled'
   | 'rejected'
@@ -169,7 +170,7 @@ export async function getGlobalBtcVaultHistory(params: {
 
 /**
  * Fetches BtcDepositRequest and BtcRedeemRequest status for *_REQUEST history rows and maps
- * to displayStatus (open_to_claim, claim_pending, pending, cancelled). CLAIMED/CANCELLED rows
+ * to displayStatus (ready_to_claim, ready_to_withdraw, pending, cancelled). CLAIMED/CANCELLED rows
  * get successful/cancelled from action without a subgraph lookup.
  */
 export async function enrichHistoryWithRequestStatus(
@@ -220,7 +221,7 @@ export async function enrichHistoryWithRequestStatus(
       const id = `${item.user.toLowerCase()}-${item.epochId}`
       const status = item.action === 'DEPOSIT_REQUEST' ? depositStatusById[id] : redeemStatusById[id]
       if (status === 'CLAIMABLE') {
-        result.displayStatus = item.action === 'DEPOSIT_REQUEST' ? 'open_to_claim' : 'claim_pending'
+        result.displayStatus = item.action === 'DEPOSIT_REQUEST' ? 'ready_to_claim' : 'ready_to_withdraw'
       } else if (status === 'CANCELLED') {
         result.displayStatus = 'cancelled'
       } else {

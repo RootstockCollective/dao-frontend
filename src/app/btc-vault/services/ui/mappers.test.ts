@@ -323,16 +323,16 @@ describe('mapRequestDisplayStatus', () => {
     expect(result.displayStatusLabel).toBe('Pending')
   })
 
-  it('maps claimable deposit to "Open to claim"', () => {
+  it('maps claimable deposit to "Ready to claim"', () => {
     const result = mapRequestDisplayStatus('claimable', 'deposit')
-    expect(result.displayStatus).toBe('open_to_claim')
-    expect(result.displayStatusLabel).toBe('Open to claim')
+    expect(result.displayStatus).toBe('ready_to_claim')
+    expect(result.displayStatusLabel).toBe('Ready to claim')
   })
 
-  it('maps claimable withdrawal to "Claim pending"', () => {
+  it('maps claimable withdrawal to "Ready to withdraw"', () => {
     const result = mapRequestDisplayStatus('claimable', 'withdrawal')
-    expect(result.displayStatus).toBe('claim_pending')
-    expect(result.displayStatusLabel).toBe('Claim pending')
+    expect(result.displayStatus).toBe('ready_to_withdraw')
+    expect(result.displayStatusLabel).toBe('Ready to withdraw')
   })
 
   it('maps done to "Successful"', () => {
@@ -445,7 +445,7 @@ describe('toPaginatedHistoryDisplay', () => {
     expect(result.rows[0].displayStatus).toBe('successful')
   })
 
-  it('maps claimable deposit to open_to_claim display status', () => {
+  it('maps claimable deposit to ready_to_claim display status', () => {
     const raw = {
       data: [
         {
@@ -465,8 +465,8 @@ describe('toPaginatedHistoryDisplay', () => {
       totalPages: 1,
     }
     const result = toPaginatedHistoryDisplay(raw)
-    expect(result.rows[0].displayStatus).toBe('open_to_claim')
-    expect(result.rows[0].displayStatusLabel).toBe('Open to claim')
+    expect(result.rows[0].displayStatus).toBe('ready_to_claim')
+    expect(result.rows[0].displayStatusLabel).toBe('Ready to claim')
   })
 
   it('includes updatedAtFormatted from updated when present, else created', () => {
@@ -622,7 +622,7 @@ describe('apiHistoryToPaginatedDisplay', () => {
           timestamp: 1700086400,
           blockNumber: '2',
           transactionHash: '',
-          displayStatus: 'claim_pending' as const,
+          displayStatus: 'ready_to_withdraw' as const,
         },
       ],
       pagination: {
@@ -640,8 +640,8 @@ describe('apiHistoryToPaginatedDisplay', () => {
     expect(row.type).toBe('withdrawal')
     expect(row.amountFormatted).toBe('3')
     expect(row.claimTokenType).toBe('shares')
-    expect(row.displayStatus).toBe('claim_pending')
-    expect(row.displayStatusLabel).toBe('Claim pending')
+    expect(row.displayStatus).toBe('ready_to_withdraw')
+    expect(row.displayStatusLabel).toBe('Ready to withdraw')
     expect(row.status).toBe('claimable')
     expect(row.submitTxShort).toBeNull()
     expect(row.submitTxFull).toBeNull()

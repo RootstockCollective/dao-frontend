@@ -10,24 +10,30 @@ import { RBTC } from '@/lib/constants'
 import type { DisplayStatus } from '../../services/ui/types'
 
 /**
- * Filter-specific status labels per design spec.
- * Intentionally differs from DISPLAY_STATUS_LABELS (used for table badges):
- * - badge "Open to claim" → filter "Active"
- * - badge "Claim pending" → filter "Shares claim pending"
+ * Filter-specific status labels per AC3 spec.
+ * Differs from DISPLAY_STATUS_LABELS used for table badges.
  */
 const FILTER_STATUS_LABELS: Record<DisplayStatus, string> = {
   pending: 'Pending',
-  claim_pending: 'Shares claim pending',
-  open_to_claim: 'Active',
+  approved: 'Approved',
+  ready_to_claim: 'Ready to claim',
+  ready_to_withdraw: 'Ready to withdraw',
   successful: 'Successful',
   cancelled: 'Cancelled',
   rejected: 'Rejected',
 }
 
+/**
+ * Order of statuses in the filter dropdown per AC3:
+ * For deposits: Pending → Ready to claim → Successful → Cancelled
+ * For withdrawals: Pending → Approved → Ready to withdraw → Successful → Cancelled
+ * Merged list prioritizes the deposit flow, then adds withdrawal-specific states.
+ */
 const STATUS_ORDER: DisplayStatus[] = [
   'pending',
-  'open_to_claim',
-  'claim_pending',
+  'approved',
+  'ready_to_claim',
+  'ready_to_withdraw',
   'successful',
   'cancelled',
   'rejected',
@@ -42,7 +48,7 @@ interface Props {
 
 /**
  * Filter sidebar for BTC Vault transaction history.
- * Provides three filter groups: Type, Claim Token, and Status.
+ * Provides three filter groups: Type, Claim Token, and Status per AC3 requirements.
  */
 export function BtcVaultHistoryFilterSideBar({ isOpen, onClose, activeFilters, onApply }: Props) {
   const filterGroups: FilterGroup[] = useMemo(
@@ -64,9 +70,10 @@ export function BtcVaultHistoryFilterSideBar({ isOpen, onClose, activeFilters, o
         allLabel: 'All claim tokens',
         allTestId: 'all-tokens',
         isMultiSelect: false,
+        // Per AC3: Shares first, then RBTC with icon
         options: [
-          { label: 'rBTC', value: 'rbtc', icon: <TokenImage symbol={RBTC} size={16} /> },
           { label: 'Shares', value: 'shares' },
+          { label: 'rBTC', value: 'rbtc', icon: <TokenImage symbol={RBTC} size={16} /> },
         ],
       },
       {

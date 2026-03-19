@@ -335,7 +335,7 @@ describe('enrichHistoryWithRequestStatus', () => {
     expect(result[1].displayStatus).toBe('cancelled')
   })
 
-  it('sets open_to_claim for DEPOSIT_REQUEST when request status is CLAIMABLE', async () => {
+  it('sets ready_to_claim for DEPOSIT_REQUEST when request status is CLAIMABLE', async () => {
     const history = [
       {
         id: '0x1',
@@ -366,10 +366,10 @@ describe('enrichHistoryWithRequestStatus', () => {
 
     const result = await enrichHistoryWithRequestStatus(history)
 
-    expect(result[0].displayStatus).toBe('open_to_claim')
+    expect(result[0].displayStatus).toBe('ready_to_claim')
   })
 
-  it('sets claim_pending for REDEEM_REQUEST when request status is CLAIMABLE', async () => {
+  it('sets ready_to_withdraw for REDEEM_REQUEST when request status is CLAIMABLE', async () => {
     const history = [
       {
         id: '0x2',
@@ -400,7 +400,7 @@ describe('enrichHistoryWithRequestStatus', () => {
 
     const result = await enrichHistoryWithRequestStatus(history)
 
-    expect(result[0].displayStatus).toBe('claim_pending')
+    expect(result[0].displayStatus).toBe('ready_to_withdraw')
   })
 
   it('sets pending for REQUEST when request status is PENDING', async () => {
@@ -533,6 +533,6 @@ describe('enrichHistoryWithRequestStatus', () => {
 
     const result = await enrichHistoryWithRequestStatus(history)
 
-    expect(result[0].displayStatus).toBe('open_to_claim')
+    expect(result[0].displayStatus).toBe('ready_to_claim')
   })
 })
