@@ -5,6 +5,7 @@ import { VaultAbi } from '@/lib/abis/VaultAbi'
 
 import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'
 import { GovernorAbi } from './abis/Governor'
+import { RootcampABI } from './abis/RootcampABI'
 import { RootlingsS1ABI } from './abis/RootlingsS1'
 import { StRIFTokenAbi } from './abis/StRIFTokenAbi'
 import { VotingVanguardsNftAbi } from './abis/VotingVanguardsNFTAbi'
@@ -29,6 +30,7 @@ import {
   REWARD_DISTRIBUTOR_ADDRESS,
   RIF,
   RIF_ADDRESS,
+  ROOTCAMP_NFT_ADDRESS,
   ROOTLINGS_S1_NFT_ADDRESS,
   STRIF,
   STRIF_ADDRESS,
@@ -63,6 +65,7 @@ const nftContracts = {
   VANGUARD: VANGUARD_NFT_ADDRESS,
   BB: BB_NFT_ADDRESS, // Beta Builders
   ROOTLINGS_S1: ROOTLINGS_S1_NFT_ADDRESS,
+  ROOTCAMP: ROOTCAMP_NFT_ADDRESS,
 }
 
 export const DEFAULT_NFT_CONTRACT_ABI = EarlyAdoptersNFTAbi
@@ -76,6 +79,8 @@ const abiContractsMap = {
   [nftContracts.BB]: EarlyAdoptersNFTAbi,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [nftContracts.ROOTLINGS_S1]: RootlingsS1ABI as any, // Type assertion to avoid TS deep instantiation error
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [nftContracts.ROOTCAMP]: RootcampABI as any,
 }
 
 const treasuryContracts = {

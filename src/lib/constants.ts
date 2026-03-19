@@ -40,6 +40,7 @@ export const VANGUARD_NFT_ADDRESS = process.env.NEXT_PUBLIC_VANGUARD?.toLowerCas
 export const BB_NFT_ADDRESS = process.env.NEXT_PUBLIC_BB_NFT_ADDRESS?.toLowerCase() as Address
 export const ROOTLINGS_S1_NFT_ADDRESS =
   process.env.NEXT_PUBLIC_ROOTLINGS_S1_NFT_ADDRESS?.toLowerCase() as Address
+export const ROOTCAMP_NFT_ADDRESS = process.env.NEXT_PUBLIC_ROOTCAMP_NFT_ADDRESS?.toLowerCase() as Address
 // NFTs end
 export const MULTICALL_ADDRESS = process.env.NEXT_PUBLIC_MULTICALL_ADDRESS as Address
 export const GRANTS_BUCKET_ADDRESS = process.env.NEXT_PUBLIC_GRANTS_BUCKET_ADDRESS as Address

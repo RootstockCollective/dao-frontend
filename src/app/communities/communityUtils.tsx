@@ -1,8 +1,9 @@
-import { nftContracts } from '@/lib/contracts'
-import type { FC, ReactNode } from 'react'
+import type { ReactNode } from 'react'
+
 import { Header, Paragraph } from '@/components/Typography'
+import { ROOTCAMP_NFT_ADDRESS, ROOTLINGS_S1_NFT_ADDRESS } from '@/lib/constants'
+import { nftContracts } from '@/lib/contracts'
 import { ipfsGatewayUrl } from '@/lib/ipfs'
-import { ROOTLINGS_S1_NFT_ADDRESS } from '@/lib/constants'
 
 /**
  * Represents the result of a contract read operation.
@@ -37,7 +38,7 @@ export interface CommunityItem {
   additionalChecks?: AdditionalCheck[]
   readMoreLink?: string
   discussionLink?: string
-  campaignDetails?: FC<{ activation?: ReactNode }>
+  campaignDetails?: (props: { activation?: ReactNode }) => ReactNode
   isExternal?: boolean
 }
 
@@ -217,6 +218,24 @@ export const betaBuilders: CommunityItem = {
   discussionLink: 'https://discord.com/channels/842021106956238848/1284160805671272458',
 }
 
+export const cultivatorCommunity: CommunityItem = {
+  leftImageSrc: '/images/nfts/cultivators.jpg',
+  title: 'Cultivator',
+  subtitle: '',
+  description:
+    "Rootstock's inner circle for dedicated BTCFi believers. Earn rewards through on-chain activity, activations, unlock exclusive perks, and get early access to what we plant next.",
+  nftAddress: '',
+  numberOfMembers: 0,
+  isMintable: false,
+  readMoreLink: 'https://cultivators.rootstockcollective.xyz/',
+  cover: '',
+  detailedDescription: <></>,
+  specialPower: '20% voting booster',
+  activation: '',
+  requirement: '',
+  isExternal: true,
+}
+
 export const rootstockHacktivator: CommunityItem = {
   leftImageSrc: '/images/nfts/rsk-hacktivator-thumb.png',
   title: 'HACKTIVATOR',
@@ -256,6 +275,26 @@ export const rootlingsS1: CommunityItem = {
   ),
 }
 
+export const rootcampNft: CommunityItem = {
+  leftImageSrc: ipfsGatewayUrl('QmXzCQ9B1XaHdsfxpPVkAQNTvFw5o7BD7H8XZ96FKyRPnb'),
+  title: 'Rootcamp Certified Builder',
+  subtitle: 'Rootcamp',
+  description: 'Rootcamp Certified Builder badge, earned after 12 weeks of intensive training.',
+  specialPower: 'Club + Perks',
+  nftAddress: ROOTCAMP_NFT_ADDRESS,
+  cover: ipfsGatewayUrl('QmXzCQ9B1XaHdsfxpPVkAQNTvFw5o7BD7H8XZ96FKyRPnb'),
+  isMintable: true,
+  numberOfMembers: 0,
+  activation: 'March 2026',
+  requirement: 'Rootcamp participation, Self-Claim',
+  detailedDescription: (
+    <>
+      Rootcamp Certified Builder badge, earned after 12 weeks of intensive training, recognizing builders who
+      are ready to ship on Rootstock: Bitcoin security, EVM execution, and real on-chain impact.
+    </>
+  ),
+}
+
 export const communitiesToRender = [
   earlyAdoptersCommunity,
   ogFounders,
@@ -264,6 +303,7 @@ export const communitiesToRender = [
   vanguardCommunity,
   betaBuilders,
   rootlingsS1,
+  rootcampNft,
 ]
 
 export const communitiesMapByContract = Object.fromEntries(
