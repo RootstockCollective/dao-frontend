@@ -17,6 +17,7 @@ import { useRbtcVault } from './useRbtcVault'
  *
  * Row 1: TVL, Vault APY, Synthetic Yield APY, Liquidity Reserve.
  * Row 2: Current NAV, Deployed Capital, Unallocated Capital, Manual Buffer.
+ * Row 3: Pending Deposit Capital, Pending Withdrawal Capital, Net Pending Capital, Price per Share.
  */
 export const useRbtcVaultMetrics = () => {
   const { prices } = usePricesContext()
@@ -29,6 +30,9 @@ export const useRbtcVaultMetrics = () => {
     lastClosedEpoch,
     previousClosedEpoch,
     totalAssets,
+    totalPendingDepositAssets,
+    totalRedeemRequiredAssets,
+    totalRedeemPaidAssets,
     isLoading: isLoadingVault,
     error: vaultError,
   } = useRbtcVault()
@@ -53,6 +57,15 @@ export const useRbtcVaultMetrics = () => {
     const syntheticYieldApy = isNaN(syntheticApyDecimal) ? '—' : `${(syntheticApyDecimal * 100).toFixed(2)}%`
     const vaultApy = computeIndicativeApy(lastClosedEpoch, previousClosedEpoch)
 
+    const pendingWithdrawals = totalRedeemRequiredAssets - totalRedeemPaidAssets
+    const netPending = totalPendingDepositAssets - pendingWithdrawals
+
+    // price = assets / supply
+    const pricePerShareWei =
+      lastClosedEpoch && lastClosedEpoch.supplyAtClose > 0n
+        ? (lastClosedEpoch.assetsAtClose * WeiPerEther) / lastClosedEpoch.supplyAtClose
+        : 0n
+
     return {
       row1: {
         tvl: formatMetrics(tvlRaw, rbtcPrice, RBTC),
@@ -65,6 +78,12 @@ export const useRbtcVaultMetrics = () => {
         deployedCapital: formatMetrics(reportedOffchainAssets, rbtcPrice, RBTC),
         unallocatedCapital: formatMetrics(freeOnchainLiquidity, rbtcPrice, RBTC),
         manualBuffer: formatMetrics(bufferAssets, rbtcPrice, RBTC),
+      },
+      row3: {
+        pendingDepositCapital: formatMetrics(totalPendingDepositAssets, rbtcPrice, RBTC),
+        pendingWithdrawalCapital: formatMetrics(pendingWithdrawals, rbtcPrice, RBTC),
+        netPendingCapital: formatMetrics(netPending, rbtcPrice, RBTC),
+        pricePerShare: formatMetrics(pricePerShareWei, rbtcPrice, RBTC),
       },
       isLoading,
       error,
@@ -80,6 +99,9 @@ export const useRbtcVaultMetrics = () => {
     previousClosedEpoch,
     rbtcPrice,
     totalAssets,
+    totalPendingDepositAssets,
+    totalRedeemRequiredAssets,
+    totalRedeemPaidAssets,
     isLoading,
     error,
   ])
