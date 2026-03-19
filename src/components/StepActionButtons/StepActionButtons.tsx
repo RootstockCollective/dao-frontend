@@ -1,8 +1,10 @@
-import { Button } from '@/components/Button'
-import { TransactionInProgressButton } from './TransactionInProgressButton'
 import { ReactNode } from 'react'
 
-interface ButtonAction {
+import { Button } from '@/components/Button'
+
+import { TransactionInProgressButton } from './TransactionInProgressButton'
+
+export interface ButtonAction {
   label: string
   onClick: () => void
   disabled?: boolean
@@ -10,7 +12,7 @@ interface ButtonAction {
   isTxPending?: boolean
 }
 
-interface ButtonActions {
+export interface ButtonActions {
   primary: ButtonAction
   secondary?: ButtonAction
 }

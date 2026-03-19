@@ -3,7 +3,9 @@
 import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { RBTC } from '@/lib/constants'
+import { useModal } from '@/shared/hooks/useModal'
 
+import { TopUpBufferFlow } from '../flows/buffer/TopUpBufferFlow'
 import { useRbtcVaultMetrics } from '../hooks/useRbtcVaultMetrics'
 import { RbtcVaultMetricCard } from './RbtcVaultMetricCard'
 import { RbtcVaultMetricsRow } from './RbtcVaultMetricsRow'
@@ -13,6 +15,8 @@ export const RbtcVaultMetricsSection = () => {
   const { tvl, vaultApy, syntheticYieldApy, liquidityReserve } = row1
   const { currentNav, deployedCapital, unallocatedCapital, manualBuffer } = row2
   const { pendingDepositCapital, pendingWithdrawalCapital, netPendingCapital, pricePerShare } = row3
+
+  const bufferModal = useModal()
 
   if (isLoading) {
     return (
@@ -95,6 +99,7 @@ export const RbtcVaultMetricsSection = () => {
           tokenSymbol={RBTC}
           fiatAmount={manualBuffer.fiatAmount}
           buttonLabel="Top Up Buffer"
+          onButtonClick={bufferModal.openModal}
         />
       </RbtcVaultMetricsRow>
 
@@ -129,6 +134,8 @@ export const RbtcVaultMetricsSection = () => {
           fiatAmount={pricePerShare.fiatAmount}
         />
       </RbtcVaultMetricsRow>
+
+      {bufferModal.isModalOpened && <TopUpBufferFlow onClose={bufferModal.closeModal} />}
     </div>
   )
 }

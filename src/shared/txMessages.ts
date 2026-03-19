@@ -323,4 +323,46 @@ export const TX_MESSAGES = {
       loading: false,
     },
   },
+  bufferTopUp: {
+    pending: {
+      title: 'Buffer top-up in process',
+      content: 'Waiting for transaction confirmation...',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Buffer top-up successful',
+      content: 'The buffer has been topped up successfully.',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Buffer top-up failed',
+      content:
+        'An unexpected error occurred while trying to top up the buffer. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
+  bufferAllowance: {
+    pending: {
+      title: 'Allowance in process',
+      content: 'Wait for allowance transaction to be completed.',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Allowance successful',
+      content: 'Allowance successfully granted!',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Error on allowance',
+      content:
+        'An unexpected error occurred while trying to execute the allowance. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
 } as const
