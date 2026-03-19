@@ -1,5 +1,6 @@
 import {
   betaBuilders,
+  cultivatorCommunity,
   earlyAdoptersCommunity,
   ogFounders,
   ogFoundersEcosystemPartners,
@@ -46,19 +47,19 @@ export default function Communities() {
             />
             <ResponsiveCommunityItemHOC className="lg:col-span-2" {...rootlingsS1} enableDebris />
             <ResponsiveCommunityItemHOC className="lg:col-span-2" {...vanguardCommunity} enableDebris />
-            <ResponsiveCommunityItemHOC className="lg:col-span-2" {...rootcampNft} enableDebris />
           </div>
         </SectionContainer>
         <SectionContainer
           title="CLUBS"
           rightContent="These are essentially a group where people with likeminded interests can discuss ideas. Some are gated with NFTs, and in the future it may be possible to give anyone the ability to request a  club is created. The more you participate — from proposals to governance to community — the more opportunities you have to collect. "
         >
-          <div>
-            {/* Communities */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
+            <ResponsiveCommunityItemHOC {...cultivatorCommunity} enableDebris />
+            <div className="flex flex-col gap-2 lg:col-span-2">
               <ResponsiveCommunityItemHOC {...betaBuilders} variant="landscape" enableDebris />
               <ResponsiveCommunityItemHOC {...rootstockHacktivator} variant="landscape" enableDebris />
             </div>
+            <ResponsiveCommunityItemHOC {...rootcampNft} enableDebris />
           </div>
         </SectionContainer>
       </div>
