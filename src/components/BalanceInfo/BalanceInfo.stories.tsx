@@ -85,3 +85,14 @@ export const TVL: Story = {
     fiatAmount: '999,999,999.99 USD',
   },
 }
+
+export const TVLWithSecondaryValue: Story = {
+  args: {
+    title: 'TVL',
+    tooltipContent: <Label variant="body-s">Total Value Locked — aggregate rBTC held by the vault</Label>,
+    amount: '999.99999',
+    symbol: 'rBTC',
+    secondaryValue: '99.99%',
+    fiatAmount: '12,345 USD',
+  },
+}

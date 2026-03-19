@@ -1,4 +1,3 @@
-import { FC } from 'react'
 import { BodyVariants, TagVariants } from './types'
 import { BaseTypography, BaseTypographyProps } from './Typography'
 
@@ -33,7 +32,7 @@ interface Props extends Omit<BaseTypographyProps<'label'>, 'as'> {
  *
  * All variants support the `bold`, `caps`, and `html` props.
  */
-export const Label: FC<Props> = ({ children, variant = 'body', 'data-testid': dataTestId = '', ...rest }) => (
+export const Label = ({ children, variant = 'body', 'data-testid': dataTestId = '', ...rest }: Props) => (
   <BaseTypography as="label" variant={variant} data-testid={dataTestId} {...rest}>
     {children}
   </BaseTypography>
