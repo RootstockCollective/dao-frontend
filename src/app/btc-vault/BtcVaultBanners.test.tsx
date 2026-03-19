@@ -78,6 +78,22 @@ describe('BtcVaultBanners', () => {
     expect(screen.getByTestId('DisclosureContent')).toBeInTheDocument()
   })
 
+  it('renders deposit window above disclosure when wallet is not connected and epoch is open', () => {
+    mockUseAccount.mockReturnValue({ address: undefined, isConnected: false })
+    mockUseEpochState.mockReturnValue({ data: openEpoch })
+    render(<BtcVaultBanners />)
+
+    expect(screen.getByTestId('DisclosureBanner')).toBeInTheDocument()
+    expect(screen.getByTestId('deposit-window-section')).toBeInTheDocument()
+    expect(screen.getByText(/DEPOSIT WINDOW 2/)).toBeInTheDocument()
+    expect(screen.getByText('DISCLOSURE')).toBeInTheDocument()
+    expect(screen.getByTestId('DisclosureContent')).toBeInTheDocument()
+    const depositSection = screen.getByTestId('deposit-window-section')
+    const disclosure = screen.getByText('DISCLOSURE').closest('div')
+    expect(disclosure).toBeInTheDocument()
+    expect(depositSection.compareDocumentPosition(disclosure!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+  })
+
   it('renders combined card with KYB-approved message when connected, KYB passed, and epoch is closed', () => {
     mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
     mockUseEpochState.mockReturnValue({ data: closedEpoch })
