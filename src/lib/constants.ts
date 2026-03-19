@@ -70,6 +70,7 @@ export const CACHE_REVALIDATE_SECONDS = 20
 export const RIF = 'RIF'
 export const USD = 'USD'
 export const RBTC = ENV === 'mainnet' || ENV === 'fork' ? 'rBTC' : 'tRBTC'
+export const WRBTC = 'WrBTC'
 // All RBTC symbol variants (mainnet and testnet) - use for symbol matching
 export const RBTC_SYMBOLS = ['rbtc', 'trbtc'] as const
 export const STRIF = 'stRIF'
