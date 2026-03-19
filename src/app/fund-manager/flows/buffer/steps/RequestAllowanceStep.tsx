@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react'
 
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Span } from '@/components/Typography'
-import { RBTC, WRBTC } from '@/lib/constants'
+import { RBTC, WRBTC, WRBTC_ADDRESS } from '@/lib/constants'
 import { buffer } from '@/lib/contracts'
 import { formatNumberWithCommas } from '@/lib/utils'
 import { executeTxFlow } from '@/shared/notification'
@@ -14,13 +14,13 @@ import { FlowStepProps } from '../../../types'
 import { useTopUpBufferContext } from '../TopUpBufferContext'
 
 export const RequestAllowanceStep = ({ onGoNext, onGoBack, setButtonActions }: FlowStepProps) => {
-  const { amount, wrbtcAddress, usdEquivalent, isValidAmount } = useTopUpBufferContext()
+  const { amount, usdEquivalent, isValidAmount } = useTopUpBufferContext()
   const hasAutoAdvancedRef = useRef(false)
 
   const formattedAllowanceAmount = useMemo(() => (amount ? formatNumberWithCommas(amount) : '0'), [amount])
 
   const { isAllowanceEnough, isAllowanceReadLoading, onRequestAllowance, isRequesting, isTxPending } =
-    useErc20Allowance(wrbtcAddress, buffer.address, amount)
+    useErc20Allowance(WRBTC_ADDRESS, buffer.address, amount)
 
   // Auto-advance if allowance is already sufficient
   useEffect(() => {
@@ -43,7 +43,7 @@ export const RequestAllowanceStep = ({ onGoNext, onGoBack, setButtonActions }: F
       primary: {
         label: isRequesting ? 'Requesting...' : 'Request allowance',
         onClick: handleRequestAllowance,
-        disabled: isAllowanceReadLoading || !isValidAmount || !wrbtcAddress,
+        disabled: isAllowanceReadLoading || !isValidAmount,
         loading: isRequesting,
         isTxPending,
       },
@@ -57,7 +57,6 @@ export const RequestAllowanceStep = ({ onGoNext, onGoBack, setButtonActions }: F
     isRequesting,
     isTxPending,
     isValidAmount,
-    wrbtcAddress,
     onGoBack,
     handleRequestAllowance,
     setButtonActions,

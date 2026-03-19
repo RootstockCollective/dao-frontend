@@ -1,5 +1,5 @@
-import { useCallback, useMemo } from 'react'
-import { Address, erc20Abi, parseEther, zeroAddress } from 'viem'
+import { useMemo } from 'react'
+import { Address, erc20Abi, parseEther } from 'viem'
 import { useAccount, useReadContract } from 'wagmi'
 
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
@@ -21,13 +21,8 @@ const parseAmountWei = (amount: string): bigint => {
  * @param spenderAddress - The contract allowed to spend (e.g. Buffer, Vault)
  * @param amount - Human-readable amount string (in ether units)
  */
-export const useErc20Allowance = (
-  tokenAddress: Address | undefined,
-  spenderAddress: Address,
-  amount: string,
-) => {
+export const useErc20Allowance = (tokenAddress: Address, spenderAddress: Address, amount: string) => {
   const { address } = useAccount()
-  const isReady = !!tokenAddress && !!address
 
   const { data: allowanceBalance, isLoading: isAllowanceReadLoading } = useReadContract({
     abi: erc20Abi,
@@ -35,7 +30,6 @@ export const useErc20Allowance = (
     functionName: 'allowance',
     args: [address!, spenderAddress],
     query: {
-      enabled: isReady,
       refetchInterval: AVERAGE_BLOCKTIME,
     },
   })
@@ -47,11 +41,10 @@ export const useErc20Allowance = (
     [allowanceBalance, amountWei],
   )
 
-  // useContractWrite must always run; use zeroAddress only as a typed placeholder until tokenAddress exists.
   const contractWriteConfig = useMemo(
     () => ({
       abi: erc20Abi,
-      address: tokenAddress ?? zeroAddress,
+      address: tokenAddress,
       functionName: 'approve' as const,
       args: [spenderAddress, amountWei] as readonly [Address, bigint],
     }),
@@ -59,19 +52,12 @@ export const useErc20Allowance = (
   )
 
   const {
-    onRequestTransaction: requestApproveTx,
     isRequesting,
     isTxPending,
     isTxFailed,
     txHash: allowanceTxHash,
+    onRequestTransaction: onRequestAllowance,
   } = useContractWrite(contractWriteConfig)
-
-  const onRequestAllowance = useCallback(() => {
-    if (!isReady) {
-      return Promise.reject(new Error('Wallet or token address not ready'))
-    }
-    return requestApproveTx()
-  }, [isReady, requestApproveTx])
 
   return {
     isAllowanceEnough,

@@ -1,11 +1,9 @@
 'use client'
 
 import { createContext, ReactNode, useContext } from 'react'
-import { Address } from 'viem'
 
-import { RBTC } from '@/lib/constants'
+import { RBTC, WRBTC_ADDRESS } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context'
-import { useReadRbtcBuffer } from '@/shared/hooks/contracts/btc-vault'
 
 import { useAmountInput } from '../../hooks/useAmountInput'
 import { SelectedToken, useTokenSelection } from '../../hooks/useTokenSelection'
@@ -21,7 +19,6 @@ interface TopUpBufferContextValue {
   balanceFormatted: string
   isNative: boolean
   requiresAllowance: boolean
-  wrbtcAddress: Address | undefined
   setAmount: (value: string) => void
   handleAmountChange: (value: string) => void
   handlePercentageClick: (percentage: number) => void
@@ -38,10 +35,8 @@ export const TopUpBufferProvider = ({ children }: Props) => {
   const { prices } = usePricesContext()
   const rbtcPrice = prices[RBTC]?.price ?? 0
 
-  // TODO: call useRbtcBuffer instead (maybe create an useReadRbtcBufferBatch hook)
-  const { data: wrbtcAddress } = useReadRbtcBuffer({ functionName: 'asset' })
   const { selectedToken, setSelectedToken, balance, balanceFormatted, isNative, requiresAllowance } =
-    useTokenSelection(wrbtcAddress)
+    useTokenSelection(WRBTC_ADDRESS)
 
   const {
     amount,
@@ -69,7 +64,6 @@ export const TopUpBufferProvider = ({ children }: Props) => {
     balanceFormatted,
     isNative,
     requiresAllowance,
-    wrbtcAddress,
     setAmount,
     handleAmountChange,
     handlePercentageClick,

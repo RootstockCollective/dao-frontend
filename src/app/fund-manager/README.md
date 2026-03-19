@@ -146,7 +146,8 @@ Use these when the UX matches; do not force-fit unrelated CTAs.
 | `useAmountInput` | [`hooks/useAmountInput.ts`](./hooks/useAmountInput.ts) | Amount string, validation, % buttons, native gas reserve |
 | `useTokenSelection` | [`hooks/useTokenSelection.ts`](./hooks/useTokenSelection.ts) | Native vs wrapped + balances |
 | `useErc20Allowance` | [`hooks/useErc20Allowance.ts`](./hooks/useErc20Allowance.ts) | Generic approve flow for a spender |
-| `useVaultAsset` / reads | [`hooks/useVaultAsset.ts`](./hooks/useVaultAsset.ts), [`useReadRbtcBuffer`](../../shared/hooks/contracts/btc-vault/useReadRbtcBuffer.ts) | Buffer/vault token address and other reads |
+| `useVaultAsset` / reads | [`hooks/useVaultAsset.ts`](./hooks/useVaultAsset.ts), [`useReadRbtcBuffer`](../../shared/hooks/contracts/btc-vault/useReadRbtcBuffer.ts) | Vault asset and buffer reads (`bufferAssets`, `bufferDebt`, etc.) |
+| Top-up WrBTC ERC-20 | `WRBTC_ADDRESS` / `NEXT_PUBLIC_WRBTC_ADDRESS` in [`@/lib/constants`](../../lib/constants.ts) | Wrapped token address for buffer top-up (`TopUpBufferContext`); not read from `buffer.asset()` |
 
 **Constants:** Import **`RBTC`** and **`WRBTC`** from `@/lib/constants`. Native display is environment-dependent (`rBTC` vs `tRBTC`); wrapped label is always `WRBTC`. Use **`TokenImage`** with `symbol={RBTC}` for both native and wrapped visuals when product says they share the same icon.
 
