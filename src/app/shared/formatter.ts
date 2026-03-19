@@ -64,10 +64,20 @@ export const getSymbolDecimals = (symbol: string): number => {
   return symbols[symbol.toLocaleLowerCase()]?.decimals ?? 18
 }
 
-export const formatSymbol = (value: bigint | string, symbol: string) => {
+export const formatSymbol = (value: bigint | string, symbol: string): string => {
   if (!value || value === '0') {
     return '0'
   }
+
+  const amount = Big(value.toString())
+  if (amount.lt(0)) {
+    const positiveFormatted = formatSymbol(amount.abs().toFixed(), symbol)
+    if (positiveFormatted.startsWith('<')) {
+      return `>-${positiveFormatted.slice(1)}`
+    }
+    return `-${positiveFormatted}`
+  }
+
   const symbolKey = symbol.toLocaleLowerCase()
   const { decimals, displayDecimals } = symbols[symbolKey] ?? {
     decimals: 18,
@@ -76,14 +86,14 @@ export const formatSymbol = (value: bigint | string, symbol: string) => {
   const isRbtc = RBTC_SYMBOLS.includes(symbolKey as (typeof RBTC_SYMBOLS)[number])
   const minimumFractionDigits = isRbtc ? 0 : displayDecimals
 
-  const amount = Big(value.toString()).div(Big(10).pow(decimals))
+  const scaled = amount.div(Big(10).pow(decimals))
   const minimumAmount = Big(1).div(Big(10).pow(displayDecimals))
 
-  if (amount.lt(1) && displayDecimals === 0) {
+  if (scaled.lt(1) && displayDecimals === 0) {
     return '<1'
   }
 
-  if (amount.lt(minimumAmount)) {
+  if (scaled.lt(minimumAmount)) {
     return `<0${displayDecimals > 0 ? '.'.padEnd(displayDecimals, '0') + '1' : ''}`
   }
 
@@ -91,7 +101,7 @@ export const formatSymbol = (value: bigint | string, symbol: string) => {
     minimumFractionDigits,
     maximumFractionDigits: displayDecimals,
     roundingMode: 'floor',
-  }).format(amount.toString() as never)
+  }).format(scaled.toString() as never)
 }
 
 /**

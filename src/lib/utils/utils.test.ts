@@ -65,6 +65,23 @@ describe('formatCurrency', () => {
   it('formatCurrency with Big 0', () => {
     expect(formatCurrency(new Big(0))).toBe('$0.00')
   })
+
+  it('formatCurrency with negative value', () => {
+    expect(formatCurrency(-123456.789)).toBe('-$123,456.79')
+    expect(formatCurrency(-5)).toBe('-$5.00')
+  })
+
+  it('formatCurrency with small negative value between -0.01 and 0', () => {
+    expect(formatCurrency(-0.005)).toBe('>-$0.01')
+    expect(formatCurrency(-0.001)).toBe('>-$0.01')
+    expect(formatCurrency(-0.005, { showCurrencyLabel: true })).toBe('>-$0.01 USD')
+  })
+
+  it('formatCurrency with negative value at or beyond -0.01', () => {
+    expect(formatCurrency(-0.01)).toBe('-$0.01')
+    expect(formatCurrency(-0.05)).toBe('-$0.05')
+    expect(formatCurrency(-1)).toBe('-$1.00')
+  })
 })
 
 describe('formatNumberWithCommas', () => {
