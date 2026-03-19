@@ -23,8 +23,8 @@ const abis = {
   GaugeAbi,
   RewardDistributorAbi,
 } as const
-type CollectiveRewardsAbis = typeof abis
-type CollectiveRewardsAbiName = keyof CollectiveRewardsAbis
-type CollectiveRewardsAbi = CollectiveRewardsAbis[CollectiveRewardsAbiName]
+
+type CollectiveRewardsAbiName = keyof typeof abis
+type CollectiveRewardsAbi = (typeof abis)[CollectiveRewardsAbiName]
 
 export const getAbi = (abiName: CollectiveRewardsAbiName): CollectiveRewardsAbi => abis[abiName]

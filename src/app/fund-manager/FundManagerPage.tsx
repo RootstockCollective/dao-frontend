@@ -8,6 +8,8 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header } from '@/components/Typography'
 import { usePermissionsManager } from '@/shared/hooks/contracts'
 
+import { RbtcVaultMetricsSection } from './components'
+
 const NAME = 'Fund Manager Dashboard'
 
 export const FundManagerPage = () => {
@@ -26,13 +28,11 @@ export const FundManagerPage = () => {
   }
 
   return (
-    <div
-      data-testid={NAME}
-      className="flex flex-col items-start w-full h-full pt-[0.13rem] md:gap-6 rounded-sm"
-    >
+    <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">
       <Header caps variant="h1" className="text-3xl leading-10 pb-10">
         {NAME}
       </Header>
+      <RbtcVaultMetricsSection />
     </div>
   )
 }

@@ -1,2 +1,6 @@
 export * from './usePermissionsManager'
 export * from './useReadPermissionsManager'
+export * from './useReadRbtcBuffer'
+export * from './useReadRbtcVaultBatch'
+export * from './useReadRbtcVaultForMultipleArgs'
+export * from './useReadSyntheticYield'
