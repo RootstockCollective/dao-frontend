@@ -1,15 +1,18 @@
 import { renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { TRANSPARENCY_WALLET_LABEL } from '@/app/btc-vault/components/capital-allocation/WalletBalancesTable.constants'
 import { RBTC } from '@/lib/constants'
 
 import { useCapitalAllocation } from './useCapitalAllocation'
 
 const mockUseReadContracts = vi.fn()
+const mockUseBalance = vi.fn()
 const mockUsePricesContext = vi.fn()
 
 vi.mock('wagmi', () => ({
   useReadContracts: (...args: unknown[]) => mockUseReadContracts(...args),
+  useBalance: (...args: unknown[]) => mockUseBalance(...args),
 }))
 
 vi.mock('@/shared/context/PricesContext', () => ({
@@ -23,16 +26,22 @@ function setupMocks({
   isLoading = false,
   error = undefined,
   rbtcPrice = 50_000,
+  balanceWei = 0n,
 }: {
   data?: { result: bigint }[]
   isLoading?: boolean
   error?: Error
   rbtcPrice?: number
+  balanceWei?: bigint
 } = {}) {
   mockUseReadContracts.mockReturnValue({
     data,
     isLoading,
     error,
+  })
+  mockUseBalance.mockReturnValue({
+    data: balanceWei !== undefined ? { value: balanceWei, decimals: 18 } : undefined,
+    isLoading: false,
   })
   mockUsePricesContext.mockReturnValue({
     prices: { [RBTC]: { price: rbtcPrice }, tRBTC: { price: rbtcPrice }, rBTC: { price: rbtcPrice } },
@@ -106,10 +115,11 @@ describe('useCapitalAllocation', () => {
     expect(result.current.data).toBeUndefined()
   })
 
-  it('includes wallets array from mock (empty) and does not break display', () => {
+  it('includes one transparency wallet row with label and does not break display', () => {
     const { result } = renderHook(() => useCapitalAllocation())
 
-    expect(result.current.data?.wallets).toEqual([])
+    expect(result.current.data?.wallets).toHaveLength(1)
+    expect(result.current.data?.wallets[0].label).toBe(TRANSPARENCY_WALLET_LABEL)
   })
 
   it('calls useReadContracts with four contract configs and refetchInterval', () => {
@@ -123,6 +133,11 @@ describe('useCapitalAllocation', () => {
           expect.objectContaining({ functionName: 'reservedOnchainAssets' }),
           expect.objectContaining({ functionName: 'reportedOffchainAssets' }),
         ]),
+        query: expect.objectContaining({ refetchInterval: 60_000 }),
+      }),
+    )
+    expect(mockUseBalance).toHaveBeenCalledWith(
+      expect.objectContaining({
         query: expect.objectContaining({ refetchInterval: 60_000 }),
       }),
     )

@@ -80,20 +80,14 @@ const MOCK_DATA: CapitalAllocationDisplay = {
   ],
   wallets: [
     {
-      label: 'Fordefi 1',
-      trackingPlatform: 'Nimbus',
-      trackingUrl: 'https://app.nimbus.io',
-      amountFormatted: '0.80',
-      fiatAmountFormatted: '$40,000.00 USD',
-      percentFormatted: '80%',
-    },
-    {
-      label: 'Fordefi 2',
-      trackingPlatform: 'Suivision',
-      trackingUrl: 'https://suivision.xyz',
-      amountFormatted: '0.20',
-      fiatAmountFormatted: '$10,000.00 USD',
-      percentFormatted: '20%',
+      label: 'Foredefi 1',
+      labelUrl:
+        'https://rootstock-testnet.blockscout.com/address/0x8ea0E8c0552A3434a6055AEBdF49750CD71889de?tab=coin_balance_history',
+      trackingPlatform: 'Simulated strategy 1',
+      trackingUrl: 'https://debank.com/profile/0x8ea0e8C0552a3434A6055aebdf49750cD71889dE',
+      amountFormatted: '1.00',
+      fiatAmountFormatted: '$50,000.00 USD',
+      percentFormatted: '100%',
     },
   ],
 }

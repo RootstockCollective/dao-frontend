@@ -90,7 +90,7 @@ describe('WalletBalancesTable', () => {
     render(<WalletBalancesTable wallets={MOCK_WALLETS} />)
 
     expect(screen.getByTestId('wallet-balances-table')).toBeInTheDocument()
-    expect(screen.getByText('On-chain wallets')).toBeInTheDocument()
+    expect(screen.getByText('On-chain wallet')).toBeInTheDocument()
     expect(screen.getByText('Tracking')).toBeInTheDocument()
     expect(screen.getByText('1069.99992')).toBeInTheDocument()
     expect(screen.getByText('$2256.00')).toBeInTheDocument()
@@ -213,7 +213,7 @@ describe('WalletBalancesTable', () => {
       screen.getAllByRole('row').map(row => within(row).queryByText(/Wallet/)?.textContent)
         .filter(Boolean)
 
-    it('clicking "On-chain wallets" header sorts rows alphabetically', async () => {
+    it('clicking "On-chain wallet" header sorts rows alphabetically', async () => {
       const user = userEvent.setup()
       render(<WalletBalancesTable wallets={SORT_WALLETS} />)
 

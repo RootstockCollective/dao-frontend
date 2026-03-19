@@ -49,8 +49,30 @@ export function WalletBalancesTable({ wallets, className, 'data-testid': testId,
     () => [
       accessor('label', {
         id: 'wallet',
-        header: 'On-chain wallets',
-        cell: ({ getValue }) => <Span variant="body-s">{getValue()}</Span>,
+        header: 'On-chain wallet',
+        cell: ({ row, getValue }) => {
+          const labelUrl = row.original.labelUrl
+          const text = getValue()
+          if (labelUrl) {
+            return (
+              <span className="inline-flex items-center gap-1">
+                <a
+                  href={labelUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-primary hover:underline"
+                  data-testid={`wallet-label-link-${row.index}`}
+                >
+                  <Span variant="body-s" className="text-primary">
+                    {text}
+                  </Span>
+                </a>
+                <ArrowUpRightIcon size={14} aria-hidden />
+              </span>
+            )
+          }
+          return <Span variant="body-s">{text}</Span>
+        },
         meta: { width: '1.5fr' },
       }),
       accessor('trackingPlatform', {
