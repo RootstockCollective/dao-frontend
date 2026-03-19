@@ -6,7 +6,7 @@ import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
 import { KotoQuestionMarkIcon } from '@/components/Icons/KotoQuestionMarkIcon'
 import { TokenImage } from '@/components/TokenImage'
 import { Tooltip } from '@/components/Tooltip'
-import { Label, Span } from '@/components/Typography'
+import { Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
@@ -81,15 +81,16 @@ export function CapitalAllocationDonutChart({
                 data-testid={`legend-${cat.label.toLowerCase().replaceAll(/\s+/g, '-')}`}
               >
                 {/* Row 1: dot + label — fixed min-height for consistent vertical alignment across items */}
-                <span className="flex min-h-6 min-w-0 items-center gap-1.5">
+                <Span
+                  variant="tag"
+                  className="flex min-h-6 min-w-0 items-center gap-1.5 font-normal text-100"
+                >
                   <span
                     className="h-2.5 w-2.5 shrink-0 rounded-full"
                     style={{ backgroundColor: CAPITAL_ALLOCATION_CHART_COLORS[index] ?? '#888' }}
                     aria-hidden
                   />
-                  <Label variant="tag" className="shrink-0 font-normal" style={{ color: '#ACA39D' }}>
-                    {cat.label}
-                  </Label>
+                  <span className="shrink-0">{cat.label}</span>
                   {CAPITAL_ALLOCATION_TOOLTIP_MAP[cat.label] && (
                     <Tooltip text={CAPITAL_ALLOCATION_TOOLTIP_MAP[cat.label]}>
                       <KotoQuestionMarkIcon
@@ -98,7 +99,7 @@ export function CapitalAllocationDonutChart({
                       />
                     </Tooltip>
                   )}
-                </span>
+                </Span>
                 {/* Row 2: token amount + percentage — fixed min-height for alignment */}
                 <span className="flex min-h-7 min-w-0 items-center gap-1 pl-4 text-100">
                   <Span variant="body-l" bold>
