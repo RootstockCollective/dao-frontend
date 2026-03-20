@@ -12,12 +12,10 @@ export const useUpdateNav = (reportedOffchainAssetsWei: bigint) => {
     () => ({
       ...rbtcVault,
       functionName: 'reportOffchainAssetsAndProcessFunding' as const,
-      args: [reportedOffchainAssetsWei] as readonly [bigint],
+      args: [reportedOffchainAssetsWei] as const,
     }),
     [reportedOffchainAssetsWei],
   )
 
-  const { onRequestTransaction, isRequesting, isTxPending } = useContractWrite(config)
-
-  return { onRequestTransaction, isRequesting, isTxPending }
+  return useContractWrite(config)
 }

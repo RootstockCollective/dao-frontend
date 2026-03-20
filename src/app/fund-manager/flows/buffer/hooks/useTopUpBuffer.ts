@@ -10,23 +10,21 @@ import { useContractWrite } from '@/shared/hooks/useContractWrite'
  * - `onInjectNative(amountWei)`: for rBTC (native) — calls `buffer.injectNative()` with value
  */
 export const useTopUpBuffer = (amountWei: bigint, isNative: boolean) => {
-  const erc20Config = useMemo(
-    () => ({
-      ...buffer,
-      functionName: 'inject' as const,
-      args: [amountWei] as const,
-    }),
-    [amountWei],
+  const config = useMemo(
+    () =>
+      isNative
+        ? {
+            ...buffer,
+            functionName: 'injectNative' as const,
+            args: [] as const,
+            value: amountWei,
+          }
+        : {
+            ...buffer,
+            functionName: 'inject' as const,
+            args: [amountWei] as const,
+          },
+    [amountWei, isNative],
   )
-  const nativeConfig = useMemo(
-    () => ({
-      ...buffer,
-      functionName: 'injectNative' as const,
-      args: [] as const,
-      value: amountWei,
-    }),
-    [amountWei],
-  )
-  const config = isNative ? nativeConfig : erc20Config
   return useContractWrite(config)
 }

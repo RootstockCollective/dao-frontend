@@ -20,10 +20,9 @@ export const useDepositToVault = (amountWei: bigint, isNative: boolean) => {
         : {
             ...rbtcVault,
             functionName: 'moveCapitalIn' as const,
-            args: [amountWei] as readonly [bigint],
+            args: [amountWei] as const,
           },
     [amountWei, isNative],
   )
-
   return useContractWrite(config)
 }
