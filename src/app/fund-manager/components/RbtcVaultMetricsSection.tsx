@@ -8,6 +8,7 @@ import { useModal } from '@/shared/hooks/useModal'
 import { TopUpBufferFlow } from '../flows/buffer/TopUpBufferFlow'
 import { DepositToVaultFlow } from '../flows/deposit/DepositToVaultFlow'
 import { UpdateNavFlow } from '../flows/nav/UpdateNavFlow'
+import { SyntheticYieldTopUpFlow } from '../flows/synthetic-yield/SyntheticYieldTopUpFlow'
 import { useRbtcVaultMetrics } from '../hooks/useRbtcVaultMetrics'
 import { RbtcVaultMetricCard } from './RbtcVaultMetricCard'
 import { RbtcVaultMetricsRow } from './RbtcVaultMetricsRow'
@@ -21,6 +22,7 @@ export const RbtcVaultMetricsSection = () => {
   const bufferModal = useModal()
   const updateNavModal = useModal()
   const depositToVaultModal = useModal()
+  const syntheticYieldTopUpModal = useModal()
 
   if (isLoading) {
     return (
@@ -59,6 +61,7 @@ export const RbtcVaultMetricsSection = () => {
           tooltipContent="Fixed synthetic yield rate configured for the vault. Reflected in the vault's overall performance."
           amount={syntheticYieldApy}
           buttonLabel="Top Up Synthetic Yield APY"
+          onButtonClick={syntheticYieldTopUpModal.openModal}
         />
         <RbtcVaultMetricCard
           title="Liquidity Reserve"
@@ -144,6 +147,9 @@ export const RbtcVaultMetricsSection = () => {
       {bufferModal.isModalOpened && <TopUpBufferFlow onClose={bufferModal.closeModal} />}
       {updateNavModal.isModalOpened && <UpdateNavFlow onClose={updateNavModal.closeModal} />}
       {depositToVaultModal.isModalOpened && <DepositToVaultFlow onClose={depositToVaultModal.closeModal} />}
+      {syntheticYieldTopUpModal.isModalOpened && (
+        <SyntheticYieldTopUpFlow onClose={syntheticYieldTopUpModal.closeModal} />
+      )}
     </div>
   )
 }

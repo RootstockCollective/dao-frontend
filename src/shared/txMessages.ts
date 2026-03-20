@@ -386,4 +386,46 @@ export const TX_MESSAGES = {
       loading: false,
     },
   },
+  syntheticYieldAllowance: {
+    pending: {
+      title: 'Allowance in process',
+      content: 'Wait for allowance transaction to be completed.',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Allowance successful',
+      content: 'Allowance successfully granted!',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Error on allowance',
+      content:
+        'An unexpected error occurred while trying to execute the allowance. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
+  syntheticYieldTopUp: {
+    pending: {
+      title: 'Synthetic Yield top-up in process',
+      content: 'Waiting for transaction confirmation...',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Synthetic Yield top-up successful',
+      content: 'Synthetic Yield has been funded successfully.',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Synthetic Yield top-up failed',
+      content:
+        'An unexpected error occurred while funding Synthetic Yield. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
 } as const
