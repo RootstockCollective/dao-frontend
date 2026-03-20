@@ -1,21 +1,43 @@
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
 import { WeiPerEther } from '@/lib/constants'
 
-import { NO_VAULT_SHARES_REASON } from '../constants'
+import type { EligibilityStatus, PauseState, VaultRequest } from '@/app/btc-vault/services/types'
 import {
-  toVaultMetricsDisplay,
-  toEpochDisplay,
-  toUserPositionDisplay,
+  apiHistoryToPaginatedDisplay,
+  mapRequestDisplayStatus,
   toActionEligibility,
   toActiveRequestDisplay,
-  toRequestDetailDisplay,
-  toPaginatedHistoryDisplay,
-  apiHistoryToPaginatedDisplay,
   toCapitalAllocationDisplay,
-  mapRequestDisplayStatus,
+  toEpochDisplay,
+  toPaginatedHistoryDisplay,
+  toUserPositionDisplay,
+  toVaultMetricsDisplay,
   toWalletBalanceDisplay,
-} from './mappers'
+} from '@/app/btc-vault/services/ui/mappers'
+
+import {
+  DEPOSIT_ELIGIBILITY_LOADING_REASON,
+  DEPOSIT_WHITELIST_BLOCK_REASON,
+  NO_VAULT_SHARES_REASON,
+} from '../constants'
+
+const activePause: PauseState = { deposits: 'active', withdrawals: 'active' }
+const pausedDeposits: PauseState = { deposits: 'paused', withdrawals: 'active' }
+const eligible: EligibilityStatus = { eligible: true, reason: '' }
+const noActiveRequests: VaultRequest[] = []
+const oneActiveRequest: VaultRequest[] = [
+  {
+    id: 'req-1',
+    type: 'deposit',
+    amount: 1n,
+    status: 'pending',
+    epochId: '1',
+    batchRedeemId: null,
+    timestamps: { created: 0 },
+    txHashes: {},
+  },
+]
 
 describe('toEpochDisplay', () => {
   it('maps epoch state and includes endTime and closesAtFormatted', () => {
@@ -153,11 +175,7 @@ describe('toUserPositionDisplay', () => {
 })
 
 describe('toActionEligibility', () => {
-  const activePause = { deposits: 'active' as const, withdrawals: 'active' as const }
-  const eligible = { eligible: true, reason: '' }
-  const noActiveRequests: [] = []
-
-  it('happy path — all allowed when user has vault shares', () => {
+  it('happy path — all allowed when user has vault shares (no whitelist param)', () => {
     const result = toActionEligibility(activePause, eligible, noActiveRequests, true)
     expect(result.canDeposit).toBe(true)
     expect(result.canWithdraw).toBe(true)
@@ -228,6 +246,77 @@ describe('toActionEligibility', () => {
     expect(result.depositBlockReason).toBe('You already have an active request')
     expect(result.canWithdraw).toBe(false)
     expect(result.withdrawBlockReason).toBe('You already have an active request')
+  })
+
+  describe('whitelist priority (isWhitelisted)', () => {
+    it('when isWhitelisted === false, blocks deposit with whitelist reason over pause and active request', () => {
+      const result = toActionEligibility(activePause, eligible, noActiveRequests, true, false)
+      expect(result.canDeposit).toBe(false)
+      expect(result.depositBlockReason).toBe(DEPOSIT_WHITELIST_BLOCK_REASON)
+      expect(result.canWithdraw).toBe(true)
+    })
+
+    it('when isWhitelisted === false with paused deposits, still shows whitelist reason first', () => {
+      const result = toActionEligibility(pausedDeposits, eligible, noActiveRequests, true, false)
+      expect(result.canDeposit).toBe(false)
+      expect(result.depositBlockReason).toBe(DEPOSIT_WHITELIST_BLOCK_REASON)
+    })
+
+    it('when isWhitelisted === false with active request, still shows whitelist reason first', () => {
+      const result = toActionEligibility(activePause, eligible, oneActiveRequest, true, false)
+      expect(result.canDeposit).toBe(false)
+      expect(result.depositBlockReason).toBe(DEPOSIT_WHITELIST_BLOCK_REASON)
+    })
+
+    it('when isWhitelisted === null (loading), blocks deposit with loading reason', () => {
+      const result = toActionEligibility(activePause, eligible, noActiveRequests, true, null)
+      expect(result.canDeposit).toBe(false)
+      expect(result.depositBlockReason).toBe(DEPOSIT_ELIGIBILITY_LOADING_REASON)
+    })
+
+    it('when isWhitelisted === true, uses existing pause/eligibility/activeRequest logic', () => {
+      const result = toActionEligibility(activePause, eligible, noActiveRequests, true, true)
+      expect(result.canDeposit).toBe(true)
+      expect(result.depositBlockReason).toBe('')
+    })
+
+    it('when isWhitelisted === true and deposits paused, returns pause reason', () => {
+      const result = toActionEligibility(pausedDeposits, eligible, noActiveRequests, true, true)
+      expect(result.canDeposit).toBe(false)
+      expect(result.depositBlockReason).not.toBe(DEPOSIT_WHITELIST_BLOCK_REASON)
+    })
+
+    it('when isWhitelisted === true and has active request, returns active request reason', () => {
+      const result = toActionEligibility(activePause, eligible, oneActiveRequest, true, true)
+      expect(result.canDeposit).toBe(false)
+      expect(result.depositBlockReason).not.toBe(DEPOSIT_WHITELIST_BLOCK_REASON)
+    })
+
+    it('when isWhitelisted is undefined, uses existing logic (backward compatible)', () => {
+      const result = toActionEligibility(activePause, eligible, noActiveRequests, true)
+      expect(result.canDeposit).toBe(true)
+      expect(result.depositBlockReason).toBe('')
+    })
+  })
+
+  describe('withdrawal unaffected by whitelist', () => {
+    it('canWithdraw and withdrawBlockReason are the same for isWhitelisted false and true', () => {
+      const resultFalse = toActionEligibility(activePause, eligible, noActiveRequests, true, false)
+      const resultTrue = toActionEligibility(activePause, eligible, noActiveRequests, true, true)
+      expect(resultFalse.canWithdraw).toBe(resultTrue.canWithdraw)
+      expect(resultFalse.withdrawBlockReason).toBe(resultTrue.withdrawBlockReason)
+    })
+
+    it('withdrawal blocked by pause regardless of isWhitelisted', () => {
+      const pausedWithdrawals: PauseState = {
+        deposits: 'active',
+        withdrawals: 'paused',
+      }
+      const rFalse = toActionEligibility(pausedWithdrawals, eligible, noActiveRequests, true, false)
+      const rTrue = toActionEligibility(pausedWithdrawals, eligible, noActiveRequests, true, true)
+      expect(rFalse.canWithdraw).toBe(false)
+      expect(rTrue.canWithdraw).toBe(false)
+    })
   })
 })
 

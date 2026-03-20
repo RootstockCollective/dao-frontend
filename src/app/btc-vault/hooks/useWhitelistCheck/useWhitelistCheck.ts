@@ -11,13 +11,17 @@ import { permissionsManager } from '@/lib/contracts'
  * Enabled only when a wallet is connected; returns `{ isWhitelisted: false, isLoading: false }`
  * when disconnected.
  *
- * @returns `{ isWhitelisted: boolean, isLoading: boolean }`
+ * @returns `{ isWhitelisted: boolean, isLoading: boolean, refetch }`
  */
-export function useWhitelistCheck(): { isWhitelisted: boolean; isLoading: boolean } {
+export function useWhitelistCheck(): {
+  isWhitelisted: boolean
+  isLoading: boolean
+  refetch: () => Promise<unknown>
+} {
   const { address } = useAccount()
   const enabled = !!address && !!permissionsManager.address
 
-  const { data, isLoading } = useReadContract({
+  const { data, isLoading, refetch } = useReadContract({
     address: permissionsManager.address,
     abi: permissionsManager.abi,
     functionName: 'hasRole',
@@ -31,7 +35,8 @@ export function useWhitelistCheck(): { isWhitelisted: boolean; isLoading: boolea
     () => ({
       isWhitelisted: data ?? false,
       isLoading: enabled ? isLoading : false,
+      refetch,
     }),
-    [data, enabled, isLoading],
+    [data, enabled, isLoading, refetch],
   )
 }

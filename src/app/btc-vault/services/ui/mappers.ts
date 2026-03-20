@@ -8,7 +8,9 @@ import { formatCurrencyWithLabel, shortAddress } from '@/lib/utils'
 
 import {
   ACTIVE_REQUEST_REASON,
+  DEPOSIT_ELIGIBILITY_LOADING_REASON,
   DEPOSIT_PAUSED_REASON,
+  DEPOSIT_WHITELIST_BLOCK_REASON,
   NO_VAULT_SHARES_REASON,
   WITHDRAWAL_PAUSED_REASON,
 } from '../constants'
@@ -134,12 +136,17 @@ export function toUserPositionDisplay(raw: UserPosition): UserPositionDisplay {
 }
 
 /**
- * Consolidates pause state, eligibility, active requests, and vault share balance into action eligibility.
+ * Consolidates pause state, eligibility, active requests, vault share balance, and optional
+ * deposit whitelist resolution into action eligibility.
  * Determines whether the user can deposit/withdraw and provides human-readable block reasons.
+ * When `isWhitelisted` is provided, it gates deposit first (loading / not whitelisted); withdrawal
+ * ignores whitelist and still uses pause, eligibility, active requests, and share balance.
+ * When `isWhitelisted` is omitted, eligibility alone gates deposit (legacy callers).
  * @param pause - Current pause state for deposits and withdrawals
- * @param eligibility - User's eligibility status (e.g. whitelist)
+ * @param eligibility - User's eligibility status (e.g. KYC); also used for withdraw when whitelist is supplied separately
  * @param activeRequests - User's currently active vault requests
  * @param hasVaultShares - Whether the user holds a non-zero vault share balance (`balanceOf` > 0)
+ * @param isWhitelisted - When provided: `false` blocks deposit with whitelist copy; `null` blocks deposit while loading; `true` applies pause/eligibility/active rules for deposit
  * @returns Object with canDeposit/canWithdraw booleans and block reason strings
  */
 export function toActionEligibility(
@@ -147,18 +154,9 @@ export function toActionEligibility(
   eligibility: EligibilityStatus,
   activeRequests: VaultRequest[],
   hasVaultShares: boolean,
+  isWhitelisted?: boolean | null,
 ): ActionEligibility {
   const hasActive = activeRequests.length > 0
-  const canDeposit = pause.deposits === 'active' && eligibility.eligible && !hasActive
-  const canWithdraw = pause.withdrawals === 'active' && eligibility.eligible && !hasActive && hasVaultShares
-
-  const depositBlockReason = !eligibility.eligible
-    ? eligibility.reason
-    : pause.deposits === 'paused'
-      ? DEPOSIT_PAUSED_REASON
-      : hasActive
-        ? ACTIVE_REQUEST_REASON
-        : ''
 
   const withdrawBlockReason = !eligibility.eligible
     ? eligibility.reason
@@ -169,6 +167,53 @@ export function toActionEligibility(
         : !hasVaultShares
           ? NO_VAULT_SHARES_REASON
           : ''
+
+  const canWithdraw = pause.withdrawals === 'active' && eligibility.eligible && !hasActive && hasVaultShares
+
+  if (isWhitelisted === undefined) {
+    const canDeposit = pause.deposits === 'active' && eligibility.eligible && !hasActive
+    const depositBlockReason = !eligibility.eligible
+      ? eligibility.reason
+      : pause.deposits === 'paused'
+        ? DEPOSIT_PAUSED_REASON
+        : hasActive
+          ? ACTIVE_REQUEST_REASON
+          : ''
+
+    return {
+      canDeposit,
+      canWithdraw,
+      depositBlockReason,
+      withdrawBlockReason,
+    }
+  }
+
+  if (isWhitelisted === null) {
+    return {
+      canDeposit: false,
+      canWithdraw,
+      depositBlockReason: DEPOSIT_ELIGIBILITY_LOADING_REASON,
+      withdrawBlockReason,
+    }
+  }
+
+  if (isWhitelisted === false) {
+    return {
+      canDeposit: false,
+      canWithdraw,
+      depositBlockReason: DEPOSIT_WHITELIST_BLOCK_REASON,
+      withdrawBlockReason,
+    }
+  }
+
+  const canDeposit = pause.deposits === 'active' && eligibility.eligible && !hasActive
+  const depositBlockReason = !eligibility.eligible
+    ? eligibility.reason
+    : pause.deposits === 'paused'
+      ? DEPOSIT_PAUSED_REASON
+      : hasActive
+        ? ACTIVE_REQUEST_REASON
+        : ''
 
   return {
     canDeposit,

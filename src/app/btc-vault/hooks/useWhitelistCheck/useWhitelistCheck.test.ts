@@ -34,6 +34,7 @@ function setupMocks({
     data: hasRoleData,
     isLoading,
     isError: false,
+    refetch: vi.fn(),
   })
 }
 
@@ -44,13 +45,15 @@ describe('useWhitelistCheck', () => {
   })
 
   describe('return shape', () => {
-    it('returns { isWhitelisted, isLoading }', () => {
+    it('returns { isWhitelisted, isLoading, refetch }', () => {
       const { result } = renderHook(() => useWhitelistCheck())
 
       expect(result.current).toHaveProperty('isWhitelisted')
       expect(result.current).toHaveProperty('isLoading')
+      expect(result.current).toHaveProperty('refetch')
       expect(typeof result.current.isWhitelisted).toBe('boolean')
       expect(typeof result.current.isLoading).toBe('boolean')
+      expect(typeof result.current.refetch).toBe('function')
     })
   })
 

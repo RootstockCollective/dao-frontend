@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { RBTC } from '@/lib/constants'
 
+import { formatDateMonthFirst } from '../services/ui/formatters'
 import { BtcVaultMetrics } from './BtcVaultMetrics'
 
 const renderWithProviders = () =>
@@ -119,7 +120,7 @@ describe('BtcVaultMetrics', () => {
 
     const apy = screen.getByTestId('btc-vault-apy')
     expect(apy).toHaveTextContent('Last updated on')
-    expect(apy).toHaveTextContent('Feb 27, 2024')
+    expect(apy).toHaveTextContent(formatDateMonthFirst(defaultMetrics.timestamp))
   })
 
   it('shows USD fiat amounts when rBTC price is available', () => {
