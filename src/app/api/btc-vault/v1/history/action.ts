@@ -270,6 +270,10 @@ export async function enrichHistoryWithRequestStatus(
       result.displayStatus = 'cancelled'
     } else if (item.action === 'REDEEM_ACCEPTED') {
       result.displayStatus = 'approved'
+    } else if (item.action === 'DEPOSIT_CLAIMABLE') {
+      result.displayStatus = 'open_to_claim'
+    } else if (item.action === 'REDEEM_CLAIMABLE') {
+      result.displayStatus = 'claim_pending'
     }
     return result
   })
