@@ -1,5 +1,6 @@
 import { formatEther } from 'viem'
 
+import type { BtcVaultHistoryStatusKey } from '@/app/api/btc-vault/v1/history/action'
 import { DEPOSIT_ACTIONS } from '@/app/api/btc-vault/v1/schemas'
 import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import Big from '@/lib/big'
@@ -378,6 +379,21 @@ export function toPaginatedHistoryDisplay(
 }
 
 /**
+ * Temporary: API `displayStatus` uses DAO-2114 wire keys while row `DisplayStatus` is still legacy.
+ * Removed once `types.ts` aliases `DisplayStatus` to `BtcVaultHistoryStatusKey`.
+ */
+function wireDisplayStatusToLegacyRowStatus(wire: BtcVaultHistoryStatusKey | undefined): DisplayStatus {
+  const w = wire ?? 'pending'
+  if (w === 'open_to_claim') return 'ready_to_claim'
+  if (w === 'claim_pending') return 'ready_to_withdraw'
+  if (w === 'pending' || w === 'approved' || w === 'successful' || w === 'cancelled' || w === 'rejected') {
+    return w
+  }
+  const _exhaustive: never = w
+  return _exhaustive
+}
+
+/**
  * Maps a single API history item to VaultRequest for use by TransactionDetailPage.
  * Enables toRequestDetailDisplay(request, null, rbtcPrice, address) without changing the detail UI.
  */
@@ -386,7 +402,7 @@ export function mapApiItemToVaultRequest(item: BtcVaultHistoryItemWithStatus): V
   const isDeposit = DEPOSIT_ACTIONS.includes(actionUpper)
   const type: RequestType = isDeposit ? 'deposit' : 'withdrawal'
   const amount = isDeposit ? BigInt(item.assets) : BigInt(item.shares)
-  const displayStatus: DisplayStatus = item.displayStatus ?? 'pending'
+  const displayStatus = wireDisplayStatusToLegacyRowStatus(item.displayStatus)
   const status = displayStatusToRequestStatus(displayStatus)
   const txHash = item.transactionHash?.trim() || undefined
   const failureReason: VaultRequest['failureReason'] =
@@ -443,7 +459,7 @@ export function apiHistoryToPaginatedDisplay(response: BtcVaultHistoryApiRespons
     const isDeposit = DEPOSIT_ACTIONS.includes(actionUpper)
     const type: RequestType = isDeposit ? 'deposit' : 'withdrawal'
     const amountWei = isDeposit ? BigInt(item.assets) : BigInt(item.shares)
-    const displayStatus: DisplayStatus = item.displayStatus ?? 'pending'
+    const displayStatus = wireDisplayStatusToLegacyRowStatus(item.displayStatus)
     const displayStatusLabel = DISPLAY_STATUS_LABELS[displayStatus]
     const status = displayStatusToRequestStatus(displayStatus)
 

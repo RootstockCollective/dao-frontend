@@ -725,7 +725,7 @@ describe('apiHistoryToPaginatedDisplay', () => {
           timestamp: 1700086400,
           blockNumber: '2',
           transactionHash: '',
-          displayStatus: 'ready_to_withdraw' as const,
+          displayStatus: 'claim_pending' as const,
         },
       ],
       pagination: {

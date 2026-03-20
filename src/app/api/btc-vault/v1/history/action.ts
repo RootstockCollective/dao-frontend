@@ -3,6 +3,16 @@ import { gql } from '@apollo/client'
 import { ALL_ACTION_TYPES } from '@/app/api/btc-vault/v1/schemas'
 import { btcVaultClient } from '@/shared/components/ApolloClient'
 
+/** Lifecycle keys on history JSON `displayStatus` (subgraph enrichment + terminal actions). */
+export type BtcVaultHistoryStatusKey =
+  | 'open_to_claim'
+  | 'pending'
+  | 'approved'
+  | 'claim_pending'
+  | 'successful'
+  | 'cancelled'
+  | 'rejected'
+
 export interface BtcVaultHistoryItem {
   id: string
   user: string
@@ -15,19 +25,9 @@ export interface BtcVaultHistoryItem {
   transactionHash: string
 }
 
-/** Display status for history rows (Ready to claim / Ready to withdraw from request status). */
-export type BtcVaultHistoryDisplayStatus =
-  | 'ready_to_claim'
-  | 'pending'
-  | 'ready_to_withdraw'
-  | 'approved'
-  | 'successful'
-  | 'cancelled'
-  | 'rejected'
-
 export interface BtcVaultHistoryItemWithStatus extends BtcVaultHistoryItem {
-  /** Set for each row; from request status for *_REQUEST, derived from action for CLAIMED/CANCELLED. */
-  displayStatus?: BtcVaultHistoryDisplayStatus
+  /** Wire lifecycle for *_REQUEST rows (subgraph); CLAIMED/CANCELLED log rows derive from action. */
+  displayStatus?: BtcVaultHistoryStatusKey
 }
 
 const BTC_VAULT_GLOBAL_HISTORY_QUERY = gql`
@@ -174,10 +174,44 @@ export async function getGlobalBtcVaultHistory(params: {
   }))
 }
 
+/** Normalizes subgraph request status strings for comparison (trim + uppercase). */
+function normalizeSubgraphRequestStatus(status: string | undefined): string {
+  return (status ?? '').trim().toUpperCase()
+}
+
 /**
- * Fetches BtcDepositRequest and BtcRedeemRequest status for *_REQUEST history rows and maps
- * to displayStatus (ready_to_claim, ready_to_withdraw, pending, cancelled). CLAIMED/CANCELLED rows
- * get successful/cancelled from action without a subgraph lookup.
+ * Redeem: contract-indexed (subgraph) status → wire code. One code per row; stronger phases win first
+ * (cancelled → claimed → claimable → accepted → pending).
+ * SC names (typical): PENDING, ACCEPTED, CLAIMABLE, CLAIMED, CANCELLED → wire pending, approved, claim_pending, successful, cancelled.
+ */
+function mapRedeemSubgraphStatusToWire(statusRaw: string | undefined): BtcVaultHistoryStatusKey {
+  const s = normalizeSubgraphRequestStatus(statusRaw)
+  if (!s) return 'pending'
+  if (s === 'CANCELLED' || s === 'CANCELED') return 'cancelled'
+  if (s === 'CLAIMED') return 'successful'
+  if (s === 'CLAIMABLE') return 'claim_pending'
+  if (s === 'ACCEPTED') return 'approved'
+  if (s === 'PENDING') return 'pending'
+  return 'pending'
+}
+
+/**
+ * Deposit request: same terminal/precedence idea; ACCEPTED stays `pending` to avoid new deposit UX surface.
+ */
+function mapDepositSubgraphStatusToWire(statusRaw: string | undefined): BtcVaultHistoryStatusKey {
+  const s = normalizeSubgraphRequestStatus(statusRaw)
+  if (!s) return 'pending'
+  if (s === 'CANCELLED' || s === 'CANCELED') return 'cancelled'
+  if (s === 'CLAIMED') return 'successful'
+  if (s === 'CLAIMABLE') return 'open_to_claim'
+  if (s === 'ACCEPTED') return 'pending'
+  if (s === 'PENDING') return 'pending'
+  return 'pending'
+}
+
+/**
+ * Fetches BtcDepositRequest and BtcRedeemRequest status for *_REQUEST rows and sets wire `displayStatus`.
+ * REDEEM_CLAIMED / DEPOSIT_CLAIMED / *_CANCELLED rows get successful/cancelled from action (no subgraph).
  */
 export async function enrichHistoryWithRequestStatus(
   history: BtcVaultHistoryItem[],
@@ -226,20 +260,11 @@ export async function enrichHistoryWithRequestStatus(
     if (item.action === 'DEPOSIT_REQUEST' || item.action === 'REDEEM_REQUEST') {
       const id = `${item.user.toLowerCase()}-${item.epochId}`
       const status = item.action === 'DEPOSIT_REQUEST' ? depositStatusById[id] : redeemStatusById[id]
-      if (status === 'CLAIMABLE') {
-        result.displayStatus = item.action === 'DEPOSIT_REQUEST' ? 'ready_to_claim' : 'ready_to_withdraw'
-      } else if (status === 'CANCELLED') {
-        result.displayStatus = 'cancelled'
-      } else {
-        result.displayStatus = 'pending'
-      }
-    } else if (item.action === 'DEPOSIT_CLAIMABLE') {
-      result.displayStatus = 'ready_to_claim'
-    } else if (item.action === 'REDEEM_CLAIMABLE') {
-      result.displayStatus = 'ready_to_withdraw'
-    } else if (item.action === 'DEPOSIT_CLAIMED') {
-      result.displayStatus = 'successful'
-    } else if (item.action === 'REDEEM_CLAIMED') {
+      result.displayStatus =
+        item.action === 'DEPOSIT_REQUEST'
+          ? mapDepositSubgraphStatusToWire(status)
+          : mapRedeemSubgraphStatusToWire(status)
+    } else if (item.action === 'DEPOSIT_CLAIMED' || item.action === 'REDEEM_CLAIMED') {
       result.displayStatus = 'successful'
     } else if (item.action === 'DEPOSIT_CANCELLED' || item.action === 'REDEEM_CANCELLED') {
       result.displayStatus = 'cancelled'

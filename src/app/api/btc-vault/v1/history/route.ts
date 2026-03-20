@@ -17,7 +17,8 @@ export const revalidate = 60
  * Query params: limit (1–200, default 20), page (default 1), sort_field (timestamp | assets),
  * sort_direction (asc | desc), type[] (optional action filter), address (optional; when omitted, returns global history).
  * Response: { data: BtcVaultHistoryItemWithStatus[], pagination: PaginationResponse }.
- * Each item may include displayStatus for table display (ready_to_claim, ready_to_withdraw, pending, successful, cancelled).
+ * Each item may include `displayStatus`: **wire / DTO lifecycle codes** from subgraph enrichment (e.g. `approved`,
+ * `claim_pending`), not guaranteed 1:1 with on-screen labels — the client adapter maps these to view model copy.
  * 400 on validation error (body includes error, details); 500 on server error.
  */
 export async function GET(req: NextRequest) {
