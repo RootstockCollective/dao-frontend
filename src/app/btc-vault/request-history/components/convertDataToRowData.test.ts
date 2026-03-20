@@ -14,8 +14,8 @@ const MOCK_ROW: RequestHistoryRowDisplay = {
   finalizeTxShort: null,
   submitTxFull: '0x1234567890',
   finalizeTxFull: null,
-  displayStatus: 'ready_to_claim',
-  displayStatusLabel: 'Ready to claim',
+  displayStatus: 'open_to_claim',
+  displayStatusLabel: 'Open to claim',
   fiatAmountFormatted: '$98,500',
   claimTokenType: 'rbtc',
   updatedAtFormatted: '15 Jan 2025',
@@ -37,8 +37,8 @@ describe('convertDataToRowData', () => {
     expect(row.data.type).toBe('Deposit')
     expect(row.data.date).toBe('2025-01-15')
     expect(row.data.amount).toBe('1.5')
-    expect(row.data.status).toBe('ready_to_claim')
-    expect(row.data.displayStatusLabel).toBe('Ready to claim')
+    expect(row.data.status).toBe('open_to_claim')
+    expect(row.data.displayStatusLabel).toBe('Open to claim')
     expect(row.data.fiatAmount).toBe('$98,500')
     expect(row.data.claimTokenType).toBe('rbtc')
     expect(row.data.requestStatus).toBe('claimable')
@@ -51,8 +51,8 @@ describe('convertDataToRowData', () => {
       ...MOCK_ROW,
       id: 'req-2',
       type: 'withdrawal',
-      displayStatus: 'ready_to_withdraw',
-      displayStatusLabel: 'Ready to withdraw',
+      displayStatus: 'claim_pending',
+      displayStatusLabel: 'Claim pending',
       fiatAmountFormatted: null,
       claimTokenType: 'shares',
     }

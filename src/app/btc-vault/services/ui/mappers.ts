@@ -1,6 +1,5 @@
 import { formatEther } from 'viem'
 
-import type { BtcVaultHistoryStatusKey } from '@/app/api/btc-vault/v1/history/action'
 import { DEPOSIT_ACTIONS } from '@/app/api/btc-vault/v1/schemas'
 import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import Big from '@/lib/big'
@@ -47,6 +46,7 @@ import type {
   DisplayStatus,
   DisplayStatusResult,
   EpochDisplay,
+  HistoryRowStatusLabel,
   PaginatedHistoryDisplay,
   RequestDetailDisplay,
   RequestHistoryRowDisplay,
@@ -54,7 +54,48 @@ import type {
   VaultMetricsDisplay,
   WalletBalanceDisplay,
 } from './types'
-import { DISPLAY_STATUS_LABELS } from './types'
+import { DISPLAY_STATUS_LABELS, WITHDRAWAL_TX_HISTORY_STATUS_LABELS } from './types'
+
+const DISPLAY_STATUS_TO_REQUEST_STATUS = new Map<DisplayStatus, RequestStatus>([
+  ['pending', 'pending'],
+  ['approved', 'pending'],
+  ['open_to_claim', 'claimable'],
+  ['claim_pending', 'claimable'],
+  ['successful', 'done'],
+  ['cancelled', 'cancelled'],
+  ['rejected', 'failed'],
+])
+
+const CLAIMABLE_DISPLAY_BY_TYPE = new Map<RequestType, DisplayStatus>([
+  ['deposit', 'open_to_claim'],
+  ['withdrawal', 'claim_pending'],
+])
+
+const WITHDRAWAL_TX_HISTORY_LABEL_OVERRIDES = new Map<DisplayStatus, HistoryRowStatusLabel>([
+  ['claim_pending', WITHDRAWAL_TX_HISTORY_STATUS_LABELS.claim_pending],
+  ['successful', WITHDRAWAL_TX_HISTORY_STATUS_LABELS.successful],
+])
+
+const DISPLAY_STATUS_TO_FAILURE_REASON = new Map<DisplayStatus, NonNullable<VaultRequest['failureReason']>>([
+  ['rejected', 'rejected'],
+  ['cancelled', 'cancelled'],
+])
+
+interface RequestDisplayContext {
+  type: RequestType
+  failureReason?: VaultRequest['failureReason']
+}
+
+const REQUEST_STATUS_TO_DISPLAY_RESOLVER = new Map<
+  RequestStatus,
+  (ctx: RequestDisplayContext) => DisplayStatus
+>([
+  ['pending', () => 'pending'],
+  ['done', () => 'successful'],
+  ['cancelled', () => 'cancelled'],
+  ['claimable', ({ type }) => CLAIMABLE_DISPLAY_BY_TYPE.get(type) ?? 'claim_pending'],
+  ['failed', ({ failureReason }) => (failureReason === 'rejected' ? 'rejected' : 'cancelled')],
+])
 
 /**
  * Maps raw vault metrics from the adapter into display-ready formatted strings.
@@ -261,9 +302,6 @@ export function toActiveRequestDisplay(
 
 /**
  * Maps domain `RequestStatus` + `RequestType` + optional `failureReason` to a visual display status.
- * Per AC3 spec:
- *   - Deposit: pending → ready_to_claim (Claimable) → successful (Successful)
- *   - Withdrawal: pending → approved (optional future state) → ready_to_withdraw (Claimable) → successful (Withdrawn)
  * @param status - Domain request lifecycle status
  * @param type - Whether this is a deposit or withdrawal
  * @param failureReason - Optional reason for failure (cancelled vs rejected)
@@ -274,27 +312,8 @@ export function mapRequestDisplayStatus(
   type: RequestType,
   failureReason?: VaultRequest['failureReason'],
 ): DisplayStatusResult {
-  let displayStatus: DisplayStatus
-
-  switch (status) {
-    case 'pending':
-      displayStatus = 'pending'
-      break
-    case 'claimable':
-      // Deposit claimable → "Ready to claim", Withdrawal claimable → "Ready to withdraw"
-      displayStatus = type === 'deposit' ? 'ready_to_claim' : 'ready_to_withdraw'
-      break
-    case 'done':
-      displayStatus = 'successful'
-      break
-    case 'failed':
-    default:
-      displayStatus = failureReason === 'rejected' ? 'rejected' : 'cancelled'
-      break
-    case 'cancelled':
-      displayStatus = 'cancelled'
-      break
-  }
+  const displayStatus =
+    REQUEST_STATUS_TO_DISPLAY_RESOLVER.get(status)?.({ type, failureReason }) ?? 'cancelled'
 
   return { displayStatus, displayStatusLabel: DISPLAY_STATUS_LABELS[displayStatus] }
 }
@@ -356,10 +375,8 @@ export function toPaginatedHistoryDisplay(
         type: req.type,
         amountFormatted: formatEther(req.amount),
         status: req.status,
-        createdAtFormatted: formatDateMonthFirst(req.timestamps.created),
-        finalizedAtFormatted: req.timestamps.finalized
-          ? formatDateMonthFirst(req.timestamps.finalized)
-          : null,
+        createdAtFormatted: formatTimestamp(req.timestamps.created),
+        finalizedAtFormatted: req.timestamps.finalized ? formatTimestamp(req.timestamps.finalized) : null,
         submitTxShort: req.txHashes.submit ? shortenTxHash(req.txHashes.submit) : null,
         finalizeTxShort: req.txHashes.finalize ? shortenTxHash(req.txHashes.finalize) : null,
         submitTxFull: req.txHashes.submit ?? null,
@@ -379,21 +396,6 @@ export function toPaginatedHistoryDisplay(
 }
 
 /**
- * Temporary: API `displayStatus` uses DAO-2114 wire keys while row `DisplayStatus` is still legacy.
- * Removed once `types.ts` aliases `DisplayStatus` to `BtcVaultHistoryStatusKey`.
- */
-function wireDisplayStatusToLegacyRowStatus(wire: BtcVaultHistoryStatusKey | undefined): DisplayStatus {
-  const w = wire ?? 'pending'
-  if (w === 'open_to_claim') return 'ready_to_claim'
-  if (w === 'claim_pending') return 'ready_to_withdraw'
-  if (w === 'pending' || w === 'approved' || w === 'successful' || w === 'cancelled' || w === 'rejected') {
-    return w
-  }
-  const _exhaustive: never = w
-  return _exhaustive
-}
-
-/**
  * Maps a single API history item to VaultRequest for use by TransactionDetailPage.
  * Enables toRequestDetailDisplay(request, null, rbtcPrice, address) without changing the detail UI.
  */
@@ -402,11 +404,10 @@ export function mapApiItemToVaultRequest(item: BtcVaultHistoryItemWithStatus): V
   const isDeposit = DEPOSIT_ACTIONS.includes(actionUpper)
   const type: RequestType = isDeposit ? 'deposit' : 'withdrawal'
   const amount = isDeposit ? BigInt(item.assets) : BigInt(item.shares)
-  const displayStatus = wireDisplayStatusToLegacyRowStatus(item.displayStatus)
+  const displayStatus = item.displayStatus ?? 'pending'
   const status = displayStatusToRequestStatus(displayStatus)
   const txHash = item.transactionHash?.trim() || undefined
-  const failureReason: VaultRequest['failureReason'] =
-    displayStatus === 'rejected' ? 'rejected' : displayStatus === 'cancelled' ? 'cancelled' : undefined
+  const failureReason = DISPLAY_STATUS_TO_FAILURE_REASON.get(displayStatus)
 
   return {
     id: item.id,
@@ -424,23 +425,25 @@ export function mapApiItemToVaultRequest(item: BtcVaultHistoryItemWithStatus): V
   }
 }
 
+/**
+ * Collapses table/wire `DisplayStatus` into domain `RequestStatus` (stepper, cancel, finalize flows).
+ * `approved` (SC accepted) is still before claimable, so it maps to domain `pending` same as wire `pending`.
+ * `open_to_claim` / `claim_pending` map to `claimable` (user can finalize).
+ */
 function displayStatusToRequestStatus(displayStatus: DisplayStatus): RequestStatus {
-  switch (displayStatus) {
-    case 'pending':
-      return 'pending'
-    case 'ready_to_claim':
-    case 'ready_to_withdraw':
-    case 'approved':
-      return 'claimable'
-    case 'successful':
-      return 'done'
-    case 'cancelled':
-      return 'cancelled'
-    case 'rejected':
-      return 'failed'
-    default:
-      return 'pending'
-  }
+  return DISPLAY_STATUS_TO_REQUEST_STATUS.get(displayStatus) ?? 'pending'
+}
+
+/**
+ * Row label for TX history: `DISPLAY_STATUS_LABELS`, with withdrawal overrides for claimable/claimed wording.
+ */
+export function getTxHistoryStatusLabel(
+  displayStatus: DisplayStatus,
+  requestType: RequestType,
+): HistoryRowStatusLabel {
+  const override =
+    requestType === 'withdrawal' ? WITHDRAWAL_TX_HISTORY_LABEL_OVERRIDES.get(displayStatus) : undefined
+  return override ?? DISPLAY_STATUS_LABELS[displayStatus]
 }
 
 /**
@@ -459,8 +462,8 @@ export function apiHistoryToPaginatedDisplay(response: BtcVaultHistoryApiRespons
     const isDeposit = DEPOSIT_ACTIONS.includes(actionUpper)
     const type: RequestType = isDeposit ? 'deposit' : 'withdrawal'
     const amountWei = isDeposit ? BigInt(item.assets) : BigInt(item.shares)
-    const displayStatus = wireDisplayStatusToLegacyRowStatus(item.displayStatus)
-    const displayStatusLabel = DISPLAY_STATUS_LABELS[displayStatus]
+    const displayStatus = item.displayStatus ?? 'pending'
+    const displayStatusLabel = getTxHistoryStatusLabel(displayStatus, type)
     const status = displayStatusToRequestStatus(displayStatus)
 
     const txHash = item.transactionHash?.trim() || null
