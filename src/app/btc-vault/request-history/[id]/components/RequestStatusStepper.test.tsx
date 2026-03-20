@@ -66,6 +66,14 @@ describe('RequestStatusStepper', () => {
     expect(screen.queryByText('Approved')).not.toBeInTheDocument()
   })
 
+  it('highlights stage 3 (Approved) when displayStatus is approved', () => {
+    render(<RequestStatusStepper status="pending" type="withdrawal" displayStatus="approved" />)
+    const stage3 = screen.getByText('Approved')
+    expect(stage3).toHaveClass('font-semibold')
+    const stage2 = screen.getByText('Pending')
+    expect(stage2).not.toHaveClass('font-semibold')
+  })
+
   it('renders cancelled stages for withdrawal type too', () => {
     render(<RequestStatusStepper status="cancelled" type="withdrawal" />)
     expect(screen.getByText('Cancelled by user')).toBeInTheDocument()

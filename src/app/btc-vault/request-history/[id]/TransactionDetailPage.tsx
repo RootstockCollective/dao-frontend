@@ -78,6 +78,7 @@ export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
         detail={detail}
         status={request.status}
         type={request.type}
+        displayStatus={request.displayStatus}
         onCancel={openModal}
       />
       {isModalOpened && (
