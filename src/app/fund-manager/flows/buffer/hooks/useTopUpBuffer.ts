@@ -1,39 +1,32 @@
-import { useCallback } from 'react'
-import { Hash } from 'viem'
-import { useWriteContract } from 'wagmi'
+import { useMemo } from 'react'
 
 import { buffer } from '@/lib/contracts'
+import { useContractWrite } from '@/shared/hooks/useContractWrite'
 
 /**
  * CTA-specific hook for the Top Up Buffer flow.
  * Provides two write functions:
- * - `onInject(amount)`: for WrBTC (ERC-20) — calls `buffer.inject(uint256)`
- * - `onInjectNative(amount)`: for rBTC (native) — calls `buffer.injectNative()` with value
+ * - `onInject(amountWei)`: for WrBTC (ERC-20) — calls `buffer.inject(uint256)`
+ * - `onInjectNative(amountWei)`: for rBTC (native) — calls `buffer.injectNative()` with value
  */
-export const useTopUpBuffer = () => {
-  const { writeContractAsync } = useWriteContract()
-
-  const onInject = useCallback(
-    (amount: bigint): Promise<Hash> => {
-      return writeContractAsync({
-        ...buffer,
-        functionName: 'inject',
-        args: [amount],
-      })
-    },
-    [writeContractAsync],
+export const useTopUpBuffer = (amountWei: bigint, isNative: boolean) => {
+  const erc20Config = useMemo(
+    () => ({
+      ...buffer,
+      functionName: 'inject' as const,
+      args: [amountWei] as const,
+    }),
+    [amountWei],
   )
-
-  const onInjectNative = useCallback(
-    (amount: bigint) => {
-      return writeContractAsync({
-        ...buffer,
-        functionName: 'injectNative',
-        value: amount,
-      })
-    },
-    [writeContractAsync],
+  const nativeConfig = useMemo(
+    () => ({
+      ...buffer,
+      functionName: 'injectNative' as const,
+      args: [] as const,
+      value: amountWei,
+    }),
+    [amountWei],
   )
-
-  return { onInject, onInjectNative }
+  const config = isNative ? nativeConfig : erc20Config
+  return useContractWrite(config)
 }

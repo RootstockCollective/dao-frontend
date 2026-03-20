@@ -6,6 +6,7 @@ import { RBTC } from '@/lib/constants'
 import { useModal } from '@/shared/hooks/useModal'
 
 import { TopUpBufferFlow } from '../flows/buffer/TopUpBufferFlow'
+import { DepositToVaultFlow } from '../flows/deposit/DepositToVaultFlow'
 import { UpdateNavFlow } from '../flows/nav/UpdateNavFlow'
 import { useRbtcVaultMetrics } from '../hooks/useRbtcVaultMetrics'
 import { RbtcVaultMetricCard } from './RbtcVaultMetricCard'
@@ -19,6 +20,7 @@ export const RbtcVaultMetricsSection = () => {
 
   const bufferModal = useModal()
   const updateNavModal = useModal()
+  const depositToVaultModal = useModal()
 
   if (isLoading) {
     return (
@@ -86,6 +88,7 @@ export const RbtcVaultMetricsSection = () => {
           tokenSymbol={RBTC}
           fiatAmount={deployedCapital.fiatAmount}
           buttonLabel="Deposit to Vault"
+          onButtonClick={depositToVaultModal.openModal}
         />
         <RbtcVaultMetricCard
           title="Unallocated Capital"
@@ -140,6 +143,7 @@ export const RbtcVaultMetricsSection = () => {
 
       {bufferModal.isModalOpened && <TopUpBufferFlow onClose={bufferModal.closeModal} />}
       {updateNavModal.isModalOpened && <UpdateNavFlow onClose={updateNavModal.closeModal} />}
+      {depositToVaultModal.isModalOpened && <DepositToVaultFlow onClose={depositToVaultModal.closeModal} />}
     </div>
   )
 }
