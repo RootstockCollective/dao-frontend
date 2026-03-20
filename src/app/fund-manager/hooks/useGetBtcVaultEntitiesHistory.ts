@@ -6,17 +6,15 @@ import { getBtcVaultHistoryEndpoint } from '@/lib/endpoints'
 
 export interface BtcVaultEntityHistoryRow {
   id: string
-  investor: string
-  entity: string
-  type: 'DEPOSIT' | 'WITHDRAW'
+  user: string
+  action: string
   assets: string
   shares: string
-  status: string
-  requestTimestamp: number
-  requestBlockNumber: string
-  requestTransactionHash: string
-  claimTimestamp: number | null
-  claimTransactionHash: string | null
+  epochId: string
+  timestamp: number
+  blockNumber: string
+  transactionHash: string
+  displayStatus?: string
 }
 
 interface BtcVaultEntitiesHistoryResponse {
@@ -27,15 +25,22 @@ interface BtcVaultEntitiesHistoryResponse {
 interface UseGetBtcVaultEntitiesHistoryParams {
   page?: number
   pageSize?: number
-  sortBy?: 'requestTimestamp' | 'assets' | 'status' | 'type' | 'investor' | 'entity'
+  sortBy?: 'timestamp' | 'assets'
   sortDirection?: 'asc' | 'desc'
-  type?: Array<'deposit' | 'withdraw'>
+  type?: Array<
+    | 'deposit_request'
+    | 'deposit_claimed'
+    | 'deposit_cancelled'
+    | 'redeem_request'
+    | 'redeem_claimed'
+    | 'redeem_cancelled'
+  >
 }
 
 async function fetchBtcVaultEntitiesHistory(
   params: UseGetBtcVaultEntitiesHistoryParams,
 ): Promise<BtcVaultEntitiesHistoryResponse> {
-  const { page = 1, pageSize = 20, sortBy = 'requestTimestamp', sortDirection = 'desc', type = [] } = params
+  const { page = 1, pageSize = 20, sortBy = 'timestamp', sortDirection = 'desc', type = [] } = params
 
   const searchParams = new URLSearchParams({
     sort_field: sortBy,
@@ -47,15 +52,15 @@ async function fetchBtcVaultEntitiesHistory(
   type.forEach(value => searchParams.append('type', value))
 
   const response = await fetch(`${getBtcVaultHistoryEndpoint}?${searchParams}`)
-  if (!response.ok) throw new Error('Failed to fetch BTC vault entities history')
+  if (!response.ok) throw new Error('Failed to fetch BTC vault history')
 
   const data = (await response.json()) as BtcVaultEntitiesHistoryResponse
-  console.log('BTC vault entities history response', data)
+  console.log('BTC vault history response', data)
   return data
 }
 
 export function useGetBtcVaultEntitiesHistory(params: UseGetBtcVaultEntitiesHistoryParams) {
-  const { page = 1, pageSize = 20, sortBy = 'requestTimestamp', sortDirection = 'desc', type = [] } = params
+  const { page = 1, pageSize = 20, sortBy = 'timestamp', sortDirection = 'desc', type = [] } = params
 
   const query = useQuery({
     queryKey: [
@@ -69,6 +74,8 @@ export function useGetBtcVaultEntitiesHistory(params: UseGetBtcVaultEntitiesHist
     ],
     queryFn: () => fetchBtcVaultEntitiesHistory({ page, pageSize, sortBy, sortDirection, type }),
     refetchInterval: AVERAGE_BLOCKTIME,
+    retry: false, // Don't retry on 500 errors to prevent infinite loops
+    refetchOnWindowFocus: false, // Don't refetch on focus to reduce API calls
   })
 
   return {

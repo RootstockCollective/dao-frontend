@@ -1,10 +1,12 @@
 import { Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
-export type RequestStatus = 'Pending' | 'Cancelled'
+export type RequestStatus = 'Open to claim' | 'Pending' | 'Successful' | 'Cancelled'
 
 const STATUS_STYLES: Record<RequestStatus, string> = {
+  'Open to claim': 'bg-brand-rootstock-lime text-black',
   Pending: 'bg-brand-rootstock-purple text-foreground',
+  Successful: 'bg-success text-black',
   Cancelled: 'bg-error text-foreground',
 }
 

@@ -13,14 +13,12 @@ import { Address } from 'viem'
 import { useGetBtcVaultEntitiesHistory } from '@/app/fund-manager/hooks/useGetBtcVaultEntitiesHistory'
 import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
 import { GridTable } from '@/components/Table'
 import { TablePager } from '@/components/TableNew'
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Paragraph, Span } from '@/components/Typography'
-import { RBTC } from '@/lib/constants'
-import { formatCurrencyWithLabel } from '@/lib/utils'
-import { shortAddress } from '@/lib/utils'
+import { EXPLORER_URL, RBTC } from '@/lib/constants'
+import { formatCurrencyWithLabel, shortAddress } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 
 import { type RequestStatus, StatusBadge } from './StatusBadge'
@@ -44,16 +42,9 @@ interface DepositWindowRequest {
 const { accessor } = createColumnHelper<DepositWindowRequest>()
 const PAGE_SIZE = 20
 
-const sortFieldByColumn: Record<
-  string,
-  'requestTimestamp' | 'assets' | 'status' | 'type' | 'investor' | 'entity'
-> = {
-  date: 'requestTimestamp',
-  investor: 'investor',
-  entity: 'entity',
-  type: 'type',
+const sortFieldByColumn: Record<string, 'timestamp' | 'assets'> = {
+  date: 'timestamp',
   amount: 'assets',
-  status: 'status',
 }
 
 function formatDate(timestamp: number): string {
@@ -64,8 +55,12 @@ function formatDate(timestamp: number): string {
   })
 }
 
-function normalizeStatus(status: string): RequestStatus {
-  const value = status.toLowerCase()
+function normalizeStatus(displayStatus?: string): RequestStatus {
+  if (!displayStatus) return 'Pending'
+  const value = displayStatus.toLowerCase()
+
+  if (value.includes('ready_to_claim') || value.includes('ready_to_withdraw')) return 'Open to claim'
+  if (value.includes('successful') || value.includes('approved')) return 'Successful'
   if (value.includes('cancel')) return 'Cancelled'
   return 'Pending'
 }
@@ -86,23 +81,23 @@ export const DepositWindowRequestsTable = () => {
     sortDirection,
   })
 
-  const rows = useMemo<DepositWindowRequest[]>(
-    () =>
-      data.map(item => ({
-        id: item.id,
-        investor: item.investor as Address,
-        entity: item.entity,
-        type: item.type === 'DEPOSIT' ? 'Deposit' : 'Withdrawal',
-        date: formatDate(item.requestTimestamp),
-        timestamp: item.requestTimestamp,
-        amountToken: formatSymbol(item.assets, RBTC),
-        amountUsd: formatCurrencyWithLabel(getFiatAmount(item.assets, rbtcPrice)),
-        tokenSymbol: RBTC,
-        status: normalizeStatus(item.status),
-        actions: '—',
-      })),
-    [data, rbtcPrice],
-  )
+  const rows = useMemo<DepositWindowRequest[]>(() => {
+    if (!data || data.length === 0) return []
+
+    return data.map(item => ({
+      id: item.id,
+      investor: item.user as Address,
+      entity: item.user,
+      type: item.action.includes('DEPOSIT') ? 'Deposit' : 'Withdrawal',
+      date: formatDate(item.timestamp),
+      timestamp: item.timestamp,
+      amountToken: formatSymbol(item.assets, RBTC),
+      amountUsd: rbtcPrice > 0 ? formatCurrencyWithLabel(getFiatAmount(item.assets, rbtcPrice)) : '—',
+      tokenSymbol: RBTC,
+      status: normalizeStatus(item.displayStatus),
+      actions: '—',
+    }))
+  }, [data, rbtcPrice])
 
   const columns = useMemo(
     () => [
@@ -117,7 +112,16 @@ export const DepositWindowRequestsTable = () => {
         id: 'investor',
         header: 'Investor',
         enableSorting: true,
-        cell: ({ cell }) => <ShortenAndCopy value={cell.getValue()} className="text-v3-primary" />,
+        cell: ({ cell }) => (
+          <a
+            href={`${EXPLORER_URL}/address/${cell.getValue()}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-v3-primary"
+          >
+            <Paragraph>{shortAddress(cell.getValue() as Address)}</Paragraph>
+          </a>
+        ),
         meta: { width: '1fr' },
       }),
       accessor('entity', {
@@ -125,7 +129,7 @@ export const DepositWindowRequestsTable = () => {
         header: 'Entity',
         enableSorting: true,
         cell: ({ cell }) => (
-          <Paragraph variant="body-s">
+          <Paragraph>
             {cell.getValue().startsWith('0x') ? shortAddress(cell.getValue() as Address) : cell.getValue()}
           </Paragraph>
         ),
@@ -135,7 +139,7 @@ export const DepositWindowRequestsTable = () => {
         id: 'type',
         header: 'Type',
         enableSorting: true,
-        cell: ({ cell }) => <Paragraph variant="body-s">{cell.getValue()}</Paragraph>,
+        cell: ({ cell }) => <Paragraph>{cell.getValue()}</Paragraph>,
         meta: { width: '0.8fr' },
       }),
       accessor('amountToken', {
@@ -143,14 +147,23 @@ export const DepositWindowRequestsTable = () => {
         header: 'Amount',
         enableSorting: true,
         cell: ({ row }) => (
-          <div className="flex flex-col items-end">
-            <div className="flex items-center gap-1.5">
-              <Paragraph>{row.original.amountToken}</Paragraph>
-              <TokenImage symbol={row.original.tokenSymbol} size={16} />
+          <div className="grid grid-cols-[1fr_auto] gap-2 items-center justify-items-center">
+            <div className="text-right">
+              <div className="">
+                <Paragraph>{row.original.amountToken}</Paragraph>
+              </div>
+              <div>
+                <Span variant="body-xs" className="text-text-40">
+                  {row.original.amountUsd}
+                </Span>
+              </div>
             </div>
-            <Span variant="body-xs" className="text-text-40">
-              {row.original.amountUsd} USD
-            </Span>
+            <div className="flex flex-col items-start h-full justify-around gap-1">
+              <TokenImage symbol={row.original.tokenSymbol} size={16} />
+              <Span variant="body-xs" className="text-text-40">
+                USD
+              </Span>
+            </div>
           </div>
         ),
         meta: { width: '1.2fr' },
@@ -181,7 +194,9 @@ export const DepositWindowRequestsTable = () => {
         Deposit Window Requests
       </Header>
       {isLoading ? <LoadingSpinner size="large" /> : null}
-      {error ? <Paragraph className="text-error">Could not load BTC vault entity history.</Paragraph> : null}
+      {error ? (
+        <Paragraph className="text-error">Could not load BTC vault history. {error.message}</Paragraph>
+      ) : null}
       <GridTable
         table={table}
         className="min-w-[700px]"
