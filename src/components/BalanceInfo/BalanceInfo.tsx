@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 
-import SeparatorBar from '@/components/SeparatorBar/SeparatorBar'
+import { SeparatorBar } from '@/components/SeparatorBar/SeparatorBar'
 import { TokenImage } from '@/components/TokenImage'
 import { Header, HeaderVariants, Label, Span } from '@/components/Typography'
 
@@ -50,7 +50,7 @@ export const BalanceInfo = ({
       <div className="flex items-center flex-row gap-2 md:mt-2 mt-4">
         <Header
           variant={headerVariant}
-          className="flex items-end flex-row gap-2 leading-none!"
+          className="flex items-end flex-row gap-2 !leading-none"
           data-testid={`Amount-${symbol}`}
         >
           {amount}
@@ -66,7 +66,7 @@ export const BalanceInfo = ({
         {secondaryValue != null && secondaryValue !== '' && (
           <>
             <SeparatorBar className="shrink-0 mx-1" aria-hidden />
-            <Header variant="h1" className="leading-none!" data-testid="SecondaryValue">
+            <Header variant={headerVariant} className="!leading-none" data-testid="SecondaryValue">
               {secondaryValue}
             </Header>
           </>

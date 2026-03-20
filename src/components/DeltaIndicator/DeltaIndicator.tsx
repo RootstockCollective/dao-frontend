@@ -1,5 +1,5 @@
 import { ArrowDownIcon, ArrowUpIcon } from '@/components/Icons'
-import SeparatorBar from '@/components/SeparatorBar/SeparatorBar'
+import { SeparatorBar } from '@/components/SeparatorBar/SeparatorBar'
 import { cn } from '@/lib/utils'
 import { FC } from 'react'
 
