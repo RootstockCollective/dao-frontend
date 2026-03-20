@@ -6,6 +6,7 @@ import { RBTC } from '@/lib/constants'
 import { useModal } from '@/shared/hooks/useModal'
 
 import { TopUpBufferFlow } from '../flows/buffer/TopUpBufferFlow'
+import { UpdateNavFlow } from '../flows/nav/UpdateNavFlow'
 import { useRbtcVaultMetrics } from '../hooks/useRbtcVaultMetrics'
 import { RbtcVaultMetricCard } from './RbtcVaultMetricCard'
 import { RbtcVaultMetricsRow } from './RbtcVaultMetricsRow'
@@ -17,6 +18,7 @@ export const RbtcVaultMetricsSection = () => {
   const { pendingDepositCapital, pendingWithdrawalCapital, netPendingCapital, pricePerShare } = row3
 
   const bufferModal = useModal()
+  const updateNavModal = useModal()
 
   if (isLoading) {
     return (
@@ -75,6 +77,7 @@ export const RbtcVaultMetricsSection = () => {
           fiatAmount={currentNav.fiatAmount}
           buttonLabel="Update NAV"
           buttonVariant="primary"
+          onButtonClick={updateNavModal.openModal}
         />
         <RbtcVaultMetricCard
           title="Deployed Capital"
@@ -136,6 +139,7 @@ export const RbtcVaultMetricsSection = () => {
       </RbtcVaultMetricsRow>
 
       {bufferModal.isModalOpened && <TopUpBufferFlow onClose={bufferModal.closeModal} />}
+      {updateNavModal.isModalOpened && <UpdateNavFlow onClose={updateNavModal.closeModal} />}
     </div>
   )
 }

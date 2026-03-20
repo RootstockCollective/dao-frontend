@@ -365,4 +365,25 @@ export const TX_MESSAGES = {
       loading: false,
     },
   },
+  updateNav: {
+    pending: {
+      title: 'NAV update in process',
+      content: 'Waiting for transaction confirmation...',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'NAV update successful',
+      content: 'The vault NAV has been updated and funding processing has run.',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'NAV update failed',
+      content:
+        'An unexpected error occurred while updating NAV. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
 } as const

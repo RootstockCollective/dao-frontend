@@ -37,3 +37,24 @@ export function computeIndicativeApy(
   if (!Number.isFinite(apy)) return '—'
   return `${(apy * 100).toFixed(2)}%`
 }
+
+/**
+ * Solves for `reportedOffchainAssets` that yields a given `totalAssets` (NAV)
+ * per the vault's accounting identity:
+ *
+ *   totalAssets = (onchainBalance + reportedOffchainAssets) - liabilities
+ *   liabilities = outstandingRedeemAssets + totalPendingDepositAssets + bufferDebt
+ *
+ * @see RBTCAsyncVault.totalAssets() in rbtc-vault-sc
+ */
+export function reportedOffchainForTargetTotalAssets(
+  targetTotalAssets: bigint,
+  onchainBalance: bigint,
+  outstandingRedeemAssets: bigint,
+  totalPendingDepositAssets: bigint,
+  bufferDebt: bigint,
+): bigint {
+  const liabilities = outstandingRedeemAssets + totalPendingDepositAssets + bufferDebt
+  const gross = targetTotalAssets + liabilities
+  return gross - onchainBalance
+}
