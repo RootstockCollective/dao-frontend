@@ -9,6 +9,7 @@ import { TopUpBufferFlow } from '../flows/buffer/TopUpBufferFlow'
 import { DepositToVaultFlow } from '../flows/deposit/DepositToVaultFlow'
 import { UpdateNavFlow } from '../flows/nav/UpdateNavFlow'
 import { SyntheticYieldTopUpFlow } from '../flows/synthetic-yield/SyntheticYieldTopUpFlow'
+import { TransferToManagerFlow } from '../flows/transfer/TransferToManagerFlow'
 import { useRbtcVaultMetrics } from '../hooks/useRbtcVaultMetrics'
 import { RbtcVaultMetricCard } from './RbtcVaultMetricCard'
 import { RbtcVaultMetricsRow } from './RbtcVaultMetricsRow'
@@ -23,6 +24,7 @@ export const RbtcVaultMetricsSection = () => {
   const updateNavModal = useModal()
   const depositToVaultModal = useModal()
   const syntheticYieldTopUpModal = useModal()
+  const transferToManagerModal = useModal()
 
   if (isLoading) {
     return (
@@ -100,6 +102,7 @@ export const RbtcVaultMetricsSection = () => {
           tokenSymbol={RBTC}
           fiatAmount={unallocatedCapital.fiatAmount}
           buttonLabel="Transfer to Manager Wallet"
+          onButtonClick={transferToManagerModal.openModal}
         />
         <RbtcVaultMetricCard
           title="Manual Buffer"
@@ -149,6 +152,9 @@ export const RbtcVaultMetricsSection = () => {
       {depositToVaultModal.isModalOpened && <DepositToVaultFlow onClose={depositToVaultModal.closeModal} />}
       {syntheticYieldTopUpModal.isModalOpened && (
         <SyntheticYieldTopUpFlow onClose={syntheticYieldTopUpModal.closeModal} />
+      )}
+      {transferToManagerModal.isModalOpened && (
+        <TransferToManagerFlow onClose={transferToManagerModal.closeModal} />
       )}
     </div>
   )

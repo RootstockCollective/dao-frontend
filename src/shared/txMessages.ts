@@ -428,4 +428,25 @@ export const TX_MESSAGES = {
       loading: false,
     },
   },
+  transfer: {
+    pending: {
+      title: 'Transfer in process',
+      content: 'Waiting for transaction confirmation...',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Transfer successful',
+      content: 'Capital has been transferred to the manager wallet successfully.',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Transfer failed',
+      content:
+        'An unexpected error occurred while transferring capital. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
 } as const
