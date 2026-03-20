@@ -92,11 +92,14 @@ const BTC_VAULT_HISTORY_COUNTER_QUERY = gql`
     btcVaultHistoryCounter(id: $id) {
       total
       depositRequests
+      depositsClaimable
       depositsClaimed
       depositsCancelled
       redeemRequests
+      redeemsClaimable
       redeemsClaimed
       redeemsCancelled
+      redeemsAccepted
     }
   }
 `
@@ -121,11 +124,14 @@ const BTC_VAULT_REDEEM_REQUESTS_BY_IDS = gql`
 
 const ACTION_TYPE_TO_COUNTER_FIELD: Record<string, string> = {
   DEPOSIT_REQUEST: 'depositRequests',
+  DEPOSIT_CLAIMABLE: 'depositsClaimable',
   DEPOSIT_CLAIMED: 'depositsClaimed',
   DEPOSIT_CANCELLED: 'depositsCancelled',
   REDEEM_REQUEST: 'redeemRequests',
+  REDEEM_CLAIMABLE: 'redeemsClaimable',
   REDEEM_CLAIMED: 'redeemsClaimed',
   REDEEM_CANCELLED: 'redeemsCancelled',
+  REDEEM_ACCEPTED: 'redeemsAccepted',
 }
 
 export async function getGlobalBtcVaultHistory(params: {
@@ -227,10 +233,18 @@ export async function enrichHistoryWithRequestStatus(
       } else {
         result.displayStatus = 'pending'
       }
-    } else if (item.action === 'DEPOSIT_CLAIMED' || item.action === 'REDEEM_CLAIMED') {
+    } else if (item.action === 'DEPOSIT_CLAIMABLE') {
+      result.displayStatus = 'ready_to_claim'
+    } else if (item.action === 'REDEEM_CLAIMABLE') {
+      result.displayStatus = 'ready_to_withdraw'
+    } else if (item.action === 'DEPOSIT_CLAIMED') {
+      result.displayStatus = 'successful'
+    } else if (item.action === 'REDEEM_CLAIMED') {
       result.displayStatus = 'successful'
     } else if (item.action === 'DEPOSIT_CANCELLED' || item.action === 'REDEEM_CANCELLED') {
       result.displayStatus = 'cancelled'
+    } else if (item.action === 'REDEEM_ACCEPTED') {
+      result.displayStatus = 'approved'
     }
     return result
   })
@@ -239,11 +253,14 @@ export async function enrichHistoryWithRequestStatus(
 interface CounterEntity {
   total: string
   depositRequests: string
+  depositsClaimable: string
   depositsClaimed: string
   depositsCancelled: string
   redeemRequests: string
+  redeemsClaimable: string
   redeemsClaimed: string
   redeemsCancelled: string
+  redeemsAccepted: string
 }
 
 export async function getBtcVaultHistoryCount(address: string, type?: string[]): Promise<number> {

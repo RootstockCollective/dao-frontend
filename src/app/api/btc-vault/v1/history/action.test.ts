@@ -43,11 +43,14 @@ const mockHistoryItems = [
 const mockCounter = {
   total: '10',
   depositRequests: '3',
+  depositsClaimable: '1',
   depositsClaimed: '2',
   depositsCancelled: '1',
   redeemRequests: '2',
+  redeemsClaimable: '1',
   redeemsClaimed: '1',
   redeemsCancelled: '1',
+  redeemsAccepted: '0',
 }
 
 beforeEach(() => {
@@ -172,11 +175,14 @@ describe('getGlobalBtcVaultHistory', () => {
         variables: expect.objectContaining({
           actionFilter: [
             'DEPOSIT_REQUEST',
+            'DEPOSIT_CLAIMABLE',
             'DEPOSIT_CLAIMED',
             'DEPOSIT_CANCELLED',
             'REDEEM_REQUEST',
+            'REDEEM_CLAIMABLE',
             'REDEEM_CLAIMED',
             'REDEEM_CANCELLED',
+            'REDEEM_ACCEPTED',
           ],
         }),
       }),

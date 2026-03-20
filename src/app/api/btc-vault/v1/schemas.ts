@@ -5,11 +5,14 @@ import { AddressSchema, SortDirectionEnum } from '@/app/api/utils/validators'
 export const SortFieldEnum = z.enum(['timestamp', 'assets'])
 export const ActionTypeEnum = z.enum([
   'deposit_request',
+  'deposit_claimable',
   'deposit_claimed',
   'deposit_cancelled',
   'redeem_request',
+  'redeem_claimable',
   'redeem_claimed',
   'redeem_cancelled',
+  'redeem_accepted',
 ])
 
 /** Uppercase action type strings for subgraph/GraphQL (derived from ActionTypeEnum). */
