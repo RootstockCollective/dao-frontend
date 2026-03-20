@@ -26,3 +26,12 @@ Each commit should be a **single logical unit** that is easy to review, revert, 
 - **Subject line = future blame context:** the message must answer "why does this code exist?" without reading the diff.
 - **Body references story/phase** when working from a plan: include story ID and phase number in the body.
 - Co-located test files are committed alongside their source — never in a separate "add tests" commit.
+
+### Cross-cutting types (API ↔ UI)
+
+When a ticket **renames or replaces a string enum** used by both `src/app/api/...` and feature UI, you usually cannot land “API only” first without breaking `tsc`. Prefer one of:
+
+1. **Compatibility shim (data layer):** e.g. map API wire keys to the *previous* row/display enum in `mappers.ts` for one commit; remove the shim once `types.ts` and components use the new keys (each step green under `pre-commit`).
+2. **Widen the type temporarily** (deprecated union members), then migrate UI and narrow — only when product accepts duplicate literals briefly.
+
+If you still touch **more than five source files** in one commit, say so in the body (ticket ref + “single cross-component contract”) so `git blame` stays honest.
