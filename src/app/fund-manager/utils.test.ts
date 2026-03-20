@@ -1,6 +1,6 @@
 import { SECONDS_PER_YEAR } from '@/lib/constants'
 import { describe, expect, it } from 'vitest'
-import { computeIndicativeApy } from './utils'
+import { computeIndicativeApy, reportedOffchainForTargetTotalAssets } from './utils'
 
 function epoch(closedAt: number, assetsAtClose: number, supplyAtClose: number) {
   return {
@@ -105,5 +105,35 @@ describe('computeIndicativeApy', () => {
       const current = epoch(SECONDS_PER_YEAR, 105_250, 100_000) // share price 1.0525 → 5.25%
       expect(computeIndicativeApy(current, prev)).toBe('5.25%')
     })
+  })
+})
+
+describe('reportedOffchainForTargetTotalAssets', () => {
+  it('returns reported off-chain assets that matches vault totalAssets accounting', () => {
+    const onchain = 500n
+    const redeemOutstanding = 100n
+    const pendingDeposits = 50n
+    const bufferDebt = 25n
+    const targetNav = 1000n
+    const reported = reportedOffchainForTargetTotalAssets(
+      targetNav,
+      onchain,
+      redeemOutstanding,
+      pendingDeposits,
+      bufferDebt,
+    )
+    const liabilities = redeemOutstanding + pendingDeposits + bufferDebt
+    const gross = targetNav + liabilities
+    expect(reported).toBe(gross - onchain)
+    expect(onchain + reported - liabilities).toBe(targetNav)
+  })
+
+  it('returns zero when gross equals on-chain balance', () => {
+    expect(reportedOffchainForTargetTotalAssets(200n, 500n, 100n, 150n, 50n)).toBe(0n)
+  })
+
+  it('returns negative when target NAV is below on-chain balance minus liabilities', () => {
+    const result = reportedOffchainForTargetTotalAssets(100n, 500n, 100n, 150n, 50n)
+    expect(result).toBe(-100n)
   })
 })

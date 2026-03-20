@@ -29,6 +29,7 @@ interface Props {
 /**
  * Generic modal shell for fund-manager multi-step CTA flows.
  * Encapsulates step navigation, progress bar, step labels, and action buttons.
+ * When `stepConfig` has a single step, step labels and the progress bar are hidden.
  * The stepConfig array can change at runtime (e.g. when switching between rBTC/WrBTC).
  */
 export const FundManagerFlowModal = ({ title, stepConfig, onClose }: Props) => {
@@ -42,16 +43,19 @@ export const FundManagerFlowModal = ({ title, stepConfig, onClose }: Props) => {
   const currentStepConfig = useMemo(() => stepConfig[step], [stepConfig, step])
   const StepComponent = currentStepConfig.component
   const labels = useMemo(() => stepConfig.map(s => s.label), [stepConfig])
+  const showStepChrome = stepConfig.length > 1
 
   return (
     <Modal onClose={onClose} data-testid="FundManagerFlowModal">
       <div className="h-full flex flex-col p-4 md:p-6">
         <Header className="mt-16 mb-4">{title}</Header>
 
-        <div className="mb-12">
-          <FlowStepLabels labels={labels} currentStep={step} />
-          <ProgressBar progress={currentStepConfig.progress} className="mt-3" />
-        </div>
+        {showStepChrome && (
+          <div className="mb-12">
+            <FlowStepLabels labels={labels} currentStep={step} />
+            <ProgressBar progress={currentStepConfig.progress} className="mt-3" />
+          </div>
+        )}
 
         {currentStepConfig.description && (
           <Paragraph className="mb-8">{currentStepConfig.description}</Paragraph>
