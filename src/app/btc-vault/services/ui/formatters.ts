@@ -58,6 +58,7 @@ export function formatDateMonthFirst(unix: number): string {
 
 /**
  * Formats a Unix timestamp (seconds) for "closing on [Month Day]" display (e.g. "February 23").
+ * Uses UTC so the calendar day is stable across client timezones.
  * @param unix - Unix timestamp in seconds
  * @returns Formatted date string (e.g. "February 23")
  */

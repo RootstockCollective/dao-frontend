@@ -1,6 +1,6 @@
 import React from 'react'
 import type { Meta, StoryObj } from '@storybook/nextjs'
-import SeparatorBar from './SeparatorBar'
+import { SeparatorBar } from './SeparatorBar'
 
 const meta: Meta<typeof SeparatorBar> = {
   title: 'Components/SeparatorBar',

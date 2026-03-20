@@ -49,6 +49,7 @@ export const BtcVaultMetrics = () => {
     () => (epoch?.epochId != null ? `Deposit window ${epoch.epochId}` : 'Deposit window'),
     [epoch?.epochId],
   )
+  // Deposit window row: human-readable "closing on …" when epoch is open
   const depositWindowValue = useMemo(() => {
     if (isMetricsLoading || !epoch) return PLACEHOLDER
     if (epoch.status === 'open' && epoch.endTime != null) {
@@ -57,18 +58,19 @@ export const BtcVaultMetrics = () => {
     return PLACEHOLDER
   }, [epoch, isMetricsLoading])
 
+  // APY fiat line under the main amount
   const lastUpdatedFormatted = useMemo(() => {
     if (!metrics?.timestamp) return null
     return `Last updated on ${formatDateMonthFirst(metrics.timestamp)}`
   }, [metrics?.timestamp])
 
-  const balanceStyle = 'w-[256px] min-w-[180px]'
+  const BALANCE_STYLE = 'w-[256px] min-w-[180px]'
 
   return (
     <div className="flex flex-col gap-6 w-full" data-testid="btc-vault-metrics-content">
-      <div className="flex flex-row flex-wrap gap-x-6 gap-y-6 w-full" data-testid="btc-vault-metrics-row">
+      <div className="flex flex-row flex-wrap gap-6 w-full" data-testid="btc-vault-metrics-row">
         <BalanceInfo
-          className={balanceStyle}
+          className={BALANCE_STYLE}
           title="TVL"
           tooltipContent={TVL_TOOLTIP}
           amount={isMetricsLoading ? '...' : tvlFormatted}
@@ -79,7 +81,7 @@ export const BtcVaultMetrics = () => {
           headerVariant="h3"
         />
         <BalanceInfo
-          className={balanceStyle}
+          className={BALANCE_STYLE}
           title="APY (est.)"
           tooltipContent={APY_TOOLTIP}
           amount={isMetricsLoading ? '...' : `${apyFormatted}%`}
@@ -88,7 +90,7 @@ export const BtcVaultMetrics = () => {
           headerVariant="h3"
         />
         <BalanceInfo
-          className={balanceStyle}
+          className={BALANCE_STYLE}
           title={depositWindowLabel}
           tooltipContent={DEPOSIT_WINDOW_TOOLTIP}
           amount={depositWindowValue}
@@ -96,7 +98,7 @@ export const BtcVaultMetrics = () => {
           headerVariant="h3"
         />
         <BalanceInfo
-          className={balanceStyle}
+          className={BALANCE_STYLE}
           title="Price per Share"
           tooltipContent={PRICE_PER_SHARE_TOOLTIP}
           amount={isMetricsLoading ? '...' : pricePerShareFormatted}

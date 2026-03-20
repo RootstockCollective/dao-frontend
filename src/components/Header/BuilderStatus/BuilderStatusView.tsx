@@ -1,4 +1,4 @@
-import SeparatorBar from '@/components/SeparatorBar/SeparatorBar'
+import { SeparatorBar } from '@/components/SeparatorBar/SeparatorBar'
 import { HourglassIcon } from '../../Icons/HourglassIcon'
 import { Span } from '@/components/Typography'
 import { HtmlHTMLAttributes } from 'react'

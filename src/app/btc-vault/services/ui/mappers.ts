@@ -66,6 +66,7 @@ export function toVaultMetricsDisplay(raw: VaultMetrics): VaultMetricsDisplay {
     timestamp: raw.timestamp,
     tvlRaw: raw.tvl,
     pricePerShareRaw: raw.pricePerShare,
+    // tvlPercentFormatted omitted until backend provides; UI shows "—"
   }
 }
 
