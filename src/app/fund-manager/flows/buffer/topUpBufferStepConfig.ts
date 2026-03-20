@@ -1,10 +1,35 @@
+import { parseEther } from 'viem'
+
 import { RBTC } from '@/lib/constants'
+import { buffer } from '@/lib/contracts'
 
 import { SelectedToken } from '../../hooks/useTokenSelection'
 import { FlowStepConfig } from '../../types'
-import { ConfirmDepositStep } from './steps/ConfirmDepositStep'
-import { DepositAmountStep } from './steps/DepositAmountStep'
-import { RequestAllowanceStep } from './steps/RequestAllowanceStep'
+import { createConfirmStep } from '../createConfirmStep'
+import { createDepositAmountStep } from '../createDepositAmountStep'
+import { createRequestAllowanceStep } from '../createRequestAllowanceStep'
+import { useTopUpBuffer } from './hooks/useTopUpBuffer'
+import { useTopUpBufferContext } from './TopUpBufferContext'
+
+const DepositAmountStep = createDepositAmountStep({
+  contractAddress: buffer.address,
+  addressLabel: 'Buffer address',
+  useFlowContext: useTopUpBufferContext,
+})
+
+const RequestAllowanceStep = createRequestAllowanceStep({
+  spenderAddress: buffer.address,
+  contractLabel: 'Buffer Contract',
+  actionName: 'bufferAllowance',
+  useFlowContext: useTopUpBufferContext,
+})
+
+const ConfirmDepositStep = createConfirmStep({
+  useFlowContext: useTopUpBufferContext,
+  useTransaction: ({ amount, isNative }) => useTopUpBuffer(parseEther(amount), isNative),
+  actionName: 'bufferTopUp',
+  getRecipientAddress: () => buffer.address,
+})
 
 const RBTC_STEP_CONFIG: FlowStepConfig[] = [
   {

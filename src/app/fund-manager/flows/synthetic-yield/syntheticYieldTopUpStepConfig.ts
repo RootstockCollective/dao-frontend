@@ -1,10 +1,35 @@
+import { parseEther } from 'viem'
+
 import { RBTC } from '@/lib/constants'
+import { syntheticYield } from '@/lib/contracts'
 
 import { SelectedToken } from '../../hooks/useTokenSelection'
 import { FlowStepConfig } from '../../types'
-import { ConfirmDepositStep } from './steps/ConfirmDepositStep'
-import { DepositAmountStep } from './steps/DepositAmountStep'
-import { RequestAllowanceStep } from './steps/RequestAllowanceStep'
+import { createConfirmStep } from '../createConfirmStep'
+import { createDepositAmountStep } from '../createDepositAmountStep'
+import { createRequestAllowanceStep } from '../createRequestAllowanceStep'
+import { useSyntheticYieldTopUp } from './hooks/useSyntheticYieldTopUp'
+import { useSyntheticYieldTopUpContext } from './SyntheticYieldTopUpContext'
+
+const DepositAmountStep = createDepositAmountStep({
+  contractAddress: syntheticYield.address,
+  addressLabel: 'Synthetic Yield address',
+  useFlowContext: useSyntheticYieldTopUpContext,
+})
+
+const RequestAllowanceStep = createRequestAllowanceStep({
+  spenderAddress: syntheticYield.address,
+  contractLabel: 'Synthetic Yield contract',
+  actionName: 'syntheticYieldAllowance',
+  useFlowContext: useSyntheticYieldTopUpContext,
+})
+
+const ConfirmDepositStep = createConfirmStep({
+  useFlowContext: useSyntheticYieldTopUpContext,
+  useTransaction: ({ amount, isNative }) => useSyntheticYieldTopUp(parseEther(amount), isNative),
+  actionName: 'syntheticYieldTopUp',
+  getRecipientAddress: () => syntheticYield.address,
+})
 
 const RBTC_STEP_CONFIG: FlowStepConfig[] = [
   {

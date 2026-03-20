@@ -20,7 +20,6 @@ interface UpdateNavContextValue {
   isValidAmount: boolean
   errorMessage: string
   currentNav: ReturnType<typeof formatMetrics>
-  // TODO(TOK-1183): effective on — wire real data source for effective date
   effectiveOnDisplay: string
   reportedOffchainWei: bigint | null
   vaultReadsLoading: boolean
@@ -132,7 +131,7 @@ export const UpdateNavProvider = ({ children }: Props) => {
     errorMessage,
     currentNav,
     // TODO(TOK-1183): effective on — wire real data source
-    effectiveOnDisplay: 'Imediately',
+    effectiveOnDisplay: 'Immediately',
     reportedOffchainWei,
     vaultReadsLoading,
     refetchNav,

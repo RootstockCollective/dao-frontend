@@ -1,10 +1,30 @@
+import { Address, parseEther } from 'viem'
+
 import { RBTC } from '@/lib/constants'
+import { rbtcVault } from '@/lib/contracts'
 
 import { SelectedToken } from '../../hooks/useTokenSelection'
 import { FlowStepConfig } from '../../types'
-import { ConfirmTransferStep } from './steps/ConfirmTransferStep'
+import { createConfirmStep } from '../createConfirmStep'
+import { createRequestAllowanceStep } from '../createRequestAllowanceStep'
+import { useTransferToManager } from './hooks/useTransferToManager'
 import { RecipientInfoStep } from './steps/RecipientInfoStep'
-import { RequestAllowanceStep } from './steps/RequestAllowanceStep'
+import { TransferToManagerContextValue, useTransferToManagerContext } from './TransferToManagerContext'
+
+const RequestAllowanceStep = createRequestAllowanceStep({
+  spenderAddress: rbtcVault.address,
+  contractLabel: 'Vault Contract',
+  actionName: 'allowance',
+  useFlowContext: useTransferToManagerContext,
+})
+
+const ConfirmTransferStep = createConfirmStep<TransferToManagerContextValue>({
+  useFlowContext: useTransferToManagerContext,
+  useTransaction: ({ amount, isNative, recipientAddress }) =>
+    useTransferToManager(parseEther(amount), isNative, recipientAddress as Address),
+  actionName: 'transfer',
+  getRecipientAddress: ({ recipientAddress }) => recipientAddress as Address,
+})
 
 const RBTC_STEP_CONFIG: FlowStepConfig[] = [
   {

@@ -75,7 +75,6 @@ export const NavInputStep = ({ onCloseModal, setButtonActions }: FlowStepProps) 
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-2 gap-y-6 w-full">
-        {/* TODO(TOK-1183): effective on — wire real data source */}
         <div className="flex flex-col gap-0.5">
           <Label variant="tag" className="text-bg-0">
             Effective on

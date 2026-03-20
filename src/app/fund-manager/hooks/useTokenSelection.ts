@@ -37,7 +37,6 @@ export const useTokenSelection = (wrbtcAddress: Address) => {
 
   const balance = useMemo(() => {
     if (isNative) return rbtcBalanceData?.value ?? 0n
-    return 1000000000000000000n
     return wrbtcBalanceRaw ?? 0n
   }, [isNative, rbtcBalanceData?.value, wrbtcBalanceRaw])
 

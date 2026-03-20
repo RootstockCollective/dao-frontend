@@ -4,8 +4,8 @@ import { useCallback } from 'react'
 import type { Hash } from 'viem'
 import { useAccount, useWriteContract } from 'wagmi'
 
-import { useTransactionStatus } from '@/app/user/Stake/hooks/useTransactionStatus'
 import { rbtcVault } from '@/lib/contracts'
+import { useTransactionStatus } from '@/shared/hooks/useTransactionStatus'
 
 /**
  * Hook wrapping the `claimRedeemNative()` contract call to finalize a claimable withdrawal.

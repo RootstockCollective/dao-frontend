@@ -7,26 +7,13 @@ import { RBTC, WRBTC_ADDRESS } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context'
 
 import { useAmountInput } from '../../hooks/useAmountInput'
-import { SelectedToken, useTokenSelection } from '../../hooks/useTokenSelection'
+import { useTokenSelection } from '../../hooks/useTokenSelection'
+import { AmountFlowContextValue } from '../createAmountFlowContext'
 
-interface TransferToManagerContextValue {
-  amount: string
-  isValidAmount: boolean
-  isAmountOverBalance: boolean
-  errorMessage: string
-  usdEquivalent: string
-  selectedToken: SelectedToken
-  balance: bigint
-  balanceFormatted: string
-  isNative: boolean
-  requiresAllowance: boolean
+export interface TransferToManagerContextValue extends AmountFlowContextValue {
   recipientAddress: string
   isValidAddress: boolean
   isFormValid: boolean
-  setAmount: (value: string) => void
-  handleAmountChange: (value: string) => void
-  handlePercentageClick: (percentage: number) => void
-  setSelectedToken: (token: SelectedToken) => void
   setRecipientAddress: (address: string) => void
 }
 
