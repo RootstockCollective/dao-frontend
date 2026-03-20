@@ -142,6 +142,7 @@ describe('useRequestHistory', () => {
     expect(data.rows[1].displayStatus).toBe('successful')
     expect(data.rows[1].amountFormatted).toBe('2')
     expect(data.rows[1].claimTokenType).toBe('shares')
+    expect(data.rawRowCountBeforeStatusFilter).toBeUndefined()
   })
 
   it('filters rows by displayStatus when filters.status is provided', async () => {
@@ -165,6 +166,7 @@ describe('useRequestHistory', () => {
     expect(data.rows[0].id).toBe('0xuser2-2')
     expect(data.total).toBe(42)
     expect(data.page).toBe(1)
+    expect(data.rawRowCountBeforeStatusFilter).toBe(2)
   })
 
   it('uses sort_field=assets when params.sortField is amount', async () => {
