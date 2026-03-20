@@ -334,15 +334,17 @@ export function toRequestDetailDisplay(
   userAddress: string,
 ): RequestDetailDisplay {
   const base = toActiveRequestDisplay(req, claimableInfo, rbtcPrice)
+  const isApproved = req.displayStatus === 'approved'
   return {
     ...base,
+    claimable: base.claimable || req.status === 'claimable',
     typeLabel: req.type === 'deposit' ? 'Deposit' : 'Withdrawal',
     // SAFETY: userAddress comes from useAccount which returns `0x${string}` at runtime
     addressShort: shortAddress(userAddress as `0x${string}`),
     addressFull: userAddress,
     submitTxShort: req.txHashes.submit ? shortenTxHash(req.txHashes.submit) : null,
     submitTxFull: req.txHashes.submit ?? null,
-    canCancel: req.status === 'pending',
+    canCancel: req.status === 'pending' && !isApproved,
   }
 }
 
@@ -416,6 +418,7 @@ export function mapApiItemToVaultRequest(item: BtcVaultHistoryItemWithStatus): V
     status,
     epochId: isDeposit ? item.epochId : null,
     batchRedeemId: isDeposit ? null : item.epochId,
+    displayStatus,
     timestamps: {
       created: item.timestamp,
       updated: item.timestamp,

@@ -24,10 +24,9 @@ export function TransactionDetailView({ detail, status, type, onCancel }: Transa
       <div className="bg-bg-80 rounded py-8 px-4 md:p-6 w-full flex flex-col gap-6">
         <RequestStatusStepper status={status} type={type} />
         <RequestDetailGrid detail={detail} />
-        {/* TODO(DAO-XXXX): Wire up claim/cancel logic when implemented */}
         {detail.claimable && (
           <Button variant="primary" data-testid="claim-button" onClick={() => {}}>
-            {detail.type === 'deposit' ? 'Claim Shares' : "Claim shares' value"}
+            {detail.type === 'deposit' ? 'Claim Shares' : 'Claim rBTC'}
           </Button>
         )}
         {detail.canCancel && (

@@ -81,6 +81,42 @@ const MOCK_DEPOSIT_DONE = {
   txHashes: { submit: '0x' + 'b'.repeat(64), finalize: '0x' + 'c'.repeat(64) },
 }
 
+const MOCK_WITHDRAWAL_APPROVED = {
+  id: 'req-withdrawal-approved',
+  type: 'withdrawal' as const,
+  amount: ONE_BTC / 2n,
+  status: 'pending' as const,
+  displayStatus: 'approved' as const,
+  epochId: null,
+  batchRedeemId: '1',
+  timestamps: { created: 1700000000 },
+  txHashes: { submit: '0x' + 'a'.repeat(64) },
+}
+
+const MOCK_WITHDRAWAL_CLAIMABLE = {
+  id: 'req-withdrawal-claimable',
+  type: 'withdrawal' as const,
+  amount: ONE_BTC / 2n,
+  status: 'claimable' as const,
+  displayStatus: 'claim_pending' as const,
+  epochId: null,
+  batchRedeemId: '2',
+  timestamps: { created: 1700000000 },
+  txHashes: { submit: '0x' + 'd'.repeat(64) },
+}
+
+const MOCK_DEPOSIT_CLAIMABLE = {
+  id: 'req-deposit-claimable',
+  type: 'deposit' as const,
+  amount: ONE_BTC,
+  status: 'claimable' as const,
+  displayStatus: 'open_to_claim' as const,
+  epochId: '1',
+  batchRedeemId: null,
+  timestamps: { created: 1700000000 },
+  txHashes: { submit: '0x' + 'e'.repeat(64) },
+}
+
 describe('TransactionDetailPage', () => {
   beforeEach(() => {
     mockUseAccount.mockReturnValue({
@@ -149,6 +185,29 @@ describe('TransactionDetailPage', () => {
     fireEvent.click(screen.getByTestId('cancel-request-button'))
     expect(screen.getByTestId('CancelRequestModal')).toBeInTheDocument()
     expect(screen.getByText('Are you sure you want to cancel this request?')).toBeInTheDocument()
+  })
+
+  it('does not render cancel button for approved withdrawal', () => {
+    mockUseRequestById.mockReturnValue({ data: MOCK_WITHDRAWAL_APPROVED, isLoading: false })
+    render(<TransactionDetailPage id="req-withdrawal-approved" />)
+    expect(screen.getByTestId('request-detail-grid')).toBeInTheDocument()
+    expect(screen.queryByTestId('cancel-request-button')).not.toBeInTheDocument()
+  })
+
+  it('renders claim button with "Claim rBTC" for claimable withdrawal', () => {
+    mockUseRequestById.mockReturnValue({ data: MOCK_WITHDRAWAL_CLAIMABLE, isLoading: false })
+    render(<TransactionDetailPage id="req-withdrawal-claimable" />)
+    expect(screen.getByTestId('claim-button')).toBeInTheDocument()
+    expect(screen.getByTestId('claim-button')).toHaveTextContent('Claim rBTC')
+    expect(screen.queryByTestId('cancel-request-button')).not.toBeInTheDocument()
+  })
+
+  it('renders claim button with "Claim Shares" for claimable deposit', () => {
+    mockUseRequestById.mockReturnValue({ data: MOCK_DEPOSIT_CLAIMABLE, isLoading: false })
+    render(<TransactionDetailPage id="req-deposit-claimable" />)
+    expect(screen.getByTestId('claim-button')).toBeInTheDocument()
+    expect(screen.getByTestId('claim-button')).toHaveTextContent('Claim Shares')
+    expect(screen.queryByTestId('cancel-request-button')).not.toBeInTheDocument()
   })
 
   it('shows success toast and closes modal when "Yes, cancel" is clicked', async () => {

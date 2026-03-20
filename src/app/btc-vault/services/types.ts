@@ -221,6 +221,13 @@ export interface VaultRequest {
   }
 
   /**
+   * Wire display status from the history API (e.g. `'approved'`, `'claim_pending'`).
+   * Present only for requests fetched via the history endpoint; `undefined` for
+   * requests built from on-chain reads (useActiveRequests).
+   */
+  displayStatus?: import('./ui/api-types').BtcVaultHistoryStatusKey
+
+  /**
    * Reason for failure when `status` is `'failed'`.
    * - `cancelled` — User voluntarily cancelled the request before settlement.
    * - `rejected`  — The system/contract rejected the request (e.g. insufficient liquidity, revert).
