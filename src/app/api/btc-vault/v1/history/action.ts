@@ -1,318 +1,158 @@
-import { gql } from '@apollo/client'
+import {
+  fetchBtcVaultHistoryFromBlockscout,
+  getFromBlockscoutSource,
+} from './sources/get-from-blockscout-source'
+import {
+  enrichHistoryWithRequestStatus,
+  getFromTheGraphSource,
+  queryBtcVaultHistoryCountFromSubgraph,
+} from './sources/get-from-the-graph-source'
+import type { BtcVaultHistoryDataSourceName, BtcVaultHistorySource } from './sources/types'
+import type { BtcVaultHistoryItem, BtcVaultHistoryItemWithStatus, BtcVaultHistoryQueryParams } from './types'
 
-import { ALL_ACTION_TYPES } from '@/app/api/btc-vault/v1/schemas'
-import { btcVaultClient } from '@/shared/components/ApolloClient'
+export type {
+  BtcVaultHistoryDisplayStatus,
+  BtcVaultHistoryItem,
+  BtcVaultHistoryItemWithStatus,
+  BtcVaultHistoryQueryParams,
+} from './types'
 
-/** Lifecycle keys on history JSON `displayStatus` (subgraph enrichment + terminal actions). */
-export type BtcVaultHistoryStatusKey =
-  | 'open_to_claim'
-  | 'pending'
-  | 'approved'
-  | 'claim_pending'
-  | 'successful'
-  | 'cancelled'
-  | 'rejected'
+export type { BtcVaultHistoryDataSourceName }
 
-export interface BtcVaultHistoryItem {
-  id: string
-  user: string
-  action: string
-  assets: string
-  shares: string
-  epochId: string
-  timestamp: number
-  blockNumber: string
-  transactionHash: string
+export interface BtcVaultHistoryFetchError {
+  source: BtcVaultHistoryDataSourceName
+  message: string
 }
 
-export interface BtcVaultHistoryItemWithStatus extends BtcVaultHistoryItem {
-  /** Wire lifecycle for *_REQUEST rows (subgraph); CLAIMED/CANCELLED log rows derive from action. */
-  displayStatus?: BtcVaultHistoryStatusKey
+export interface BtcVaultHistoryPageResult {
+  items: BtcVaultHistoryItem[]
+  total: number
+  source: BtcVaultHistoryDataSourceName | null
+  errors: BtcVaultHistoryFetchError[]
 }
 
-const BTC_VAULT_GLOBAL_HISTORY_QUERY = gql`
-  query BtcVaultGlobalHistory(
-    $first: Int!
-    $skip: Int!
-    $orderBy: BtcVaultHistory_orderBy!
-    $orderDirection: OrderDirection!
-    $actionFilter: [BtcVaultActionType!]!
-  ) {
-    btcVaultHistories(
-      where: { action_in: $actionFilter }
-      first: $first
-      skip: $skip
-      orderBy: $orderBy
-      orderDirection: $orderDirection
-    ) {
-      id
-      user
-      action
-      assets
-      shares
-      epochId
-      timestamp
-      blockNumber
-      transactionHash
-    }
-  }
-`
-
-const BTC_VAULT_USER_HISTORY_QUERY = gql`
-  query BtcVaultUserHistory(
-    $user: Bytes!
-    $first: Int!
-    $skip: Int!
-    $orderBy: BtcVaultHistory_orderBy!
-    $orderDirection: OrderDirection!
-    $actionFilter: [BtcVaultActionType!]!
-  ) {
-    btcVaultHistories(
-      where: { user: $user, action_in: $actionFilter }
-      first: $first
-      skip: $skip
-      orderBy: $orderBy
-      orderDirection: $orderDirection
-    ) {
-      id
-      user
-      action
-      assets
-      shares
-      epochId
-      timestamp
-      blockNumber
-      transactionHash
-    }
-  }
-`
-
-const BTC_VAULT_HISTORY_COUNTER_QUERY = gql`
-  query BtcVaultHistoryCounter($id: ID!) {
-    btcVaultHistoryCounter(id: $id) {
-      total
-      depositRequests
-      depositsClaimable
-      depositsClaimed
-      depositsCancelled
-      redeemRequests
-      redeemsClaimable
-      redeemsClaimed
-      redeemsCancelled
-      redeemsAccepted
-    }
-  }
-`
-
-const BTC_VAULT_DEPOSIT_REQUESTS_BY_IDS = gql`
-  query BtcDepositRequestsByIds($ids: [ID!]!, $first: Int!) {
-    btcDepositRequests(where: { id_in: $ids }, first: $first) {
-      id
-      status
-    }
-  }
-`
-
-const BTC_VAULT_REDEEM_REQUESTS_BY_IDS = gql`
-  query BtcRedeemRequestsByIds($ids: [ID!]!, $first: Int!) {
-    btcRedeemRequests(where: { id_in: $ids }, first: $first) {
-      id
-      status
-    }
-  }
-`
-
-const ACTION_TYPE_TO_COUNTER_FIELD: Record<string, string> = {
-  DEPOSIT_REQUEST: 'depositRequests',
-  DEPOSIT_CLAIMABLE: 'depositsClaimable',
-  DEPOSIT_CLAIMED: 'depositsClaimed',
-  DEPOSIT_CANCELLED: 'depositsCancelled',
-  REDEEM_REQUEST: 'redeemRequests',
-  REDEEM_CLAIMABLE: 'redeemsClaimable',
-  REDEEM_CLAIMED: 'redeemsClaimed',
-  REDEEM_CANCELLED: 'redeemsCancelled',
-  REDEEM_ACCEPTED: 'redeemsAccepted',
+/** Result after fetch + source-scoped enrichment (unified pipeline). */
+export interface BtcVaultHistoryPageEnrichedResult {
+  data: BtcVaultHistoryItemWithStatus[]
+  total: number
+  source: BtcVaultHistoryDataSourceName | null
+  errors: BtcVaultHistoryFetchError[]
 }
 
-export async function getGlobalBtcVaultHistory(params: {
-  limit: number
-  page: number
-  sort_field: 'timestamp' | 'assets'
-  sort_direction: 'asc' | 'desc'
-  type?: string[]
-  address?: string
-}): Promise<BtcVaultHistoryItem[]> {
-  const { limit, page, sort_field, sort_direction, type, address } = params
-  const skip = (page - 1) * limit
-
-  const actionFilter = type ? type.map(t => t.toUpperCase()) : [...ALL_ACTION_TYPES]
-
-  const query = address ? BTC_VAULT_USER_HISTORY_QUERY : BTC_VAULT_GLOBAL_HISTORY_QUERY
-  const variables: Record<string, unknown> = {
-    first: limit,
-    skip,
-    orderBy: sort_field,
-    orderDirection: sort_direction,
-    actionFilter,
+function enrichHistoryDisplayStatusFromActionOnly(item: BtcVaultHistoryItem): BtcVaultHistoryItemWithStatus {
+  const result: BtcVaultHistoryItemWithStatus = { ...item }
+  if (item.action === 'DEPOSIT_REQUEST' || item.action === 'REDEEM_REQUEST') {
+    result.displayStatus = 'pending'
+  } else if (item.action === 'DEPOSIT_CLAIMABLE') {
+    result.displayStatus = 'ready_to_claim'
+  } else if (item.action === 'REDEEM_CLAIMABLE') {
+    result.displayStatus = 'ready_to_withdraw'
+  } else if (item.action === 'DEPOSIT_CLAIMED' || item.action === 'REDEEM_CLAIMED') {
+    result.displayStatus = 'successful'
+  } else if (item.action === 'DEPOSIT_CANCELLED' || item.action === 'REDEEM_CANCELLED') {
+    result.displayStatus = 'cancelled'
+  } else if (item.action === 'REDEEM_ACCEPTED') {
+    result.displayStatus = 'approved'
   }
-
-  if (address) {
-    variables.user = address.toLowerCase()
-  }
-
-  const { data } = await btcVaultClient.query<{
-    btcVaultHistories: BtcVaultHistoryItem[]
-  }>({
-    query,
-    variables,
-    fetchPolicy: 'no-cache',
-  })
-
-  return (data?.btcVaultHistories ?? []).map(item => ({
-    ...item,
-    timestamp: Number(item.timestamp),
-  }))
+  return result
 }
 
-/** Normalizes subgraph request status strings for comparison (trim + uppercase). */
-function normalizeSubgraphRequestStatus(status: string | undefined): string {
-  return (status ?? '').trim().toUpperCase()
+const theGraphHistorySource: BtcVaultHistorySource = getFromTheGraphSource({
+  mapActionOnly: enrichHistoryDisplayStatusFromActionOnly,
+})
+
+const blockscoutHistorySource: BtcVaultHistorySource = getFromBlockscoutSource({
+  mapActionOnly: enrichHistoryDisplayStatusFromActionOnly,
+})
+
+const historySourcesOrdered: BtcVaultHistorySource[] = [theGraphHistorySource, blockscoutHistorySource]
+
+/**
+ * Fetches a page of BTC vault history with **source-scoped** enrichment: tries **The Graph** first, then **Blockscout** (DAO-2106).
+ * Each source runs `fetchPageAndTotal` then `enrichWithStatus` on that source only (no Apollo enrichment when Blockscout served the list).
+ */
+export async function fetchBtcVaultHistoryPageAndEnrich(
+  params: BtcVaultHistoryQueryParams,
+): Promise<BtcVaultHistoryPageEnrichedResult> {
+  const errors: BtcVaultHistoryFetchError[] = []
+
+  for (const source of historySourcesOrdered) {
+    try {
+      const { items, total } = await source.fetchPageAndTotal(params)
+      const data = await source.enrichWithStatus(items)
+      return { data, total, source: source.name, errors }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      console.warn(`[btc-vault][DAO-2106] History source "${source.name}" failed`, error)
+      errors.push({ source: source.name, message })
+    }
+  }
+
+  return { data: [], total: 0, source: null, errors }
+}
+
+function historyItemFromEnriched(row: BtcVaultHistoryItemWithStatus): BtcVaultHistoryItem {
+  const { displayStatus: _displayStatus, ...item } = row
+  return item
 }
 
 /**
- * Redeem: contract-indexed (subgraph) status → wire code. One code per row; stronger phases win first
- * (cancelled → claimed → claimable → accepted → pending).
- * SC names (typical): PENDING, ACCEPTED, CLAIMABLE, CLAIMED, CANCELLED → wire pending, approved, claim_pending, successful, cancelled.
+ * Fetches raw items + total (no cross-source enrichment). Prefer {@link fetchBtcVaultHistoryPageAndEnrich} for the API route.
  */
-function mapRedeemSubgraphStatusToWire(statusRaw: string | undefined): BtcVaultHistoryStatusKey {
-  const s = normalizeSubgraphRequestStatus(statusRaw)
-  if (!s) return 'pending'
-  if (s === 'CANCELLED' || s === 'CANCELED') return 'cancelled'
-  if (s === 'CLAIMED') return 'successful'
-  if (s === 'CLAIMABLE') return 'claim_pending'
-  if (s === 'ACCEPTED') return 'approved'
-  if (s === 'PENDING') return 'pending'
-  return 'pending'
+export async function fetchBtcVaultHistoryPageAndTotal(
+  params: BtcVaultHistoryQueryParams,
+): Promise<BtcVaultHistoryPageResult> {
+  const enriched = await fetchBtcVaultHistoryPageAndEnrich(params)
+  return {
+    items: enriched.data.map(historyItemFromEnriched),
+    total: enriched.total,
+    source: enriched.source,
+    errors: enriched.errors,
+  }
 }
 
 /**
- * Deposit request: same terminal/precedence idea; ACCEPTED stays `pending` to avoid new deposit UX surface.
+ * @deprecated Prefer `fetchBtcVaultHistoryPageAndTotal` from the route to avoid duplicate subgraph/Blockscout work.
  */
-function mapDepositSubgraphStatusToWire(statusRaw: string | undefined): BtcVaultHistoryStatusKey {
-  const s = normalizeSubgraphRequestStatus(statusRaw)
-  if (!s) return 'pending'
-  if (s === 'CANCELLED' || s === 'CANCELED') return 'cancelled'
-  if (s === 'CLAIMED') return 'successful'
-  if (s === 'CLAIMABLE') return 'open_to_claim'
-  if (s === 'ACCEPTED') return 'pending'
-  if (s === 'PENDING') return 'pending'
-  return 'pending'
+export async function getGlobalBtcVaultHistory(
+  params: BtcVaultHistoryQueryParams,
+): Promise<BtcVaultHistoryItem[]> {
+  const { data } = await fetchBtcVaultHistoryPageAndEnrich(params)
+  return data.map(historyItemFromEnriched)
 }
 
 /**
- * Fetches BtcDepositRequest and BtcRedeemRequest status for *_REQUEST rows and sets wire `displayStatus`.
- * REDEEM_CLAIMED / DEPOSIT_CLAIMED / *_CANCELLED rows get successful/cancelled from action (no subgraph).
+ * @deprecated Prefer `fetchBtcVaultHistoryPageAndTotal` from the route to avoid duplicate subgraph/Blockscout work.
  */
-export async function enrichHistoryWithRequestStatus(
+export async function getBtcVaultHistoryCount(address: string, type?: string[]): Promise<number> {
+  try {
+    return await queryBtcVaultHistoryCountFromSubgraph(address, type)
+  } catch (error) {
+    console.warn('[btc-vault][DAO-2106] Subgraph count failed; falling back to Blockscout total', error)
+    const { total } = await fetchBtcVaultHistoryFromBlockscout({
+      limit: 1,
+      page: 1,
+      sort_field: 'timestamp',
+      sort_direction: 'desc',
+      type,
+      address: address === 'global' ? undefined : address,
+    })
+    return total
+  }
+}
+
+/**
+ * Like {@link enrichHistoryWithRequestStatus} but falls back to action-only `displayStatus` when subgraph enrichment fails.
+ */
+export async function enrichHistoryWithRequestStatusSafe(
   history: BtcVaultHistoryItem[],
 ): Promise<BtcVaultHistoryItemWithStatus[]> {
-  const depositIds = new Set<string>()
-  const redeemIds = new Set<string>()
-  for (const item of history) {
-    const id = `${item.user.toLowerCase()}-${item.epochId}`
-    if (item.action === 'DEPOSIT_REQUEST') depositIds.add(id)
-    else if (item.action === 'REDEEM_REQUEST') redeemIds.add(id)
+  try {
+    return await enrichHistoryWithRequestStatus(history)
+  } catch (error) {
+    console.warn('[btc-vault][DAO-2106] Subgraph enrichment failed; using action-only displayStatus', error)
+    return history.map(enrichHistoryDisplayStatusFromActionOnly)
   }
-
-  let depositStatusById: Record<string, string> = {}
-  let redeemStatusById: Record<string, string> = {}
-
-  if (depositIds.size > 0) {
-    const ids = [...depositIds]
-    const { data } = await btcVaultClient.query<{
-      btcDepositRequests: { id: string; status: string }[]
-    }>({
-      query: BTC_VAULT_DEPOSIT_REQUESTS_BY_IDS,
-      variables: { ids, first: ids.length },
-      fetchPolicy: 'no-cache',
-    })
-    for (const r of data?.btcDepositRequests ?? []) {
-      depositStatusById[r.id] = r.status
-    }
-  }
-
-  if (redeemIds.size > 0) {
-    const ids = [...redeemIds]
-    const { data } = await btcVaultClient.query<{
-      btcRedeemRequests: { id: string; status: string }[]
-    }>({
-      query: BTC_VAULT_REDEEM_REQUESTS_BY_IDS,
-      variables: { ids, first: ids.length },
-      fetchPolicy: 'no-cache',
-    })
-    for (const r of data?.btcRedeemRequests ?? []) {
-      redeemStatusById[r.id] = r.status
-    }
-  }
-
-  return history.map((item): BtcVaultHistoryItemWithStatus => {
-    const result: BtcVaultHistoryItemWithStatus = { ...item }
-    if (item.action === 'DEPOSIT_REQUEST' || item.action === 'REDEEM_REQUEST') {
-      const id = `${item.user.toLowerCase()}-${item.epochId}`
-      const status = item.action === 'DEPOSIT_REQUEST' ? depositStatusById[id] : redeemStatusById[id]
-      result.displayStatus =
-        item.action === 'DEPOSIT_REQUEST'
-          ? mapDepositSubgraphStatusToWire(status)
-          : mapRedeemSubgraphStatusToWire(status)
-    } else if (item.action === 'DEPOSIT_CLAIMED' || item.action === 'REDEEM_CLAIMED') {
-      result.displayStatus = 'successful'
-    } else if (item.action === 'DEPOSIT_CANCELLED' || item.action === 'REDEEM_CANCELLED') {
-      result.displayStatus = 'cancelled'
-    } else if (item.action === 'REDEEM_ACCEPTED') {
-      result.displayStatus = 'approved'
-    } else if (item.action === 'DEPOSIT_CLAIMABLE') {
-      result.displayStatus = 'open_to_claim'
-    } else if (item.action === 'REDEEM_CLAIMABLE') {
-      result.displayStatus = 'claim_pending'
-    }
-    return result
-  })
 }
 
-interface CounterEntity {
-  total: string
-  depositRequests: string
-  depositsClaimable: string
-  depositsClaimed: string
-  depositsCancelled: string
-  redeemRequests: string
-  redeemsClaimable: string
-  redeemsClaimed: string
-  redeemsCancelled: string
-  redeemsAccepted: string
-}
-
-export async function getBtcVaultHistoryCount(address: string, type?: string[]): Promise<number> {
-  const { data } = await btcVaultClient.query<{
-    btcVaultHistoryCounter: CounterEntity | null
-  }>({
-    query: BTC_VAULT_HISTORY_COUNTER_QUERY,
-    variables: { id: address.toLowerCase() },
-    fetchPolicy: 'no-cache',
-  })
-
-  const counter = data?.btcVaultHistoryCounter
-  if (!counter) return 0
-
-  if (!type || type.length === 0) {
-    return Number(counter.total)
-  }
-
-  return type.reduce((sum, t) => {
-    const field = ACTION_TYPE_TO_COUNTER_FIELD[t.toUpperCase()]
-    if (field) {
-      return sum + Number(counter[field as keyof CounterEntity])
-    }
-    return sum
-  }, 0)
-}
+export { enrichHistoryWithRequestStatus }
