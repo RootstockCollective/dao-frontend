@@ -9,6 +9,7 @@ import { useModal } from '@/shared/hooks/useModal'
 import { showToast } from '@/shared/notification'
 
 import { useCancelBtcVaultRequest } from '../../hooks/useCancelRequest'
+import { useClaimRequest } from '../../hooks/useClaimRequest'
 import { useRequestById } from '../../hooks/useRequestById'
 import { toRequestDetailDisplay } from '../../services/ui/mappers'
 import { CancelRequestModal, TransactionDetailOops, TransactionDetailView } from './components'
@@ -24,6 +25,12 @@ export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
   const rbtcPrice = prices[RBTC]?.price ?? 0
   const { isModalOpened, openModal, closeModal } = useModal()
   const { onCancelRequest, isRequesting: isCancelling } = useCancelBtcVaultRequest(request?.type ?? 'deposit')
+  const {
+    claim,
+    canClaim,
+    isRequesting: isClaiming,
+    isTxPending: isClaimTxPending,
+  } = useClaimRequest(request ?? null)
 
   if (!address || !isConnected) {
     return <TransactionDetailOops variant="not-connected" />
@@ -38,6 +45,24 @@ export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
   }
 
   const detail = toRequestDetailDisplay(request, null, rbtcPrice, address)
+  const isClaimPending = isClaiming || isClaimTxPending
+
+  const handleClaim = async () => {
+    try {
+      await claim()
+      showToast({
+        severity: 'success',
+        title: request.type === 'deposit' ? 'Shares claimed' : 'rBTC claimed',
+        content: 'Your claim transaction has been submitted.',
+      })
+    } catch (error) {
+      showToast({
+        severity: 'error',
+        title: 'Claim failed',
+        content: error instanceof Error ? error.message : 'Something went wrong.',
+      })
+    }
+  }
 
   const handleConfirmCancel = async () => {
     // TODO: VaultRequest.id is a UI string ("req-deposit-pending"), but the
@@ -79,6 +104,8 @@ export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
         status={request.status}
         type={request.type}
         displayStatus={request.displayStatus}
+        onClaim={canClaim ? handleClaim : undefined}
+        isClaimPending={isClaimPending}
         onCancel={openModal}
       />
       {isModalOpened && (

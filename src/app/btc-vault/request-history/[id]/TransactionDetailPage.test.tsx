@@ -7,6 +7,8 @@ const mockUseAccount = vi.fn()
 const mockUseRequestById = vi.fn()
 const mockShowToast = vi.fn()
 const mockOnCancelRequest = vi.fn()
+const mockClaim = vi.fn()
+const mockUseClaimRequest = vi.fn()
 
 vi.mock('wagmi', () => ({
   useAccount: () => mockUseAccount(),
@@ -24,6 +26,10 @@ vi.mock('../../hooks/useCancelRequest', () => ({
     isTxFailed: false,
     cancelTxHash: undefined,
   }),
+}))
+
+vi.mock('../../hooks/useClaimRequest', () => ({
+  useClaimRequest: (...args: unknown[]) => mockUseClaimRequest(...args),
 }))
 
 vi.mock('@/shared/notification', () => ({
@@ -124,6 +130,14 @@ describe('TransactionDetailPage', () => {
       isConnected: true,
     })
     mockUseRequestById.mockReturnValue({ data: MOCK_WITHDRAWAL_PENDING, isLoading: false })
+    mockUseClaimRequest.mockReturnValue({
+      claim: mockClaim,
+      canClaim: false,
+      claimableAmount: 0n,
+      isReadingAmount: false,
+      isRequesting: false,
+      isTxPending: false,
+    })
   })
 
   afterEach(() => {
@@ -196,6 +210,14 @@ describe('TransactionDetailPage', () => {
 
   it('renders claim button with "Claim rBTC" for claimable withdrawal', () => {
     mockUseRequestById.mockReturnValue({ data: MOCK_WITHDRAWAL_CLAIMABLE, isLoading: false })
+    mockUseClaimRequest.mockReturnValue({
+      claim: mockClaim,
+      canClaim: true,
+      claimableAmount: ONE_BTC / 2n,
+      isReadingAmount: false,
+      isRequesting: false,
+      isTxPending: false,
+    })
     render(<TransactionDetailPage id="req-withdrawal-claimable" />)
     expect(screen.getByTestId('claim-button')).toBeInTheDocument()
     expect(screen.getByTestId('claim-button')).toHaveTextContent('Claim rBTC')
@@ -204,10 +226,62 @@ describe('TransactionDetailPage', () => {
 
   it('renders claim button with "Claim Shares" for claimable deposit', () => {
     mockUseRequestById.mockReturnValue({ data: MOCK_DEPOSIT_CLAIMABLE, isLoading: false })
+    mockUseClaimRequest.mockReturnValue({
+      claim: mockClaim,
+      canClaim: true,
+      claimableAmount: ONE_BTC,
+      isReadingAmount: false,
+      isRequesting: false,
+      isTxPending: false,
+    })
     render(<TransactionDetailPage id="req-deposit-claimable" />)
     expect(screen.getByTestId('claim-button')).toBeInTheDocument()
     expect(screen.getByTestId('claim-button')).toHaveTextContent('Claim Shares')
     expect(screen.queryByTestId('cancel-request-button')).not.toBeInTheDocument()
+  })
+
+  it('shows success toast when claim succeeds', async () => {
+    mockUseRequestById.mockReturnValue({ data: MOCK_WITHDRAWAL_CLAIMABLE, isLoading: false })
+    mockClaim.mockResolvedValue('0xclaimhash')
+    mockUseClaimRequest.mockReturnValue({
+      claim: mockClaim,
+      canClaim: true,
+      claimableAmount: ONE_BTC / 2n,
+      isReadingAmount: false,
+      isRequesting: false,
+      isTxPending: false,
+    })
+    render(<TransactionDetailPage id="req-withdrawal-claimable" />)
+    fireEvent.click(screen.getByTestId('claim-button'))
+    await waitFor(() => {
+      expect(mockShowToast).toHaveBeenCalledWith({
+        severity: 'success',
+        title: 'rBTC claimed',
+        content: 'Your claim transaction has been submitted.',
+      })
+    })
+  })
+
+  it('shows error toast when claim fails', async () => {
+    mockUseRequestById.mockReturnValue({ data: MOCK_DEPOSIT_CLAIMABLE, isLoading: false })
+    mockClaim.mockRejectedValue(new Error('User rejected'))
+    mockUseClaimRequest.mockReturnValue({
+      claim: mockClaim,
+      canClaim: true,
+      claimableAmount: ONE_BTC,
+      isReadingAmount: false,
+      isRequesting: false,
+      isTxPending: false,
+    })
+    render(<TransactionDetailPage id="req-deposit-claimable" />)
+    fireEvent.click(screen.getByTestId('claim-button'))
+    await waitFor(() => {
+      expect(mockShowToast).toHaveBeenCalledWith({
+        severity: 'error',
+        title: 'Claim failed',
+        content: 'User rejected',
+      })
+    })
   })
 
   it('shows success toast and closes modal when "Yes, cancel" is clicked', async () => {

@@ -4,8 +4,7 @@ import { Button } from '@/components/Button'
 import { Header } from '@/components/Typography'
 
 import type { RequestStatus, RequestType } from '../../../services/types'
-import type { DisplayStatus } from '../../../services/ui/types'
-import type { RequestDetailDisplay } from '../../../services/ui/types'
+import type { DisplayStatus, RequestDetailDisplay } from '../../../services/ui/types'
 import { RequestDetailGrid } from './RequestDetailGrid'
 import { RequestStatusStepper } from './RequestStatusStepper'
 
@@ -14,6 +13,8 @@ export interface TransactionDetailViewProps {
   status: RequestStatus
   type: RequestType
   displayStatus?: DisplayStatus
+  onClaim?: () => void
+  isClaimPending?: boolean
   onCancel?: () => void
 }
 
@@ -22,6 +23,8 @@ export function TransactionDetailView({
   status,
   type,
   displayStatus,
+  onClaim,
+  isClaimPending,
   onCancel,
 }: TransactionDetailViewProps) {
   return (
@@ -33,8 +36,13 @@ export function TransactionDetailView({
         <RequestStatusStepper status={status} type={type} displayStatus={displayStatus} />
         <RequestDetailGrid detail={detail} />
         {detail.claimable && (
-          <Button variant="primary" data-testid="claim-button" onClick={() => {}}>
-            {detail.type === 'deposit' ? 'Claim Shares' : 'Claim rBTC'}
+          <Button
+            variant="primary"
+            data-testid="claim-button"
+            onClick={onClaim}
+            disabled={isClaimPending || !onClaim}
+          >
+            {isClaimPending ? 'Claiming...' : detail.type === 'deposit' ? 'Claim Shares' : 'Claim rBTC'}
           </Button>
         )}
         {detail.canCancel && (
