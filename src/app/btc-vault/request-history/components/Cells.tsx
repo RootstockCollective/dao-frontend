@@ -13,7 +13,7 @@ import { btcVaultRequestDetail } from '@/shared/constants/routes'
 import { useTableContext } from '@/shared/context'
 
 import type { RequestStatus } from '../../services/types'
-import type { DisplayRequestType, DisplayStatus, DisplayStatusLabel } from '../../services/ui/types'
+import type { DisplayRequestType, DisplayStatus, HistoryRowStatusLabel } from '../../services/ui/types'
 import type { BtcVaultHistoryCellDataMap, ColumnId } from './BtcVaultHistoryTable.config'
 import { COLUMN_TRANSFORMS } from './BtcVaultHistoryTable.config'
 import { RequestStatusBadge } from './RequestStatusBadge'
@@ -103,7 +103,7 @@ export const AmountCell = ({ amount, fiatAmount, claimTokenType, isHovered }: Am
 
 interface StatusCellProps extends CellStateProps {
   displayStatus: DisplayStatus
-  displayStatusLabel: DisplayStatusLabel
+  displayStatusLabel: HistoryRowStatusLabel
 }
 
 export const StatusCell = ({ displayStatus, displayStatusLabel }: StatusCellProps) => (
@@ -122,10 +122,8 @@ interface ActionsCellProps {
 const actionLinkClass = 'flex items-center gap-1 font-medium text-black no-underline hover:underline'
 
 /**
- * Claimable: "Claim shares"/"Claim rBTC" or "Withdraw" links to detail.
- * Pending: "Cancel request" links to detail.
- * Done/failed/cancelled: "View Detail" only, links to detail.
- * Actions visible on hover (desktop) or mobile card state.
+ * Claimable: "Claim shares"/"Claim rBTC" links to detail. Pending: "Cancel request" links to detail.
+ * Done/failed/cancelled: "View Detail" only, links to detail. Actions visible on hover (desktop).
  */
 export const ActionsCell = ({ requestId, requestStatus, type, isHovered }: ActionsCellProps) => {
   if (!isHovered) {

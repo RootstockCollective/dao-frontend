@@ -1,7 +1,7 @@
 import type { Column, TypedTable } from '@/shared/context'
 
 import type { RequestStatus, RequestType } from '../../services/types'
-import type { DisplayRequestType, DisplayStatus, DisplayStatusLabel } from '../../services/ui/types'
+import type { DisplayRequestType, DisplayStatus, HistoryRowStatusLabel } from '../../services/ui/types'
 
 /** Columns rendered as visible table headers. */
 export type VisibleColumnId = 'type' | 'date' | 'amount' | 'status' | 'actions'
@@ -44,7 +44,7 @@ const VISIBLE_COLUMN_TRANSFORMS: Record<VisibleColumnId, string> = {
   type: 'flex-[1_1_7rem] min-w-[7rem]',
   date: 'flex-[1_1_8rem] min-w-[8rem]',
   amount: 'flex-[1.5_1_10rem] min-w-[10rem]',
-  status: 'flex-[1_1_7rem] min-w-[7rem] justify-center',
+  status: 'flex-[1_1_7rem] min-w-[7rem]',
   actions: 'flex-[1_1_9rem] min-w-[9rem] justify-end pr-4',
 }
 
@@ -74,7 +74,7 @@ export interface BtcVaultHistoryCellDataMap {
   actions: string
   fiatAmount: string | null
   claimTokenType: 'rbtc' | 'shares'
-  displayStatusLabel: DisplayStatusLabel
+  displayStatusLabel: HistoryRowStatusLabel
   requestStatus: RequestStatus
   updatedAtFormatted: string
   createdAtFormatted: string

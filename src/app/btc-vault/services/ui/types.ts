@@ -1,4 +1,5 @@
 import type { EpochStatus, RequestStatus, RequestType } from '../types'
+import type { BtcVaultHistoryStatusKey } from './api-types'
 
 export const DISPLAY_REQUEST_TYPE_LABELS: Record<RequestType, string> = {
   deposit: 'Deposit',
@@ -12,34 +13,32 @@ export type DisplayRequestType = (typeof DISPLAY_REQUEST_TYPE_LABELS)[RequestTyp
 
 /**
  * Visual status shown in the transaction history table.
- * Maps from domain `RequestStatus` + `RequestType` + optional `failureReason`.
- *
- * Deposit flow:
- *   pending → ready_to_claim → successful
- *
- * Withdrawal flow:
- *   pending → approved (optional, future) → ready_to_withdraw → successful
+ * Same keys as API wire `displayStatus` (`BtcVaultHistoryStatusKey`); labels differ by context in mappers.
  */
-export type DisplayStatus =
-  | 'ready_to_claim' // Deposit claimable: "Ready to claim"
-  | 'ready_to_withdraw' // Withdrawal claimable: "Ready to withdraw"
-  | 'pending'
-  | 'approved' // Withdrawal approved (future state from FM)
-  | 'successful'
-  | 'cancelled'
-  | 'rejected'
+export type DisplayStatus = BtcVaultHistoryStatusKey
 
 export const DISPLAY_STATUS_LABELS = {
-  ready_to_claim: 'Ready to claim',
-  ready_to_withdraw: 'Ready to withdraw',
+  open_to_claim: 'Open to claim',
   pending: 'Pending',
   approved: 'Approved',
+  claim_pending: 'Claim pending',
   successful: 'Successful',
   cancelled: 'Cancelled',
   rejected: 'Rejected',
 } as const
 
 export type DisplayStatusLabel = (typeof DISPLAY_STATUS_LABELS)[DisplayStatus]
+
+/** Withdrawal TX history UI strings for wire `claim_pending` and `successful` (SC claimable / claimed). */
+export const WITHDRAWAL_TX_HISTORY_STATUS_LABELS = {
+  claim_pending: 'Ready to withdraw',
+  successful: 'Withdrawn',
+} as const
+
+export type WithdrawalTxHistoryStatusLabel =
+  (typeof WITHDRAWAL_TX_HISTORY_STATUS_LABELS)[keyof typeof WITHDRAWAL_TX_HISTORY_STATUS_LABELS]
+
+export type HistoryRowStatusLabel = DisplayStatusLabel | WithdrawalTxHistoryStatusLabel
 
 export interface DisplayStatusResult {
   displayStatus: DisplayStatus
@@ -146,8 +145,8 @@ export interface RequestHistoryRowDisplay {
   finalizeTxFull: string | null
   /** Mapped visual status for the table badge (6 variants). */
   displayStatus: DisplayStatus
-  /** Human-readable label for the display status (e.g. "Open to claim"). */
-  displayStatusLabel: DisplayStatusLabel
+  /** Human-readable label for the display status (type-aware for TX history withdrawals). */
+  displayStatusLabel: HistoryRowStatusLabel
   /** USD equivalent of the amount (deposits only). `null` for withdrawals. */
   fiatAmountFormatted: string | null
   /** Whether the row represents rBTC (deposits) or vault share tokens (withdrawals). */
@@ -162,6 +161,8 @@ export interface PaginatedHistoryDisplay {
   page: number
   limit: number
   totalPages: number
+  /** Present when client-side status filter ran; row count on the current page before filtering. */
+  rawRowCountBeforeStatusFilter?: number
 }
 
 export interface RequestDetailDisplay extends ActiveRequestDisplay {

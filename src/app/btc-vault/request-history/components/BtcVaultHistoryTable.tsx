@@ -1,13 +1,13 @@
 'use client'
 
 import { motion } from 'motion/react'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useAccount } from 'wagmi'
 
 import { FilterButton } from '@/app/proposals/components/filter/FilterButton'
 import type { ActiveFilter } from '@/components/FilterSideBar'
-import { TablePager } from '@/components/TableNew'
-import { Header } from '@/components/Typography'
+import { TablePager, type TablePagerCountContext } from '@/components/TableNew'
+import { Header, Paragraph } from '@/components/Typography'
 import { useTableActionsContext, useTableContext, withTableContext } from '@/shared/context'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
@@ -25,10 +25,10 @@ import { MobileBtcVaultHistory } from './MobileBtcVaultHistory'
 const VALID_TYPES: readonly RequestType[] = ['deposit', 'withdrawal']
 const VALID_CLAIM_TOKENS: readonly ('shares' | 'rbtc')[] = ['shares', 'rbtc']
 const VALID_STATUSES: readonly DisplayStatus[] = [
-  'ready_to_claim',
-  'ready_to_withdraw',
+  'open_to_claim',
   'pending',
   'approved',
+  'claim_pending',
   'successful',
   'cancelled',
   'rejected',
@@ -58,6 +58,27 @@ export function toHistoryFilters(activeFilters: ActiveFilter[]): HistoryFilterPa
   }
 }
 
+function BtcVaultHistoryStatusFilterPagerCount({
+  ctx,
+  matchCount,
+}: {
+  ctx: TablePagerCountContext
+  matchCount: number
+}) {
+  const matchLabel = matchCount === 1 ? 'event matches' : 'events match'
+  const loadedEnd = ctx.totalItems > 0 ? ctx.end : 0
+
+  return (
+    <Paragraph
+      variant="body-xs"
+      className="text-v3-bg-accent-0 select-none first-letter:uppercase"
+      data-testid="btc-vault-history-table-pager-status-filter-count"
+    >
+      {`${matchCount} ${matchLabel} this status in the loaded window · ${loadedEnd} of ${ctx.totalItems} events loaded`}
+    </Paragraph>
+  )
+}
+
 function BtcVaultHistoryTableInner() {
   const isDesktop = useIsDesktop()
   const { address } = useAccount()
@@ -74,6 +95,10 @@ function BtcVaultHistoryTableInner() {
   useClickOutside(filterSidebarRef, () => isDesktop && setIsFilterSidebarOpen(false))
 
   const historyFilters = useMemo(() => toHistoryFilters(activeFilters), [activeFilters])
+  const statusFilterKey = useMemo(
+    () => (historyFilters?.status?.length ? [...historyFilters.status].sort().join() : ''),
+    [historyFilters?.status],
+  )
 
   const sortDirection = sort?.direction || 'desc'
 
@@ -100,6 +125,15 @@ function BtcVaultHistoryTableInner() {
   }, [])
 
   const hasActiveFilters = useMemo(() => activeFilters.length > 0, [activeFilters])
+
+  const renderHistoryPagerCount = useMemo((): ((ctx: TablePagerCountContext) => ReactNode) | undefined => {
+    if (!statusFilterKey || !data) return undefined
+    const matchCount = data.rows.length
+    function renderHistoryPagerCountImpl(ctx: TablePagerCountContext) {
+      return <BtcVaultHistoryStatusFilterPagerCount ctx={ctx} matchCount={matchCount} />
+    }
+    return renderHistoryPagerCountImpl
+  }, [data, statusFilterKey])
 
   // Reacts to: mount. Provides column definitions and default sort (newest first) to TableContext.
   useEffect(() => {
@@ -172,6 +206,7 @@ function BtcVaultHistoryTableInner() {
         onPageChange={handlePageChange}
         pagedItemName="events"
         mode="expandable"
+        renderPagerCount={renderHistoryPagerCount}
         data-testid="btc-vault-history-table-pager"
       />
     </div>

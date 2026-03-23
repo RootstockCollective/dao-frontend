@@ -15,6 +15,28 @@ import {
 
 const mockQuery = vi.mocked(btcVaultClient.query)
 
+function gqlOperationName(query: unknown): string | undefined {
+  return (query as { definitions?: { name?: { value?: string } }[] })?.definitions?.[0]?.name?.value
+}
+
+function mockDepositAndRedeemRequestQueries(payload: {
+  deposits?: { id: string; status: string }[]
+  redeems?: { id: string; status: string }[]
+}) {
+  const deposits = payload.deposits ?? []
+  const redeems = payload.redeems ?? []
+  mockQuery.mockImplementation((opts: { query: unknown }) => {
+    const opName = gqlOperationName(opts.query)
+    if (opName === 'BtcDepositRequestsByIds') {
+      return Promise.resolve({ data: { btcDepositRequests: deposits } } as never)
+    }
+    if (opName === 'BtcRedeemRequestsByIds') {
+      return Promise.resolve({ data: { btcRedeemRequests: redeems } } as never)
+    }
+    return Promise.reject(new Error('Unexpected query'))
+  })
+}
+
 const mockHistoryItems = [
   {
     id: '0xabc-1',
@@ -341,7 +363,7 @@ describe('enrichHistoryWithRequestStatus', () => {
     expect(result[1].displayStatus).toBe('cancelled')
   })
 
-  it('sets ready_to_claim for DEPOSIT_REQUEST when request status is CLAIMABLE', async () => {
+  it('sets open_to_claim for DEPOSIT_REQUEST when request status is CLAIMABLE', async () => {
     const history = [
       {
         id: '0x1',
@@ -356,26 +378,16 @@ describe('enrichHistoryWithRequestStatus', () => {
       },
     ]
     const requestId = '0xa18f4fbee88592bee3d51d90ba791e769a9b902f-1'
-    mockQuery.mockImplementation((opts: { query: unknown }) => {
-      const opName = (opts.query as { definitions?: { name?: { value?: string } }[] })?.definitions?.[0]
-        ?.name?.value
-      if (opName === 'BtcDepositRequestsByIds') {
-        return Promise.resolve({
-          data: { btcDepositRequests: [{ id: requestId, status: 'CLAIMABLE' }] },
-        } as never)
-      }
-      if (opName === 'BtcRedeemRequestsByIds') {
-        return Promise.resolve({ data: { btcRedeemRequests: [] } } as never)
-      }
-      return Promise.reject(new Error('Unexpected query'))
+    mockDepositAndRedeemRequestQueries({
+      deposits: [{ id: requestId, status: 'CLAIMABLE' }],
     })
 
     const result = await enrichHistoryWithRequestStatus(history)
 
-    expect(result[0].displayStatus).toBe('ready_to_claim')
+    expect(result[0].displayStatus).toBe('open_to_claim')
   })
 
-  it('sets ready_to_withdraw for REDEEM_REQUEST when request status is CLAIMABLE', async () => {
+  it('sets approved for REDEEM_REQUEST when subgraph status is ACCEPTED', async () => {
     const history = [
       {
         id: '0x2',
@@ -390,23 +402,85 @@ describe('enrichHistoryWithRequestStatus', () => {
       },
     ]
     const requestId = '0xb29f5fbee88592bee3d51d90ba791e769a9b903f-2'
-    mockQuery.mockImplementation((opts: { query: unknown }) => {
-      const opName = (opts.query as { definitions?: { name?: { value?: string } }[] })?.definitions?.[0]
-        ?.name?.value
-      if (opName === 'BtcDepositRequestsByIds') {
-        return Promise.resolve({ data: { btcDepositRequests: [] } } as never)
-      }
-      if (opName === 'BtcRedeemRequestsByIds') {
-        return Promise.resolve({
-          data: { btcRedeemRequests: [{ id: requestId, status: 'CLAIMABLE' }] },
-        } as never)
-      }
-      return Promise.reject(new Error('Unexpected query'))
+    mockDepositAndRedeemRequestQueries({
+      redeems: [{ id: requestId, status: 'ACCEPTED' }],
     })
 
     const result = await enrichHistoryWithRequestStatus(history)
 
-    expect(result[0].displayStatus).toBe('ready_to_withdraw')
+    expect(result[0].displayStatus).toBe('approved')
+  })
+
+  it('normalizes redeem ACCEPTED casing to wire approved', async () => {
+    const history = [
+      {
+        id: '0x2',
+        user: '0xb29f5fbee88592bee3d51d90ba791e769a9b903f',
+        action: 'REDEEM_REQUEST',
+        assets: '200',
+        shares: '100',
+        epochId: '2',
+        timestamp: 1710100000,
+        blockNumber: '7136080',
+        transactionHash: '0x78fa',
+      },
+    ]
+    const requestId = '0xb29f5fbee88592bee3d51d90ba791e769a9b903f-2'
+    mockDepositAndRedeemRequestQueries({
+      redeems: [{ id: requestId, status: 'Accepted' }],
+    })
+
+    const result = await enrichHistoryWithRequestStatus(history)
+
+    expect(result[0].displayStatus).toBe('approved')
+  })
+
+  it('sets successful for REDEEM_REQUEST when subgraph status is CLAIMED', async () => {
+    const history = [
+      {
+        id: '0x2',
+        user: '0xb29f5fbee88592bee3d51d90ba791e769a9b903f',
+        action: 'REDEEM_REQUEST',
+        assets: '200',
+        shares: '100',
+        epochId: '2',
+        timestamp: 1710100000,
+        blockNumber: '7136080',
+        transactionHash: '0x78fa',
+      },
+    ]
+    const requestId = '0xb29f5fbee88592bee3d51d90ba791e769a9b903f-2'
+    mockDepositAndRedeemRequestQueries({
+      redeems: [{ id: requestId, status: 'CLAIMED' }],
+    })
+
+    const result = await enrichHistoryWithRequestStatus(history)
+
+    expect(result[0].displayStatus).toBe('successful')
+  })
+
+  it('sets claim_pending for REDEEM_REQUEST when request status is CLAIMABLE', async () => {
+    const history = [
+      {
+        id: '0x2',
+        user: '0xb29f5fbee88592bee3d51d90ba791e769a9b903f',
+        action: 'REDEEM_REQUEST',
+        assets: '200',
+        shares: '100',
+        epochId: '2',
+        timestamp: 1710100000,
+        blockNumber: '7136080',
+        transactionHash: '0x78fa',
+      },
+    ]
+    const requestId = '0xb29f5fbee88592bee3d51d90ba791e769a9b903f-2'
+    mockDepositAndRedeemRequestQueries({
+      redeems: [{ id: requestId, status: 'CLAIMABLE' }],
+    })
+
+    const result = await enrichHistoryWithRequestStatus(history)
+
+    expect(result[0].displayStatus).toBe('claim_pending')
   })
 
   it('sets pending for REQUEST when request status is PENDING', async () => {
@@ -424,18 +498,80 @@ describe('enrichHistoryWithRequestStatus', () => {
       },
     ]
     const requestId = '0xa18f4fbee88592bee3d51d90ba791e769a9b902f-1'
-    mockQuery.mockImplementation((opts: { query: unknown }) => {
-      const opName = (opts.query as { definitions?: { name?: { value?: string } }[] })?.definitions?.[0]
-        ?.name?.value
-      if (opName === 'BtcDepositRequestsByIds') {
-        return Promise.resolve({
-          data: { btcDepositRequests: [{ id: requestId, status: 'PENDING' }] },
-        } as never)
-      }
-      if (opName === 'BtcRedeemRequestsByIds') {
-        return Promise.resolve({ data: { btcRedeemRequests: [] } } as never)
-      }
-      return Promise.reject(new Error('Unexpected query'))
+    mockDepositAndRedeemRequestQueries({
+      deposits: [{ id: requestId, status: 'PENDING' }],
+    })
+
+    const result = await enrichHistoryWithRequestStatus(history)
+
+    expect(result[0].displayStatus).toBe('pending')
+  })
+
+  it('maps redeem subgraph status CANCELLED to wire cancelled', async () => {
+    const history = [
+      {
+        id: '0x2',
+        user: '0xb29f5fbee88592bee3d51d90ba791e769a9b903f',
+        action: 'REDEEM_REQUEST',
+        assets: '200',
+        shares: '100',
+        epochId: '2',
+        timestamp: 1710100000,
+        blockNumber: '7136080',
+        transactionHash: '0x78fa',
+      },
+    ]
+    const requestId = '0xb29f5fbee88592bee3d51d90ba791e769a9b903f-2'
+    mockDepositAndRedeemRequestQueries({
+      redeems: [{ id: requestId, status: 'cancelled' }],
+    })
+
+    const result = await enrichHistoryWithRequestStatus(history)
+
+    expect(result[0].displayStatus).toBe('cancelled')
+  })
+
+  it('sets successful for DEPOSIT_REQUEST when subgraph status is CLAIMED', async () => {
+    const history = [
+      {
+        id: '0x1',
+        user: '0xa18f4fbee88592bee3d51d90ba791e769a9b902f',
+        action: 'DEPOSIT_REQUEST',
+        assets: '100',
+        shares: '50',
+        epochId: '1',
+        timestamp: 1710000000,
+        blockNumber: '7136040',
+        transactionHash: '0x78f9',
+      },
+    ]
+    const requestId = '0xa18f4fbee88592bee3d51d90ba791e769a9b902f-1'
+    mockDepositAndRedeemRequestQueries({
+      deposits: [{ id: requestId, status: 'CLAIMED' }],
+    })
+
+    const result = await enrichHistoryWithRequestStatus(history)
+
+    expect(result[0].displayStatus).toBe('successful')
+  })
+
+  it('maps redeem unknown subgraph status to pending', async () => {
+    const history = [
+      {
+        id: '0x2',
+        user: '0xb29f5fbee88592bee3d51d90ba791e769a9b903f',
+        action: 'REDEEM_REQUEST',
+        assets: '200',
+        shares: '100',
+        epochId: '2',
+        timestamp: 1710100000,
+        blockNumber: '7136080',
+        transactionHash: '0x78fa',
+      },
+    ]
+    const requestId = '0xb29f5fbee88592bee3d51d90ba791e769a9b903f-2'
+    mockDepositAndRedeemRequestQueries({
+      redeems: [{ id: requestId, status: 'FUTURE_STATE' }],
     })
 
     const result = await enrichHistoryWithRequestStatus(history)
@@ -458,18 +594,8 @@ describe('enrichHistoryWithRequestStatus', () => {
       },
     ]
     const requestId = '0xb29f5fbee88592bee3d51d90ba791e769a9b903f-2'
-    mockQuery.mockImplementation((opts: { query: unknown }) => {
-      const opName = (opts.query as { definitions?: { name?: { value?: string } }[] })?.definitions?.[0]
-        ?.name?.value
-      if (opName === 'BtcDepositRequestsByIds') {
-        return Promise.resolve({ data: { btcDepositRequests: [] } } as never)
-      }
-      if (opName === 'BtcRedeemRequestsByIds') {
-        return Promise.resolve({
-          data: { btcRedeemRequests: [{ id: requestId, status: 'CANCELLED' }] },
-        } as never)
-      }
-      return Promise.reject(new Error('Unexpected query'))
+    mockDepositAndRedeemRequestQueries({
+      redeems: [{ id: requestId, status: 'CANCELLED' }],
     })
 
     const result = await enrichHistoryWithRequestStatus(history)
@@ -491,17 +617,7 @@ describe('enrichHistoryWithRequestStatus', () => {
         transactionHash: '0x78f9',
       },
     ]
-    mockQuery.mockImplementation((opts: { query: unknown }) => {
-      const opName = (opts.query as { definitions?: { name?: { value?: string } }[] })?.definitions?.[0]
-        ?.name?.value
-      if (opName === 'BtcDepositRequestsByIds') {
-        return Promise.resolve({ data: { btcDepositRequests: [] } } as never)
-      }
-      if (opName === 'BtcRedeemRequestsByIds') {
-        return Promise.resolve({ data: { btcRedeemRequests: [] } } as never)
-      }
-      return Promise.reject(new Error('Unexpected query'))
-    })
+    mockDepositAndRedeemRequestQueries({})
 
     const result = await enrichHistoryWithRequestStatus(history)
 
@@ -523,22 +639,12 @@ describe('enrichHistoryWithRequestStatus', () => {
       },
     ]
     const requestId = '0xa18f4fbee88592bee3d51d90ba791e769a9b902f-1'
-    mockQuery.mockImplementation((opts: { query: unknown }) => {
-      const opName = (opts.query as { definitions?: { name?: { value?: string } }[] })?.definitions?.[0]
-        ?.name?.value
-      if (opName === 'BtcDepositRequestsByIds') {
-        return Promise.resolve({
-          data: { btcDepositRequests: [{ id: requestId, status: 'CLAIMABLE' }] },
-        } as never)
-      }
-      if (opName === 'BtcRedeemRequestsByIds') {
-        return Promise.resolve({ data: { btcRedeemRequests: [] } } as never)
-      }
-      return Promise.reject(new Error('Unexpected query'))
+    mockDepositAndRedeemRequestQueries({
+      deposits: [{ id: requestId, status: 'CLAIMABLE' }],
     })
 
     const result = await enrichHistoryWithRequestStatus(history)
 
-    expect(result[0].displayStatus).toBe('ready_to_claim')
+    expect(result[0].displayStatus).toBe('open_to_claim')
   })
 })

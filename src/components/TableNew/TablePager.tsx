@@ -1,8 +1,9 @@
+import { type ReactNode, useEffect, useMemo, useState } from 'react'
+
 import { Button } from '@/components/Button'
-import { Paragraph, Span } from '@/components/Typography'
 import type { CommonComponentProps } from '@/components/commonProps'
+import { Paragraph, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { useEffect, useState, useMemo } from 'react'
 
 const modes = ['cyclic', 'expandable'] as const
 type Mode = (typeof modes)[number]
@@ -15,12 +16,20 @@ export interface Range {
   end: number
 }
 
+export interface TablePagerCountContext {
+  start: number
+  end: number
+  totalItems: number
+}
+
 export interface TablePagerProps extends CommonComponentProps {
   pageSize: number
   totalItems: number
   pagedItemName: string
   onPageChange: (range: Range) => void
   mode: Mode
+  /** When set, replaces the default “{item} a–b out of n” line. `totalItems` still drives load-more / range clamping. */
+  renderPagerCount?: (ctx: TablePagerCountContext) => ReactNode
 }
 
 const PagerCount: React.FC<{
@@ -87,6 +96,7 @@ export const TablePager: React.FC<TablePagerProps> = ({
   pagedItemName,
   onPageChange,
   mode,
+  renderPagerCount,
   className,
 }) => {
   if (!isMode(mode)) {
@@ -191,7 +201,11 @@ export const TablePager: React.FC<TablePagerProps> = ({
         <div className="flex items-center gap-2">{/* TODO: first/prev/next/last for cyclic mode */}</div>
       )}
 
-      <PagerCount start={start} end={end} total={totalItems} itemName={pagedItemName} />
+      {renderPagerCount ? (
+        renderPagerCount({ start, end, totalItems })
+      ) : (
+        <PagerCount start={start} end={end} total={totalItems} itemName={pagedItemName} />
+      )}
     </div>
   )
 }

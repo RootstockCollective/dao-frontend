@@ -3,6 +3,7 @@
 import { ProgressStepper } from '@/components/ProgressBarNew'
 
 import type { RequestStatus, RequestType } from '../../../services/types'
+import type { DisplayStatus } from '../../../services/ui/types'
 
 const WITHDRAWAL_STAGES = ['Submitted', 'Pending', 'Approved', 'Redeemed'] as const
 const DEPOSIT_STAGES = ['Submitted', 'Pending', 'Approved', 'Shares claimed'] as const
@@ -13,8 +14,8 @@ function getStages(type: RequestType, status: RequestStatus) {
   return type === 'withdrawal' ? WITHDRAWAL_STAGES : DEPOSIT_STAGES
 }
 
-// TODO: failed requests show a notification instead of a stepper stage
-function getCurrentStage(status: RequestStatus): number | null {
+function getCurrentStage(status: RequestStatus, displayStatus?: DisplayStatus): number | null {
+  if (status === 'pending' && displayStatus === 'approved') return 3
   switch (status) {
     case 'pending':
       return 2
@@ -36,10 +37,11 @@ function getCurrentStage(status: RequestStatus): number | null {
 interface RequestStatusStepperProps {
   status: RequestStatus
   type: RequestType
+  displayStatus?: DisplayStatus
 }
 
-export function RequestStatusStepper({ status, type }: RequestStatusStepperProps) {
-  const currentStage = getCurrentStage(status)
+export function RequestStatusStepper({ status, type, displayStatus }: RequestStatusStepperProps) {
+  const currentStage = getCurrentStage(status, displayStatus)
   if (currentStage === null) return null
 
   const stages = getStages(type, status)

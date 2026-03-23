@@ -43,7 +43,10 @@ function buildHistoryUrl(
 
 /**
  * Fetches paginated, filtered, and sorted request history from GET /api/btc-vault/v1/history.
- * Maps API response to PaginatedHistoryDisplay and applies client-side status filter when filters.status is set.
+ * Response is adapted with `apiHistoryToPaginatedDisplay` (DTO → view model: `displayStatus`,
+ * type-aware `displayStatusLabel`); table/cards must consume this output, not raw JSON.
+ * Applies client-side status filter when `filters.status` is set. Pagination `total` / `totalPages`
+ * stay API values (unfiltered history); the table pager shows matching counts when status is filtered.
  *
  * @param address - Connected wallet address; query is disabled when undefined
  * @param params - Pagination and sort parameters (page, limit, sortField, sortDirection)
@@ -66,8 +69,9 @@ export function useRequestHistory(
 
       if (filters?.status?.length) {
         const statusSet = new Set(filters.status)
+        const rawRowCountBeforeStatusFilter = result.rows.length
         const filteredRows = result.rows.filter(row => statusSet.has(row.displayStatus))
-        return { ...result, rows: filteredRows }
+        return { ...result, rows: filteredRows, rawRowCountBeforeStatusFilter }
       }
 
       return result

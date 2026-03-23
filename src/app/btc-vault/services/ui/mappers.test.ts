@@ -11,9 +11,12 @@ import {
   toCapitalAllocationDisplay,
   toEpochDisplay,
   toPaginatedHistoryDisplay,
+  toRequestDetailDisplay,
   toUserPositionDisplay,
   toVaultMetricsDisplay,
   toWalletBalanceDisplay,
+  getTxHistoryStatusLabel,
+  mapApiItemToVaultRequest,
 } from '@/app/btc-vault/services/ui/mappers'
 
 import {
@@ -426,16 +429,16 @@ describe('mapRequestDisplayStatus', () => {
     expect(result.displayStatusLabel).toBe('Pending')
   })
 
-  it('maps claimable deposit to "Ready to claim"', () => {
+  it('maps claimable deposit to "Open to claim"', () => {
     const result = mapRequestDisplayStatus('claimable', 'deposit')
-    expect(result.displayStatus).toBe('ready_to_claim')
-    expect(result.displayStatusLabel).toBe('Ready to claim')
+    expect(result.displayStatus).toBe('open_to_claim')
+    expect(result.displayStatusLabel).toBe('Open to claim')
   })
 
-  it('maps claimable withdrawal to "Ready to withdraw"', () => {
+  it('maps claimable withdrawal to "Claim pending"', () => {
     const result = mapRequestDisplayStatus('claimable', 'withdrawal')
-    expect(result.displayStatus).toBe('ready_to_withdraw')
-    expect(result.displayStatusLabel).toBe('Ready to withdraw')
+    expect(result.displayStatus).toBe('claim_pending')
+    expect(result.displayStatusLabel).toBe('Claim pending')
   })
 
   it('maps done to "Successful"', () => {
@@ -460,6 +463,12 @@ describe('mapRequestDisplayStatus', () => {
     const result = mapRequestDisplayStatus('failed', 'deposit', 'rejected')
     expect(result.displayStatus).toBe('rejected')
     expect(result.displayStatusLabel).toBe('Rejected')
+  })
+
+  it('maps cancelled domain status to "Cancelled"', () => {
+    const result = mapRequestDisplayStatus('cancelled', 'deposit')
+    expect(result.displayStatus).toBe('cancelled')
+    expect(result.displayStatusLabel).toBe('Cancelled')
   })
 })
 
@@ -548,7 +557,7 @@ describe('toPaginatedHistoryDisplay', () => {
     expect(result.rows[0].displayStatus).toBe('successful')
   })
 
-  it('maps claimable deposit to ready_to_claim display status', () => {
+  it('maps claimable deposit to open_to_claim display status', () => {
     const raw = {
       data: [
         {
@@ -568,8 +577,8 @@ describe('toPaginatedHistoryDisplay', () => {
       totalPages: 1,
     }
     const result = toPaginatedHistoryDisplay(raw)
-    expect(result.rows[0].displayStatus).toBe('ready_to_claim')
-    expect(result.rows[0].displayStatusLabel).toBe('Ready to claim')
+    expect(result.rows[0].displayStatus).toBe('open_to_claim')
+    expect(result.rows[0].displayStatusLabel).toBe('Open to claim')
   })
 
   it('includes updatedAtFormatted from updated when present, else created', () => {
@@ -618,6 +627,28 @@ describe('toPaginatedHistoryDisplay', () => {
     const result = toPaginatedHistoryDisplay(raw)
     expect(result.rows[0].displayStatus).toBe('rejected')
     expect(result.rows[0].displayStatusLabel).toBe('Rejected')
+  })
+})
+
+describe('getTxHistoryStatusLabel', () => {
+  const cases: {
+    displayStatus: Parameters<typeof getTxHistoryStatusLabel>[0]
+    requestType: 'deposit' | 'withdrawal'
+    expected: string
+  }[] = [
+    { displayStatus: 'approved', requestType: 'withdrawal', expected: 'Approved' },
+    { displayStatus: 'approved', requestType: 'deposit', expected: 'Approved' },
+    { displayStatus: 'claim_pending', requestType: 'withdrawal', expected: 'Ready to withdraw' },
+    { displayStatus: 'claim_pending', requestType: 'deposit', expected: 'Claim pending' },
+    { displayStatus: 'successful', requestType: 'withdrawal', expected: 'Withdrawn' },
+    { displayStatus: 'successful', requestType: 'deposit', expected: 'Successful' },
+    { displayStatus: 'pending', requestType: 'withdrawal', expected: 'Pending' },
+    { displayStatus: 'open_to_claim', requestType: 'deposit', expected: 'Open to claim' },
+    { displayStatus: 'cancelled', requestType: 'withdrawal', expected: 'Cancelled' },
+  ]
+
+  it.each(cases)('$requestType + $displayStatus → $expected', ({ displayStatus, requestType, expected }) => {
+    expect(getTxHistoryStatusLabel(displayStatus, requestType)).toBe(expected)
   })
 })
 
@@ -712,6 +743,39 @@ describe('apiHistoryToPaginatedDisplay', () => {
     expect(row.finalizeTxFull).toBeNull()
   })
 
+  it('maps redeem REQUEST with wire approved to Approved label and pending domain status', () => {
+    const response = {
+      data: [
+        {
+          id: 'id-w',
+          user: '0xu',
+          action: 'REDEEM_REQUEST',
+          assets: '0',
+          shares: '1000000000000000000',
+          epochId: '2',
+          timestamp: 1700086400,
+          blockNumber: '2',
+          transactionHash: '0xabc',
+          displayStatus: 'approved' as const,
+        },
+      ],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 1,
+        totalPages: 1,
+        offset: 0,
+        sort_field: 'timestamp',
+        sort_direction: 'desc' as const,
+      },
+    }
+    const result = apiHistoryToPaginatedDisplay(response)
+    const row = result.rows[0]
+    expect(row.displayStatus).toBe('approved')
+    expect(row.displayStatusLabel).toBe('Approved')
+    expect(row.status).toBe('pending')
+  })
+
   it('maps redeem_* to withdrawal, shares amount, claimTokenType shares', () => {
     const response = {
       data: [
@@ -725,7 +789,7 @@ describe('apiHistoryToPaginatedDisplay', () => {
           timestamp: 1700086400,
           blockNumber: '2',
           transactionHash: '',
-          displayStatus: 'ready_to_withdraw' as const,
+          displayStatus: 'claim_pending' as const,
         },
       ],
       pagination: {
@@ -743,7 +807,7 @@ describe('apiHistoryToPaginatedDisplay', () => {
     expect(row.type).toBe('withdrawal')
     expect(row.amountFormatted).toBe('3')
     expect(row.claimTokenType).toBe('shares')
-    expect(row.displayStatus).toBe('ready_to_withdraw')
+    expect(row.displayStatus).toBe('claim_pending')
     expect(row.displayStatusLabel).toBe('Ready to withdraw')
     expect(row.status).toBe('claimable')
     expect(row.submitTxShort).toBeNull()
@@ -823,6 +887,145 @@ describe('apiHistoryToPaginatedDisplay', () => {
     const result = apiHistoryToPaginatedDisplay(response)
     expect(result.rows[0].status).toBe('cancelled')
     expect(result.rows[1].status).toBe('failed')
+  })
+})
+
+describe('mapApiItemToVaultRequest', () => {
+  it('maps wire approved redeem row to domain pending status and preserves displayStatus', () => {
+    const req = mapApiItemToVaultRequest({
+      id: 'x',
+      user: '0xabc',
+      action: 'REDEEM_REQUEST',
+      assets: '0',
+      shares: '1000000000000000000',
+      epochId: '1',
+      timestamp: 1700000000,
+      blockNumber: '1',
+      transactionHash: '0xtx',
+      displayStatus: 'approved',
+    })
+    expect(req.type).toBe('withdrawal')
+    expect(req.status).toBe('pending')
+    expect(req.displayStatus).toBe('approved')
+  })
+
+  it('maps wire claim_pending redeem row to domain claimable and preserves displayStatus', () => {
+    const req = mapApiItemToVaultRequest({
+      id: 'y',
+      user: '0xabc',
+      action: 'REDEEM_REQUEST',
+      assets: '0',
+      shares: '1000000000000000000',
+      epochId: '2',
+      timestamp: 1700000000,
+      blockNumber: '2',
+      transactionHash: '0xtx2',
+      displayStatus: 'claim_pending',
+    })
+    expect(req.status).toBe('claimable')
+    expect(req.displayStatus).toBe('claim_pending')
+  })
+})
+
+describe('toRequestDetailDisplay', () => {
+  const USER_ADDRESS = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb29266'
+
+  it('sets canCancel true for pending withdrawal without displayStatus', () => {
+    const req: VaultRequest = {
+      id: 'req-1',
+      type: 'withdrawal',
+      amount: WeiPerEther,
+      status: 'pending',
+      epochId: null,
+      batchRedeemId: '1',
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    const result = toRequestDetailDisplay(req, null, 0, USER_ADDRESS)
+    expect(result.canCancel).toBe(true)
+    expect(result.claimable).toBe(false)
+  })
+
+  it('sets canCancel false for approved withdrawal (displayStatus = approved)', () => {
+    const req: VaultRequest = {
+      id: 'req-2',
+      type: 'withdrawal',
+      amount: WeiPerEther,
+      status: 'pending',
+      displayStatus: 'approved',
+      epochId: null,
+      batchRedeemId: '1',
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    const result = toRequestDetailDisplay(req, null, 0, USER_ADDRESS)
+    expect(result.canCancel).toBe(false)
+    expect(result.claimable).toBe(false)
+  })
+
+  it('sets claimable true when domain status is claimable, even without claimableInfo', () => {
+    const req: VaultRequest = {
+      id: 'req-3',
+      type: 'withdrawal',
+      amount: WeiPerEther,
+      status: 'claimable',
+      displayStatus: 'claim_pending',
+      epochId: null,
+      batchRedeemId: '2',
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    const result = toRequestDetailDisplay(req, null, 0, USER_ADDRESS)
+    expect(result.claimable).toBe(true)
+    expect(result.canCancel).toBe(false)
+  })
+
+  it('sets claimable true for claimable deposit without claimableInfo', () => {
+    const req: VaultRequest = {
+      id: 'req-4',
+      type: 'deposit',
+      amount: WeiPerEther,
+      status: 'claimable',
+      displayStatus: 'open_to_claim',
+      epochId: '1',
+      batchRedeemId: null,
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    const result = toRequestDetailDisplay(req, null, 0, USER_ADDRESS)
+    expect(result.claimable).toBe(true)
+    expect(result.canCancel).toBe(false)
+  })
+
+  it('sets both canCancel and claimable false for terminal statuses', () => {
+    const doneReq: VaultRequest = {
+      id: 'req-done',
+      type: 'deposit',
+      amount: WeiPerEther,
+      status: 'done',
+      epochId: '1',
+      batchRedeemId: null,
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    const cancelledReq: VaultRequest = {
+      id: 'req-cancelled',
+      type: 'withdrawal',
+      amount: WeiPerEther,
+      status: 'cancelled',
+      epochId: null,
+      batchRedeemId: '1',
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+
+    const doneResult = toRequestDetailDisplay(doneReq, null, 0, USER_ADDRESS)
+    expect(doneResult.canCancel).toBe(false)
+    expect(doneResult.claimable).toBe(false)
+
+    const cancelledResult = toRequestDetailDisplay(cancelledReq, null, 0, USER_ADDRESS)
+    expect(cancelledResult.canCancel).toBe(false)
+    expect(cancelledResult.claimable).toBe(false)
   })
 })
 
