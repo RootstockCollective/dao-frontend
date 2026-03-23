@@ -8,7 +8,6 @@ import { Header, Label, Span } from '@/components/Typography'
 import { RBTC, WRBTC, WRBTC_ADDRESS } from '@/lib/constants'
 import { formatNumberWithCommas } from '@/lib/utils'
 import { executeTxFlow } from '@/shared/notification'
-import { TX_MESSAGES } from '@/shared/txMessages'
 
 import { useErc20Allowance } from '../hooks/useErc20Allowance'
 import { FlowStepProps } from '../types'
@@ -17,14 +16,12 @@ import { AmountFlowContextValue } from './createAmountFlowContext'
 interface CreateRequestAllowanceStepConfig {
   spenderAddress: Address
   contractLabel: string
-  actionName: keyof typeof TX_MESSAGES
   useFlowContext: () => AmountFlowContextValue
 }
 
 export const createRequestAllowanceStep = ({
   spenderAddress,
   contractLabel,
-  actionName,
   useFlowContext,
 }: CreateRequestAllowanceStepConfig) => {
   const RequestAllowanceStep = ({ onGoNext, onGoBack, setButtonActions }: FlowStepProps) => {
@@ -47,7 +44,7 @@ export const createRequestAllowanceStep = ({
       executeTxFlow({
         onRequestTx: onRequestAllowance,
         onSuccess: onGoNext,
-        action: actionName,
+        action: 'allowance',
       })
     }, [onRequestAllowance, onGoNext])
 

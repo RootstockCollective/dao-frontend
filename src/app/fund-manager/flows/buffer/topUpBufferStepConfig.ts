@@ -20,7 +20,6 @@ const DepositAmountStep = createDepositAmountStep({
 const RequestAllowanceStep = createRequestAllowanceStep({
   spenderAddress: buffer.address,
   contractLabel: 'Buffer Contract',
-  actionName: 'bufferAllowance',
   useFlowContext: useTopUpBufferContext,
 })
 

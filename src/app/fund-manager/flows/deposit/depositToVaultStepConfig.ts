@@ -20,7 +20,6 @@ const DepositAmountStep = createDepositAmountStep({
 const RequestAllowanceStep = createRequestAllowanceStep({
   spenderAddress: rbtcVault.address,
   contractLabel: 'Vault Contract',
-  actionName: 'vaultAllowance',
   useFlowContext: useDepositToVaultContext,
 })
 

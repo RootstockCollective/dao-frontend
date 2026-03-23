@@ -14,7 +14,6 @@ import { TransferToManagerContextValue, useTransferToManagerContext } from './Tr
 const RequestAllowanceStep = createRequestAllowanceStep({
   spenderAddress: rbtcVault.address,
   contractLabel: 'Vault Contract',
-  actionName: 'allowance',
   useFlowContext: useTransferToManagerContext,
 })
 

@@ -344,27 +344,6 @@ export const TX_MESSAGES = {
       loading: false,
     },
   },
-  bufferAllowance: {
-    pending: {
-      title: 'Allowance in process',
-      content: 'Wait for allowance transaction to be completed.',
-      severity: 'info',
-      loading: true,
-    },
-    success: {
-      title: 'Allowance successful',
-      content: 'Allowance successfully granted!',
-      severity: 'success',
-      loading: false,
-    },
-    error: {
-      title: 'Error on allowance',
-      content:
-        'An unexpected error occurred while trying to execute the allowance. Please try again later. If the issue persists, contact support for assistance.',
-      severity: 'error',
-      loading: false,
-    },
-  },
   updateNav: {
     pending: {
       title: 'NAV update in process',
@@ -382,27 +361,6 @@ export const TX_MESSAGES = {
       title: 'NAV update failed',
       content:
         'An unexpected error occurred while updating NAV. Please try again later. If the issue persists, contact support for assistance.',
-      severity: 'error',
-      loading: false,
-    },
-  },
-  syntheticYieldAllowance: {
-    pending: {
-      title: 'Allowance in process',
-      content: 'Wait for allowance transaction to be completed.',
-      severity: 'info',
-      loading: true,
-    },
-    success: {
-      title: 'Allowance successful',
-      content: 'Allowance successfully granted!',
-      severity: 'success',
-      loading: false,
-    },
-    error: {
-      title: 'Error on allowance',
-      content:
-        'An unexpected error occurred while trying to execute the allowance. Please try again later. If the issue persists, contact support for assistance.',
       severity: 'error',
       loading: false,
     },

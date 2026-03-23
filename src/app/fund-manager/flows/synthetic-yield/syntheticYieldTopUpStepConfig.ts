@@ -20,7 +20,6 @@ const DepositAmountStep = createDepositAmountStep({
 const RequestAllowanceStep = createRequestAllowanceStep({
   spenderAddress: syntheticYield.address,
   contractLabel: 'Synthetic Yield contract',
-  actionName: 'syntheticYieldAllowance',
   useFlowContext: useSyntheticYieldTopUpContext,
 })
 
