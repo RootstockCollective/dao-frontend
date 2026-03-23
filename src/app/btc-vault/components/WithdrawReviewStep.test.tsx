@@ -12,6 +12,7 @@ const defaultProps = {
   amount: '2',
   rbtcEquivalent: '2.04',
   withdrawalFee: '0',
+  onBack: vi.fn(),
   onSubmit: vi.fn(),
   isSubmitting: false,
 }
@@ -73,9 +74,18 @@ describe('WithdrawReviewStep', () => {
     )
   })
 
-  it('does not render a Back button', () => {
+  it('renders Back button', () => {
     render(<WithdrawReviewStep {...defaultProps} />)
 
-    expect(screen.queryByTestId('BackButton')).not.toBeInTheDocument()
+    expect(screen.getByTestId('BackButton')).toHaveTextContent('Back')
+  })
+
+  it('calls onBack when Back is clicked', async () => {
+    const user = userEvent.setup()
+    const onBack = vi.fn()
+    render(<WithdrawReviewStep {...defaultProps} onBack={onBack} />)
+
+    await user.click(screen.getByTestId('BackButton'))
+    expect(onBack).toHaveBeenCalledOnce()
   })
 })

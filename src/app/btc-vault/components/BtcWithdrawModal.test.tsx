@@ -72,11 +72,11 @@ describe('BtcWithdrawModal', () => {
     vi.clearAllMocks()
   })
 
-  it('renders the modal with SHARES WITHDRAWAL header', () => {
+  it('renders the modal with WITHDRAW rBTC header', () => {
     render(<BtcWithdrawModal {...defaultProps} />)
 
     expect(screen.getByTestId('BtcWithdrawModal')).toBeInTheDocument()
-    expect(screen.getByText('SHARES WITHDRAWAL')).toBeInTheDocument()
+    expect(screen.getByText('WITHDRAW rBTC')).toBeInTheDocument()
   })
 
   it('starts on the amount step', () => {
@@ -143,7 +143,7 @@ describe('BtcWithdrawModal', () => {
     expect(screen.getByTestId('SharesBalanceLabel')).toHaveTextContent('5.0')
   })
 
-  it('keeps SHARES WITHDRAWAL title on review step', async () => {
+  it('keeps WITHDRAW rBTC title on review step', async () => {
     const user = userEvent.setup()
     render(<BtcWithdrawModal {...defaultProps} />)
 
@@ -151,6 +151,22 @@ describe('BtcWithdrawModal', () => {
     await user.type(input, '2')
     await user.click(screen.getByTestId('ContinueButton'))
 
-    expect(screen.getByText('SHARES WITHDRAWAL')).toBeInTheDocument()
+    expect(screen.getByText('WITHDRAW rBTC')).toBeInTheDocument()
+  })
+
+  it('returns to amount step when Back is clicked on review', async () => {
+    const user = userEvent.setup()
+    render(<BtcWithdrawModal {...defaultProps} />)
+
+    const input = screen.getByTestId('Input_amount-btc-vault-withdraw')
+    await user.type(input, '2')
+    await user.click(screen.getByTestId('ContinueButton'))
+
+    expect(screen.getByTestId('WithdrawReviewStep')).toBeInTheDocument()
+
+    await user.click(screen.getByTestId('BackButton'))
+
+    expect(screen.getByTestId('WithdrawAmountStep')).toBeInTheDocument()
+    expect(screen.queryByTestId('WithdrawReviewStep')).not.toBeInTheDocument()
   })
 })

@@ -52,6 +52,7 @@ export const BtcWithdrawModal = ({ onClose, onSubmit, isSubmitting }: BtcWithdra
   }, [amount, pricePerShareRaw])
 
   const handleNext = () => setStep('review')
+  const handleBack = () => setStep('amount')
 
   const handleSubmit = useCallback(() => {
     if (!amount) return
@@ -68,7 +69,7 @@ export const BtcWithdrawModal = ({ onClose, onSubmit, isSubmitting }: BtcWithdra
   return (
     <Modal onClose={onClose} data-testid="BtcWithdrawModal">
       <div className="h-full flex flex-col p-4 md:p-6">
-        <Header className="mt-16 mb-4">SHARES WITHDRAWAL</Header>
+        <Header className="mt-16 mb-4">WITHDRAW rBTC</Header>
 
         <div className="mb-12">
           <WithdrawSteps currentStep={stepIndex} />
@@ -92,6 +93,7 @@ export const BtcWithdrawModal = ({ onClose, onSubmit, isSubmitting }: BtcWithdra
             amount={amount}
             rbtcEquivalent={rbtcEquivalent}
             withdrawalFee={BTC_VAULT_WITHDRAWAL_FEE}
+            onBack={handleBack}
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
           />
