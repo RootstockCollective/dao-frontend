@@ -1,8 +1,13 @@
 'use client'
+import { useRouter } from 'next/navigation'
+import { createContext, ReactNode, useContext, useState } from 'react'
+import { Address, keccak256, toHex } from 'viem'
+import { useAccount } from 'wagmi'
+
 import {
+  AdditionalCheck,
   communitiesMapByContract,
   CommunityItem,
-  AdditionalCheck,
   ContractReadResult,
 } from '@/app/communities/communityUtils'
 import { nftAlertMessages } from '@/app/communities/nft/[address]/constants'
@@ -12,10 +17,6 @@ import { useCommunity } from '@/shared/hooks/useCommunity'
 import { useStRif } from '@/shared/hooks/useStRIf'
 import { showToast } from '@/shared/notification'
 import { NftMeta } from '@/shared/types'
-import { useRouter } from 'next/navigation'
-import { createContext, ReactNode, useContext, useState } from 'react'
-import { Address } from 'viem'
-import { useAccount } from 'wagmi'
 
 interface CommunityNFTContextProps {
   // NFT Information Management
@@ -50,6 +51,8 @@ interface CommunityNFTContextProps {
   nftSymbol?: string
   stRifThreshold?: bigint
 }
+
+const MINTER_ROLE = keccak256(toHex('MINTER_ROLE'))
 
 const CommunityNFTContext = createContext<CommunityNFTContextProps | null>(null)
 
@@ -109,6 +112,12 @@ export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProvi
           { functionName: 'mintLimit', args: [] },
           { functionName: 'totalSupply', args: [] },
         ]
+      } else if (name === 'hasMinterRole') {
+        if (!address) {
+          setIsChecking(false)
+          return false
+        }
+        functions = [{ functionName: 'hasRole', args: [MINTER_ROLE, address] }]
       }
       if (!functions) continue
       try {

@@ -273,6 +273,13 @@ export const rootlingsS1: CommunityItem = {
       active backers who combine governance with community spirit.
     </>
   ),
+  additionalChecks: [
+    {
+      name: 'hasMinterRole',
+      check: (data: ContractReadResult) => Boolean(data[0]?.result),
+      alertMessage: 'You are not whitelisted to mint this NFT.',
+    },
+  ],
 }
 
 export const rootcampNft: CommunityItem = {
@@ -293,6 +300,13 @@ export const rootcampNft: CommunityItem = {
       are ready to ship on Rootstock: Bitcoin security, EVM execution, and real on-chain impact.
     </>
   ),
+  additionalChecks: [
+    {
+      name: 'hasMinterRole',
+      check: (data: ContractReadResult) => Boolean(data[0]?.result),
+      alertMessage: 'You are not whitelisted to mint this NFT.',
+    },
+  ],
 }
 
 export const communitiesToRender = [
