@@ -2,21 +2,12 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { GET } from './route'
 
 vi.mock('./action', () => ({
-  enrichHistoryWithRequestStatus: vi.fn((history: unknown) => Promise.resolve(history)),
-  getGlobalBtcVaultHistory: vi.fn(),
-  getBtcVaultHistoryCount: vi.fn(),
+  fetchBtcVaultHistoryPageAndEnrich: vi.fn(),
 }))
 
-import {
-  enrichHistoryWithRequestStatus,
-  getBtcVaultHistoryCount,
-  getGlobalBtcVaultHistory,
-  type BtcVaultHistoryItem,
-} from './action'
+import { fetchBtcVaultHistoryPageAndEnrich, type BtcVaultHistoryItem } from './action'
 
-const mockEnrich = vi.mocked(enrichHistoryWithRequestStatus)
-const mockGetHistory = vi.mocked(getGlobalBtcVaultHistory)
-const mockGetCount = vi.mocked(getBtcVaultHistoryCount)
+const mockFetchEnrich = vi.mocked(fetchBtcVaultHistoryPageAndEnrich)
 
 const mockHistory: BtcVaultHistoryItem[] = [
   {
@@ -33,14 +24,12 @@ const mockHistory: BtcVaultHistoryItem[] = [
 ]
 
 beforeEach(() => {
-  mockGetHistory.mockClear()
-  mockGetCount.mockClear()
+  mockFetchEnrich.mockClear()
 })
 
 describe('GET /api/btc-vault/v1/history', () => {
   it('should return 200 with correct data and pagination shape (no address)', async () => {
-    mockGetHistory.mockResolvedValue(mockHistory)
-    mockGetCount.mockResolvedValue(1)
+    mockFetchEnrich.mockResolvedValue({ data: mockHistory, total: 1, source: 'the-graph', errors: [] })
 
     const req = new Request('http://localhost/api/btc-vault/v1/history')
     const response = await GET(req as never)
@@ -58,31 +47,36 @@ describe('GET /api/btc-vault/v1/history', () => {
       sort_field: 'timestamp',
       sort_direction: 'desc',
     })
+    expect(response.headers.get('X-Source')).toBe('the-graph')
+    expect(response.headers.get('X-Source-Errors')).toBeNull()
   })
 
-  it('should call counter with "global" when no address provided', async () => {
-    mockGetHistory.mockResolvedValue([])
-    mockGetCount.mockResolvedValue(0)
+  it('should call fetch with global semantics when no address provided', async () => {
+    mockFetchEnrich.mockResolvedValue({ data: [], total: 0, source: 'the-graph', errors: [] })
 
     const req = new Request('http://localhost/api/btc-vault/v1/history')
     await GET(req as never)
 
-    expect(mockGetCount).toHaveBeenCalledWith('global', undefined)
+    expect(mockFetchEnrich).toHaveBeenCalledWith(
+      expect.objectContaining({
+        address: undefined,
+      }),
+    )
   })
 
-  it('should pass address to action functions when provided', async () => {
-    mockGetHistory.mockResolvedValue([])
-    mockGetCount.mockResolvedValue(0)
+  it('should pass address to fetch when provided', async () => {
+    mockFetchEnrich.mockResolvedValue({ data: [], total: 0, source: 'the-graph', errors: [] })
 
     const address = '0xa18f4fbee88592bee3d51d90ba791e769a9b902f'
     const req = new Request(`http://localhost/api/btc-vault/v1/history?address=${address}`)
     const response = await GET(req as never)
 
     expect(response.status).toBe(200)
-    expect(mockGetHistory).toHaveBeenCalledWith(
-      expect.objectContaining({ address }),
+    expect(mockFetchEnrich).toHaveBeenCalledWith(
+      expect.objectContaining({
+        address,
+      }),
     )
-    expect(mockGetCount).toHaveBeenCalledWith(address, undefined)
   })
 
   it('should return 400 for invalid address query param', async () => {
@@ -122,8 +116,7 @@ describe('GET /api/btc-vault/v1/history', () => {
   })
 
   it('should pass type filter through correctly', async () => {
-    mockGetHistory.mockResolvedValue([])
-    mockGetCount.mockResolvedValue(0)
+    mockFetchEnrich.mockResolvedValue({ data: [], total: 0, source: 'the-graph', errors: [] })
 
     const req = new Request(
       'http://localhost/api/btc-vault/v1/history?type=deposit_request&type=redeem_claimed',
@@ -131,17 +124,15 @@ describe('GET /api/btc-vault/v1/history', () => {
     const response = await GET(req as never)
 
     expect(response.status).toBe(200)
-    expect(mockGetHistory).toHaveBeenCalledWith(
+    expect(mockFetchEnrich).toHaveBeenCalledWith(
       expect.objectContaining({
         type: ['deposit_request', 'redeem_claimed'],
       }),
     )
-    expect(mockGetCount).toHaveBeenCalledWith('global', ['deposit_request', 'redeem_claimed'])
   })
 
   it('should return 200 with empty data when no results', async () => {
-    mockGetHistory.mockResolvedValue([])
-    mockGetCount.mockResolvedValue(0)
+    mockFetchEnrich.mockResolvedValue({ data: [], total: 0, source: 'the-graph', errors: [] })
 
     const req = new Request('http://localhost/api/btc-vault/v1/history')
     const response = await GET(req as never)
@@ -154,8 +145,7 @@ describe('GET /api/btc-vault/v1/history', () => {
   })
 
   it('should pass query parameters correctly', async () => {
-    mockGetHistory.mockResolvedValue([])
-    mockGetCount.mockResolvedValue(0)
+    mockFetchEnrich.mockResolvedValue({ data: [], total: 0, source: 'the-graph', errors: [] })
 
     const req = new Request(
       'http://localhost/api/btc-vault/v1/history?page=2&limit=10&sort_field=assets&sort_direction=asc',
@@ -163,7 +153,7 @@ describe('GET /api/btc-vault/v1/history', () => {
     const response = await GET(req as never)
 
     expect(response.status).toBe(200)
-    expect(mockGetHistory).toHaveBeenCalledWith({
+    expect(mockFetchEnrich).toHaveBeenCalledWith({
       limit: 10,
       page: 2,
       sort_field: 'assets',
@@ -174,8 +164,7 @@ describe('GET /api/btc-vault/v1/history', () => {
   })
 
   it('should compute pagination correctly for multiple pages', async () => {
-    mockGetHistory.mockResolvedValue(mockHistory)
-    mockGetCount.mockResolvedValue(45)
+    mockFetchEnrich.mockResolvedValue({ data: mockHistory, total: 45, source: 'the-graph', errors: [] })
 
     const req = new Request('http://localhost/api/btc-vault/v1/history?page=3&limit=10')
     const response = await GET(req as never)
@@ -191,5 +180,41 @@ describe('GET /api/btc-vault/v1/history', () => {
       sort_field: 'timestamp',
       sort_direction: 'desc',
     })
+  })
+
+  it('should set X-Source blockscout and X-Source-Errors when subgraph failed and Blockscout succeeds', async () => {
+    mockFetchEnrich.mockResolvedValue({
+      data: mockHistory,
+      total: 1,
+      source: 'blockscout',
+      errors: [{ source: 'the-graph', message: 'subgraph down' }],
+    })
+
+    const req = new Request('http://localhost/api/btc-vault/v1/history')
+    const response = await GET(req as never)
+
+    expect(response.status).toBe(200)
+    expect(response.headers.get('X-Source')).toBe('blockscout')
+    expect(response.headers.get('X-Source-Errors')).toContain('the-graph: subgraph down')
+  })
+
+  it('should return 500 when no data source succeeds', async () => {
+    mockFetchEnrich.mockResolvedValue({
+      data: [],
+      total: 0,
+      source: null,
+      errors: [
+        { source: 'the-graph', message: 'down' },
+        { source: 'blockscout', message: 'down' },
+      ],
+    })
+
+    const req = new Request('http://localhost/api/btc-vault/v1/history')
+    const response = await GET(req as never)
+
+    expect(response.status).toBe(500)
+    const body = await response.json()
+    expect(body.error).toBe('Cannot fetch BTC vault history from any source')
+    expect(response.headers.get('X-Source-Errors')).toContain('the-graph: down')
   })
 })
