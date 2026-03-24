@@ -166,18 +166,14 @@ describe('BtcVaultDashboard', () => {
     })
   })
 
-  it('shows history links under their respective metrics when history exists', () => {
+  it('shows View history under Principal when user has position history', () => {
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
 
     const historyLink = screen.getByTestId('btc-vault-history-link')
-    const yieldHistoryLink = screen.getByTestId('btc-vault-yield-history-link')
     expect(historyLink).toBeInTheDocument()
-    expect(yieldHistoryLink).toBeInTheDocument()
     expect(screen.getByText('View history')).toBeInTheDocument()
-    expect(screen.getByText('View yield history')).toBeInTheDocument()
-
     expect(historyLink.querySelector('[aria-label="History Icon"]')).toBeInTheDocument()
-    expect(yieldHistoryLink.querySelector('[aria-label="History Icon"]')).toBeInTheDocument()
+    expect(screen.queryByTestId('btc-vault-yield-history-link')).not.toBeInTheDocument()
   })
 
   it('positions View history under Principal deposited', () => {
@@ -188,15 +184,7 @@ describe('BtcVaultDashboard', () => {
     expect(principalMetric.parentElement).toContain(historyLink)
   })
 
-  it('positions View yield history under Yield % to date', () => {
-    render(<BtcVaultDashboard />, { wrapper: Wrapper })
-
-    const yieldMetric = screen.getByTestId('metric-yield-percent')
-    const yieldHistoryLink = screen.getByTestId('btc-vault-yield-history-link')
-    expect(yieldMetric.parentElement).toContain(yieldHistoryLink)
-  })
-
-  it('hides history links when user has no vault tokens', () => {
+  it('hides View history when user has no vault tokens', () => {
     const emptyDisplay: UserPositionDisplay = {
       ...MOCK_DISPLAY,
       vaultTokensRaw: 0n,
@@ -205,7 +193,6 @@ describe('BtcVaultDashboard', () => {
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
 
     expect(screen.queryByTestId('btc-vault-history-link')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('btc-vault-yield-history-link')).not.toBeInTheDocument()
   })
 
   it('returns null when wallet is disconnected', () => {
