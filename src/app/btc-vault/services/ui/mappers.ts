@@ -456,9 +456,13 @@ export function getTxHistoryStatusLabel(
  * Status filter is not applied here; the hook applies it client-side to rows.
  *
  * @param response - API response shape { data: BtcVaultHistoryItemWithStatus[], pagination }
+ * @param rbtcPrice
  * @returns Display-ready paginated history for the table
  */
-export function apiHistoryToPaginatedDisplay(response: BtcVaultHistoryApiResponse): PaginatedHistoryDisplay {
+export function apiHistoryToPaginatedDisplay(
+  response: BtcVaultHistoryApiResponse,
+  rbtcPrice = 0,
+): PaginatedHistoryDisplay {
   const { data, pagination } = response
   const rows: RequestHistoryRowDisplay[] = data.map(item => {
     const actionUpper = item.action.toUpperCase()
@@ -483,7 +487,10 @@ export function apiHistoryToPaginatedDisplay(response: BtcVaultHistoryApiRespons
       finalizeTxFull: null,
       displayStatus,
       displayStatusLabel,
-      fiatAmountFormatted: null,
+      fiatAmountFormatted:
+        isDeposit && rbtcPrice > 0
+          ? formatCurrencyWithLabel(Big(Number(formatEther(amountWei))).mul(rbtcPrice))
+          : null,
       claimTokenType: isDeposit ? ('rbtc' as const) : ('shares' as const),
       updatedAtFormatted: formatDateShort(item.timestamp),
     }

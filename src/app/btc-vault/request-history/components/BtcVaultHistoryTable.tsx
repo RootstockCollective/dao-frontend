@@ -8,7 +8,9 @@ import { FilterButton } from '@/app/proposals/components/filter/FilterButton'
 import type { ActiveFilter } from '@/components/FilterSideBar'
 import { TablePager, type TablePagerCountContext } from '@/components/TableNew'
 import { Header, Paragraph } from '@/components/Typography'
+import { RBTC } from '@/lib/constants'
 import { useTableActionsContext, useTableContext, withTableContext } from '@/shared/context'
+import { usePricesContext } from '@/shared/context/PricesContext'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
@@ -82,6 +84,8 @@ function BtcVaultHistoryStatusFilterPagerCount({
 function BtcVaultHistoryTableInner() {
   const isDesktop = useIsDesktop()
   const { address } = useAccount()
+  const { prices } = usePricesContext()
+  const rbtcPrice = prices[RBTC]?.price ?? 0
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
   const [pagerKey, setPagerKey] = useState(0)
 
@@ -106,6 +110,7 @@ function BtcVaultHistoryTableInner() {
     address,
     { page: 1, limit: pageEnd, sortDirection },
     historyFilters,
+    rbtcPrice,
   )
 
   const rowData = useMemo(() => convertDataToRowData(data?.rows), [data?.rows])
