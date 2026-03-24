@@ -18,16 +18,13 @@ export function useFinalizeDeposit() {
   const { writeContractAsync, data: finalizeTxHash, isPending: isRequesting } = useWriteContract()
   const { isTxPending, isTxFailed } = useTransactionStatus(finalizeTxHash)
 
-  const onFinalizeDeposit = useCallback(
-    (_claimableAssets: bigint): Promise<Hash> => {
-      if (!address) return Promise.reject(new Error('Wallet not connected'))
-      return writeContractAsync({
-        ...rbtcVault,
-        functionName: 'claimDeposit',
-      })
-    },
-    [writeContractAsync, address],
-  )
+  const onFinalizeDeposit = useCallback((): Promise<Hash> => {
+    if (!address) return Promise.reject(new Error('Wallet not connected'))
+    return writeContractAsync({
+      ...rbtcVault,
+      functionName: 'claimDeposit',
+    })
+  }, [writeContractAsync, address])
 
   return {
     onFinalizeDeposit,

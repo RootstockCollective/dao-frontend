@@ -127,7 +127,7 @@ describe('useClaimRequest', () => {
     const { result } = renderHook(() => useClaimRequest(CLAIMABLE_DEPOSIT))
     await result.current.claim()
 
-    expect(mockOnFinalizeDeposit).toHaveBeenCalledWith(ONE_BTC)
+    expect(mockOnFinalizeDeposit).toHaveBeenCalledWith()
     expect(mockOnFinalizeWithdrawal).not.toHaveBeenCalled()
   })
 
@@ -138,7 +138,7 @@ describe('useClaimRequest', () => {
     const { result } = renderHook(() => useClaimRequest(CLAIMABLE_WITHDRAWAL))
     await result.current.claim()
 
-    expect(mockOnFinalizeWithdrawal).toHaveBeenCalledWith(ONE_BTC / 2n)
+    expect(mockOnFinalizeWithdrawal).toHaveBeenCalledWith()
     expect(mockOnFinalizeDeposit).not.toHaveBeenCalled()
   })
 

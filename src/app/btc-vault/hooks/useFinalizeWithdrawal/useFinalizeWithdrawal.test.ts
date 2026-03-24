@@ -42,12 +42,11 @@ describe('useFinalizeWithdrawal', () => {
   })
 
   it('calls writeContractAsync with claimRedeemNative (no args)', async () => {
-    const claimableShares = 500_000_000_000_000_000n
     const txHash = '0xmockhash'
     mockWriteContractAsync.mockResolvedValue(txHash)
 
     const { result } = renderHook(() => useFinalizeWithdrawal())
-    const hash = await result.current.onFinalizeWithdrawal(claimableShares)
+    const hash = await result.current.onFinalizeWithdrawal()
 
     expect(hash).toBe(txHash)
     expect(mockWriteContractAsync).toHaveBeenCalledOnce()
@@ -61,7 +60,7 @@ describe('useFinalizeWithdrawal', () => {
     mockWriteContractAsync.mockResolvedValue('0xhash')
 
     const { result } = renderHook(() => useFinalizeWithdrawal())
-    await result.current.onFinalizeWithdrawal(1n)
+    await result.current.onFinalizeWithdrawal()
 
     const callArgs = mockWriteContractAsync.mock.calls[0][0]
     expect(callArgs.value).toBeUndefined()
@@ -70,8 +69,6 @@ describe('useFinalizeWithdrawal', () => {
   it('rejects when wallet is disconnected', async () => {
     mockUseAccount.mockReturnValue({ address: undefined })
     const { result } = renderHook(() => useFinalizeWithdrawal())
-    await expect(result.current.onFinalizeWithdrawal(1_000_000_000_000_000_000n)).rejects.toThrow(
-      'Wallet not connected',
-    )
+    await expect(result.current.onFinalizeWithdrawal()).rejects.toThrow('Wallet not connected')
   })
 })

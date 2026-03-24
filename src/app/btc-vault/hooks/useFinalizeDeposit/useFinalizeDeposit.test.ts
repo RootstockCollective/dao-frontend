@@ -45,12 +45,11 @@ describe('useFinalizeDeposit', () => {
   })
 
   it('calls writeContractAsync with claimDeposit() (no args)', async () => {
-    const claimableAssets = 2_000_000_000_000_000_000n
     const txHash = '0xfinalizetxhash'
     mockWriteContractAsync.mockResolvedValue(txHash)
 
     const { result } = renderHook(() => useFinalizeDeposit())
-    const hash = await result.current.onFinalizeDeposit(claimableAssets)
+    const hash = await result.current.onFinalizeDeposit()
 
     expect(hash).toBe(txHash)
     expect(mockWriteContractAsync).toHaveBeenCalledOnce()
@@ -65,16 +64,14 @@ describe('useFinalizeDeposit', () => {
 
     const { result } = renderHook(() => useFinalizeDeposit())
 
-    await expect(result.current.onFinalizeDeposit(1_000_000_000_000_000_000n)).rejects.toThrow(
-      'Wallet not connected',
-    )
+    await expect(result.current.onFinalizeDeposit()).rejects.toThrow('Wallet not connected')
   })
 
   it('does not send value (deposit finalizes shares, not native rBTC)', async () => {
     mockWriteContractAsync.mockResolvedValue('0xhash')
 
     const { result } = renderHook(() => useFinalizeDeposit())
-    await result.current.onFinalizeDeposit(1_000_000_000_000_000_000n)
+    await result.current.onFinalizeDeposit()
 
     const callArgs = mockWriteContractAsync.mock.calls[0][0]
     expect(callArgs.value).toBeUndefined()

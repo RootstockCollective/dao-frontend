@@ -47,7 +47,7 @@ export function useClaimRequest(request: VaultRequest | null) {
     if (!amount || amount === 0n) {
       return Promise.reject(new Error('No claimable amount available'))
     }
-    return requestType === 'deposit' ? onFinalizeDeposit(amount) : onFinalizeWithdrawal(amount)
+    return requestType === 'deposit' ? onFinalizeDeposit() : onFinalizeWithdrawal()
   }, [claimableAmount, requestType, onFinalizeDeposit, onFinalizeWithdrawal])
 
   const isRequesting = requestType === 'deposit' ? isDepositRequesting : isWithdrawalRequesting

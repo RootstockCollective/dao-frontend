@@ -20,16 +20,13 @@ export function useFinalizeWithdrawal() {
   const { writeContractAsync, data: finalizeTxHash, isPending: isRequesting } = useWriteContract()
   const { isTxPending, isTxFailed } = useTransactionStatus(finalizeTxHash)
 
-  const onFinalizeWithdrawal = useCallback(
-    (_claimableShares: bigint): Promise<Hash> => {
-      if (!address) return Promise.reject(new Error('Wallet not connected'))
-      return writeContractAsync({
-        ...rbtcVault,
-        functionName: 'claimRedeemNative',
-      })
-    },
-    [writeContractAsync, address],
-  )
+  const onFinalizeWithdrawal = useCallback((): Promise<Hash> => {
+    if (!address) return Promise.reject(new Error('Wallet not connected'))
+    return writeContractAsync({
+      ...rbtcVault,
+      functionName: 'claimRedeemNative',
+    })
+  }, [writeContractAsync, address])
 
   return {
     onFinalizeWithdrawal,
