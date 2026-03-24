@@ -888,6 +888,96 @@ describe('apiHistoryToPaginatedDisplay', () => {
     expect(result.rows[0].status).toBe('cancelled')
     expect(result.rows[1].status).toBe('failed')
   })
+
+  it('computes fiatAmountFormatted for deposit rows when rbtcPrice is provided', () => {
+    const response = {
+      data: [
+        {
+          id: 'id-fiat',
+          user: '0xu',
+          action: 'DEPOSIT_CLAIMED',
+          assets: '1500000000000000000',
+          shares: '0',
+          epochId: '1',
+          timestamp: 1700000000,
+          blockNumber: '1',
+          transactionHash: '0xabc',
+          displayStatus: 'successful' as const,
+        },
+      ],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 1,
+        totalPages: 1,
+        offset: 0,
+        sort_field: 'timestamp',
+        sort_direction: 'desc' as const,
+      },
+    }
+    const result = apiHistoryToPaginatedDisplay(response, 50_000)
+    expect(result.rows[0].fiatAmountFormatted).toBe('$75,000.00 USD')
+  })
+
+  it('returns null fiatAmountFormatted for withdrawal rows even when rbtcPrice is provided', () => {
+    const response = {
+      data: [
+        {
+          id: 'id-w',
+          user: '0xu',
+          action: 'REDEEM_REQUEST',
+          assets: '0',
+          shares: '1000000000000000000',
+          epochId: '1',
+          timestamp: 1700000000,
+          blockNumber: '1',
+          transactionHash: '0xabc',
+          displayStatus: 'pending' as const,
+        },
+      ],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 1,
+        totalPages: 1,
+        offset: 0,
+        sort_field: 'timestamp',
+        sort_direction: 'desc' as const,
+      },
+    }
+    const result = apiHistoryToPaginatedDisplay(response, 50_000)
+    expect(result.rows[0].fiatAmountFormatted).toBeNull()
+  })
+
+  it('returns null fiatAmountFormatted for deposits when rbtcPrice is 0', () => {
+    const response = {
+      data: [
+        {
+          id: 'id-noprice',
+          user: '0xu',
+          action: 'DEPOSIT_REQUEST',
+          assets: '1000000000000000000',
+          shares: '0',
+          epochId: '1',
+          timestamp: 1700000000,
+          blockNumber: '1',
+          transactionHash: '0xabc',
+          displayStatus: 'pending' as const,
+        },
+      ],
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 1,
+        totalPages: 1,
+        offset: 0,
+        sort_field: 'timestamp',
+        sort_direction: 'desc' as const,
+      },
+    }
+    const result = apiHistoryToPaginatedDisplay(response, 0)
+    expect(result.rows[0].fiatAmountFormatted).toBeNull()
+  })
 })
 
 describe('mapApiItemToVaultRequest', () => {

@@ -51,21 +51,23 @@ function buildHistoryUrl(
  * @param address - Connected wallet address; query is disabled when undefined
  * @param params - Pagination and sort parameters (page, limit, sortField, sortDirection)
  * @param filters - Optional filter criteria (type, claim token, display status); status is filtered client-side
+ * @param rbtcPrice
  */
 export function useRequestHistory(
   address: string | undefined,
   params: PaginationParams,
   filters?: HistoryFilterParams,
+  rbtcPrice = 0,
 ) {
   return useQuery({
-    queryKey: ['btc-vault', 'history', address, params, filters],
+    queryKey: ['btc-vault', 'history', address, params, filters, rbtcPrice],
     queryFn: async () => {
       if (!address) throw new Error('address is required')
       const url = buildHistoryUrl(address, params, filters)
       const res = await fetch(url)
       if (!res.ok) throw new Error(`History API error: ${res.status}`)
       const response = (await res.json()) as BtcVaultHistoryApiResponse
-      const result = apiHistoryToPaginatedDisplay(response)
+      const result = apiHistoryToPaginatedDisplay(response, rbtcPrice)
 
       if (filters?.status?.length) {
         const statusSet = new Set(filters.status)
