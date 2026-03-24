@@ -13,6 +13,14 @@ vi.mock('wagmi', () => ({
   useReadContract: (...args: unknown[]) => mockUseReadContract(...args),
 }))
 
+vi.mock('@/shared/context/PricesContext', () => ({
+  usePricesContext: () => ({
+    prices: {
+      RBTC: { price: 23_750 },
+    },
+  }),
+}))
+
 const CONNECTED_ADDRESS = '0x1234567890abcdef1234567890abcdef12345678'
 const ONE_ETHER = 1_000_000_000_000_000_000n
 

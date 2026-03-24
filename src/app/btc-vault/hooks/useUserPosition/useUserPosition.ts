@@ -2,7 +2,9 @@ import { useMemo } from 'react'
 import { type Address } from 'viem'
 import { useBalance, useReadContract, useReadContracts } from 'wagmi'
 
+import { RBTC } from '@/lib/constants'
 import { rbtcVault } from '@/lib/contracts'
+import { usePricesContext } from '@/shared/context/PricesContext'
 
 import type { UserPosition } from '../../services/types'
 import { toUserPositionDisplay } from '../../services/ui/mappers'
@@ -26,6 +28,8 @@ export function useUserPosition(address: Address | undefined): {
   isLoading: boolean
   isError: boolean
 } {
+  const { prices } = usePricesContext()
+  const rbtcPrice = prices[RBTC]?.price ?? 0
   const isConnected = !!address
 
   const {
@@ -105,8 +109,8 @@ export function useUserPosition(address: Address | undefined): {
       totalDepositedPrincipal: 0n,
     }
 
-    return toUserPositionDisplay(position)
-  }, [isConnected, nativeBalance?.value, vaultTokens, totalSupply, positionValue])
+    return toUserPositionDisplay(position, rbtcPrice)
+  }, [isConnected, nativeBalance?.value, vaultTokens, totalSupply, positionValue, rbtcPrice])
 
   return { data, isLoading, isError }
 }

@@ -81,14 +81,19 @@ describe('toVaultMetricsDisplay', () => {
 })
 
 describe('toUserPositionDisplay', () => {
+  const TEST_RBTC_PRICE = 23_750
+
   it('includes formatted strings and raw bigints', () => {
-    const result = toUserPositionDisplay({
-      rbtcBalance: 2n * WeiPerEther,
-      vaultTokens: 5n * WeiPerEther,
-      positionValue: (51n * WeiPerEther) / 10n,
-      percentOfVault: 10.2,
-      totalDepositedPrincipal: 5n * WeiPerEther,
-    })
+    const result = toUserPositionDisplay(
+      {
+        rbtcBalance: 2n * WeiPerEther,
+        vaultTokens: 5n * WeiPerEther,
+        positionValue: (51n * WeiPerEther) / 10n,
+        percentOfVault: 10.2,
+        totalDepositedPrincipal: 5n * WeiPerEther,
+      },
+      TEST_RBTC_PRICE,
+    )
     expect(result.rbtcBalanceFormatted).toBe('2')
     expect(result.vaultTokensFormatted).toBe('5')
     expect(result.positionValueFormatted).toBe('5.1')
@@ -98,38 +103,47 @@ describe('toUserPositionDisplay', () => {
   })
 
   it('derives current earnings as positionValue - totalDepositedPrincipal', () => {
-    const result = toUserPositionDisplay({
-      rbtcBalance: 0n,
-      vaultTokens: 5n * WeiPerEther,
-      positionValue: (51n * WeiPerEther) / 10n,
-      percentOfVault: 10.2,
-      totalDepositedPrincipal: 5n * WeiPerEther,
-    })
+    const result = toUserPositionDisplay(
+      {
+        rbtcBalance: 0n,
+        vaultTokens: 5n * WeiPerEther,
+        positionValue: (51n * WeiPerEther) / 10n,
+        percentOfVault: 10.2,
+        totalDepositedPrincipal: 5n * WeiPerEther,
+      },
+      TEST_RBTC_PRICE,
+    )
     expect(result.currentEarningsFormatted).toBe('0.1')
     expect(result.totalBalanceFormatted).toBe('5.1')
     expect(result.totalBalanceRaw).toBe((51n * WeiPerEther) / 10n)
   })
 
   it('clamps current earnings to zero when positionValue < principal', () => {
-    const result = toUserPositionDisplay({
-      rbtcBalance: 0n,
-      vaultTokens: 4n * WeiPerEther,
-      positionValue: 4n * WeiPerEther,
-      percentOfVault: 8.0,
-      totalDepositedPrincipal: 5n * WeiPerEther,
-    })
+    const result = toUserPositionDisplay(
+      {
+        rbtcBalance: 0n,
+        vaultTokens: 4n * WeiPerEther,
+        positionValue: 4n * WeiPerEther,
+        percentOfVault: 8.0,
+        totalDepositedPrincipal: 5n * WeiPerEther,
+      },
+      TEST_RBTC_PRICE,
+    )
     expect(result.currentEarningsFormatted).toBe('0')
     expect(result.yieldPercentToDateFormatted).toBe('0.00%')
   })
 
   it('returns 0% yield when totalDepositedPrincipal is 0', () => {
-    const result = toUserPositionDisplay({
-      rbtcBalance: 0n,
-      vaultTokens: 0n,
-      positionValue: 0n,
-      percentOfVault: 0,
-      totalDepositedPrincipal: 0n,
-    })
+    const result = toUserPositionDisplay(
+      {
+        rbtcBalance: 0n,
+        vaultTokens: 0n,
+        positionValue: 0n,
+        percentOfVault: 0,
+        totalDepositedPrincipal: 0n,
+      },
+      TEST_RBTC_PRICE,
+    )
     expect(result.yieldPercentToDateFormatted).toBe('0.00%')
     expect(result.currentEarningsFormatted).toBe('0')
     expect(result.totalDepositedPrincipalFormatted).toBe('0')
@@ -137,43 +151,70 @@ describe('toUserPositionDisplay', () => {
   })
 
   it('computes yield percent with integer math', () => {
-    const result = toUserPositionDisplay({
-      rbtcBalance: 0n,
-      vaultTokens: 10n * WeiPerEther,
-      positionValue: 11n * WeiPerEther,
-      percentOfVault: 50,
-      totalDepositedPrincipal: 10n * WeiPerEther,
-    })
+    const result = toUserPositionDisplay(
+      {
+        rbtcBalance: 0n,
+        vaultTokens: 10n * WeiPerEther,
+        positionValue: 11n * WeiPerEther,
+        percentOfVault: 50,
+        totalDepositedPrincipal: 10n * WeiPerEther,
+      },
+      TEST_RBTC_PRICE,
+    )
     expect(result.yieldPercentToDateFormatted).toBe('10.00%')
   })
 
-  it('formats fiat amounts using MOCK_RBTC_USD_PRICE', () => {
-    const result = toUserPositionDisplay({
-      rbtcBalance: 2n * WeiPerEther,
-      vaultTokens: 5n * WeiPerEther,
-      positionValue: (51n * WeiPerEther) / 10n,
-      percentOfVault: 10.2,
-      totalDepositedPrincipal: 5n * WeiPerEther,
-    })
+  it('formats fiat amounts using provided rbtcPrice', () => {
+    const result = toUserPositionDisplay(
+      {
+        rbtcBalance: 2n * WeiPerEther,
+        vaultTokens: 5n * WeiPerEther,
+        positionValue: (51n * WeiPerEther) / 10n,
+        percentOfVault: 10.2,
+        totalDepositedPrincipal: 5n * WeiPerEther,
+      },
+      TEST_RBTC_PRICE,
+    )
     expect(result.fiatWalletBalance).toBe('$47,500.00 USD')
     expect(result.fiatPrincipalDeposited).toBe('$118,750.00 USD')
     expect(result.fiatCurrentEarnings).toBe('$2,375.00 USD')
     expect(result.fiatTotalBalance).toBe('$121,125.00 USD')
   })
 
-  it('returns zero fiat for empty position', () => {
-    const result = toUserPositionDisplay({
-      rbtcBalance: 0n,
-      vaultTokens: 0n,
-      positionValue: 0n,
-      percentOfVault: 0,
-      totalDepositedPrincipal: 0n,
-    })
+  it('returns zero fiat for empty position with valid price', () => {
+    const result = toUserPositionDisplay(
+      {
+        rbtcBalance: 0n,
+        vaultTokens: 0n,
+        positionValue: 0n,
+        percentOfVault: 0,
+        totalDepositedPrincipal: 0n,
+      },
+      TEST_RBTC_PRICE,
+    )
     expect(result.fiatWalletBalance).toBe('$0.00 USD')
     expect(result.fiatVaultShares).toBe('$0.00 USD')
     expect(result.fiatPrincipalDeposited).toBe('$0.00 USD')
     expect(result.fiatCurrentEarnings).toBe('$0.00 USD')
     expect(result.fiatTotalBalance).toBe('$0.00 USD')
+  })
+
+  it('returns null fiat fields when rbtcPrice is 0', () => {
+    const result = toUserPositionDisplay(
+      {
+        rbtcBalance: 2n * WeiPerEther,
+        vaultTokens: 5n * WeiPerEther,
+        positionValue: (51n * WeiPerEther) / 10n,
+        percentOfVault: 10.2,
+        totalDepositedPrincipal: 5n * WeiPerEther,
+      },
+      0,
+    )
+    expect(result.fiatWalletBalance).toBeNull()
+    expect(result.fiatVaultShares).toBeNull()
+    expect(result.fiatPrincipalDeposited).toBeNull()
+    expect(result.fiatCurrentEarnings).toBeNull()
+    expect(result.fiatTotalBalance).toBeNull()
   })
 })
 
@@ -492,7 +533,7 @@ describe('toPaginatedHistoryDisplay', () => {
       limit: 10,
       totalPages: 1,
     }
-    const result = toPaginatedHistoryDisplay(raw)
+    const result = toPaginatedHistoryDisplay(raw, 23_750)
     expect(result.rows).toHaveLength(1)
     expect(result.rows[0].submitTxShort).toBe('0xaaaa...aaaa')
     expect(result.rows[0].submitTxFull).toBe('0x' + 'a'.repeat(64))

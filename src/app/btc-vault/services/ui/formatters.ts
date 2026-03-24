@@ -3,12 +3,6 @@ import { DateTime } from 'luxon'
 const VAULT_BASIS_POINTS = 1_000_000_000n // 1e9 = 100%
 
 /**
- * Placeholder price until a real oracle/price feed is wired.
- * Represents USD per 1 rBTC as a whole number (no decimals).
- */
-export const MOCK_RBTC_USD_PRICE = 23_750
-
-/**
  * Converts vault basis points (1e9 = 100%) to a percentage string with 2 decimal places.
  * @param basisPoints - APY in vault basis points
  * @returns Formatted percentage string (e.g. "8.50")
