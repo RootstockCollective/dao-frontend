@@ -9,6 +9,7 @@ import { cookieToInitialState } from 'wagmi'
 import { headers } from 'next/headers'
 import { wagmiAdapterConfig } from '@/config'
 import { MainContainer } from '@/components/MainContainer'
+import Script from 'next/script'
 
 const openSans = Open_Sans({
   variable: '--font-open-sans',
@@ -33,6 +34,13 @@ export default async function RootLayout({ children }: Readonly<Props>) {
   const initialState = cookieToInitialState(wagmiAdapterConfig, (await headers()).get('cookie'))
   return (
     <html lang="en" data-theme="default">
+      {process.env.NODE_ENV === 'development' && (
+        <Script
+          src="//unpkg.com/react-grab/dist/index.global.js"
+          crossOrigin="anonymous"
+          strategy="beforeInteractive"
+        />
+      )}
       <GoogleTagManager gtmId={`${GOOGLE_TAG_ID}`} />
       <body className={`${openSans.variable} font-sans`}>
         {/* Google Tag Manager (noscript) */}
