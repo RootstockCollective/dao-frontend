@@ -15,27 +15,25 @@ import { RBTCAsyncVaultAbi } from '@/lib/abis/btc-vault/RBTCAsyncVaultAbi'
 
 import type { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
-/** Blockscout-style log payload for `DepositRequest` (viem v2.46+ has no `encodeEventLog` on main export). */
-function encodeDepositRequestLogFixture(args: {
-  controller: Address
+/** Blockscout-style log payload for `DepositRequested` (viem v2.46+ has no `encodeEventLog` on main export). */
+function encodeDepositRequestedLogFixture(args: {
   owner: Address
-  requestId: bigint
-  sender: Address
+  epochId: bigint
   assets: bigint
+  isNative: boolean
 }): { topics: Hex[]; data: Hex } {
-  const topic0 = toEventHash('DepositRequest(address,address,uint256,address,uint256)')
-  const topics: [Hex, Hex, Hex, Hex] = [
+  const topic0 = toEventHash('DepositRequested(address,uint256,uint256,bool)')
+  const topics: [Hex, Hex, Hex] = [
     topic0,
-    pad(args.controller, { size: 32 }),
     pad(args.owner, { size: 32 }),
-    pad(toHex(args.requestId, { size: 32 })),
+    pad(toHex(args.epochId, { size: 32 })),
   ]
   const data = encodeAbiParameters(
     [
-      { name: 'sender', type: 'address' },
       { name: 'assets', type: 'uint256' },
+      { name: 'isNative', type: 'bool' },
     ],
-    [args.sender, args.assets],
+    [args.assets, args.isNative],
   )
   return { topics, data }
 }
@@ -60,16 +58,14 @@ import {
 } from './blockscout'
 
 describe('mapDecodedVaultLogToHistoryItem', () => {
-  it('maps DepositRequest to DEPOSIT_REQUEST row using controller as user (subgraph parity)', () => {
-    const controller = '0x1111111111111111111111111111111111111111' as Address
-    const owner = '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' as Address
+  it('maps DepositRequested to DEPOSIT_REQUEST row using owner as user', () => {
+    const owner = '0x1111111111111111111111111111111111111111' as Address
 
-    const encoded = encodeDepositRequestLogFixture({
-      controller,
+    const encoded = encodeDepositRequestedLogFixture({
       owner,
-      requestId: 5n,
-      sender: owner,
+      epochId: 5n,
       assets: 10n ** 18n,
+      isNative: true,
     })
 
     const decoded = decodeEventLog({
@@ -86,7 +82,7 @@ describe('mapDecodedVaultLogToHistoryItem', () => {
     })
 
     expect(row).toMatchObject({
-      user: controller.toLowerCase(),
+      user: owner.toLowerCase(),
       action: 'DEPOSIT_REQUEST',
       epochId: '5',
       transactionHash: '0xabc',
@@ -116,7 +112,9 @@ describe('btcVaultRpcDisplayStatusForRequest', () => {
   })
 })
 
-function makeRpcLogRow(overrides: Partial<BackendEventByTopic0ResponseValue>): BackendEventByTopic0ResponseValue {
+function makeRpcLogRow(
+  overrides: Partial<BackendEventByTopic0ResponseValue>,
+): BackendEventByTopic0ResponseValue {
   return {
     address: VAULT_FOR_TEST,
     blockNumber: '0xa',
@@ -161,15 +159,13 @@ describe('fetchBtcVaultHistoryFromBlockscout', () => {
     ).rejects.toThrow(/NEXT_PUBLIC_BLOCKSCOUT_URL/)
   })
 
-  it('fetches getLogs, decodes DepositRequest, and returns paginated items', async () => {
-    const controller = '0x3333333333333333333333333333333333333333' as Address
-    const owner = '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' as Address
-    const encoded = encodeDepositRequestLogFixture({
-      controller,
+  it('fetches getLogs, decodes DepositRequested, and returns paginated items', async () => {
+    const owner = '0x3333333333333333333333333333333333333333' as Address
+    const encoded = encodeDepositRequestedLogFixture({
       owner,
-      requestId: 1n,
-      sender: owner,
+      epochId: 1n,
       assets: 1000n,
+      isNative: true,
     })
 
     const vault = VAULT_FOR_TEST.toLowerCase()
@@ -193,7 +189,7 @@ describe('fetchBtcVaultHistoryFromBlockscout', () => {
     }
 
     const depositTopic0 = toEventSelector(
-      getAbiItem({ abi: RBTCAsyncVaultAbi, name: 'DepositRequest' }),
+      getAbiItem({ abi: RBTCAsyncVaultAbi, name: 'DepositRequested' }),
     ).toLowerCase()
 
     const depositTopicCalls = { count: 0 }
@@ -231,18 +227,16 @@ describe('fetchBtcVaultHistoryFromBlockscout', () => {
     expect(total).toBe(1)
     expect(items).toHaveLength(1)
     expect(items[0]?.action).toBe('DEPOSIT_REQUEST')
-    expect(items[0]?.user).toBe(controller.toLowerCase())
+    expect(items[0]?.user).toBe(owner.toLowerCase())
   })
 
-  it('with type deposit_request only scans the DepositRequest topic (one getLogs stream, paginated)', async () => {
-    const controller = '0x3333333333333333333333333333333333333333' as Address
-    const owner = '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' as Address
-    const encoded = encodeDepositRequestLogFixture({
-      controller,
+  it('with type deposit_request only scans the DepositRequested topic (one getLogs stream, paginated)', async () => {
+    const owner = '0x3333333333333333333333333333333333333333' as Address
+    const encoded = encodeDepositRequestedLogFixture({
       owner,
-      requestId: 1n,
-      sender: owner,
+      epochId: 1n,
       assets: 1000n,
+      isNative: true,
     })
 
     const vault = VAULT_FOR_TEST.toLowerCase()
@@ -266,7 +260,7 @@ describe('fetchBtcVaultHistoryFromBlockscout', () => {
     }
 
     const depositTopic0 = toEventSelector(
-      getAbiItem({ abi: RBTCAsyncVaultAbi, name: 'DepositRequest' }),
+      getAbiItem({ abi: RBTCAsyncVaultAbi, name: 'DepositRequested' }),
     ).toLowerCase()
 
     const depositTopicCalls = { count: 0 }

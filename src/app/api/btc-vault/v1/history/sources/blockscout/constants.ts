@@ -14,10 +14,9 @@ export const MULTICALL_BATCH_SIZE = 128
 
 /** Vault events that produce `BtcVaultHistoryItem` rows directly (per-user events only). */
 export const HISTORY_EVENT_NAMES = [
-  'DepositRequest',
+  'DepositRequested',
   'DepositClaimed',
   'DepositRequestCancelled',
-  'NativeDepositRequestCancelled',
   'RedeemRequest',
   'RedeemClaimed',
   'RedeemRequestCancelled',
@@ -30,10 +29,10 @@ export const HISTORY_EVENT_NAMES = [
  * direct event decoding.
  */
 export const ACTION_TO_EVENT_NAMES: Record<string, (typeof HISTORY_EVENT_NAMES)[number][]> = {
-  DEPOSIT_REQUEST: ['DepositRequest'],
+  DEPOSIT_REQUEST: ['DepositRequested'],
   DEPOSIT_CLAIMABLE: [],
   DEPOSIT_CLAIMED: ['DepositClaimed'],
-  DEPOSIT_CANCELLED: ['DepositRequestCancelled', 'NativeDepositRequestCancelled'],
+  DEPOSIT_CANCELLED: ['DepositRequestCancelled'],
   REDEEM_REQUEST: ['RedeemRequest'],
   REDEEM_CLAIMABLE: [],
   REDEEM_CLAIMED: ['RedeemClaimed'],

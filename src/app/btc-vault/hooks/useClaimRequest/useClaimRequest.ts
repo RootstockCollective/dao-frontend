@@ -34,8 +34,8 @@ export function useClaimRequest(request: VaultRequest | null) {
   const { data: claimableAmount, isLoading: isReadingAmount } = useReadContract({
     ...rbtcVault,
     functionName,
-    args: requestId != null && address ? [requestId, address as Address] : undefined,
-    query: { enabled: isClaimable && requestId != null && !!address },
+    args: address ? [address as Address] : undefined,
+    query: { enabled: isClaimable && !!address },
   })
 
   const {

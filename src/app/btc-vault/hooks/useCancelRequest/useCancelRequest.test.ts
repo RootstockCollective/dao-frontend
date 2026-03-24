@@ -54,9 +54,7 @@ describe('useCancelRequest', () => {
 
     const callArgs = mockWriteContractAsync.mock.calls[0][0]
     expect(callArgs.functionName).toBe('cancelDepositRequestNative')
-    expect(callArgs.args[0]).toBe(requestId)
-    expect(callArgs.args[1]).toBe('0xTestAddress')
-    expect(callArgs.args[2]).toBe('0xTestAddress')
+    expect(callArgs.args).toEqual(['0xTestAddress'])
   })
 
   it('calls cancelRedeemRequest for withdrawal cancellations', async () => {
@@ -71,9 +69,7 @@ describe('useCancelRequest', () => {
 
     const callArgs = mockWriteContractAsync.mock.calls[0][0]
     expect(callArgs.functionName).toBe('cancelRedeemRequest')
-    expect(callArgs.args[0]).toBe(requestId)
-    expect(callArgs.args[1]).toBe('0xTestAddress')
-    expect(callArgs.args[2]).toBe('0xTestAddress')
+    expect(callArgs.args).toEqual(['0xTestAddress'])
   })
 
   it('does not pass value (no rBTC sent when cancelling)', async () => {

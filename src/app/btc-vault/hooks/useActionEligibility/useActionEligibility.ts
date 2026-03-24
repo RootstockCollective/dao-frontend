@@ -41,8 +41,8 @@ export function useActionEligibility(address: string | undefined) {
     return [
       { ...rbtcVault, functionName: 'depositRequestsPaused' as const },
       { ...rbtcVault, functionName: 'redeemRequestsPaused' as const },
-      { ...rbtcVault, functionName: 'depositReq' as const, args: [address as Address] },
-      { ...rbtcVault, functionName: 'redeemReq' as const, args: [address as Address] },
+      { ...rbtcVault, functionName: 'asyncDepositRequests' as const, args: [address as Address] },
+      { ...rbtcVault, functionName: 'asyncRedeemRequests' as const, args: [address as Address] },
       { ...rbtcVault, functionName: 'balanceOf' as const, args: [address as Address] },
     ] as const
   }, [address])

@@ -85,19 +85,21 @@ describe('useClaimRequest', () => {
     expect(callArgs.query.enabled).toBe(false)
   })
 
-  it('enables contract read for claimable deposit with correct functionName', () => {
+  it('enables contract read for claimable deposit with correct functionName and args', () => {
     mockUseReadContract.mockReturnValue({ data: ONE_BTC, isLoading: false })
     renderHook(() => useClaimRequest(CLAIMABLE_DEPOSIT))
     const callArgs = mockUseReadContract.mock.calls[0][0]
     expect(callArgs.functionName).toBe('claimableDepositRequest')
+    expect(callArgs.args).toEqual([ADDRESS])
     expect(callArgs.query.enabled).toBe(true)
   })
 
-  it('enables contract read for claimable withdrawal with correct functionName', () => {
+  it('enables contract read for claimable withdrawal with correct functionName and args', () => {
     mockUseReadContract.mockReturnValue({ data: ONE_BTC / 2n, isLoading: false })
     renderHook(() => useClaimRequest(CLAIMABLE_WITHDRAWAL))
     const callArgs = mockUseReadContract.mock.calls[0][0]
     expect(callArgs.functionName).toBe('claimableRedeemRequest')
+    expect(callArgs.args).toEqual([ADDRESS])
     expect(callArgs.query.enabled).toBe(true)
   })
 

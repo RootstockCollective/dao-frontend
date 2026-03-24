@@ -21,13 +21,13 @@ export function useCancelBtcVaultRequest(requestType: RequestType) {
   const { isTxPending, isTxFailed } = useTransactionStatus(cancelTxHash)
 
   const onCancelRequest = useCallback(
-    (requestId: bigint): Promise<Hash> => {
+    (_requestId: bigint): Promise<Hash> => {
       if (!address) return Promise.reject(new Error('Wallet not connected'))
       const functionName = requestType === 'deposit' ? 'cancelDepositRequestNative' : 'cancelRedeemRequest'
       return writeContractAsync({
         ...rbtcVault,
         functionName,
-        args: [requestId, address, address],
+        args: [address],
       })
     },
     [writeContractAsync, address, requestType],
