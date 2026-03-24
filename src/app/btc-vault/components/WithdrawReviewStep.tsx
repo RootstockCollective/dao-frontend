@@ -48,53 +48,49 @@ export const WithdrawReviewStep = ({
         Make sure that everything is correct before continuing:
       </Paragraph>
 
-      <div className="grid grid-cols-2 gap-6 gap-x-10">
-        {/* Left column: No. of shares + Redemption fee */}
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-1" data-testid="review-shares">
-            <Label variant="body-s" className="text-text-60">
-              No. of shares to withdraw
-            </Label>
-            <Label variant="body-l" bold>
-              {amount}
-            </Label>
-          </div>
-          <div className="flex flex-col gap-1" data-testid="review-fee">
-            <Label variant="body-s" className="text-text-60">
-              Redemption fee
-            </Label>
-            <Label variant="body-l" bold>
-              {withdrawalFee}%
-            </Label>
-          </div>
+      <div className="grid grid-cols-2 gap-y-6 gap-x-10">
+        <div className="flex flex-col gap-1" data-testid="review-shares">
+          <Label variant="body-s" className="text-text-60">
+            No. of shares to withdraw
+          </Label>
+          <Label variant="body-l" bold>
+            {amount}
+          </Label>
         </div>
-
-        {/* Right column: Redemption value (est.) + Expected completion */}
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-1" data-testid="review-redemption-value">
-            <Label variant="body-s" className="text-text-60">
-              Redemption value (est.)
-            </Label>
-            <div className="flex items-center gap-2">
-              <TokenImage symbol={RBTC} size={20} />
-              <Label variant="body-l" bold>
-                {rbtcEquivalent} {RBTC}
-              </Label>
-            </div>
-            {usdEquivalent && (
-              <Label variant="body-s" className="text-text-60">
-                {usdEquivalent}
-              </Label>
-            )}
-          </div>
-          <div className="flex flex-col gap-1" data-testid="review-expected-completion">
-            <Label variant="body-s" className="text-text-60">
-              Expected completion
-            </Label>
+        <div className="flex flex-col gap-1" data-testid="review-redemption-value">
+          <Label variant="body-s" className="text-text-60">
+            Redemption value (est.)
+          </Label>
+          <div className="flex items-center gap-2">
             <Label variant="body-l" bold>
-              {WITHDRAWAL_EXPECTED_COMPLETION}
+              {rbtcEquivalent}
+            </Label>
+            <TokenImage symbol={RBTC} size={20} />
+            <Label variant="body-l" bold>
+              {RBTC}
             </Label>
           </div>
+          {usdEquivalent && (
+            <Label variant="body-s" className="text-text-60">
+              {usdEquivalent}
+            </Label>
+          )}
+        </div>
+        <div className="flex flex-col gap-1" data-testid="review-fee">
+          <Label variant="body-s" className="text-text-60">
+            Redemption fee
+          </Label>
+          <Label variant="body-l" bold>
+            {withdrawalFee}%
+          </Label>
+        </div>
+        <div className="flex flex-col gap-1" data-testid="review-expected-completion">
+          <Label variant="body-s" className="text-text-60">
+            Expected completion
+          </Label>
+          <Label variant="body-l" bold>
+            {WITHDRAWAL_EXPECTED_COMPLETION}
+          </Label>
         </div>
       </div>
 

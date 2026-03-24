@@ -153,9 +153,12 @@ export const WithdrawAmountStep = ({
             Redemption value (est.)
           </Label>
           <div className="flex items-center gap-2">
+            <Label variant="body-s" bold>
+              {rbtcEquivalent}
+            </Label>
             <TokenImage symbol={RBTC} size={16} />
             <Label variant="body-s" bold>
-              {rbtcEquivalent} {RBTC}
+              {RBTC}
             </Label>
           </div>
           {usdEquivalent && (
