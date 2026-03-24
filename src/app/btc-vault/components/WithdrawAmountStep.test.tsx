@@ -46,7 +46,7 @@ describe('WithdrawAmountStep', () => {
   it('shows rBTC equivalent in metrics when amount is set', () => {
     render(<WithdrawAmountStep {...defaultProps} amount="2" rbtcEquivalent="2.04" />)
 
-    expect(screen.getByTestId('review-redemption-value')).toHaveTextContent(`2.04 ${RBTC}`)
+    expect(screen.getByTestId('review-redemption-value')).toHaveTextContent(`2.04${RBTC}`)
   })
 
   it('shows error when amount exceeds balance', () => {
