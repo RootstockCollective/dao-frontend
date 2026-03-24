@@ -24,21 +24,21 @@ describe('toHistoryFilters', () => {
   })
 
   it('extracts status filters', () => {
-    const filters = [makeFilter('status', 'pending'), makeFilter('status', 'cancelled')]
-    expect(toHistoryFilters(filters)).toEqual({ status: ['pending', 'cancelled'] })
+    const filters = [makeFilter('status', 'Pending'), makeFilter('status', 'Cancelled')]
+    expect(toHistoryFilters(filters)).toEqual({ status: ['Pending', 'Cancelled'] })
   })
 
   it('combines multiple filter groups', () => {
     const filters = [
       makeFilter('type', 'withdrawal'),
       makeFilter('claimToken', 'shares'),
-      makeFilter('status', 'successful'),
+      makeFilter('status', 'Successful'),
     ]
     const result = toHistoryFilters(filters)
     expect(result).toEqual({
       type: ['withdrawal'],
       claimToken: ['shares'],
-      status: ['successful'],
+      status: ['Successful'],
     })
   })
 

@@ -70,7 +70,7 @@ export function useRequestHistory(
       if (filters?.status?.length) {
         const statusSet = new Set(filters.status)
         const rawRowCountBeforeStatusFilter = result.rows.length
-        const filteredRows = result.rows.filter(row => statusSet.has(row.displayStatus))
+        const filteredRows = result.rows.filter(row => statusSet.has(row.displayStatusLabel))
         return { ...result, rows: filteredRows, rawRowCountBeforeStatusFilter }
       }
 

@@ -145,13 +145,13 @@ describe('useRequestHistory', () => {
     expect(data.rawRowCountBeforeStatusFilter).toBeUndefined()
   })
 
-  it('filters rows by displayStatus when filters.status is provided', async () => {
+  it('filters rows by displayStatusLabel when filters.status is provided', async () => {
     mockFetch.mockResolvedValueOnce({
       ok: true,
       json: () => Promise.resolve(API_RESPONSE),
     })
 
-    const filters = { status: ['successful' as const] }
+    const filters = { status: ['Withdrawn' as const] }
     const { result } = renderHookWithClient(() =>
       useRequestHistory('0xuser', defaultParams, filters),
     )
@@ -162,7 +162,7 @@ describe('useRequestHistory', () => {
 
     const data = result.current.data!
     expect(data.rows).toHaveLength(1)
-    expect(data.rows[0].displayStatus).toBe('successful')
+    expect(data.rows[0].displayStatusLabel).toBe('Withdrawn')
     expect(data.rows[0].id).toBe('0xuser2-2')
     expect(data.total).toBe(42)
     expect(data.page).toBe(1)

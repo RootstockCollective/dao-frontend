@@ -14,7 +14,7 @@ import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 import { useRequestHistory } from '../../hooks/useRequestHistory/useRequestHistory'
 import type { RequestType } from '../../services/types'
-import type { DisplayStatus, HistoryFilterParams } from '../../services/ui/types'
+import type { HistoryFilterParams, HistoryRowStatusLabel } from '../../services/ui/types'
 import { BtcVaultHistoryFilterSideBar } from './BtcVaultHistoryFilterSideBar'
 import type { BtcVaultHistoryCellDataMap, ColumnId } from './BtcVaultHistoryTable.config'
 import { DEFAULT_HEADERS, PAGE_SIZE } from './BtcVaultHistoryTable.config'
@@ -24,14 +24,14 @@ import { MobileBtcVaultHistory } from './MobileBtcVaultHistory'
 
 const VALID_TYPES: readonly RequestType[] = ['deposit', 'withdrawal']
 const VALID_CLAIM_TOKENS: readonly ('shares' | 'rbtc')[] = ['shares', 'rbtc']
-const VALID_STATUSES: readonly DisplayStatus[] = [
-  'open_to_claim',
-  'pending',
-  'approved',
-  'claim_pending',
-  'successful',
-  'cancelled',
-  'rejected',
+const VALID_STATUSES: readonly HistoryRowStatusLabel[] = [
+  'Pending',
+  'Approved',
+  'Ready to claim',
+  'Ready to withdraw',
+  'Successful',
+  'Withdrawn',
+  'Cancelled',
 ]
 
 /** @internal Exported for testing. Converts FilterSideBar state to typed filter params. */
@@ -45,8 +45,8 @@ export function toHistoryFilters(activeFilters: ActiveFilter[]): HistoryFilterPa
   const claimToken = valuesOf('claimToken').filter((v): v is 'shares' | 'rbtc' =>
     VALID_CLAIM_TOKENS.includes(v as 'shares' | 'rbtc'),
   )
-  const status = valuesOf('status').filter((v): v is DisplayStatus =>
-    VALID_STATUSES.includes(v as DisplayStatus),
+  const status = valuesOf('status').filter((v): v is HistoryRowStatusLabel =>
+    VALID_STATUSES.includes(v as HistoryRowStatusLabel),
   )
 
   if (!type.length && !claimToken.length && !status.length) return undefined

@@ -81,7 +81,7 @@ describe('historyFiltersToApiTypes', () => {
   it('ignores status filter (status is applied client-side by hook)', () => {
     const result = historyFiltersToApiTypes({
       type: ['deposit'],
-      status: ['pending', 'successful'],
+      status: ['Pending', 'Successful'],
     })
     expect(result).toHaveLength(4)
     expect(result).toEqual(['deposit_request', 'deposit_claimable', 'deposit_claimed', 'deposit_cancelled'])

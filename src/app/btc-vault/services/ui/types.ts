@@ -18,7 +18,7 @@ export type DisplayRequestType = (typeof DISPLAY_REQUEST_TYPE_LABELS)[RequestTyp
 export type DisplayStatus = BtcVaultHistoryStatusKey
 
 export const DISPLAY_STATUS_LABELS = {
-  open_to_claim: 'Open to claim',
+  open_to_claim: 'Ready to claim',
   pending: 'Pending',
   approved: 'Approved',
   claim_pending: 'Claim pending',
@@ -50,7 +50,7 @@ export interface DisplayStatusResult {
 export interface HistoryFilterParams {
   type?: RequestType[]
   claimToken?: ('shares' | 'rbtc')[]
-  status?: DisplayStatus[]
+  status?: HistoryRowStatusLabel[]
 }
 
 // --- Display Types ---
