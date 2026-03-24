@@ -10,28 +10,28 @@ import { rbtcVault } from '@/lib/contracts'
 import type { RequestType } from '../../services/types'
 
 /**
- * Hook to cancel a pending deposit or withdrawal request before epoch settlement.
+ * Hook to cancel the caller's pending deposit or redeem request before epoch settlement.
  *
- * - Deposits:    `cancelDepositRequestNative(requestId, receiver, controller)` — returns native rBTC.
- * - Withdrawals: `cancelRedeemRequest(requestId, receiver, controller)` — returns vault shares.
+ * The vault stores at most one async deposit and one async redeem per address; cancel functions
+ * take `owner` only and require `msg.sender == owner`.
+ *
+ * - Deposits:    `cancelDepositRequestNative(owner)` — refunds native RBTC.
+ * - Withdrawals: `cancelRedeemRequest(owner)` — returns escrowed vault shares.
  */
 export function useCancelBtcVaultRequest(requestType: RequestType) {
   const { address } = useAccount()
   const { writeContractAsync, data: cancelTxHash, isPending: isRequesting } = useWriteContract()
   const { isTxPending, isTxFailed } = useTransactionStatus(cancelTxHash)
 
-  const onCancelRequest = useCallback(
-    (_requestId: bigint): Promise<Hash> => {
-      if (!address) return Promise.reject(new Error('Wallet not connected'))
-      const functionName = requestType === 'deposit' ? 'cancelDepositRequestNative' : 'cancelRedeemRequest'
-      return writeContractAsync({
-        ...rbtcVault,
-        functionName,
-        args: [address],
-      })
-    },
-    [writeContractAsync, address, requestType],
-  )
+  const onCancelRequest = useCallback((): Promise<Hash> => {
+    if (!address) return Promise.reject(new Error('Wallet not connected'))
+    const functionName = requestType === 'deposit' ? 'cancelDepositRequestNative' : 'cancelRedeemRequest'
+    return writeContractAsync({
+      ...rbtcVault,
+      functionName,
+      args: [address],
+    })
+  }, [writeContractAsync, address, requestType])
 
   return {
     onCancelRequest,

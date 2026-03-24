@@ -10,13 +10,6 @@ import type { RequestType, VaultRequest } from '../../services/types'
 import { useFinalizeDeposit } from '../useFinalizeDeposit'
 import { useFinalizeWithdrawal } from '../useFinalizeWithdrawal'
 
-function getRequestId(request: VaultRequest): bigint | null {
-  const raw = request.type === 'deposit' ? request.epochId : request.batchRedeemId
-  if (raw == null) return null
-  const n = BigInt(raw)
-  return n >= 0n ? n : null
-}
-
 /**
  * Reads the on-chain claimable amount and provides a one-call `claim()` function
  * that dispatches to `useFinalizeDeposit` or `useFinalizeWithdrawal` based on request type.
@@ -26,7 +19,6 @@ function getRequestId(request: VaultRequest): bigint | null {
 export function useClaimRequest(request: VaultRequest | null) {
   const { address } = useAccount()
   const isClaimable = request?.status === 'claimable'
-  const requestId = request ? getRequestId(request) : null
   const requestType: RequestType = request?.type ?? 'deposit'
 
   const functionName = requestType === 'deposit' ? 'claimableDepositRequest' : 'claimableRedeemRequest'
