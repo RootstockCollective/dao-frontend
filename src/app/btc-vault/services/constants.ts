@@ -28,7 +28,7 @@ export const BTC_VAULT_WITHDRAWAL_FEE = '0'
 
 /** Disclaimer shown at the bottom of the withdrawal modal on both steps */
 export const BTC_VAULT_WITHDRAWAL_DISCLAIMER =
-  'Subject to approval by fund manager. Cancelable until deposit window close.'
+  'Subject to approval by fund manager. Shares are minted at the NAV confirmed at deposit window close. Cancelable until deposit window close.'
 
 /** Step progress values for the 2-step withdrawal flow (amount → review) */
 export const WITHDRAWAL_STEP_PROGRESS = [50, 100] as const
