@@ -48,7 +48,7 @@ vi.mock('@/shared/components/ApolloClient', () => ({
   },
 }))
 
-vi.mock('./sources/get-from-blockscout-source', () => ({
+vi.mock('./sources/blockscout', () => ({
   fetchBtcVaultHistoryFromBlockscout: (...args: unknown[]) => mockBlockscout(...args),
   getFromBlockscoutSource: vi.fn(() => ({
     name: 'blockscout' as const,
@@ -102,11 +102,14 @@ describe('fetchBtcVaultHistoryPageAndTotal (DAO-2106)', () => {
             btcVaultHistoryCounter: {
               total: '10',
               depositRequests: '0',
+              depositsClaimable: '0',
               depositsClaimed: '0',
               depositsCancelled: '0',
               redeemRequests: '0',
+              redeemsClaimable: '0',
               redeemsClaimed: '0',
               redeemsCancelled: '0',
+              redeemsAccepted: '0',
             },
           },
         }

@@ -57,7 +57,7 @@ import {
   fetchBtcVaultHistoryFromBlockscout,
   mapDecodedVaultLogToHistoryItem,
   type BlockscoutRpcLogsResponse,
-} from './get-from-blockscout-source'
+} from './blockscout'
 
 describe('mapDecodedVaultLogToHistoryItem', () => {
   it('maps DepositRequest to DEPOSIT_REQUEST row using controller as user (subgraph parity)', () => {
@@ -97,12 +97,12 @@ describe('mapDecodedVaultLogToHistoryItem', () => {
 })
 
 describe('btcVaultRpcDisplayStatusForRequest', () => {
-  it('returns ready_to_claim when claimable > 0 for deposit', () => {
-    expect(btcVaultRpcDisplayStatusForRequest('DEPOSIT_REQUEST', 1n, 2n)).toBe('ready_to_claim')
+  it('returns open_to_claim when claimable > 0 for deposit', () => {
+    expect(btcVaultRpcDisplayStatusForRequest('DEPOSIT_REQUEST', 1n, 2n)).toBe('open_to_claim')
   })
 
-  it('returns ready_to_withdraw when claimable > 0 for redeem', () => {
-    expect(btcVaultRpcDisplayStatusForRequest('REDEEM_REQUEST', 0n, 1n)).toBe('ready_to_withdraw')
+  it('returns claim_pending when claimable > 0 for redeem', () => {
+    expect(btcVaultRpcDisplayStatusForRequest('REDEEM_REQUEST', 0n, 1n)).toBe('claim_pending')
   })
 
   it('returns pending when only pending > 0', () => {

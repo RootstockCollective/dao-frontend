@@ -1,7 +1,5 @@
-import {
-  fetchBtcVaultHistoryFromBlockscout,
-  getFromBlockscoutSource,
-} from './sources/get-from-blockscout-source'
+import { mapActionToDisplayStatus } from './mapActionToDisplayStatus'
+import { fetchBtcVaultHistoryFromBlockscout, getFromBlockscoutSource } from './sources/blockscout'
 import {
   enrichHistoryWithRequestStatus,
   getFromTheGraphSource,
@@ -15,6 +13,7 @@ export type {
   BtcVaultHistoryItem,
   BtcVaultHistoryItemWithStatus,
   BtcVaultHistoryQueryParams,
+  BtcVaultHistoryDisplayStatus as BtcVaultHistoryStatusKey,
 } from './types'
 
 export type { BtcVaultHistoryDataSourceName }
@@ -40,21 +39,7 @@ export interface BtcVaultHistoryPageEnrichedResult {
 }
 
 function enrichHistoryDisplayStatusFromActionOnly(item: BtcVaultHistoryItem): BtcVaultHistoryItemWithStatus {
-  const result: BtcVaultHistoryItemWithStatus = { ...item }
-  if (item.action === 'DEPOSIT_REQUEST' || item.action === 'REDEEM_REQUEST') {
-    result.displayStatus = 'pending'
-  } else if (item.action === 'DEPOSIT_CLAIMABLE') {
-    result.displayStatus = 'ready_to_claim'
-  } else if (item.action === 'REDEEM_CLAIMABLE') {
-    result.displayStatus = 'ready_to_withdraw'
-  } else if (item.action === 'DEPOSIT_CLAIMED' || item.action === 'REDEEM_CLAIMED') {
-    result.displayStatus = 'successful'
-  } else if (item.action === 'DEPOSIT_CANCELLED' || item.action === 'REDEEM_CANCELLED') {
-    result.displayStatus = 'cancelled'
-  } else if (item.action === 'REDEEM_ACCEPTED') {
-    result.displayStatus = 'approved'
-  }
-  return result
+  return { ...item, displayStatus: mapActionToDisplayStatus(item.action) }
 }
 
 const theGraphHistorySource: BtcVaultHistorySource = getFromTheGraphSource({

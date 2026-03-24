@@ -1,8 +1,8 @@
-/** Display status for history rows (Ready to claim / Ready to withdraw from request status). */
+/** Display status for history rows (open_to_claim / claim_pending from request status). */
 export type BtcVaultHistoryDisplayStatus =
-  | 'ready_to_claim'
+  | 'open_to_claim'
   | 'pending'
-  | 'ready_to_withdraw'
+  | 'claim_pending'
   | 'approved'
   | 'successful'
   | 'cancelled'

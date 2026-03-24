@@ -17,7 +17,7 @@ export const revalidate = 60
  * Query params: limit (1–200, default 20), page (default 1), sort_field (timestamp | assets),
  * sort_direction (asc | desc), type[] (optional action filter), address (optional; when omitted, returns global history).
  * Response: { data: BtcVaultHistoryItemWithStatus[], pagination: PaginationResponse }.
- * Each item may include displayStatus for table display (ready_to_claim, ready_to_withdraw, pending, successful, cancelled, approved).
+ * Each item may include displayStatus for table display (open_to_claim, claim_pending, pending, successful, cancelled, approved).
  * When The Graph is unavailable, history is loaded from Blockscout (DAO-2106). List and `displayStatus` enrichment are **per-source**
  * (Blockscout path uses on-chain `pending*` / `claimable*` reads via multicall; falls back to action-only labels if RPC fails).
  *

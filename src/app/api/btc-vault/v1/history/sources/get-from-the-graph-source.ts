@@ -3,6 +3,7 @@ import { gql } from '@apollo/client'
 import { ALL_ACTION_TYPES } from '@/app/api/btc-vault/v1/schemas'
 import { btcVaultClient } from '@/shared/components/ApolloClient'
 
+import { mapActionToDisplayStatus } from '../mapActionToDisplayStatus'
 import type { BtcVaultHistoryItem, BtcVaultHistoryItemWithStatus, BtcVaultHistoryQueryParams } from '../types'
 import type { BtcVaultHistorySource } from './types'
 
@@ -201,7 +202,7 @@ export async function queryBtcVaultHistoryCountFromSubgraph(
 
 /**
  * Fetches BtcDepositRequest and BtcRedeemRequest status for *_REQUEST history rows and maps
- * to displayStatus (ready_to_claim, ready_to_withdraw, pending, cancelled). CLAIMED/CANCELLED rows
+ * to displayStatus (open_to_claim, claim_pending, pending, cancelled). CLAIMED/CANCELLED rows
  * get successful/cancelled from action without a subgraph lookup.
  */
 export async function enrichHistoryWithRequestStatus(
@@ -256,24 +257,21 @@ export async function enrichHistoryWithRequestStatus(
     const result: BtcVaultHistoryItemWithStatus = { ...item }
     if (item.action === 'DEPOSIT_REQUEST' || item.action === 'REDEEM_REQUEST') {
       const id = `${item.user.toLowerCase()}-${item.epochId}`
-      const status = item.action === 'DEPOSIT_REQUEST' ? depositStatusById[id] : redeemStatusById[id]
+      const rawStatus = item.action === 'DEPOSIT_REQUEST' ? depositStatusById[id] : redeemStatusById[id]
+      const status = rawStatus?.toUpperCase()
       if (status === 'CLAIMABLE') {
-        result.displayStatus = item.action === 'DEPOSIT_REQUEST' ? 'ready_to_claim' : 'ready_to_withdraw'
+        result.displayStatus = item.action === 'DEPOSIT_REQUEST' ? 'open_to_claim' : 'claim_pending'
+      } else if (status === 'ACCEPTED') {
+        result.displayStatus = 'approved'
+      } else if (status === 'CLAIMED') {
+        result.displayStatus = 'successful'
       } else if (status === 'CANCELLED') {
         result.displayStatus = 'cancelled'
       } else {
         result.displayStatus = 'pending'
       }
-    } else if (item.action === 'DEPOSIT_CLAIMABLE') {
-      result.displayStatus = 'ready_to_claim'
-    } else if (item.action === 'REDEEM_CLAIMABLE') {
-      result.displayStatus = 'ready_to_withdraw'
-    } else if (item.action === 'DEPOSIT_CLAIMED' || item.action === 'REDEEM_CLAIMED') {
-      result.displayStatus = 'successful'
-    } else if (item.action === 'DEPOSIT_CANCELLED' || item.action === 'REDEEM_CANCELLED') {
-      result.displayStatus = 'cancelled'
-    } else if (item.action === 'REDEEM_ACCEPTED') {
-      result.displayStatus = 'approved'
+    } else {
+      result.displayStatus = mapActionToDisplayStatus(item.action)
     }
     return result
   })
