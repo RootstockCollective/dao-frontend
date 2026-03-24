@@ -115,6 +115,7 @@ export const StatusCell = ({ displayStatus, displayStatusLabel }: StatusCellProp
 interface ActionsCellProps {
   requestId: string
   requestStatus: RequestStatus
+  displayStatus: DisplayStatus
   type: DisplayRequestType
   isHovered: boolean
 }
@@ -125,7 +126,13 @@ const actionLinkClass = 'flex items-center gap-1 font-medium text-black no-under
  * Claimable: "Claim shares"/"Claim rBTC" links to detail. Pending: "Cancel request" links to detail.
  * Done/failed/cancelled: "View Detail" only, links to detail. Actions visible on hover (desktop).
  */
-export const ActionsCell = ({ requestId, requestStatus, type, isHovered }: ActionsCellProps) => {
+export const ActionsCell = ({
+  requestId,
+  requestStatus,
+  displayStatus,
+  type,
+  isHovered,
+}: ActionsCellProps) => {
   if (!isHovered) {
     return <TableCell columnId="actions" />
   }
@@ -150,6 +157,10 @@ export const ActionsCell = ({ requestId, requestStatus, type, isHovered }: Actio
         </Link>
       </TableCell>
     )
+  }
+
+  if (requestStatus === 'pending' && displayStatus === 'approved') {
+    return <TableCell columnId="actions">{viewDetailLink}</TableCell>
   }
 
   if (requestStatus === 'pending') {
