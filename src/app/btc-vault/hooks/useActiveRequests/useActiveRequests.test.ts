@@ -5,9 +5,14 @@ import { useActiveRequests } from './useActiveRequests'
 
 const mockUseReadContracts = vi.fn()
 const mockUsePricesContext = vi.fn()
+const mockUseQuery = vi.fn()
 
 vi.mock('wagmi', () => ({
   useReadContracts: (...args: unknown[]) => mockUseReadContracts(...args),
+}))
+
+vi.mock('@tanstack/react-query', () => ({
+  useQuery: (...args: unknown[]) => mockUseQuery(...args),
 }))
 
 vi.mock('@/shared/context/PricesContext', () => ({
@@ -46,6 +51,7 @@ describe('useActiveRequests', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockUsePricesContext.mockReturnValue({ prices: { rBTC: { price: 23750 } } })
+    mockUseQuery.mockReturnValue({ data: undefined })
   })
 
   describe('when address is undefined', () => {
