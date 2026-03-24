@@ -1,12 +1,13 @@
 'use client'
 
-import { createContext, ReactNode, useCallback, useContext, useState } from 'react'
-import { Address, isAddress } from 'viem'
+import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
+import { Address, formatEther, isAddress } from 'viem'
 
 import { RBTC, WRBTC_ADDRESS } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context'
 
 import { useAmountInput } from '../../hooks/useAmountInput'
+import { useRbtcVault } from '../../hooks/useRbtcVault'
 import { useTokenSelection } from '../../hooks/useTokenSelection'
 import { AmountFlowContextValue } from '../createAmountFlowContext'
 
@@ -34,8 +35,9 @@ export const TransferToManagerProvider = ({ children }: Props) => {
     setRecipientAddressRaw(address.trim())
   }, [])
 
-  const { selectedToken, setSelectedToken, balance, balanceFormatted, isNative, requiresAllowance } =
-    useTokenSelection(WRBTC_ADDRESS)
+  const { selectedToken, setSelectedToken, isNative, requiresAllowance } = useTokenSelection(WRBTC_ADDRESS)
+  const { freeOnchainLiquidity: balance } = useRbtcVault()
+  const balanceFormatted = useMemo(() => formatEther(balance), [balance])
 
   const {
     amount,

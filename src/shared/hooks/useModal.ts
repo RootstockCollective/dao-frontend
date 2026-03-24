@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+
 import { useScrollLock } from './useScrollLock'
 
 interface ModalReturn {

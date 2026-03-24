@@ -130,7 +130,7 @@ export const UpdateNavProvider = ({ children }: Props) => {
     isValidAmount,
     errorMessage,
     currentNav,
-    // TODO(TOK-1183): effective on — wire real data source
+    // Replace this with dynamic data if needed.
     effectiveOnDisplay: 'Immediately',
     reportedOffchainWei,
     vaultReadsLoading,
