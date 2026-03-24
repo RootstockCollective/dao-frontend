@@ -109,24 +109,13 @@ export const BtcVaultDashboard = () => {
             tooltipContent="Current total value of your vault position based on NAV"
             data-testid="metric-total-balance"
           />
-          <div className="w-full md:w-[214px] md:min-w-[180px]">
-            <BalanceInfo
-              title="Yield % to date"
-              amount={metricAmount(isLoading, isError, data?.yieldPercentToDateFormatted)}
-              tooltipContent="Cumulative yield earned on your deposited principal"
-              data-testid="metric-yield-percent"
-            />
-            {hasHistory && (
-              <span
-                aria-disabled="true"
-                className="mt-6 flex items-center gap-x-1 text-sm font-medium text-text-60 cursor-not-allowed opacity-50"
-                data-testid="btc-vault-yield-history-link"
-              >
-                <HistoryIcon />
-                <Span variant="body-s">View yield history</Span>
-              </span>
-            )}
-          </div>
+          <BalanceInfo
+            className="w-full md:w-[214px] md:min-w-[180px]"
+            title="Yield % to date"
+            amount={metricAmount(isLoading, isError, data?.yieldPercentToDateFormatted)}
+            tooltipContent="Cumulative yield earned on your deposited principal"
+            data-testid="metric-yield-percent"
+          />
         </div>
       </div>
 
