@@ -63,9 +63,12 @@ export const DepositReviewStep = ({
             Amount to deposit
           </Label>
           <div className="flex items-center gap-2">
+            <Label variant="body-l" bold>
+              {amount}
+            </Label>
             <TokenImage symbol={RBTC} size={20} />
             <Label variant="body-l" bold>
-              {amount} {RBTC}
+              {RBTC}
             </Label>
           </div>
           {usdEquivalent && (
