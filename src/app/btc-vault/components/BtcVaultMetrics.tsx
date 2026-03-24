@@ -29,7 +29,6 @@ export const BtcVaultMetrics = () => {
   const rbtcPrice = prices[RBTC]?.price ?? 0
 
   const tvlFormatted = metrics?.tvlFormatted ?? PLACEHOLDER
-  const tvlPercentFormatted = metrics?.tvlPercentFormatted ?? PLACEHOLDER
   const apyFormatted = metrics?.apyFormatted ?? PLACEHOLDER
   const pricePerShareFormatted = metrics?.pricePerShareFormatted ?? PLACEHOLDER
   const isMetricsLoading = metricsLoading || (!metrics && !metricsError)
@@ -75,7 +74,6 @@ export const BtcVaultMetrics = () => {
           tooltipContent={TVL_TOOLTIP}
           amount={isMetricsLoading ? '...' : tvlFormatted}
           symbol={isMetricsLoading ? undefined : RBTC}
-          secondaryValue={isMetricsLoading ? undefined : tvlPercentFormatted}
           fiatAmount={isMetricsLoading ? undefined : (tvlUsd ?? undefined)}
           data-testid="btc-vault-tvl"
           headerVariant="h3"

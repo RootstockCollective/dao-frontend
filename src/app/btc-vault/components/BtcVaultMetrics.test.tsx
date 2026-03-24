@@ -1,5 +1,5 @@
 import { TooltipProvider } from '@radix-ui/react-tooltip'
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { RBTC } from '@/lib/constants'
@@ -93,16 +93,16 @@ describe('BtcVaultMetrics', () => {
     expect(depositWindow).toHaveTextContent('closing on February 23')
   })
 
-  it('displays TVL with value, percentage (or placeholder), and token symbol', () => {
+  it('displays TVL with value and token symbol (no variation % until we can measure it)', () => {
     renderWithProviders()
 
     const tvl = screen.getByTestId('btc-vault-tvl')
     expect(tvl).toHaveTextContent('50')
     expect(tvl).toHaveTextContent(RBTC)
-    expect(tvl).toHaveTextContent('—')
+    expect(within(tvl).queryByTestId('SecondaryValue')).not.toBeInTheDocument()
   })
 
-  it('displays TVL with tvlPercentFormatted when provided', () => {
+  it('does not show TVL percent variation even when metrics include tvlPercentFormatted', () => {
     mockUseVaultMetrics.mockReturnValue({
       data: { ...defaultMetrics, tvlPercentFormatted: '12.34%' },
       isLoading: false,
@@ -112,7 +112,8 @@ describe('BtcVaultMetrics', () => {
 
     const tvl = screen.getByTestId('btc-vault-tvl')
     expect(tvl).toHaveTextContent('50')
-    expect(tvl).toHaveTextContent('12.34%')
+    expect(tvl).not.toHaveTextContent('12.34%')
+    expect(within(tvl).queryByTestId('SecondaryValue')).not.toBeInTheDocument()
   })
 
   it('shows Last updated on under APY from metrics timestamp', () => {
