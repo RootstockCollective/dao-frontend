@@ -8,11 +8,12 @@ import { Tooltip } from '@/components/Tooltip'
 import { executeTxFlow } from '@/shared/notification'
 
 import { useActionEligibility } from '../hooks/useActionEligibility'
+import { useBtcVaultSharesAllowance } from '../hooks/useBtcVaultSharesAllowance'
 import { useBtcVaultInvalidation } from '../hooks/useBtcVaultInvalidation'
 import { useSubmitDeposit } from '../hooks/useSubmitDeposit'
 import { useSubmitWithdrawal } from '../hooks/useSubmitWithdrawal'
 import { REQUEST_SUBMITTING_REASON } from '../services/constants'
-import type { DepositRequestParams, WithdrawalRequestParams } from '../services/types'
+import type { DepositRequestParams } from '../services/types'
 import { BtcDepositModal } from './BtcDepositModal'
 import { BtcWithdrawModal } from './BtcWithdrawModal'
 
@@ -40,9 +41,23 @@ export const BtcVaultActions = () => {
     isTxPending: isWithdrawTxPending,
   } = useSubmitWithdrawal()
 
-  const isDepositSubmitting = isDepositRequesting || isDepositTxPending
+  const {
+    allowance,
+    refetchAllowance,
+    isAllowanceReadLoading,
+    requestApproveShares,
+    hasAllowanceFor,
+    isRequesting: isApproveSharesRequesting,
+    isTxPending: isApproveSharesTxPending,
+    isTxFailed: isAllowanceTxFailed,
+    allowanceTxHash,
+  } = useBtcVaultSharesAllowance()
+
+  const isApprovingShares = isApproveSharesRequesting || isApproveSharesTxPending
   const isWithdrawSubmitting = isWithdrawRequesting || isWithdrawTxPending
-  const isAnySubmitting = isDepositSubmitting || isWithdrawSubmitting
+
+  const isDepositSubmitting = isDepositRequesting || isDepositTxPending
+  const isAnySubmitting = isDepositSubmitting || isApprovingShares || isWithdrawSubmitting
 
   const depositDisabled = !canDeposit || isAnySubmitting
   const withdrawDisabled = !canWithdraw || isAnySubmitting
@@ -64,11 +79,24 @@ export const BtcVaultActions = () => {
     [onRequestDeposit, invalidateAfterSubmit],
   )
 
-  const handleWithdrawSubmit = useCallback(
-    async (params: WithdrawalRequestParams) => {
-      executeTxFlow({
+  const handleApproveWithdrawShares = useCallback(
+    async (shares: bigint) => {
+      await executeTxFlow({
+        action: 'allowance',
+        onRequestTx: () => requestApproveShares(shares),
+        onSuccess: async () => {
+          await refetchAllowance()
+        },
+      })
+    },
+    [requestApproveShares, refetchAllowance],
+  )
+
+  const handleRequestWithdrawRedeem = useCallback(
+    async (shares: bigint) => {
+      await executeTxFlow({
         action: 'btcVaultWithdrawRequest',
-        onRequestTx: () => onRequestRedeem(params.amount),
+        onRequestTx: () => onRequestRedeem(shares),
         onSuccess: () => {
           setIsWithdrawModalOpen(false)
           invalidateAfterSubmit()
@@ -114,8 +142,15 @@ export const BtcVaultActions = () => {
       {isWithdrawModalOpen && (
         <BtcWithdrawModal
           onClose={() => setIsWithdrawModalOpen(false)}
-          onSubmit={handleWithdrawSubmit}
-          isSubmitting={isWithdrawSubmitting}
+          hasAllowanceFor={hasAllowanceFor}
+          onApproveShares={handleApproveWithdrawShares}
+          onRequestWithdraw={handleRequestWithdrawRedeem}
+          isApprovingShares={isApprovingShares}
+          isWithdrawSubmitting={isWithdrawSubmitting}
+          allowance={allowance}
+          isAllowanceReadLoading={isAllowanceReadLoading}
+          allowanceTxHash={allowanceTxHash}
+          isAllowanceTxFailed={isAllowanceTxFailed}
         />
       )}
     </div>

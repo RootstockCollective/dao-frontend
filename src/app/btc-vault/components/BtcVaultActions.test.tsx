@@ -9,6 +9,11 @@ import { BtcVaultActions } from './BtcVaultActions'
 const mockUseActionEligibility = vi.fn()
 const mockUseSubmitDeposit = vi.fn()
 const mockUseSubmitWithdrawal = vi.fn()
+const mockUseBtcVaultSharesAllowance = vi.fn()
+
+vi.mock('../hooks/useBtcVaultSharesAllowance', () => ({
+  useBtcVaultSharesAllowance: () => mockUseBtcVaultSharesAllowance(),
+}))
 
 vi.mock('wagmi', () => ({
   useAccount: () => ({ address: '0x1234567890123456789012345678901234567890' }),
@@ -29,6 +34,20 @@ vi.mock('../hooks/useSubmitDeposit', () => ({
 vi.mock('../hooks/useSubmitWithdrawal', () => ({
   useSubmitWithdrawal: () => mockUseSubmitWithdrawal(),
 }))
+
+const defaultAllowanceHook = {
+  allowance: undefined as bigint | undefined,
+  shareTokenAddress: '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' as `0x${string}`,
+  refetchAllowance: vi.fn(),
+  isAllowanceReadLoading: false,
+  isAllowanceFetching: false,
+  requestApproveShares: vi.fn(),
+  hasAllowanceFor: vi.fn(),
+  isRequesting: false,
+  isTxPending: false,
+  isTxFailed: false,
+  allowanceTxHash: undefined as `0x${string}` | undefined,
+}
 
 function renderWithQueryClient(ui: ReactNode) {
   const client = new QueryClient({
@@ -64,6 +83,7 @@ describe('BtcVaultActions', () => {
       isRequesting: false,
       isTxPending: false,
     })
+    mockUseBtcVaultSharesAllowance.mockReturnValue(defaultAllowanceHook)
   })
 
   afterEach(() => {
@@ -101,5 +121,17 @@ describe('BtcVaultActions', () => {
 
     expect(getByTestId('DepositButton')).not.toBeDisabled()
     expect(getByTestId('WithdrawButton')).not.toBeDisabled()
+  })
+
+  it('disables both buttons while vault share allowance is approving', () => {
+    mockUseBtcVaultSharesAllowance.mockReturnValue({
+      ...defaultAllowanceHook,
+      isRequesting: true,
+    })
+
+    const { getByTestId } = renderWithQueryClient(<BtcVaultActions />)
+
+    expect(getByTestId('DepositButton')).toBeDisabled()
+    expect(getByTestId('WithdrawButton')).toBeDisabled()
   })
 })

@@ -1,6 +1,7 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import type { Hash } from 'viem'
 import { formatEther, parseEther } from 'viem'
 import { useAccount } from 'wagmi'
 
@@ -11,60 +12,118 @@ import { Header } from '@/components/Typography'
 import { useUserPosition } from '../hooks/useUserPosition'
 import { useVaultMetrics } from '../hooks/useVaultMetrics'
 import { BTC_VAULT_WITHDRAWAL_FEE, WITHDRAWAL_STEP_PROGRESS } from '../services/constants'
-import type { WithdrawalRequestParams } from '../services/types'
+import { WithdrawAllowanceStep } from './WithdrawAllowanceStep'
 import { WithdrawAmountStep } from './WithdrawAmountStep'
 import { WithdrawReviewStep } from './WithdrawReviewStep'
 import { WithdrawSteps } from './WithdrawSteps'
 
-type WithdrawStep = 'amount' | 'review'
+type WithdrawStep = 'amount' | 'allowance' | 'confirm'
 
-const STEP_INDEX: Record<WithdrawStep, number> = { amount: 0, review: 1 }
+const STEP_INDEX: Record<WithdrawStep, number> = { amount: 0, allowance: 1, confirm: 2 }
 
-interface BtcWithdrawModalProps {
+export interface BtcWithdrawModalProps {
   onClose: () => void
-  onSubmit: (params: WithdrawalRequestParams) => Promise<void>
-  isSubmitting: boolean
+  hasAllowanceFor: (shares: bigint) => Promise<boolean>
+  onApproveShares: (shares: bigint) => Promise<void>
+  onRequestWithdraw: (shares: bigint) => Promise<void>
+  isApprovingShares: boolean
+  isWithdrawSubmitting: boolean
+  isAllowanceReadLoading: boolean
+  isAllowanceTxFailed: boolean
+  allowance?: bigint
+  allowanceTxHash?: Hash
 }
 
-export const BtcWithdrawModal = ({ onClose, onSubmit, isSubmitting }: BtcWithdrawModalProps) => {
+export const BtcWithdrawModal = ({
+  onClose,
+  hasAllowanceFor,
+  onApproveShares,
+  onRequestWithdraw,
+  isApprovingShares,
+  isWithdrawSubmitting,
+  allowance,
+  isAllowanceReadLoading,
+  allowanceTxHash,
+  isAllowanceTxFailed,
+}: BtcWithdrawModalProps) => {
   const { address } = useAccount()
   const { data: userPosition } = useUserPosition(address)
   const { data: vaultMetrics } = useVaultMetrics()
 
   const [step, setStep] = useState<WithdrawStep>('amount')
   const [amount, setAmount] = useState('')
+  const [sharesWei, setSharesWei] = useState(0n)
+  const [visitedAllowanceStep, setVisitedAllowanceStep] = useState(false)
+  const [isCheckingAllowance, setIsCheckingAllowance] = useState(false)
 
   const vaultTokensFormatted = userPosition?.vaultTokensFormatted ?? '0'
   const vaultTokensRaw = userPosition?.vaultTokensRaw ?? 0n
-
-  // Price Per Share = NAV per share (convertToAssets(1e18)) renamed for clarity
   const pricePerShareRaw = vaultMetrics?.pricePerShareRaw ?? 0n
 
   const rbtcEquivalent = useMemo(() => {
     if (!amount || pricePerShareRaw === 0n) return '0'
     try {
-      const sharesWei = parseEther(amount)
-      const rbtcWei = (sharesWei * pricePerShareRaw) / 10n ** 18n
+      const shares = parseEther(amount)
+      const rbtcWei = (shares * pricePerShareRaw) / 10n ** 18n
       return formatEther(rbtcWei)
     } catch {
       return '0'
     }
   }, [amount, pricePerShareRaw])
 
-  const handleNext = () => setStep('review')
-  const handleBack = () => setStep('amount')
+  // If allowance becomes sufficient while on the approve step (e.g. refetch), advance to confirm.
+  useEffect(() => {
+    if (step !== 'allowance') return
+    if (sharesWei <= 0n) return
+    if (allowance === undefined) return
+    if (allowance < sharesWei) return
+    setStep('confirm')
+  }, [step, sharesWei, allowance])
 
-  const handleSubmit = useCallback(() => {
+  const handleAmountContinue = useCallback(async () => {
     if (!amount) return
     try {
-      const sharesWei = parseEther(amount)
-      onSubmit({ amount: sharesWei })
+      const sw = parseEther(amount)
+      setIsCheckingAllowance(true)
+      setSharesWei(sw)
+      if (await hasAllowanceFor(sw)) {
+        setVisitedAllowanceStep(false)
+        setStep('confirm')
+      } else {
+        setVisitedAllowanceStep(true)
+        setStep('allowance')
+      }
     } catch {
-      // parseEther may throw on invalid input — noop
+      // parseEther or allowance check failed — stay on amount
+    } finally {
+      setIsCheckingAllowance(false)
     }
-  }, [amount, onSubmit])
+  }, [amount, hasAllowanceFor])
+
+  const handleAllowanceApprove = useCallback(async () => {
+    if (sharesWei <= 0n) return
+    await onApproveShares(sharesWei)
+    if (await hasAllowanceFor(sharesWei)) {
+      setStep('confirm')
+    }
+  }, [sharesWei, onApproveShares, hasAllowanceFor])
+
+  const handleBackFromAllowance = useCallback(() => {
+    setStep('amount')
+  }, [])
+
+  const handleBackFromConfirm = useCallback(() => {
+    setStep('amount')
+  }, [])
+
+  const handleConfirmSubmit = useCallback(async () => {
+    if (sharesWei <= 0n) return
+    await onRequestWithdraw(sharesWei)
+  }, [sharesWei, onRequestWithdraw])
 
   const stepIndex = STEP_INDEX[step]
+  const progress =
+    WITHDRAWAL_STEP_PROGRESS[stepIndex] ?? WITHDRAWAL_STEP_PROGRESS[WITHDRAWAL_STEP_PROGRESS.length - 1]
 
   return (
     <Modal onClose={onClose} data-testid="BtcWithdrawModal">
@@ -73,7 +132,7 @@ export const BtcWithdrawModal = ({ onClose, onSubmit, isSubmitting }: BtcWithdra
 
         <div className="mb-12">
           <WithdrawSteps currentStep={stepIndex} />
-          <ProgressBar progress={WITHDRAWAL_STEP_PROGRESS[stepIndex]} className="mt-3" />
+          <ProgressBar progress={progress} className="mt-3" />
         </div>
 
         {step === 'amount' && (
@@ -84,18 +143,32 @@ export const BtcWithdrawModal = ({ onClose, onSubmit, isSubmitting }: BtcWithdra
             vaultTokensRaw={vaultTokensRaw}
             rbtcEquivalent={rbtcEquivalent}
             withdrawalFee={BTC_VAULT_WITHDRAWAL_FEE}
-            onNext={handleNext}
+            isContinuePending={isCheckingAllowance}
+            onNext={handleAmountContinue}
           />
         )}
 
-        {step === 'review' && (
+        {step === 'allowance' && (
+          <WithdrawAllowanceStep
+            sharesWei={sharesWei}
+            isAllowanceReadLoading={isAllowanceReadLoading}
+            isApproving={isApprovingShares}
+            allowanceTxHash={allowanceTxHash}
+            isAllowanceTxFailed={isAllowanceTxFailed}
+            onRequestAllowance={handleAllowanceApprove}
+            onBack={handleBackFromAllowance}
+          />
+        )}
+
+        {step === 'confirm' && (
           <WithdrawReviewStep
             amount={amount}
             rbtcEquivalent={rbtcEquivalent}
             withdrawalFee={BTC_VAULT_WITHDRAWAL_FEE}
-            onBack={handleBack}
-            onSubmit={handleSubmit}
-            isSubmitting={isSubmitting}
+            showWithdrawRequestTxHint={visitedAllowanceStep}
+            onBack={handleBackFromConfirm}
+            onSubmit={handleConfirmSubmit}
+            isSubmitting={isWithdrawSubmitting}
           />
         )}
       </div>

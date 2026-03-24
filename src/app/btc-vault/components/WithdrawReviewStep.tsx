@@ -11,21 +11,28 @@ import { RBTC } from '@/lib/constants'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 
-import { BTC_VAULT_WITHDRAWAL_DISCLAIMER, WITHDRAWAL_EXPECTED_COMPLETION } from '../services/constants'
+import {
+  BTC_VAULT_WITHDRAW_REQUEST_TX_HINT,
+  BTC_VAULT_WITHDRAWAL_DISCLAIMER,
+  WITHDRAWAL_EXPECTED_COMPLETION,
+} from '../services/constants'
 
 interface WithdrawReviewStepProps {
   amount: string
   rbtcEquivalent: string
   withdrawalFee: string
   onBack: () => void
-  onSubmit: () => void
+  onSubmit: () => void | Promise<void>
   isSubmitting: boolean
+  /** When true, user completed the approve-shares step; show hint about the withdrawal-request signature. */
+  showWithdrawRequestTxHint?: boolean
 }
 
 export const WithdrawReviewStep = ({
   amount,
   rbtcEquivalent,
   withdrawalFee,
+  showWithdrawRequestTxHint = false,
   onBack,
   onSubmit,
   isSubmitting,
@@ -47,6 +54,11 @@ export const WithdrawReviewStep = ({
       <Paragraph variant="body" className="mb-8">
         Make sure that everything is correct before continuing:
       </Paragraph>
+      {showWithdrawRequestTxHint && (
+        <Paragraph variant="body-s" className="mb-6 text-text-60" data-testid="WithdrawRequestTxHint">
+          {BTC_VAULT_WITHDRAW_REQUEST_TX_HINT}
+        </Paragraph>
+      )}
 
       <div className="grid grid-cols-2 gap-y-6 gap-x-10">
         <div className="flex flex-col gap-1" data-testid="review-shares">
@@ -112,7 +124,7 @@ export const WithdrawReviewStep = ({
             </Button>
             <Button
               variant="primary"
-              onClick={onSubmit}
+              onClick={() => void onSubmit()}
               disabled={isSubmitting}
               data-testid="SubmitRequestButton"
               className="whitespace-nowrap"
