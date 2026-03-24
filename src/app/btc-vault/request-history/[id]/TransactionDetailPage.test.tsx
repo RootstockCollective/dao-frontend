@@ -296,6 +296,7 @@ describe('TransactionDetailPage', () => {
         content: 'Your request has been canceled successfully.',
       })
     })
+    expect(mockOnCancelRequest).toHaveBeenCalledWith()
     expect(screen.queryByTestId('CancelRequestModal')).not.toBeInTheDocument()
   })
 })

@@ -5,12 +5,10 @@ import { useUserPosition } from './useUserPosition'
 
 const mockUseBalance = vi.fn()
 const mockUseReadContracts = vi.fn()
-const mockUseReadContract = vi.fn()
 
 vi.mock('wagmi', () => ({
   useBalance: (...args: unknown[]) => mockUseBalance(...args),
   useReadContracts: (...args: unknown[]) => mockUseReadContracts(...args),
-  useReadContract: (...args: unknown[]) => mockUseReadContract(...args),
 }))
 
 vi.mock('@/shared/context/PricesContext', () => ({
@@ -27,11 +25,9 @@ const ONE_ETHER = 1_000_000_000_000_000_000n
 function setupMocks({
   balance,
   multicall,
-  convertToAssets,
 }: {
   balance?: { value: bigint }
   multicall?: { result: bigint }[]
-  convertToAssets?: bigint
 } = {}) {
   mockUseBalance.mockReturnValue({
     data: balance,
@@ -40,11 +36,6 @@ function setupMocks({
   })
   mockUseReadContracts.mockReturnValue({
     data: multicall,
-    isLoading: false,
-    isError: false,
-  })
-  mockUseReadContract.mockReturnValue({
-    data: convertToAssets,
     isLoading: false,
     isError: false,
   })
@@ -93,12 +84,11 @@ describe('useUserPosition', () => {
     it('returns formatted position data from contract reads', () => {
       const vaultTokens = 5n * ONE_ETHER
       const totalSupply = 50n * ONE_ETHER
-      const positionValue = (51n * ONE_ETHER) / 10n
+      const totalAssets = 51n * ONE_ETHER
 
       setupMocks({
         balance: { value: 2n * ONE_ETHER },
-        multicall: [{ result: vaultTokens }, { result: totalSupply }],
-        convertToAssets: positionValue,
+        multicall: [{ result: vaultTokens }, { result: totalSupply }, { result: totalAssets }],
       })
 
       const { result } = renderHook(() => useUserPosition(CONNECTED_ADDRESS))
@@ -113,7 +103,6 @@ describe('useUserPosition', () => {
     it('reports isLoading when any query is loading', () => {
       mockUseBalance.mockReturnValue({ data: undefined, isLoading: true, isError: false })
       mockUseReadContracts.mockReturnValue({ data: undefined, isLoading: false, isError: false })
-      mockUseReadContract.mockReturnValue({ data: undefined, isLoading: false, isError: false })
 
       const { result } = renderHook(() => useUserPosition(CONNECTED_ADDRESS))
 
@@ -123,7 +112,6 @@ describe('useUserPosition', () => {
     it('reports isError when any query has an error', () => {
       mockUseBalance.mockReturnValue({ data: undefined, isLoading: false, isError: true })
       mockUseReadContracts.mockReturnValue({ data: undefined, isLoading: false, isError: false })
-      mockUseReadContract.mockReturnValue({ data: undefined, isLoading: false, isError: false })
 
       const { result } = renderHook(() => useUserPosition(CONNECTED_ADDRESS))
 
@@ -133,7 +121,7 @@ describe('useUserPosition', () => {
     it('sets totalDepositedPrincipal to 0n', () => {
       setupMocks({
         balance: { value: ONE_ETHER },
-        multicall: [{ result: ONE_ETHER }, { result: 10n * ONE_ETHER }],
+        multicall: [{ result: ONE_ETHER }, { result: 10n * ONE_ETHER }, { result: 10n * ONE_ETHER }],
       })
 
       const { result } = renderHook(() => useUserPosition(CONNECTED_ADDRESS))
@@ -144,7 +132,7 @@ describe('useUserPosition', () => {
     it('returns zero positionValue and percentOfVault when user has no vault tokens', () => {
       setupMocks({
         balance: { value: 3n * ONE_ETHER },
-        multicall: [{ result: 0n }, { result: 100n * ONE_ETHER }],
+        multicall: [{ result: 0n }, { result: 100n * ONE_ETHER }, { result: 100n * ONE_ETHER }],
       })
 
       const { result } = renderHook(() => useUserPosition(CONNECTED_ADDRESS))
@@ -159,8 +147,7 @@ describe('useUserPosition', () => {
       // 1/3 of total supply → 33.33% (integer math: (1 * 10000) / 3 = 3333, / 100 = 33.33)
       setupMocks({
         balance: { value: ONE_ETHER },
-        multicall: [{ result: ONE_ETHER }, { result: 3n * ONE_ETHER }],
-        convertToAssets: ONE_ETHER,
+        multicall: [{ result: ONE_ETHER }, { result: 3n * ONE_ETHER }, { result: 3n * ONE_ETHER }],
       })
 
       const { result } = renderHook(() => useUserPosition(CONNECTED_ADDRESS))

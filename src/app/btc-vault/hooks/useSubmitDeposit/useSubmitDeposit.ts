@@ -26,7 +26,6 @@ export function useSubmitDeposit() {
       return writeContractAsync({
         ...rbtcVault,
         functionName: 'requestDepositNative',
-        args: [address, address],
         value: amount,
       })
     },

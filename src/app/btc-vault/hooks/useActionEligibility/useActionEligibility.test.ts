@@ -100,9 +100,7 @@ describe('useActionEligibility', () => {
 
       expect(result.current.data).toBeUndefined()
       expect(result.current.isLoading).toBe(false)
-      expect(mockUseReadContracts).toHaveBeenCalledWith(
-        expect.objectContaining({ contracts: undefined }),
-      )
+      expect(mockUseReadContracts).toHaveBeenCalledWith(expect.objectContaining({ contracts: undefined }))
     })
   })
 
@@ -116,11 +114,11 @@ describe('useActionEligibility', () => {
             expect.objectContaining({ functionName: 'depositRequestsPaused' }),
             expect.objectContaining({ functionName: 'redeemRequestsPaused' }),
             expect.objectContaining({
-              functionName: 'depositReq',
+              functionName: 'asyncDepositRequests',
               args: [USER_ADDRESS],
             }),
             expect.objectContaining({
-              functionName: 'redeemReq',
+              functionName: 'asyncRedeemRequests',
               args: [USER_ADDRESS],
             }),
             expect.objectContaining({

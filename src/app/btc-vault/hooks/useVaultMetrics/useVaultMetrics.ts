@@ -13,14 +13,14 @@ const ONE_SHARE = parseEther('1')
 const SYNTHETIC_TO_VAULT_BPS = 100_000n
 
 /**
- * Reads vault metrics from chain via multicall (totalAssets, totalSupply, convertToAssets(1e18)).
- * APY is 0n when SyntheticYield data is missing — TODO: wire when backend or on-chain source is available.
+ * Reads vault metrics from chain via multicall (totalAssets, totalSupply).
+ * pricePerShare is derived client-side: (totalAssets * 1e18) / totalSupply.
+ * APY is 0n when SyntheticYield data is missing.
  */
 export function useVaultMetrics() {
   const contracts = useMemo(
     () => [
       { ...rbtcVault, functionName: 'totalAssets' as const },
-      { ...rbtcVault, functionName: 'convertToAssets' as const, args: [ONE_SHARE] as const },
       { ...rbtcVault, functionName: 'totalSupply' as const },
       { ...syntheticYield, functionName: 'syntheticRatePerSecond' as const },
       { ...syntheticYield, functionName: 'SECONDS_PER_YEAR' as const },
@@ -36,13 +36,12 @@ export function useVaultMetrics() {
   })
 
   const raw = useMemo((): VaultMetrics | null => {
-    if (!data || data.length < 3) return null
-    const [totalAssetsResult, convertToAssetsResult, _totalSupplyResult, rateResult, secPerYearResult] = data
+    if (!data || data.length < 2) return null
+    const [totalAssetsResult, totalSupplyResult, rateResult, secPerYearResult] = data
     const totalAssets = (totalAssetsResult?.result as bigint | undefined) ?? 0n
-    const pricePerShare = (convertToAssetsResult?.result as bigint | undefined) ?? 0n
-    // totalSupply available for derived metrics; unused in display
+    const totalSupply = (totalSupplyResult?.result as bigint | undefined) ?? 0n
+    const pricePerShare = totalSupply > 0n ? (totalAssets * ONE_SHARE) / totalSupply : ONE_SHARE
     let apy = 0n
-    // TODO: APY has no on-chain source when SyntheticYield data is missing; show 0 until backend or source is wired.
     if (rateResult?.result != null && secPerYearResult?.result != null) {
       const rate = rateResult.result as bigint
       const secPerYear = secPerYearResult.result as bigint

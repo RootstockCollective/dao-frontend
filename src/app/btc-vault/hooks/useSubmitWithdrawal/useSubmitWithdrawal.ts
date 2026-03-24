@@ -24,7 +24,7 @@ export function useSubmitWithdrawal() {
       return writeContractAsync({
         ...rbtcVault,
         functionName: 'requestRedeem',
-        args: [shares, address, address],
+        args: [shares],
       })
     },
     [writeContractAsync, address],

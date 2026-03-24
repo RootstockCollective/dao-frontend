@@ -30,12 +30,9 @@ describe('useVaultMetrics', () => {
     expect(result.current.isLoading).toBe(true)
   })
 
-  it('returns null raw when data has fewer than 3 results', () => {
+  it('returns null raw when data has fewer than 2 results', () => {
     mockedUseReadContracts.mockReturnValue({
-      data: [
-        { result: 50_000_000_000_000_000_000n },
-        { result: 1_020_000_000_000_000_000n },
-      ],
+      data: [{ result: 50_000_000_000_000_000_000n }],
       isLoading: false,
       error: null,
       refetch: vi.fn(),
@@ -49,16 +46,10 @@ describe('useVaultMetrics', () => {
 
   it('maps contract results to VaultMetrics and formatted display', () => {
     const tvl = 50_000_000_000_000_000_000n
-    const pricePerShare = 1_020_000_000_000_000_000n
     const totalSupply = 30_000_000_000_000_000_000n
+    const expectedPricePerShare = (tvl * 1_000_000_000_000_000_000n) / totalSupply
     mockedUseReadContracts.mockReturnValue({
-      data: [
-        { result: tvl },
-        { result: pricePerShare },
-        { result: totalSupply },
-        { result: null },
-        { result: null },
-      ],
+      data: [{ result: tvl }, { result: totalSupply }, { result: null }, { result: null }],
       isLoading: false,
       error: null,
       refetch: vi.fn(),
@@ -68,7 +59,7 @@ describe('useVaultMetrics', () => {
 
     expect(result.current.raw).not.toBeNull()
     expect(result.current.raw?.tvl).toBe(tvl)
-    expect(result.current.raw?.pricePerShare).toBe(pricePerShare)
+    expect(result.current.raw?.pricePerShare).toBe(expectedPricePerShare)
     expect(result.current.raw?.apy).toBe(0n)
     expect(typeof result.current.raw?.timestamp).toBe('number')
 
@@ -77,23 +68,16 @@ describe('useVaultMetrics', () => {
     expect(result.current.data).toHaveProperty('apyFormatted')
     expect(result.current.data).toHaveProperty('pricePerShareFormatted')
     expect(result.current.data).toHaveProperty('tvlRaw', tvl)
-    expect(result.current.data).toHaveProperty('pricePerShareRaw', pricePerShare)
+    expect(result.current.data).toHaveProperty('pricePerShareRaw', expectedPricePerShare)
   })
 
   it('derives APY from synthetic yield when rate and SECONDS_PER_YEAR are present', () => {
     const tvl = 100_000_000_000_000_000_000n
-    const pricePerShare = 1_000_000_000_000_000_000n
     const totalSupply = 80_000_000_000_000_000_000n
     const ratePerSecond = 317_097_919_837_645n // ~1e18 / 31_536_000
     const secondsPerYear = 31_536_000n
     mockedUseReadContracts.mockReturnValue({
-      data: [
-        { result: tvl },
-        { result: pricePerShare },
-        { result: totalSupply },
-        { result: ratePerSecond },
-        { result: secondsPerYear },
-      ],
+      data: [{ result: tvl }, { result: totalSupply }, { result: ratePerSecond }, { result: secondsPerYear }],
       isLoading: false,
       error: null,
       refetch: vi.fn(),

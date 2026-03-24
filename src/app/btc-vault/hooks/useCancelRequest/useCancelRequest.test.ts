@@ -42,45 +42,39 @@ describe('useCancelRequest', () => {
   })
 
   it('calls cancelDepositRequestNative for deposit cancellations', async () => {
-    const requestId = 42n
     const txHash = '0xmockhash'
     mockWriteContractAsync.mockResolvedValue(txHash)
 
     const { result } = renderHook(() => useCancelBtcVaultRequest('deposit'))
-    const hash = await result.current.onCancelRequest(requestId)
+    const hash = await result.current.onCancelRequest()
 
     expect(hash).toBe(txHash)
     expect(mockWriteContractAsync).toHaveBeenCalledOnce()
 
     const callArgs = mockWriteContractAsync.mock.calls[0][0]
     expect(callArgs.functionName).toBe('cancelDepositRequestNative')
-    expect(callArgs.args[0]).toBe(requestId)
-    expect(callArgs.args[1]).toBe('0xTestAddress')
-    expect(callArgs.args[2]).toBe('0xTestAddress')
+    expect(callArgs.args).toEqual(['0xTestAddress'])
   })
 
   it('calls cancelRedeemRequest for withdrawal cancellations', async () => {
-    const requestId = 7n
     const txHash = '0xmockhash'
     mockWriteContractAsync.mockResolvedValue(txHash)
 
     const { result } = renderHook(() => useCancelBtcVaultRequest('withdrawal'))
-    const hash = await result.current.onCancelRequest(requestId)
+    const hash = await result.current.onCancelRequest()
 
     expect(hash).toBe(txHash)
 
     const callArgs = mockWriteContractAsync.mock.calls[0][0]
     expect(callArgs.functionName).toBe('cancelRedeemRequest')
-    expect(callArgs.args[0]).toBe(requestId)
-    expect(callArgs.args[1]).toBe('0xTestAddress')
-    expect(callArgs.args[2]).toBe('0xTestAddress')
+    expect(callArgs.args).toEqual(['0xTestAddress'])
   })
 
   it('does not pass value (no rBTC sent when cancelling)', async () => {
     mockWriteContractAsync.mockResolvedValue('0xhash')
 
     const { result } = renderHook(() => useCancelBtcVaultRequest('deposit'))
-    await result.current.onCancelRequest(1n)
+    await result.current.onCancelRequest()
 
     const callArgs = mockWriteContractAsync.mock.calls[0][0]
     expect(callArgs.value).toBeUndefined()
@@ -89,6 +83,6 @@ describe('useCancelRequest', () => {
   it('rejects when wallet is disconnected', async () => {
     mockUseAccount.mockReturnValue({ address: undefined })
     const { result } = renderHook(() => useCancelBtcVaultRequest('deposit'))
-    await expect(result.current.onCancelRequest(1n)).rejects.toThrow('Wallet not connected')
+    await expect(result.current.onCancelRequest()).rejects.toThrow('Wallet not connected')
   })
 })

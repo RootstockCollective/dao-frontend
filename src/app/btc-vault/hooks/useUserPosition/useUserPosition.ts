@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { type Address } from 'viem'
-import { useBalance, useReadContract, useReadContracts } from 'wagmi'
+import { useBalance, useReadContracts } from 'wagmi'
 
 import { RBTC } from '@/lib/constants'
 import { rbtcVault } from '@/lib/contracts'
@@ -13,10 +13,11 @@ import type { UserPositionDisplay } from '../../services/ui/types'
 /**
  * Reads the connected user's BTC vault position from on-chain data.
  *
- * Performs three contract reads in a waterfall:
+ * Performs two reads:
  * 1. Native rBTC balance via `useBalance`
- * 2. Vault token balance + total supply via multicall (`balanceOf`, `totalSupply`)
- * 3. Position value via `convertToAssets(vaultTokens)` (only when vaultTokens > 0)
+ * 2. Vault token balance + total supply + totalAssets via multicall
+ *
+ * Position value is derived client-side: (vaultTokens * totalAssets) / totalSupply.
  *
  * All queries auto-refresh every 60 seconds and are disabled when wallet is disconnected.
  *
@@ -56,6 +57,10 @@ export function useUserPosition(address: Address | undefined): {
         ...rbtcVault,
         functionName: 'totalSupply',
       } as const,
+      {
+        ...rbtcVault,
+        functionName: 'totalAssets',
+      } as const,
     ]
   }, [address])
 
@@ -73,25 +78,12 @@ export function useUserPosition(address: Address | undefined): {
 
   const vaultTokens = (multicallData?.[0]?.result as bigint | undefined) ?? 0n
   const totalSupply = (multicallData?.[1]?.result as bigint | undefined) ?? 0n
+  const totalAssets = (multicallData?.[2]?.result as bigint | undefined) ?? 0n
 
-  const {
-    data: positionValueRaw,
-    isLoading: isLoadingConvert,
-    isError: isConvertError,
-  } = useReadContract({
-    ...rbtcVault,
-    functionName: 'convertToAssets',
-    args: [vaultTokens],
-    query: {
-      enabled: isConnected && vaultTokens > 0n,
-      refetchInterval: 60_000,
-    },
-  })
+  const positionValue = totalSupply > 0n ? (vaultTokens * totalAssets) / totalSupply : 0n
 
-  const positionValue = (positionValueRaw as bigint | undefined) ?? 0n
-
-  const isLoading = isConnected && (isLoadingBalance || isLoadingMulticall || isLoadingConvert)
-  const isError = isConnected && (isBalanceError || isMulticallError || isConvertError)
+  const isLoading = isConnected && (isLoadingBalance || isLoadingMulticall)
+  const isError = isConnected && (isBalanceError || isMulticallError)
 
   const data = useMemo(() => {
     if (!isConnected) return
@@ -104,13 +96,12 @@ export function useUserPosition(address: Address | undefined): {
       vaultTokens,
       positionValue,
       percentOfVault,
-      // TODO: totalDepositedPrincipal requires historical event data (sum of deposits minus withdrawals).
-      // Leave as 0n until backend integration is available.
+      // TODO(DAO-XXXX): totalDepositedPrincipal requires historical event data (sum of deposits minus withdrawals).
       totalDepositedPrincipal: 0n,
     }
 
     return toUserPositionDisplay(position, rbtcPrice)
-  }, [isConnected, nativeBalance?.value, vaultTokens, totalSupply, positionValue, rbtcPrice])
+  }, [isConnected, nativeBalance?.value, vaultTokens, totalSupply, totalAssets, positionValue, rbtcPrice])
 
   return { data, isLoading, isError }
 }

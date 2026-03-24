@@ -19,7 +19,7 @@ const WEI_PER_ETHER = 10n ** 18n
  * Reads the user's active deposit and redeem requests from the BTC vault contract
  * via two-phase multicall, derives pending/claimable status, and maps to display shape.
  *
- * Phase 1: depositReq(address), redeemReq(address). If both zero, returns [].
+ * Phase 1: asyncDepositRequests(address), asyncRedeemRequests(address). If both zero, returns [].
  * Phase 2 (when at least one request): pending/claimable and epochSnapshot per request.
  *
  * @param address - User wallet address (controller); undefined disables reads
@@ -32,8 +32,16 @@ export function useActiveRequests(address: string | undefined): { data: ActiveRe
   const phase1Contracts = useMemo(
     () =>
       [
-        { ...rbtcVault, functionName: 'depositReq' as const, args: [(address ?? zeroAddress) as Address] },
-        { ...rbtcVault, functionName: 'redeemReq' as const, args: [(address ?? zeroAddress) as Address] },
+        {
+          ...rbtcVault,
+          functionName: 'asyncDepositRequests' as const,
+          args: [(address ?? zeroAddress) as Address],
+        },
+        {
+          ...rbtcVault,
+          functionName: 'asyncRedeemRequests' as const,
+          args: [(address ?? zeroAddress) as Address],
+        },
       ] as const,
     [address],
   )
@@ -59,19 +67,19 @@ export function useActiveRequests(address: string | undefined): { data: ActiveRe
     const redShares = redeemResult?.[1] ?? 0n
     if (depAssets === 0n && redShares === 0n) return []
     const list: Array<
-      typeof rbtcVault & { functionName: string; args: readonly [bigint, Address] | readonly [bigint] }
+      typeof rbtcVault & { functionName: string; args: readonly [Address] | readonly [bigint] }
     > = []
     if (depAssets > 0n) {
       list.push(
         {
           ...rbtcVault,
           functionName: 'pendingDepositRequest' as const,
-          args: [depEpochId, address as Address],
+          args: [address as Address],
         },
         {
           ...rbtcVault,
           functionName: 'claimableDepositRequest' as const,
-          args: [depEpochId, address as Address],
+          args: [address as Address],
         },
         { ...rbtcVault, functionName: 'epochSnapshot' as const, args: [depEpochId] },
       )
@@ -81,12 +89,12 @@ export function useActiveRequests(address: string | undefined): { data: ActiveRe
         {
           ...rbtcVault,
           functionName: 'pendingRedeemRequest' as const,
-          args: [redEpochId, address as Address],
+          args: [address as Address],
         },
         {
           ...rbtcVault,
           functionName: 'claimableRedeemRequest' as const,
-          args: [redEpochId, address as Address],
+          args: [address as Address],
         },
         { ...rbtcVault, functionName: 'epochSnapshot' as const, args: [redEpochId] },
       )

@@ -55,27 +55,25 @@ export function mapDecodedVaultLogToHistoryItem(
   const id = historyId(txHash, logIndex)
 
   switch (decoded.eventName) {
-    case 'DepositRequest': {
-      const { controller, requestId, assets } = decoded.args
+    case 'DepositRequested': {
+      const { owner, epochId, assets } = decoded.args
       return {
         id,
-        user: normalizeAddress(controller),
+        user: normalizeAddress(owner),
         action: 'DEPOSIT_REQUEST',
         assets: String(assets),
         shares: '0',
-        epochId: String(requestId),
+        epochId: String(epochId),
         timestamp,
         blockNumber,
         transactionHash: txHash,
       }
     }
-    case 'NativeDepositRequested':
-      return null
     case 'DepositClaimed': {
-      const { controller, epochId, assets, shares } = decoded.args
+      const { caller, epochId, assets, shares } = decoded.args
       return {
         id,
-        user: normalizeAddress(controller),
+        user: normalizeAddress(caller),
         action: 'DEPOSIT_CLAIMED',
         assets: String(assets),
         shares: String(shares),
@@ -86,52 +84,38 @@ export function mapDecodedVaultLogToHistoryItem(
       }
     }
     case 'DepositRequestCancelled': {
-      const { controller, requestId, assets } = decoded.args
+      const { owner, epochId, assets } = decoded.args
       return {
         id,
-        user: normalizeAddress(controller),
+        user: normalizeAddress(owner),
         action: 'DEPOSIT_CANCELLED',
         assets: String(assets),
         shares: '0',
-        epochId: String(requestId),
-        timestamp,
-        blockNumber,
-        transactionHash: txHash,
-      }
-    }
-    case 'NativeDepositRequestCancelled': {
-      const { controller, requestId, assets } = decoded.args
-      return {
-        id,
-        user: normalizeAddress(controller),
-        action: 'DEPOSIT_CANCELLED',
-        assets: String(assets),
-        shares: '0',
-        epochId: String(requestId),
+        epochId: String(epochId),
         timestamp,
         blockNumber,
         transactionHash: txHash,
       }
     }
     case 'RedeemRequest': {
-      const { controller, requestId, shares } = decoded.args
+      const { owner, epochId, shares } = decoded.args
       return {
         id,
-        user: normalizeAddress(controller),
+        user: normalizeAddress(owner),
         action: 'REDEEM_REQUEST',
         assets: '0',
         shares: String(shares),
-        epochId: String(requestId),
+        epochId: String(epochId),
         timestamp,
         blockNumber,
         transactionHash: txHash,
       }
     }
     case 'RedeemClaimed': {
-      const { controller, epochId, assets, shares } = decoded.args
+      const { caller, epochId, assets, shares } = decoded.args
       return {
         id,
-        user: normalizeAddress(controller),
+        user: normalizeAddress(caller),
         action: 'REDEEM_CLAIMED',
         assets: String(assets),
         shares: String(shares),
@@ -142,14 +126,14 @@ export function mapDecodedVaultLogToHistoryItem(
       }
     }
     case 'RedeemRequestCancelled': {
-      const { controller, requestId, shares } = decoded.args
+      const { owner, epochId, shares } = decoded.args
       return {
         id,
-        user: normalizeAddress(controller),
+        user: normalizeAddress(owner),
         action: 'REDEEM_CANCELLED',
         assets: '0',
         shares: String(shares),
-        epochId: String(requestId),
+        epochId: String(epochId),
         timestamp,
         blockNumber,
         transactionHash: txHash,

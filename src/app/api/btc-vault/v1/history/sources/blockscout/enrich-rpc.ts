@@ -75,43 +75,41 @@ export async function enrichHistoryWithRpcRequestStatus(
       | 'claimableDepositRequest'
       | 'pendingRedeemRequest'
       | 'claimableRedeemRequest'
-    args: readonly [bigint, Address]
+    args: readonly [Address]
   }[] = []
 
   for (const [i, element] of history.entries()) {
     const item = element!
     if (!isRequestNeedingRpc(item)) continue
     if (item.action === 'DEPOSIT_REQUEST') {
-      const requestId = BigInt(item.epochId)
-      const controller = getAddress(item.user as Address)
+      const owner = getAddress(item.user as Address)
       pairMeta.push({ historyIndex: i, action: 'DEPOSIT_REQUEST' })
       contracts.push({
         address: vault,
         abi: RBTCAsyncVaultAbi,
         functionName: 'pendingDepositRequest',
-        args: [requestId, controller],
+        args: [owner],
       })
       contracts.push({
         address: vault,
         abi: RBTCAsyncVaultAbi,
         functionName: 'claimableDepositRequest',
-        args: [requestId, controller],
+        args: [owner],
       })
     } else if (item.action === 'REDEEM_REQUEST') {
-      const requestId = BigInt(item.epochId)
-      const controller = getAddress(item.user as Address)
+      const owner = getAddress(item.user as Address)
       pairMeta.push({ historyIndex: i, action: 'REDEEM_REQUEST' })
       contracts.push({
         address: vault,
         abi: RBTCAsyncVaultAbi,
         functionName: 'pendingRedeemRequest',
-        args: [requestId, controller],
+        args: [owner],
       })
       contracts.push({
         address: vault,
         abi: RBTCAsyncVaultAbi,
         functionName: 'claimableRedeemRequest',
-        args: [requestId, controller],
+        args: [owner],
       })
     }
   }

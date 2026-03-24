@@ -65,22 +65,8 @@ export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
   }
 
   const handleConfirmCancel = async () => {
-    // TODO: VaultRequest.id is a UI string ("req-deposit-pending"), but the
-    // contract expects a numeric requestId (uint256). Once useRequestById returns real
-    // on-chain data, replace this with the actual numeric requestId field.
-    const numericId = Number(request.epochId ?? request.batchRedeemId ?? '0')
-    if (!Number.isFinite(numericId)) {
-      closeModal()
-      showToast({
-        severity: 'error',
-        title: 'Cancellation failed',
-        content: 'Cannot determine on-chain request ID.',
-      })
-      return
-    }
-
     try {
-      await onCancelRequest(BigInt(numericId))
+      await onCancelRequest()
       closeModal()
       showToast({
         severity: 'success',
