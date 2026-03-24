@@ -57,53 +57,46 @@ export const DepositReviewStep = ({
         Make sure that everything is correct before continuing:
       </Paragraph>
 
-      <div className="grid grid-cols-2 gap-6 gap-x-10">
-        {/* Left column: Amount to deposit + Deposit fee */}
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-1" data-testid="review-amount">
-            <Label variant="body-s" className="text-text-60">
-              Amount to deposit
-            </Label>
-            <div className="flex items-center gap-2">
-              <TokenImage symbol={RBTC} size={20} />
-              <Label variant="body-l" bold>
-                {amount} {RBTC}
-              </Label>
-            </div>
-            {usdEquivalent && (
-              <Label variant="body-s" className="text-text-60">
-                {usdEquivalent}
-              </Label>
-            )}
-          </div>
-          <div className="flex flex-col gap-1" data-testid="review-fee">
-            <Label variant="body-s" className="text-text-60">
-              Deposit fee
-            </Label>
+      <div className="grid grid-cols-2 gap-y-6 gap-x-10">
+        <div className="flex flex-col gap-1" data-testid="review-amount">
+          <Label variant="body-s" className="text-text-60">
+            Amount to deposit
+          </Label>
+          <div className="flex items-center gap-2">
+            <TokenImage symbol={RBTC} size={20} />
             <Label variant="body-l" bold>
-              {depositFee}%
+              {amount} {RBTC}
             </Label>
           </div>
+          {usdEquivalent && (
+            <Label variant="body-s" className="text-text-60">
+              {usdEquivalent}
+            </Label>
+          )}
         </div>
-
-        {/* Right column: No. of shares to receive (est.) + Expected completion */}
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-1" data-testid="review-shares">
-            <Label variant="body-s" className="text-text-60">
-              No. of shares to receive (est.)
-            </Label>
-            <Label variant="body-l" bold>
-              {sharesFormatted}
-            </Label>
-          </div>
-          <div className="flex flex-col gap-1" data-testid="review-expected-completion">
-            <Label variant="body-s" className="text-text-60">
-              Expected completion
-            </Label>
-            <Label variant="body-l" bold>
-              {DEPOSIT_EXPECTED_COMPLETION}
-            </Label>
-          </div>
+        <div className="flex flex-col gap-1" data-testid="review-shares">
+          <Label variant="body-s" className="text-text-60">
+            No. of shares to receive (est.)
+          </Label>
+          <Label variant="body-l" bold>
+            {sharesFormatted}
+          </Label>
+        </div>
+        <div className="flex flex-col gap-1" data-testid="review-fee">
+          <Label variant="body-s" className="text-text-60">
+            Deposit fee
+          </Label>
+          <Label variant="body-l" bold>
+            {depositFee}%
+          </Label>
+        </div>
+        <div className="flex flex-col gap-1" data-testid="review-expected-completion">
+          <Label variant="body-s" className="text-text-60">
+            Expected completion
+          </Label>
+          <Label variant="body-l" bold>
+            {DEPOSIT_EXPECTED_COMPLETION}
+          </Label>
         </div>
       </div>
 
