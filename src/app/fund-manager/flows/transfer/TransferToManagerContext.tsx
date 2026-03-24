@@ -51,6 +51,7 @@ export const TransferToManagerProvider = ({ children }: Props) => {
   } = useAmountInput({
     balance,
     isNative,
+    isUserBalance: false,
     tokenPrice: rbtcPrice,
   })
 

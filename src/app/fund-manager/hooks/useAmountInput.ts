@@ -1,25 +1,29 @@
 import { useCallback, useMemo, useState } from 'react'
-import { formatEther, formatUnits, parseUnits } from 'viem'
+import { formatUnits, parseUnits } from 'viem'
 
 import Big from '@/lib/big'
 import { formatCurrencyWithLabel, handleAmountInput } from '@/lib/utils'
 
-// TODO: move to constants
-/** Conservative gas reserve for native rBTC transactions (0.001 rBTC) */
-const GAS_RESERVE_WEI = 1_000_000_000_000_000n
-
 interface Props {
   balance: bigint
   isNative: boolean
+  /** When true, balance is the user's wallet; show gas warning if they use full native balance. */
+  isUserBalance?: boolean
   tokenPrice?: number
   decimals?: number
 }
 
 /**
- * Manages amount input state, validation, percentage shortcuts (with gas reserve for native tokens),
- * and USD equivalent display. Reusable across all fund-manager CTAs.
+ * Manages amount input state, validation, percentage shortcuts, and USD equivalent display.
+ * Reusable across all fund-manager CTAs.
  */
-export const useAmountInput = ({ balance, isNative, tokenPrice, decimals = 18 }: Props) => {
+export const useAmountInput = ({
+  balance,
+  isNative,
+  isUserBalance = true,
+  tokenPrice,
+  decimals = 18,
+}: Props) => {
   const [amount, setAmount] = useState('')
 
   const handleAmountChange = useCallback((value: string) => {
@@ -28,17 +32,11 @@ export const useAmountInput = ({ balance, isNative, tokenPrice, decimals = 18 }:
 
   const handlePercentageClick = useCallback(
     (percentage: number) => {
-      if (percentage === 1 && isNative) {
-        const maxWei = balance > GAS_RESERVE_WEI ? balance - GAS_RESERVE_WEI : 0n
-        const maxStr = formatEther(maxWei)
-        setAmount(maxStr)
-      } else {
-        const balanceStr = formatUnits(balance, decimals)
-        const calculatedAmount = Big(balanceStr).mul(percentage).toString()
-        setAmount(calculatedAmount)
-      }
+      const balanceStr = formatUnits(balance, decimals)
+      const calculatedAmount = Big(balanceStr).mul(percentage).toString()
+      setAmount(calculatedAmount)
     },
-    [balance, isNative, decimals],
+    [balance, decimals],
   )
 
   const isAmountOverBalance = useMemo(() => {
@@ -51,8 +49,17 @@ export const useAmountInput = ({ balance, isNative, tokenPrice, decimals = 18 }:
     if (isAmountOverBalance) {
       return 'This is more than the available balance. Please update the amount.'
     }
+    if (!isUserBalance || !isNative || !amount || amount === '0') return ''
+    try {
+      const amountWei = parseUnits(amount, decimals)
+      if (amountWei >= balance && balance > 0n) {
+        return 'Using your full balance may not leave enough for gas fees, which could cause the transaction to fail.'
+      }
+    } catch {
+      // invalid amount string
+    }
     return ''
-  }, [isAmountOverBalance])
+  }, [isAmountOverBalance, isUserBalance, isNative, amount, decimals, balance])
 
   const isValidAmount = useMemo(() => {
     if (!amount) return false

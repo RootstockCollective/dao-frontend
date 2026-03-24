@@ -5,6 +5,9 @@ import { useAmountInput } from './useAmountInput'
 
 const TWO_RBTC = 2000000000000000000n
 
+const FULL_BALANCE_GAS_WARNING =
+  'Using your full balance may not leave enough for gas fees, which could cause the transaction to fail.'
+
 describe('useAmountInput', () => {
   afterEach(() => {
     vi.clearAllMocks()
@@ -125,23 +128,59 @@ describe('useAmountInput', () => {
     })
   })
 
-  describe('percentage shortcuts - native token with gas reserve', () => {
-    it('handlePercentageClick(1) subtracts gas reserve from native balance', () => {
+  describe('percentage shortcuts - native token', () => {
+    it('handlePercentageClick(1) sets 100% of balance (no gas reserve)', () => {
       const { result } = renderHook(() => useAmountInput({ balance: TWO_RBTC, isNative: true }))
       act(() => {
         result.current.handlePercentageClick(1)
       })
-      // 2 RBTC - 0.001 RBTC gas reserve = 1.999
-      expect(result.current.amount).toBe('1.999')
+      expect(result.current.amount).toBe('2')
+    })
+  })
+
+  describe('gas warning via errorMessage', () => {
+    it('returns gas warning when native, user balance, and amount equals full balance', () => {
+      const { result } = renderHook(() => useAmountInput({ balance: TWO_RBTC, isNative: true }))
+      act(() => {
+        result.current.setAmount('2')
+      })
+      expect(result.current.errorMessage).toBe(FULL_BALANCE_GAS_WARNING)
     })
 
-    it('handlePercentageClick(1) returns 0 when balance <= gas reserve', () => {
-      const tinyBalance = 500_000_000_000_000n // 0.0005 RBTC
-      const { result } = renderHook(() => useAmountInput({ balance: tinyBalance, isNative: true }))
+    it('returns empty errorMessage when isUserBalance is false', () => {
+      const { result } = renderHook(() =>
+        useAmountInput({ balance: TWO_RBTC, isNative: true, isUserBalance: false }),
+      )
       act(() => {
-        result.current.handlePercentageClick(1)
+        result.current.setAmount('2')
       })
-      expect(result.current.amount).toBe('0')
+      expect(result.current.errorMessage).toBe('')
+    })
+
+    it('returns empty when token is not native', () => {
+      const { result } = renderHook(() => useAmountInput({ balance: TWO_RBTC, isNative: false }))
+      act(() => {
+        result.current.setAmount('2')
+      })
+      expect(result.current.errorMessage).toBe('')
+    })
+
+    it('returns empty when amount is below full balance', () => {
+      const { result } = renderHook(() => useAmountInput({ balance: TWO_RBTC, isNative: true }))
+      act(() => {
+        result.current.setAmount('1')
+      })
+      expect(result.current.errorMessage).toBe('')
+    })
+
+    it('returns balance error when amount exceeds balance (not gas warning)', () => {
+      const { result } = renderHook(() => useAmountInput({ balance: TWO_RBTC, isNative: true }))
+      act(() => {
+        result.current.setAmount('3')
+      })
+      expect(result.current.errorMessage).toBe(
+        'This is more than the available balance. Please update the amount.',
+      )
     })
   })
 
