@@ -99,11 +99,11 @@ export interface UserPositionDisplay {
   /** Derived: ((positionValue - principal) / principal) * 100, or "0.00%" when principal is 0 */
   yieldPercentToDateFormatted: string
 
-  fiatWalletBalance: string
-  fiatVaultShares: string
-  fiatPrincipalDeposited: string
-  fiatCurrentEarnings: string
-  fiatTotalBalance: string
+  fiatWalletBalance: string | null
+  fiatVaultShares: string | null
+  fiatPrincipalDeposited: string | null
+  fiatCurrentEarnings: string | null
+  fiatTotalBalance: string | null
 }
 
 export interface ActionEligibility {

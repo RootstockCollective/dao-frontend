@@ -36,7 +36,6 @@ import {
   formatDateShort,
   formatPercent,
   formatTimestamp,
-  MOCK_RBTC_USD_PRICE,
   shortenTxHash,
 } from './formatters'
 import type {
@@ -141,9 +140,10 @@ export function toEpochDisplay(raw: EpochState): EpochDisplay {
  * Maps raw user position into display-ready strings while preserving raw bigints for form validation.
  * Derives current earnings, yield %, total balance, and fiat amounts.
  * @param raw - Raw user position with bigint balances
+ * @param rbtcPrice - Current rBTC price in USD (0 or negative if unavailable)
  * @returns Display object with formatted strings, derived metrics, and raw bigint values
  */
-export function toUserPositionDisplay(raw: UserPosition): UserPositionDisplay {
+export function toUserPositionDisplay(raw: UserPosition, rbtcPrice: number): UserPositionDisplay {
   const currentEarnings =
     raw.positionValue > raw.totalDepositedPrincipal ? raw.positionValue - raw.totalDepositedPrincipal : 0n
 
@@ -151,6 +151,8 @@ export function toUserPositionDisplay(raw: UserPosition): UserPositionDisplay {
   const yieldBps =
     raw.totalDepositedPrincipal > 0n ? (currentEarnings * 10_000n) / raw.totalDepositedPrincipal : 0n
   const yieldPercent = Number(yieldBps) / 100
+
+  const hasFiat = rbtcPrice > 0
 
   return {
     rbtcBalanceFormatted: formatSymbol(raw.rbtcBalance, RBTC),
@@ -167,13 +169,13 @@ export function toUserPositionDisplay(raw: UserPosition): UserPositionDisplay {
     totalBalanceRaw: raw.positionValue,
     yieldPercentToDateFormatted: formatPercent(yieldPercent),
 
-    fiatWalletBalance: formatCurrencyWithLabel(getFiatAmount(raw.rbtcBalance, MOCK_RBTC_USD_PRICE)),
-    fiatVaultShares: formatCurrencyWithLabel(getFiatAmount(raw.positionValue, MOCK_RBTC_USD_PRICE)),
-    fiatPrincipalDeposited: formatCurrencyWithLabel(
-      getFiatAmount(raw.totalDepositedPrincipal, MOCK_RBTC_USD_PRICE),
-    ),
-    fiatCurrentEarnings: formatCurrencyWithLabel(getFiatAmount(currentEarnings, MOCK_RBTC_USD_PRICE)),
-    fiatTotalBalance: formatCurrencyWithLabel(getFiatAmount(raw.positionValue, MOCK_RBTC_USD_PRICE)),
+    fiatWalletBalance: hasFiat ? formatCurrencyWithLabel(getFiatAmount(raw.rbtcBalance, rbtcPrice)) : null,
+    fiatVaultShares: hasFiat ? formatCurrencyWithLabel(getFiatAmount(raw.positionValue, rbtcPrice)) : null,
+    fiatPrincipalDeposited: hasFiat
+      ? formatCurrencyWithLabel(getFiatAmount(raw.totalDepositedPrincipal, rbtcPrice))
+      : null,
+    fiatCurrentEarnings: hasFiat ? formatCurrencyWithLabel(getFiatAmount(currentEarnings, rbtcPrice)) : null,
+    fiatTotalBalance: hasFiat ? formatCurrencyWithLabel(getFiatAmount(raw.positionValue, rbtcPrice)) : null,
   }
 }
 
@@ -356,7 +358,7 @@ export function toRequestDetailDisplay(
  */
 export function toPaginatedHistoryDisplay(
   raw: PaginatedResult<VaultRequest>,
-  rbtcPrice = MOCK_RBTC_USD_PRICE,
+  rbtcPrice = 0,
 ): PaginatedHistoryDisplay {
   return {
     rows: raw.data.map(req => {
