@@ -8,6 +8,8 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header } from '@/components/Typography'
 import { usePermissionsManager } from '@/shared/hooks/contracts'
 
+import { TabsSection } from './sections/TabsSection'
+
 const NAME = 'Admin'
 
 export const AdminPage = () => {
@@ -26,13 +28,11 @@ export const AdminPage = () => {
   }
 
   return (
-    <div
-      data-testid={NAME}
-      className="flex flex-col items-start w-full h-full pt-[0.13rem] md:gap-6 rounded-sm"
-    >
-      <Header caps variant="h1" className="text-3xl leading-10 pb-10">
+    <div data-testid={NAME} className="flex flex-col gap-10">
+      <Header caps variant="h1">
         {NAME}
       </Header>
+      <TabsSection />
     </div>
   )
 }
