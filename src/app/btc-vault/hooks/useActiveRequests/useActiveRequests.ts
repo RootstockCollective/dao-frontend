@@ -1,5 +1,6 @@
 'use client'
 
+import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import type { Address } from 'viem'
 import { zeroAddress } from 'viem'
@@ -10,8 +11,11 @@ import { rbtcVault } from '@/lib/contracts'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
 import type { ClaimableInfo, VaultRequest } from '../../services/types'
+import type { BtcVaultHistoryApiResponse } from '../../services/ui/api-types'
 import { toActiveRequestDisplay } from '../../services/ui/mappers'
 import type { ActiveRequestDisplay } from '../../services/ui/types'
+
+const HISTORY_API_PATH = '/api/btc-vault/v1/history'
 
 const WEI_PER_ETHER = 10n ** 18n
 
@@ -113,6 +117,26 @@ export function useActiveRequests(address: string | undefined): { data: ActiveRe
     query: { enabled: !!address && needsPhase2 },
   })
 
+  // Fetch recent DEPOSIT_REQUEST / REDEEM_REQUEST history entries to get real timestamps & tx hashes
+  const { data: historyData } = useQuery({
+    queryKey: ['btc-vault', 'active-requests-history', address],
+    queryFn: async () => {
+      const params = new URLSearchParams()
+      params.set('address', address!)
+      params.set('page', '1')
+      params.set('limit', '10')
+      params.set('sort_field', 'timestamp')
+      params.set('sort_direction', 'desc')
+      params.append('type', 'deposit_request')
+      params.append('type', 'redeem_request')
+      const res = await fetch(`${HISTORY_API_PATH}?${params.toString()}`)
+      if (!res.ok) throw new Error(`History API error: ${res.status}`)
+      return (await res.json()) as BtcVaultHistoryApiResponse
+    },
+    enabled: !!address && needsPhase2,
+    staleTime: Infinity,
+  })
+
   // SAFETY: narrow type to avoid wagmi's "excessively deep" instantiation in useMemo deps
   const phase2Data = phase2Raw as readonly { status: string; result?: unknown }[] | undefined
 
@@ -157,6 +181,9 @@ export function useActiveRequests(address: string | undefined): { data: ActiveRe
           supplyAtClose + 1n > 0n ? ((assetsAtClose + 1n) * WEI_PER_ETHER) / (supplyAtClose + 1n) : 0n
         claimableInfo = { claimable: true, lockedSharePrice: navPerShare }
       }
+      const depHistory = historyData?.data.find(
+        h => h.action === 'DEPOSIT_REQUEST' && h.epochId === String(depEpochId),
+      )
       requests.push({
         req: {
           id: `dep-${depEpochId}`,
@@ -165,8 +192,8 @@ export function useActiveRequests(address: string | undefined): { data: ActiveRe
           status,
           epochId: String(depEpochId),
           batchRedeemId: null,
-          timestamps: { created: 0 },
-          txHashes: {},
+          timestamps: { created: depHistory?.timestamp ?? 0 },
+          txHashes: depHistory?.transactionHash ? { submit: depHistory.transactionHash } : {},
         },
         claimableInfo,
       })
@@ -191,6 +218,9 @@ export function useActiveRequests(address: string | undefined): { data: ActiveRe
           supplyAtClose + 1n > 0n ? ((assetsAtClose + 1n) * WEI_PER_ETHER) / (supplyAtClose + 1n) : 0n
         claimableInfo = { claimable: true, lockedSharePrice: navPerShare }
       }
+      const redHistory = historyData?.data.find(
+        h => h.action === 'REDEEM_REQUEST' && h.epochId === String(redEpochId),
+      )
       requests.push({
         req: {
           id: `red-${redEpochId}`,
@@ -199,15 +229,26 @@ export function useActiveRequests(address: string | undefined): { data: ActiveRe
           status,
           epochId: null,
           batchRedeemId: String(redEpochId),
-          timestamps: { created: 0 },
-          txHashes: {},
+          timestamps: { created: redHistory?.timestamp ?? 0 },
+          txHashes: redHistory?.transactionHash ? { submit: redHistory.transactionHash } : {},
         },
         claimableInfo,
       })
     }
 
     return requests.map(({ req, claimableInfo }) => toActiveRequestDisplay(req, claimableInfo, rbtcPrice))
-  }, [address, phase1Data, phase2Data, needsPhase2, isLoading1, isLoading2, error1, error2, rbtcPrice])
+  }, [
+    address,
+    phase1Data,
+    phase2Data,
+    needsPhase2,
+    isLoading1,
+    isLoading2,
+    error1,
+    error2,
+    rbtcPrice,
+    historyData,
+  ])
 
   return { data }
 }
