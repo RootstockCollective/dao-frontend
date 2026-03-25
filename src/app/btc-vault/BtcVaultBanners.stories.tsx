@@ -1,7 +1,6 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import type React from 'react'
-import { fn } from 'storybook/test'
 
 import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
 
@@ -84,7 +83,7 @@ export const DisconnectedOpen: Story = {
 export const EligibilityNone: Story = {
   name: 'Connected — KYB not submitted',
   args: {
-    children: <EligibilityBannerContent variant="none" onSubmitKyb={fn()} onCheckStatus={fn()} />,
+    children: <EligibilityBannerContent variant="none" />,
   },
 }
 
@@ -96,8 +95,6 @@ export const EligibilityRejected: Story = {
       <EligibilityBannerContent
         variant="rejected"
         rejectionReason="Document verification could not be completed"
-        onSubmitKyb={fn()}
-        onCheckStatus={fn()}
       />
     ),
   },
@@ -158,7 +155,7 @@ export const PausedWithEligibility: Story = {
         <PauseBannerContent pauseState={{ deposits: 'paused', withdrawals: 'paused' }} />
       </StackableBanner>
       <StackableBanner background={BTC_VAULT_GRADIENT}>
-        <EligibilityBannerContent variant="none" onSubmitKyb={fn()} onCheckStatus={fn()} />
+        <EligibilityBannerContent variant="none" />
       </StackableBanner>
     </div>
   ),

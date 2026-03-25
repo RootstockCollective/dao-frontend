@@ -70,7 +70,7 @@ describe('BtcVaultBanners', () => {
     mockUseEpochState.mockReturnValue({ data: closedEpoch })
     mockUseKybStatus.mockReturnValue({
       status: 'passed' as const,
-      submitKyb: vi.fn(),
+
     })
     mockUseActionEligibility.mockReturnValue({
       data: { pauseState: { deposits: 'active', withdrawals: 'active' } },
@@ -112,7 +112,7 @@ describe('BtcVaultBanners', () => {
     mockUseEpochState.mockReturnValue({ data: closedEpoch })
     mockUseKybStatus.mockReturnValue({
       status: 'passed' as const,
-      submitKyb: vi.fn(),
+
     })
     render(<BtcVaultBanners />)
 
@@ -127,7 +127,7 @@ describe('BtcVaultBanners', () => {
     mockUseEpochState.mockReturnValue({ data: openEpoch })
     mockUseKybStatus.mockReturnValue({
       status: 'passed' as const,
-      submitKyb: vi.fn(),
+
     })
     render(<BtcVaultBanners />)
 
@@ -142,7 +142,7 @@ describe('BtcVaultBanners', () => {
     mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
     mockUseKybStatus.mockReturnValue({
       status: 'none' as const,
-      submitKyb: vi.fn(),
+
     })
     render(<BtcVaultBanners />)
 
@@ -157,7 +157,7 @@ describe('BtcVaultBanners', () => {
     mockUseKybStatus.mockReturnValue({
       status: 'rejected' as const,
       rejectionReason: 'Document verification could not be completed.',
-      submitKyb: vi.fn(),
+
     })
     render(<BtcVaultBanners />)
 
@@ -172,7 +172,7 @@ describe('BtcVaultBanners', () => {
     mockUseEpochState.mockReturnValue({ data: openEpoch })
     mockUseKybStatus.mockReturnValue({
       status: 'none' as const,
-      submitKyb: vi.fn(),
+
     })
     render(<BtcVaultBanners />)
 

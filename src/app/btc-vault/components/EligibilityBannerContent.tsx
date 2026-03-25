@@ -1,7 +1,6 @@
 'use client'
 
-import { Button } from '@/components/Button'
-import { ExternalLinkIcon, ShieldExclamationIcon } from '@/components/Icons'
+import { ShieldExclamationIcon } from '@/components/Icons'
 import { ExternalLink } from '@/components/Link'
 import { Header, Label, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
@@ -13,38 +12,27 @@ const REJECTED_PREFIX = "We couldn't approve your KYB submission because of"
 const REJECTED_SUFFIX = ' Update the information and resubmit to unlock deposits.'
 const SUBMIT_KYB_LABEL = 'Submit KYB'
 const RESUBMIT_KYB_LABEL = 'Re-submit KYB'
-const CHECK_STATUS_LABEL = 'KYB already submitted? Check KYB status'
-const CHECK_STATUS_LINK_HREF_PLACEHOLDER = '#'
+const CHECK_STATUS_TEXT = 'KYB already submitted? Check KYB status in the designated KYB portal'
+const KYB_PORTAL_URL = 'https://www.rootstocklabs.com/institutional/'
 
 export type EligibilityBannerVariant = 'none' | 'rejected'
 
 export interface EligibilityBannerContentProps {
   variant: EligibilityBannerVariant
-  onSubmitKyb: () => void
-  onCheckStatus: () => void
-  /** When provided, used as href for "Check KYB status" link (e.g. external status page). Otherwise uses "#" and relies on onCheckStatus. */
-  checkStatusHref?: string
   /** When supplied from a real API, caller must sanitize (e.g. DOMPurify) or escape to prevent XSS. */
   rejectionReason?: string
 }
 
 /**
  * Presentational eligibility banner for No KYB and KYB Rejected states.
- * Renders section header, copy, primary CTA, and secondary "Check KYB status" link.
+ * Renders section header, copy, primary CTA linking to KYB portal, and secondary status text.
  * Caller wraps in card; no data fetching.
  */
-export function EligibilityBannerContent({
-  variant,
-  rejectionReason,
-  onSubmitKyb,
-  onCheckStatus,
-  checkStatusHref = CHECK_STATUS_LINK_HREF_PLACEHOLDER,
-}: EligibilityBannerContentProps) {
+export function EligibilityBannerContent({ variant, rejectionReason }: EligibilityBannerContentProps) {
   const rejectionMessage = rejectionReason
     ? `${REJECTED_PREFIX} ${rejectionReason}.${REJECTED_SUFFIX}`
     : `${REJECTED_PREFIX}...${REJECTED_SUFFIX}`
 
-  const linkClassName = 'text-[#171412] hover:opacity-80'
   const contentMaxWidth = 'max-w-xl'
 
   return (
@@ -59,24 +47,18 @@ export function EligibilityBannerContent({
             {NONE_INSTRUCTION}
           </Label>
           <div className="flex flex-col gap-4">
-            <Button variant="primary" onClick={onSubmitKyb} data-testid="eligibility-banner-submit-kyb">
-              {SUBMIT_KYB_LABEL}
-            </Button>
             <ExternalLink
-              href={checkStatusHref}
-              onClick={onCheckStatus}
-              {...(checkStatusHref !== CHECK_STATUS_LINK_HREF_PLACEHOLDER && {
-                target: '_blank',
-                rel: 'noopener noreferrer',
-              })}
-              className={linkClassName}
-              data-testid="eligibility-banner-check-status"
+              href={KYB_PORTAL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative overflow-hidden py-3 px-4 rounded-sm font-bold text-base transition-all duration-150 flex items-center justify-center w-full md:w-fit bg-primary text-bg-100 border border-primary"
+              data-testid="eligibility-banner-submit-kyb"
             >
-              <Span className="inline-flex items-center gap-1.5">
-                {CHECK_STATUS_LABEL}
-                <ExternalLinkIcon size={14} aria-label="" />
-              </Span>
+              <Span bold>{SUBMIT_KYB_LABEL}</Span>
             </ExternalLink>
+            <Span className="text-[#171412]" data-testid="eligibility-banner-check-status">
+              {CHECK_STATUS_TEXT}
+            </Span>
           </div>
         </>
       )}
@@ -93,28 +75,21 @@ export function EligibilityBannerContent({
               {rejectionMessage}
             </Label>
           </div>
-          {/* Button aligned with message text (icon 24px + gap-3 12px = 36px) */}
+          {/* Link aligned with message text (icon 24px + gap-3 12px = 36px) */}
           <div className="ml-9">
-            <Button variant="primary" onClick={onSubmitKyb} data-testid="eligibility-banner-submit-kyb">
-              {RESUBMIT_KYB_LABEL}
-            </Button>
+            <ExternalLink
+              href={KYB_PORTAL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative overflow-hidden py-3 px-4 rounded-sm font-bold text-base transition-all duration-150 flex items-center justify-center w-full md:w-fit bg-primary text-bg-100 border border-primary"
+              data-testid="eligibility-banner-submit-kyb"
+            >
+              <Span bold>{RESUBMIT_KYB_LABEL}</Span>
+            </ExternalLink>
           </div>
-          {/* Link aligned with shield icon (same left as icon) */}
-          <ExternalLink
-            href={checkStatusHref}
-            onClick={onCheckStatus}
-            {...(checkStatusHref !== CHECK_STATUS_LINK_HREF_PLACEHOLDER && {
-              target: '_blank',
-              rel: 'noopener noreferrer',
-            })}
-            className={linkClassName}
-            data-testid="eligibility-banner-check-status"
-          >
-            <Span className="inline-flex items-center gap-1.5">
-              {CHECK_STATUS_LABEL}
-              <ExternalLinkIcon size={14} aria-label="" />
-            </Span>
-          </ExternalLink>
+          <Span className="text-[#171412]" data-testid="eligibility-banner-check-status">
+            {CHECK_STATUS_TEXT}
+          </Span>
         </>
       )}
     </section>
