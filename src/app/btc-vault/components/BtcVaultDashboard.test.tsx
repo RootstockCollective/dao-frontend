@@ -184,7 +184,7 @@ describe('BtcVaultDashboard', () => {
     expect(principalMetric.parentElement).toContain(historyLink)
   })
 
-  it('hides View history when user has no vault tokens', () => {
+  it('shows View history under Principal even when vault share balance is zero', () => {
     const emptyDisplay: UserPositionDisplay = {
       ...MOCK_DISPLAY,
       vaultTokensRaw: 0n,
@@ -192,7 +192,9 @@ describe('BtcVaultDashboard', () => {
     mockUseUserPosition.mockReturnValue({ data: emptyDisplay, isLoading: false })
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
 
-    expect(screen.queryByTestId('btc-vault-history-link')).not.toBeInTheDocument()
+    const historyLink = screen.getByTestId('btc-vault-history-link')
+    expect(historyLink).toBeInTheDocument()
+    expect(historyLink).toHaveAttribute('href', '/btc-vault/request-history')
   })
 
   it('returns null when wallet is disconnected', () => {
