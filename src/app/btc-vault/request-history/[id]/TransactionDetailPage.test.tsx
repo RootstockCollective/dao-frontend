@@ -9,9 +9,17 @@ const mockShowToast = vi.fn()
 const mockOnCancelRequest = vi.fn()
 const mockClaim = vi.fn()
 const mockUseClaimRequest = vi.fn()
+const mockInvalidateAfterAction = vi.fn()
 
 vi.mock('wagmi', () => ({
   useAccount: () => mockUseAccount(),
+}))
+
+vi.mock('../../hooks/useBtcVaultInvalidation', () => ({
+  useBtcVaultInvalidation: () => ({
+    invalidateAfterSubmit: vi.fn(),
+    invalidateAfterAction: mockInvalidateAfterAction,
+  }),
 }))
 
 vi.mock('../../hooks/useRequestById', () => ({

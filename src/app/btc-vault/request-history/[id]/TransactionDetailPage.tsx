@@ -8,6 +8,7 @@ import { usePricesContext } from '@/shared/context/PricesContext'
 import { useModal } from '@/shared/hooks/useModal'
 import { showToast } from '@/shared/notification'
 
+import { useBtcVaultInvalidation } from '../../hooks/useBtcVaultInvalidation'
 import { useCancelBtcVaultRequest } from '../../hooks/useCancelRequest'
 import { useClaimRequest } from '../../hooks/useClaimRequest'
 import { useRequestById } from '../../hooks/useRequestById'
@@ -24,6 +25,7 @@ export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
   const { prices } = usePricesContext()
   const rbtcPrice = prices[RBTC]?.price ?? 0
   const { isModalOpened, openModal, closeModal } = useModal()
+  const { invalidateAfterAction } = useBtcVaultInvalidation()
   const { onCancelRequest, isRequesting: isCancelling } = useCancelBtcVaultRequest(request?.type ?? 'deposit')
   const {
     claim,
@@ -50,6 +52,7 @@ export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
   const handleClaim = async () => {
     try {
       await claim()
+      invalidateAfterAction(id)
       showToast({
         severity: 'success',
         title: request.type === 'deposit' ? 'Shares claimed' : 'rBTC claimed',
@@ -67,6 +70,7 @@ export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
   const handleConfirmCancel = async () => {
     try {
       await onCancelRequest()
+      invalidateAfterAction(id)
       closeModal()
       showToast({
         severity: 'success',

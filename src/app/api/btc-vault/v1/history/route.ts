@@ -7,7 +7,7 @@ import type { PaginationResponse } from '@/app/api/utils/types'
 import { BtcVaultGlobalHistoryQuerySchema } from '../schemas'
 import { fetchBtcVaultHistoryPageAndEnrich } from './action'
 
-export const revalidate = 60
+export const revalidate = 20
 
 /**
  * GET /api/btc-vault/v1/history
