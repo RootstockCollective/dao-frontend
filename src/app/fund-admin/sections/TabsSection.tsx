@@ -2,7 +2,13 @@
 
 import { useCallback, useState } from 'react'
 
+import { BTCWhitelistingHistoryTable } from '@/app/fund-admin/components/BTCWhitelistingHistoryTable'
+import type {
+  ColumnId,
+  WhitelistCellDataMap,
+} from '@/app/fund-admin/components/BTCWhitelistingHistoryTable.config'
 import { SolidTabs } from '@/components/Tabs'
+import { TableProvider } from '@/shared/context'
 
 const ADMIN_TABS = ['Whitelist', 'Vault controls', 'Audit log'] as const
 type AdminTab = (typeof ADMIN_TABS)[number]
@@ -23,7 +29,11 @@ export function TabsSection() {
       variant="muted"
     >
       <div className="mt-6 p-6 pt-4 bg-bg-80 rounded-sm">
-        {activeTab === 'Whitelist' && 'Whitelist table'}
+        {activeTab === 'Whitelist' && (
+          <TableProvider<ColumnId, WhitelistCellDataMap>>
+            <BTCWhitelistingHistoryTable />
+          </TableProvider>
+        )}
         {activeTab === 'Vault controls' && 'Vault controls'}
         {activeTab === 'Audit log' && 'Audit log table'}
       </div>

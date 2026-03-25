@@ -41,3 +41,14 @@ const baseHistoryQuerySchema = z.object({
 export const BtcVaultGlobalHistoryQuerySchema = baseHistoryQuerySchema.extend({
   address: AddressSchema.optional(),
 })
+
+/** Sort fields for GET /api/btc-vault/v1/whitelist-role-history (subgraph `BtcVaultWhitelistedUser_orderBy`). */
+export const BtcVaultWhitelistedUsersSortFieldEnum = z.enum(['lastUpdated', 'account', 'status'])
+
+/** Query schema for GET /api/btc-vault/v1/whitelist-role-history */
+export const BtcVaultWhitelistRoleHistoryQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(200).default(20),
+  page: z.coerce.number().int().min(1).default(1),
+  sort_field: BtcVaultWhitelistedUsersSortFieldEnum.default('lastUpdated'),
+  sort_direction: SortDirectionEnum.default('desc'),
+})
