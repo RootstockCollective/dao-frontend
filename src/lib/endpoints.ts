@@ -81,3 +81,6 @@ export const fetchRewardDistributionRewardsLogsByAddress = withChainId(
 export const getVaultHistoryEndpoint = `/api/vault/v1/addresses/{{address}}/history`
 
 export const getBtcVaultEpochHistoryEndpoint = `/api/btc-vault/v1/epoch-history`
+
+/** GET /api/btc-vault/v1/whitelist-role-history — subgraph `btcVaultWhitelistedUsers`. */
+export const getBtcVaultWhitelistRoleHistoryEndpoint = `/api/btc-vault/v1/whitelist-role-history`
