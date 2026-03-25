@@ -22,7 +22,7 @@ const CLAIMABLE_DEPOSIT_ROW = {
     fiatAmount: '$98,500',
     claimTokenType: 'rbtc' as const,
     status: 'open_to_claim' as const,
-    displayStatusLabel: 'Open to claim' as const,
+    displayStatusLabel: 'Ready to claim' as const,
     requestStatus: 'claimable' as const,
     updatedAtFormatted: '15 Jan 2025',
     createdAtFormatted: '10 Jan 2025',
@@ -101,7 +101,7 @@ describe('BtcVaultHistoryDataRow', () => {
     expect(row).toHaveTextContent('Deposit')
     expect(row).toHaveTextContent('15 Jan 2025')
     expect(row).toHaveTextContent('1.5')
-    expect(row).toHaveTextContent('Open to claim')
+    expect(row).toHaveTextContent('Ready to claim')
   })
 
   it('does not show actions when not hovered', () => {

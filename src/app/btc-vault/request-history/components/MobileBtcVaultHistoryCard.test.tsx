@@ -17,7 +17,7 @@ const CLAIMABLE_DEPOSIT_ROW = {
     fiatAmount: '$98,500',
     claimTokenType: 'rbtc' as const,
     status: 'open_to_claim' as const,
-    displayStatusLabel: 'Open to claim' as const,
+    displayStatusLabel: 'Ready to claim' as const,
     requestStatus: 'claimable' as const,
     updatedAtFormatted: '15 Jan 2025',
     createdAtFormatted: '10 Jan 2025',
@@ -72,7 +72,7 @@ describe('MobileBtcVaultHistoryCard', () => {
     expect(card).toHaveTextContent('Deposit')
     expect(card).toHaveTextContent('15 Jan 2025')
     expect(card).toHaveTextContent('1.5')
-    expect(card).toHaveTextContent('Open to claim')
+    expect(card).toHaveTextContent('Ready to claim')
   })
 
   it('always shows "Claim shares" for claimable deposit', () => {

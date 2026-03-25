@@ -7,31 +7,21 @@ import type { ActiveFilter, FilterGroup } from '@/components/FilterSideBar/types
 import { TokenImage } from '@/components/TokenImage'
 import { RBTC } from '@/lib/constants'
 
-import type { DisplayStatus } from '../../services/ui/types'
+import type { HistoryRowStatusLabel } from '../../services/ui/types'
 
 /**
- * Filter-specific labels keyed by internal `DisplayStatus` (same keys as client-side status filter).
- * `claim_pending` uses withdraw-oriented copy; `successful` uses **Completed** so one chip covers finalized
- * deposits ("Successful" in rows) and claimed withdrawals ("Withdrawn" in rows).
+ * Filter options for the status filter, using display labels that match the row badges exactly.
+ * Both `label` and `value` use the same `HistoryRowStatusLabel` string so the client-side
+ * filter in `useRequestHistory` can match against `row.displayStatusLabel` directly.
  */
-const FILTER_STATUS_LABELS: Record<DisplayStatus, string> = {
-  pending: 'Pending',
-  approved: 'Approved',
-  open_to_claim: 'Active',
-  claim_pending: 'Ready to withdraw',
-  successful: 'Completed',
-  cancelled: 'Cancelled',
-  rejected: 'Rejected',
-}
-
-const STATUS_ORDER: DisplayStatus[] = [
-  'pending',
-  'approved',
-  'open_to_claim',
-  'claim_pending',
-  'successful',
-  'cancelled',
-  'rejected',
+const FILTER_STATUS_OPTIONS: HistoryRowStatusLabel[] = [
+  'Pending',
+  'Approved',
+  'Ready to claim',
+  'Ready to withdraw',
+  'Successful',
+  'Withdrawn',
+  'Cancelled',
 ]
 
 interface Props {
@@ -76,7 +66,7 @@ export function BtcVaultHistoryFilterSideBar({ isOpen, onClose, activeFilters, o
         allLabel: 'All statuses',
         allTestId: 'all-statuses',
         isMultiSelect: true,
-        options: STATUS_ORDER.map(value => ({ label: FILTER_STATUS_LABELS[value], value })),
+        options: FILTER_STATUS_OPTIONS.map(label => ({ label, value: label })),
       },
     ],
     [],

@@ -470,10 +470,10 @@ describe('mapRequestDisplayStatus', () => {
     expect(result.displayStatusLabel).toBe('Pending')
   })
 
-  it('maps claimable deposit to "Open to claim"', () => {
+  it('maps claimable deposit to "Ready to claim"', () => {
     const result = mapRequestDisplayStatus('claimable', 'deposit')
     expect(result.displayStatus).toBe('open_to_claim')
-    expect(result.displayStatusLabel).toBe('Open to claim')
+    expect(result.displayStatusLabel).toBe('Ready to claim')
   })
 
   it('maps claimable withdrawal to "Claim pending"', () => {
@@ -619,7 +619,7 @@ describe('toPaginatedHistoryDisplay', () => {
     }
     const result = toPaginatedHistoryDisplay(raw)
     expect(result.rows[0].displayStatus).toBe('open_to_claim')
-    expect(result.rows[0].displayStatusLabel).toBe('Open to claim')
+    expect(result.rows[0].displayStatusLabel).toBe('Ready to claim')
   })
 
   it('includes updatedAtFormatted from updated when present, else created', () => {
@@ -684,7 +684,7 @@ describe('getTxHistoryStatusLabel', () => {
     { displayStatus: 'successful', requestType: 'withdrawal', expected: 'Withdrawn' },
     { displayStatus: 'successful', requestType: 'deposit', expected: 'Successful' },
     { displayStatus: 'pending', requestType: 'withdrawal', expected: 'Pending' },
-    { displayStatus: 'open_to_claim', requestType: 'deposit', expected: 'Open to claim' },
+    { displayStatus: 'open_to_claim', requestType: 'deposit', expected: 'Ready to claim' },
     { displayStatus: 'cancelled', requestType: 'withdrawal', expected: 'Cancelled' },
   ]
 
