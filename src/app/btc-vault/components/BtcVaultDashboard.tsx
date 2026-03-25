@@ -14,9 +14,6 @@ import { btcVaultRequestHistory } from '@/shared/constants/routes'
 import { useUserPosition } from '../hooks/useUserPosition/useUserPosition'
 import { BtcVaultActions } from './BtcVaultActions'
 
-const IS_MOCK_ENABLED =
-  process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_MOCK_BTC_VAULT === 'true'
-
 const LoadingValue = () => <Span className="animate-pulse text-text-60">0</Span>
 
 /** Resolves the display value for a metric based on query state. */
@@ -35,8 +32,6 @@ export const BtcVaultDashboard = () => {
   const { data, isLoading, isError } = useUserPosition(address)
 
   if (!address || !isConnected) return null
-
-  const hasHistory = IS_MOCK_ENABLED || (!!data && data.vaultTokensRaw > 0n)
 
   return (
     <SectionContainer title="MY METRICS" className="w-full">
@@ -80,16 +75,14 @@ export const BtcVaultDashboard = () => {
               fiatAmount={isLoading || isError ? undefined : data?.fiatPrincipalDeposited}
               data-testid="metric-principal"
             />
-            {hasHistory && (
-              <Link
-                href={btcVaultRequestHistory}
-                className="mt-6 flex items-center gap-x-1 text-sm font-medium underline underline-offset-2"
-                data-testid="btc-vault-history-link"
-              >
-                <HistoryIcon />
-                <Span variant="body-s">View history</Span>
-              </Link>
-            )}
+            <Link
+              href={btcVaultRequestHistory}
+              className="mt-6 flex items-center gap-x-1 text-sm font-medium underline underline-offset-2"
+              data-testid="btc-vault-history-link"
+            >
+              <HistoryIcon />
+              <Span variant="body-s">View history</Span>
+            </Link>
           </div>
           <BalanceInfo
             className="w-full md:w-[214px] md:min-w-[180px]"
