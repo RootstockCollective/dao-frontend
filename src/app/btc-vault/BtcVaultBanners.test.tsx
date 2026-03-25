@@ -3,10 +3,16 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 
 import { BtcVaultBanners } from './BtcVaultBanners'
+import {
+  BOTH_PAUSED_REASON,
+  DEPOSIT_PAUSED_REASON,
+  WITHDRAWAL_PAUSED_REASON,
+} from './services/constants'
 
 const mockUseAccount = vi.fn()
 const mockUseEpochState = vi.fn()
 const mockUseKybStatus = vi.fn()
+const mockUseActionEligibility = vi.fn()
 
 vi.mock('wagmi', async importOriginal => {
   const actual = await importOriginal<typeof import('wagmi')>()
@@ -22,6 +28,10 @@ vi.mock('./hooks/useEpochState', () => ({
 
 vi.mock('./hooks/useKybStatus', () => ({
   useKybStatus: () => mockUseKybStatus(),
+}))
+
+vi.mock('./hooks/useActionEligibility', () => ({
+  useActionEligibility: () => mockUseActionEligibility(),
 }))
 
 vi.mock('@/shared/hooks/useIsDesktop', () => ({
@@ -61,6 +71,9 @@ describe('BtcVaultBanners', () => {
     mockUseKybStatus.mockReturnValue({
       status: 'passed' as const,
       submitKyb: vi.fn(),
+    })
+    mockUseActionEligibility.mockReturnValue({
+      data: { pauseState: { deposits: 'active', withdrawals: 'active' } },
     })
   })
 
@@ -166,5 +179,50 @@ describe('BtcVaultBanners', () => {
     expect(screen.getByTestId('btc-vault-eligibility-and-deposit-card')).toBeInTheDocument()
     expect(screen.getByTestId('eligibility-banner-content')).toBeInTheDocument()
     expect(screen.getByTestId('deposit-window-section')).toBeInTheDocument()
+  })
+
+  describe('pause banners', () => {
+    it('shows deposit paused banner when deposits are paused', () => {
+      mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
+      mockUseActionEligibility.mockReturnValue({
+        data: { pauseState: { deposits: 'paused', withdrawals: 'active' } },
+      })
+      render(<BtcVaultBanners />)
+
+      expect(screen.getByTestId('PauseBanner')).toBeInTheDocument()
+      expect(screen.getByText(DEPOSIT_PAUSED_REASON)).toBeInTheDocument()
+    })
+
+    it('shows withdrawal paused banner when withdrawals are paused', () => {
+      mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
+      mockUseActionEligibility.mockReturnValue({
+        data: { pauseState: { deposits: 'active', withdrawals: 'paused' } },
+      })
+      render(<BtcVaultBanners />)
+
+      expect(screen.getByTestId('PauseBanner')).toBeInTheDocument()
+      expect(screen.getByText(WITHDRAWAL_PAUSED_REASON)).toBeInTheDocument()
+    })
+
+    it('shows combined paused banner when both are paused', () => {
+      mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
+      mockUseActionEligibility.mockReturnValue({
+        data: { pauseState: { deposits: 'paused', withdrawals: 'paused' } },
+      })
+      render(<BtcVaultBanners />)
+
+      expect(screen.getByTestId('PauseBanner')).toBeInTheDocument()
+      expect(screen.getByText(BOTH_PAUSED_REASON)).toBeInTheDocument()
+    })
+
+    it('does not show pause banner when neither is paused', () => {
+      mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
+      mockUseActionEligibility.mockReturnValue({
+        data: { pauseState: { deposits: 'active', withdrawals: 'active' } },
+      })
+      render(<BtcVaultBanners />)
+
+      expect(screen.queryByTestId('PauseBanner')).not.toBeInTheDocument()
+    })
   })
 })

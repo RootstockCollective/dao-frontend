@@ -9,7 +9,11 @@ import { Header } from '@/components/Typography'
 import { BtcVaultEligibilityAndDepositCard } from './components/BtcVaultEligibilityAndDepositCard'
 import { DepositWindowSection } from './components/DepositWindowSection'
 import { DisclosureContent } from './components/DisclosureContent'
+import { PauseBannerContent } from './components/PauseBannerContent'
+import { useActionEligibility } from './hooks/useActionEligibility'
 import { useEpochState } from './hooks/useEpochState'
+
+const PAUSE_BANNER_GRADIENT = 'linear-gradient(270deg, #64280C 0%, #DD9E52 33.69%, #FFF5E1 52.83%)'
 
 const DisclosureSection = () => (
   <div className="flex flex-col gap-4">
@@ -26,6 +30,8 @@ export const BtcVaultBanners = () => {
   const { address, isConnected } = useAccount()
   const { data: epoch } = useEpochState()
 
+  const { data: eligibilityData } = useActionEligibility(address)
+
   if (!address || !isConnected) {
     const showDepositWindow = Boolean(epoch?.isAcceptingRequests && epoch?.endTime != null)
     const sections: ReactNode[] = []
@@ -37,5 +43,24 @@ export const BtcVaultBanners = () => {
     return <StackableBanner testId="DisclosureBanner">{sections}</StackableBanner>
   }
 
-  return <BtcVaultEligibilityAndDepositCard />
+  const pauseState = eligibilityData?.pauseState
+  const showPauseBanner =
+    pauseState && (pauseState.deposits === 'paused' || pauseState.withdrawals === 'paused')
+
+  return (
+    <>
+      {showPauseBanner && (
+        <StackableBanner
+          testId="PauseBanner"
+          background={PAUSE_BANNER_GRADIENT}
+          mobileBackground={PAUSE_BANNER_GRADIENT}
+          decorativeImageColor="#FFF5E1"
+          decorativeSecondaryColor="#171412"
+        >
+          <PauseBannerContent pauseState={pauseState} />
+        </StackableBanner>
+      )}
+      <BtcVaultEligibilityAndDepositCard />
+    </>
+  )
 }

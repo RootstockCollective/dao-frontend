@@ -8,6 +8,8 @@ import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 interface StackableBannerProps extends CommonComponentProps {
   children: ReactNode | ReactNode[]
   background?: string
+  /** Override the default mobile gradient. When omitted, falls back to the default purple/green mobile gradient. */
+  mobileBackground?: string
   /** Gap between sections (e.g. "gap-2" for 8px). When set, section wrappers use no vertical padding. */
   contentGap?: string
   /** Main debris color (e.g. cream for BTC Vault card). */
@@ -21,6 +23,7 @@ export const StackableBanner = ({
   children,
   className = '',
   background = 'linear-gradient(270deg, #442351 0%, #C0F7FF 49.49%, #E3FFEB 139.64%)',
+  mobileBackground,
   contentGap,
   decorativeImageColor = '#d2fbf6',
   decorativeSecondaryColor,
@@ -38,7 +41,9 @@ export const StackableBanner = ({
     <div
       className={cn('relative self-stretch py-6 px-10 text-v3-text-0 mt-7 md:mt-0', className)}
       style={{
-        background: isDesktop ? background : 'linear-gradient(270deg, #7B83CF 0%, #E3FFEB 52.87%)',
+        background: isDesktop
+          ? background
+          : (mobileBackground ?? 'linear-gradient(270deg, #7B83CF 0%, #E3FFEB 52.87%)'),
       }}
       data-testid={testId}
     >

@@ -1,4 +1,4 @@
-import type { EpochStatus, RequestStatus, RequestType } from '../types'
+import type { EpochStatus, PauseState, RequestStatus, RequestType } from '../types'
 import type { BtcVaultHistoryStatusKey } from './api-types'
 
 export const DISPLAY_REQUEST_TYPE_LABELS: Record<RequestType, string> = {
@@ -111,6 +111,7 @@ export interface ActionEligibility {
   canWithdraw: boolean
   depositBlockReason: string
   withdrawBlockReason: string
+  pauseState?: PauseState
 }
 
 export interface ActiveRequestDisplay {

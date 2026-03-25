@@ -5,3 +5,4 @@ export {
   type EligibilityBannerContentProps,
   type EligibilityBannerVariant,
 } from './EligibilityBannerContent'
+export { PauseBannerContent, type PauseBannerContentProps } from './PauseBannerContent'

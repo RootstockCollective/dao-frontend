@@ -226,6 +226,7 @@ describe('useActionEligibility', () => {
       expect(result.current.data?.canWithdraw).toBe(true)
       expect(result.current.data?.depositBlockReason).toBe('')
       expect(result.current.data?.withdrawBlockReason).toBe('')
+      expect(result.current.data?.pauseState).toEqual({ deposits: 'active', withdrawals: 'active' })
     })
 
     it('disables deposit with reason when deposits paused', () => {
@@ -235,6 +236,7 @@ describe('useActionEligibility', () => {
       expect(result.current.data?.canDeposit).toBe(false)
       expect(result.current.data?.depositBlockReason).toBe(DEPOSIT_PAUSED_REASON)
       expect(result.current.data?.canWithdraw).toBe(true)
+      expect(result.current.data?.pauseState).toEqual({ deposits: 'paused', withdrawals: 'active' })
     })
 
     it('disables withdraw with reason when withdrawals paused', () => {
