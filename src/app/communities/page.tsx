@@ -11,6 +11,7 @@ import {
   vanguardCommunity,
 } from '@/app/communities/communityUtils'
 import { HeroCommunitiesComponent } from '@/app/communities/components'
+import { getEnvFlag } from '@/shared/context/FeatureFlag/flags.utils'
 
 import { ResponsiveCommunityItemHOC } from './components/ResponsiveCommunityItemHOC'
 import { SectionContainer } from './components/SectionContainer'
@@ -23,6 +24,8 @@ export const dynamic = 'force-static'
  * Client-side interactivity is managed by injected client components
  */
 export default function Communities() {
+  const showCultivator = getEnvFlag('cultivator')
+
   return (
     <div>
       <div className="flex flex-col gap-2">
@@ -53,8 +56,8 @@ export default function Communities() {
           title="CLUBS"
           rightContent="These are essentially a group where people with likeminded interests can discuss ideas. Some are gated with NFTs, and in the future it may be possible to give anyone the ability to request a  club is created. The more you participate — from proposals to governance to community — the more opportunities you have to collect. "
         >
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-2">
-            <ResponsiveCommunityItemHOC {...cultivatorCommunity} enableDebris />
+          <div className={`grid grid-cols-1 ${showCultivator ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-2`}>
+            {showCultivator && <ResponsiveCommunityItemHOC {...cultivatorCommunity} enableDebris />}
             <div className="flex flex-col gap-2 lg:col-span-2">
               <ResponsiveCommunityItemHOC {...betaBuilders} variant="landscape" enableDebris />
               <ResponsiveCommunityItemHOC {...rootstockHacktivator} variant="landscape" enableDebris />
