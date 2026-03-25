@@ -60,6 +60,8 @@ export const NFT_BOOSTER_DATA_URL = (process.env.NEXT_PUBLIC_NFT_BOOSTER_DATA_UR
 export const ADMIN_ROLE = '0x7865ee6a85d4460dad7043a6436d34e32aa9ecd622990b81417e4af5b06fe9d0'
 // keccak256('MANAGER_ROLE')
 export const FUND_MANAGER_ROLE = '0x241ecf16d79d0f8dbfb92cbc07fe17840425976cf0667f022fe9877caa831b08'
+// keccak256('PAUSER_ROLE')
+export const PAUSER_ROLE = '0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a'
 // From rbtc-vault-sc Roles.sol: keccak256("WHITELISTED_USER_ROLE") — role for whitelisted users allowed to interact with the vault
 export const DEPOSITOR_ROLE = '0x013e1f410e70025de956b8838ba99c3a9a9f7eb3e6d678062363333c8abd7ea0'
 // keccak256('WHITELISTED_USER_ROLE') — mirrors Roles.sol (internal constant, no on-chain getter)

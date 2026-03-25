@@ -1,11 +1,12 @@
 import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
 
-import { ADMIN_ROLE, FUND_MANAGER_ROLE } from '@/lib/constants'
+import { ADMIN_ROLE, FUND_MANAGER_ROLE, PAUSER_ROLE } from '@/lib/constants'
 import { permissionsManager } from '@/lib/contracts'
 
 import { useReadPermissionsManager } from './useReadPermissionsManager'
 
+// TODO: multicall query
 export function usePermissionsManager() {
   const { address: connectedAddress } = useAccount()
 
@@ -35,16 +36,29 @@ export function usePermissionsManager() {
     { enabled: queryEnabled },
   )
 
-  const isLoading = isAdminLoading || isFundManagerLoading
-  const error = adminError || fundManagerError
+  const {
+    data: isPauser,
+    isLoading: isPauserLoading,
+    error: pauserError,
+  } = useReadPermissionsManager(
+    {
+      functionName: 'hasRole',
+      args: [PAUSER_ROLE, connectedAddress!],
+    },
+    { enabled: queryEnabled },
+  )
+
+  const isLoading = isAdminLoading || isFundManagerLoading || isPauserLoading
+  const error = adminError || fundManagerError || pauserError
 
   return useMemo(
     () => ({
       isAdmin: isAdmin ?? false,
       isFundManager: isFundManager ?? false,
+      isPauser: isPauser ?? false,
       isLoading,
       error,
     }),
-    [isAdmin, isFundManager, isLoading, error],
+    [isAdmin, isFundManager, isPauser, isLoading, error],
   )
 }
