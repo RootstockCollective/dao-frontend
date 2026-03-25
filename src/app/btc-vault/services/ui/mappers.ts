@@ -293,14 +293,14 @@ export function toActiveRequestDisplay(
     type: req.type,
     amountFormatted: formatEther(req.amount),
     status: req.status,
-    createdAtFormatted: formatTimestamp(req.timestamps.created),
+    createdAtFormatted: req.timestamps.created > 0 ? formatTimestamp(req.timestamps.created) : '—',
     claimable: claimableInfo?.claimable ?? false,
     lockedSharePriceFormatted:
       claimableInfo?.lockedSharePrice != null ? `${formatEther(claimableInfo.lockedSharePrice)}/share` : null,
     finalizeId: req.type === 'deposit' ? req.epochId : req.batchRedeemId,
     epochId: req.epochId,
     batchRedeemId: req.batchRedeemId,
-    lastUpdatedFormatted: formatDateShort(lastUpdated),
+    lastUpdatedFormatted: lastUpdated > 0 ? formatDateShort(lastUpdated) : '—',
     sharesFormatted,
     usdEquivalentFormatted,
   }
