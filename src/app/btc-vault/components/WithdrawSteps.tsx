@@ -3,29 +3,94 @@
 import { CaretRight } from '@/components/Icons/CaretRight'
 import { Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface WithdrawStepsProps {
+  /** 0 = amount, 1 = allowance, 2 = confirm */
   currentStep: number
 }
 
 /**
- * Two-step indicator for the BTC vault withdrawal modal.
- * Mirrors the pattern from DepositSteps / StakeSteps.
+ * Three-step indicator for the BTC vault withdrawal modal.
+ * Matches layout and motion from `StakeSteps` (DAO-2115).
  */
-export const WithdrawSteps = ({ currentStep }: WithdrawStepsProps) => (
-  <div className="flex justify-between items-center w-full">
-    <Span variant="tag" caps className="whitespace-nowrap shrink-0 mr-1 text-text-100">
-      SELECT AMOUNT
-    </Span>
+export const WithdrawSteps = ({ currentStep }: WithdrawStepsProps) => {
+  const isDesktop = useIsDesktop()
 
-    <CaretRight className={cn('shrink-0 mr-1', currentStep >= 1 ? 'opacity-100' : 'opacity-60')} />
+  const getTransformOffset = () => {
+    const offsets = [0, -18, -36]
+    return offsets[currentStep] ?? 0
+  }
 
-    <Span
-      variant="tag"
-      caps
-      className={cn('whitespace-nowrap shrink-0', currentStep >= 1 ? 'text-text-100' : 'text-text-60')}
+  const transitionClasses = isDesktop ? '' : 'transition-transform duration-600 ease-in-out'
+  const stepTransitionClasses = isDesktop ? '' : 'transition-all duration-400 ease-out'
+  const transformStyle = isDesktop ? {} : { transform: `translateX(${getTransformOffset()}%)` }
+  const containerClasses = isDesktop ? 'w-full' : 'w-screen -mx-6'
+  const stepLayoutClasses = isDesktop ? 'flex justify-between items-center' : ''
+  const paddingClasses = isDesktop ? '' : 'px-6'
+
+  return (
+    <div
+      className={cn(
+        'relative flex items-center whitespace-nowrap flex-nowrap',
+        containerClasses,
+        stepLayoutClasses,
+        paddingClasses,
+        transitionClasses,
+      )}
+      style={transformStyle}
     >
-      CONFIRM REQUEST
-    </Span>
-  </div>
-)
+      <Span
+        variant="tag"
+        caps
+        className={cn(
+          'whitespace-nowrap flex-shrink-0 mr-1',
+          'text-text-100 scale-100',
+          stepTransitionClasses,
+        )}
+      >
+        SELECT AMOUNT
+      </Span>
+
+      <CaretRight
+        className={cn(
+          'flex-shrink-0 mr-1',
+          currentStep >= 1 ? 'opacity-100 scale-100' : 'opacity-60 scale-98',
+          stepTransitionClasses,
+        )}
+      />
+
+      <Span
+        variant="tag"
+        caps
+        className={cn(
+          'whitespace-nowrap flex-shrink-0 mr-1',
+          currentStep >= 1 ? 'text-text-100 scale-100' : 'text-text-60 scale-98',
+          stepTransitionClasses,
+        )}
+      >
+        APPROVE SHARES
+      </Span>
+
+      <CaretRight
+        className={cn(
+          'flex-shrink-0 mr-1',
+          currentStep >= 2 ? 'opacity-100 scale-100' : 'opacity-60 scale-98',
+          stepTransitionClasses,
+        )}
+      />
+
+      <Span
+        variant="tag"
+        caps
+        className={cn(
+          'whitespace-nowrap flex-shrink-0',
+          currentStep === 2 ? 'text-text-100 scale-100' : 'text-text-60 scale-98',
+          stepTransitionClasses,
+        )}
+      >
+        CONFIRM WITHDRAW
+      </Span>
+    </div>
+  )
+}

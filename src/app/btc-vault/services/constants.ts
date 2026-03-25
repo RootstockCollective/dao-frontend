@@ -30,8 +30,16 @@ export const BTC_VAULT_WITHDRAWAL_FEE = '0'
 export const BTC_VAULT_WITHDRAWAL_DISCLAIMER =
   'Subject to approval by fund manager. Shares are minted at the NAV confirmed at deposit window close. Cancelable until deposit window close.'
 
-/** Step progress values for the 2-step withdrawal flow (amount → review) */
-export const WITHDRAWAL_STEP_PROGRESS = [50, 100] as const
+/** Step progress values for the 3-step withdrawal flow (amount → approve shares → confirm) */
+export const WITHDRAWAL_STEP_PROGRESS = [33, 66, 100] as const
+
+/** Shown on the vault-shares allowance step (DAO-2115). */
+export const BTC_VAULT_WITHDRAW_TWO_TX_MESSAGE =
+  'You will be asked to sign two transactions: one to approve your shares for use, and another to complete the withdrawal request.'
+
+/** Shown on the final withdraw step when the user already completed an approve transaction. */
+export const BTC_VAULT_WITHDRAW_REQUEST_TX_HINT =
+  'Your wallet will ask you to confirm the withdrawal request.'
 
 /** Qualitative expected completion time for withdrawal requests */
 export const WITHDRAWAL_EXPECTED_COMPLETION = '5 days'

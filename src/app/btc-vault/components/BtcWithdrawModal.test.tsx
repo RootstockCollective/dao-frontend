@@ -38,8 +38,15 @@ beforeAll(() => {
 
 const defaultProps = {
   onClose: vi.fn(),
-  onSubmit: vi.fn().mockResolvedValue(undefined),
-  isSubmitting: false,
+  hasAllowanceFor: vi.fn().mockResolvedValue(true),
+  onApproveShares: vi.fn().mockResolvedValue(undefined),
+  onRequestWithdraw: vi.fn().mockResolvedValue(undefined),
+  isApprovingShares: false,
+  isWithdrawSubmitting: false,
+  allowance: undefined as bigint | undefined,
+  isAllowanceReadLoading: false,
+  allowanceTxHash: undefined as `0x${string}` | undefined,
+  isAllowanceTxFailed: false,
 }
 
 describe('BtcWithdrawModal', () => {
@@ -86,7 +93,7 @@ describe('BtcWithdrawModal', () => {
     expect(screen.queryByTestId('WithdrawReviewStep')).not.toBeInTheDocument()
   })
 
-  it('navigates to review step when Continue is clicked', async () => {
+  it('navigates to confirm when Continue is clicked and allowance is sufficient', async () => {
     const user = userEvent.setup()
     render(<BtcWithdrawModal {...defaultProps} />)
 
@@ -97,6 +104,20 @@ describe('BtcWithdrawModal', () => {
 
     expect(screen.getByTestId('WithdrawReviewStep')).toBeInTheDocument()
     expect(screen.queryByTestId('WithdrawAmountStep')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('WithdrawAllowanceStep')).not.toBeInTheDocument()
+  })
+
+  it('navigates to allowance step when Continue and allowance is insufficient', async () => {
+    const user = userEvent.setup()
+    const hasAllowanceFor = vi.fn().mockResolvedValue(false)
+    render(<BtcWithdrawModal {...defaultProps} hasAllowanceFor={hasAllowanceFor} />)
+
+    const input = screen.getByTestId('Input_amount-btc-vault-withdraw')
+    await user.type(input, '2')
+    await user.click(screen.getByTestId('ContinueButton'))
+
+    expect(screen.getByTestId('WithdrawAllowanceStep')).toBeInTheDocument()
+    expect(screen.queryByTestId('WithdrawReviewStep')).not.toBeInTheDocument()
   })
 
   it('displays review fields with correct values', async () => {
@@ -113,19 +134,17 @@ describe('BtcWithdrawModal', () => {
     expect(screen.getByTestId('review-expected-completion')).toHaveTextContent('5 days')
   })
 
-  it('calls onSubmit with correct params when Send request is clicked', async () => {
+  it('calls onRequestWithdraw with correct params when Send request is clicked', async () => {
     const user = userEvent.setup()
-    const onSubmit = vi.fn().mockResolvedValue(undefined)
-    render(<BtcWithdrawModal {...defaultProps} onSubmit={onSubmit} />)
+    const onRequestWithdraw = vi.fn().mockResolvedValue(undefined)
+    render(<BtcWithdrawModal {...defaultProps} onRequestWithdraw={onRequestWithdraw} />)
 
     const input = screen.getByTestId('Input_amount-btc-vault-withdraw')
     await user.type(input, '2')
     await user.click(screen.getByTestId('ContinueButton'))
     await user.click(screen.getByTestId('SubmitRequestButton'))
 
-    expect(onSubmit).toHaveBeenCalledWith({
-      amount: 2_000_000_000_000_000_000n,
-    })
+    expect(onRequestWithdraw).toHaveBeenCalledWith(2_000_000_000_000_000_000n)
   })
 
   it('calls onClose when the close button is clicked', async () => {
@@ -143,7 +162,7 @@ describe('BtcWithdrawModal', () => {
     expect(screen.getByTestId('SharesBalanceLabel')).toHaveTextContent('5.0')
   })
 
-  it('keeps WITHDRAW rBTC title on review step', async () => {
+  it('keeps WITHDRAW rBTC title on confirm step', async () => {
     const user = userEvent.setup()
     render(<BtcWithdrawModal {...defaultProps} />)
 
@@ -154,7 +173,7 @@ describe('BtcWithdrawModal', () => {
     expect(screen.getByText('WITHDRAW rBTC')).toBeInTheDocument()
   })
 
-  it('returns to amount step when Back is clicked on review', async () => {
+  it('returns to amount step when Back is clicked on confirm', async () => {
     const user = userEvent.setup()
     render(<BtcWithdrawModal {...defaultProps} />)
 
@@ -168,5 +187,12 @@ describe('BtcWithdrawModal', () => {
 
     expect(screen.getByTestId('WithdrawAmountStep')).toBeInTheDocument()
     expect(screen.queryByTestId('WithdrawReviewStep')).not.toBeInTheDocument()
+  })
+
+  it('shows three-step labels including APPROVE SHARES', () => {
+    render(<BtcWithdrawModal {...defaultProps} />)
+    expect(screen.getByText('SELECT AMOUNT')).toBeInTheDocument()
+    expect(screen.getByText('APPROVE SHARES')).toBeInTheDocument()
+    expect(screen.getByText('CONFIRM WITHDRAW')).toBeInTheDocument()
   })
 })

@@ -23,7 +23,9 @@ interface WithdrawAmountStepProps {
   vaultTokensRaw: bigint
   rbtcEquivalent: string
   withdrawalFee: string
-  onNext: () => void
+  onNext: () => void | Promise<void>
+  /** When true, Continue is disabled and shows a pending state (e.g. allowance check). */
+  isContinuePending?: boolean
 }
 
 export const WithdrawAmountStep = ({
@@ -33,6 +35,7 @@ export const WithdrawAmountStep = ({
   vaultTokensRaw,
   rbtcEquivalent,
   withdrawalFee,
+  isContinuePending = false,
   onNext,
 }: WithdrawAmountStepProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -184,8 +187,13 @@ export const WithdrawAmountStep = ({
           <Paragraph variant="body-s" className="text-text-60 text-xs max-w-[440px]" data-testid="Disclaimer">
             {BTC_VAULT_WITHDRAWAL_DISCLAIMER}
           </Paragraph>
-          <Button variant="primary" onClick={onNext} disabled={!isValid} data-testid="ContinueButton">
-            Continue
+          <Button
+            variant="primary"
+            onClick={() => void onNext()}
+            disabled={!isValid || isContinuePending}
+            data-testid="ContinueButton"
+          >
+            {isContinuePending ? 'Checking...' : 'Continue'}
           </Button>
         </div>
       </div>
