@@ -32,14 +32,14 @@ export function VaultControlsSection() {
     <div className="flex flex-col sm:flex-row gap-2">
       <PauseCard
         title="DEPOSITS"
-        description="Pause or resume deposits. Please provide an explanation for this pause."
+        description="Pause or resume deposits."
         isPaused={depositsPaused}
         onPause={handlePauseDeposits}
         isSubmitting={isSubmitting}
       />
       <PauseCard
         title="WITHDRAWALS"
-        description="Pause or resume withdrawals. Please provide an explanation for this pause."
+        description="Pause or resume withdrawals."
         isPaused={withdrawalsPaused}
         onPause={handlePauseWithdrawals}
         isSubmitting={isSubmitting}

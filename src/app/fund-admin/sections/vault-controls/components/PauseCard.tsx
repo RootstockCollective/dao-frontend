@@ -1,9 +1,6 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
-
 import { Button } from '@/components/Button'
-import { TextArea } from '@/components/FormFields/TextArea'
 import { ExclamationCircleIcon } from '@/components/Icons/ExclamationCircleIcon'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
@@ -14,12 +11,9 @@ interface Props {
   isPaused: boolean
   onPause: (paused: boolean) => void
   isSubmitting: boolean
-  pausedReason?: string // TODO: add this to the contract
 }
 
-export function PauseCard({ title, description, isPaused, onPause, isSubmitting, pausedReason }: Props) {
-  const { control } = useForm({ defaultValues: { reason: '' } })
-
+export function PauseCard({ title, description, isPaused, onPause, isSubmitting }: Props) {
   const handleClick = () => onPause(!isPaused)
 
   return (
@@ -42,13 +36,11 @@ export function PauseCard({ title, description, isPaused, onPause, isSubmitting,
         <Paragraph variant="body-s" className="text-text-secondary mb-4">
           {description}
         </Paragraph>
-        {!isPaused ? (
-          <TextArea control={control} name="reason" label="Short description" minRows={3} maxRows={12} />
-        ) : (
+        {isPaused && (
           <div className="flex items-start gap-3">
             <ExclamationCircleIcon size={24} className="shrink-0 text-text-100" />
             <Paragraph variant="body-s">
-              {`${title.charAt(0).toUpperCase() + title.slice(1).toLowerCase()} has been paused${pausedReason ? ` because of: ${pausedReason}` : ''}.`}
+              {`${title.charAt(0).toUpperCase() + title.slice(1).toLowerCase()} has been paused.`}
             </Paragraph>
           </div>
         )}
