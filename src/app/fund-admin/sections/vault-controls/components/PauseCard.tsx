@@ -10,11 +10,16 @@ interface Props {
   description: string
   isPaused: boolean
   onPause: (paused: boolean) => void
-  isSubmitting: boolean
+  isRequesting: boolean
+  isTxPending: boolean
 }
 
-export function PauseCard({ title, description, isPaused, onPause, isSubmitting }: Props) {
+export function PauseCard({ title, description, isPaused, onPause, isRequesting, isTxPending }: Props) {
   const handleClick = () => onPause(!isPaused)
+  const isBusy = isRequesting || isTxPending
+
+  const actionLabel = isPaused ? 'Resume' : 'Pause'
+  const buttonLabel = isTxPending ? 'In progress...' : isRequesting ? 'Requesting...' : actionLabel
 
   return (
     <div className="flex flex-col flex-1 bg-bg-80 rounded-sm p-6 justify-between gap-4">
@@ -46,8 +51,8 @@ export function PauseCard({ title, description, isPaused, onPause, isSubmitting 
         )}
       </div>
       <div className="flex justify-start">
-        <Button variant="secondary-outline" disabled={isSubmitting} onClick={handleClick}>
-          {isSubmitting ? 'Submitting...' : isPaused ? 'Resume' : 'Pause'}
+        <Button variant="secondary-outline" disabled={isBusy} onClick={handleClick}>
+          {buttonLabel}
         </Button>
       </div>
     </div>

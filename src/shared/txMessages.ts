@@ -427,6 +427,48 @@ export const TX_MESSAGES = {
       loading: false,
     },
   },
+  rbtcVaultPauseDeposits: {
+    pending: {
+      title: 'Deposit pause update in process',
+      content: 'Waiting for transaction confirmation...',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Deposit pause updated',
+      content: 'Vault deposit pause setting has been updated successfully.',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Deposit pause update failed',
+      content:
+        'An unexpected error occurred while updating deposit pause. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
+  rbtcVaultPauseWithdrawals: {
+    pending: {
+      title: 'Withdrawal pause update in process',
+      content: 'Waiting for transaction confirmation...',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Withdrawal pause updated',
+      content: 'Vault withdrawal pause setting has been updated successfully.',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Withdrawal pause update failed',
+      content:
+        'An unexpected error occurred while updating withdrawal pause. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
   updateNav: {
     pending: {
       title: 'NAV update in process',

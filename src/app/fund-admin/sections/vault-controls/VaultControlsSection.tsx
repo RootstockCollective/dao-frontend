@@ -2,30 +2,50 @@
 
 import { useCallback } from 'react'
 
+import { executeTxFlow } from '@/shared/notification'
+
 import { PauseCard } from './components/PauseCard'
-import { usePauseVault } from './hooks/usePauseVault'
+import { usePauseVaultDeposits } from './hooks/usePauseVaultDeposits'
+import { usePauseVaultWithdrawals } from './hooks/usePauseVaultWithdrawals'
 import { useVaultPauseState } from './hooks/useVaultPauseState'
 
 export function VaultControlsSection() {
   const { depositsPaused, withdrawalsPaused, refetch } = useVaultPauseState()
-  const { pauseDeposits, pauseWithdrawals, isRequesting, isTxPending } = usePauseVault()
-
-  const isSubmitting = isRequesting || isTxPending
+  const {
+    onRequestTransaction: onRequestDepositTx,
+    isRequesting: isDepositRequesting,
+    isTxPending: isDepositTxPending,
+  } = usePauseVaultDeposits(depositsPaused)
+  const {
+    onRequestTransaction: onRequestWithdrawalTx,
+    isRequesting: isWithdrawalRequesting,
+    isTxPending: isWithdrawalTxPending,
+  } = usePauseVaultWithdrawals(withdrawalsPaused)
 
   const handlePauseDeposits = useCallback(
-    async (paused: boolean) => {
-      await pauseDeposits(paused)
-      refetch()
+    async (_paused: boolean) => {
+      await executeTxFlow({
+        action: 'rbtcVaultPauseDeposits',
+        onRequestTx: onRequestDepositTx,
+        onSuccess: () => {
+          refetch()
+        },
+      })
     },
-    [pauseDeposits, refetch],
+    [onRequestDepositTx, refetch],
   )
 
   const handlePauseWithdrawals = useCallback(
-    async (paused: boolean) => {
-      await pauseWithdrawals(paused)
-      refetch()
+    async (_paused: boolean) => {
+      await executeTxFlow({
+        action: 'rbtcVaultPauseWithdrawals',
+        onRequestTx: onRequestWithdrawalTx,
+        onSuccess: () => {
+          refetch()
+        },
+      })
     },
-    [pauseWithdrawals, refetch],
+    [onRequestWithdrawalTx, refetch],
   )
 
   return (
@@ -35,14 +55,16 @@ export function VaultControlsSection() {
         description="Pause or resume deposits."
         isPaused={depositsPaused}
         onPause={handlePauseDeposits}
-        isSubmitting={isSubmitting}
+        isRequesting={isDepositRequesting}
+        isTxPending={isDepositTxPending}
       />
       <PauseCard
         title="WITHDRAWALS"
         description="Pause or resume withdrawals."
         isPaused={withdrawalsPaused}
         onPause={handlePauseWithdrawals}
-        isSubmitting={isSubmitting}
+        isRequesting={isWithdrawalRequesting}
+        isTxPending={isWithdrawalTxPending}
       />
     </div>
   )
