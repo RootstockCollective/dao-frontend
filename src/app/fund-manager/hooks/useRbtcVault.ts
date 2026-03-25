@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { type Address, erc20Abi } from 'viem'
 import { useReadContract } from 'wagmi'
 
@@ -32,6 +32,7 @@ export const useRbtcVault = () => {
     data: batchData,
     isLoading: isBatchLoading,
     error: batchError,
+    refetch: refetchBatch,
   } = useReadRbtcVaultBatch(VAULT_CONFIGS)
 
   const [
@@ -49,6 +50,7 @@ export const useRbtcVault = () => {
     data: vaultAssetBalance = 0n,
     isLoading: isBalanceLoading,
     error: balanceError,
+    refetch: refetchVaultTokenBalance,
   } = useReadContract({
     abi: erc20Abi,
     address: assetAddress as Address,
@@ -77,10 +79,15 @@ export const useRbtcVault = () => {
     data: epochSnapshots,
     isLoading: isSnapshotLoading,
     error: snapshotError,
+    refetch: refetchEpochSnapshots,
   } = useReadRbtcVaultForMultipleArgs(
     { functionName: 'epochSnapshot', args: epochArgs },
     { enabled: epochArgs.length > 0 },
   )
+
+  const refetchVault = useCallback(async () => {
+    await Promise.all([refetchBatch(), refetchVaultTokenBalance(), refetchEpochSnapshots()])
+  }, [refetchBatch, refetchEpochSnapshots, refetchVaultTokenBalance])
 
   return useMemo(() => {
     const lastClosedEpoch = lastEpochId ? parseEpochSnapshot(epochSnapshots?.[0]) : null
@@ -100,6 +107,7 @@ export const useRbtcVault = () => {
       totalRedeemPaidAssets,
       isLoading,
       error,
+      refetchVault,
     }
   }, [
     vaultAssetBalance,
@@ -119,5 +127,6 @@ export const useRbtcVault = () => {
     balanceError,
     snapshotError,
     epochArgs,
+    refetchVault,
   ])
 }

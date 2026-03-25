@@ -1,7 +1,11 @@
-import { ChevronDownIcon } from '@/components/Icons'
-import { cn } from '@/lib/utils'
+'use client'
+
 import * as SelectPrimitive from '@radix-ui/react-select'
 import { forwardRef } from 'react'
+
+import { ChevronDownIcon } from '@/components/Icons'
+import { usePortalContainer } from '@/components/PortalContainerContext'
+import { cn } from '@/lib/utils'
 
 // Composable Dropdown components based on Radix Select primitives.
 // Usage example:
@@ -42,28 +46,32 @@ DropdownTrigger.displayName = SelectPrimitive.Trigger.displayName
 const DropdownContent = forwardRef<
   HTMLDivElement,
   React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
->(({ className, children, position = 'popper', ...props }, ref) => (
-  <SelectPrimitive.Portal>
-    <SelectPrimitive.Content
-      ref={ref}
-      className={cn(
-        'z-dropdown font-rootstock-sans rounded-b-md overflow-hidden bg-v3-bg-accent-60',
-        className,
-      )}
-      position={position}
-      sideOffset={8}
-      data-testid="dropdown-content"
-      {...props}
-    >
-      <SelectPrimitive.Viewport
-        className={cn(position === 'popper' && 'w-full min-w-[var(--radix-select-trigger-width)]')}
-        data-testid="dropdown-option-container"
+>(({ className, children, position = 'popper', ...props }, ref) => {
+  const portalContainer = usePortalContainer()
+
+  return (
+    <SelectPrimitive.Portal container={portalContainer ?? undefined}>
+      <SelectPrimitive.Content
+        ref={ref}
+        className={cn(
+          'z-dropdown font-rootstock-sans rounded-b-md overflow-hidden bg-v3-bg-accent-60',
+          className,
+        )}
+        position={position}
+        sideOffset={8}
+        data-testid="dropdown-content"
+        {...props}
       >
-        {children}
-      </SelectPrimitive.Viewport>
-    </SelectPrimitive.Content>
-  </SelectPrimitive.Portal>
-))
+        <SelectPrimitive.Viewport
+          className={cn(position === 'popper' && 'w-full min-w-[var(--radix-select-trigger-width)]')}
+          data-testid="dropdown-option-container"
+        >
+          {children}
+        </SelectPrimitive.Viewport>
+      </SelectPrimitive.Content>
+    </SelectPrimitive.Portal>
+  )
+})
 DropdownContent.displayName = SelectPrimitive.Content.displayName
 
 const DropdownItem = forwardRef<

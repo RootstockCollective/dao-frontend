@@ -323,4 +323,88 @@ export const TX_MESSAGES = {
       loading: false,
     },
   },
+  bufferTopUp: {
+    pending: {
+      title: 'Buffer top-up in process',
+      content: 'Waiting for transaction confirmation...',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Buffer top-up successful',
+      content: 'The buffer has been topped up successfully.',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Buffer top-up failed',
+      content:
+        'An unexpected error occurred while trying to top up the buffer. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
+  updateNav: {
+    pending: {
+      title: 'NAV update in process',
+      content: 'Waiting for transaction confirmation...',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'NAV update successful',
+      content: 'The vault NAV has been updated and funding processing has run.',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'NAV update failed',
+      content:
+        'An unexpected error occurred while updating NAV. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
+  syntheticYieldTopUp: {
+    pending: {
+      title: 'Synthetic Yield top-up in process',
+      content: 'Waiting for transaction confirmation...',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Synthetic Yield top-up successful',
+      content: 'Synthetic Yield has been funded successfully.',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Synthetic Yield top-up failed',
+      content:
+        'An unexpected error occurred while funding Synthetic Yield. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
+  transfer: {
+    pending: {
+      title: 'Transfer in process',
+      content: 'Waiting for transaction confirmation...',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Transfer successful',
+      content: 'Capital has been transferred to the manager wallet successfully.',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Transfer failed',
+      content:
+        'An unexpected error occurred while transferring capital. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
 } as const
