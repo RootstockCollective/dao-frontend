@@ -113,10 +113,7 @@ export function useActionEligibility(address: string | undefined) {
       balanceSlot?.status === 'success' && typeof balanceSlot.result === 'bigint' ? balanceSlot.result : 0n
     const hasVaultShares = vaultTokenBalance > 0n
 
-    return {
-      ...toActionEligibility(pause, eligibility, activeRequests, hasVaultShares, whitelistForMapper),
-      pauseState: pause,
-    }
+    return toActionEligibility(pause, eligibility, activeRequests, hasVaultShares, whitelistForMapper)
   }, [address, vaultData, whitelistForMapper])
 
   const isLoading = enabled && isLoadingVault

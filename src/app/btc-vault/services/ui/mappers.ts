@@ -229,6 +229,7 @@ export function toActionEligibility(
       canWithdraw,
       depositBlockReason,
       withdrawBlockReason,
+      pauseState: pause,
     }
   }
 
@@ -238,6 +239,7 @@ export function toActionEligibility(
       canWithdraw,
       depositBlockReason: DEPOSIT_ELIGIBILITY_LOADING_REASON,
       withdrawBlockReason,
+      pauseState: pause,
     }
   }
 
@@ -247,6 +249,7 @@ export function toActionEligibility(
       canWithdraw,
       depositBlockReason: DEPOSIT_WHITELIST_BLOCK_REASON,
       withdrawBlockReason,
+      pauseState: pause,
     }
   }
 
@@ -264,6 +267,7 @@ export function toActionEligibility(
     canWithdraw,
     depositBlockReason,
     withdrawBlockReason,
+    pauseState: pause,
   }
 }
 
