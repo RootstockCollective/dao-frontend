@@ -1,23 +1,25 @@
 'use client'
-import { useMemo, memo, useState, useRef, useCallback, useEffect } from 'react'
+import moment from 'moment'
 import { AnimatePresence, motion } from 'motion/react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+
+import { Milestones, Proposal } from '@/app/proposals/shared/types'
 import { DebounceSearch } from '@/components/DebounceSearch'
+import { Header } from '@/components/Typography'
+import { cn } from '@/lib/utils'
+import { useStickyHeader } from '@/shared/hooks'
+import { useClickOutside } from '@/shared/hooks/useClickOutside'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { ProposalState } from '@/shared/types/types'
+
+import { MILESTONE_SEPARATOR } from '../shared/utils'
+import { ActiveFiltersDisplay } from './filter/ActiveFiltersDisplay'
 import { FilterButton } from './filter/FilterButton'
 import { ProposalsFilterSideBar } from './filter/ProposalsFilterSideBar'
-import { cn } from '@/lib/utils'
-import { useClickOutside } from '@/shared/hooks/useClickOutside'
-import { SearchButton } from './SearchButton'
-import { Header } from '@/components/Typography'
-import { Proposal, Milestones } from '@/app/proposals/shared/types'
+import { FilterItem, FilterType } from './filter/types'
 import { useProposalFilters } from './filter/useProposalFilters'
-import { ActiveFiltersDisplay } from './filter/ActiveFiltersDisplay'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { useStickyHeader } from '@/shared/hooks'
-import { FilterType, FilterItem } from './filter/types'
-import { MILESTONE_SEPARATOR } from '../shared/utils'
-import { ProposalState } from '@/shared/types/types'
-import moment from 'moment'
 import { ProposalsTable, ProposalsTableRef } from './ProposalsTableWithPagination'
+import { SearchButton } from './SearchButton'
 
 /**
  * Filters proposals based on active filters
@@ -194,7 +196,7 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
                   className="w-full max-w-[650px]"
                 >
                   <DebounceSearch
-                    placeholder="Search a proposal"
+                    placeholder="Search proposal names and content"
                     searchValue={searchValue}
                     onSearchSubmit={handleSearch}
                     ref={searchBoxRef}
