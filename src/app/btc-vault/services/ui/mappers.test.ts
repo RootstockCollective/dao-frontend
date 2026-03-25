@@ -21,8 +21,10 @@ import {
 
 import {
   DEPOSIT_ELIGIBILITY_LOADING_REASON,
+  DEPOSIT_PAUSED_REASON,
   DEPOSIT_WHITELIST_BLOCK_REASON,
   NO_VAULT_SHARES_REASON,
+  WITHDRAWAL_PAUSED_REASON,
 } from '../constants'
 
 const activePause: PauseState = { deposits: 'active', withdrawals: 'active' }
@@ -243,7 +245,7 @@ describe('toActionEligibility', () => {
       true,
     )
     expect(result.canDeposit).toBe(false)
-    expect(result.depositBlockReason).toBe('Deposits are currently paused')
+    expect(result.depositBlockReason).toBe(DEPOSIT_PAUSED_REASON)
     expect(result.canWithdraw).toBe(true)
   })
 
@@ -256,7 +258,7 @@ describe('toActionEligibility', () => {
     )
     expect(result.canDeposit).toBe(true)
     expect(result.canWithdraw).toBe(false)
-    expect(result.withdrawBlockReason).toBe('Withdrawals are currently paused')
+    expect(result.withdrawBlockReason).toBe(WITHDRAWAL_PAUSED_REASON)
   })
 
   it('ineligible user cannot deposit or withdraw', () => {
