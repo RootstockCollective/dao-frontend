@@ -78,7 +78,18 @@ export const MobileBtcVaultHistoryCard: FC<Props> = memo(({ row }) => {
             <MoneyIconKoto size={16} />
           </Link>
         )}
-        {data.requestStatus === 'pending' && (
+        {data.requestStatus === 'pending' && data.status === 'approved' && (
+          <Link
+            href={btcVaultRequestDetail(String(row.id))}
+            className="flex items-center gap-1 font-medium text-v3-text-100 no-underline hover:underline"
+          >
+            <Paragraph variant="body-s" className="font-medium text-v3-text-100">
+              View Detail
+            </Paragraph>
+            <ArrowRight size={16} />
+          </Link>
+        )}
+        {data.requestStatus === 'pending' && data.status !== 'approved' && (
           <Link
             href={btcVaultRequestDetail(String(row.id))}
             className="flex items-center gap-1 font-medium text-v3-text-100 no-underline hover:underline"
