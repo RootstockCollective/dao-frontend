@@ -46,14 +46,14 @@ export const BTC_VAULT_WITHDRAW_REQUEST_TX_HINT =
   'Your wallet will ask you to confirm the withdrawal request.'
 
 /** Qualitative expected completion time for withdrawal requests */
-export const WITHDRAWAL_EXPECTED_COMPLETION = '5 days'
+export const WITHDRAWAL_EXPECTED_COMPLETION = '7 days'
 
 /** Qualitative expected completion time for deposit requests */
-export const DEPOSIT_EXPECTED_COMPLETION = '5 days'
+export const DEPOSIT_EXPECTED_COMPLETION = '7 days'
 
 /**
  * Duration of one epoch in seconds (deposit/withdrawal window).
  * Used to derive endTime from startTime when startTime is known.
  * TODO(DAO-2066): align with product/config when final; countdown UI may show fallback when endTime is 0.
  */
-export const EPOCH_DURATION_SEC = 6 * 24 * 3600 // 6 days
+export const EPOCH_DURATION_SEC = 7 * 24 * 3600 // 6 days
