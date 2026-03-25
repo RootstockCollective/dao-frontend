@@ -129,6 +129,9 @@ export function useActiveRequests(address: string | undefined): { data: ActiveRe
       params.set('sort_direction', 'desc')
       params.append('type', 'deposit_request')
       params.append('type', 'redeem_request')
+      params.append('type', 'deposit_claimable')
+      params.append('type', 'redeem_claimable')
+      params.append('type', 'redeem_accepted')
       const res = await fetch(`${HISTORY_API_PATH}?${params.toString()}`)
       if (!res.ok) throw new Error(`History API error: ${res.status}`)
       return (await res.json()) as BtcVaultHistoryApiResponse
@@ -182,7 +185,9 @@ export function useActiveRequests(address: string | undefined): { data: ActiveRe
         claimableInfo = { claimable: true, lockedSharePrice: navPerShare }
       }
       const depHistory = historyData?.data.find(
-        h => h.action === 'DEPOSIT_REQUEST' && h.epochId === String(depEpochId),
+        h =>
+          (h.action === 'DEPOSIT_REQUEST' || h.action === 'DEPOSIT_CLAIMABLE') &&
+          h.epochId === String(depEpochId),
       )
       requests.push({
         req: {
@@ -219,7 +224,11 @@ export function useActiveRequests(address: string | undefined): { data: ActiveRe
         claimableInfo = { claimable: true, lockedSharePrice: navPerShare }
       }
       const redHistory = historyData?.data.find(
-        h => h.action === 'REDEEM_REQUEST' && h.epochId === String(redEpochId),
+        h =>
+          (h.action === 'REDEEM_REQUEST' ||
+            h.action === 'REDEEM_ACCEPTED' ||
+            h.action === 'REDEEM_CLAIMABLE') &&
+          h.epochId === String(redEpochId),
       )
       requests.push({
         req: {
