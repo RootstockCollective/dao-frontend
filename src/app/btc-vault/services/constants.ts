@@ -1,6 +1,7 @@
 /** Block reasons returned by `toActionEligibility` and consumed by `BtcVaultActions`. */
 export const DEPOSIT_PAUSED_REASON = 'Deposits are currently paused'
 export const WITHDRAWAL_PAUSED_REASON = 'Withdrawals are currently paused'
+export const BOTH_PAUSED_REASON = 'Deposits and withdrawals are currently paused'
 export const ACTIVE_REQUEST_REASON = 'You already have an active request'
 /** Shown when deposit or withdraw is blocked because the address lacks the whitelisted role (DAO-2109). */
 export const NOT_WHITELISTED_REASON = 'Address not whitelisted.'
