@@ -23,7 +23,7 @@ vi.mock('wagmi', () => ({
   }),
 }))
 
-vi.mock('@/app/user/Stake/hooks/useTransactionStatus', () => ({
+vi.mock('@/shared/hooks/useTransactionStatus', () => ({
   useTransactionStatus: () => ({ isTxPending: false, isTxFailed: false }),
 }))
 
