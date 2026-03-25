@@ -24,7 +24,7 @@ const KYB_PASSED_WINDOW_CLOSED = 'KYB approved. Deposit window is currently clos
  * show the card with a short message so Re-submit (randomization) never makes the card disappear.
  */
 export function BtcVaultEligibilityAndDepositCard() {
-  const { status, rejectionReason, submitKyb } = useKybStatus()
+  const { status, rejectionReason } = useKybStatus()
   const { data: epoch } = useEpochState()
 
   const showEligibility = status !== 'passed'
@@ -38,8 +38,6 @@ export function BtcVaultEligibilityAndDepositCard() {
         key="eligibility"
         variant={status === 'rejected' ? 'rejected' : 'none'}
         rejectionReason={rejectionReason}
-        onSubmitKyb={submitKyb}
-        onCheckStatus={() => {}}
       />,
     )
   }

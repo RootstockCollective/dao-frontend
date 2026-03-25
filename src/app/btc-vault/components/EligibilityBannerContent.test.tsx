@@ -1,54 +1,57 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it } from 'vitest'
 
-import { cleanup, render, screen, within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { cleanup, render, screen } from '@testing-library/react'
 
 import { EligibilityBannerContent } from './EligibilityBannerContent'
 
 describe('EligibilityBannerContent', () => {
   afterEach(() => {
     cleanup()
-    vi.clearAllMocks()
   })
 
-  it('renders ELIGIBILITY header, Submit KYB button, and secondary link when variant is none', () => {
-    const onSubmitKyb = vi.fn()
-    const onCheckStatus = vi.fn()
-    render(
-      <EligibilityBannerContent variant="none" onSubmitKyb={onSubmitKyb} onCheckStatus={onCheckStatus} />,
-    )
+  it('renders ELIGIBILITY header, Submit KYB link, and check status text when variant is none', () => {
+    render(<EligibilityBannerContent variant="none" />)
 
     expect(screen.getByText('ELIGIBILITY')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Submit KYB/ })).toBeInTheDocument()
+    expect(screen.getByText('Submit KYB')).toBeInTheDocument()
     expect(
-      screen.getByText('KYB already submitted? Check KYB status'),
+      screen.getByText('KYB already submitted? Check KYB status in the designated KYB portal'),
     ).toBeInTheDocument()
     expect(screen.getByTestId('eligibility-banner-content')).toBeInTheDocument()
   })
 
   it('renders instructional text when variant is none', () => {
-    render(
-      <EligibilityBannerContent variant="none" onSubmitKyb={() => {}} onCheckStatus={() => {}} />,
-    )
+    render(<EligibilityBannerContent variant="none" />)
 
     const section = screen.getByTestId('eligibility-banner-content')
     expect(
-      within(section).getByText(
-        /Deposits are locked until KYB is approved\. Submit KYB to unlock deposits once the review is complete\./,
+      section.textContent?.includes(
+        'Deposits are locked until KYB is approved. Submit KYB to unlock deposits once the review is complete.',
       ),
-    ).toBeInTheDocument()
+    ).toBe(true)
+  })
+
+  it('links Submit KYB to the institutional portal in a new tab', () => {
+    render(<EligibilityBannerContent variant="none" />)
+
+    const link = screen.getByTestId('eligibility-banner-submit-kyb')
+    expect(link).toHaveAttribute('href', 'https://www.rootstocklabs.com/institutional/')
+    expect(link).toHaveAttribute('target', '_blank')
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer')
+  })
+
+  it('renders check status as plain text without a link when variant is none', () => {
+    render(<EligibilityBannerContent variant="none" />)
+
+    const checkStatus = screen.getByTestId('eligibility-banner-check-status')
+    expect(checkStatus.tagName).not.toBe('A')
+    expect(checkStatus).not.toHaveAttribute('href')
   })
 
   it('renders Re-submit KYB, rejection message, and icon when variant is rejected', () => {
-    render(
-      <EligibilityBannerContent
-        variant="rejected"
-        onSubmitKyb={() => {}}
-        onCheckStatus={() => {}}
-      />,
-    )
+    render(<EligibilityBannerContent variant="rejected" />)
 
-    expect(screen.getByRole('button', { name: /Re-submit KYB/ })).toBeInTheDocument()
+    expect(screen.getByText('Re-submit KYB')).toBeInTheDocument()
     expect(
       screen.getByText(
         /We couldn't approve your KYB submission because of\.\.\. Update the information and resubmit to unlock deposits\./,
@@ -59,14 +62,7 @@ describe('EligibilityBannerContent', () => {
   })
 
   it('uses rejectionReason in message when variant is rejected and rejectionReason provided', () => {
-    render(
-      <EligibilityBannerContent
-        variant="rejected"
-        rejectionReason="incomplete documentation"
-        onSubmitKyb={() => {}}
-        onCheckStatus={() => {}}
-      />,
-    )
+    render(<EligibilityBannerContent variant="rejected" rejectionReason="incomplete documentation" />)
 
     expect(
       screen.getByText(
@@ -75,60 +71,12 @@ describe('EligibilityBannerContent', () => {
     ).toBeInTheDocument()
   })
 
-  it('calls onSubmitKyb when primary button is clicked', async () => {
-    const user = userEvent.setup()
-    const onSubmitKyb = vi.fn()
-    render(
-      <EligibilityBannerContent variant="none" onSubmitKyb={onSubmitKyb} onCheckStatus={() => {}} />,
-    )
+  it('links Re-submit KYB to the institutional portal in a new tab', () => {
+    render(<EligibilityBannerContent variant="rejected" />)
 
-    await user.click(screen.getByRole('button', { name: /Submit KYB/ }))
-
-    expect(onSubmitKyb).toHaveBeenCalledTimes(1)
-  })
-
-  it('calls onCheckStatus when Check KYB status link is clicked', async () => {
-    const user = userEvent.setup()
-    const onCheckStatus = vi.fn()
-    render(
-      <EligibilityBannerContent variant="none" onSubmitKyb={() => {}} onCheckStatus={onCheckStatus} />,
-    )
-
-    await user.click(screen.getByText('KYB already submitted? Check KYB status'))
-
-    expect(onCheckStatus).toHaveBeenCalledTimes(1)
-  })
-
-  it('adds target="_blank" and rel="noopener noreferrer" to Check KYB status link when checkStatusHref is a real URL', () => {
-    const externalUrl = 'https://example.com/kyb-status'
-    render(
-      <EligibilityBannerContent
-        variant="none"
-        checkStatusHref={externalUrl}
-        onSubmitKyb={() => {}}
-        onCheckStatus={() => {}}
-      />,
-    )
-
-    const link = screen.getByTestId('eligibility-banner-check-status')
-    expect(link).toHaveAttribute('href', externalUrl)
+    const link = screen.getByTestId('eligibility-banner-submit-kyb')
+    expect(link).toHaveAttribute('href', 'https://www.rootstocklabs.com/institutional/')
     expect(link).toHaveAttribute('target', '_blank')
     expect(link).toHaveAttribute('rel', 'noopener noreferrer')
-  })
-
-  it('calls onSubmitKyb when Re-submit KYB is clicked in rejected variant', async () => {
-    const user = userEvent.setup()
-    const onSubmitKyb = vi.fn()
-    render(
-      <EligibilityBannerContent
-        variant="rejected"
-        onSubmitKyb={onSubmitKyb}
-        onCheckStatus={() => {}}
-      />,
-    )
-
-    await user.click(screen.getByRole('button', { name: /Re-submit KYB/ }))
-
-    expect(onSubmitKyb).toHaveBeenCalledTimes(1)
   })
 })

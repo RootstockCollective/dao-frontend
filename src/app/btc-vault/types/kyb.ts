@@ -10,8 +10,5 @@ export interface KybStatusResult {
   rejectionReason?: string
 }
 
-/** Hook return: status result plus actions. UI uses these; mock/API lives in the hook. */
-export interface UseKybStatusResult extends KybStatusResult {
-  /** Call when user submits or re-submits KYB. */
-  submitKyb: () => void
-}
+/** Hook return: status result. UI uses these; mock/API lives in the hook. */
+export type UseKybStatusResult = KybStatusResult
