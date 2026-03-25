@@ -38,6 +38,61 @@ function encodeDepositRequestedLogFixture(args: {
   return { topics, data }
 }
 
+function encodeEpochSettledLogFixture(args: {
+  epochId: bigint
+  reportedOffchainAssets: bigint
+  assets: bigint
+  supply: bigint
+  closedAt: bigint
+}): { topics: Hex[]; data: Hex } {
+  const topic0 = toEventHash('EpochSettled(uint256,uint256,uint256,uint256,uint64)')
+  const topics = [topic0, pad(toHex(args.epochId, { size: 32 }), { size: 32 })] as [Hex, Hex]
+  const data = encodeAbiParameters(
+    [
+      { name: 'reportedOffchainAssets', type: 'uint256' },
+      { name: 'assets', type: 'uint256' },
+      { name: 'supply', type: 'uint256' },
+      { name: 'closedAt', type: 'uint64' },
+    ],
+    [args.reportedOffchainAssets, args.assets, args.supply, args.closedAt],
+  )
+  return { topics, data }
+}
+
+function encodeEpochFundingProgressLogFixture(args: {
+  epochId: bigint
+  fundedAssets: bigint
+  requiredAssets: bigint
+  claimable: boolean
+}): { topics: Hex[]; data: Hex } {
+  const topic0 = toEventHash('EpochFundingProgress(uint256,uint256,uint256,bool)')
+  const topics = [topic0, pad(toHex(args.epochId, { size: 32 }), { size: 32 })] as [Hex, Hex]
+  const data = encodeAbiParameters(
+    [
+      { name: 'fundedAssets', type: 'uint256' },
+      { name: 'requiredAssets', type: 'uint256' },
+      { name: 'claimable', type: 'bool' },
+    ],
+    [args.fundedAssets, args.requiredAssets, args.claimable],
+  )
+  return { topics, data }
+}
+
+function encodeRedeemRequestLogFixture(args: {
+  owner: Address
+  epochId: bigint
+  shares: bigint
+}): { topics: Hex[]; data: Hex } {
+  const topic0 = toEventHash('RedeemRequest(address,uint256,uint256)')
+  const topics = [
+    topic0,
+    pad(args.owner, { size: 32 }),
+    pad(toHex(args.epochId, { size: 32 }), { size: 32 }),
+  ] as [Hex, Hex, Hex]
+  const data = encodeAbiParameters([{ name: 'shares', type: 'uint256' }], [args.shares])
+  return { topics, data }
+}
+
 const { VAULT_FOR_TEST } = vi.hoisted(() => ({
   VAULT_FOR_TEST: '0x2222222222222222222222222222222222222222',
 }))
@@ -268,7 +323,12 @@ describe('fetchBtcVaultHistoryFromBlockscout', () => {
       const url = new URL(String(input))
       expect(url.searchParams.get('address')).toBe(vault)
       const topic0 = url.searchParams.get('topic0')?.toLowerCase() ?? ''
-      expect(topic0).toBe(depositTopic0)
+      if (topic0 !== depositTopic0) {
+        return {
+          ok: true,
+          json: async () => endPage,
+        } as Response
+      }
       depositTopicCalls.count += 1
       const payload = depositTopicCalls.count === 1 ? firstPage : endPage
       return {
@@ -288,6 +348,339 @@ describe('fetchBtcVaultHistoryFromBlockscout', () => {
 
     expect(total).toBe(1)
     expect(items).toHaveLength(1)
-    expect(fetchMock).toHaveBeenCalledTimes(2)
+    // History fetch scans multiple topics (vault events + EpochSettled + EpochFundingProgress); assert deposit stream ran.
+    expect(fetchMock.mock.calls.length).toBeGreaterThanOrEqual(2)
+    const depositTopic = toEventSelector(
+      getAbiItem({ abi: RBTCAsyncVaultAbi, name: 'DepositRequested' }),
+    ).toLowerCase()
+    expect(
+      fetchMock.mock.calls.some(call => {
+        const url = new URL(String(call[0]))
+        return url.searchParams.get('topic0')?.toLowerCase() === depositTopic
+      }),
+    ).toBe(true)
+  })
+
+  it('promotes DEPOSIT_REQUEST to DEPOSIT_CLAIMABLE when EpochSettled exists for epochId', async () => {
+    const owner = '0x3333333333333333333333333333333333333333' as Address
+    const encodedDeposit = encodeDepositRequestedLogFixture({
+      owner,
+      epochId: 1n,
+      assets: 1000n,
+      isNative: true,
+    })
+    const encodedEpochSettled = encodeEpochSettledLogFixture({
+      epochId: 1n,
+      reportedOffchainAssets: 0n,
+      assets: 0n,
+      supply: 0n,
+      closedAt: 1n,
+    })
+
+    const vault = VAULT_FOR_TEST.toLowerCase()
+    const depositTopic0 = toEventSelector(
+      getAbiItem({ abi: RBTCAsyncVaultAbi, name: 'DepositRequested' }),
+    ).toLowerCase()
+    const epochSettledTopic0 = toEventSelector(
+      getAbiItem({ abi: RBTCAsyncVaultAbi, name: 'EpochSettled' }),
+    ).toLowerCase()
+    const epochFundingTopic0 = toEventSelector(
+      getAbiItem({ abi: RBTCAsyncVaultAbi, name: 'EpochFundingProgress' }),
+    ).toLowerCase()
+
+    const depositRpcRow = makeRpcLogRow({
+      data: encodedDeposit.data,
+      topics: [...encodedDeposit.topics, null],
+      blockNumber: '0xa',
+      logIndex: '0x0',
+    })
+    const epochSettledRpcRow = makeRpcLogRow({
+      data: encodedEpochSettled.data,
+      topics: [...encodedEpochSettled.topics, null],
+      blockNumber: '0xb',
+      logIndex: '0x0',
+    })
+
+    const firstDepositPage: BlockscoutRpcLogsResponse = {
+      message: 'OK',
+      status: '1',
+      result: [depositRpcRow],
+    }
+    const firstEpochSettledPage: BlockscoutRpcLogsResponse = {
+      message: 'OK',
+      status: '1',
+      result: [epochSettledRpcRow],
+    }
+    const endPage: BlockscoutRpcLogsResponse = {
+      message: 'No records found',
+      status: '0',
+      result: null,
+    }
+
+    const calls = { deposit: 0, settled: 0, funding: 0 }
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo) => {
+        const url = new URL(String(input))
+        expect(url.searchParams.get('address')).toBe(vault)
+
+        const topic0 = url.searchParams.get('topic0')?.toLowerCase() ?? ''
+        if (topic0 === depositTopic0) {
+          calls.deposit += 1
+          const payload = calls.deposit === 1 ? firstDepositPage : endPage
+          return { ok: true, json: async () => payload } as Response
+        }
+        if (topic0 === epochSettledTopic0) {
+          calls.settled += 1
+          const payload = calls.settled === 1 ? firstEpochSettledPage : endPage
+          return { ok: true, json: async () => payload } as Response
+        }
+        if (topic0 === epochFundingTopic0) {
+          calls.funding += 1
+          const payload = calls.funding === 1 ? endPage : endPage
+          return { ok: true, json: async () => payload } as Response
+        }
+
+        return { ok: true, json: async () => endPage } as Response
+      }),
+    )
+
+    const { items } = await fetchBtcVaultHistoryFromBlockscout({
+      limit: 10,
+      page: 1,
+      sort_field: 'timestamp',
+      sort_direction: 'desc',
+      type: ['deposit_request'],
+    })
+
+    expect(items).toHaveLength(1)
+    expect(items[0]?.action).toBe('DEPOSIT_CLAIMABLE')
+  })
+
+  it('promotes REDEEM_REQUEST to REDEEM_ACCEPTED when EpochSettled exists for epochId', async () => {
+    const owner = '0x3333333333333333333333333333333333333333' as Address
+    const encodedRedeem = encodeRedeemRequestLogFixture({ owner, epochId: 1n, shares: 2n })
+    const encodedEpochSettled = encodeEpochSettledLogFixture({
+      epochId: 1n,
+      reportedOffchainAssets: 0n,
+      assets: 0n,
+      supply: 0n,
+      closedAt: 1n,
+    })
+
+    const vault = VAULT_FOR_TEST.toLowerCase()
+    const redeemTopic0 = toEventSelector(
+      getAbiItem({ abi: RBTCAsyncVaultAbi, name: 'RedeemRequest' }),
+    ).toLowerCase()
+    const epochSettledTopic0 = toEventSelector(
+      getAbiItem({ abi: RBTCAsyncVaultAbi, name: 'EpochSettled' }),
+    ).toLowerCase()
+    const epochFundingTopic0 = toEventSelector(
+      getAbiItem({ abi: RBTCAsyncVaultAbi, name: 'EpochFundingProgress' }),
+    ).toLowerCase()
+
+    const redeemRpcRow = makeRpcLogRow({
+      data: encodedRedeem.data,
+      topics: [...encodedRedeem.topics, null],
+      blockNumber: '0xa',
+      logIndex: '0x0',
+    })
+    const epochSettledRpcRow = makeRpcLogRow({
+      data: encodedEpochSettled.data,
+      topics: [...encodedEpochSettled.topics, null],
+      blockNumber: '0xb',
+      logIndex: '0x0',
+    })
+
+    const firstRedeemPage: BlockscoutRpcLogsResponse = {
+      message: 'OK',
+      status: '1',
+      result: [redeemRpcRow],
+    }
+    const firstEpochSettledPage: BlockscoutRpcLogsResponse = {
+      message: 'OK',
+      status: '1',
+      result: [epochSettledRpcRow],
+    }
+    const endPage: BlockscoutRpcLogsResponse = {
+      message: 'No records found',
+      status: '0',
+      result: null,
+    }
+
+    const calls = { redeem: 0, settled: 0, funding: 0 }
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo) => {
+        const url = new URL(String(input))
+        expect(url.searchParams.get('address')).toBe(vault)
+        const topic0 = url.searchParams.get('topic0')?.toLowerCase() ?? ''
+
+        if (topic0 === redeemTopic0) {
+          calls.redeem += 1
+          const payload = calls.redeem === 1 ? firstRedeemPage : endPage
+          return { ok: true, json: async () => payload } as Response
+        }
+        if (topic0 === epochSettledTopic0) {
+          calls.settled += 1
+          const payload = calls.settled === 1 ? firstEpochSettledPage : endPage
+          return { ok: true, json: async () => payload } as Response
+        }
+        if (topic0 === epochFundingTopic0) {
+          calls.funding += 1
+          // Funding is not claimable -> stays REDEEM_ACCEPTED
+          const payload =
+            calls.funding === 1
+              ? {
+                  message: 'OK',
+                  status: '1',
+                  result: [
+                    makeRpcLogRow({
+                      data: encodeEpochFundingProgressLogFixture({
+                        epochId: 1n,
+                        fundedAssets: 0n,
+                        requiredAssets: 0n,
+                        claimable: false,
+                      }).data,
+                      topics: [
+                        ...encodeEpochFundingProgressLogFixture({
+                          epochId: 1n,
+                          fundedAssets: 0n,
+                          requiredAssets: 0n,
+                          claimable: false,
+                        }).topics,
+                        null,
+                      ],
+                      blockNumber: '0xc',
+                      logIndex: '0x0',
+                    }),
+                  ],
+                }
+              : endPage
+          return { ok: true, json: async () => payload } as Response
+        }
+
+        return { ok: true, json: async () => endPage } as Response
+      }),
+    )
+
+    const { items } = await fetchBtcVaultHistoryFromBlockscout({
+      limit: 10,
+      page: 1,
+      sort_field: 'timestamp',
+      sort_direction: 'desc',
+      type: ['redeem_request'],
+    })
+
+    expect(items).toHaveLength(1)
+    expect(items[0]?.action).toBe('REDEEM_ACCEPTED')
+  })
+
+  it('promotes REDEEM_ACCEPTED to REDEEM_CLAIMABLE when EpochFundingProgress has claimable=true', async () => {
+    const owner = '0x3333333333333333333333333333333333333333' as Address
+    const encodedRedeem = encodeRedeemRequestLogFixture({ owner, epochId: 1n, shares: 2n })
+    const encodedEpochSettled = encodeEpochSettledLogFixture({
+      epochId: 1n,
+      reportedOffchainAssets: 0n,
+      assets: 0n,
+      supply: 0n,
+      closedAt: 1n,
+    })
+    const encodedEpochFunding = encodeEpochFundingProgressLogFixture({
+      epochId: 1n,
+      fundedAssets: 0n,
+      requiredAssets: 0n,
+      claimable: true,
+    })
+
+    const vault = VAULT_FOR_TEST.toLowerCase()
+    const redeemTopic0 = toEventSelector(
+      getAbiItem({ abi: RBTCAsyncVaultAbi, name: 'RedeemRequest' }),
+    ).toLowerCase()
+    const epochSettledTopic0 = toEventSelector(
+      getAbiItem({ abi: RBTCAsyncVaultAbi, name: 'EpochSettled' }),
+    ).toLowerCase()
+    const epochFundingTopic0 = toEventSelector(
+      getAbiItem({ abi: RBTCAsyncVaultAbi, name: 'EpochFundingProgress' }),
+    ).toLowerCase()
+
+    const redeemRpcRow = makeRpcLogRow({
+      data: encodedRedeem.data,
+      topics: [...encodedRedeem.topics, null],
+      blockNumber: '0xa',
+      logIndex: '0x0',
+    })
+    const epochSettledRpcRow = makeRpcLogRow({
+      data: encodedEpochSettled.data,
+      topics: [...encodedEpochSettled.topics, null],
+      blockNumber: '0xb',
+      logIndex: '0x0',
+    })
+    const epochFundingRpcRow = makeRpcLogRow({
+      data: encodedEpochFunding.data,
+      topics: [...encodedEpochFunding.topics, null],
+      blockNumber: '0xc',
+      logIndex: '0x0',
+    })
+
+    const firstRedeemPage: BlockscoutRpcLogsResponse = {
+      message: 'OK',
+      status: '1',
+      result: [redeemRpcRow],
+    }
+    const firstEpochSettledPage: BlockscoutRpcLogsResponse = {
+      message: 'OK',
+      status: '1',
+      result: [epochSettledRpcRow],
+    }
+    const firstEpochFundingPage: BlockscoutRpcLogsResponse = {
+      message: 'OK',
+      status: '1',
+      result: [epochFundingRpcRow],
+    }
+    const endPage: BlockscoutRpcLogsResponse = {
+      message: 'No records found',
+      status: '0',
+      result: null,
+    }
+
+    const calls = { redeem: 0, settled: 0, funding: 0 }
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (input: RequestInfo) => {
+        const url = new URL(String(input))
+        expect(url.searchParams.get('address')).toBe(vault)
+        const topic0 = url.searchParams.get('topic0')?.toLowerCase() ?? ''
+
+        if (topic0 === redeemTopic0) {
+          calls.redeem += 1
+          const payload = calls.redeem === 1 ? firstRedeemPage : endPage
+          return { ok: true, json: async () => payload } as Response
+        }
+        if (topic0 === epochSettledTopic0) {
+          calls.settled += 1
+          const payload = calls.settled === 1 ? firstEpochSettledPage : endPage
+          return { ok: true, json: async () => payload } as Response
+        }
+        if (topic0 === epochFundingTopic0) {
+          calls.funding += 1
+          const payload = calls.funding === 1 ? firstEpochFundingPage : endPage
+          return { ok: true, json: async () => payload } as Response
+        }
+
+        return { ok: true, json: async () => endPage } as Response
+      }),
+    )
+
+    const { items } = await fetchBtcVaultHistoryFromBlockscout({
+      limit: 10,
+      page: 1,
+      sort_field: 'timestamp',
+      sort_direction: 'desc',
+      type: ['redeem_request'],
+    })
+
+    expect(items).toHaveLength(1)
+    expect(items[0]?.action).toBe('REDEEM_CLAIMABLE')
   })
 })

@@ -6,13 +6,19 @@ import type { GetFromBlockscoutSourceOptions } from './types'
 
 export { mapDecodedVaultLogToHistoryItem, rpcGetLogToBlockscoutLogItem } from './decode-logs'
 export { btcVaultRpcDisplayStatusForRequest, enrichHistoryWithRpcRequestStatus } from './enrich-rpc'
+export {
+  fetchEpochFundingProgressMap,
+  fetchEpochSettledMap,
+  promoteRequestActionsFromEpochMaps,
+} from './fetch-epoch-events'
 export { fetchBtcVaultHistoryFromBlockscout } from './fetch-history'
 export type { BlockscoutLogItem, BlockscoutRpcLogsResponse, GetFromBlockscoutSourceOptions } from './types'
 
 /**
- * Blockscout history source: logs from Blockscout `getLogs`, returns only REQUEST rows
- * (one per operation, matching the subgraph output shape). Cancelled requests are pre-enriched
- * from CANCEL events; remaining statuses via on-chain `pending*` / `claimable*` multicall.
+ * Blockscout history source: logs from Blockscout `getLogs`; `action` may be promoted to
+ * `DEPOSIT_CLAIMABLE` / `REDEEM_ACCEPTED` / `REDEEM_CLAIMABLE` via epoch events. Cancelled
+ * requests are pre-enriched from CANCEL events; remaining statuses via on-chain `pending*` /
+ * `claimable*` multicall.
  */
 export function getFromBlockscoutSource(options: GetFromBlockscoutSourceOptions): BtcVaultHistorySource {
   const { mapActionOnly } = options
