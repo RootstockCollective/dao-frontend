@@ -29,7 +29,12 @@ const SORT_FIELD_BY_COLUMN: Partial<Record<ColumnId, BtcVaultWhitelistedUsersSor
   institution: 'lastUpdated',
 }
 
-export const BTCWhitelistingHistoryTable = () => {
+interface BTCWhitelistingHistoryTableProps {
+  /** When set (e.g. from TabsSection), used after de-whitelist success; same refetch as grant success. */
+  onWhitelistDataChange?: () => void
+}
+
+export const BTCWhitelistingHistoryTable = ({ onWhitelistDataChange }: BTCWhitelistingHistoryTableProps) => {
   const queryClient = useQueryClient()
   const [deWhitelistFullAddress, setDeWhitelistFullAddress] = useState<string | null>(null)
   const [pageEnd, setPageEnd] = useState(PAGE_SIZE)
@@ -94,12 +99,14 @@ export const BTCWhitelistingHistoryTable = () => {
     setDeWhitelistFullAddress(address)
   }, [])
 
-  const handleDeWhitelistSuccess = useCallback(() => {
+  const refetchWhitelistQueries = useCallback(() => {
     void queryClient.refetchQueries({
       queryKey: [...BTC_VAULT_WHITELISTED_USERS_QUERY_KEY],
       type: 'all',
     })
   }, [queryClient])
+
+  const handleDeWhitelistSuccess = onWhitelistDataChange ?? refetchWhitelistQueries
 
   return (
     <div className="w-full flex flex-col gap-8 md:gap-10">
