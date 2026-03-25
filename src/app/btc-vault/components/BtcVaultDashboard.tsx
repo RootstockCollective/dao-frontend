@@ -51,7 +51,6 @@ export const BtcVaultDashboard = () => {
             className="w-full md:w-[214px] md:min-w-[180px]"
             title="Vault shares"
             amount={metricAmount(isLoading, isError, data?.vaultTokensFormatted)}
-            symbol={RBTC}
             fiatAmount={isLoading || isError ? undefined : data?.fiatVaultShares}
             tooltipContent="Your share tokens representing deposited rBTC in the vault"
             data-testid="metric-vault-shares"
