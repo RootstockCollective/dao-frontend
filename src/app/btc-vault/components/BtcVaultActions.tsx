@@ -1,6 +1,5 @@
 'use client'
 
-import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useState } from 'react'
 import { useAccount } from 'wagmi'
 
@@ -9,6 +8,7 @@ import { Tooltip } from '@/components/Tooltip'
 import { executeTxFlow } from '@/shared/notification'
 
 import { useActionEligibility } from '../hooks/useActionEligibility'
+import { useBtcVaultInvalidation } from '../hooks/useBtcVaultInvalidation'
 import { useSubmitDeposit } from '../hooks/useSubmitDeposit'
 import { useSubmitWithdrawal } from '../hooks/useSubmitWithdrawal'
 import { REQUEST_SUBMITTING_REASON } from '../services/constants'
@@ -17,9 +17,9 @@ import { BtcDepositModal } from './BtcDepositModal'
 import { BtcWithdrawModal } from './BtcWithdrawModal'
 
 export const BtcVaultActions = () => {
-  const queryClient = useQueryClient()
   const { address } = useAccount()
   const { data: actionEligibility } = useActionEligibility(address)
+  const { invalidateAfterSubmit } = useBtcVaultInvalidation()
 
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false)
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false)
@@ -49,11 +49,6 @@ export const BtcVaultActions = () => {
 
   const depositTooltipText = isAnySubmitting ? REQUEST_SUBMITTING_REASON : depositBlockReason
   const withdrawTooltipText = isAnySubmitting ? REQUEST_SUBMITTING_REASON : withdrawBlockReason
-
-  const invalidateAfterSubmit = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ['btc-vault', 'active-requests', address] })
-    queryClient.invalidateQueries({ queryKey: ['btc-vault', 'action-eligibility', address] })
-  }, [queryClient, address])
 
   const handleDepositSubmit = useCallback(
     async (params: DepositRequestParams) => {
