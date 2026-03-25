@@ -22,6 +22,9 @@ interface BtcVaultEntitiesHistoryResponse {
   pagination: PaginationResponse & { totalPages: number }
 }
 
+/** Stable fallback so consumers (e.g. useMemo deps) do not see a new [] each render while loading. */
+const EMPTY_BTC_VAULT_HISTORY_ROWS: BtcVaultEntityHistoryRow[] = []
+
 interface UseGetBtcVaultEntitiesHistoryParams {
   page?: number
   pageSize?: number
@@ -39,6 +42,7 @@ interface UseGetBtcVaultEntitiesHistoryParams {
 
 async function fetchBtcVaultEntitiesHistory(
   params: UseGetBtcVaultEntitiesHistoryParams,
+  signal?: AbortSignal,
 ): Promise<BtcVaultEntitiesHistoryResponse> {
   const { page = 1, pageSize = 20, sortBy = 'timestamp', sortDirection = 'desc', type = [] } = params
 
@@ -51,35 +55,42 @@ async function fetchBtcVaultEntitiesHistory(
 
   type.forEach(value => searchParams.append('type', value))
 
-  const response = await fetch(`${getBtcVaultHistoryEndpoint}?${searchParams}`)
+  const response = await fetch(`${getBtcVaultHistoryEndpoint}?${searchParams}`, { signal })
   if (!response.ok) throw new Error('Failed to fetch BTC vault history')
 
   const data = (await response.json()) as BtcVaultEntitiesHistoryResponse
-  console.log('BTC vault history response', data)
   return data
 }
 
 export function useGetBtcVaultEntitiesHistory(params: UseGetBtcVaultEntitiesHistoryParams) {
   const { page = 1, pageSize = 20, sortBy = 'timestamp', sortDirection = 'desc', type = [] } = params
 
+  const normalizedType = [...type].sort()
+  const typeKey = normalizedType.join(',')
+
   const query = useQuery({
-    queryKey: [
-      'btc-vault',
-      'entities-history',
-      page,
-      pageSize,
-      sortBy,
-      sortDirection,
-      type.length > 0 ? [...type].sort().join(',') : '',
-    ],
-    queryFn: () => fetchBtcVaultEntitiesHistory({ page, pageSize, sortBy, sortDirection, type }),
+    queryKey: ['btc-vault', 'entities-history', page, pageSize, sortBy, sortDirection, typeKey],
+    queryFn: ({ signal }) =>
+      fetchBtcVaultEntitiesHistory(
+        {
+          page,
+          pageSize,
+          sortBy,
+          sortDirection,
+          type: normalizedType,
+        },
+        signal,
+      ),
     refetchInterval: AVERAGE_BLOCKTIME,
-    retry: false, // Don't retry on 500 errors to prevent infinite loops
-    refetchOnWindowFocus: false, // Don't refetch on focus to reduce API calls
+    retry: false,
+    refetchOnWindowFocus: false,
   })
 
+  const rawList = query.data?.data
+  const data = rawList ?? EMPTY_BTC_VAULT_HISTORY_ROWS
+
   return {
-    data: query.data?.data ?? [],
+    data,
     pagination: query.data?.pagination,
     isLoading: query.isLoading,
     error: query.error,

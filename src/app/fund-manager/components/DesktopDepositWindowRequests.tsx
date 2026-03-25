@@ -2,6 +2,7 @@
 
 import { type Dispatch, memo, type ReactNode, Suspense, useCallback, useState } from 'react'
 
+import { RequestStatusBadge } from '@/app/btc-vault/request-history/components/RequestStatusBadge'
 import { ArrowDownWFill } from '@/components/Icons/v3design/ArrowDownWFill'
 import { ArrowsUpDown } from '@/components/Icons/v3design/ArrowsUpDown'
 import { ArrowUpWFill } from '@/components/Icons/v3design/ArrowUpWFill'
@@ -19,7 +20,6 @@ import type {
   DepositWindowTable,
 } from './DepositWindowRequestsTable.config'
 import { COLUMN_TRANSFORMS, SORT_LABELS } from './DepositWindowRequestsTable.config'
-import { StatusBadge } from './StatusBadge'
 
 // ─── Header ──────────────────────────────────────────────────────────
 
@@ -237,7 +237,7 @@ const DepositWindowDataRow = memo(({ row }: DataRowProps) => {
       </TableCell>
 
       <TableCell columnId="status">
-        <StatusBadge status={data.status} />
+        <RequestStatusBadge displayStatus={data.status} label={data.displayStatusLabel} />
       </TableCell>
     </tr>
   )

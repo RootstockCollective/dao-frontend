@@ -29,7 +29,7 @@ export const DepositWindowRequestsTable = () => {
   const { prices } = usePricesContext()
   const rbtcPrice = prices[RBTC]?.price ?? 0
 
-  const sortBy = sort?.columnId ? SORT_FIELD_BY_COLUMN[sort.columnId] : 'timestamp'
+  const sortBy = (sort?.columnId && SORT_FIELD_BY_COLUMN[sort.columnId]) ?? 'timestamp'
   const sortDirection = sort?.direction || 'desc'
 
   const { data, pagination, isLoading, error } = useGetBtcVaultEntitiesHistory({
@@ -63,14 +63,12 @@ export const DepositWindowRequestsTable = () => {
   }, [rowData])
 
   useEffect(() => {
-    dispatch({ type: 'SET_LOADING', payload: isLoading || false })
+    dispatch({ type: 'SET_LOADING', payload: isLoading })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoading])
 
   useEffect(() => {
-    if (error) {
-      dispatch({ type: 'SET_ERROR', payload: error.message })
-    }
+    dispatch({ type: 'SET_ERROR', payload: error ? error.message : null })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [error])
 

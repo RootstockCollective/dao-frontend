@@ -1,62 +1,69 @@
 import type { Address } from 'viem'
 
+import type { RequestType } from '@/app/btc-vault/services/types'
+import { getTxHistoryStatusLabel } from '@/app/btc-vault/services/ui/mappers'
+import type { DisplayStatus } from '@/app/btc-vault/services/ui/types'
 import type { BtcVaultEntityHistoryRow } from '@/app/fund-manager/hooks/useGetBtcVaultEntitiesHistory'
 import Big from '@/lib/big'
+import { RBTC, WeiPerEther } from '@/lib/constants'
 import { formatCurrency, shortAddress } from '@/lib/utils'
 import type { Row } from '@/shared/context'
 
 import type { ColumnId, DepositWindowCellDataMap } from './DepositWindowRequestsTable.config'
-import type { RequestStatus } from './StatusBadge'
 
-function formatDate(timestamp: number): string {
-  return new Date(timestamp * 1000).toLocaleDateString('en-US', {
+const DEFAULT_DISPLAY_STATUS: DisplayStatus = 'pending'
+
+function formatDate(timestampInSeconds: number): string {
+  return new Date(timestampInSeconds * 1000).toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
   })
 }
 
-function normalizeStatus(displayStatus?: string): RequestStatus {
-  if (!displayStatus) return 'Pending'
-  const value = displayStatus.toLowerCase()
-
-  if (value.includes('ready_to_claim') || value.includes('ready_to_withdraw') || value === 'claimable')
-    return 'Open to claim'
-  if (value.includes('successful') || value === 'claimed') return 'Successful'
-  if (value.includes('cancel')) return 'Cancelled'
-
-  return 'Pending'
+function getRequestType(action: string): RequestType {
+  return action.includes('DEPOSIT') ? 'deposit' : 'withdrawal'
 }
 
 /**
  * Maps raw API history rows to table row format expected by TableContext.
- * @param data - Raw BTC vault history rows from the API
- * @param rbtcPrice - Current rBTC price in USD for fiat conversion
+ * @param data Raw BTC vault history rows from the API
+ * @param rbtcPrice Current rBTC price in USD for fiat conversion
  */
 export function convertDataToRowData(
-  data: BtcVaultEntityHistoryRow[] | undefined,
+  data: readonly BtcVaultEntityHistoryRow[] | undefined,
   rbtcPrice: number,
 ): Row<ColumnId, string, DepositWindowCellDataMap>[] {
-  if (!data || data.length === 0) return []
+  if (!data?.length) return []
 
   return data.map(item => {
-    const amountBig = Big(item.assets)
-    const amountFormatted = formatCurrency(amountBig.div(1e18), { showCurrencySymbol: false })
-    const fiatAmount = rbtcPrice > 0 ? formatCurrency(amountBig.div(1e18).mul(rbtcPrice)) : null
+    const requestType = getRequestType(item.action)
+    const typeLabel = requestType === 'deposit' ? 'Deposit' : 'Withdrawal'
+
+    const userAddress = item.user as Address
+    const shortUserAddress = shortAddress(userAddress)
+
+    const amount = Big(item.assets).div(WeiPerEther.toString())
+    const amountFormatted = formatCurrency(amount, { showCurrencySymbol: false })
+    const fiatAmount = rbtcPrice > 0 ? formatCurrency(amount.mul(rbtcPrice)) : null
+
+    const displayStatus = (item.displayStatus ?? DEFAULT_DISPLAY_STATUS) as DisplayStatus
+    const displayStatusLabel = getTxHistoryStatusLabel(displayStatus, requestType)
 
     return {
       id: item.id,
       data: {
         date: formatDate(item.timestamp),
-        investor: shortAddress(item.user as Address),
-        entity: shortAddress(item.user as Address),
-        type: item.action.includes('DEPOSIT') ? 'Deposit' : 'Withdrawal',
+        investor: shortUserAddress,
+        entity: shortUserAddress,
+        type: typeLabel,
         amount: amountFormatted,
-        status: normalizeStatus(item.displayStatus),
+        status: displayStatus,
+        displayStatusLabel,
         fiatAmount,
-        tokenSymbol: 'RBTC',
+        tokenSymbol: RBTC,
         user: item.user,
-        requestType: item.action.includes('DEPOSIT') ? 'deposit' : 'withdrawal',
+        requestType,
         timestamp: item.timestamp,
       },
     }
