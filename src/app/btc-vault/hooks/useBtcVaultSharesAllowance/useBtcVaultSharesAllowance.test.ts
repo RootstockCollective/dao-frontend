@@ -5,28 +5,16 @@ import { rbtcVault } from '@/lib/contracts'
 
 import { useBtcVaultSharesAllowance } from './useBtcVaultSharesAllowance'
 
-const SHARE_TOKEN = '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' as `0x${string}`
-
 const mockRefetch = vi.fn()
 const mockWriteContractAsync = vi.fn()
 
 vi.mock('wagmi', () => ({
   useAccount: () => ({ address: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' }),
-  useReadContract: vi.fn((config: { functionName?: string }) => {
-    if (config.functionName === 'share') {
-      return {
-        data: SHARE_TOKEN,
-        isLoading: false,
-        isFetching: false,
-        refetch: vi.fn(),
-      }
-    }
-    return {
-      data: 5_000_000_000_000_000_000n,
-      refetch: mockRefetch,
-      isLoading: false,
-      isFetching: false,
-    }
+  useReadContract: () => ({
+    data: 5_000_000_000_000_000_000n,
+    refetch: mockRefetch,
+    isLoading: false,
+    isFetching: false,
   }),
   useWriteContract: () => ({
     writeContractAsync: mockWriteContractAsync,
@@ -64,7 +52,7 @@ describe('useBtcVaultSharesAllowance', () => {
     await expect(result.current.hasAllowanceFor(200n)).resolves.toBe(false)
   })
 
-  it('requestApproveShares approves vault as spender on the share token', async () => {
+  it('requestApproveShares uses vault as ERC-20 token and spender', async () => {
     const { result } = renderHook(() => useBtcVaultSharesAllowance())
     const shares = 2_000_000_000_000_000_000n
     await result.current.requestApproveShares(shares)
@@ -72,7 +60,7 @@ describe('useBtcVaultSharesAllowance', () => {
     await waitFor(() => {
       expect(mockWriteContractAsync).toHaveBeenCalledWith(
         expect.objectContaining({
-          address: SHARE_TOKEN,
+          address: rbtcVault.address,
           functionName: 'approve',
           args: [rbtcVault.address, shares],
         }),

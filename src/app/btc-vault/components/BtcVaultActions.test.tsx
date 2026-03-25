@@ -37,7 +37,6 @@ vi.mock('../hooks/useSubmitWithdrawal', () => ({
 
 const defaultAllowanceHook = {
   allowance: undefined as bigint | undefined,
-  shareTokenAddress: '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' as `0x${string}`,
   refetchAllowance: vi.fn(),
   isAllowanceReadLoading: false,
   isAllowanceFetching: false,
