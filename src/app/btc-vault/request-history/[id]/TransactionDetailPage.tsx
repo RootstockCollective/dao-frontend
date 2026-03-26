@@ -66,12 +66,11 @@ export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
     await executeTxFlow({
       action: 'btcVaultCancel',
       onRequestTx: () => onCancelRequest(),
+      onPending: () => closeModal(),
       onSuccess: async () => {
         await new Promise(resolve => setTimeout(resolve, BACKEND_INDEX_DELAY_MS))
         invalidateAfterAction(id)
-        closeModal()
       },
-      onError: () => closeModal(),
     })
   }
 

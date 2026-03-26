@@ -4,6 +4,7 @@ import { Separator } from '@radix-ui/react-select'
 
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
+import { TransactionInProgressButton } from '@/components/StepActionButtons'
 import { Paragraph } from '@/components/Typography'
 
 interface CancelRequestModalProps {
@@ -36,15 +37,18 @@ export function CancelRequestModal({ onClose, onConfirm, isLoading }: CancelRequ
             >
               Nevermind
             </Button>
-            <Button
-              onClick={onConfirm}
-              variant="primary"
-              className="whitespace-nowrap"
-              disabled={isLoading}
-              data-testid="CancelRequestConfirm"
-            >
-              {isLoading ? 'Canceling...' : 'Yes, cancel'}
-            </Button>
+            {isLoading ? (
+              <TransactionInProgressButton />
+            ) : (
+              <Button
+                onClick={onConfirm}
+                variant="primary"
+                className="whitespace-nowrap"
+                data-testid="CancelRequestConfirm"
+              >
+                Yes, cancel
+              </Button>
+            )}
           </div>
         </div>
       </div>

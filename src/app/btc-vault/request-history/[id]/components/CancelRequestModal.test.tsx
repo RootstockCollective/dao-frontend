@@ -1,7 +1,15 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
 import { CancelRequestModal } from './CancelRequestModal'
+
+beforeAll(() => {
+  global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+  }))
+})
 
 describe('CancelRequestModal', () => {
   const onClose = vi.fn()
@@ -34,5 +42,12 @@ describe('CancelRequestModal', () => {
     fireEvent.click(screen.getByTestId('CancelRequestConfirm'))
     expect(onConfirm).toHaveBeenCalledTimes(1)
     expect(onClose).not.toHaveBeenCalled()
+  })
+
+  it('shows In progress button when isLoading is true', () => {
+    render(<CancelRequestModal onClose={onClose} onConfirm={onConfirm} isLoading />)
+    expect(screen.getByText('In progress')).toBeInTheDocument()
+    expect(screen.queryByTestId('CancelRequestConfirm')).not.toBeInTheDocument()
+    expect(screen.getByTestId('CancelRequestNevermind')).toBeInTheDocument()
   })
 })

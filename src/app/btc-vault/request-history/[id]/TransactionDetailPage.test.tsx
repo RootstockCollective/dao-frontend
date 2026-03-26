@@ -273,21 +273,26 @@ describe('TransactionDetailPage', () => {
     })
   })
 
-  it('calls executeTxFlow with btcVaultCancel action when cancel is confirmed', async () => {
+  it('closes modal when wallet approves the cancel transaction', async () => {
     mockOnCancelRequest.mockResolvedValue('0xmockhash')
-    mockExecuteTxFlow.mockResolvedValue('0xmockhash')
+    mockExecuteTxFlow.mockImplementation(async ({ onPending }) => {
+      onPending?.('0xmockhash')
+      return '0xmockhash'
+    })
     render(<TransactionDetailPage id="req-withdrawal-pending" />)
     fireEvent.click(screen.getByTestId('cancel-request-button'))
+    expect(screen.getByTestId('CancelRequestModal')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('CancelRequestConfirm'))
     await waitFor(() => {
       expect(mockExecuteTxFlow).toHaveBeenCalledWith(
         expect.objectContaining({
           action: 'btcVaultCancel',
           onRequestTx: expect.any(Function),
+          onPending: expect.any(Function),
           onSuccess: expect.any(Function),
-          onError: expect.any(Function),
         }),
       )
+      expect(screen.queryByTestId('CancelRequestModal')).not.toBeInTheDocument()
     })
   })
 })
