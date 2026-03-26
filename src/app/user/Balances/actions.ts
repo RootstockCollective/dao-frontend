@@ -1,22 +1,22 @@
-import { GetPricesResult } from '@/app/user/types'
-import {
-  fetchNewAllocationEventEndpoint,
-  fetchPricesEndpoint,
-  fetchProposalsCreatedByGovernorAddress,
-  fetchVoteCastEventEndpoint,
-  getNftHolders,
-  getTokenHoldersOfAddress,
-} from '@/lib/endpoints'
-import { tokenContracts, GovernorAddress, BackersManagerAddress } from '@/lib/contracts'
+import { Address, isAddress, padHex } from 'viem'
+
 import {
   NextPageParams,
   NftHolderItem,
   ServerResponseV2,
   TokenHoldersResponse,
 } from '@/app/user/Balances/types'
-import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
-import { Address, isAddress, padHex } from 'viem'
+import { GetPricesResult } from '@/app/user/types'
 import { RIF_WALLET_SERVICES_URL } from '@/lib/constants'
+import { GovernorAddress, tokenContracts } from '@/lib/contracts'
+import {
+  fetchPricesEndpoint,
+  fetchProposalsCreatedByGovernorAddress,
+  fetchVoteCastEventEndpoint,
+  getNftHolders,
+  getTokenHoldersOfAddress,
+} from '@/lib/endpoints'
+import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
 const rws = RIF_WALLET_SERVICES_URL ?? ''
 
@@ -63,13 +63,6 @@ export const fetchVoteCastEventByAccountAddress = (address: Address) =>
   fetchRws(
     fetchVoteCastEventEndpoint
       .replace('{{address}}', GovernorAddress)
-      .replace('{{topic1}}', padHex(address, { size: 32 })),
-  )
-
-export const fetchNewAllocationEventByAccountAddress = (address: Address) =>
-  fetchRws(
-    fetchNewAllocationEventEndpoint
-      .replace('{{address}}', BackersManagerAddress)
       .replace('{{topic1}}', padHex(address, { size: 32 })),
   )
 
