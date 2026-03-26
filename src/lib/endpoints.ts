@@ -81,3 +81,4 @@ export const fetchRewardDistributionRewardsLogsByAddress = withChainId(
 export const getVaultHistoryEndpoint = `/api/vault/v1/addresses/{{address}}/history`
 
 export const getBtcVaultEpochHistoryEndpoint = `/api/btc-vault/v1/epoch-history`
+export const getBtcVaultHistoryEndpoint = `/api/btc-vault/v1/history`
