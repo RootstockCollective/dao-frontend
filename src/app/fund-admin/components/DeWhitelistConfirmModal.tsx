@@ -59,7 +59,7 @@ export function DeWhitelistConfirmModal({ fullAddress, onClose, onSuccess }: DeW
             <Button
               variant="primary"
               onClick={handleConfirm}
-              data-testid="Yes, de-whitelist"
+              data-testid="DeWhitelistConfirm"
               textClassName="text-black"
               disabled={!canSubmit || isBusy}
             >

@@ -69,9 +69,9 @@ export function useGetBTCWhitelistingHistory({
           ...BTC_VAULT_WHITELISTED_USERS_QUERY_KEY,
           { page, limit, sortField, sortDirection },
         ] as const,
-        queryFn: async (): Promise<WhitelistRoleHistoryApiResponse> => {
+        queryFn: async ({ signal }): Promise<WhitelistRoleHistoryApiResponse> => {
           const url = buildWhitelistHistoryUrl({ page, limit, sortField, sortDirection })
-          const res = await fetch(url, { cache: 'no-store' })
+          const res = await fetch(url, { cache: 'no-store', signal })
           if (!res.ok) {
             const text = await res.text()
             throw new Error(`Whitelist history API error: ${res.status} ${text}`)
@@ -89,7 +89,7 @@ export function useGetBTCWhitelistingHistory({
   const rows = useMemo(() => {
     const flat = results.flatMap(r => r.data?.data ?? [])
     return flat.slice(0, visibleItemCount)
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visibleItemCount, resultsDataTick])
 
   const pagination = results[0]?.data?.pagination

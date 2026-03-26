@@ -3,7 +3,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useState } from 'react'
 
-import { BTCAddWhitelist } from '@/app/fund-admin/components/BTCGrantWhitelist'
+import { BTCAddWhitelist } from '@/app/fund-admin/components/BTCAddWhitelist'
 import { BTCWhitelistingHistoryTable } from '@/app/fund-admin/components/BTCWhitelistingHistoryTable'
 import type {
   ColumnId,
