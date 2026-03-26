@@ -54,7 +54,8 @@ export const DepositWindowRequestsTable = () => {
   useEffect(() => {
     dispatch({ type: 'SET_COLUMNS', payload: DEFAULT_HEADERS })
     dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: 'date', direction: 'desc' } })
-  }, [dispatch])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Intentionally run once on mount
 
   useEffect(() => {
     dispatch({ type: 'SET_ROWS', payload: rowData })
