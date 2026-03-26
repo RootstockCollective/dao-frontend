@@ -47,6 +47,13 @@ export const SWAP_PROVIDERS = {
 export type SwapProviderName = (typeof SWAP_PROVIDERS)[keyof typeof SWAP_PROVIDERS]
 
 /**
+ * Uniswap V3 pool fee tiers (basis points). Single source of truth for provider + UI.
+ */
+export const UNISWAP_FEE_TIERS = [100, 500, 3000, 10000] as const
+
+export type UniswapFeeTier = (typeof UNISWAP_FEE_TIERS)[number]
+
+/**
  * Convert a Uniswap V3 fee tier to a percentage.
  * @param tier - Fee tier in basis points (e.g. 3000)
  * @returns Percentage as decimal (e.g. 0.3)

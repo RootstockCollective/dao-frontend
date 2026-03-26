@@ -2,6 +2,7 @@ import { Address, Hex } from 'viem'
 
 import { USDRIF, USDT0 } from '@/lib/constants'
 import { PermitSingle } from '@/lib/swap/permit2'
+import type { SwapQuoteMode } from '@/lib/swap/types'
 
 /**
  * Supported swap tokens
@@ -13,7 +14,7 @@ export type SwapTokenSymbol = typeof USDT0 | typeof USDRIF
  * - exactIn: User specifies input amount, quote returns expected output
  * - exactOut: User specifies desired output, quote returns required input
  */
-export type SwapMode = 'exactIn' | 'exactOut'
+export type SwapMode = SwapQuoteMode
 
 /**
  * Quote result from Uniswap QuoterV2 contract.
@@ -22,8 +23,11 @@ export type SwapMode = 'exactIn' | 'exactOut'
 export interface QuoteResult {
   amountOut: bigint
   gasEstimate: bigint
+  /** Single-hop fee, or first-hop fee when `hopFees` exists. */
   feeTier: number
   timestamp: number
+  /** Ordered per-hop fee list used to build the multihop execution path. */
+  hopFees?: readonly number[]
   amountIn?: bigint
   sqrtPriceX96After?: bigint
   initializedTicksCrossed?: bigint
