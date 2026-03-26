@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useDebounce } from 'use-debounce'
 import { type Address, formatUnits, Hex, parseUnits } from 'viem'
 import { useAccount, useReadContract, useSignTypedData, useWriteContract } from 'wagmi'
@@ -153,6 +153,19 @@ export const useSwapInput = () => {
     return getSwapRouteCacheKey(a, b)
   }, [tokenIn, tokenOut, tokens])
 
+  const prevRouteKeyRef = useRef<string>('')
+
+  // Manual fee tier is only valid for the pair/topology it was chosen on. When tokenIn/tokenOut
+  // changes, the route key changes—reset to Auto so we never quote with a stale explicit tier.
+  useEffect(() => {
+    if (!swapRouteCacheKey) return
+    const prev = prevRouteKeyRef.current
+    prevRouteKeyRef.current = swapRouteCacheKey
+    if (prev && prev !== swapRouteCacheKey) {
+      setSelectedFeeTier(null)
+    }
+  }, [swapRouteCacheKey, setSelectedFeeTier])
+
   // Wait for user to stop typing before fetching quote (avoids excessive API calls)
   const [debouncedTypedAmount] = useDebounce(typedAmount, QUOTE_DEBOUNCE_MS)
 
@@ -165,6 +178,16 @@ export const useSwapInput = () => {
     staleTime: 5 * 60_000,
     retry: false,
   })
+
+  // `availableFeeTiers` lists tiers that probe successfully for this route (single-hop pools or
+  // multihop uniform paths). If the user’s explicit tier is not in that set, fall back to Auto.
+  useEffect(() => {
+    if (selectedFeeTier === null) return
+    if (availableFeeTiers === undefined) return
+    if (availableFeeTiers.length === 0 || !availableFeeTiers.some(t => t === selectedFeeTier)) {
+      setSelectedFeeTier(null)
+    }
+  }, [availableFeeTiers, selectedFeeTier, setSelectedFeeTier])
 
   // React Query handles caching, refetching, and loading states
   const {

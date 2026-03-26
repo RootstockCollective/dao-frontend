@@ -317,7 +317,7 @@ describe('uniswap provider - integration tests', () => {
           tokenOut: rifToken,
           amountIn,
           tokenInDecimals: tokenOutDecimals,
-          tokenOutDecimals: tokenOutDecimals,
+          tokenOutDecimals: rifDecimals,
           feeTier: tier,
         })
 

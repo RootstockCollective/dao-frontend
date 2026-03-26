@@ -22,6 +22,44 @@ function isValidUniswapFeeTier(fee: number): boolean {
   return (UNISWAP_FEE_TIERS as readonly number[]).includes(fee)
 }
 
+/** Lowercase fingerprint for classifying viem / fetch failures vs expected pool reverts. */
+function errorFingerprint(err: unknown): string {
+  if (!(err instanceof Error)) return ''
+  const ctor = err.constructor?.name ?? ''
+  return `${ctor} ${err.name} ${err.message}`.toLowerCase()
+}
+
+function isTransportOrInfrastructureError(err: unknown): boolean {
+  const fp = errorFingerprint(err)
+  return (
+    fp.includes('failed to fetch') ||
+    fp.includes('fetch failed') ||
+    fp.includes('networkerror') ||
+    fp.includes('network request failed') ||
+    fp.includes('econnrefused') ||
+    fp.includes('etimedout') ||
+    fp.includes('timeout') ||
+    fp.includes('timed out') ||
+    fp.includes('rate limit') ||
+    fp.includes('too many requests') ||
+    fp.includes(' 429') ||
+    fp.includes(' 503') ||
+    fp.includes('bad gateway') ||
+    fp.includes('service unavailable')
+  )
+}
+
+function isLikelyQuoterContractRevert(err: unknown): boolean {
+  const fp = errorFingerprint(err)
+  return (
+    fp.includes('revert') ||
+    fp.includes('execution reverted') ||
+    fp.includes('contractfunctionrevertederror') ||
+    fp.includes('contractfunctionexecutionerror') ||
+    fp.includes('call_exception')
+  )
+}
+
 /**
  * Type predicate to validate and narrow the quote result type
  * Result should be: [amountOut: bigint, sqrtPriceX96After: bigint, initializedTicksCrossed: number, gasEstimate: bigint]
@@ -486,14 +524,20 @@ async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
     if (params.feeTier !== undefined && isValidUniswapFeeTier(params.feeTier)) {
       try {
         return await getMultihopQuoteExactInUniformTier(params, params.feeTier, route.tokens, providerName)
-      } catch {
-        return {
-          provider: providerName,
-          amountOut: '0',
-          amountOutRaw: '0',
-          feeTier: params.feeTier,
-          error: `No liquidity available in the ${feeTierToPercent(params.feeTier)}% uniform path.`,
+      } catch (err) {
+        if (isTransportOrInfrastructureError(err)) {
+          throw err
         }
+        if (isLikelyQuoterContractRevert(err)) {
+          return {
+            provider: providerName,
+            amountOut: '0',
+            amountOutRaw: '0',
+            feeTier: params.feeTier,
+            error: `No liquidity available in the ${feeTierToPercent(params.feeTier)}% uniform path.`,
+          }
+        }
+        throw err
       }
     }
 
@@ -510,14 +554,20 @@ async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
   if (params.feeTier !== undefined && isValidUniswapFeeTier(params.feeTier)) {
     try {
       return await getQuoteForSingleTier(params, params.feeTier, providerName)
-    } catch {
-      return {
-        provider: providerName,
-        amountOut: '0',
-        amountOutRaw: '0',
-        feeTier: params.feeTier,
-        error: `No liquidity available in the ${feeTierToPercent(params.feeTier)}% fee pool.`,
+    } catch (err) {
+      if (isTransportOrInfrastructureError(err)) {
+        throw err
       }
+      if (isLikelyQuoterContractRevert(err)) {
+        return {
+          provider: providerName,
+          amountOut: '0',
+          amountOutRaw: '0',
+          feeTier: params.feeTier,
+          error: `No liquidity available in the ${feeTierToPercent(params.feeTier)}% fee pool.`,
+        }
+      }
+      throw err
     }
   }
 
@@ -550,14 +600,20 @@ async function getUniswapExactOutputQuote(params: QuoteExactOutputParams): Promi
     if (params.feeTier !== undefined && isValidUniswapFeeTier(params.feeTier)) {
       try {
         return await getMultihopQuoteExactOutUniformTier(params, params.feeTier, route.tokens, providerName)
-      } catch {
-        return {
-          provider: providerName,
-          amountOut: '0',
-          amountOutRaw: '0',
-          feeTier: params.feeTier,
-          error: `No liquidity available in the ${feeTierToPercent(params.feeTier)}% uniform path.`,
+      } catch (err) {
+        if (isTransportOrInfrastructureError(err)) {
+          throw err
         }
+        if (isLikelyQuoterContractRevert(err)) {
+          return {
+            provider: providerName,
+            amountOut: '0',
+            amountOutRaw: '0',
+            feeTier: params.feeTier,
+            error: `No liquidity available in the ${feeTierToPercent(params.feeTier)}% uniform path.`,
+          }
+        }
+        throw err
       }
     }
 
@@ -574,14 +630,20 @@ async function getUniswapExactOutputQuote(params: QuoteExactOutputParams): Promi
   if (params.feeTier !== undefined && isValidUniswapFeeTier(params.feeTier)) {
     try {
       return await getExactOutputQuoteForSingleTier(params, params.feeTier, providerName)
-    } catch {
-      return {
-        provider: providerName,
-        amountOut: '0',
-        amountOutRaw: '0',
-        feeTier: params.feeTier,
-        error: `No liquidity available in the ${feeTierToPercent(params.feeTier)}% fee pool.`,
+    } catch (err) {
+      if (isTransportOrInfrastructureError(err)) {
+        throw err
       }
+      if (isLikelyQuoterContractRevert(err)) {
+        return {
+          provider: providerName,
+          amountOut: '0',
+          amountOutRaw: '0',
+          feeTier: params.feeTier,
+          error: `No liquidity available in the ${feeTierToPercent(params.feeTier)}% fee pool.`,
+        }
+      }
+      throw err
     }
   }
 

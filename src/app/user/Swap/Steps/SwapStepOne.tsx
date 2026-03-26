@@ -262,6 +262,20 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     [amountIn, amountOut],
   )
 
+  /** In Auto mode, show actual routing fees (per-hop if the winning combo is mixed). */
+  const poolFeeAutoHint = useMemo(() => {
+    if (selectedFeeTier !== null || activeFeeTier === null) return ''
+    const hops = quote?.hopFees
+    if (!hops?.length) {
+      return ` (${feeTierToPercent(activeFeeTier)}%)`
+    }
+    const allSame = hops.every(f => f === hops[0])
+    if (allSame) {
+      return ` (${feeTierToPercent(hops[0])}%)`
+    }
+    return ` (${hops.map(t => `${feeTierToPercent(t)}%`).join(' → ')} per hop)`
+  }, [selectedFeeTier, activeFeeTier, quote?.hopFees])
+
   return (
     <>
       <div className="flex flex-col gap-4">
@@ -295,9 +309,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
             <div className="flex flex-col gap-1 md:items-end">
               <Label variant="body-s" className="text-text-60">
                 Pool fee
-                {selectedFeeTier === null &&
-                  activeFeeTier !== null &&
-                  ` (${feeTierToPercent(activeFeeTier)}%)`}
+                {poolFeeAutoHint}
               </Label>
               <PercentageButtons
                 options={feeTierOptions}
