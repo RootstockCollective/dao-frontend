@@ -3,6 +3,7 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 
 import { USDRIF, USDT0, USDT0_USDRIF_POOL_ADDRESS } from '@/lib/constants'
+import { SWAP_FLOW_TOKEN_SYMBOLS } from '@/lib/swap/constants'
 import type { PermitSingle } from '@/lib/swap/permit2'
 
 import type { SwapMode, SwapState, SwapStore, SwapTokenSymbol } from './types'
@@ -10,6 +11,19 @@ import type { SwapMode, SwapState, SwapStore, SwapTokenSymbol } from './types'
 // Default pool fee - 0.01% is most common for stablecoin pairs
 const DEFAULT_POOL_FEE = 100
 
+function pickDistinctPairToken(selected: SwapTokenSymbol, other: SwapTokenSymbol): SwapTokenSymbol {
+  if (other !== selected) return other
+  const fallback = SWAP_FLOW_TOKEN_SYMBOLS.find(s => s !== selected)
+  return fallback ?? USDT0
+}
+
+/**
+ * Zustand swap UI store.
+ *
+ * `poolFee` / `selectedFeeTier` are the single user-facing fee choice: one tier (or Auto)
+ * applied uniformly to every hop on multihop routes. `poolAddress` is the canonical
+ * USDT0/USDRIF pool when that pair is selected; it is not used to encode multihop paths.
+ */
 const initialState: SwapState = {
   // Token selection
   tokenIn: USDT0,
@@ -48,22 +62,24 @@ export const useSwapStore = create<SwapStore>()(
 
       setTokenIn: (token: SwapTokenSymbol) =>
         set(
-          {
+          state => ({
             tokenIn: token,
+            tokenOut: pickDistinctPairToken(token, state.tokenOut),
             typedAmount: '',
             swapError: null,
-          },
+          }),
           false,
           'setTokenIn',
         ),
 
       setTokenOut: (token: SwapTokenSymbol) =>
         set(
-          {
+          state => ({
             tokenOut: token,
+            tokenIn: pickDistinctPairToken(token, state.tokenIn),
             typedAmount: '',
             swapError: null,
-          },
+          }),
           false,
           'setTokenOut',
         ),

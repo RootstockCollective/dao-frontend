@@ -1,5 +1,6 @@
 import {
   ICECREAMSWAP_ROUTER_ADDRESS,
+  RIF,
   UNISWAP_QUOTER_V2_ADDRESS,
   UNISWAP_UNIVERSAL_ROUTER_ADDRESS,
   USDRIF,
@@ -15,7 +16,11 @@ import { tokenContracts } from '@/lib/contracts'
 export const SWAP_TOKEN_ADDRESSES = {
   USDT0: tokenContracts[USDT0],
   USDRIF: tokenContracts[USDRIF],
+  RIF: tokenContracts[RIF],
 } as const
+
+/** Symbols exposed in the in-app swap flow (fixed triple: stablecoin + derivatives + RIF). */
+export const SWAP_FLOW_TOKEN_SYMBOLS = [USDT0, USDRIF, RIF] as const
 
 /**
  * DEX Router Contract Addresses
