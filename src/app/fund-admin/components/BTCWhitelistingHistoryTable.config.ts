@@ -34,7 +34,7 @@ export const COLUMN_TRANSFORMS: Record<ColumnId, string> = {
 
 const VISIBLE_HEADERS: Column<VisibleColumnId>[] = [
   { id: 'address', hidden: false, sortable: true },
-  { id: 'institution', hidden: false, sortable: true },
+  { id: 'institution', hidden: false, sortable: false },
   { id: 'date', hidden: false, sortable: true },
   { id: 'status', hidden: false, sortable: true },
 ]

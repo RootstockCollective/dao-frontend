@@ -1,11 +1,9 @@
 import { useMemo } from 'react'
-import type { Address } from 'viem'
+import { type Address, zeroAddress } from 'viem'
 
 import { WHITELISTED_USER_ROLE } from '@/lib/constants'
 import { permissionsManager } from '@/lib/contracts'
 import { useContractWrite } from '@/shared/hooks/useContractWrite'
-
-const PLACEHOLDER_ACCOUNT = '0x0000000000000000000000000000000000000000' as Address
 
 /**
  * Fund admin: grant `WHITELISTED_USER_ROLE` on PermissionsManager for an account.
@@ -13,7 +11,7 @@ const PLACEHOLDER_ACCOUNT = '0x0000000000000000000000000000000000000000' as Addr
  * When `account` is null, `canSubmit` is false — do not call `onRequestTransaction`.
  */
 export const useGrantWhitelistedUserRole = (account: Address | null) => {
-  const target = account ?? PLACEHOLDER_ACCOUNT
+  const target = account ?? zeroAddress
 
   const config = useMemo(
     () => ({

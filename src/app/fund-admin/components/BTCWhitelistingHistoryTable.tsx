@@ -53,8 +53,7 @@ export const BTCWhitelistingHistoryTable = ({ onWhitelistDataChange }: BTCWhitel
     isLoading,
     error,
   } = useGetBTCWhitelistingHistory({
-    page: 1,
-    limit: pageEnd,
+    visibleItemCount: pageEnd,
     sortField,
     sortDirection,
   })
@@ -71,29 +70,26 @@ export const BTCWhitelistingHistoryTable = ({ onWhitelistDataChange }: BTCWhitel
     setPagerKey(prev => prev + 1)
   }, [sortField, sortDirection])
 
+  // Mount: column definitions and default sort (newest first).
   useEffect(() => {
     dispatch({ type: 'SET_COLUMNS', payload: DEFAULT_HEADERS })
     dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: 'date', direction: 'desc' } })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     dispatch({ type: 'SET_ROWS', payload: rowData })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rowData])
+  }, [dispatch, rowData])
 
   useEffect(() => {
     dispatch({ type: 'SET_LOADING', payload: isLoading })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading])
+  }, [dispatch, isLoading])
 
   useEffect(() => {
     dispatch({
       type: 'SET_ERROR',
       payload: error instanceof Error ? error.message : error ? String(error) : null,
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [error])
+  }, [dispatch, error])
 
   const handleRowAction = useCallback((address: string) => {
     setDeWhitelistFullAddress(address)

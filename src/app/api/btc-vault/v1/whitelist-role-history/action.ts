@@ -22,13 +22,16 @@ const BTC_VAULT_WHITELISTED_USERS_PAGE = gql`
   }
 `
 
-const BTC_VAULT_WHITELISTED_USERS_IDS_BATCH = gql`
-  query BtcVaultWhitelistedUsersIds($skip: Int!, $first: Int!) {
-    btcVaultWhitelistedUsers(skip: $skip, first: $first) {
-      id
+const BTC_VAULT_WHITELISTED_USERS_COUNTER = gql`
+  query BtcVaultWhitelistedUsersCounterQuery($id: ID!) {
+    btcVaultWhitelistedUsersCounter(id: $id) {
+      total
     }
   }
 `
+
+/** Subgraph `BtcVaultWhitelistedUsersCounter` global row id (see entity schema). */
+const WHITELIST_USERS_COUNTER_GLOBAL_ID = 'global'
 
 export type BtcVaultWhitelistedUsersSortField = z.infer<typeof BtcVaultWhitelistedUsersSortFieldEnum>
 
@@ -45,34 +48,26 @@ export interface BtcVaultWhitelistedUsersPageResult {
   total: number
 }
 
-const COUNT_BATCH = 500
-const COUNT_MAX_SKIP = 50_000
-const STATUS_SORT_BATCH = 500
-const STATUS_SORT_MAX_SKIP = 50_000
+/** Page size for full-list subgraph scans (count + status sort). Not related to the UI table page size. */
+const WHITELIST_SUBGRAPH_SCAN_PAGE = 500
 
 async function countBtcVaultWhitelistedUsersUncached(): Promise<number> {
-  let skip = 0
-  let total = 0
-  for (;;) {
-    const result = await btcVaultClient.query<{
-      btcVaultWhitelistedUsers: { id: string }[]
-    }>({
-      query: BTC_VAULT_WHITELISTED_USERS_IDS_BATCH,
-      variables: { skip, first: COUNT_BATCH },
-      fetchPolicy: 'no-cache',
-    })
+  const result = await btcVaultClient.query<{
+    btcVaultWhitelistedUsersCounter: { total: string } | null
+  }>({
+    query: BTC_VAULT_WHITELISTED_USERS_COUNTER,
+    variables: { id: WHITELIST_USERS_COUNTER_GLOBAL_ID },
+    fetchPolicy: 'no-cache',
+  })
 
-    if (result.error) {
-      throw result.error
-    }
-
-    const chunk = result.data?.btcVaultWhitelistedUsers ?? []
-    total += chunk.length
-    if (chunk.length < COUNT_BATCH) break
-    skip += COUNT_BATCH
-    if (skip >= COUNT_MAX_SKIP) break
+  if (result.error) {
+    throw result.error
   }
-  return total
+
+  const counter = result.data?.btcVaultWhitelistedUsersCounter
+  if (!counter) return 0
+
+  return Number(counter.total)
 }
 
 const getCachedBtcVaultWhitelistedUsersTotal = unstable_cache(
@@ -123,7 +118,7 @@ async function fetchAllWhitelistedUsersForStatusSort(): Promise<BtcVaultWhitelis
     }>({
       query: BTC_VAULT_WHITELISTED_USERS_PAGE,
       variables: {
-        first: STATUS_SORT_BATCH,
+        first: WHITELIST_SUBGRAPH_SCAN_PAGE,
         skip,
         orderBy: 'lastUpdated',
         orderDirection: 'desc',
@@ -138,9 +133,8 @@ async function fetchAllWhitelistedUsersForStatusSort(): Promise<BtcVaultWhitelis
     const chunk = result.data?.btcVaultWhitelistedUsers ?? []
     rows.push(...chunk.map(normalizeRow))
 
-    if (chunk.length < STATUS_SORT_BATCH) break
-    skip += STATUS_SORT_BATCH
-    if (skip >= STATUS_SORT_MAX_SKIP) break
+    if (chunk.length < WHITELIST_SUBGRAPH_SCAN_PAGE) break
+    skip += WHITELIST_SUBGRAPH_SCAN_PAGE
   }
 
   return rows
@@ -158,11 +152,14 @@ export async function fetchBtcVaultWhitelistedUsersPage(params: {
   const skip = (params.page - 1) * params.limit
 
   if (params.sort_field === 'status') {
-    const allRows = await fetchAllWhitelistedUsersForStatusSort()
-    const sortedRows = allRows.sort((a, b) => compareStatusRows(a, b, params.sort_direction))
+    const [allRows, total] = await Promise.all([
+      fetchAllWhitelistedUsersForStatusSort(),
+      getCachedBtcVaultWhitelistedUsersTotal(),
+    ])
+    const sortedRows = [...allRows].sort((a, b) => compareStatusRows(a, b, params.sort_direction))
     return {
       data: sortedRows.slice(skip, skip + params.limit),
-      total: allRows.length,
+      total,
     }
   }
 

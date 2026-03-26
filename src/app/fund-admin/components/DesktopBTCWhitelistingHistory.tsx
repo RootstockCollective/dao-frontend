@@ -1,6 +1,6 @@
 'use client'
 
-import { type Dispatch, type ReactElement, useState } from 'react'
+import { type Dispatch, type FocusEvent, type ReactElement, useState } from 'react'
 
 import { DESKTOP_ROW_STYLES } from '@/app/builders/components/Table/utils/builderRowUtils'
 import { DeWhitelistIcon } from '@/components/Icons/DeWhitelistIcon'
@@ -159,15 +159,27 @@ interface DataRowProps {
 function WhitelistDataRow({ row, onAction }: DataRowProps) {
   const { data } = row
   const [isHovered, setIsHovered] = useState(false)
+  const [isFocusWithin, setIsFocusWithin] = useState(false)
+  const isRowActive = isHovered || isFocusWithin
 
-  const showActionInsteadOfStatus = Boolean(isHovered && onAction && data.status === 'Whitelisted')
+  const showActionInsteadOfStatus = !!(isRowActive && onAction && data.status === 'Whitelisted')
+
+  const handleRowFocus = () => {
+    setIsFocusWithin(true)
+  }
+
+  const handleRowBlur = (e: FocusEvent<HTMLTableRowElement>) => {
+    const next = e.relatedTarget as Node | null
+    if (next && e.currentTarget.contains(next)) return
+    setIsFocusWithin(false)
+  }
 
   return (
     <tr
       className={cn(
         DESKTOP_ROW_STYLES.base,
         'py-3 min-h-[65px]',
-        isHovered
+        isRowActive
           ? showActionInsteadOfStatus
             ? DESKTOP_ROW_STYLES.selected
             : DESKTOP_ROW_STYLES.unselected
@@ -175,6 +187,8 @@ function WhitelistDataRow({ row, onAction }: DataRowProps) {
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onFocus={handleRowFocus}
+      onBlur={handleRowBlur}
     >
       <TableCell columnId="address">
         <a
@@ -183,7 +197,7 @@ function WhitelistDataRow({ row, onAction }: DataRowProps) {
           rel="noopener noreferrer"
           className={cn(
             'flex items-center gap-1 text-v3-primary',
-            isHovered && showActionInsteadOfStatus && 'text-v3-bg-accent-100',
+            isRowActive && showActionInsteadOfStatus && 'text-v3-bg-accent-100',
           )}
         >
           <Paragraph variant="body-l">{data.address}</Paragraph>
@@ -192,7 +206,7 @@ function WhitelistDataRow({ row, onAction }: DataRowProps) {
       <TableCell columnId="institution">
         <Paragraph
           variant="body-l"
-          className={isHovered && showActionInsteadOfStatus ? 'text-v3-bg-accent-100' : undefined}
+          className={isRowActive && showActionInsteadOfStatus ? 'text-v3-bg-accent-100' : undefined}
         >
           {data.institution}
         </Paragraph>
@@ -200,7 +214,7 @@ function WhitelistDataRow({ row, onAction }: DataRowProps) {
       <TableCell columnId="date">
         <Paragraph
           variant="body-s"
-          className={isHovered && showActionInsteadOfStatus ? 'text-v3-bg-accent-100' : undefined}
+          className={isRowActive && showActionInsteadOfStatus ? 'text-v3-bg-accent-100' : undefined}
         >
           {data.date}
         </Paragraph>
