@@ -27,7 +27,7 @@ export function VaultControlsSection() {
       await executeTxFlow({
         action: paused ? 'pauseDeposits' : 'resumeDeposits',
         onRequestTx: onRequestDepositTx,
-        onSuccess: () => refetch(),
+        onSuccess: () => void refetch(),
       })
     },
     [onRequestDepositTx, refetch],
@@ -38,7 +38,7 @@ export function VaultControlsSection() {
       await executeTxFlow({
         action: paused ? 'pauseWithdrawals' : 'resumeWithdrawals',
         onRequestTx: onRequestWithdrawalTx,
-        onSuccess: () => refetch(),
+        onSuccess: () => void refetch(),
       })
     },
     [onRequestWithdrawalTx, refetch],
@@ -47,7 +47,7 @@ export function VaultControlsSection() {
   return (
     <div className="flex flex-col sm:flex-row gap-2">
       <PauseCard
-        title="DEPOSITS"
+        title="Deposits"
         description="Pause or resume deposits."
         isPaused={depositsPaused}
         onPause={handlePauseDeposits}
@@ -55,7 +55,7 @@ export function VaultControlsSection() {
         isTxPending={isDepositTxPending}
       />
       <PauseCard
-        title="WITHDRAWALS"
+        title="Withdrawals"
         description="Pause or resume withdrawals."
         isPaused={withdrawalsPaused}
         onPause={handlePauseWithdrawals}

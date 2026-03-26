@@ -3,6 +3,7 @@ import { useAccount } from 'wagmi'
 
 import type { PermissionsManagerAbi } from '@/lib/abis/btc-vault'
 import { ADMIN_ROLE, FUND_MANAGER_ROLE, PAUSER_ROLE } from '@/lib/constants'
+import { permissionsManager } from '@/lib/contracts'
 
 import { UseReadContractForMultipleArgsConfig } from '../types'
 import { useReadPermissionsManagerForMultipleArgs } from './useReadPermissionsManagerForMultipleArgs'
@@ -10,20 +11,22 @@ import { useReadPermissionsManagerForMultipleArgs } from './useReadPermissionsMa
 type HasRoleArgsList = UseReadContractForMultipleArgsConfig<PermissionsManagerAbi, 'hasRole'>['args']
 
 export function usePermissionsManager() {
-  const { address: connectedAddress } = useAccount()
+  const { address } = useAccount()
 
   const hasRoleArgs = useMemo((): HasRoleArgsList => {
-    if (!connectedAddress) return []
+    if (!address) return []
     return [
-      [ADMIN_ROLE, connectedAddress],
-      [FUND_MANAGER_ROLE, connectedAddress],
-      [PAUSER_ROLE, connectedAddress],
+      [ADMIN_ROLE, address],
+      [FUND_MANAGER_ROLE, address],
+      [PAUSER_ROLE, address],
     ]
-  }, [connectedAddress])
+  }, [address])
+
+  const enabled = hasRoleArgs.length > 0 && Boolean(permissionsManager.address)
 
   const { data, isLoading, error } = useReadPermissionsManagerForMultipleArgs(
     { functionName: 'hasRole', args: hasRoleArgs },
-    { enabled: hasRoleArgs.length > 0 },
+    { enabled },
   )
 
   const { isAdmin, isFundManager, isPauser } = useMemo(

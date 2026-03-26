@@ -44,9 +44,7 @@ export function PauseCard({ title, description, isPaused, onPause, isRequesting,
         {isPaused && (
           <div className="flex items-start gap-3">
             <ExclamationCircleIcon size={24} className="shrink-0 text-text-100" />
-            <Paragraph variant="body-s">
-              {`${title.charAt(0).toUpperCase() + title.slice(1).toLowerCase()} has been paused.`}
-            </Paragraph>
+            <Paragraph variant="body-s">{`${title} has been paused.`}</Paragraph>
           </div>
         )}
       </div>
