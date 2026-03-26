@@ -1,10 +1,10 @@
 import { describe, it, expect, beforeAll } from 'vitest'
-import { parseUnits, encodeFunctionData, type AbiFunction } from 'viem'
+import { parseUnits, encodeFunctionData, type AbiFunction, type Address } from 'viem'
 import {
   uniswapProvider,
   getAvailableFeeTiers,
   UNISWAP_FEE_TIERS,
-  encodeUniformFeeSwapPath,
+  encodePerHopFeeSwapPath,
 } from './uniswap'
 import { ROUTER_ADDRESSES, SWAP_TOKEN_ADDRESSES } from '../constants'
 import { resolveSwapRoute } from '../routes'
@@ -36,6 +36,42 @@ function expectAutoExactInOk(result: SwapQuote) {
   expect(result.error).toBeUndefined()
   expect(parseFloat(result.amountOut)).toBeGreaterThan(0)
   expect(UNISWAP_FEE_TIERS).toContain(result.feeTier)
+}
+
+function getTwoHopFeeCombinations(): number[][] {
+  const hopCombos: number[][] = []
+  for (const firstHopFee of UNISWAP_FEE_TIERS) {
+    for (const secondHopFee of UNISWAP_FEE_TIERS) {
+      hopCombos.push([firstHopFee, secondHopFee])
+    }
+  }
+  return hopCombos
+}
+
+async function getBestMultihopExactInputFromMulticall(routeTokens: readonly Address[], amountIn: bigint) {
+  const hopCombos = getTwoHopFeeCombinations()
+  const multicall = await publicClient.multicall({
+    contracts: hopCombos.map(hopFees => ({
+      address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
+      abi: UniswapQuoterV2Abi,
+      functionName: 'quoteExactInput' as const,
+      args: [encodePerHopFeeSwapPath(routeTokens, hopFees), amountIn] as const,
+    })),
+  })
+
+  let bestOut = 0n
+  let winningHops: readonly number[] | null = null
+  multicall.forEach((row, index) => {
+    if (row.status !== 'success' || !Array.isArray(row.result)) return
+    const amountOut = row.result[0]
+    if (typeof amountOut !== 'bigint') return
+    if (amountOut > bestOut) {
+      bestOut = amountOut
+      winningHops = hopCombos[index]
+    }
+  })
+
+  return { bestOut, winningHops }
 }
 
 describe('uniswap provider - integration tests', () => {
@@ -238,28 +274,28 @@ describe('uniswap provider - integration tests', () => {
 
   describe('USDRIF↔RIF multihop quotes (STORY-006 Phase 1)', () => {
     it.skipIf(!hasRifToken)(
-      'getQuote matches quoteExactInput for same path bytes (uniform fee)',
+      'getAvailableFeeTiers returns no selectable tiers for multihop (UI uses internal routing)',
       async () => {
-        const route = resolveSwapRoute(SWAP_TOKEN_ADDRESSES.USDRIF, rifToken)
-        expect(route.tokens.length).toBe(3)
-
-        const amountIn = parseUnits('1', tokenOutDecimals)
         const tiers = await getAvailableFeeTiers(
           SWAP_TOKEN_ADDRESSES.USDRIF,
           rifToken,
           tokenOutDecimals,
         )
-        expect(tiers.length).toBeGreaterThan(0)
-        const fee = tiers[0]
+        expect(tiers).toEqual([])
+      },
+      15000,
+    )
 
-        const path = encodeUniformFeeSwapPath(route.tokens, fee)
-        const onChain = (await publicClient.readContract({
-          address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
-          abi: UniswapQuoterV2Abi,
-          functionName: 'quoteExactInput',
-          args: [path, amountIn],
-        })) as [bigint, bigint[], number[], bigint]
-        const amountOutOnChain = onChain[0]
+    it.skipIf(!hasRifToken)(
+      'getQuote picks best output over all standard per-hop fee pairs',
+      async () => {
+        const route = resolveSwapRoute(SWAP_TOKEN_ADDRESSES.USDRIF, rifToken)
+        expect(route.tokens.length).toBe(3)
+
+        const amountIn = parseUnits('1', tokenOutDecimals)
+        const { bestOut, winningHops } = await getBestMultihopExactInputFromMulticall(route.tokens, amountIn)
+
+        expect(bestOut > 0n).toBe(true)
 
         const result = await uniswapProvider.getQuote({
           tokenIn: SWAP_TOKEN_ADDRESSES.USDRIF,
@@ -267,35 +303,23 @@ describe('uniswap provider - integration tests', () => {
           amountIn,
           tokenInDecimals: tokenOutDecimals,
           tokenOutDecimals: rifDecimals,
-          feeTier: fee,
         })
 
         expect(result.error).toBeUndefined()
-        expect(result.amountOutRaw).toBe(amountOutOnChain.toString())
+        expect(result.amountOutRaw).toBe(bestOut.toString())
+        expect(result.hopFees).toEqual(winningHops)
       },
       45000,
     )
 
     it.skipIf(!hasRifToken)(
-      'reverse direction RIF→USDRIF matches quoteExactInput',
+      'reverse direction RIF→USDRIF matches best per-hop multicall',
       async () => {
         const route = resolveSwapRoute(rifToken, SWAP_TOKEN_ADDRESSES.USDRIF)
         const amountIn = parseUnits('0.5', rifDecimals)
-        const tiers = await getAvailableFeeTiers(
-          rifToken,
-          SWAP_TOKEN_ADDRESSES.USDRIF,
-          rifDecimals,
-        )
-        expect(tiers.length).toBeGreaterThan(0)
-        const fee = tiers[0]
+        const { bestOut, winningHops } = await getBestMultihopExactInputFromMulticall(route.tokens, amountIn)
 
-        const path = encodeUniformFeeSwapPath(route.tokens, fee)
-        const onChain = (await publicClient.readContract({
-          address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
-          abi: UniswapQuoterV2Abi,
-          functionName: 'quoteExactInput',
-          args: [path, amountIn],
-        })) as [bigint, bigint[], number[], bigint]
+        expect(bestOut > 0n).toBe(true)
 
         const result = await uniswapProvider.getQuote({
           tokenIn: rifToken,
@@ -303,11 +327,11 @@ describe('uniswap provider - integration tests', () => {
           amountIn,
           tokenInDecimals: rifDecimals,
           tokenOutDecimals: tokenOutDecimals,
-          feeTier: fee,
         })
 
         expect(result.error).toBeUndefined()
-        expect(result.amountOutRaw).toBe(onChain[0].toString())
+        expect(result.amountOutRaw).toBe(bestOut.toString())
+        expect(result.hopFees).toEqual(winningHops)
       },
       45000,
     )
