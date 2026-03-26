@@ -1,9 +1,10 @@
 import { logger } from '@/lib/logger'
 import { NextRequest, NextResponse } from 'next/server'
-import { Address, isAddress, getAddress } from 'viem'
+import { Address, getAddress, isAddress } from 'viem'
+
+import { SWAP_TOKEN_ADDRESSES, UNISWAP_FEE_TIERS } from '@/lib/swap/constants'
 import { uniswapProvider } from '@/lib/swap/providers/uniswap'
-import { SWAP_TOKEN_ADDRESSES } from '@/lib/swap/constants'
-import { getTokenDecimalsBatch, scaleAmount, isValidAmount } from '@/lib/swap/utils'
+import { getTokenDecimalsBatch, isValidAmount, scaleAmount } from '@/lib/swap/utils'
 
 /**
  * Cache quotes for 30 seconds
@@ -11,26 +12,38 @@ import { getTokenDecimalsBatch, scaleAmount, isValidAmount } from '@/lib/swap/ut
  */
 export const revalidate = 30
 
+function parseOptionalFeeTier(raw: string | null): number | undefined {
+  if (raw === null || raw === '') return undefined
+  const n = Number(raw)
+  if (!Number.isInteger(n) || !(UNISWAP_FEE_TIERS as readonly number[]).includes(n)) {
+    return undefined
+  }
+  return n
+}
+
 /**
  * GET /api/swap/quote
+ *
+ * Uses the same `uniswapProvider.getQuote` path as the in-app swap flow (including multihop
+ * pairs resolved in `src/lib/swap/routes.ts`, e.g. USDRIF↔RIF via USDT0).
  *
  * Query parameters:
  * - tokenIn: Token address to swap from (defaults to USDT0)
  * - tokenOut: Token address to swap to (defaults to USDRIF)
  * - amount: Amount to swap (human-readable string, e.g., "100.5")
+ * - feeTier: Optional Uniswap V3 fee tier (100, 500, 3000, 10000). Omit for Auto (best quote).
  *
  * Example:
- * GET /api/swap/quote?tokenIn=0x779dED0C9e1022225F8e0630b35A9B54Be713736&tokenOut=0x3A15461d8AE0f0Fb5fA2629e9dA7D66A794a6E37&amount=100
+ * GET /api/swap/quote?tokenIn=...&tokenOut=...&amount=100&feeTier=500
  */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams
   const tokenInParam = searchParams.get('tokenIn')
   const tokenOutParam = searchParams.get('tokenOut')
   const amountParam = searchParams.get('amount')
+  const feeTier = parseOptionalFeeTier(searchParams.get('feeTier'))
 
   try {
-    // For this iteration, tokenIn is always USDT0 and tokenOut is always USDRIF
-    // But we validate the params if provided
     const tokenIn = (
       tokenInParam && isAddress(tokenInParam) ? tokenInParam : SWAP_TOKEN_ADDRESSES.USDT0
     ) as Address
@@ -71,6 +84,7 @@ export async function GET(request: NextRequest) {
           amountIn,
           tokenInDecimals,
           tokenOutDecimals,
+          ...(feeTier !== undefined ? { feeTier } : {}),
         })
         .catch(error => ({
           provider: provider.name,

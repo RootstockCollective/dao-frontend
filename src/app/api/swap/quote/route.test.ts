@@ -14,6 +14,12 @@ describe('GET /api/swap/quote - integration tests', () => {
     realTokenIn !== '0x0000000000000000000000000000000000000000' &&
     realTokenOut !== '0x0000000000000000000000000000000000000000'
 
+  const realRif = SWAP_TOKEN_ADDRESSES.RIF
+  const hasRifMultihop =
+    hasRealAddresses &&
+    realRif &&
+    realRif !== '0x0000000000000000000000000000000000000000'
+
   /**
    * Helper function to create a request and call the GET handler
    */
@@ -21,11 +27,13 @@ describe('GET /api/swap/quote - integration tests', () => {
     amount: string
     tokenIn?: string
     tokenOut?: string
+    feeTier?: string
   }): Promise<{ response: NextResponse; data: any }> {
     const url = new URL('http://localhost/api/swap/quote')
     if (params.tokenIn) url.searchParams.set('tokenIn', params.tokenIn)
     if (params.tokenOut) url.searchParams.set('tokenOut', params.tokenOut)
     url.searchParams.set('amount', params.amount)
+    if (params.feeTier !== undefined) url.searchParams.set('feeTier', params.feeTier)
 
     const request = new NextRequest(url)
     const response = await GET(request)
@@ -72,6 +80,41 @@ describe('GET /api/swap/quote - integration tests', () => {
         expect(data.quotes.length).toBe(1)
         expect(data.quotes[0].provider).toBe('uniswap')
 
+        expectSuccessfulQuote(data.quotes[0])
+      },
+      30000,
+    )
+
+    it.skipIf(!hasRifMultihop)(
+      'should return multihop quote for USDRIF → RIF',
+      async () => {
+        const { response, data } = await callQuoteAPI({
+          tokenIn: realTokenOut,
+          tokenOut: realRif!,
+          amount: '1',
+        })
+
+        expect(response.status).toBe(200)
+        expect(data.quotes[0].provider).toBe('uniswap')
+        expectSuccessfulQuote(data.quotes[0])
+        expect(data.quotes[0].hopFees).toBeDefined()
+        expect(Array.isArray(data.quotes[0].hopFees)).toBe(true)
+        expect(data.quotes[0].hopFees.length).toBe(2)
+      },
+      45000,
+    )
+
+    it.skipIf(!hasRealAddresses)(
+      'should return successful quote when optional feeTier matches the pool',
+      async () => {
+        const { response, data } = await callQuoteAPI({
+          tokenIn: realTokenIn,
+          tokenOut: realTokenOut,
+          amount: '1',
+          feeTier: '500',
+        })
+
+        expect(response.status).toBe(200)
         expectSuccessfulQuote(data.quotes[0])
       },
       30000,

@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { Address, isAddress } from 'viem'
-import { SWAP_TOKEN_ADDRESSES } from '@/lib/swap/constants'
+
 import { sentryClient } from '@/lib/sentry/sentry-client'
+import { SWAP_TOKEN_ADDRESSES } from '@/lib/swap/constants'
 
 /**
  * Response type from the swap quote API
@@ -11,6 +12,10 @@ export interface SwapQuoteResponse {
     provider: string
     amountOut: string
     amountOutRaw: string
+    /** Present when the provider used an explicit or resolved fee tier. */
+    feeTier?: number
+    /** Per-hop fees for multihop routes (aligned with `SwapQuote` from swap providers). */
+    hopFees?: readonly number[]
     priceImpact?: string
     gasEstimate?: string
     error?: string
@@ -24,6 +29,8 @@ export interface UseSwapQuoteParams {
   amount: string
   tokenIn?: Address
   tokenOut?: Address
+  /** Optional Uniswap V3 fee tier; omitted or `null` means Auto (same as quote API). */
+  feeTier?: number | null
   enabled?: boolean
 }
 
@@ -39,24 +46,30 @@ export interface UseSwapQuoteParams {
  *   amount: '100',
  *   tokenIn: USDT0_ADDRESS,
  *   tokenOut: USDRIF_ADDRESS,
+ *   feeTier: 500,
  * })
  * ```
  */
 export function useSwapQuote(params: UseSwapQuoteParams) {
-  const { tokenIn, tokenOut, amount, enabled = true } = params
+  const { tokenIn, tokenOut, amount, feeTier, enabled = true } = params
 
   // Use default addresses if not provided
   const tokenInAddress = tokenIn || SWAP_TOKEN_ADDRESSES.USDT0
   const tokenOutAddress = tokenOut || SWAP_TOKEN_ADDRESSES.USDRIF
 
+  const feeTierKey = feeTier ?? 'auto'
+
   return useQuery<SwapQuoteResponse>({
-    queryKey: ['swapQuote', tokenInAddress, tokenOutAddress, amount],
+    queryKey: ['swapQuote', tokenInAddress, tokenOutAddress, amount, feeTierKey],
     queryFn: async () => {
       const searchParams = new URLSearchParams({
         tokenIn: tokenInAddress,
         tokenOut: tokenOutAddress,
         amount,
       })
+      if (feeTier != null) {
+        searchParams.set('feeTier', String(feeTier))
+      }
 
       const response = await fetch(`/api/swap/quote?${searchParams.toString()}`)
 
