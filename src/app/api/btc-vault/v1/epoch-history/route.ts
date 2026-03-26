@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 
 import { getCachedEpochHistory } from './action'
 
-export const revalidate = 25
+export const revalidate = 20
 
 export async function GET() {
   try {

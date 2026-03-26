@@ -82,6 +82,6 @@ export async function fetchEpochHistory(): Promise<EpochHistoryResult> {
 }
 
 export const getCachedEpochHistory = unstable_cache(fetchEpochHistory, ['cached_btc_vault_epoch_history'], {
-  revalidate: 25,
+  revalidate: 20,
   tags: ['cached_btc_vault_epoch_history'],
 })
