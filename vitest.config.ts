@@ -77,7 +77,9 @@ export default defineConfig({
           exclude: [
             '**/node_modules/**',
             '**/.worktree*/**',
-            '**/swap/**/*.test.ts',
+            'src/lib/swap/utils.test.ts',
+            'src/lib/swap/permit2.test.ts',
+            'src/lib/swap/providers/**/*.test.ts',
             '**/swap/**/*.test.tsx',
             '**/Swap/**/*.test.ts',
             '**/Swap/**/*.test.tsx',
