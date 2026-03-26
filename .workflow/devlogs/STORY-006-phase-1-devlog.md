@@ -24,10 +24,12 @@
 
 ## Deviations from Plan
 
-| Deviation | Reason | Impact |
-| --------- | ------ | ------ |
-| No dedicated Vitest “mainnet” project | Repo only had default (testnet env) + optional fork; no separate mainnet project. | On-chain comparisons remain in `uniswap.test.ts` under fork when `FORK_RPC_URL` is set; comments document ≤ 1 wei rule. |
+
+| Deviation                                                 | Reason                                                                                           | Impact                                                                                                                                  |
+| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| No dedicated Vitest “mainnet” project                     | Repo only had default (testnet env) + optional fork; no separate mainnet project.                | On-chain comparisons remain in `uniswap.test.ts` under fork when `FORK_RPC_URL` is set; comments document ≤ 1 wei rule.                 |
 | `UniswapQuoterV2Abi` typed as `Abi` instead of `as const` | Viem narrowed `functionName` / `multicall` contracts to single-hop only with the expanded tuple. | Slightly looser ABI typing; runtime unchanged. `readContract` results for multihop asserted via runtime guards + narrow casts in tests. |
+
 
 ## Discoveries
 
@@ -43,3 +45,4 @@ See `## Plan Amendments` in `.workflow/plans/STORY-006-plan.md`.
 - Uniform fee on all hops is intentional (Oku-style); real liquidity may favor mixed tiers on paper, but product rule is one tier repeated in path bytes.
 - `getSwapEncodedData` / `getPermitSwapEncodedData` still encode **single-hop** paths only (Phase 4 execution).
 - Phase 2+ must not be merged as part of this task per scope.
+
