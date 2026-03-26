@@ -110,6 +110,13 @@ describe('useSwapQuote', () => {
       )
     })
 
+    it('should append feeTier when provided', async () => {
+      const { result } = renderUseSwapQuote({ feeTier: 500 })
+
+      await waitFor(() => expect(result.current.data).toBeDefined())
+      expect(mockedFetch).toHaveBeenCalledWith(expect.stringContaining('feeTier=500'))
+    })
+
     it.skipIf(!SWAP_TOKEN_ADDRESSES.USDT0 || !SWAP_TOKEN_ADDRESSES.USDRIF)(
       'should use default token addresses when not provided',
       async () => {
