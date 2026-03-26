@@ -84,12 +84,13 @@ async function getBestMultihopExactInputFromMulticall(routeTokens: readonly Addr
   return { bestOut, winningHops }
 }
 
-function mockPermitForTests(token: Address): PermitSingle {
+/** Large permit budget for encoding-only tests; `amount` uses the bridged token's decimals (e.g. USDRIF/RIF). */
+function mockPermitForTests(token: Address, tokenDecimals: number): PermitSingle {
   const deadline = BigInt(Math.floor(Date.now() / 1000) + 3600)
   return {
     details: {
       token,
-      amount: parseUnits('1000000', 18),
+      amount: parseUnits('1000000', tokenDecimals),
       expiration: Number(deadline),
       nonce: 0,
     },
@@ -98,7 +99,7 @@ function mockPermitForTests(token: Address): PermitSingle {
   }
 }
 
-const MOCK_SIGNATURE = (`0x${'00'.repeat(65)}`) as Hex
+const MOCK_SIGNATURE = `0x${'00'.repeat(65)}` as Hex
 
 describe('uniswap provider - integration tests', () => {
   const realTokenIn = SWAP_TOKEN_ADDRESSES.USDT0
@@ -302,11 +303,7 @@ describe('uniswap provider - integration tests', () => {
     it.skipIf(!hasRifToken)(
       'getAvailableFeeTiers returns uniform-path tiers for USDRIF↔RIF multihop',
       async () => {
-        const tiers = await getAvailableFeeTiers(
-          SWAP_TOKEN_ADDRESSES.USDRIF,
-          rifToken,
-          tokenOutDecimals,
-        )
+        const tiers = await getAvailableFeeTiers(SWAP_TOKEN_ADDRESSES.USDRIF, rifToken, tokenOutDecimals)
         expect(Array.isArray(tiers)).toBe(true)
         tiers.forEach(t => expect(UNISWAP_FEE_TIERS).toContain(t))
       },
@@ -316,11 +313,7 @@ describe('uniswap provider - integration tests', () => {
     it.skipIf(!hasRifToken)(
       'getQuote with explicit fee matches quoteExactInput on uniform multihop path',
       async () => {
-        const tiers = await getAvailableFeeTiers(
-          SWAP_TOKEN_ADDRESSES.USDRIF,
-          rifToken,
-          tokenOutDecimals,
-        )
+        const tiers = await getAvailableFeeTiers(SWAP_TOKEN_ADDRESSES.USDRIF, rifToken, tokenOutDecimals)
         if (tiers.length === 0) return
 
         const tier = tiers[0]
@@ -636,8 +629,7 @@ describe('uniswap provider - integration tests', () => {
       { timeout: 15_000 },
       async () => {
         const quoteFunction = UniswapQuoterV2Abi.find(
-          (item): item is AbiFunction =>
-            item.type === 'function' && item.name === 'quoteExactInputSingle',
+          (item): item is AbiFunction => item.type === 'function' && item.name === 'quoteExactInputSingle',
         )
         expect(quoteFunction?.name).toBe('quoteExactInputSingle')
         expect(quoteFunction?.stateMutability).toBe('view')
@@ -674,69 +666,92 @@ describe('uniswap provider - integration tests', () => {
   })
 
   /**
-   * STORY-006 Phase 4: execution bundle uses the same V3 path bytes as `quoteExactInput`
-   * (token order starts with `tokenIn`). Full `execute` is not static-callable without a valid permit signature;
-   * encoding + quoter agreement is the strongest fork-safe check here.
+   * Universal Router swap payload uses the same V3 path bytes as `quoteExactInput`
+   * (first address = tokenIn). Wallet `execute` is not asserted here (needs valid permit + funded account);
+   * encoding agreement with the Quoter is the fork-safe guarantee.
    */
-  describe('multihop execution encoding (STORY-006 Phase 4)', () => {
+  describe('multihop execution encoding', () => {
     const testRecipient = '0x000000000000000000000000000000000000dEaD' as Address
+
+    const swapInputTuple = [
+      { name: 'recipient', type: 'address' },
+      { name: 'amountIn', type: 'uint256' },
+      { name: 'amountOutMinimum', type: 'uint256' },
+      { name: 'path', type: 'bytes' },
+      { name: 'payerIsUser', type: 'bool' },
+    ] as const
+
+    async function assertPermitBundlePathMatchesQuoter(params: {
+      caseLabel: string
+      tokenIn: Address
+      tokenOut: Address
+      tokenInDecimals: number
+      tokenOutDecimals: number
+      amountIn: bigint
+    }) {
+      const { caseLabel, tokenIn, tokenOut, tokenInDecimals, tokenOutDecimals, amountIn } = params
+
+      const result = await uniswapProvider.getQuote({
+        tokenIn,
+        tokenOut,
+        amountIn,
+        tokenInDecimals,
+        tokenOutDecimals,
+      })
+
+      expect(
+        result.error,
+        `${caseLabel}: multihop quote failed — ${result.error ?? 'unknown'}`,
+      ).toBeUndefined()
+      expect(result.hopFees?.length, `${caseLabel}: expected hopFees on multihop quote`).toBeGreaterThan(0)
+
+      const hopFees = result.hopFees as readonly number[]
+      const route = resolveSwapRoute(tokenIn, tokenOut)
+      const expectedPath = encodePerHopFeeSwapPath(route.tokens, hopFees)
+
+      const chainQuote = await publicClient.readContract({
+        address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
+        abi: UniswapQuoterV2Abi,
+        functionName: 'quoteExactInput',
+        args: [expectedPath, amountIn],
+      })
+      const amountOutOnChain = (chainQuote as [bigint, bigint[], number[], bigint])[0]
+      expect(result.amountOutRaw).toBe(amountOutOnChain.toString())
+
+      const minOut =
+        amountOutOnChain > 10n ? (amountOutOnChain * 99n) / 100n : amountOutOnChain > 0n ? 1n : 0n
+      expect(minOut > 0n).toBe(true)
+
+      const { commands, inputs } = getPermitSwapEncodedData({
+        tokenIn,
+        tokenOut,
+        amountIn,
+        amountOutMinimum: minOut,
+        poolFee: hopFees[0],
+        hopFees,
+        recipient: testRecipient,
+        permit: mockPermitForTests(tokenIn, tokenInDecimals),
+        signature: MOCK_SIGNATURE,
+      })
+
+      expect(commands).toBe('0x0a00')
+      const decoded = decodeAbiParameters([...swapInputTuple], inputs[1])
+      const pathHex = decoded[3] as Hex
+      expect(pathHex.toLowerCase()).toBe(expectedPath.toLowerCase())
+      expect(pathHex.slice(2, 42).toLowerCase()).toBe(tokenIn.slice(2).toLowerCase())
+    }
 
     it.skipIf(!hasRifToken)(
       'USDRIF→RIF: permit2+swap bundle path matches Quoter and starts with tokenIn',
       async () => {
-        const tokenIn = SWAP_TOKEN_ADDRESSES.USDRIF
-        const tokenOut = rifToken
-        const amountIn = parseUnits('0.05', tokenOutDecimals)
-        const result = await uniswapProvider.getQuote({
-          tokenIn,
-          tokenOut,
-          amountIn,
+        await assertPermitBundlePathMatchesQuoter({
+          caseLabel: 'USDRIF→RIF',
+          tokenIn: SWAP_TOKEN_ADDRESSES.USDRIF,
+          tokenOut: rifToken,
           tokenInDecimals: tokenOutDecimals,
           tokenOutDecimals: rifDecimals,
+          amountIn: parseUnits('0.05', tokenOutDecimals),
         })
-        if (result.error || !result.hopFees?.length) return
-
-        const route = resolveSwapRoute(tokenIn, tokenOut)
-        const expectedPath = encodePerHopFeeSwapPath(route.tokens, result.hopFees)
-        const chainQuote = await publicClient.readContract({
-          address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
-          abi: UniswapQuoterV2Abi,
-          functionName: 'quoteExactInput',
-          args: [expectedPath, amountIn],
-        })
-        const amountOutOnChain = (chainQuote as [bigint, bigint[], number[], bigint])[0]
-        expect(result.amountOutRaw).toBe(amountOutOnChain.toString())
-
-        const minOut =
-          amountOutOnChain > 10n ? (amountOutOnChain * 99n) / 100n : amountOutOnChain > 0n ? 1n : 0n
-        expect(minOut > 0n).toBe(true)
-
-        const { commands, inputs } = getPermitSwapEncodedData({
-          tokenIn,
-          tokenOut,
-          amountIn,
-          amountOutMinimum: minOut,
-          poolFee: result.hopFees[0],
-          hopFees: result.hopFees,
-          recipient: testRecipient,
-          permit: mockPermitForTests(tokenIn),
-          signature: MOCK_SIGNATURE,
-        })
-
-        expect(commands).toBe('0x0a00')
-        const decoded = decodeAbiParameters(
-          [
-            { name: 'recipient', type: 'address' },
-            { name: 'amountIn', type: 'uint256' },
-            { name: 'amountOutMinimum', type: 'uint256' },
-            { name: 'path', type: 'bytes' },
-            { name: 'payerIsUser', type: 'bool' },
-          ],
-          inputs[1],
-        )
-        const pathHex = decoded[3] as Hex
-        expect(pathHex.toLowerCase()).toBe(expectedPath.toLowerCase())
-        expect(pathHex.slice(2, 42).toLowerCase()).toBe(tokenIn.slice(2).toLowerCase())
       },
       45000,
     )
@@ -744,59 +759,14 @@ describe('uniswap provider - integration tests', () => {
     it.skipIf(!hasRifToken)(
       'RIF→USDRIF: permit2+swap bundle path matches Quoter and starts with tokenIn',
       async () => {
-        const tokenIn = rifToken
-        const tokenOut = SWAP_TOKEN_ADDRESSES.USDRIF
-        const amountIn = parseUnits('0.25', rifDecimals)
-        const result = await uniswapProvider.getQuote({
-          tokenIn,
-          tokenOut,
-          amountIn,
+        await assertPermitBundlePathMatchesQuoter({
+          caseLabel: 'RIF→USDRIF',
+          tokenIn: rifToken,
+          tokenOut: SWAP_TOKEN_ADDRESSES.USDRIF,
           tokenInDecimals: rifDecimals,
           tokenOutDecimals: tokenOutDecimals,
+          amountIn: parseUnits('0.25', rifDecimals),
         })
-        if (result.error || !result.hopFees?.length) return
-
-        const route = resolveSwapRoute(tokenIn, tokenOut)
-        const expectedPath = encodePerHopFeeSwapPath(route.tokens, result.hopFees)
-        const chainQuote = await publicClient.readContract({
-          address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
-          abi: UniswapQuoterV2Abi,
-          functionName: 'quoteExactInput',
-          args: [expectedPath, amountIn],
-        })
-        const amountOutOnChain = (chainQuote as [bigint, bigint[], number[], bigint])[0]
-        expect(result.amountOutRaw).toBe(amountOutOnChain.toString())
-
-        const minOut =
-          amountOutOnChain > 10n ? (amountOutOnChain * 99n) / 100n : amountOutOnChain > 0n ? 1n : 0n
-        expect(minOut > 0n).toBe(true)
-
-        const { commands, inputs } = getPermitSwapEncodedData({
-          tokenIn,
-          tokenOut,
-          amountIn,
-          amountOutMinimum: minOut,
-          poolFee: result.hopFees[0],
-          hopFees: result.hopFees,
-          recipient: testRecipient,
-          permit: mockPermitForTests(tokenIn),
-          signature: MOCK_SIGNATURE,
-        })
-
-        expect(commands).toBe('0x0a00')
-        const decoded = decodeAbiParameters(
-          [
-            { name: 'recipient', type: 'address' },
-            { name: 'amountIn', type: 'uint256' },
-            { name: 'amountOutMinimum', type: 'uint256' },
-            { name: 'path', type: 'bytes' },
-            { name: 'payerIsUser', type: 'bool' },
-          ],
-          inputs[1],
-        )
-        const pathHex = decoded[3] as Hex
-        expect(pathHex.toLowerCase()).toBe(expectedPath.toLowerCase())
-        expect(pathHex.slice(2, 42).toLowerCase()).toBe(tokenIn.slice(2).toLowerCase())
       },
       45000,
     )

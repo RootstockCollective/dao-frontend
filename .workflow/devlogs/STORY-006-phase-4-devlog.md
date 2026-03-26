@@ -21,7 +21,9 @@
 
 2. **Slippage / quote alignment:** Documented in `SwapStepThree.tsx` that `quote.amountOut` is the Quoter exact-in output for **exactIn**, and the user’s target output for **exactOut** while execution remains `V3_SWAP_EXACT_IN` with `quote.amountIn` — slippage on min-out still matches the router’s exact-in semantics.
 
-3. **Fork tests:** Added `multihop execution encoding (STORY-006 Phase 4)` in `src/lib/swap/providers/uniswap.test.ts`: for small **USDRIF→RIF** and **RIF→USDRIF** swaps, assert provider quote raw out matches on-chain `quoteExactInput` for the same pathbytes, decode `getPermitSwapEncodedData` V3 input and assert path equals resolver-built path (case-insensitive hex) and starts with `tokenIn`. Commands `0x0a00` asserted. No live `execute` (would need real permit signature + balance).
+3. **Fork tests:** Added **`multihop execution encoding`** in `src/lib/swap/providers/uniswap.test.ts`: for small **USDRIF→RIF** and **RIF→USDRIF** swaps, assert provider quote raw out matches on-chain `quoteExactInput` for the same path bytes, decode `getPermitSwapEncodedData` V3 input and assert path equals resolver-built path (case-insensitive hex) and starts with `tokenIn`. Commands `0x0a00` asserted. No live `execute` (would need real permit signature + balance).
+
+5. **Elite review follow-up (post `b88b3dd9`):** Tests no longer **vacuously pass** on quote failure (explicit `expect` on `result.error` / `hopFees`); shared `assertPermitBundlePathMatchesQuoter` removes duplication; `mockPermitForTests(token, tokenDecimals)` uses **tokenIn** decimals for `parseUnits`. Phase 4 commit subject stays historical; subsequent commit documents test-only tightening.
 
 4. **DRY:** Introduced `swapQuoteNoLiquidityExplicitTier` and replaced four duplicated explicit-tier quoter-revert `catch` branches in `getUniswapQuote` / `getUniswapExactOutputQuote`.
 
@@ -37,7 +39,7 @@
 
 ## Plan Amendments
 
-- None (plan file not edited).
+- **Naming:** Phase 4 primary commit `feat(swap): execute multihop swaps via universal router` primarily delivered **encoding + quoter tests** and provider DRY—not a production execution-path code change. Prefer `test(swap): …` / `refactor(swap): …` split for similar changes going forward.
 
 ## Notes for Code Review
 
