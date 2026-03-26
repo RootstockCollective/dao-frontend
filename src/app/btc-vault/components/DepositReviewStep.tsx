@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 
 import { Button } from '@/components/Button'
 import { Divider } from '@/components/Divider'
+import { TransactionInProgressButton } from '@/components/StepActionButtons'
 import { TokenImage } from '@/components/TokenImage'
 import { Label, Paragraph } from '@/components/Typography'
 import Big from '@/lib/big'
@@ -119,15 +120,18 @@ export const DepositReviewStep = ({
             >
               Back
             </Button>
-            <Button
-              variant="primary"
-              onClick={onSubmit}
-              disabled={isSubmitting}
-              data-testid="SubmitRequestButton"
-              className="whitespace-nowrap"
-            >
-              {isSubmitting ? 'Submitting...' : 'Send request'}
-            </Button>
+            {isSubmitting ? (
+              <TransactionInProgressButton />
+            ) : (
+              <Button
+                variant="primary"
+                onClick={onSubmit}
+                data-testid="SubmitRequestButton"
+                className="whitespace-nowrap"
+              >
+                Send request
+              </Button>
+            )}
           </div>
         </div>
       </div>

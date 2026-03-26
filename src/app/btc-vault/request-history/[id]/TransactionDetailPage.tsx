@@ -6,7 +6,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { RBTC } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useModal } from '@/shared/hooks/useModal'
-import { showToast } from '@/shared/notification'
+import { executeTxFlow } from '@/shared/notification'
 
 import { useBtcVaultInvalidation } from '../../hooks/useBtcVaultInvalidation'
 import { useCancelBtcVaultRequest } from '../../hooks/useCancelRequest'
@@ -49,42 +49,29 @@ export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
   const detail = toRequestDetailDisplay(request, null, rbtcPrice, address)
   const isClaimPending = isClaiming || isClaimTxPending
 
+  const BACKEND_INDEX_DELAY_MS = 3000
+
   const handleClaim = async () => {
-    try {
-      await claim()
-      invalidateAfterAction(id)
-      showToast({
-        severity: 'success',
-        title: request.type === 'deposit' ? 'Shares claimed' : 'rBTC claimed',
-        content: 'Your claim transaction has been submitted.',
-      })
-    } catch (error) {
-      showToast({
-        severity: 'error',
-        title: 'Claim failed',
-        content: error instanceof Error ? error.message : 'Something went wrong.',
-      })
-    }
+    await executeTxFlow({
+      action: 'btcVaultClaim',
+      onRequestTx: () => claim(),
+      onSuccess: async () => {
+        await new Promise(resolve => setTimeout(resolve, BACKEND_INDEX_DELAY_MS))
+        invalidateAfterAction(id)
+      },
+    })
   }
 
   const handleConfirmCancel = async () => {
-    try {
-      await onCancelRequest()
-      invalidateAfterAction(id)
-      closeModal()
-      showToast({
-        severity: 'success',
-        title: 'Request canceled',
-        content: 'Your request has been canceled successfully.',
-      })
-    } catch (error) {
-      closeModal()
-      showToast({
-        severity: 'error',
-        title: 'Cancellation failed',
-        content: error instanceof Error ? error.message : 'Something went wrong.',
-      })
-    }
+    await executeTxFlow({
+      action: 'btcVaultCancel',
+      onRequestTx: () => onCancelRequest(),
+      onPending: () => closeModal(),
+      onSuccess: async () => {
+        await new Promise(resolve => setTimeout(resolve, BACKEND_INDEX_DELAY_MS))
+        invalidateAfterAction(id)
+      },
+    })
   }
 
   return (

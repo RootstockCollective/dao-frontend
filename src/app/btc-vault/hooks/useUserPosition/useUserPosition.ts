@@ -9,6 +9,7 @@ import { usePricesContext } from '@/shared/context/PricesContext'
 import type { UserPosition } from '../../services/types'
 import { toUserPositionDisplay } from '../../services/ui/mappers'
 import type { UserPositionDisplay } from '../../services/ui/types'
+import { useUserPrincipal } from './useUserPrincipal'
 
 /**
  * Reads the connected user's BTC vault position from on-chain data.
@@ -82,8 +83,14 @@ export function useUserPosition(address: Address | undefined): {
 
   const positionValue = totalSupply > 0n ? (vaultTokens * totalAssets) / totalSupply : 0n
 
-  const isLoading = isConnected && (isLoadingBalance || isLoadingMulticall)
-  const isError = isConnected && (isBalanceError || isMulticallError)
+  const {
+    data: principalData,
+    isLoading: isLoadingPrincipal,
+    isError: isPrincipalError,
+  } = useUserPrincipal(address)
+
+  const isLoading = isConnected && (isLoadingBalance || isLoadingMulticall || isLoadingPrincipal)
+  const isError = isConnected && (isBalanceError || isMulticallError || isPrincipalError)
 
   const data = useMemo(() => {
     if (!isConnected) return
@@ -96,12 +103,20 @@ export function useUserPosition(address: Address | undefined): {
       vaultTokens,
       positionValue,
       percentOfVault,
-      // TODO(DAO-XXXX): totalDepositedPrincipal requires historical event data (sum of deposits minus withdrawals).
-      totalDepositedPrincipal: 0n,
+      totalDepositedPrincipal: principalData ?? 0n,
     }
 
     return toUserPositionDisplay(position, rbtcPrice)
-  }, [isConnected, nativeBalance?.value, vaultTokens, totalSupply, totalAssets, positionValue, rbtcPrice])
+  }, [
+    isConnected,
+    nativeBalance?.value,
+    vaultTokens,
+    totalSupply,
+    totalAssets,
+    positionValue,
+    rbtcPrice,
+    principalData,
+  ])
 
   return { data, isLoading, isError }
 }
