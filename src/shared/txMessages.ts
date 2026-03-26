@@ -260,6 +260,48 @@ export const TX_MESSAGES = {
       loading: false,
     },
   },
+  btcVaultClaim: {
+    pending: {
+      title: 'Claim in process',
+      content: 'Waiting for transaction confirmation...',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Claim successful',
+      content: 'Your claim has been processed successfully.',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Claim failed',
+      content:
+        'An unexpected error occurred while claiming. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
+  btcVaultCancel: {
+    pending: {
+      title: 'Cancellation in process',
+      content: 'Waiting for transaction confirmation...',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Request canceled',
+      content: 'Your request has been canceled successfully.',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Cancellation failed',
+      content:
+        'An unexpected error occurred while canceling your request. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
   btcVaultDepositRequest: {
     pending: {
       title: 'Deposit request in process',

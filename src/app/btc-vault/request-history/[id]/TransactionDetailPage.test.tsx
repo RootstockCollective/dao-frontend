@@ -5,7 +5,7 @@ import { TransactionDetailPage } from './TransactionDetailPage'
 
 const mockUseAccount = vi.fn()
 const mockUseRequestById = vi.fn()
-const mockShowToast = vi.fn()
+const mockExecuteTxFlow = vi.fn()
 const mockOnCancelRequest = vi.fn()
 const mockClaim = vi.fn()
 const mockUseClaimRequest = vi.fn()
@@ -41,7 +41,7 @@ vi.mock('../../hooks/useClaimRequest', () => ({
 }))
 
 vi.mock('@/shared/notification', () => ({
-  showToast: (args: unknown) => mockShowToast(args),
+  executeTxFlow: (args: unknown) => mockExecuteTxFlow(args),
 }))
 
 vi.mock('@/shared/walletConnection/connection/useAppKitFlow', () => ({
@@ -248,9 +248,10 @@ describe('TransactionDetailPage', () => {
     expect(screen.queryByTestId('cancel-request-button')).not.toBeInTheDocument()
   })
 
-  it('shows success toast when claim succeeds', async () => {
+  it('calls executeTxFlow with btcVaultClaim action when claim is clicked', async () => {
     mockUseRequestById.mockReturnValue({ data: MOCK_WITHDRAWAL_CLAIMABLE, isLoading: false })
     mockClaim.mockResolvedValue('0xclaimhash')
+    mockExecuteTxFlow.mockResolvedValue('0xclaimhash')
     mockUseClaimRequest.mockReturnValue({
       claim: mockClaim,
       canClaim: true,
@@ -262,49 +263,31 @@ describe('TransactionDetailPage', () => {
     render(<TransactionDetailPage id="req-withdrawal-claimable" />)
     fireEvent.click(screen.getByTestId('claim-button'))
     await waitFor(() => {
-      expect(mockShowToast).toHaveBeenCalledWith({
-        severity: 'success',
-        title: 'rBTC claimed',
-        content: 'Your claim transaction has been submitted.',
-      })
+      expect(mockExecuteTxFlow).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'btcVaultClaim',
+          onRequestTx: expect.any(Function),
+          onSuccess: expect.any(Function),
+        }),
+      )
     })
   })
 
-  it('shows error toast when claim fails', async () => {
-    mockUseRequestById.mockReturnValue({ data: MOCK_DEPOSIT_CLAIMABLE, isLoading: false })
-    mockClaim.mockRejectedValue(new Error('User rejected'))
-    mockUseClaimRequest.mockReturnValue({
-      claim: mockClaim,
-      canClaim: true,
-      claimableAmount: ONE_BTC,
-      isReadingAmount: false,
-      isRequesting: false,
-      isTxPending: false,
-    })
-    render(<TransactionDetailPage id="req-deposit-claimable" />)
-    fireEvent.click(screen.getByTestId('claim-button'))
-    await waitFor(() => {
-      expect(mockShowToast).toHaveBeenCalledWith({
-        severity: 'error',
-        title: 'Claim failed',
-        content: 'User rejected',
-      })
-    })
-  })
-
-  it('shows success toast and closes modal when "Yes, cancel" is clicked', async () => {
+  it('calls executeTxFlow with btcVaultCancel action when cancel is confirmed', async () => {
     mockOnCancelRequest.mockResolvedValue('0xmockhash')
+    mockExecuteTxFlow.mockResolvedValue('0xmockhash')
     render(<TransactionDetailPage id="req-withdrawal-pending" />)
     fireEvent.click(screen.getByTestId('cancel-request-button'))
     fireEvent.click(screen.getByTestId('CancelRequestConfirm'))
     await waitFor(() => {
-      expect(mockShowToast).toHaveBeenCalledWith({
-        severity: 'success',
-        title: 'Request canceled',
-        content: 'Your request has been canceled successfully.',
-      })
+      expect(mockExecuteTxFlow).toHaveBeenCalledWith(
+        expect.objectContaining({
+          action: 'btcVaultCancel',
+          onRequestTx: expect.any(Function),
+          onSuccess: expect.any(Function),
+          onError: expect.any(Function),
+        }),
+      )
     })
-    expect(mockOnCancelRequest).toHaveBeenCalledWith()
-    expect(screen.queryByTestId('CancelRequestModal')).not.toBeInTheDocument()
   })
 })
