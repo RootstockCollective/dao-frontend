@@ -36,7 +36,7 @@ describe('WithdrawReviewStep', () => {
     expect(screen.getByTestId('review-shares')).toHaveTextContent('2')
     expect(screen.getByTestId('review-redemption-value')).toHaveTextContent('2.04')
     expect(screen.getByTestId('review-fee')).toHaveTextContent('0%')
-    expect(screen.getByTestId('review-expected-completion')).toHaveTextContent('5 days')
+    expect(screen.getByTestId('review-expected-completion')).toHaveTextContent('7 days')
   })
 
   it('renders Send request button', () => {
