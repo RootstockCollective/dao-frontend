@@ -28,10 +28,6 @@ export const fetchVoteCastEventEndpoint = withChainId(
   `/address/{{address}}/eventsByTopic0?topic0=${CAST_VOTE_EVENT}&topic1={{topic1}}&topic01Opr=and`,
 )
 
-export const getTokenHoldersOfAddress = withChainId(`/address/{{address}}/holders`)
-
-export const getNftHolders = withChainId(`/nfts/{{address}}/holders`)
-
 // keccak256('NotifyReward(address,uint256,uint256)')
 const GAUGE_NOTIFY_REWARD_EVENT = '0x3c0f5c48b0ffa2c570c1a0f4fbf7b0f8982213afff9eb42cd258ead865cf3c9d'
 export const fetchGaugeNotifyRewardLogsByAddress = withChainId(

@@ -17,7 +17,8 @@ const getAllNftHolders = async (nftAddress: string) => {
       nextPageParams = next
     } while (nextPageParams)
   } catch (err) {
-    console.log('getAllNftHolders No holders found', err)
+    const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+    console.log('getAllNftHolders No holders found:', errorMessage)
   }
   return (
     allData

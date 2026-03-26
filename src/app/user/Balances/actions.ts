@@ -11,9 +11,9 @@ import {
 } from '@/app/user/Balances/types'
 import { GetPricesResult } from '@/app/user/types'
 import { fetchLogsByTopic } from '@/lib/blockscout/fetchLogsByTopic'
-import { RIF_WALLET_SERVICES_URL } from '@/lib/constants'
+import { BLOCKSCOUT_URL, RIF_WALLET_SERVICES_URL } from '@/lib/constants'
 import { GovernorAddress, tokenContracts } from '@/lib/contracts'
-import { fetchPricesEndpoint, getNftHolders, getTokenHoldersOfAddress } from '@/lib/endpoints'
+import { fetchPricesEndpoint } from '@/lib/endpoints'
 import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
 const rws = RIF_WALLET_SERVICES_URL ?? ''
@@ -80,26 +80,61 @@ export const fetchProposalsCreatedCached = async (): Promise<{
   return { data }
 }
 
-export const fetchNftHoldersOfAddress = async (address: string, nextParams: NextPageParams | null) => {
-  const params = nextParams ? `&nextPageParams=${encodeURIComponent(JSON.stringify(nextParams))}` : ''
-  const url = `${rws}${getNftHolders.replace('{{address}}', address)}${params}`
-  const res = await fetch(url)
-  if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
-  const data: ServerResponseV2<NftHolderItem> = await res.json()
-  if (data.error) {
-    throw new Error(data.error)
+function buildPaginationParams(nextParams: NextPageParams | null): string {
+  if (!nextParams) return ''
+  const searchParams = new URLSearchParams()
+  for (const [key, value] of Object.entries(nextParams)) {
+    if (value != null) searchParams.set(key, String(value))
   }
-  return data
+  const qs = searchParams.toString()
+  return qs ? `&${qs}` : ''
 }
 
-export const fetchTokenHoldersOfAddress = async (address: string, nextParams: NextPageParams | null) => {
-  const params = nextParams ? `&nextPageParams=${encodeURIComponent(JSON.stringify(nextParams))}` : ''
-  const url = `${rws}${getTokenHoldersOfAddress.replace('{{address}}', address)}${params}`
+interface BlockscoutNftInstance {
+  id: string
+  owner: { hash: string; ens_domain_name?: string }
+  image_url: string | null
+  metadata: NftHolderItem['metadata'] | null
+}
+
+export const fetchNftHoldersOfAddress = async (
+  address: string,
+  nextParams: NextPageParams | null,
+): Promise<ServerResponseV2<NftHolderItem>> => {
+  if (!isAddress(address)) {
+    throw new Error(`Invalid address: ${address}`)
+  }
+  const pagination = buildPaginationParams(nextParams)
+  const url = `${BLOCKSCOUT_URL}/api/v2/tokens/${address}/instances?${pagination}`
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
+  const data = (await res.json()) as {
+    items: BlockscoutNftInstance[]
+    next_page_params: NextPageParams | null
+  }
+  return {
+    items: data.items.map(item => ({
+      owner: item.owner.hash,
+      id: item.id,
+      image_url: item.image_url ?? '',
+      metadata: item.metadata ?? { creator: '', description: '', external_url: '', image: '', name: '' },
+      ens_domain_name: item.owner.ens_domain_name,
+    })),
+    next_page_params: data.next_page_params,
+  }
+}
+
+export const fetchTokenHoldersOfAddress = async (
+  address: string,
+  nextParams: NextPageParams | null,
+): Promise<ServerResponseV2<TokenHoldersResponse>> => {
+  if (!isAddress(address)) {
+    throw new Error(`Invalid address: ${address}`)
+  }
+  const pagination = buildPaginationParams(nextParams)
+  const url = `${BLOCKSCOUT_URL}/api/v2/tokens/${address}/holders?${pagination}`
   const res = await fetch(url)
   if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
   const data: ServerResponseV2<TokenHoldersResponse> = await res.json()
-  if (data.error) {
-    throw new Error(data.error)
-  }
   return data
 }
