@@ -20,9 +20,10 @@ function pickDistinctPairToken(selected: SwapTokenSymbol, other: SwapTokenSymbol
 /**
  * Zustand swap UI store.
  *
- * `poolFee` / `selectedFeeTier` are the single user-facing fee choice: one tier (or Auto)
- * applied uniformly to every hop on multihop routes. `poolAddress` is the canonical
- * USDT0/USDRIF pool when that pair is selected; it is not used to encode multihop paths.
+ * `selectedFeeTier`: null = Auto. On multihop, Auto picks the best quote over standard **per-hop**
+ * fee combinations; a chosen integer applies the **same** fee on every hop (uniform path).
+ * `poolFee` mirrors the active quote’s first hop for execution hints. `poolAddress` is the
+ * canonical USDT0/USDRIF pool for that pair; multihop path bytes come from the resolver + quote `hopFees`.
  */
 const initialState: SwapState = {
   // Token selection

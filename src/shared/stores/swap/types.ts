@@ -63,9 +63,9 @@ export interface SwapState {
   // Pool configuration (single-hop oriented)
   /** Primary pool for single-hop pairs (e.g. USDT0/USDRIF). Unused for multihop quotes; may stay set from a prior pair. */
   poolAddress: Address | null
-  /** Uniform V3 fee tier for the whole swap (same value repeated on each hop for multihop). */
+  /** First-hop fee from the latest quote (single-hop or multihop; execution uses full `hopFees` when present). */
   poolFee: number | null
-  /** User-selected fee tier override. null = auto (multicall all tiers, pick best). Applies uniformly to every hop. */
+  /** User fee override. null = Auto (multihop: best per-hop tier combo; explicit: same tier every hop). */
   selectedFeeTier: number | null
 }
 
