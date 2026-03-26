@@ -200,12 +200,12 @@ describe('fetchLogsByTopic', () => {
         }),
     })
 
-    await expect(
-      fetchLogsByTopic({
-        address: '0xAddr',
-        topic0: '0xtopic',
-      }),
-    ).rejects.toThrow('Blockscout error: No records found (status: 0)')
+    const result = await fetchLogsByTopic({
+      address: '0xAddr',
+      topic0: '0xtopic',
+    })
+
+    expect(result.data).toHaveLength(0)
   })
 
   it('throws on HTTP error', async () => {
