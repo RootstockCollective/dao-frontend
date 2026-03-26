@@ -41,11 +41,11 @@ describe('useBtcVaultInvalidation', () => {
   })
 
   describe('invalidateAfterAction', () => {
-    it('invalidates submit keys plus history and request detail', () => {
+    it('invalidates submit keys plus history, principal, and request detail', () => {
       const { result } = renderHook(() => useBtcVaultInvalidation())
       result.current.invalidateAfterAction('req-123')
 
-      expect(mockInvalidateQueries).toHaveBeenCalledTimes(4)
+      expect(mockInvalidateQueries).toHaveBeenCalledTimes(5)
       expect(mockInvalidateQueries).toHaveBeenCalledWith({
         queryKey: ['btc-vault', 'active-requests', mockAddress],
       })
@@ -56,6 +56,9 @@ describe('useBtcVaultInvalidation', () => {
         queryKey: ['btc-vault', 'history', mockAddress],
       })
       expect(mockInvalidateQueries).toHaveBeenCalledWith({
+        queryKey: ['btc-vault', 'principal', mockAddress],
+      })
+      expect(mockInvalidateQueries).toHaveBeenCalledWith({
         queryKey: ['btc-vault', 'request', 'req-123', mockAddress],
       })
     })
@@ -64,7 +67,7 @@ describe('useBtcVaultInvalidation', () => {
       const { result } = renderHook(() => useBtcVaultInvalidation())
       result.current.invalidateAfterAction()
 
-      expect(mockInvalidateQueries).toHaveBeenCalledTimes(3)
+      expect(mockInvalidateQueries).toHaveBeenCalledTimes(4)
       expect(mockInvalidateQueries).not.toHaveBeenCalledWith(
         expect.objectContaining({ queryKey: expect.arrayContaining(['request']) }),
       )

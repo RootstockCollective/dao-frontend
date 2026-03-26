@@ -22,6 +22,8 @@ export function useBtcVaultInvalidation() {
       invalidateAfterSubmit()
       // Invalidate history list — partial key matches all pagination/filter/price combos
       queryClient.invalidateQueries({ queryKey: ['btc-vault', 'history', address] })
+      // Invalidate principal — recalculate after deposit/withdrawal finalization
+      queryClient.invalidateQueries({ queryKey: ['btc-vault', 'principal', address] })
       // Invalidate individual request detail
       if (requestId) {
         queryClient.invalidateQueries({ queryKey: ['btc-vault', 'request', requestId, address] })

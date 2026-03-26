@@ -5,6 +5,7 @@ import { useUserPosition } from './useUserPosition'
 
 const mockUseBalance = vi.fn()
 const mockUseReadContracts = vi.fn()
+const mockUseUserPrincipal = vi.fn()
 
 vi.mock('wagmi', () => ({
   useBalance: (...args: unknown[]) => mockUseBalance(...args),
@@ -19,15 +20,21 @@ vi.mock('@/shared/context/PricesContext', () => ({
   }),
 }))
 
+vi.mock('./useUserPrincipal', () => ({
+  useUserPrincipal: (...args: unknown[]) => mockUseUserPrincipal(...args),
+}))
+
 const CONNECTED_ADDRESS = '0x1234567890abcdef1234567890abcdef12345678'
 const ONE_ETHER = 1_000_000_000_000_000_000n
 
 function setupMocks({
   balance,
   multicall,
+  principal,
 }: {
   balance?: { value: bigint }
   multicall?: { result: bigint }[]
+  principal?: bigint
 } = {}) {
   mockUseBalance.mockReturnValue({
     data: balance,
@@ -36,6 +43,11 @@ function setupMocks({
   })
   mockUseReadContracts.mockReturnValue({
     data: multicall,
+    isLoading: false,
+    isError: false,
+  })
+  mockUseUserPrincipal.mockReturnValue({
+    data: principal ?? undefined,
     isLoading: false,
     isError: false,
   })
@@ -118,7 +130,7 @@ describe('useUserPosition', () => {
       expect(result.current.isError).toBe(true)
     })
 
-    it('sets totalDepositedPrincipal to 0n', () => {
+    it('defaults totalDepositedPrincipal to 0n when principal API has not loaded', () => {
       setupMocks({
         balance: { value: ONE_ETHER },
         multicall: [{ result: ONE_ETHER }, { result: 10n * ONE_ETHER }, { result: 10n * ONE_ETHER }],
@@ -127,6 +139,29 @@ describe('useUserPosition', () => {
       const { result } = renderHook(() => useUserPosition(CONNECTED_ADDRESS))
 
       expect(result.current.data?.totalDepositedPrincipalRaw).toBe(0n)
+    })
+
+    it('uses fetched principal when available', () => {
+      const principal = 3n * ONE_ETHER
+      setupMocks({
+        balance: { value: ONE_ETHER },
+        multicall: [{ result: ONE_ETHER }, { result: 10n * ONE_ETHER }, { result: 10n * ONE_ETHER }],
+        principal,
+      })
+
+      const { result } = renderHook(() => useUserPosition(CONNECTED_ADDRESS))
+
+      expect(result.current.data?.totalDepositedPrincipalRaw).toBe(principal)
+    })
+
+    it('reports isLoading when principal is loading', () => {
+      mockUseBalance.mockReturnValue({ data: undefined, isLoading: false, isError: false })
+      mockUseReadContracts.mockReturnValue({ data: undefined, isLoading: false, isError: false })
+      mockUseUserPrincipal.mockReturnValue({ data: undefined, isLoading: true, isError: false })
+
+      const { result } = renderHook(() => useUserPosition(CONNECTED_ADDRESS))
+
+      expect(result.current.isLoading).toBe(true)
     })
 
     it('returns zero positionValue and percentOfVault when user has no vault tokens', () => {
