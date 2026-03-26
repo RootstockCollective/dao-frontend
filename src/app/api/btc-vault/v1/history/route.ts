@@ -18,8 +18,10 @@ export const revalidate = 20
  * sort_direction (asc | desc), type[] (optional action filter), address (optional; when omitted, returns global history).
  * Response: { data: BtcVaultHistoryItemWithStatus[], pagination: PaginationResponse }.
  * Each item may include displayStatus for table display (open_to_claim, claim_pending, pending, successful, cancelled, approved).
- * When The Graph is unavailable, history is loaded from Blockscout (DAO-2106). List and `displayStatus` enrichment are **per-source**
- * (Blockscout path uses on-chain `pending*` / `claimable*` reads via multicall; falls back to action-only labels if RPC fails).
+ * When The Graph is unavailable, history is loaded from Blockscout (DAO-2106). Blockscout rows may use `action` values
+ * `DEPOSIT_CLAIMABLE`, `REDEEM_ACCEPTED`, `REDEEM_CLAIMABLE` when epoch events are present (not only `*_REQUEST`).
+ * List and `displayStatus` enrichment are **per-source** (Blockscout path uses on-chain `pending*` / `claimable*` reads via
+ * multicall for request-like actions; falls back to action-only labels if RPC fails).
  *
  * Response headers (same pattern as GET /api/btc-vault/v1/epoch-history):
  * - `X-Source`: `the-graph` | `blockscout` when data was loaded successfully

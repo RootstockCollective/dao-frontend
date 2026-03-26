@@ -2,6 +2,11 @@ import { RBTC_VAULT_ADDRESS } from '@/lib/constants'
 
 import type { BtcVaultHistoryDisplayStatus, BtcVaultHistoryItem } from '../../types'
 import { tryDecodeLog } from './decode-logs'
+import {
+  fetchEpochFundingProgressMap,
+  fetchEpochSettledMap,
+  promoteRequestActionsFromEpochMaps,
+} from './fetch-epoch-events'
 import { fetchVaultLogsForTopics, topic0sForActionFilter } from './fetch-logs'
 import { normalizeAddress, normalizeHistoryActionType, requireBlockscoutUrl } from './utils'
 
@@ -93,8 +98,13 @@ function deduplicateCancelRows(rows: BtcVaultHistoryItem[]): BtcVaultHistoryItem
 
 /**
  * Fetches vault contract logs from Blockscout, decodes per-user events,
- * and returns only REQUEST rows (DEPOSIT_REQUEST / REDEEM_REQUEST) — one per
- * operation — matching the subgraph's output shape.
+ * and returns one row per deposit/redeem operation (subgraph-shaped `action`).
+ *
+ * Rows start as `DEPOSIT_REQUEST` / `REDEEM_REQUEST` from request events, then
+ * **`action` is promoted** when `EpochSettled` / `EpochFundingProgress` logs exist
+ * for that `epochId`: `DEPOSIT_CLAIMABLE`, `REDEEM_ACCEPTED`, `REDEEM_CLAIMABLE`
+ * (see `promoteRequestActionsFromEpochMaps`). Original request `id` and
+ * `transactionHash` are preserved.
  *
  * Cancelled requests are pre-enriched with `displayStatus: 'cancelled'` so
  * the RPC enrichment step can skip them (the vault returns 0/0 for cancelled
@@ -151,8 +161,20 @@ export async function fetchBtcVaultHistoryFromBlockscout(params: {
     return true
   })
 
+  const [epochSettledMap, epochFundingMap] = await Promise.all([
+    fetchEpochSettledMap(baseUrl, vaultAddress),
+    fetchEpochFundingProgressMap(baseUrl, vaultAddress),
+  ])
+
+  const promotedRows = promoteRequestActionsFromEpochMaps(
+    requestRows,
+    epochSettledMap,
+    epochFundingMap,
+    cancelledIds,
+  )
+
   const collected: (BtcVaultHistoryItem & { displayStatus?: BtcVaultHistoryDisplayStatus })[] =
-    requestRows.map(row => {
+    promotedRows.map(row => {
       if (cancelledIds.has(row.id)) {
         return { ...row, displayStatus: 'cancelled' as const }
       }

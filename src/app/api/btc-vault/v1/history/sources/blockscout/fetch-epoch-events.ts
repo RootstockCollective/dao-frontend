@@ -97,6 +97,50 @@ export async function fetchEpochFundingProgressMap(
 }
 
 /**
+ * Promotes `action` on each request row in-place to match subgraph `btcVaultHistory` semantics
+ * when epoch events exist. Skips cancelled request ids. **`id` / `transactionHash` stay on the
+ * original request** (stable keys); only **`action`** changes.
+ *
+ * - DEPOSIT_REQUEST + EpochSettled(epochId) → DEPOSIT_CLAIMABLE
+ * - REDEEM_REQUEST + EpochSettled → REDEEM_ACCEPTED; if EpochFundingProgress(epochId).claimable → REDEEM_CLAIMABLE
+ *
+ * The API uses this path instead of {@link synthesizeIntermediateRows}, which emits **extra**
+ * synthetic rows per transition.
+ */
+export function promoteRequestActionsFromEpochMaps(
+  requestRows: BtcVaultHistoryItem[],
+  epochSettledMap: Map<string, EpochEventInfo>,
+  epochFundingMap: Map<string, EpochEventInfo>,
+  cancelledIds: Set<string>,
+): BtcVaultHistoryItem[] {
+  return requestRows.map(row => {
+    if (cancelledIds.has(row.id)) {
+      return row
+    }
+
+    if (row.action === 'DEPOSIT_REQUEST') {
+      if (epochSettledMap.has(row.epochId)) {
+        return { ...row, action: 'DEPOSIT_CLAIMABLE' }
+      }
+      return row
+    }
+
+    if (row.action === 'REDEEM_REQUEST') {
+      let action = row.action
+      if (epochSettledMap.has(row.epochId)) {
+        action = 'REDEEM_ACCEPTED'
+      }
+      if (action === 'REDEEM_ACCEPTED' && epochFundingMap.get(row.epochId)?.claimable) {
+        action = 'REDEEM_CLAIMABLE'
+      }
+      return action === row.action ? row : { ...row, action }
+    }
+
+    return row
+  })
+}
+
+/**
  * Synthesizes intermediate history rows (DEPOSIT_CLAIMABLE, REDEEM_ACCEPTED, REDEEM_CLAIMABLE)
  * by cross-referencing request rows with epoch event maps.
  *
@@ -106,6 +150,9 @@ export async function fetchEpochFundingProgressMap(
  *
  * Synthetic rows inherit user/assets/shares/epochId from the request row and
  * timestamp/blockNumber/transactionHash from the epoch event.
+ *
+ * @deprecated Not used by the history API — prefer {@link promoteRequestActionsFromEpochMaps}
+ * for in-place `action` promotion (single row per request).
  */
 export function synthesizeIntermediateRows(
   requestRows: BtcVaultHistoryItem[],

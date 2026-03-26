@@ -29,11 +29,23 @@ export function btcVaultRpcDisplayStatusForRequest(
   return 'successful'
 }
 
+function itemNeedsVaultBalanceRpc(item: BtcVaultHistoryItem): boolean {
+  if ((item as BtcVaultHistoryItemWithStatus).displayStatus) return false
+  return (
+    item.action === 'DEPOSIT_REQUEST' ||
+    item.action === 'DEPOSIT_CLAIMABLE' ||
+    item.action === 'REDEEM_REQUEST' ||
+    item.action === 'REDEEM_CLAIMABLE'
+  )
+}
+
 /**
  * Enriches history rows using vault view calls only (no subgraph). Intended for the Blockscout history path (DAO-2106).
  *
  * - Items with a pre-set `displayStatus` (e.g. cancelled requests) are passed through unchanged.
- * - `DEPOSIT_REQUEST` / `REDEEM_REQUEST` without a pre-set status: `pending*` + `claimable*` via `multicall`
+ * - `DEPOSIT_REQUEST` / `DEPOSIT_CLAIMABLE` / `REDEEM_REQUEST` / `REDEEM_CLAIMABLE` without a pre-set status:
+ *   `pending*` + `claimable*` via `multicall` (promoted actions need the same reads as base requests).
+ * - `REDEEM_ACCEPTED`: `displayStatus` from `mapActionToDisplayStatus` (typically `approved`) without RPC.
  * - Other rows: derived from `action` via shared `mapActionToDisplayStatus`
  *
  * @throws If `NEXT_PUBLIC_NODE_URL` is missing when any row needs RPC
@@ -41,11 +53,7 @@ export function btcVaultRpcDisplayStatusForRequest(
 export async function enrichHistoryWithRpcRequestStatus(
   history: BtcVaultHistoryItem[],
 ): Promise<BtcVaultHistoryItemWithStatus[]> {
-  const isRequestNeedingRpc = (item: BtcVaultHistoryItem) =>
-    (item.action === 'DEPOSIT_REQUEST' || item.action === 'REDEEM_REQUEST') &&
-    !(item as BtcVaultHistoryItemWithStatus).displayStatus
-
-  const needsRpc = history.some(isRequestNeedingRpc)
+  const needsRpc = history.some(itemNeedsVaultBalanceRpc)
   if (!needsRpc) {
     return history.map((item): BtcVaultHistoryItemWithStatus => {
       const preSet = (item as BtcVaultHistoryItemWithStatus).displayStatus
@@ -63,6 +71,7 @@ export async function enrichHistoryWithRpcRequestStatus(
 
   interface PairMeta {
     historyIndex: number
+    /** Same branch as `btcVaultRpcDisplayStatusForRequest` first argument */
     action: 'DEPOSIT_REQUEST' | 'REDEEM_REQUEST'
   }
   const pairMeta: PairMeta[] = []
@@ -80,9 +89,10 @@ export async function enrichHistoryWithRpcRequestStatus(
 
   for (const [i, element] of history.entries()) {
     const item = element!
-    if (!isRequestNeedingRpc(item)) continue
-    if (item.action === 'DEPOSIT_REQUEST') {
-      const owner = getAddress(item.user as Address)
+    if (!itemNeedsVaultBalanceRpc(item)) continue
+
+    const owner = getAddress(item.user as Address)
+    if (item.action === 'DEPOSIT_REQUEST' || item.action === 'DEPOSIT_CLAIMABLE') {
       pairMeta.push({ historyIndex: i, action: 'DEPOSIT_REQUEST' })
       contracts.push({
         address: vault,
@@ -96,8 +106,7 @@ export async function enrichHistoryWithRpcRequestStatus(
         functionName: 'claimableDepositRequest',
         args: [owner],
       })
-    } else if (item.action === 'REDEEM_REQUEST') {
-      const owner = getAddress(item.user as Address)
+    } else if (item.action === 'REDEEM_REQUEST' || item.action === 'REDEEM_CLAIMABLE') {
       pairMeta.push({ historyIndex: i, action: 'REDEEM_REQUEST' })
       contracts.push({
         address: vault,
@@ -140,7 +149,12 @@ export async function enrichHistoryWithRpcRequestStatus(
   return history.map((item, index): BtcVaultHistoryItemWithStatus => {
     const preSet = (item as BtcVaultHistoryItemWithStatus).displayStatus
     if (preSet) return { ...item, displayStatus: preSet }
-    if (item.action === 'DEPOSIT_REQUEST' || item.action === 'REDEEM_REQUEST') {
+    if (
+      item.action === 'DEPOSIT_REQUEST' ||
+      item.action === 'DEPOSIT_CLAIMABLE' ||
+      item.action === 'REDEEM_REQUEST' ||
+      item.action === 'REDEEM_CLAIMABLE'
+    ) {
       return { ...item, displayStatus: displayByHistoryIndex.get(index) ?? 'pending' }
     }
     return { ...item, displayStatus: mapActionToDisplayStatus(item.action) }
