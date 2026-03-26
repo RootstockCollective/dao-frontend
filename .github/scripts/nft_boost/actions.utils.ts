@@ -1,4 +1,5 @@
 import { Address, Block, getAddress } from 'viem'
+
 import { getAbi } from '../../../src/lib/abis/tok'
 import { COINBASE_ADDRESS } from '../../../src/lib/constants'
 
@@ -19,8 +20,7 @@ export async function getActions() {
   const { publicClient } = await import(`../../../src/lib/viemPublicClient`)
   const builderRegistryAddress = process.env.NEXT_PUBLIC_BUILDER_REGISTRY_ADDRESS
   const backersManagerAddress = process.env.NEXT_PUBLIC_BACKERS_MANAGER_ADDRESS
-  const chainId = process.env.NEXT_PUBLIC_CHAIN_ID
-  const rifWalletServicesUrl = process.env.NEXT_PUBLIC_RIF_WALLET_SERVICES
+  const blockscoutUrl = process.env.NEXT_PUBLIC_BLOCKSCOUT_URL
 
   const getLatestBlockNumber = (): Promise<bigint> => {
     return publicClient.getBlockNumber()
@@ -33,18 +33,55 @@ export async function getActions() {
   const getNftTransferEvents = async (nftContract: string): Promise<NFTEvent[]> => {
     console.info('NFT contract address: ', nftContract)
     const transferTopic = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
-    const fromBlock = 5000000 // all the NFT addresses in mainnet and testnet were deployed after block 5000000
-    const url = `${rifWalletServicesUrl}/address/${nftContract}/eventsByTopic0?topic0=${transferTopic}&chainId=${chainId}&fromBlock=${fromBlock}`
-    try {
-      const response = await fetch(url)
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+    const initialFromBlock = 5000000 // all the NFT addresses in mainnet and testnet were deployed after block 5000000
+    const MAX_PAGES = 200
+
+    const allLogs: NFTEvent[] = []
+    const seen = new Set<string>()
+    let fromBlock = initialFromBlock
+
+    for (let page = 0; page < MAX_PAGES; page++) {
+      const params = new URLSearchParams({
+        module: 'logs',
+        action: 'getLogs',
+        address: nftContract,
+        topic0: transferTopic,
+        fromBlock: fromBlock.toString(),
+        toBlock: 'latest',
+      })
+      const url = `${blockscoutUrl}/api?${params}`
+
+      try {
+        const response = await fetch(url, { signal: AbortSignal.timeout(25_000) })
+        if (!response.ok) {
+          throw new Error(`Blockscout HTTP error! status: ${response.status}`)
+        }
+        const json = (await response.json()) as { result: NFTEvent[] }
+        const logs: NFTEvent[] = json.result ?? []
+
+        if (logs.length === 0) break
+
+        let lastBlockNumber = fromBlock
+        for (const log of logs) {
+          const key = `${log.transactionHash}-${log.logIndex}`
+          if (!seen.has(key)) {
+            seen.add(key)
+            allLogs.push(log)
+          }
+          const bn = parseInt(log.blockNumber, 16)
+          if (bn > lastBlockNumber) lastBlockNumber = bn
+        }
+
+        // If we didn't advance, we've exhausted this block's logs
+        if (lastBlockNumber === fromBlock) break
+        fromBlock = lastBlockNumber
+      } catch (error) {
+        console.error('Error fetching NFT transfer events:', error)
+        throw error
       }
-      return response.json()
-    } catch (error) {
-      console.error('Error fetching NFT holders:', error)
-      throw error
     }
+
+    return allLogs
   }
 
   const getAllGauges = async (): Promise<Address[]> => {
