@@ -44,7 +44,6 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     setSelectedFeeTier,
     activeFeeTier,
     availableFeeTiers,
-    isMultihopSwap,
   } = useSwapInput()
   const { tokenIn, tokenOut, tokenInData, tokenOutData, toggleTokenSelection } = useTokenSelection()
   const { balances, prices } = useBalancesContext()
@@ -212,7 +211,6 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     [tokenInBalance, setAmountIn],
   )
 
-  // Fee buttons are only meaningful for single-hop routes.
   const feeTierOptions = useMemo(() => {
     const allOptions = buildFeeTierOptions()
     return allOptions.filter(option => {
@@ -287,36 +285,29 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
         />
 
         {tokenInBalance && Big(tokenInBalance).gt(0) && (
-          <div
-            className={`flex flex-col gap-3 mx-3 -mt-2 md:flex-row md:items-end ${
-              isMultihopSwap ? '' : 'md:justify-between'
-            }`}
-          >
+          <div className="flex flex-col gap-3 mx-3 -mt-2 md:flex-row md:items-end md:justify-between">
             <div className="flex flex-col gap-1">
               <Label variant="body-s" className="text-text-60">
                 % of balance
               </Label>
               <PercentageButtons onPercentageClick={handlePercentageClick} testId="swap-percentage-buttons" />
             </div>
-            {!isMultihopSwap && (
-              <div className="flex flex-col gap-1 md:items-end">
-                <Label variant="body-s" className="text-text-60">
-                  Pool fee
-                  {/* In auto mode we display the first-hop fee from the active quote for transparency. */}
-                  {selectedFeeTier === null &&
-                    activeFeeTier !== null &&
-                    ` (${feeTierToPercent(activeFeeTier)}%)`}
-                </Label>
-                <PercentageButtons
-                  options={feeTierOptions}
-                  value={selectedFeeTier === null ? AUTO_FEE_TIER : String(selectedFeeTier)}
-                  onPercentageClick={(value: string) =>
-                    setSelectedFeeTier(value === AUTO_FEE_TIER ? null : Number(value))
-                  }
-                  testId="swap-fee-tier-buttons"
-                />
-              </div>
-            )}
+            <div className="flex flex-col gap-1 md:items-end">
+              <Label variant="body-s" className="text-text-60">
+                Pool fee
+                {selectedFeeTier === null &&
+                  activeFeeTier !== null &&
+                  ` (${feeTierToPercent(activeFeeTier)}%)`}
+              </Label>
+              <PercentageButtons
+                options={feeTierOptions}
+                value={selectedFeeTier === null ? AUTO_FEE_TIER : String(selectedFeeTier)}
+                onPercentageClick={(value: string) =>
+                  setSelectedFeeTier(value === AUTO_FEE_TIER ? null : Number(value))
+                }
+                testId="swap-fee-tier-buttons"
+              />
+            </div>
           </div>
         )}
 

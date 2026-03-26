@@ -5,7 +5,7 @@ import { RIF } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
 
 import { SWAP_TOKEN_ADDRESSES } from './constants'
-import { isMultihopRoute, resolveSwapRoute } from './routes'
+import { getSwapRouteCacheKey, isMultihopRoute, resolveSwapRoute } from './routes'
 import { encodeUniformFeeSwapPath } from './providers/uniswap'
 
 describe('resolveSwapRoute', () => {
@@ -37,6 +37,14 @@ describe('resolveSwapRoute', () => {
     const route = resolveSwapRoute(a, b)
     expect(route.tokens).toEqual([getAddress(a), getAddress(b)])
     expect(isMultihopRoute(route)).toBe(false)
+  })
+
+  it('getSwapRouteCacheKey is stable for direction (USDRIF↔RIF)', () => {
+    const forward = getSwapRouteCacheKey(usdrif, rif)
+    const reverse = getSwapRouteCacheKey(rif, usdrif)
+    expect(forward).not.toBe(reverse)
+    expect(forward.split(':')).toHaveLength(3)
+    expect(reverse.split(':')).toHaveLength(3)
   })
 })
 

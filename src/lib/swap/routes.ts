@@ -41,3 +41,8 @@ export function resolveSwapRoute(tokenIn: Address, tokenOut: Address): SwapRoute
 export function isMultihopRoute(route: SwapRoute): boolean {
   return route.tokens.length > 2
 }
+
+/** Stable key for React Query (checksum addresses in path order). */
+export function getSwapRouteCacheKey(tokenIn: Address, tokenOut: Address): string {
+  return resolveSwapRoute(tokenIn, tokenOut).tokens.join(':')
+}

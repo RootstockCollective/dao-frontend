@@ -5,6 +5,7 @@ import {
   getAvailableFeeTiers,
   UNISWAP_FEE_TIERS,
   encodePerHopFeeSwapPath,
+  encodeUniformFeeSwapPath,
 } from './uniswap'
 import { ROUTER_ADDRESSES, SWAP_TOKEN_ADDRESSES } from '../constants'
 import { resolveSwapRoute } from '../routes'
@@ -274,16 +275,57 @@ describe('uniswap provider - integration tests', () => {
 
   describe('USDRIF↔RIF multihop quotes (STORY-006 Phase 1)', () => {
     it.skipIf(!hasRifToken)(
-      'getAvailableFeeTiers returns no selectable tiers for multihop (UI uses internal routing)',
+      'getAvailableFeeTiers returns uniform-path tiers for USDRIF↔RIF multihop',
       async () => {
         const tiers = await getAvailableFeeTiers(
           SWAP_TOKEN_ADDRESSES.USDRIF,
           rifToken,
           tokenOutDecimals,
         )
-        expect(tiers).toEqual([])
+        expect(Array.isArray(tiers)).toBe(true)
+        tiers.forEach(t => expect(UNISWAP_FEE_TIERS).toContain(t))
       },
       15000,
+    )
+
+    it.skipIf(!hasRifToken)(
+      'getQuote with explicit fee matches quoteExactInput on uniform multihop path',
+      async () => {
+        const tiers = await getAvailableFeeTiers(
+          SWAP_TOKEN_ADDRESSES.USDRIF,
+          rifToken,
+          tokenOutDecimals,
+        )
+        if (tiers.length === 0) return
+
+        const tier = tiers[0]
+        const route = resolveSwapRoute(SWAP_TOKEN_ADDRESSES.USDRIF, rifToken)
+        const amountIn = parseUnits('1', tokenOutDecimals)
+        const path = encodeUniformFeeSwapPath(route.tokens, tier)
+
+        const rawDirect = await publicClient.readContract({
+          address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
+          abi: UniswapQuoterV2Abi,
+          functionName: 'quoteExactInput',
+          args: [path, amountIn],
+        })
+        expect(Array.isArray(rawDirect)).toBe(true)
+        const expectedOut = (rawDirect as [bigint])[0]
+
+        const result = await uniswapProvider.getQuote({
+          tokenIn: SWAP_TOKEN_ADDRESSES.USDRIF,
+          tokenOut: rifToken,
+          amountIn,
+          tokenInDecimals: tokenOutDecimals,
+          tokenOutDecimals: tokenOutDecimals,
+          feeTier: tier,
+        })
+
+        expect(result.error).toBeUndefined()
+        expect(result.amountOutRaw).toBe(expectedOut.toString())
+        expect(result.hopFees).toEqual([tier, tier])
+      },
+      30000,
     )
 
     it.skipIf(!hasRifToken)(

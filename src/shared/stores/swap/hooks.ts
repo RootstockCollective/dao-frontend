@@ -15,7 +15,7 @@ import { sentryClient } from '@/lib/sentry/sentry-client'
 import { createSecurePermit } from '@/lib/swap/permit2'
 import type { SwapQuote } from '@/lib/swap/providers'
 import { getAvailableFeeTiers, getPermitSwapEncodedData, uniswapProvider } from '@/lib/swap/providers/uniswap'
-import { isMultihopRoute, resolveSwapRoute } from '@/lib/swap/routes'
+import { getSwapRouteCacheKey } from '@/lib/swap/routes'
 
 import type { QuoteResult, SwapTokenSymbol } from './types'
 import { useSwapStore } from './useSwapStore'
@@ -50,9 +50,8 @@ function getQuoteFetchContext(params: {
   tokenOut: SwapTokenSymbol
   tokens: ReturnType<typeof useSwapTokens>['tokens']
   selectedFeeTier: number | null
-  isMultihopSwap: boolean
 }): QuoteFetchContext | null {
-  const { tokenIn, tokenOut, tokens, selectedFeeTier, isMultihopSwap } = params
+  const { tokenIn, tokenOut, tokens, selectedFeeTier } = params
   const tokenInData = tokens[tokenIn]
   const tokenOutData = tokens[tokenOut]
 
@@ -65,7 +64,7 @@ function getQuoteFetchContext(params: {
     tokenOutAddress: tokenOutData.address,
     tokenInDecimals: tokenInData.decimals,
     tokenOutDecimals: tokenOutData.decimals,
-    selectedFeeTier: isMultihopSwap ? null : selectedFeeTier,
+    selectedFeeTier,
   }
 }
 
@@ -121,8 +120,7 @@ function normalizeQuoteResult(params: {
  * @returns Display values for both fields, setters that switch mode, quote state,
  *   fee tier selection (`selectedFeeTier` / `setSelectedFeeTier`),
  *   the resolved fee tier from the latest quote (`activeFeeTier`),
- *   the list of tiers with liquidity (`availableFeeTiers`),
- *   and `isMultihopSwap` when the route is optimized internally (no pool-fee UI).
+ *   the list of tiers with liquidity (`availableFeeTiers`).
  */
 export const useSwapInput = () => {
   const { tokens } = useSwapTokens()
@@ -148,29 +146,22 @@ export const useSwapInput = () => {
     })),
   )
 
-  const isMultihopSwap = useMemo(() => {
+  const swapRouteCacheKey = useMemo(() => {
     const a = tokens[tokenIn]?.address
     const b = tokens[tokenOut]?.address
-    if (!a || !b) return false
-    return isMultihopRoute(resolveSwapRoute(a, b))
+    if (!a || !b) return ''
+    return getSwapRouteCacheKey(a, b)
   }, [tokenIn, tokenOut, tokens])
 
   // Wait for user to stop typing before fetching quote (avoids excessive API calls)
   const [debouncedTypedAmount] = useDebounce(typedAmount, QUOTE_DEBOUNCE_MS)
 
-  useEffect(() => {
-    if (isMultihopSwap && selectedFeeTier !== null) {
-      setSelectedFeeTier(null)
-    }
-  }, [isMultihopSwap, selectedFeeTier, setSelectedFeeTier])
-
-  // Probe which fee tiers have liquidity (cached for the token pair, rarely changes)
+  // Probe which fee tiers have liquidity (cached for the route topology, rarely changes)
   const { data: availableFeeTiers } = useQuery({
-    queryKey: ['availableFeeTiers', tokenIn, tokenOut],
-    // SAFETY: enabled guard ensures decimals are defined before queryFn runs
+    queryKey: ['availableFeeTiers', swapRouteCacheKey],
     queryFn: () =>
       getAvailableFeeTiers(tokens[tokenIn].address, tokens[tokenOut].address, tokens[tokenIn].decimals!),
-    enabled: !!tokens[tokenIn].decimals && !!tokens[tokenOut].decimals && !isMultihopSwap,
+    enabled: !!swapRouteCacheKey && !!tokens[tokenIn].decimals && !!tokens[tokenOut].decimals,
     staleTime: 5 * 60_000,
     retry: false,
   })
@@ -182,14 +173,7 @@ export const useSwapInput = () => {
     isFetching: isQuoteFetching,
     error: quoteError,
   } = useQuery({
-    queryKey: [
-      'swapQuote',
-      tokenIn,
-      tokenOut,
-      mode,
-      debouncedTypedAmount,
-      isMultihopSwap ? 'multihop-auto' : selectedFeeTier,
-    ],
+    queryKey: ['swapQuote', swapRouteCacheKey, mode, debouncedTypedAmount, selectedFeeTier],
     queryFn: async () => {
       if (!debouncedTypedAmount) {
         return null
@@ -200,7 +184,6 @@ export const useSwapInput = () => {
         tokenOut,
         tokens,
         selectedFeeTier,
-        isMultihopSwap,
       })
       if (!quoteContext) {
         return null
@@ -310,7 +293,6 @@ export const useSwapInput = () => {
     setSelectedFeeTier,
     activeFeeTier,
     availableFeeTiers: availableFeeTiers ?? [],
-    isMultihopSwap,
   }
 }
 
