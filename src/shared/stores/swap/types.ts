@@ -1,13 +1,13 @@
 import { Address, Hex } from 'viem'
 
-import { USDRIF, USDT0 } from '@/lib/constants'
+import { RIF, USDRIF, USDT0 } from '@/lib/constants'
 import { PermitSingle } from '@/lib/swap/permit2'
 import type { SwapQuoteMode } from '@/lib/swap/types'
 
 /**
  * Supported swap tokens
  */
-export type SwapTokenSymbol = typeof USDT0 | typeof USDRIF
+export type SwapTokenSymbol = typeof USDT0 | typeof USDRIF | typeof RIF
 
 /**
  * Determines which input field the user is editing and the quote direction.
@@ -60,10 +60,12 @@ export interface SwapState {
   permit: PermitSingle | null
   permitSignature: Hex | null
 
-  // Pool configuration
+  // Pool configuration (single-hop oriented)
+  /** Primary pool for single-hop pairs (e.g. USDT0/USDRIF). Unused for multihop quotes; may stay set from a prior pair. */
   poolAddress: Address | null
+  /** Uniform V3 fee tier for the whole swap (same value repeated on each hop for multihop). */
   poolFee: number | null
-  /** User-selected fee tier override. null = auto (multicall all tiers, pick best). */
+  /** User-selected fee tier override. null = auto (multicall all tiers, pick best). Applies uniformly to every hop. */
   selectedFeeTier: number | null
 }
 
