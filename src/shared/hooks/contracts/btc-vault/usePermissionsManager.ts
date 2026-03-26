@@ -1,61 +1,45 @@
 import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
 
+import type { PermissionsManagerAbi } from '@/lib/abis/btc-vault'
 import { ADMIN_ROLE, FUND_MANAGER_ROLE, PAUSER_ROLE } from '@/lib/constants'
-import { permissionsManager } from '@/lib/contracts'
 
-import { useReadPermissionsManager } from './useReadPermissionsManager'
+import { UseReadContractForMultipleArgsConfig } from '../types'
+import { useReadPermissionsManagerForMultipleArgs } from './useReadPermissionsManagerForMultipleArgs'
 
-// TODO: multicall query
+type HasRoleArgsList = UseReadContractForMultipleArgsConfig<PermissionsManagerAbi, 'hasRole'>['args']
+
 export function usePermissionsManager() {
   const { address: connectedAddress } = useAccount()
 
-  const queryEnabled = !!connectedAddress && !!permissionsManager.address
+  const hasRoleArgs = useMemo((): HasRoleArgsList => {
+    if (!connectedAddress) return []
+    return [
+      [ADMIN_ROLE, connectedAddress],
+      [FUND_MANAGER_ROLE, connectedAddress],
+      [PAUSER_ROLE, connectedAddress],
+    ]
+  }, [connectedAddress])
 
-  const {
-    data: isAdmin,
-    isLoading: isAdminLoading,
-    error: adminError,
-  } = useReadPermissionsManager(
-    {
-      functionName: 'hasRole',
-      args: [ADMIN_ROLE, connectedAddress!],
-    },
-    { enabled: queryEnabled },
+  const { data, isLoading, error } = useReadPermissionsManagerForMultipleArgs(
+    { functionName: 'hasRole', args: hasRoleArgs },
+    { enabled: hasRoleArgs.length > 0 },
   )
 
-  const {
-    data: isFundManager,
-    isLoading: isFundManagerLoading,
-    error: fundManagerError,
-  } = useReadPermissionsManager(
-    {
-      functionName: 'hasRole',
-      args: [FUND_MANAGER_ROLE, connectedAddress!],
-    },
-    { enabled: queryEnabled },
+  const { isAdmin, isFundManager, isPauser } = useMemo(
+    () => ({
+      isAdmin: Boolean(data[0]),
+      isFundManager: Boolean(data[1]),
+      isPauser: Boolean(data[2]),
+    }),
+    [data],
   )
-
-  const {
-    data: isPauser,
-    isLoading: isPauserLoading,
-    error: pauserError,
-  } = useReadPermissionsManager(
-    {
-      functionName: 'hasRole',
-      args: [PAUSER_ROLE, connectedAddress!],
-    },
-    { enabled: queryEnabled },
-  )
-
-  const isLoading = isAdminLoading || isFundManagerLoading || isPauserLoading
-  const error = adminError || fundManagerError || pauserError
 
   return useMemo(
     () => ({
-      isAdmin: isAdmin ?? false,
-      isFundManager: isFundManager ?? false,
-      isPauser: isPauser ?? false,
+      isAdmin,
+      isFundManager,
+      isPauser,
       isLoading,
       error,
     }),
