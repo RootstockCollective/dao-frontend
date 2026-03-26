@@ -4,19 +4,22 @@ import { UniswapQuoterV2Abi } from '@/lib/abis/UniswapQuoterV2Abi'
 import Big from '@/lib/big'
 import { publicClient } from '@/lib/viemPublicClient'
 
-import { feeTierToPercent, ROUTER_ADDRESSES, SWAP_PROVIDERS } from '../constants'
+import {
+  feeTierToPercent,
+  ROUTER_ADDRESSES,
+  SWAP_PROVIDERS,
+  UNISWAP_FEE_TIERS,
+  type UniswapFeeTier,
+} from '../constants'
 import type { PermitSingle } from '../permit2'
 import { isMultihopRoute, resolveSwapRoute } from '../routes'
-import type { QuoteExactOutputParams, QuoteParams, SwapProvider, SwapQuote } from './'
+import type { QuoteExactOutputParams, QuoteMode, QuoteParams, SwapProvider, SwapQuote } from './'
 
-/**
- * Uniswap V3 Pool Fee Tiers (in basis points)
- * 100 = 0.01%, 500 = 0.05%, 3000 = 0.3%, 10000 = 1%
- */
-export const UNISWAP_FEE_TIERS: readonly number[] = [100, 500, 3000, 10000]
+export { UNISWAP_FEE_TIERS }
+export type { UniswapFeeTier } from '../constants'
 
 function isValidUniswapFeeTier(fee: number): boolean {
-  return UNISWAP_FEE_TIERS.includes(fee)
+  return (UNISWAP_FEE_TIERS as readonly number[]).includes(fee)
 }
 
 /**
@@ -68,27 +71,78 @@ function encodeFeeUint24Hex(fee: number): string {
 
 /**
  * Encode a Uniswap V3 path: token₀ + fee + token₁ + fee + … + tokenₙ.
- * The same `fee` is used for every hop (Oku-style single tier for the whole route).
+ * The same `fee` is used for every hop.
  */
 export function encodeUniformFeeSwapPath(tokens: readonly Address[], fee: number): Hex {
   if (tokens.length < 2) {
     throw new Error('encodeUniformFeeSwapPath requires at least two tokens')
   }
-  const feeHex = encodeFeeUint24Hex(fee)
+  const fees = Array.from({ length: tokens.length - 1 }, () => fee)
+  return encodePerHopFeeSwapPath(tokens, fees)
+}
+
+/**
+ * Encode a Uniswap V3 path with a possibly different uint24 fee on each hop.
+ */
+const UINT24_MAX = 0xffffff
+
+export function encodePerHopFeeSwapPath(tokens: readonly Address[], hopFees: readonly number[]): Hex {
+  if (tokens.length < 2) {
+    throw new Error('encodePerHopFeeSwapPath requires at least two tokens')
+  }
+  if (tokens.length !== hopFees.length + 1) {
+    throw new Error('encodePerHopFeeSwapPath: hopFees must have length tokens.length - 1')
+  }
+  for (const f of hopFees) {
+    if (!Number.isInteger(f) || f < 0 || f > UINT24_MAX) {
+      throw new Error(`encodePerHopFeeSwapPath: hop fee must be uint24 integer, got ${String(f)}`)
+    }
+  }
   let pathHex = ''
   for (let i = 0; i < tokens.length - 1; i++) {
-    pathHex += tokens[i].slice(2) + feeHex
+    pathHex += tokens[i].slice(2) + encodeFeeUint24Hex(hopFees[i])
   }
   pathHex += tokens[tokens.length - 1].slice(2)
   return `0x${pathHex}` as Hex
 }
 
-/**
- * Path bytes for QuoterV2.quoteExactOutput: reversed token order vs exact-in (tokenOut → … → tokenIn).
- */
-function encodeUniformFeePathForExactOutputQuote(tokens: readonly Address[], fee: number): Hex {
-  const reversed = [...tokens].reverse() as Address[]
-  return encodeUniformFeeSwapPath(reversed, fee)
+/** Max hops for brute-force fee combination search (4^hops multicall calls). */
+const MAX_MULTIHOP_FEE_SEARCH_HOPS = 3
+
+/** Build every possible fee list using {@link UNISWAP_FEE_TIERS} for each hop. */
+const feeCombinationsCache = new Map<number, number[][]>()
+
+function cartesianFeeCombinations(hopCount: number): number[][] {
+  if (hopCount > MAX_MULTIHOP_FEE_SEARCH_HOPS) {
+    throw new Error(
+      `Multihop fee search supports at most ${MAX_MULTIHOP_FEE_SEARCH_HOPS} hops (got ${hopCount}). Extend policy explicitly if routes grow.`,
+    )
+  }
+
+  const cached = feeCombinationsCache.get(hopCount)
+  if (cached) {
+    return cached
+  }
+
+  let combos: number[][] = [[]]
+  for (let h = 0; h < hopCount; h++) {
+    const next: number[][] = []
+    for (const c of combos) {
+      for (const f of UNISWAP_FEE_TIERS) {
+        next.push([...c, f])
+      }
+    }
+    combos = next
+  }
+
+  feeCombinationsCache.set(hopCount, combos)
+  return combos
+}
+
+function encodePerHopPathForExactOutputQuote(tokens: readonly Address[], hopFees: readonly number[]): Hex {
+  const reversedTokens = [...tokens].reverse() as Address[]
+  const reversedFees = [...hopFees].reverse()
+  return encodePerHopFeeSwapPath(reversedTokens, reversedFees)
 }
 
 /**
@@ -112,36 +166,6 @@ async function getQuoteForSingleTier(
     throw new Error(
       `Invalid quote result structure: expected tuple [bigint, bigint, number, bigint], got ${typeof rawResult}`,
     )
-  }
-
-  const [amountOut, , , gasEstimate] = rawResult
-  return {
-    provider: providerName,
-    amountOut: formatUnits(amountOut, tokenOutDecimals),
-    amountOutRaw: amountOut.toString(),
-    gasEstimate: gasEstimate?.toString(),
-    feeTier: fee,
-  }
-}
-
-async function getMultihopQuoteForUniformTier(
-  params: QuoteParams,
-  fee: number,
-  tokens: readonly Address[],
-  providerName: SwapProvider['name'],
-): Promise<SwapQuote> {
-  const { amountIn, tokenOutDecimals } = params
-  const path = encodeUniformFeeSwapPath(tokens, fee)
-
-  const rawResult = (await publicClient.readContract({
-    address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
-    abi: UniswapQuoterV2Abi,
-    functionName: 'quoteExactInput',
-    args: [path, amountIn],
-  })) as unknown
-
-  if (!isValidQuotePathResult(rawResult)) {
-    throw new Error('Invalid multihop quoteExactInput result structure')
   }
 
   const [amountOut, , , gasEstimate] = rawResult
@@ -188,37 +212,6 @@ async function getExactOutputQuoteForSingleTier(
   }
 }
 
-async function getMultihopExactOutputQuoteForUniformTier(
-  params: QuoteExactOutputParams,
-  fee: number,
-  tokens: readonly Address[],
-  providerName: SwapProvider['name'],
-): Promise<SwapQuote> {
-  const { amountOut, tokenOutDecimals } = params
-  const path = encodeUniformFeePathForExactOutputQuote(tokens, fee)
-
-  const rawResult = (await publicClient.readContract({
-    address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
-    abi: UniswapQuoterV2Abi,
-    functionName: 'quoteExactOutput',
-    args: [path, amountOut],
-  })) as unknown
-
-  if (!isValidQuotePathResult(rawResult)) {
-    throw new Error('Invalid multihop quoteExactOutput result structure')
-  }
-
-  const [amountIn, , , gasEstimate] = rawResult
-  return {
-    provider: providerName,
-    amountOut: formatUnits(amountOut, tokenOutDecimals),
-    amountOutRaw: amountOut.toString(),
-    amountInRaw: amountIn.toString(),
-    gasEstimate: gasEstimate?.toString(),
-    feeTier: fee,
-  }
-}
-
 function buildExactInputContracts(tokenIn: Address, tokenOut: Address, amountIn: bigint) {
   return UNISWAP_FEE_TIERS.map(fee => ({
     address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
@@ -228,12 +221,14 @@ function buildExactInputContracts(tokenIn: Address, tokenOut: Address, amountIn:
   }))
 }
 
-function buildMultihopExactInputContracts(tokens: readonly Address[], amountIn: bigint) {
-  return UNISWAP_FEE_TIERS.map(fee => ({
+function buildMultihopExactInputContractsAllFeePairs(tokens: readonly Address[], amountIn: bigint) {
+  const hopCount = tokens.length - 1
+  const combos = cartesianFeeCombinations(hopCount)
+  return combos.map(hopFees => ({
     address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
     abi: UniswapQuoterV2Abi,
     functionName: 'quoteExactInput' as const,
-    args: [encodeUniformFeeSwapPath(tokens, fee), amountIn] as const,
+    args: [encodePerHopFeeSwapPath(tokens, hopFees), amountIn] as const,
   }))
 }
 
@@ -246,12 +241,14 @@ function buildExactOutputContracts(tokenIn: Address, tokenOut: Address, amountOu
   }))
 }
 
-function buildMultihopExactOutputContracts(tokens: readonly Address[], amountOut: bigint) {
-  return UNISWAP_FEE_TIERS.map(fee => ({
+function buildMultihopExactOutputContractsAllFeePairs(tokens: readonly Address[], amountOut: bigint) {
+  const hopCount = tokens.length - 1
+  const combos = cartesianFeeCombinations(hopCount)
+  return combos.map(hopFees => ({
     address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
     abi: UniswapQuoterV2Abi,
     functionName: 'quoteExactOutput' as const,
-    args: [encodeUniformFeePathForExactOutputQuote(tokens, fee), amountOut] as const,
+    args: [encodePerHopPathForExactOutputQuote(tokens, hopFees), amountOut] as const,
   }))
 }
 
@@ -273,38 +270,6 @@ async function getBestQuoteFromAllTiers(
 
   results.forEach((result, index) => {
     if (result.status !== 'success' || !isValidQuoteResult(result.result)) return
-    const [amountOut, , , gasEstimate] = result.result
-    validQuotes.push({
-      provider: providerName,
-      amountOut: formatUnits(amountOut, tokenOutDecimals),
-      amountOutRaw: amountOut.toString(),
-      gasEstimate: gasEstimate?.toString(),
-      feeTier: UNISWAP_FEE_TIERS[index],
-    })
-  })
-
-  if (validQuotes.length === 0) return null
-
-  return validQuotes.reduce((best, current) =>
-    new Big(current.amountOut).gt(best.amountOut) ? current : best,
-  )
-}
-
-async function getBestMultihopQuoteFromAllTiers(
-  params: QuoteParams,
-  tokens: readonly Address[],
-  providerName: SwapProvider['name'],
-): Promise<SwapQuote | null> {
-  const { amountIn, tokenOutDecimals } = params
-
-  const results = await publicClient.multicall({
-    contracts: buildMultihopExactInputContracts(tokens, amountIn),
-  })
-
-  const validQuotes: SwapQuote[] = []
-
-  results.forEach((result, index) => {
-    if (result.status !== 'success' || !isValidQuotePathResult(result.result)) return
     const [amountOut, , , gasEstimate] = result.result
     validQuotes.push({
       provider: providerName,
@@ -359,62 +324,106 @@ async function getBestExactOutputFromAllTiers(
   })
 }
 
-async function getBestMultihopExactOutputFromAllTiers(
-  params: QuoteExactOutputParams,
+function selectBetterMultihopQuote(mode: QuoteMode, current: SwapQuote, best: SwapQuote): SwapQuote {
+  if (mode === 'exactIn') {
+    return new Big(current.amountOut).gt(best.amountOut) ? current : best
+  }
+
+  if (!best.amountInRaw || !current.amountInRaw) {
+    return best
+  }
+  return new Big(current.amountInRaw).lt(best.amountInRaw) ? current : best
+}
+
+async function getBestMultihopQuoteExactIn(
+  params: QuoteParams,
   tokens: readonly Address[],
   providerName: SwapProvider['name'],
 ): Promise<SwapQuote | null> {
-  const { amountOut, tokenOutDecimals } = params
-
+  const combos = cartesianFeeCombinations(tokens.length - 1)
   const results = await publicClient.multicall({
-    contracts: buildMultihopExactOutputContracts(tokens, amountOut),
+    contracts: buildMultihopExactInputContractsAllFeePairs(tokens, params.amountIn),
   })
-
   const validQuotes: SwapQuote[] = []
 
   results.forEach((result, index) => {
     if (result.status !== 'success' || !isValidQuotePathResult(result.result)) return
-    const [amountIn, , , gasEstimate] = result.result
+
+    const [amountOut, , , gasEstimate] = result.result
+    const routeHopFees = combos[index]
     validQuotes.push({
       provider: providerName,
-      amountOut: formatUnits(amountOut, tokenOutDecimals),
+      amountOut: formatUnits(amountOut, params.tokenOutDecimals),
       amountOutRaw: amountOut.toString(),
-      amountInRaw: amountIn.toString(),
       gasEstimate: gasEstimate?.toString(),
-      feeTier: UNISWAP_FEE_TIERS[index],
+      feeTier: routeHopFees[0],
+      hopFees: routeHopFees,
     })
   })
 
   if (validQuotes.length === 0) return null
+  return validQuotes.reduce((best, current) => selectBetterMultihopQuote('exactIn', current, best))
+}
 
-  return validQuotes.reduce((best, current) => {
-    if (!best.amountInRaw || !current.amountInRaw) return best
-    return new Big(current.amountInRaw).lt(best.amountInRaw) ? current : best
+async function getBestMultihopQuoteExactOut(
+  params: QuoteExactOutputParams,
+  tokens: readonly Address[],
+  providerName: SwapProvider['name'],
+): Promise<SwapQuote | null> {
+  const combos = cartesianFeeCombinations(tokens.length - 1)
+  const results = await publicClient.multicall({
+    contracts: buildMultihopExactOutputContractsAllFeePairs(tokens, params.amountOut),
   })
+  const validQuotes: SwapQuote[] = []
+
+  results.forEach((result, index) => {
+    if (result.status !== 'success' || !isValidQuotePathResult(result.result)) return
+
+    const [amountIn, , , gasEstimate] = result.result
+    const routeHopFees = combos[index]
+    validQuotes.push({
+      provider: providerName,
+      amountOut: formatUnits(params.amountOut, params.tokenOutDecimals),
+      amountOutRaw: params.amountOut.toString(),
+      amountInRaw: amountIn.toString(),
+      gasEstimate: gasEstimate?.toString(),
+      feeTier: routeHopFees[0],
+      hopFees: routeHopFees,
+    })
+  })
+
+  if (validQuotes.length === 0) return null
+  return validQuotes.reduce((best, current) => selectBetterMultihopQuote('exactOut', current, best))
 }
 
 /**
  * Get a quote from Uniswap
  * Strategy:
- * - If a valid feeTier is specified: try ONLY that tier, no fallback (user explicitly chose it)
- * - Otherwise (auto): multicall all tiers and pick the best quote
+ * - Multihop: one multicall over all standard per-hop fee combinations; best exact-in output wins (ignores `feeTier`).
+ * - Single-hop + explicit fee: one call for that tier only.
+ * - Single-hop auto: multicall all tiers, pick best output.
  *
  * Fee tiers are different Uniswap V3 pools (0.01%, 0.05%, 0.3%, 1% fees).
  * This is NOT slippage -- slippage tolerance is handled at swap execution time.
- *
- * Multi-hop routes (e.g. USDRIF↔RIF via USDT0) use the same fee on every hop and QuoterV2.quoteExactInput.
  */
 async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
   const providerName = SWAP_PROVIDERS.UNISWAP
   const route = resolveSwapRoute(params.tokenIn, params.tokenOut)
   const multihop = isMultihopRoute(route)
 
-  // User explicitly selected a fee tier - single RPC call, no fallback
+  if (multihop) {
+    const bestQuote = await getBestMultihopQuoteExactIn(params, route.tokens, providerName)
+    if (bestQuote) return bestQuote
+    return {
+      provider: providerName,
+      amountOut: '0',
+      amountOutRaw: '0',
+      error: 'No liquidity available. All pool fee tiers failed to provide a quote.',
+    }
+  }
+
   if (params.feeTier !== undefined && isValidUniswapFeeTier(params.feeTier)) {
     try {
-      if (multihop) {
-        return await getMultihopQuoteForUniformTier(params, params.feeTier, route.tokens, providerName)
-      }
       return await getQuoteForSingleTier(params, params.feeTier, providerName)
     } catch {
       return {
@@ -427,11 +436,7 @@ async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
     }
   }
 
-  // Invalid fee tier behaves like auto (same as previous single-hop behavior)
-  // Auto mode - single multicall probes all tiers and picks the best
-  const bestQuote = multihop
-    ? await getBestMultihopQuoteFromAllTiers(params, route.tokens, providerName)
-    : await getBestQuoteFromAllTiers(params, providerName)
+  const bestQuote = await getBestQuoteFromAllTiers(params, providerName)
   if (bestQuote) {
     return bestQuote
   }
@@ -447,25 +452,27 @@ async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
 /**
  * Get an exact output quote from Uniswap
  * Strategy:
- * - If a valid feeTier is specified: try ONLY that tier, no fallback (user explicitly chose it)
- * - Otherwise (auto): multicall all tiers and pick the best quote (lowest amountIn)
+ * - Multihop: multicall all per-hop fee combinations; lowest required amountIn wins (ignores `feeTier`).
+ * - Single-hop explicit/auto: same as before.
  */
 async function getUniswapExactOutputQuote(params: QuoteExactOutputParams): Promise<SwapQuote> {
   const providerName = SWAP_PROVIDERS.UNISWAP
   const route = resolveSwapRoute(params.tokenIn, params.tokenOut)
   const multihop = isMultihopRoute(route)
 
-  // User explicitly selected a fee tier - single RPC call, no fallback
+  if (multihop) {
+    const bestQuote = await getBestMultihopQuoteExactOut(params, route.tokens, providerName)
+    if (bestQuote) return bestQuote
+    return {
+      provider: providerName,
+      amountOut: '0',
+      amountOutRaw: '0',
+      error: 'No liquidity available. All pool fee tiers failed to provide a quote.',
+    }
+  }
+
   if (params.feeTier !== undefined && isValidUniswapFeeTier(params.feeTier)) {
     try {
-      if (multihop) {
-        return await getMultihopExactOutputQuoteForUniformTier(
-          params,
-          params.feeTier,
-          route.tokens,
-          providerName,
-        )
-      }
       return await getExactOutputQuoteForSingleTier(params, params.feeTier, providerName)
     } catch {
       return {
@@ -478,10 +485,7 @@ async function getUniswapExactOutputQuote(params: QuoteExactOutputParams): Promi
     }
   }
 
-  // Auto mode - single multicall probes all tiers and picks the best
-  const bestQuote = multihop
-    ? await getBestMultihopExactOutputFromAllTiers(params, route.tokens, providerName)
-    : await getBestExactOutputFromAllTiers(params, providerName)
+  const bestQuote = await getBestExactOutputFromAllTiers(params, providerName)
   if (bestQuote) {
     return bestQuote
   }
@@ -504,16 +508,32 @@ export interface ExecuteSwapParams {
   tokenOut: Address
   amountIn: bigint
   amountOutMinimum: bigint
+  /** Used for single-hop paths; first-hop fee when `hopFees` is set. */
   poolFee: number
   recipient: Address
+  /** Full per-hop fees for multihop; must match `resolveSwapRoute(tokenIn, tokenOut)`. */
+  hopFees?: readonly number[]
 }
 
 /**
  * Encode the swap path for Uniswap V3 (single hop: tokenIn + fee + tokenOut).
- * Multi-hop execution encoding is handled in a later phase; this remains the two-token helper.
  */
 function encodeSingleHopSwapPath(tokenIn: Address, fee: number, tokenOut: Address): Hex {
   return encodeUniformFeeSwapPath([tokenIn, tokenOut], fee)
+}
+
+function encodeExecuteSwapPath(
+  params: Pick<ExecuteSwapParams, 'tokenIn' | 'tokenOut' | 'poolFee' | 'hopFees'>,
+): Hex {
+  const { tokenIn, tokenOut, poolFee, hopFees } = params
+  const route = resolveSwapRoute(tokenIn, tokenOut)
+  if (hopFees && hopFees.length > 0) {
+    if (hopFees.length !== route.tokens.length - 1) {
+      throw new Error('hopFees length does not match resolved swap route')
+    }
+    return encodePerHopFeeSwapPath(route.tokens, hopFees)
+  }
+  return encodeSingleHopSwapPath(tokenIn, poolFee, tokenOut)
 }
 
 /**
@@ -524,9 +544,9 @@ export function getSwapEncodedData(params: ExecuteSwapParams): {
   commands: Hex
   inputs: [Hex]
 } {
-  const { tokenIn, tokenOut, amountIn, amountOutMinimum, poolFee, recipient } = params
+  const { tokenIn, tokenOut, amountIn, amountOutMinimum, poolFee, recipient, hopFees } = params
 
-  const path = encodeSingleHopSwapPath(tokenIn, poolFee, tokenOut)
+  const path = encodeExecuteSwapPath({ tokenIn, tokenOut, poolFee, hopFees })
 
   const input = encodeAbiParameters(
     [
@@ -572,7 +592,8 @@ export function getPermitSwapEncodedData(params: PermitSwapParams): {
   commands: Hex
   inputs: [Hex, Hex]
 } {
-  const { tokenIn, tokenOut, amountIn, amountOutMinimum, poolFee, recipient, permit, signature } = params
+  const { tokenIn, tokenOut, amountIn, amountOutMinimum, poolFee, recipient, hopFees, permit, signature } =
+    params
 
   const permitInput = encodeAbiParameters(
     [
@@ -611,7 +632,7 @@ export function getPermitSwapEncodedData(params: PermitSwapParams): {
     ],
   )
 
-  const path = encodeSingleHopSwapPath(tokenIn, poolFee, tokenOut)
+  const path = encodeExecuteSwapPath({ tokenIn, tokenOut, poolFee, hopFees })
   const swapInput = encodeAbiParameters(
     [
       { name: 'recipient', type: 'address' },
@@ -644,25 +665,16 @@ export async function getAvailableFeeTiers(
   tokenIn: Address,
   tokenOut: Address,
   tokenInDecimals: number,
-): Promise<number[]> {
-  const oneFullTokenRaw = 10n ** BigInt(tokenInDecimals)
-  const maxProbeRaw = 10n ** 12n
-  const testAmount = oneFullTokenRaw > maxProbeRaw ? maxProbeRaw : oneFullTokenRaw
+): Promise<UniswapFeeTier[]> {
   const route = resolveSwapRoute(tokenIn, tokenOut)
 
   if (isMultihopRoute(route)) {
-    const results = await publicClient.multicall({
-      contracts: buildMultihopExactInputContracts(route.tokens, testAmount),
-    })
-    return results
-      .map((result, index) =>
-        result.status === 'success' && isValidQuotePathResult(result.result)
-          ? UNISWAP_FEE_TIERS[index]
-          : null,
-      )
-      .filter((fee): fee is number => fee !== null)
+    return []
   }
 
+  const oneFullTokenRaw = 10n ** BigInt(tokenInDecimals)
+  const maxProbeRaw = 10n ** 12n
+  const testAmount = oneFullTokenRaw > maxProbeRaw ? maxProbeRaw : oneFullTokenRaw
   const results = await publicClient.multicall({
     contracts: buildExactInputContracts(tokenIn, tokenOut, testAmount),
   })
@@ -671,7 +683,7 @@ export async function getAvailableFeeTiers(
     .map((result, index) =>
       result.status === 'success' && isValidQuoteResult(result.result) ? UNISWAP_FEE_TIERS[index] : null,
     )
-    .filter((fee): fee is number => fee !== null)
+    .filter((fee): fee is UniswapFeeTier => fee !== null)
 }
 
 export const uniswapProvider: SwapProvider = {

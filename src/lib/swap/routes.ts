@@ -7,7 +7,7 @@ import { SWAP_TOKEN_ADDRESSES } from './constants'
 
 /**
  * Resolved swap topology: token sequence only (Uniswap V3 path without fee slots).
- * Fees are chosen at quote time as one uniform uint24 tier repeated for every hop.
+ * Fees are chosen at quote time per hop (see Uniswap provider multihop quoting).
  */
 export interface SwapRoute {
   readonly tokens: readonly Address[]
