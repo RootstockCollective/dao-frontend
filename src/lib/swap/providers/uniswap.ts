@@ -6,6 +6,7 @@ import { publicClient } from '@/lib/viemPublicClient'
 
 import { feeTierToPercent, ROUTER_ADDRESSES, SWAP_PROVIDERS } from '../constants'
 import type { PermitSingle } from '../permit2'
+import { isMultihopRoute, resolveSwapRoute } from '../routes'
 import type { QuoteExactOutputParams, QuoteParams, SwapProvider, SwapQuote } from './'
 
 /**
@@ -38,6 +39,59 @@ function isValidQuoteResult(result: unknown): result is [bigint, bigint, number,
 }
 
 /**
+ * QuoterV2.quoteExactInput(bytes path, uint256 amountIn) / quoteExactOutput(bytes path, uint256 amountOut)
+ */
+function isValidQuotePathResult(result: unknown): result is [bigint, bigint[], number[], bigint] {
+  if (!Array.isArray(result) || result.length < 4) {
+    return false
+  }
+  const [amount, sqrtList, ticksList, gasEstimate] = result
+  return (
+    typeof amount === 'bigint' &&
+    Array.isArray(sqrtList) &&
+    Array.isArray(ticksList) &&
+    typeof gasEstimate === 'bigint'
+  )
+}
+
+/** uint24 fee as 3-byte big-endian hex (no 0x). */
+function encodeFeeUint24Hex(fee: number): string {
+  const feeBuffer = new ArrayBuffer(4)
+  const feeView = new DataView(feeBuffer)
+  feeView.setUint32(0, fee, false)
+  const feeBytes = new Uint8Array(feeBuffer)
+  const feeBytes3 = feeBytes.slice(1, 4)
+  return Array.from(feeBytes3)
+    .map((b: number) => b.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+/**
+ * Encode a Uniswap V3 path: token₀ + fee + token₁ + fee + … + tokenₙ.
+ * The same `fee` is used for every hop (Oku-style single tier for the whole route).
+ */
+export function encodeUniformFeeSwapPath(tokens: readonly Address[], fee: number): Hex {
+  if (tokens.length < 2) {
+    throw new Error('encodeUniformFeeSwapPath requires at least two tokens')
+  }
+  const feeHex = encodeFeeUint24Hex(fee)
+  let pathHex = ''
+  for (let i = 0; i < tokens.length - 1; i++) {
+    pathHex += tokens[i].slice(2) + feeHex
+  }
+  pathHex += tokens[tokens.length - 1].slice(2)
+  return `0x${pathHex}` as Hex
+}
+
+/**
+ * Path bytes for QuoterV2.quoteExactOutput: reversed token order vs exact-in (tokenOut → … → tokenIn).
+ */
+function encodeUniformFeePathForExactOutputQuote(tokens: readonly Address[], fee: number): Hex {
+  const reversed = [...tokens].reverse() as Address[]
+  return encodeUniformFeeSwapPath(reversed, fee)
+}
+
+/**
  * Get a quote for a specific fee tier (single RPC call)
  */
 async function getQuoteForSingleTier(
@@ -58,6 +112,36 @@ async function getQuoteForSingleTier(
     throw new Error(
       `Invalid quote result structure: expected tuple [bigint, bigint, number, bigint], got ${typeof rawResult}`,
     )
+  }
+
+  const [amountOut, , , gasEstimate] = rawResult
+  return {
+    provider: providerName,
+    amountOut: formatUnits(amountOut, tokenOutDecimals),
+    amountOutRaw: amountOut.toString(),
+    gasEstimate: gasEstimate?.toString(),
+    feeTier: fee,
+  }
+}
+
+async function getMultihopQuoteForUniformTier(
+  params: QuoteParams,
+  fee: number,
+  tokens: readonly Address[],
+  providerName: SwapProvider['name'],
+): Promise<SwapQuote> {
+  const { amountIn, tokenOutDecimals } = params
+  const path = encodeUniformFeeSwapPath(tokens, fee)
+
+  const rawResult = (await publicClient.readContract({
+    address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
+    abi: UniswapQuoterV2Abi,
+    functionName: 'quoteExactInput',
+    args: [path, amountIn],
+  })) as unknown
+
+  if (!isValidQuotePathResult(rawResult)) {
+    throw new Error('Invalid multihop quoteExactInput result structure')
   }
 
   const [amountOut, , , gasEstimate] = rawResult
@@ -104,6 +188,37 @@ async function getExactOutputQuoteForSingleTier(
   }
 }
 
+async function getMultihopExactOutputQuoteForUniformTier(
+  params: QuoteExactOutputParams,
+  fee: number,
+  tokens: readonly Address[],
+  providerName: SwapProvider['name'],
+): Promise<SwapQuote> {
+  const { amountOut, tokenOutDecimals } = params
+  const path = encodeUniformFeePathForExactOutputQuote(tokens, fee)
+
+  const rawResult = (await publicClient.readContract({
+    address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
+    abi: UniswapQuoterV2Abi,
+    functionName: 'quoteExactOutput',
+    args: [path, amountOut],
+  })) as unknown
+
+  if (!isValidQuotePathResult(rawResult)) {
+    throw new Error('Invalid multihop quoteExactOutput result structure')
+  }
+
+  const [amountIn, , , gasEstimate] = rawResult
+  return {
+    provider: providerName,
+    amountOut: formatUnits(amountOut, tokenOutDecimals),
+    amountOutRaw: amountOut.toString(),
+    amountInRaw: amountIn.toString(),
+    gasEstimate: gasEstimate?.toString(),
+    feeTier: fee,
+  }
+}
+
 function buildExactInputContracts(tokenIn: Address, tokenOut: Address, amountIn: bigint) {
   return UNISWAP_FEE_TIERS.map(fee => ({
     address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
@@ -113,12 +228,30 @@ function buildExactInputContracts(tokenIn: Address, tokenOut: Address, amountIn:
   }))
 }
 
+function buildMultihopExactInputContracts(tokens: readonly Address[], amountIn: bigint) {
+  return UNISWAP_FEE_TIERS.map(fee => ({
+    address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
+    abi: UniswapQuoterV2Abi,
+    functionName: 'quoteExactInput' as const,
+    args: [encodeUniformFeeSwapPath(tokens, fee), amountIn] as const,
+  }))
+}
+
 function buildExactOutputContracts(tokenIn: Address, tokenOut: Address, amountOut: bigint) {
   return UNISWAP_FEE_TIERS.map(fee => ({
     address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
     abi: UniswapQuoterV2Abi,
     functionName: 'quoteExactOutputSingle' as const,
     args: [{ tokenIn, tokenOut, amountOut, fee, sqrtPriceLimitX96: 0n }] as const,
+  }))
+}
+
+function buildMultihopExactOutputContracts(tokens: readonly Address[], amountOut: bigint) {
+  return UNISWAP_FEE_TIERS.map(fee => ({
+    address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
+    abi: UniswapQuoterV2Abi,
+    functionName: 'quoteExactOutput' as const,
+    args: [encodeUniformFeePathForExactOutputQuote(tokens, fee), amountOut] as const,
   }))
 }
 
@@ -140,6 +273,38 @@ async function getBestQuoteFromAllTiers(
 
   results.forEach((result, index) => {
     if (result.status !== 'success' || !isValidQuoteResult(result.result)) return
+    const [amountOut, , , gasEstimate] = result.result
+    validQuotes.push({
+      provider: providerName,
+      amountOut: formatUnits(amountOut, tokenOutDecimals),
+      amountOutRaw: amountOut.toString(),
+      gasEstimate: gasEstimate?.toString(),
+      feeTier: UNISWAP_FEE_TIERS[index],
+    })
+  })
+
+  if (validQuotes.length === 0) return null
+
+  return validQuotes.reduce((best, current) =>
+    new Big(current.amountOut).gt(best.amountOut) ? current : best,
+  )
+}
+
+async function getBestMultihopQuoteFromAllTiers(
+  params: QuoteParams,
+  tokens: readonly Address[],
+  providerName: SwapProvider['name'],
+): Promise<SwapQuote | null> {
+  const { amountIn, tokenOutDecimals } = params
+
+  const results = await publicClient.multicall({
+    contracts: buildMultihopExactInputContracts(tokens, amountIn),
+  })
+
+  const validQuotes: SwapQuote[] = []
+
+  results.forEach((result, index) => {
+    if (result.status !== 'success' || !isValidQuotePathResult(result.result)) return
     const [amountOut, , , gasEstimate] = result.result
     validQuotes.push({
       provider: providerName,
@@ -194,6 +359,40 @@ async function getBestExactOutputFromAllTiers(
   })
 }
 
+async function getBestMultihopExactOutputFromAllTiers(
+  params: QuoteExactOutputParams,
+  tokens: readonly Address[],
+  providerName: SwapProvider['name'],
+): Promise<SwapQuote | null> {
+  const { amountOut, tokenOutDecimals } = params
+
+  const results = await publicClient.multicall({
+    contracts: buildMultihopExactOutputContracts(tokens, amountOut),
+  })
+
+  const validQuotes: SwapQuote[] = []
+
+  results.forEach((result, index) => {
+    if (result.status !== 'success' || !isValidQuotePathResult(result.result)) return
+    const [amountIn, , , gasEstimate] = result.result
+    validQuotes.push({
+      provider: providerName,
+      amountOut: formatUnits(amountOut, tokenOutDecimals),
+      amountOutRaw: amountOut.toString(),
+      amountInRaw: amountIn.toString(),
+      gasEstimate: gasEstimate?.toString(),
+      feeTier: UNISWAP_FEE_TIERS[index],
+    })
+  })
+
+  if (validQuotes.length === 0) return null
+
+  return validQuotes.reduce((best, current) => {
+    if (!best.amountInRaw || !current.amountInRaw) return best
+    return new Big(current.amountInRaw).lt(best.amountInRaw) ? current : best
+  })
+}
+
 /**
  * Get a quote from Uniswap
  * Strategy:
@@ -202,13 +401,20 @@ async function getBestExactOutputFromAllTiers(
  *
  * Fee tiers are different Uniswap V3 pools (0.01%, 0.05%, 0.3%, 1% fees).
  * This is NOT slippage -- slippage tolerance is handled at swap execution time.
+ *
+ * Multi-hop routes (e.g. USDRIF↔RIF via USDT0) use the same fee on every hop and QuoterV2.quoteExactInput.
  */
 async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
   const providerName = SWAP_PROVIDERS.UNISWAP
+  const route = resolveSwapRoute(params.tokenIn, params.tokenOut)
+  const multihop = isMultihopRoute(route)
 
   // User explicitly selected a fee tier - single RPC call, no fallback
   if (params.feeTier !== undefined && isValidUniswapFeeTier(params.feeTier)) {
     try {
+      if (multihop) {
+        return await getMultihopQuoteForUniformTier(params, params.feeTier, route.tokens, providerName)
+      }
       return await getQuoteForSingleTier(params, params.feeTier, providerName)
     } catch {
       return {
@@ -221,8 +427,11 @@ async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
     }
   }
 
+  // Invalid fee tier behaves like auto (same as previous single-hop behavior)
   // Auto mode - single multicall probes all tiers and picks the best
-  const bestQuote = await getBestQuoteFromAllTiers(params, providerName)
+  const bestQuote = multihop
+    ? await getBestMultihopQuoteFromAllTiers(params, route.tokens, providerName)
+    : await getBestQuoteFromAllTiers(params, providerName)
   if (bestQuote) {
     return bestQuote
   }
@@ -243,10 +452,20 @@ async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
  */
 async function getUniswapExactOutputQuote(params: QuoteExactOutputParams): Promise<SwapQuote> {
   const providerName = SWAP_PROVIDERS.UNISWAP
+  const route = resolveSwapRoute(params.tokenIn, params.tokenOut)
+  const multihop = isMultihopRoute(route)
 
   // User explicitly selected a fee tier - single RPC call, no fallback
   if (params.feeTier !== undefined && isValidUniswapFeeTier(params.feeTier)) {
     try {
+      if (multihop) {
+        return await getMultihopExactOutputQuoteForUniformTier(
+          params,
+          params.feeTier,
+          route.tokens,
+          providerName,
+        )
+      }
       return await getExactOutputQuoteForSingleTier(params, params.feeTier, providerName)
     } catch {
       return {
@@ -260,7 +479,9 @@ async function getUniswapExactOutputQuote(params: QuoteExactOutputParams): Promi
   }
 
   // Auto mode - single multicall probes all tiers and picks the best
-  const bestQuote = await getBestExactOutputFromAllTiers(params, providerName)
+  const bestQuote = multihop
+    ? await getBestMultihopExactOutputFromAllTiers(params, route.tokens, providerName)
+    : await getBestExactOutputFromAllTiers(params, providerName)
   if (bestQuote) {
     return bestQuote
   }
@@ -288,32 +509,11 @@ export interface ExecuteSwapParams {
 }
 
 /**
- * Encode the swap path for Uniswap V3
- * Path format: tokenIn (20 bytes) + fee (3 bytes) + tokenOut (20 bytes) = 43 bytes
+ * Encode the swap path for Uniswap V3 (single hop: tokenIn + fee + tokenOut).
+ * Multi-hop execution encoding is handled in a later phase; this remains the two-token helper.
  */
-function encodeSwapPath(tokenIn: Address, fee: number, tokenOut: Address): Hex {
-  // Remove '0x' prefix from addresses
-  const tokenInBytes = tokenIn.slice(2)
-  const tokenOutBytes = tokenOut.slice(2)
-
-  // Encode fee as uint24 (3 bytes, big-endian)
-  // For uint24, we need 3 bytes representing the value
-  // Example: fee=100 (0x64) should be encoded as [0x00, 0x00, 0x64]
-  // When written as uint32 big-endian: [0x00, 0x00, 0x00, 0x64]
-  // We need the last 3 bytes: [0x00, 0x00, 0x64]
-  const feeBuffer = new ArrayBuffer(4)
-  const feeView = new DataView(feeBuffer)
-  feeView.setUint32(0, fee, false) // false = big-endian, writes to bytes 0-3
-  const feeBytes = new Uint8Array(feeBuffer)
-  // For big-endian uint32, bytes are [MSB, MSB, MSB, LSB]
-  // For uint24, we want the value itself, so we take bytes 1-3 (skip the leading zero byte)
-  const feeBytes3 = feeBytes.slice(1, 4) // Take bytes 1, 2, 3 (last 3 bytes)
-
-  // Build path: tokenIn (20 bytes) + fee (3 bytes) + tokenOut (20 bytes)
-  const feeHex = Array.from(feeBytes3)
-    .map((b: number) => b.toString(16).padStart(2, '0'))
-    .join('')
-  return `0x${tokenInBytes}${feeHex}${tokenOutBytes}` as Hex
+function encodeSingleHopSwapPath(tokenIn: Address, fee: number, tokenOut: Address): Hex {
+  return encodeUniformFeeSwapPath([tokenIn, tokenOut], fee)
 }
 
 /**
@@ -326,10 +526,8 @@ export function getSwapEncodedData(params: ExecuteSwapParams): {
 } {
   const { tokenIn, tokenOut, amountIn, amountOutMinimum, poolFee, recipient } = params
 
-  // Encode the swap path
-  const path = encodeSwapPath(tokenIn, poolFee, tokenOut)
+  const path = encodeSingleHopSwapPath(tokenIn, poolFee, tokenOut)
 
-  // Encode the V3_SWAP_EXACT_IN input
   const input = encodeAbiParameters(
     [
       { name: 'recipient', type: 'address' },
@@ -341,7 +539,6 @@ export function getSwapEncodedData(params: ExecuteSwapParams): {
     [recipient, amountIn, amountOutMinimum, path, true],
   )
 
-  // Command byte: 0x00 = V3_SWAP_EXACT_IN
   const commands = '0x00' as Hex
 
   return {
@@ -377,8 +574,6 @@ export function getPermitSwapEncodedData(params: PermitSwapParams): {
 } {
   const { tokenIn, tokenOut, amountIn, amountOutMinimum, poolFee, recipient, permit, signature } = params
 
-  // Encode PERMIT2_PERMIT input (command 0x0a)
-  // ABI: (PermitSingle permitSingle, bytes signature)
   const permitInput = encodeAbiParameters(
     [
       {
@@ -406,7 +601,6 @@ export function getPermitSwapEncodedData(params: PermitSwapParams): {
         details: {
           token: permit.details.token,
           amount: permit.details.amount,
-          // uint48 values need to be numbers for viem's encodeAbiParameters
           expiration: Number(permit.details.expiration),
           nonce: Number(permit.details.nonce),
         },
@@ -417,8 +611,7 @@ export function getPermitSwapEncodedData(params: PermitSwapParams): {
     ],
   )
 
-  // Encode V3_SWAP_EXACT_IN input (command 0x00)
-  const path = encodeSwapPath(tokenIn, poolFee, tokenOut)
+  const path = encodeSingleHopSwapPath(tokenIn, poolFee, tokenOut)
   const swapInput = encodeAbiParameters(
     [
       { name: 'recipient', type: 'address' },
@@ -430,7 +623,6 @@ export function getPermitSwapEncodedData(params: PermitSwapParams): {
     [recipient, amountIn, amountOutMinimum, path, true],
   )
 
-  // Commands: 0x0a (PERMIT2_PERMIT) + 0x00 (V3_SWAP_EXACT_IN)
   const commands = '0x0a00' as Hex
 
   return {
@@ -453,12 +645,23 @@ export async function getAvailableFeeTiers(
   tokenOut: Address,
   tokenInDecimals: number,
 ): Promise<number[]> {
-  // One full token in raw units (e.g. 1e18 for 18 decimals). Used as the probe for small-decimal tokens.
   const oneFullTokenRaw = 10n ** BigInt(tokenInDecimals)
-  // Cap probe size so high-decimal tokens (e.g. 18) do not always quote "1 whole token", which can revert
-  // or fail every multicall leg on forked nodes while smaller probes still prove the pool exists.
   const maxProbeRaw = 10n ** 12n
   const testAmount = oneFullTokenRaw > maxProbeRaw ? maxProbeRaw : oneFullTokenRaw
+  const route = resolveSwapRoute(tokenIn, tokenOut)
+
+  if (isMultihopRoute(route)) {
+    const results = await publicClient.multicall({
+      contracts: buildMultihopExactInputContracts(route.tokens, testAmount),
+    })
+    return results
+      .map((result, index) =>
+        result.status === 'success' && isValidQuotePathResult(result.result)
+          ? UNISWAP_FEE_TIERS[index]
+          : null,
+      )
+      .filter((fee): fee is number => fee !== null)
+  }
 
   const results = await publicClient.multicall({
     contracts: buildExactInputContracts(tokenIn, tokenOut, testAmount),

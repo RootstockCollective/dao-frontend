@@ -1,11 +1,18 @@
 import { describe, it, expect, beforeAll } from 'vitest'
-import { parseUnits, encodeFunctionData } from 'viem'
-import { uniswapProvider, getAvailableFeeTiers, UNISWAP_FEE_TIERS } from './uniswap'
+import { parseUnits, encodeFunctionData, type AbiFunction } from 'viem'
+import {
+  uniswapProvider,
+  getAvailableFeeTiers,
+  UNISWAP_FEE_TIERS,
+  encodeUniformFeeSwapPath,
+} from './uniswap'
 import { ROUTER_ADDRESSES, SWAP_TOKEN_ADDRESSES } from '../constants'
+import { resolveSwapRoute } from '../routes'
 import { getTokenDecimals } from '../utils'
 import { UniswapQuoterV2Abi } from '@/lib/abis/UniswapQuoterV2Abi'
 import { tokenContracts } from '@/lib/contracts'
 import { RIF } from '@/lib/constants'
+import { publicClient } from '@/lib/viemPublicClient'
 import type { SwapQuote } from './'
 
 /**
@@ -137,6 +144,174 @@ describe('uniswap provider - integration tests', () => {
         },
       )
     })
+
+    describe('single-hop regression vs QuoterV2 (STORY-006 Phase 1)', () => {
+    /**
+     * AC-2 / plan: app quote matches same-chain quote within ≤ 1 wei (exact match on raw uint256).
+     */
+    it.skipIf(!hasRealAddresses)(
+      'getQuote with explicit fee matches quoteExactInputSingle for USDT0→USDRIF',
+      async () => {
+        const amountIn = parseUnits('1', tokenInDecimals)
+        const available = await getAvailableFeeTiers(realTokenIn, realTokenOut, tokenInDecimals)
+        expect(available.length).toBeGreaterThan(0)
+        const fee = available[0]
+
+        const onChain = (await publicClient.readContract({
+          address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
+          abi: UniswapQuoterV2Abi,
+          functionName: 'quoteExactInputSingle',
+          args: [
+            {
+              tokenIn: realTokenIn,
+              tokenOut: realTokenOut,
+              amountIn,
+              fee,
+              sqrtPriceLimitX96: 0n,
+            },
+          ],
+        })) as [bigint, bigint, number, bigint]
+        const amountOutOnChain = onChain[0]
+
+        const result = await uniswapProvider.getQuote({
+          tokenIn: realTokenIn,
+          tokenOut: realTokenOut,
+          amountIn,
+          tokenInDecimals,
+          tokenOutDecimals,
+          feeTier: fee,
+        })
+
+        expect(result.error).toBeUndefined()
+        expect(result.amountOutRaw).toBe(amountOutOnChain.toString())
+      },
+      15000,
+    )
+
+    it.skipIf(!hasRealAddresses)(
+      'getQuote auto mode matches best quoteExactInputSingle across tiers',
+      async () => {
+        const amountIn = parseUnits('1', tokenInDecimals)
+        const multicall = await publicClient.multicall({
+          contracts: UNISWAP_FEE_TIERS.map(fee => ({
+            address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
+            abi: UniswapQuoterV2Abi,
+            functionName: 'quoteExactInputSingle' as const,
+            args: [
+              {
+                tokenIn: realTokenIn,
+                tokenOut: realTokenOut,
+                amountIn,
+                fee,
+                sqrtPriceLimitX96: 0n,
+              },
+            ] as const,
+          })),
+        })
+
+        type TierResult = { amountOut: bigint; fee: number }
+        const ok: TierResult[] = []
+        multicall.forEach((row, index) => {
+          if (row.status !== 'success' || !Array.isArray(row.result)) return
+          const amountOut = row.result[0]
+          if (typeof amountOut !== 'bigint') return
+          ok.push({ amountOut, fee: UNISWAP_FEE_TIERS[index] })
+        })
+        expect(ok.length).toBeGreaterThan(0)
+        const best = ok.reduce((a, b) => (a.amountOut >= b.amountOut ? a : b))
+
+        const result = await uniswapProvider.getQuote({
+          tokenIn: realTokenIn,
+          tokenOut: realTokenOut,
+          amountIn,
+          tokenInDecimals,
+          tokenOutDecimals,
+        })
+
+        expect(result.error).toBeUndefined()
+        expect(result.amountOutRaw).toBe(best.amountOut.toString())
+        expect(result.feeTier).toBe(best.fee)
+      },
+      30000,
+    )
+  })
+
+  describe('USDRIF↔RIF multihop quotes (STORY-006 Phase 1)', () => {
+    it.skipIf(!hasRifToken)(
+      'getQuote matches quoteExactInput for same path bytes (uniform fee)',
+      async () => {
+        const route = resolveSwapRoute(SWAP_TOKEN_ADDRESSES.USDRIF, rifToken)
+        expect(route.tokens.length).toBe(3)
+
+        const amountIn = parseUnits('1', tokenOutDecimals)
+        const tiers = await getAvailableFeeTiers(
+          SWAP_TOKEN_ADDRESSES.USDRIF,
+          rifToken,
+          tokenOutDecimals,
+        )
+        expect(tiers.length).toBeGreaterThan(0)
+        const fee = tiers[0]
+
+        const path = encodeUniformFeeSwapPath(route.tokens, fee)
+        const onChain = (await publicClient.readContract({
+          address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
+          abi: UniswapQuoterV2Abi,
+          functionName: 'quoteExactInput',
+          args: [path, amountIn],
+        })) as [bigint, bigint[], number[], bigint]
+        const amountOutOnChain = onChain[0]
+
+        const result = await uniswapProvider.getQuote({
+          tokenIn: SWAP_TOKEN_ADDRESSES.USDRIF,
+          tokenOut: rifToken,
+          amountIn,
+          tokenInDecimals: tokenOutDecimals,
+          tokenOutDecimals: rifDecimals,
+          feeTier: fee,
+        })
+
+        expect(result.error).toBeUndefined()
+        expect(result.amountOutRaw).toBe(amountOutOnChain.toString())
+      },
+      45000,
+    )
+
+    it.skipIf(!hasRifToken)(
+      'reverse direction RIF→USDRIF matches quoteExactInput',
+      async () => {
+        const route = resolveSwapRoute(rifToken, SWAP_TOKEN_ADDRESSES.USDRIF)
+        const amountIn = parseUnits('0.5', rifDecimals)
+        const tiers = await getAvailableFeeTiers(
+          rifToken,
+          SWAP_TOKEN_ADDRESSES.USDRIF,
+          rifDecimals,
+        )
+        expect(tiers.length).toBeGreaterThan(0)
+        const fee = tiers[0]
+
+        const path = encodeUniformFeeSwapPath(route.tokens, fee)
+        const onChain = (await publicClient.readContract({
+          address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
+          abi: UniswapQuoterV2Abi,
+          functionName: 'quoteExactInput',
+          args: [path, amountIn],
+        })) as [bigint, bigint[], number[], bigint]
+
+        const result = await uniswapProvider.getQuote({
+          tokenIn: rifToken,
+          tokenOut: SWAP_TOKEN_ADDRESSES.USDRIF,
+          amountIn,
+          tokenInDecimals: rifDecimals,
+          tokenOutDecimals: tokenOutDecimals,
+          feeTier: fee,
+        })
+
+        expect(result.error).toBeUndefined()
+        expect(result.amountOutRaw).toBe(onChain[0].toString())
+      },
+      45000,
+    )
+  })
 
     describe('invalid explicit feeTier — not in [100,500,3000,10000]; treated like auto mode', () => {
       it.skipIf(!hasRealAddresses)(
@@ -370,7 +545,8 @@ describe('uniswap provider - integration tests', () => {
       { timeout: 15_000 },
       async () => {
         const quoteFunction = UniswapQuoterV2Abi.find(
-          item => item.type === 'function' && item.name === 'quoteExactInputSingle',
+          (item): item is AbiFunction =>
+            item.type === 'function' && item.name === 'quoteExactInputSingle',
         )
         expect(quoteFunction?.name).toBe('quoteExactInputSingle')
         expect(quoteFunction?.stateMutability).toBe('view')
