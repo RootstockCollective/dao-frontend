@@ -1,12 +1,20 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
 import { WithdrawReviewStep } from './WithdrawReviewStep'
 
 vi.mock('@/shared/context', () => ({
   usePricesContext: () => ({ prices: {} }),
 }))
+
+beforeAll(() => {
+  global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+  }))
+})
 
 const defaultProps = {
   amount: '2',
@@ -54,16 +62,12 @@ describe('WithdrawReviewStep', () => {
     expect(onSubmit).toHaveBeenCalledOnce()
   })
 
-  it('shows "Submitting..." text when isSubmitting is true', () => {
+  it('shows In progress button when isSubmitting is true', () => {
     render(<WithdrawReviewStep {...defaultProps} isSubmitting />)
 
-    expect(screen.getByTestId('SubmitRequestButton')).toHaveTextContent('Submitting...')
-  })
-
-  it('disables button when isSubmitting is true', () => {
-    render(<WithdrawReviewStep {...defaultProps} isSubmitting />)
-
-    expect(screen.getByTestId('SubmitRequestButton')).toBeDisabled()
+    expect(screen.getByText('In progress')).toBeInTheDocument()
+    expect(screen.queryByTestId('SubmitRequestButton')).not.toBeInTheDocument()
+    expect(screen.getByTestId('BackButton')).toBeInTheDocument()
   })
 
   it('shows the disclaimer text', () => {

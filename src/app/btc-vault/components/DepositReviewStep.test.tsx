@@ -1,12 +1,20 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { DepositReviewStep } from './DepositReviewStep'
 import { DEPOSIT_EXPECTED_COMPLETION } from '../services/constants'
 
 vi.mock('@/shared/context', () => ({
   usePricesContext: () => ({ prices: {} }),
 }))
+
+beforeAll(() => {
+  global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+  }))
+})
 
 const defaultProps = {
   amount: '1',
@@ -88,11 +96,12 @@ describe('DepositReviewStep', () => {
     expect(screen.getByTestId('SubmitRequestButton')).toHaveTextContent('Send request')
   })
 
-  it('shows Submitting... when isSubmitting is true', () => {
+  it('shows In progress button when isSubmitting is true', () => {
     render(<DepositReviewStep {...defaultProps} isSubmitting />)
 
-    expect(screen.getByTestId('SubmitRequestButton')).toHaveTextContent('Submitting...')
-    expect(screen.getByTestId('SubmitRequestButton')).toBeDisabled()
+    expect(screen.getByText('In progress')).toBeInTheDocument()
+    expect(screen.queryByTestId('SubmitRequestButton')).not.toBeInTheDocument()
+    expect(screen.getByTestId('BackButton')).toBeInTheDocument()
   })
 
   it('calls onSubmit when Send request is clicked', async () => {
