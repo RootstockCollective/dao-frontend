@@ -1,5 +1,10 @@
 import { Address } from 'viem'
+
 import { SwapProviderName } from '../constants'
+import type { SwapQuoteMode } from '../types'
+
+/** Quote direction used by swap providers. */
+export type QuoteMode = SwapQuoteMode
 
 /**
  * Quote result from a swap provider
@@ -9,7 +14,10 @@ export interface SwapQuote {
   amountOut: string // Human-readable output amount
   amountOutRaw: string // Raw bigint as string
   amountInRaw?: string // Raw bigint as string (used for exact output quotes)
-  feeTier?: number // The fee tier that produced this quote (100, 500, 3000, 10000)
+  /** Single-hop pool fee, or first-hop fee when `hopFees` is present. */
+  feeTier?: number
+  /** Ordered per-hop fees for the resolved multihop route (length = hop count). */
+  hopFees?: readonly number[]
   priceImpact?: string // Percentage if available (e.g., "0.5" for 0.5%)
   gasEstimate?: string // Gas estimate if available
   error?: string // Error message if quote failed
