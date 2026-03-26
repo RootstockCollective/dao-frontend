@@ -65,7 +65,9 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
     }
   }, [amountOut, tokenOutPrice, tokenOutBalance, tokenOutData.symbol])
 
-  // Calculate minimum amount out based on slippage tolerance (local to Step 3)
+  // Minimum out for Universal Router `V3_SWAP_EXACT_IN`:
+  // - exactIn: `quote.amountOut` is the Quoter `quoteExactInput` result for the same path/hopFees as execution — slippage is applied to that.
+  // - exactOut: `quote.amountOut` is the user’s desired output (see normalizeQuoteResult); execution still uses exact-in with `quote.amountIn`; min-out protects received amount vs that target.
   const amountOutMinimum = useMemo(() => {
     if (!quote?.amountOut || slippageTolerance === null) return null
     const slippageBps = BigInt(Math.floor(slippageTolerance * 100)) // Convert to basis points
