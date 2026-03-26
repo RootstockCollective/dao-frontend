@@ -469,6 +469,48 @@ export const TX_MESSAGES = {
       loading: false,
     },
   },
+  resumeDeposits: {
+    pending: {
+      title: 'Deposit resume in process',
+      content: 'Waiting for transaction confirmation...',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Deposits resumed',
+      content: 'Vault deposit setting has been updated successfully.',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Resume deposits failed',
+      content:
+        'An unexpected error occurred while resuming deposits. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
+  resumeWithdrawals: {
+    pending: {
+      title: 'Withdrawal resume in process',
+      content: 'Waiting for transaction confirmation...',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Withdrawals resumed',
+      content: 'Vault withdrawal setting has been updated successfully.',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Resume withdrawals failed',
+      content:
+        'An unexpected error occurred while resuming withdrawals. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
   updateNav: {
     pending: {
       title: 'NAV update in process',

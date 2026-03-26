@@ -23,26 +23,22 @@ export function VaultControlsSection() {
   } = usePauseVaultWithdrawals(withdrawalsPaused)
 
   const handlePauseDeposits = useCallback(
-    async (_paused: boolean) => {
+    async (paused: boolean) => {
       await executeTxFlow({
-        action: 'pauseDeposits',
+        action: paused ? 'pauseDeposits' : 'resumeDeposits',
         onRequestTx: onRequestDepositTx,
-        onSuccess: () => {
-          refetch()
-        },
+        onSuccess: () => refetch(),
       })
     },
     [onRequestDepositTx, refetch],
   )
 
   const handlePauseWithdrawals = useCallback(
-    async (_paused: boolean) => {
+    async (paused: boolean) => {
       await executeTxFlow({
-        action: 'pauseWithdrawals',
+        action: paused ? 'pauseWithdrawals' : 'resumeWithdrawals',
         onRequestTx: onRequestWithdrawalTx,
-        onSuccess: () => {
-          refetch()
-        },
+        onSuccess: () => refetch(),
       })
     },
     [onRequestWithdrawalTx, refetch],
