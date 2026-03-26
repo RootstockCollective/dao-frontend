@@ -427,7 +427,7 @@ export const TX_MESSAGES = {
       loading: false,
     },
   },
-  rbtcVaultPauseDeposits: {
+  pauseDeposits: {
     pending: {
       title: 'Deposit pause update in process',
       content: 'Waiting for transaction confirmation...',
@@ -448,7 +448,7 @@ export const TX_MESSAGES = {
       loading: false,
     },
   },
-  rbtcVaultPauseWithdrawals: {
+  pauseWithdrawals: {
     pending: {
       title: 'Withdrawal pause update in process',
       content: 'Waiting for transaction confirmation...',

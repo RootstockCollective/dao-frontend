@@ -25,7 +25,7 @@ export function VaultControlsSection() {
   const handlePauseDeposits = useCallback(
     async (_paused: boolean) => {
       await executeTxFlow({
-        action: 'rbtcVaultPauseDeposits',
+        action: 'pauseDeposits',
         onRequestTx: onRequestDepositTx,
         onSuccess: () => {
           refetch()
@@ -38,7 +38,7 @@ export function VaultControlsSection() {
   const handlePauseWithdrawals = useCallback(
     async (_paused: boolean) => {
       await executeTxFlow({
-        action: 'rbtcVaultPauseWithdrawals',
+        action: 'pauseWithdrawals',
         onRequestTx: onRequestWithdrawalTx,
         onSuccess: () => {
           refetch()
