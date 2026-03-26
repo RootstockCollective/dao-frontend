@@ -3,7 +3,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useDebounce } from 'use-debounce'
-import { formatUnits, Hex, parseUnits } from 'viem'
+import { type Address, formatUnits, Hex, parseUnits } from 'viem'
 import { useAccount, useReadContract, useSignTypedData, useWriteContract } from 'wagmi'
 import { useShallow } from 'zustand/shallow'
 
@@ -13,9 +13,11 @@ import { UniswapUniversalRouterAbi } from '@/lib/abis/UniswapUniversalRouterAbi'
 import { PERMIT2_ADDRESS, UNISWAP_UNIVERSAL_ROUTER_ADDRESS } from '@/lib/constants'
 import { sentryClient } from '@/lib/sentry/sentry-client'
 import { createSecurePermit } from '@/lib/swap/permit2'
+import type { SwapQuote } from '@/lib/swap/providers'
 import { getAvailableFeeTiers, getPermitSwapEncodedData, uniswapProvider } from '@/lib/swap/providers/uniswap'
+import { isMultihopRoute, resolveSwapRoute } from '@/lib/swap/routes'
 
-import type { QuoteResult } from './types'
+import type { QuoteResult, SwapTokenSymbol } from './types'
 import { useSwapStore } from './useSwapStore'
 import { useSwapTokens } from './useSwapTokens'
 
@@ -27,6 +29,82 @@ const withTimeout = <T>(promise: Promise<T>, timeoutMs: number, errorMessage: st
     promise,
     new Promise<never>((_, reject) => setTimeout(() => reject(new Error(errorMessage)), timeoutMs)),
   ])
+}
+
+interface QuoteFetchContext {
+  tokenInAddress: Address
+  tokenOutAddress: Address
+  tokenInDecimals: number
+  tokenOutDecimals: number
+  selectedFeeTier: number | null
+}
+
+/** Subset of provider quote fields used after a successful `getQuote` / `getQuoteExactOutput` call. */
+type SwapQuoteFieldsForNormalize = Pick<
+  SwapQuote,
+  'amountOutRaw' | 'amountInRaw' | 'gasEstimate' | 'feeTier' | 'hopFees' | 'error'
+>
+
+function getQuoteFetchContext(params: {
+  tokenIn: SwapTokenSymbol
+  tokenOut: SwapTokenSymbol
+  tokens: ReturnType<typeof useSwapTokens>['tokens']
+  selectedFeeTier: number | null
+  isMultihopSwap: boolean
+}): QuoteFetchContext | null {
+  const { tokenIn, tokenOut, tokens, selectedFeeTier, isMultihopSwap } = params
+  const tokenInData = tokens[tokenIn]
+  const tokenOutData = tokens[tokenOut]
+
+  if (!tokenInData?.decimals || !tokenOutData?.decimals || !tokenInData?.address || !tokenOutData?.address) {
+    return null
+  }
+
+  return {
+    tokenInAddress: tokenInData.address,
+    tokenOutAddress: tokenOutData.address,
+    tokenInDecimals: tokenInData.decimals,
+    tokenOutDecimals: tokenOutData.decimals,
+    selectedFeeTier: isMultihopSwap ? null : selectedFeeTier,
+  }
+}
+
+function normalizeQuoteResult(params: {
+  mode: 'exactIn' | 'exactOut'
+  quoteResponse: SwapQuoteFieldsForNormalize
+  amount: bigint
+}): QuoteResult {
+  const { mode, quoteResponse, amount } = params
+
+  if (quoteResponse.error) {
+    throw new Error(quoteResponse.error)
+  }
+  if (quoteResponse.feeTier === undefined) {
+    throw new Error('Invalid quote response: missing feeTier from provider')
+  }
+
+  if (mode === 'exactOut') {
+    if (!quoteResponse.amountInRaw) {
+      throw new Error('Invalid quote response: missing amountInRaw for exact-out quote')
+    }
+
+    return {
+      amountOut: amount,
+      amountIn: BigInt(quoteResponse.amountInRaw),
+      gasEstimate: quoteResponse.gasEstimate ? BigInt(quoteResponse.gasEstimate) : 0n,
+      feeTier: quoteResponse.feeTier,
+      hopFees: quoteResponse.hopFees,
+      timestamp: Date.now(),
+    }
+  }
+
+  return {
+    amountOut: BigInt(quoteResponse.amountOutRaw),
+    gasEstimate: quoteResponse.gasEstimate ? BigInt(quoteResponse.gasEstimate) : 0n,
+    feeTier: quoteResponse.feeTier,
+    hopFees: quoteResponse.hopFees,
+    timestamp: Date.now(),
+  }
 }
 
 /**
@@ -43,7 +121,8 @@ const withTimeout = <T>(promise: Promise<T>, timeoutMs: number, errorMessage: st
  * @returns Display values for both fields, setters that switch mode, quote state,
  *   fee tier selection (`selectedFeeTier` / `setSelectedFeeTier`),
  *   the resolved fee tier from the latest quote (`activeFeeTier`),
- *   and the list of tiers with liquidity (`availableFeeTiers`)
+ *   the list of tiers with liquidity (`availableFeeTiers`),
+ *   and `isMultihopSwap` when the route is optimized internally (no pool-fee UI).
  */
 export const useSwapInput = () => {
   const { tokens } = useSwapTokens()
@@ -69,8 +148,21 @@ export const useSwapInput = () => {
     })),
   )
 
+  const isMultihopSwap = useMemo(() => {
+    const a = tokens[tokenIn]?.address
+    const b = tokens[tokenOut]?.address
+    if (!a || !b) return false
+    return isMultihopRoute(resolveSwapRoute(a, b))
+  }, [tokenIn, tokenOut, tokens])
+
   // Wait for user to stop typing before fetching quote (avoids excessive API calls)
   const [debouncedTypedAmount] = useDebounce(typedAmount, QUOTE_DEBOUNCE_MS)
+
+  useEffect(() => {
+    if (isMultihopSwap && selectedFeeTier !== null) {
+      setSelectedFeeTier(null)
+    }
+  }, [isMultihopSwap, selectedFeeTier, setSelectedFeeTier])
 
   // Probe which fee tiers have liquidity (cached for the token pair, rarely changes)
   const { data: availableFeeTiers } = useQuery({
@@ -78,7 +170,7 @@ export const useSwapInput = () => {
     // SAFETY: enabled guard ensures decimals are defined before queryFn runs
     queryFn: () =>
       getAvailableFeeTiers(tokens[tokenIn].address, tokens[tokenOut].address, tokens[tokenIn].decimals!),
-    enabled: !!tokens[tokenIn].decimals && !!tokens[tokenOut].decimals,
+    enabled: !!tokens[tokenIn].decimals && !!tokens[tokenOut].decimals && !isMultihopSwap,
     staleTime: 5 * 60_000,
     retry: false,
   })
@@ -90,74 +182,70 @@ export const useSwapInput = () => {
     isFetching: isQuoteFetching,
     error: quoteError,
   } = useQuery({
-    queryKey: ['swapQuote', tokenIn, tokenOut, mode, debouncedTypedAmount, selectedFeeTier],
+    queryKey: [
+      'swapQuote',
+      tokenIn,
+      tokenOut,
+      mode,
+      debouncedTypedAmount,
+      isMultihopSwap ? 'multihop-auto' : selectedFeeTier,
+    ],
     queryFn: async () => {
-      const tokenInDecimals = tokens[tokenIn].decimals
-      const tokenOutDecimals = tokens[tokenOut].decimals
-      if (!tokenInDecimals || !tokenOutDecimals || !debouncedTypedAmount) {
+      if (!debouncedTypedAmount) {
         return null
       }
 
-      if (mode === 'exactOut') {
-        // User specified output amount, get required input
-        const amountOutBigInt = parseUnits(debouncedTypedAmount, tokenOutDecimals)
-        if (amountOutBigInt <= 0n) return null
-
-        if (!uniswapProvider.getQuoteExactOutput) {
-          throw new Error('Exact output quotes not supported')
-        }
-
-        const result = await withTimeout(
-          uniswapProvider.getQuoteExactOutput({
-            tokenIn: tokens[tokenIn].address,
-            tokenOut: tokens[tokenOut].address,
-            amountOut: amountOutBigInt,
-            tokenInDecimals,
-            tokenOutDecimals,
-            feeTier: selectedFeeTier ?? undefined,
-          }),
-          QUOTE_TIMEOUT_MS,
-          'Quote request timed out.',
-        )
-
-        if (result.error) throw new Error(result.error)
-        if (!result.feeTier || !result.amountInRaw) throw new Error('Invalid quote response')
-
-        return {
-          amountOut: amountOutBigInt,
-          amountIn: BigInt(result.amountInRaw),
-          gasEstimate: result.gasEstimate ? BigInt(result.gasEstimate) : 0n,
-          feeTier: result.feeTier,
-          timestamp: Date.now(),
-        } as QuoteResult
+      const quoteContext = getQuoteFetchContext({
+        tokenIn,
+        tokenOut,
+        tokens,
+        selectedFeeTier,
+        isMultihopSwap,
+      })
+      if (!quoteContext) {
+        return null
       }
 
-      // exactIn: User specified input amount, get expected output
-      const amountInBigInt = parseUnits(debouncedTypedAmount, tokenInDecimals)
-      if (amountInBigInt <= 0n) return null
+      const parsedAmount =
+        mode === 'exactOut'
+          ? parseUnits(debouncedTypedAmount, quoteContext.tokenOutDecimals)
+          : parseUnits(debouncedTypedAmount, quoteContext.tokenInDecimals)
+      if (parsedAmount <= 0n) {
+        return null
+      }
 
-      const result = await withTimeout(
-        uniswapProvider.getQuote({
-          tokenIn: tokens[tokenIn].address,
-          tokenOut: tokens[tokenOut].address,
-          amountIn: amountInBigInt,
-          tokenInDecimals,
-          tokenOutDecimals,
-          feeTier: selectedFeeTier ?? undefined,
-        }),
-        QUOTE_TIMEOUT_MS,
-        'Quote request timed out.',
-      )
+      const quoteResponse =
+        mode === 'exactOut'
+          ? await withTimeout(
+              uniswapProvider.getQuoteExactOutput?.({
+                tokenIn: quoteContext.tokenInAddress,
+                tokenOut: quoteContext.tokenOutAddress,
+                amountOut: parsedAmount,
+                tokenInDecimals: quoteContext.tokenInDecimals,
+                tokenOutDecimals: quoteContext.tokenOutDecimals,
+                feeTier: quoteContext.selectedFeeTier ?? undefined,
+              }) ?? Promise.reject(new Error('Exact output quotes not supported')),
+              QUOTE_TIMEOUT_MS,
+              'Quote request timed out.',
+            )
+          : await withTimeout(
+              uniswapProvider.getQuote({
+                tokenIn: quoteContext.tokenInAddress,
+                tokenOut: quoteContext.tokenOutAddress,
+                amountIn: parsedAmount,
+                tokenInDecimals: quoteContext.tokenInDecimals,
+                tokenOutDecimals: quoteContext.tokenOutDecimals,
+                feeTier: quoteContext.selectedFeeTier ?? undefined,
+              }),
+              QUOTE_TIMEOUT_MS,
+              'Quote request timed out.',
+            )
 
-      if (result.error) throw new Error(result.error)
-      if (!result.feeTier) throw new Error('Invalid quote response')
-
-      return {
-        amountOut: BigInt(result.amountOutRaw),
-        gasEstimate: result.gasEstimate ? BigInt(result.gasEstimate) : 0n,
-        feeTier: result.feeTier,
-        timestamp: Date.now(),
-      } as QuoteResult
+      return normalizeQuoteResult({
+        mode,
+        quoteResponse,
+        amount: parsedAmount,
+      })
     },
     enabled: !!debouncedTypedAmount && !!tokens[tokenIn].decimals && !!tokens[tokenOut].decimals,
     staleTime: 30_000,
@@ -167,10 +255,13 @@ export const useSwapInput = () => {
 
   // Update pool fee in store when quote arrives (used for swap execution)
   useEffect(() => {
-    if (quote?.feeTier) {
+    if (quote?.hopFees?.length) {
+      // `poolFee` remains a single value in store, so multihop uses the first hop fee.
+      setPoolFee(quote.hopFees[0])
+    } else if (quote?.feeTier !== undefined) {
       setPoolFee(quote.feeTier)
     }
-  }, [quote?.feeTier, setPoolFee])
+  }, [quote?.feeTier, quote?.hopFees, setPoolFee])
 
   // The actual fee tier from the latest quote (may differ from selectedFeeTier when in auto mode)
   const activeFeeTier = quote?.feeTier ?? null
@@ -219,6 +310,7 @@ export const useSwapInput = () => {
     setSelectedFeeTier,
     activeFeeTier,
     availableFeeTiers: availableFeeTiers ?? [],
+    isMultihopSwap,
   }
 }
 
@@ -547,6 +639,7 @@ export const useSwapExecution = () => {
           amountIn: amountInBigInt,
           amountOutMinimum,
           poolFee,
+          hopFees: quote.hopFees,
           recipient: address,
           permit,
           signature: permitSignature,
