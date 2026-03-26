@@ -1,6 +1,6 @@
 {
   "name": "dao-frontend",
-  "version": "1.18.1",
+  "version": "1.19.0",
   "scripts": {
     "prepare": "husky",
     "dev": "NODE_OPTIONS='--enable-source-maps' next dev | pino-pretty",
