@@ -60,6 +60,21 @@ function isLikelyQuoterContractRevert(err: unknown): boolean {
   )
 }
 
+/** User-facing error when an explicitly requested fee tier reverts on-chain (uniform multihop vs single pool). */
+function swapQuoteNoLiquidityExplicitTier(
+  providerName: SwapProvider['name'],
+  feeTier: number,
+  messageSuffix: 'uniform path' | 'fee pool',
+): SwapQuote {
+  return {
+    provider: providerName,
+    amountOut: '0',
+    amountOutRaw: '0',
+    feeTier,
+    error: `No liquidity available in the ${feeTierToPercent(feeTier)}% ${messageSuffix}.`,
+  }
+}
+
 /**
  * Type predicate to validate and narrow the quote result type
  * Result should be: [amountOut: bigint, sqrtPriceX96After: bigint, initializedTicksCrossed: number, gasEstimate: bigint]
@@ -529,13 +544,7 @@ async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
           throw err
         }
         if (isLikelyQuoterContractRevert(err)) {
-          return {
-            provider: providerName,
-            amountOut: '0',
-            amountOutRaw: '0',
-            feeTier: params.feeTier,
-            error: `No liquidity available in the ${feeTierToPercent(params.feeTier)}% uniform path.`,
-          }
+          return swapQuoteNoLiquidityExplicitTier(providerName, params.feeTier, 'uniform path')
         }
         throw err
       }
@@ -559,13 +568,7 @@ async function getUniswapQuote(params: QuoteParams): Promise<SwapQuote> {
         throw err
       }
       if (isLikelyQuoterContractRevert(err)) {
-        return {
-          provider: providerName,
-          amountOut: '0',
-          amountOutRaw: '0',
-          feeTier: params.feeTier,
-          error: `No liquidity available in the ${feeTierToPercent(params.feeTier)}% fee pool.`,
-        }
+        return swapQuoteNoLiquidityExplicitTier(providerName, params.feeTier, 'fee pool')
       }
       throw err
     }
@@ -605,13 +608,7 @@ async function getUniswapExactOutputQuote(params: QuoteExactOutputParams): Promi
           throw err
         }
         if (isLikelyQuoterContractRevert(err)) {
-          return {
-            provider: providerName,
-            amountOut: '0',
-            amountOutRaw: '0',
-            feeTier: params.feeTier,
-            error: `No liquidity available in the ${feeTierToPercent(params.feeTier)}% uniform path.`,
-          }
+          return swapQuoteNoLiquidityExplicitTier(providerName, params.feeTier, 'uniform path')
         }
         throw err
       }
@@ -635,13 +632,7 @@ async function getUniswapExactOutputQuote(params: QuoteExactOutputParams): Promi
         throw err
       }
       if (isLikelyQuoterContractRevert(err)) {
-        return {
-          provider: providerName,
-          amountOut: '0',
-          amountOutRaw: '0',
-          feeTier: params.feeTier,
-          error: `No liquidity available in the ${feeTierToPercent(params.feeTier)}% fee pool.`,
-        }
+        return swapQuoteNoLiquidityExplicitTier(providerName, params.feeTier, 'fee pool')
       }
       throw err
     }
