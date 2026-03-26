@@ -17,7 +17,7 @@ export const useGrantWhitelistedUserRole = (account: Address | null) => {
     () => ({
       ...permissionsManager,
       functionName: 'grantRole' as const,
-      args: [WHITELISTED_USER_ROLE as `0x${string}`, target] as const,
+      args: [WHITELISTED_USER_ROLE, target] as const,
     }),
     [target],
   )
