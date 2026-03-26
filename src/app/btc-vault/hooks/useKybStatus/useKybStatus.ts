@@ -1,26 +1,28 @@
 'use client'
 
-import { useState } from 'react'
+import { useWhitelistCheck } from '@/app/btc-vault/hooks/useWhitelistCheck'
 
 import type { KybStatus, UseKybStatusResult } from '../../types/kyb'
 
-const MOCK_REJECTION_REASON = 'Document verification could not be completed.'
-
 /**
  * KYB status hook for BTC Vault eligibility banners.
- * Mock: default status is 'none' (No KYB). Reload resets.
- * Replace with real API (e.g. GET /api/kyb/status) later without changing UI contract.
+ * Derives status from the on-chain whitelist check (PermissionsManager.hasRole).
+ * Whitelisted users are treated as KYB-passed; non-whitelisted users see the KYB banner.
+ *
+ * TODO: Once the off-chain KYB process is defined, replace this on-chain check with the
+ * real KYB API (e.g. GET /api/kyb/status) and create a new banner to reflect the actual
+ * KYB lifecycle (none → pending → rejected → passed).
  *
  * @returns UseKybStatusResult — status, rejectionReason
  */
 export function useKybStatus(): UseKybStatusResult {
-  const [submitCount] = useState(0)
+  const { isWhitelisted, isLoading } = useWhitelistCheck()
 
-  const status: KybStatus = submitCount === 0 ? 'none' : submitCount === 1 ? 'rejected' : 'passed'
-  const rejectionReason = status === 'rejected' ? MOCK_REJECTION_REASON : undefined
-
-  return {
-    status,
-    rejectionReason,
+  if (isLoading) {
+    return { status: 'none' }
   }
+
+  const status: KybStatus = isWhitelisted ? 'passed' : 'none'
+
+  return { status }
 }
