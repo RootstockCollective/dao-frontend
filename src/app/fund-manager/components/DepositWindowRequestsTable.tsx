@@ -54,23 +54,19 @@ export const DepositWindowRequestsTable = () => {
   useEffect(() => {
     dispatch({ type: 'SET_COLUMNS', payload: DEFAULT_HEADERS })
     dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: 'date', direction: 'desc' } })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     dispatch({ type: 'SET_ROWS', payload: rowData })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rowData])
+  }, [dispatch, rowData])
 
   useEffect(() => {
     dispatch({ type: 'SET_LOADING', payload: isLoading })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading])
+  }, [dispatch, isLoading])
 
   useEffect(() => {
     dispatch({ type: 'SET_ERROR', payload: error ? error.message : null })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [error])
+  }, [dispatch, error])
 
   return (
     <div className="w-full flex flex-col gap-8 md:gap-10">
@@ -78,7 +74,7 @@ export const DepositWindowRequestsTable = () => {
         DEPOSIT WINDOW REQUESTS
       </Header>
 
-      <DesktopDepositWindowRequests />
+      <DesktopDepositWindowRequests isLoading={isLoading} />
 
       <TablePager
         key={pagerKey}

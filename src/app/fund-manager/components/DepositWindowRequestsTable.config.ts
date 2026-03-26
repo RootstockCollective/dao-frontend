@@ -69,7 +69,7 @@ export interface DepositWindowCellDataMap {
   fiatAmount: string | null
   tokenSymbol: string
   user: string
-  requestType: string
+  requestType: 'deposit' | 'withdrawal'
   timestamp: number
 }
 

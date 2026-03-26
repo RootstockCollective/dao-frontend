@@ -6,6 +6,7 @@ import { RequestStatusBadge } from '@/app/btc-vault/request-history/components/R
 import { ArrowDownWFill } from '@/components/Icons/v3design/ArrowDownWFill'
 import { ArrowsUpDown } from '@/components/Icons/v3design/ArrowsUpDown'
 import { ArrowUpWFill } from '@/components/Icons/v3design/ArrowUpWFill'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
 import { TokenImage } from '@/components/TokenImage'
 import { Label, Paragraph, Span } from '@/components/Typography'
@@ -247,7 +248,12 @@ DepositWindowDataRow.displayName = 'DepositWindowDataRow'
 
 // ─── Desktop Table ───────────────────────────────────────────────────
 
-export const DesktopDepositWindowRequests = memo(() => {
+interface DesktopDepositWindowRequestsProps {
+  /** From React Query — used so the first paint does not show empty-state before table context effects run. */
+  isLoading: boolean
+}
+
+export const DesktopDepositWindowRequests = memo(({ isLoading }: DesktopDepositWindowRequestsProps) => {
   const { rows, error } = useTableContext<ColumnId, DepositWindowCellDataMap>()
 
   if (error) {
@@ -261,6 +267,16 @@ export const DesktopDepositWindowRequests = memo(() => {
   }
 
   if (rows.length === 0) {
+    if (isLoading) {
+      return (
+        <div
+          className="w-full bg-v3-bg-accent-80 flex grow p-8 min-h-[180px] items-center justify-center"
+          data-testid="deposit-window-loading"
+        >
+          <LoadingSpinner />
+        </div>
+      )
+    }
     return (
       <div className="w-full bg-v3-bg-accent-80 flex grow p-8 items-center justify-center">
         <Paragraph className="text-v3-text-secondary" data-testid="no-deposit-window-requests">

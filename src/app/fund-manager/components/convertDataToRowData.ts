@@ -1,6 +1,7 @@
 import type { Address } from 'viem'
 
 import type { RequestType } from '@/app/btc-vault/services/types'
+import { formatDateMonthFirst } from '@/app/btc-vault/services/ui/formatters'
 import { getTxHistoryStatusLabel } from '@/app/btc-vault/services/ui/mappers'
 import type { DisplayStatus } from '@/app/btc-vault/services/ui/types'
 import type { BtcVaultEntityHistoryRow } from '@/app/fund-manager/hooks/useGetBtcVaultEntitiesHistory'
@@ -13,16 +14,9 @@ import type { ColumnId, DepositWindowCellDataMap } from './DepositWindowRequests
 
 const DEFAULT_DISPLAY_STATUS: DisplayStatus = 'pending'
 
-function formatDate(timestampInSeconds: number): string {
-  return new Date(timestampInSeconds * 1000).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  })
-}
-
 function getRequestType(action: string): RequestType {
-  return action.includes('DEPOSIT') ? 'deposit' : 'withdrawal'
+  const normalizedAction = action.toUpperCase()
+  return normalizedAction.includes('DEPOSIT') ? 'deposit' : 'withdrawal'
 }
 
 /**
@@ -47,13 +41,13 @@ export function convertDataToRowData(
     const amountFormatted = formatCurrency(amount, { showCurrencySymbol: false })
     const fiatAmount = rbtcPrice > 0 ? formatCurrency(amount.mul(rbtcPrice)) : null
 
-    const displayStatus = (item.displayStatus ?? DEFAULT_DISPLAY_STATUS) as DisplayStatus
+    const displayStatus = item.displayStatus ?? DEFAULT_DISPLAY_STATUS
     const displayStatusLabel = getTxHistoryStatusLabel(displayStatus, requestType)
 
     return {
       id: item.id,
       data: {
-        date: formatDate(item.timestamp),
+        date: formatDateMonthFirst(item.timestamp),
         investor: shortUserAddress,
         entity: shortUserAddress,
         type: typeLabel,

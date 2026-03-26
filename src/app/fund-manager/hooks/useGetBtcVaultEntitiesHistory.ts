@@ -1,21 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 
+import type { BtcVaultHistoryItemWithStatus } from '@/app/api/btc-vault/v1/history/types'
 import type { PaginationResponse } from '@/app/api/utils/types'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { getBtcVaultHistoryEndpoint } from '@/lib/endpoints'
 
-export interface BtcVaultEntityHistoryRow {
-  id: string
-  user: string
-  action: string
-  assets: string
-  shares: string
-  epochId: string
-  timestamp: number
-  blockNumber: string
-  transactionHash: string
-  displayStatus?: string
-}
+/** GET /api/btc-vault/v1/history row shape (`displayStatus` matches `BtcVaultHistoryDisplayStatus`). */
+export type BtcVaultEntityHistoryRow = BtcVaultHistoryItemWithStatus
 
 interface BtcVaultEntitiesHistoryResponse {
   data: BtcVaultEntityHistoryRow[]
@@ -32,9 +23,12 @@ interface UseGetBtcVaultEntitiesHistoryParams {
   sortDirection?: 'asc' | 'desc'
   type?: Array<
     | 'deposit_request'
+    | 'deposit_claimable'
     | 'deposit_claimed'
     | 'deposit_cancelled'
     | 'redeem_request'
+    | 'redeem_claimable'
+    | 'redeem_accepted'
     | 'redeem_claimed'
     | 'redeem_cancelled'
   >
@@ -55,8 +49,13 @@ async function fetchBtcVaultEntitiesHistory(
 
   type.forEach(value => searchParams.append('type', value))
 
-  const response = await fetch(`${getBtcVaultHistoryEndpoint}?${searchParams}`, { signal })
-  if (!response.ok) throw new Error('Failed to fetch BTC vault history')
+  const url = `${getBtcVaultHistoryEndpoint}?${searchParams}`
+  const response = await fetch(url, { signal })
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch BTC vault history (status: ${response.status} ${response.statusText}, url: ${url})`,
+    )
+  }
 
   const data = (await response.json()) as BtcVaultEntitiesHistoryResponse
   return data
