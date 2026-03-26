@@ -344,6 +344,47 @@ export const TX_MESSAGES = {
       loading: false,
     },
   },
+  btcVaultDeWhitelist: {
+    pending: {
+      title: 'De-whitelist in process',
+      content: 'Waiting for transaction confirmation...',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Address de-whitelisted',
+      content: 'The whitelist role was revoked successfully.',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'De-whitelist failed',
+      content: 'An unexpected error occurred while revoking the whitelist role. Please try again later.',
+      severity: 'error',
+      loading: false,
+    },
+  },
+  btcVaultWhitelistGrant: {
+    pending: {
+      title: 'Whitelist in process',
+      content: 'Waiting for transaction confirmation...',
+      severity: 'info',
+      loading: true,
+    },
+    success: {
+      title: 'Address whitelisted',
+      content: 'The whitelist role was granted successfully.',
+      severity: 'success',
+      loading: false,
+    },
+    error: {
+      title: 'Whitelist failed',
+      content:
+        'An unexpected error occurred while granting the whitelist role. Please try again later. If the issue persists, contact support for assistance.',
+      severity: 'error',
+      loading: false,
+    },
+  },
   swap: {
     pending: {
       title: 'Swap in process',
