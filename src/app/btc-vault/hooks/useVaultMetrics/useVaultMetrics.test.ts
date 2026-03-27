@@ -77,25 +77,31 @@ describe('useVaultMetrics', () => {
   it('computes APY from epoch snapshots', () => {
     const tvl = 100n * ONE_ETHER
     const totalSupply = 80n * ONE_ETHER
-    // currentEpoch = 5 → lastEpochId = 4, prevEpochId = 3
-    mockedUseReadContracts
-      .mockReturnValueOnce({
-        data: [{ result: tvl }, { result: totalSupply }, { result: 5n }],
-        isLoading: false,
-        error: null,
-        refetch: refetchStub,
-      })
-      .mockReturnValueOnce({
-        data: [
-          // epoch 4: closedAt=1000, assetsAtClose=110e18, supplyAtClose=100e18 → price=1.1
-          { status: 'success', result: [1000n, 110n * ONE_ETHER, 100n * ONE_ETHER, 0n] },
-          // epoch 3: closedAt=500, assetsAtClose=100e18, supplyAtClose=100e18 → price=1.0
-          { status: 'success', result: [500n, 100n * ONE_ETHER, 100n * ONE_ETHER, 0n] },
-        ],
-        isLoading: false,
-        error: null,
-        refetch: refetchStub,
-      })
+    const phase1Result = {
+      data: [{ result: tvl }, { result: totalSupply }, { result: 5n }],
+      isLoading: false,
+      error: null,
+      refetch: refetchStub,
+    }
+    const oneWeek = 604800n
+    const phase2Result = {
+      data: [
+        // epoch 4: 1 week later, 0.1% growth → price=1.001
+        { status: 'success', result: [oneWeek * 2n, 1001n * ONE_ETHER, 1000n * ONE_ETHER, 0n] },
+        // epoch 3: base epoch → price=1.0
+        { status: 'success', result: [oneWeek, 1000n * ONE_ETHER, 1000n * ONE_ETHER, 0n] },
+      ],
+      isLoading: false,
+      error: null,
+      refetch: refetchStub,
+    }
+    // useReadContracts is called twice per render (phase 1 + phase 2).
+    // Distinguish by contracts array length: phase 1 = 3, phase 2 = 0 or 2.
+    mockedUseReadContracts.mockImplementation(({ contracts }: { contracts: unknown[] }) => {
+      if (contracts.length === 3) return phase1Result
+      if (contracts.length === 2) return phase2Result
+      return defaultPhase2
+    })
 
     const { result } = renderHook(() => useVaultMetrics())
 
