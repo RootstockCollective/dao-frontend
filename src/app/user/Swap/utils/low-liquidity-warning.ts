@@ -10,18 +10,39 @@ export const LOW_LIQUIDITY_WARNING_MESSAGE =
   'Warning: there is not enough liquidity to swap the full amount. Please double check you are happy with the amounts shown prior to swapping.'
 
 /**
- * Returns true when the user would lose more than 5% of their input (output < 95% of input).
- * E.g. in=100: out=94.99 → show; out=95.01 → don't show.
- * Requires both amounts present and positive to avoid flashing during loading or empty state.
+ * Returns true when effective output value is more than ~5% below input value.
  *
- * @param amountIn - Input amount (user-typed in exactIn, from quote in exactOut)
- * @param amountOut - Output amount (from quote in exactIn, user-typed in exactOut)
- * @returns true if amountOut < 95% of amountIn (i.e. loss > 5%)
+ * When **both** `priceInUsd` and `priceOutUsd` are defined and &gt; 0, compares
+ * **USD notionals** (same logic as the fiat line under each field). Use this for
+ * arbitrary pairs (e.g. RIF → USDRIF): raw token amounts are not comparable.
+ *
+ * Otherwise falls back to comparing **human amounts only** — only meaningful for
+ * ~1:1 stable-style pairs (legacy USDT0 ↔ USDRIF behaviour when prices are missing).
+ *
+ * @param amountIn - Human-readable input amount
+ * @param amountOut - Human-readable quoted output amount
+ * @param priceInUsd - Optional USD price per 1 unit of token in (from balances context)
+ * @param priceOutUsd - Optional USD price per 1 unit of token out
  */
-export function shouldShowLowLiquidityWarning(amountIn: string, amountOut: string): boolean {
+export function shouldShowLowLiquidityWarning(
+  amountIn: string,
+  amountOut: string,
+  priceInUsd?: number,
+  priceOutUsd?: number,
+): boolean {
   if (!amountIn || !amountOut) return false
   const inVal = new Big(amountIn)
   const outVal = new Big(amountOut)
   if (!inVal.gt(0)) return false
+
+  const useUsd = priceInUsd !== undefined && priceOutUsd !== undefined && priceInUsd > 0 && priceOutUsd > 0
+
+  if (useUsd) {
+    const usdIn = inVal.times(priceInUsd)
+    const usdOut = outVal.times(priceOutUsd)
+    if (!usdIn.gt(0)) return false
+    return usdOut.lt(usdIn.times(MIN_OUTPUT_FRACTION))
+  }
+
   return outVal.lt(inVal.times(MIN_OUTPUT_FRACTION))
 }

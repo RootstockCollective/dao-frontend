@@ -281,8 +281,8 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   )
 
   const showLowLiquidityWarning = useMemo(
-    () => shouldShowLowLiquidityWarning(amountIn ?? '', amountOut ?? ''),
-    [amountIn, amountOut],
+    () => shouldShowLowLiquidityWarning(amountIn ?? '', amountOut ?? '', tokenInPrice, tokenOutPrice),
+    [amountIn, amountOut, tokenInPrice, tokenOutPrice],
   )
 
   /** In Auto mode, show actual routing fees (per-hop if the winning combo is mixed). */

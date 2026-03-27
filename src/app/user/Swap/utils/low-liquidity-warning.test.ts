@@ -29,6 +29,18 @@ describe('low-liquidity-warning', () => {
       expect(shouldShowLowLiquidityWarning('1000', '951')).toBe(false)
     })
 
+    it('uses USD notionals when both prices are set (cross-asset, e.g. RIF → USDRIF)', () => {
+      const rifPrice = 0.0369
+      const usdrifPrice = 1
+      // 100 RIF @ $0.0369 ≈ $3.69; 3.69 USDRIF @ $1 ≈ $3.69 → fair, no warning (not 3.69 < 100×0.95)
+      expect(shouldShowLowLiquidityWarning('100', '3.69', rifPrice, usdrifPrice)).toBe(false)
+      // Output value >5% below input value
+      expect(shouldShowLowLiquidityWarning('100', '3.0', rifPrice, usdrifPrice)).toBe(true)
+      // Edge: exactly 95% of USD in
+      expect(shouldShowLowLiquidityWarning('100', '3.5055', rifPrice, usdrifPrice)).toBe(false)
+      expect(shouldShowLowLiquidityWarning('100', '3.5054', rifPrice, usdrifPrice)).toBe(true)
+    })
+
     it('should return false for empty or missing amounts', () => {
       expect(shouldShowLowLiquidityWarning('', '10')).toBe(false)
       expect(shouldShowLowLiquidityWarning('100', '')).toBe(false)
