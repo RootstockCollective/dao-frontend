@@ -31,6 +31,18 @@ describe('resolveSwapRoute', () => {
     expect(isMultihopRoute(route)).toBe(false)
   })
 
+  it('returns a direct path for USDT0 to RIF (stablecoin leg, not USDRIF↔RIF bridge)', () => {
+    const route = resolveSwapRoute(usdt0, rif)
+    expect(route.tokens).toEqual([usdt0, rif])
+    expect(isMultihopRoute(route)).toBe(false)
+  })
+
+  it('returns a direct path for USDRIF to USDT0', () => {
+    const route = resolveSwapRoute(usdrif, usdt0)
+    expect(route.tokens).toEqual([usdrif, usdt0])
+    expect(isMultihopRoute(route)).toBe(false)
+  })
+
   it('returns a direct path for unknown pairs (no bridge table)', () => {
     const a = '0x0000000000000000000000000000000000000001' as const
     const b = '0x0000000000000000000000000000000000000002' as const
