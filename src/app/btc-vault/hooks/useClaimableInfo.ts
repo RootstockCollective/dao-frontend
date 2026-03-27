@@ -11,9 +11,9 @@ import type { ClaimableInfo, VaultRequest } from '../services/types'
 const WEI_PER_ETHER = 10n ** 18n
 
 /**
- * Fetches ClaimableInfo from the contract for a claimable deposit request.
- * Reads claimableDepositRequest + epochSnapshot to derive lockedSharePrice (NAV per share).
- * Returns null for non-deposit, non-claimable, or missing epochId requests.
+ * Fetches ClaimableInfo from the contract for a claimable request (deposit or withdrawal).
+ * Reads the appropriate claimable function + epochSnapshot to derive lockedSharePrice (NAV per share).
+ * Returns null for non-claimable requests or when epoch data is unavailable.
  */
 export function useClaimableInfo(
   request: VaultRequest | null,
@@ -21,40 +21,49 @@ export function useClaimableInfo(
 ): ClaimableInfo | null {
   const isClaimableDeposit =
     request?.type === 'deposit' && request.status === 'claimable' && !!request.epochId
-  const epochId = isClaimableDeposit ? BigInt(request.epochId!) : 0n
+  const isClaimableWithdrawal =
+    request?.type === 'withdrawal' && request.status === 'claimable' && !!request.batchRedeemId
+  const isClaimable = isClaimableDeposit || isClaimableWithdrawal
+
+  const snapshotId = isClaimableDeposit
+    ? BigInt(request!.epochId!)
+    : isClaimableWithdrawal
+      ? BigInt(request!.batchRedeemId!)
+      : 0n
 
   const contracts = useMemo(() => {
-    if (!isClaimableDeposit || !address) return []
+    if (!isClaimable || !address) return []
+    const claimFn = isClaimableDeposit ? 'claimableDepositRequest' : 'claimableRedeemRequest'
     const list: Array<
       typeof rbtcVault & { functionName: string; args: readonly [Address] | readonly [bigint] }
     > = [
       {
         ...rbtcVault,
-        functionName: 'claimableDepositRequest' as const,
+        functionName: claimFn,
         args: [address as Address],
       },
       {
         ...rbtcVault,
         functionName: 'epochSnapshot' as const,
-        args: [epochId],
+        args: [snapshotId],
       },
     ]
     return list
-  }, [isClaimableDeposit, address, epochId])
+  }, [isClaimable, isClaimableDeposit, address, snapshotId])
 
   const { data: rawData } = useReadContracts({
     contracts,
-    query: { enabled: isClaimableDeposit && !!address },
+    query: { enabled: isClaimable && !!address },
   })
 
   // SAFETY: narrow type to avoid wagmi's "excessively deep" instantiation in useMemo deps
   const data = rawData as readonly { status: string; result?: unknown }[] | undefined
 
   return useMemo(() => {
-    if (!isClaimableDeposit || !data || data.length < 2) return null
+    if (!isClaimable || !data || data.length < 2) return null
 
-    const claimableAssets = (data[0]?.status === 'success' ? data[0].result : 0n) as bigint
-    if (claimableAssets === 0n) return null
+    const claimableAmount = (data[0]?.status === 'success' ? data[0].result : 0n) as bigint
+    if (claimableAmount === 0n) return null
 
     if (data[1]?.status !== 'success') return null
     const snap = data[1].result as readonly [bigint, bigint, bigint, bigint]
@@ -65,5 +74,5 @@ export function useClaimableInfo(
 
     if (navPerShare === 0n) return null
     return { claimable: true, lockedSharePrice: navPerShare }
-  }, [isClaimableDeposit, data])
+  }, [isClaimable, data])
 }
