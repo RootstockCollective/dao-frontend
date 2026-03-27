@@ -286,18 +286,22 @@ export function toActiveRequestDisplay(
   rbtcPrice: number,
 ): ActiveRequestDisplay {
   const lastUpdated = req.timestamps.updated ?? req.timestamps.created
+  const isTerminal = req.status === 'done' || req.status === 'cancelled' || req.status === 'failed'
+  const hasSharePrice = claimableInfo?.lockedSharePrice != null && claimableInfo.lockedSharePrice > 0n
+
   const sharesFormatted =
     req.type === 'withdrawal'
       ? formatEther(req.amount)
-      : claimableInfo?.lockedSharePrice && claimableInfo.lockedSharePrice > 0n
-        ? formatEther((req.amount * WEI_PER_ETHER) / claimableInfo.lockedSharePrice)
+      : hasSharePrice
+        ? formatEther((req.amount * WEI_PER_ETHER) / claimableInfo!.lockedSharePrice)
         : '—'
 
-  // For withdrawals, amount is shares — rBTC value is only known post-settlement
+  // For withdrawals, amount is shares — rBTC value is only known post-settlement.
+  // Terminal requests (done/cancelled/failed) fall back to the raw amount.
   const amountFormatted =
-    req.type === 'withdrawal' && claimableInfo?.lockedSharePrice && claimableInfo.lockedSharePrice > 0n
-      ? formatEther((req.amount * claimableInfo.lockedSharePrice) / WEI_PER_ETHER)
-      : req.type === 'withdrawal'
+    req.type === 'withdrawal' && hasSharePrice
+      ? formatEther((req.amount * claimableInfo!.lockedSharePrice) / WEI_PER_ETHER)
+      : req.type === 'withdrawal' && !isTerminal
         ? '—'
         : formatEther(req.amount)
 
