@@ -292,7 +292,16 @@ export function toActiveRequestDisplay(
       : claimableInfo?.lockedSharePrice && claimableInfo.lockedSharePrice > 0n
         ? formatEther((req.amount * WEI_PER_ETHER) / claimableInfo.lockedSharePrice)
         : '—'
-  const amountNumber = Number(formatEther(req.amount))
+
+  // For withdrawals, amount is shares — rBTC value is only known post-settlement
+  const amountFormatted =
+    req.type === 'withdrawal' && claimableInfo?.lockedSharePrice && claimableInfo.lockedSharePrice > 0n
+      ? formatEther((req.amount * claimableInfo.lockedSharePrice) / WEI_PER_ETHER)
+      : req.type === 'withdrawal'
+        ? '—'
+        : formatEther(req.amount)
+
+  const amountNumber = amountFormatted !== '—' ? Number(amountFormatted) : 0
   const usdEquivalentFormatted =
     rbtcPrice > 0 && amountNumber > 0 ? formatCurrencyWithLabel(Big(amountNumber).mul(rbtcPrice)) : null
   return {

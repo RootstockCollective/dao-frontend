@@ -480,6 +480,41 @@ describe('toActiveRequestDisplay', () => {
     const claimableInfo = { claimable: true, lockedSharePrice: 1_000_000_000_000_000_000n }
     expect(toActiveRequestDisplay(depositReq, claimableInfo, 0).sharesFormatted).toBe('2')
   })
+
+  it('pending withdrawal shows "—" for amountFormatted (rBTC unknown pre-settlement)', () => {
+    const req = {
+      id: 'w1',
+      type: 'withdrawal' as const,
+      amount: 3_500_000_000_000_000_000n, // 3.5 shares
+      status: 'pending' as const,
+      epochId: null,
+      batchRedeemId: '1',
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    const result = toActiveRequestDisplay(req, null, 50000)
+    expect(result.amountFormatted).toBe('—')
+    expect(result.usdEquivalentFormatted).toBeNull()
+    expect(result.sharesFormatted).toBe('3.5')
+  })
+
+  it('claimable withdrawal shows computed rBTC value from lockedSharePrice', () => {
+    const req = {
+      id: 'w2',
+      type: 'withdrawal' as const,
+      amount: 2_000_000_000_000_000_000n, // 2 shares
+      status: 'claimable' as const,
+      epochId: null,
+      batchRedeemId: '2',
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    // lockedSharePrice = 1.5 rBTC per share → 2 shares = 3 rBTC
+    const claimableInfo = { claimable: true, lockedSharePrice: 1_500_000_000_000_000_000n }
+    const result = toActiveRequestDisplay(req, claimableInfo, 0)
+    expect(result.amountFormatted).toBe('3')
+    expect(result.sharesFormatted).toBe('2')
+  })
 })
 
 describe('mapRequestDisplayStatus', () => {
