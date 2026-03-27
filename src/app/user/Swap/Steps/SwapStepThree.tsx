@@ -95,8 +95,8 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
   )
 
   const showLowLiquidityWarning = useMemo(
-    () => shouldShowLowLiquidityWarning(amountIn ?? '', amountOut ?? ''),
-    [amountIn, amountOut],
+    () => shouldShowLowLiquidityWarning(amountIn ?? '', amountOut ?? '', tokenInPrice, tokenOutPrice),
+    [amountIn, amountOut, tokenInPrice, tokenOutPrice],
   )
 
   const handleConfirmSwap = useCallback(() => {
