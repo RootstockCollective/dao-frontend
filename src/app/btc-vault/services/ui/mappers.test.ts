@@ -69,7 +69,7 @@ describe('toVaultMetricsDisplay', () => {
   it('formats raw metrics', () => {
     const result = toVaultMetricsDisplay({
       tvl: 50_000_000_000_000_000_000n,
-      apy: 85_000_000n,
+      apy: 0.085,
       pricePerShare: 1_020_000_000_000_000_000n,
       timestamp: 1700000000,
     })
