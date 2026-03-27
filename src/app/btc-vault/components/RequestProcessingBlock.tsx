@@ -61,19 +61,27 @@ export function RequestProcessingBlock({ request, className, ...props }: Request
             {getAmountLabel(request.type)}
           </Label>
           <div className="flex flex-col">
-            <div className="flex items-center gap-1">
-              <Span variant="body-l" className="text-100 overflow-hidden text-ellipsis">
-                {request.amountFormatted}
-              </Span>
-              <TokenImage symbol={RBTC} size={16} />
+            {request.amountFormatted === '—' ? (
               <Span variant="body-l" className="text-100">
-                {RBTC}
+                —
               </Span>
-            </div>
-            {request.usdEquivalentFormatted && (
-              <Span variant="body-xs" bold className="text-bg-0">
-                {request.usdEquivalentFormatted}
-              </Span>
+            ) : (
+              <>
+                <div className="flex items-center gap-1">
+                  <Span variant="body-l" className="text-100 overflow-hidden text-ellipsis">
+                    {request.amountFormatted}
+                  </Span>
+                  <TokenImage symbol={RBTC} size={16} />
+                  <Span variant="body-l" className="text-100">
+                    {RBTC}
+                  </Span>
+                </div>
+                {request.usdEquivalentFormatted && (
+                  <Span variant="body-xs" bold className="text-bg-0">
+                    {request.usdEquivalentFormatted}
+                  </Span>
+                )}
+              </>
             )}
           </div>
         </div>
