@@ -10,11 +10,11 @@ import {
 } from './formatters'
 
 describe('formatApyPercent', () => {
-  it('formats 8.5% APY from basis points', () => {
-    expect(formatApyPercent(85_000_000n)).toBe('8.50')
+  it('formats 8.5% APY from decimal', () => {
+    expect(formatApyPercent(0.085)).toBe('8.50')
   })
   it('formats 0% APY', () => {
-    expect(formatApyPercent(0n)).toBe('0.00')
+    expect(formatApyPercent(0)).toBe('0.00')
   })
 })
 

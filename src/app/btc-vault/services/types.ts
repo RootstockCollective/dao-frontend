@@ -10,8 +10,8 @@ export interface VaultMetrics {
   /** Total Value Locked — aggregate rBTC held by the vault. Wei, 18 decimals. */
   tvl: bigint
 
-  /** Annual Percentage Yield. Basis points where `VAULT_BASIS_POINTS = 1e9 = 100%`. */
-  apy: bigint
+  /** Annual Percentage Yield as a decimal (e.g. 0.085 for 8.5%). Derived from consecutive epoch snapshots. */
+  apy: number
 
   /** Price per share — current price of one vault token in rBTC terms: (totalAssets * 1e18) / totalSupply. Wei, 18 decimals. */
   pricePerShare: bigint
