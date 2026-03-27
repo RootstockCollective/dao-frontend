@@ -11,9 +11,11 @@ import type { ClaimableInfo, VaultRequest } from '../services/types'
 const WEI_PER_ETHER = 10n ** 18n
 
 /**
- * Fetches ClaimableInfo from the contract for a claimable request (deposit or withdrawal).
- * Reads the appropriate claimable function + epochSnapshot to derive lockedSharePrice (NAV per share).
- * Returns null for non-claimable requests or when epoch data is unavailable.
+ * Fetches ClaimableInfo from the contract for a claimable or terminal deposit/withdrawal request.
+ * For claimable requests: reads the claimable function + epochSnapshot to derive lockedSharePrice.
+ * For terminal deposits (done/cancelled/failed): reads only epochSnapshot so the detail page
+ * can still display the shares count.
+ * Returns null for pending requests or when epoch data is unavailable.
  */
 export function useClaimableInfo(
   request: VaultRequest | null,
@@ -25,14 +27,35 @@ export function useClaimableInfo(
     request?.type === 'withdrawal' && request.status === 'claimable' && !!request.batchRedeemId
   const isClaimable = isClaimableDeposit || isClaimableWithdrawal
 
+  const isTerminalDeposit =
+    request?.type === 'deposit' &&
+    (request.status === 'done' || request.status === 'cancelled' || request.status === 'failed') &&
+    !!request.epochId
+
   const snapshotId = isClaimableDeposit
     ? BigInt(request!.epochId!)
     : isClaimableWithdrawal
       ? BigInt(request!.batchRedeemId!)
-      : 0n
+      : isTerminalDeposit
+        ? BigInt(request!.epochId!)
+        : 0n
+
+  const enabled = (isClaimable || isTerminalDeposit) && !!address
 
   const contracts = useMemo(() => {
-    if (!isClaimable || !address) return []
+    if (!enabled) return []
+
+    if (isTerminalDeposit && !isClaimable) {
+      // Terminal deposits: only need epochSnapshot (claimable amount is 0 post-claim)
+      return [
+        {
+          ...rbtcVault,
+          functionName: 'epochSnapshot' as const,
+          args: [snapshotId] as readonly [bigint],
+        },
+      ]
+    }
+
     const claimFn = isClaimableDeposit ? 'claimableDepositRequest' : 'claimableRedeemRequest'
     const list: Array<
       typeof rbtcVault & { functionName: string; args: readonly [Address] | readonly [bigint] }
@@ -49,18 +72,33 @@ export function useClaimableInfo(
       },
     ]
     return list
-  }, [isClaimable, isClaimableDeposit, address, snapshotId])
+  }, [enabled, isClaimable, isClaimableDeposit, isTerminalDeposit, address, snapshotId])
 
   const { data: rawData } = useReadContracts({
     contracts,
-    query: { enabled: isClaimable && !!address },
+    query: { enabled },
   })
 
   // SAFETY: narrow type to avoid wagmi's "excessively deep" instantiation in useMemo deps
   const data = rawData as readonly { status: string; result?: unknown }[] | undefined
 
   return useMemo(() => {
-    if (!isClaimable || !data || data.length < 2) return null
+    if (!enabled || !data || data.length === 0) return null
+
+    // Terminal deposits: single contract call (epochSnapshot only)
+    if (isTerminalDeposit && !isClaimable) {
+      if (data[0]?.status !== 'success') return null
+      const snap = data[0].result as readonly [bigint, bigint, bigint, bigint]
+      const assetsAtClose = snap[1]
+      const supplyAtClose = snap[2]
+      const navPerShare =
+        supplyAtClose + 1n > 0n ? ((assetsAtClose + 1n) * WEI_PER_ETHER) / (supplyAtClose + 1n) : 0n
+      if (navPerShare === 0n) return null
+      return { claimable: false, lockedSharePrice: navPerShare }
+    }
+
+    // Claimable requests: two contract calls (claimable amount + epochSnapshot)
+    if (data.length < 2) return null
 
     const claimableAmount = (data[0]?.status === 'success' ? data[0].result : 0n) as bigint
     if (claimableAmount === 0n) return null
@@ -74,5 +112,5 @@ export function useClaimableInfo(
 
     if (navPerShare === 0n) return null
     return { claimable: true, lockedSharePrice: navPerShare }
-  }, [isClaimable, data])
+  }, [enabled, isClaimable, isTerminalDeposit, data])
 }
