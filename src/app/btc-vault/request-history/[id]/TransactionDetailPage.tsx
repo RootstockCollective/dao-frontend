@@ -10,6 +10,7 @@ import { executeTxFlow } from '@/shared/notification'
 
 import { useBtcVaultInvalidation } from '../../hooks/useBtcVaultInvalidation'
 import { useCancelBtcVaultRequest } from '../../hooks/useCancelRequest'
+import { useClaimableInfo } from '../../hooks/useClaimableInfo'
 import { useClaimRequest } from '../../hooks/useClaimRequest'
 import { useRequestById } from '../../hooks/useRequestById'
 import { toRequestDetailDisplay } from '../../services/ui/mappers'
@@ -21,7 +22,9 @@ interface TransactionDetailPageProps {
 
 export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
   const { address, isConnected } = useAccount()
-  const { data: request, isLoading, isError } = useRequestById(id, address ?? undefined)
+  const { data: requestData, isLoading, isError } = useRequestById(id, address ?? undefined)
+  const request = requestData?.request ?? null
+  const claimableInfo = useClaimableInfo(request, address)
   const { prices } = usePricesContext()
   const rbtcPrice = prices[RBTC]?.price ?? 0
   const { isModalOpened, openModal, closeModal } = useModal()
@@ -46,7 +49,7 @@ export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
     return <TransactionDetailOops variant="not-found" />
   }
 
-  const detail = toRequestDetailDisplay(request, null, rbtcPrice, address)
+  const detail = toRequestDetailDisplay(request, claimableInfo, rbtcPrice, address)
   const isClaimPending = isClaiming || isClaimTxPending
 
   const BACKEND_INDEX_DELAY_MS = 3000

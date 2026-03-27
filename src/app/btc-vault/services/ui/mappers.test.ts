@@ -463,6 +463,22 @@ describe('toActiveRequestDisplay', () => {
     }
     expect(toActiveRequestDisplay(withdrawalReq, null, 0).sharesFormatted).toBe('3.5')
   })
+
+  it('claimable deposit shows computed shares from lockedSharePrice', () => {
+    const depositReq = {
+      id: 'd1',
+      type: 'deposit' as const,
+      amount: 2_000_000_000_000_000_000n, // 2 rBTC
+      status: 'claimable' as const,
+      epochId: '1',
+      batchRedeemId: null,
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    // lockedSharePrice = 1 rBTC per share → 2 rBTC deposit = 2 shares
+    const claimableInfo = { claimable: true, lockedSharePrice: 1_000_000_000_000_000_000n }
+    expect(toActiveRequestDisplay(depositReq, claimableInfo, 0).sharesFormatted).toBe('2')
+  })
 })
 
 describe('mapRequestDisplayStatus', () => {
@@ -1025,7 +1041,7 @@ describe('apiHistoryToPaginatedDisplay', () => {
 
 describe('mapApiItemToVaultRequest', () => {
   it('maps wire approved redeem row to domain pending status and preserves displayStatus', () => {
-    const req = mapApiItemToVaultRequest({
+    const { request: req } = mapApiItemToVaultRequest({
       id: 'x',
       user: '0xabc',
       action: 'REDEEM_REQUEST',
@@ -1043,7 +1059,7 @@ describe('mapApiItemToVaultRequest', () => {
   })
 
   it('maps wire claim_pending redeem row to domain claimable and preserves displayStatus', () => {
-    const req = mapApiItemToVaultRequest({
+    const { request: req } = mapApiItemToVaultRequest({
       id: 'y',
       user: '0xabc',
       action: 'REDEEM_REQUEST',
