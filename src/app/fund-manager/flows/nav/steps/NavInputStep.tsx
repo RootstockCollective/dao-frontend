@@ -1,11 +1,11 @@
 'use client'
 
+import Image from 'next/image'
 import { useCallback, useEffect } from 'react'
 
 import { TokenImage } from '@/components/TokenImage'
 import { Label, Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
-import { formatNumberWithCommas } from '@/lib/utils'
 import { executeTxFlow } from '@/shared/notification'
 
 import { SimpleAmountInputSection } from '../../../components/SimpleAmountInputSection'
@@ -15,15 +15,16 @@ import { useUpdateNavContext } from '../UpdateNavContext'
 
 export const NavInputStep = ({ onCloseModal, setButtonActions }: FlowStepProps) => {
   const {
-    navAmount,
-    usdEquivalent,
+    reportedOffchainAmount,
     isValidAmount,
     errorMessage,
     currentNav,
-    effectiveOnDisplay,
+    navUpdateReview,
+    currentReportedOffchain,
     reportedOffchainWei,
+    reportedOffchainWarnings,
     vaultReadsLoading,
-    handleNavAmountChange,
+    handleReportedOffchainAmountChange,
     refetchNav,
   } = useUpdateNavContext()
 
@@ -61,27 +62,25 @@ export const NavInputStep = ({ onCloseModal, setButtonActions }: FlowStepProps) 
     vaultReadsLoading,
   ])
 
-  const currentNavAmountDisplay = formatNumberWithCommas(currentNav.amount)
+  const currentNavAmountDisplay = currentNav.amount
+  const currentReportedDisplay = currentReportedOffchain.amount
+
+  const navAfterAmountDisplay = navUpdateReview?.navAfterDisplay ?? null
+  const navDeltaAmountDisplay = navUpdateReview?.navDeltaDisplay ?? null
 
   return (
     <div className="flex flex-col gap-8">
       <SimpleAmountInputSection
-        title="Enter new NAV"
-        amount={navAmount}
-        onAmountChange={handleNavAmountChange}
-        usdEquivalent={usdEquivalent}
+        title="New reported off-chain"
+        amount={reportedOffchainAmount}
+        onAmountChange={handleReportedOffchainAmountChange}
+        usdEquivalent={navUpdateReview?.reportedNewFiatDisplay ?? ''}
         errorMessage={errorMessage}
         tokenSymbol={RBTC}
       />
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-2 gap-y-6 w-full">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-2 gap-y-6 w-full">
         <div className="flex flex-col gap-0.5">
-          <Label variant="tag" className="text-bg-0">
-            Effective on
-          </Label>
-          <Span>{effectiveOnDisplay}</Span>
-        </div>
-        <div className="flex flex-col gap-0.5 sm:col-span-2">
           <Label variant="tag" className="text-bg-0">
             Current NAV
           </Label>
@@ -100,7 +99,97 @@ export const NavInputStep = ({ onCloseModal, setButtonActions }: FlowStepProps) 
             </Label>
           )}
         </div>
+
+        <div className="flex flex-col gap-0.5">
+          <Label variant="tag" className="text-bg-0">
+            Current reported off-chain
+          </Label>
+          <div className="flex flex-wrap items-center gap-2">
+            <Span>{currentReportedDisplay}</Span>
+            <div className="flex items-center gap-0.5 shrink-0 py-px rounded-sm">
+              <TokenImage symbol={RBTC} size={16} />
+              <Label variant="body-s" bold>
+                {RBTC}
+              </Label>
+            </div>
+          </div>
+          {currentReportedOffchain.fiatAmount && (
+            <Label variant="tag-s" className="text-bg-0">
+              {currentReportedOffchain.fiatAmount}
+            </Label>
+          )}
+        </div>
+
+        {navUpdateReview && (
+          <>
+            <div className="flex flex-col gap-0.5">
+              <Label variant="tag" className="text-bg-0">
+                Estimated NAV after update
+              </Label>
+              <div className="flex flex-wrap items-center gap-2">
+                <Span>{navAfterAmountDisplay}</Span>
+                <div className="flex items-center gap-0.5 shrink-0 py-px rounded-sm">
+                  <TokenImage symbol={RBTC} size={16} />
+                  <Label variant="body-s" bold>
+                    {RBTC}
+                  </Label>
+                </div>
+              </div>
+              {navUpdateReview.navAfterFiatDisplay && (
+                <Label variant="tag-s" className="text-bg-0">
+                  {navUpdateReview.navAfterFiatDisplay}
+                </Label>
+              )}
+            </div>
+
+            <div className="flex flex-col gap-0.5">
+              <Label variant="tag" className="text-bg-0">
+                NAV change
+              </Label>
+              <div className="flex flex-wrap items-center gap-2">
+                <Span>
+                  {navDeltaAmountDisplay} {RBTC}
+                  {navUpdateReview.navDeltaPctDisplay
+                    ? ` (${navUpdateReview.navDeltaPctDisplay} vs current NAV)`
+                    : navUpdateReview.navBeforeWei === 0n
+                      ? ' (percentage N/A when prior NAV was zero)'
+                      : ''}
+                </Span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-0.5 col-span-full">
+              <Label variant="tag" className="text-bg-0">
+                Reported off-chain change
+              </Label>
+              <div className="flex flex-wrap items-center gap-2">
+                <Span>
+                  {navUpdateReview.reportedDeltaDisplay} {RBTC}
+                </Span>
+              </div>
+            </div>
+          </>
+        )}
       </div>
+
+      {reportedOffchainWarnings.length > 0 && (
+        <div className="flex flex-col gap-2" data-testid="reported-offchain-warnings">
+          {reportedOffchainWarnings.map(warning => (
+            <div key={warning} className="flex items-start gap-2 py-3 px-4 rounded-sm bg-st-info/20">
+              <Image
+                src="/images/warning-icon.svg"
+                alt="Warning"
+                width={24}
+                height={24}
+                className="shrink-0 mt-0.5"
+              />
+              <Label variant="body-s" className="text-st-info wrap-break-word">
+                {warning}
+              </Label>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
