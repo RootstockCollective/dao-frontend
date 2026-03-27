@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
 
-import { USDT0, USDRIF } from '@/lib/constants'
+import { RIF, USDT0, USDRIF } from '@/lib/constants'
 
 import { useSwapSmartDefault } from './useSwapSmartDefault'
 
@@ -28,6 +28,7 @@ const mockBalancesContext = {
   balances: {
     [USDT0]: { balance: '0' },
     [USDRIF]: { balance: '100' },
+    [RIF]: { balance: '0' },
   },
   isBalancesLoading: false,
   prices: {},
@@ -44,6 +45,7 @@ describe('useSwapSmartDefault', () => {
     mockBalancesContext.balances = {
       [USDT0]: { balance: '0' },
       [USDRIF]: { balance: '100' },
+      [RIF]: { balance: '0' },
     }
   })
 
@@ -52,7 +54,7 @@ describe('useSwapSmartDefault', () => {
 
     renderHook(() => useSwapSmartDefault())
 
-    expect(mockGetSmartDefault).toHaveBeenCalledWith('0', '100')
+    expect(mockGetSmartDefault).toHaveBeenCalledWith('0', '100', '0')
     expect(mockSetTokenIn).toHaveBeenCalledWith(USDRIF)
     expect(mockSetTokenOut).toHaveBeenCalledWith(USDT0)
   })
@@ -99,6 +101,6 @@ describe('useSwapSmartDefault', () => {
 
     renderHook(() => useSwapSmartDefault())
 
-    expect(mockGetSmartDefault).toHaveBeenCalledWith('0', '0')
+    expect(mockGetSmartDefault).toHaveBeenCalledWith('0', '0', '0')
   })
 })

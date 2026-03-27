@@ -276,6 +276,8 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     return ` (${hops.map(t => `${feeTierToPercent(t)}%`).join(' → ')} per hop)`
   }, [selectedFeeTier, activeFeeTier, quote?.hopFees])
 
+  const isMultihopRoute = useMemo(() => Boolean(quote?.hopFees && quote.hopFees.length > 1), [quote?.hopFees])
+
   return (
     <>
       <div className="flex flex-col gap-4">
@@ -311,6 +313,14 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
                 Pool fee
                 {poolFeeAutoHint}
               </Label>
+              {isMultihopRoute && (
+                <span
+                  className="text-text-50 text-xs font-normal max-w-[220px] text-right leading-snug"
+                  data-testid="swap-route-bridge-hint"
+                >
+                  Route includes USDT0
+                </span>
+              )}
               <PercentageButtons
                 options={feeTierOptions}
                 value={selectedFeeTier === null ? AUTO_FEE_TIER : String(selectedFeeTier)}
