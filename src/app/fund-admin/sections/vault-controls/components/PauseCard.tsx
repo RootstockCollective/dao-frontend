@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/Button'
 import { ExclamationCircleIcon } from '@/components/Icons/ExclamationCircleIcon'
+import { TransactionInProgressButton } from '@/components/StepActionButtons'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
@@ -19,7 +20,7 @@ export function PauseCard({ title, description, isPaused, onPause, isRequesting,
   const isBusy = isRequesting || isTxPending
 
   const actionLabel = isPaused ? 'Resume' : 'Pause'
-  const buttonLabel = isTxPending ? 'In progress...' : isRequesting ? 'Requesting...' : actionLabel
+  const buttonLabel = isRequesting ? 'Requesting...' : actionLabel
 
   return (
     <div className="flex flex-col flex-1 bg-bg-80 rounded-sm p-6 justify-between gap-4">
@@ -49,9 +50,13 @@ export function PauseCard({ title, description, isPaused, onPause, isRequesting,
         )}
       </div>
       <div className="flex justify-start">
-        <Button variant="secondary-outline" disabled={isBusy} onClick={handleClick}>
-          {buttonLabel}
-        </Button>
+        {isTxPending ? (
+          <TransactionInProgressButton />
+        ) : (
+          <Button variant="secondary-outline" disabled={isBusy} onClick={handleClick}>
+            {buttonLabel}
+          </Button>
+        )}
       </div>
     </div>
   )
