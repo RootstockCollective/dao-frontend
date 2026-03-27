@@ -88,14 +88,15 @@ describe('useRequestById', () => {
 
     const data = result.current.data!
     expect(data).not.toBeNull()
-    expect(data.id).toBe('0xuser1-epoch-1')
-    expect(data.type).toBe('deposit')
-    expect(data.amount).toBe(1000000000000000000n)
-    expect(data.status).toBe('pending')
-    expect(data.epochId).toBe('1')
-    expect(data.batchRedeemId).toBeNull()
-    expect(data.timestamps).toEqual({ created: 1700000000, updated: 1700000000 })
-    expect(data.txHashes.submit).toBe('0x' + 'a'.repeat(64))
+    expect(data.request.id).toBe('0xuser1-epoch-1')
+    expect(data.request.type).toBe('deposit')
+    expect(data.request.amount).toBe(1000000000000000000n)
+    expect(data.request.status).toBe('pending')
+    expect(data.request.epochId).toBe('1')
+    expect(data.request.batchRedeemId).toBeNull()
+    expect(data.request.timestamps).toEqual({ created: 1700000000, updated: 1700000000 })
+    expect(data.request.txHashes.submit).toBe('0x' + 'a'.repeat(64))
+    expect(data.claimableInfo).toBeNull()
   })
 
   it('returns null when item is not found in history response', async () => {

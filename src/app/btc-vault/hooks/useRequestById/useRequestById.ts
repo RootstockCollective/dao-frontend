@@ -1,11 +1,16 @@
 import { useQuery } from '@tanstack/react-query'
 
-import type { VaultRequest } from '../../services/types'
+import type { ClaimableInfo, VaultRequest } from '../../services/types'
 import type { BtcVaultHistoryApiResponse } from '../../services/ui/api-types'
 import { mapApiItemToVaultRequest } from '../../services/ui/mappers'
 
 const HISTORY_API_PATH = '/api/btc-vault/v1/history'
 const REQUEST_BY_ID_LIMIT = 200
+
+interface RequestByIdResult {
+  request: VaultRequest
+  claimableInfo: ClaimableInfo | null
+}
 
 /**
  * Fetches a single vault request by id from the history API.
@@ -14,12 +19,12 @@ const REQUEST_BY_ID_LIMIT = 200
  *
  * @param id - Request id (e.g. from route params)
  * @param address - Connected wallet address; required to fetch user's history
- * @returns React Query result with data: VaultRequest | null (null if not found in first page)
+ * @returns React Query result with data: { request, claimableInfo } | null (null if not found in first page)
  */
 export function useRequestById(id: string | undefined, address: string | undefined) {
   return useQuery({
     queryKey: ['btc-vault', 'request', id, address],
-    queryFn: async (): Promise<VaultRequest | null> => {
+    queryFn: async (): Promise<RequestByIdResult | null> => {
       if (!id || !address) throw new Error('id and address are required')
       const params = new URLSearchParams({
         address,
