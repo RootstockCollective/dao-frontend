@@ -1,3 +1,5 @@
+import Big from '@/lib/big'
+
 import { SECONDS_PER_YEAR } from './constants'
 
 /**
@@ -17,4 +19,40 @@ export function growthFactorToApy(growthFactor: number, periodSeconds: number): 
   }
   const periodsPerYear = SECONDS_PER_YEAR / periodSeconds
   return Math.exp(periodsPerYear * Math.log(growthPerPeriod)) - 1
+}
+
+export interface EpochSnapshot {
+  closedAt: bigint
+  assetsAtClose: bigint
+  supplyAtClose: bigint
+}
+
+/**
+ * Computes an indicative APY from two consecutive epoch snapshots.
+ *
+ * Share price per spec: sharePrice(n) = epochTotalAssets[n] / epochTotalSupply[n]
+ * (i.e. assetsAtClose / supplyAtClose). APY = (priceNew / priceOld)^(SECONDS_PER_YEAR / elapsed) − 1.
+ *
+ * @returns APY as a decimal (e.g. 0.05 for 5%), or null when not computable.
+ */
+export function computeIndicativeApy(
+  currentEpoch: EpochSnapshot | null,
+  prevEpoch: EpochSnapshot | null,
+): number | null {
+  if (!currentEpoch || !prevEpoch) return null
+  if (currentEpoch.supplyAtClose === 0n || prevEpoch.supplyAtClose === 0n) return null
+
+  const elapsed = currentEpoch.closedAt - prevEpoch.closedAt
+  if (elapsed <= 0n) return null
+
+  const sharePriceNow = Big(currentEpoch.assetsAtClose.toString()).div(currentEpoch.supplyAtClose.toString())
+  const sharePricePrev = Big(prevEpoch.assetsAtClose.toString()).div(prevEpoch.supplyAtClose.toString())
+
+  if (sharePricePrev.eq(0)) return null
+
+  const priceRatio = Number(sharePriceNow.div(sharePricePrev).toString())
+  const apy = growthFactorToApy(priceRatio, Number(elapsed))
+
+  if (!Number.isFinite(apy)) return null
+  return apy
 }

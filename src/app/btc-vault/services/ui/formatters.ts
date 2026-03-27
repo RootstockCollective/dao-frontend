@@ -1,15 +1,12 @@
 import { DateTime } from 'luxon'
 
-const VAULT_BASIS_POINTS = 1_000_000_000n // 1e9 = 100%
-
 /**
- * Converts vault basis points (1e9 = 100%) to a percentage string with 2 decimal places.
- * @param basisPoints - APY in vault basis points
+ * Converts an APY decimal value to a percentage string with 2 decimal places.
+ * @param apy - APY as a decimal (e.g. 0.085 for 8.5%)
  * @returns Formatted percentage string (e.g. "8.50")
  */
-export function formatApyPercent(basisPoints: bigint): string {
-  const percent = Number((basisPoints * 10000n) / VAULT_BASIS_POINTS) / 100
-  return percent.toFixed(2)
+export function formatApyPercent(apy: number): string {
+  return (apy * 100).toFixed(2)
 }
 
 /**
