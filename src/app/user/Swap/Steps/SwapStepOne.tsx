@@ -7,10 +7,16 @@ import { PercentageButtonItem, PercentageButtons } from '@/components/Percentage
 import { SwapInputComponent, SwapInputToken } from '@/components/SwapInput'
 import { Label } from '@/components/Typography'
 import Big from '@/lib/big'
-import { feeTierToPercent, UNISWAP_FEE_TIERS } from '@/lib/swap/constants'
+import { feeTierToPercent, SWAP_FLOW_TOKEN_SYMBOLS, UNISWAP_FEE_TIERS } from '@/lib/swap/constants'
 import { formatForDisplay, handleAmountInput } from '@/lib/utils'
 import { useExecuteTxFlow } from '@/shared/notification'
-import { useSwapInput, useTokenAllowance, useTokenSelection } from '@/shared/stores/swap'
+import {
+  type SwapTokenSymbol,
+  useSwapInput,
+  useSwapTokens,
+  useTokenAllowance,
+  useTokenSelection,
+} from '@/shared/stores/swap'
 
 import { SwapStepWarning } from '../components/SwapStepWarning'
 import { SwapStepProps } from '../types'
@@ -45,7 +51,9 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     activeFeeTier,
     availableFeeTiers,
   } = useSwapInput()
-  const { tokenIn, tokenOut, tokenInData, tokenOutData, toggleTokenSelection } = useTokenSelection()
+  const { tokenIn, tokenOut, tokenInData, tokenOutData, setTokenIn, setTokenOut, toggleTokenSelection } =
+    useTokenSelection()
+  const { tokens: swapTokenMeta } = useSwapTokens()
   const { balances, prices } = useBalancesContext()
   const { execute: executeTxFlow, isExecuting: isApproving } = useExecuteTxFlow()
   const { allowance, hasSufficientAllowance, approve, refetchAllowance, isCheckingAllowance } =
@@ -59,6 +67,35 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   const tokenOutBalance = balances[tokenOut]?.balance ?? '0'
   const tokenInPrice = prices[tokenIn]?.price ?? 0
   const tokenOutPrice = prices[tokenOut]?.price ?? 0
+
+  const selectableSwapTokens: SwapInputToken[] = useMemo(
+    () =>
+      SWAP_FLOW_TOKEN_SYMBOLS.map(symbol => {
+        const t = swapTokenMeta[symbol]
+        return {
+          symbol: t.symbol,
+          address: t.address,
+          name: t.name,
+          decimals: t.decimals,
+          price: prices[symbol]?.price ?? undefined,
+        }
+      }),
+    [swapTokenMeta, prices],
+  )
+
+  const handleTokenInChange = useCallback(
+    (token: SwapInputToken) => {
+      setTokenIn(token.symbol as SwapTokenSymbol)
+    },
+    [setTokenIn],
+  )
+
+  const handleTokenOutChange = useCallback(
+    (token: SwapInputToken) => {
+      setTokenOut(token.symbol as SwapTokenSymbol)
+    },
+    [setTokenOut],
+  )
 
   // Display values: typed field shows raw, derived field shows formatted (2 decimals)
   // When empty, return '' so the placeholder "0" shows
@@ -220,20 +257,6 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     })
   }, [availableFeeTiers])
 
-  // Prepare tokens for SwapInputComponent
-  const tokens: SwapInputToken[] = useMemo(
-    () => [
-      {
-        symbol: tokenInData.symbol,
-        address: tokenInData.address,
-        name: tokenInData.name,
-        decimals: tokenInData.decimals,
-        price: tokenInPrice || undefined,
-      },
-    ],
-    [tokenInData, tokenInPrice],
-  )
-
   const selectedToken: SwapInputToken = useMemo(
     () => ({
       symbol: tokenInData.symbol,
@@ -284,9 +307,9 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
         {/* "Amount to swap" - user can type here to specify exact input */}
         <SwapInputComponent
           ref={inputRef}
-          tokens={tokens}
+          tokens={selectableSwapTokens}
           selectedToken={selectedToken}
-          onTokenChange={() => {}}
+          onTokenChange={handleTokenInChange}
           amount={displayAmountIn}
           onAmountChange={handleAmountChange}
           onFocus={handleInputFocus}
@@ -351,9 +374,9 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
 
         {/* "You will receive" - user can also type here to specify exact output */}
         <SwapInputComponent
-          tokens={[outputToken]}
+          tokens={selectableSwapTokens}
           selectedToken={outputToken}
-          onTokenChange={() => {}}
+          onTokenChange={handleTokenOutChange}
           amount={displayAmountOut}
           onAmountChange={handleAmountOutChange}
           onFocus={handleOutputFocus}

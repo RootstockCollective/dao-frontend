@@ -1,8 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 
-import { RIF, USDRIF } from '@/lib/constants'
-import { useSwapInput, useTokenAllowance, useTokenSelection } from '@/shared/stores/swap'
+import { RIF, USDRIF, USDT0 } from '@/lib/constants'
+import {
+  useSwapInput,
+  useTokenAllowance,
+  useTokenSelection,
+  useSwapTokens,
+} from '@/shared/stores/swap'
 
 import { SwapStepOne } from './SwapStepOne'
 
@@ -10,7 +15,29 @@ vi.mock('@/shared/stores/swap', () => ({
   useSwapInput: vi.fn(),
   useTokenSelection: vi.fn(),
   useTokenAllowance: vi.fn(),
+  useSwapTokens: vi.fn(),
 }))
+
+const swapTokensRecord = {
+  [USDT0]: {
+    symbol: USDT0,
+    address: '0x779Ded0c9e1022225f8E0630b35a9b54bE713736',
+    name: USDT0,
+    decimals: 6,
+  },
+  [USDRIF]: {
+    symbol: USDRIF,
+    address: '0x3a15461d8ae0f0fb5fa2629e9da7d66a794a6e37',
+    name: USDRIF,
+    decimals: 18,
+  },
+  [RIF]: {
+    symbol: RIF,
+    address: '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5',
+    name: RIF,
+    decimals: 18,
+  },
+} as const
 
 vi.mock('@/app/user/Balances/context/BalancesContext', () => ({
   useBalancesContext: () => ({
@@ -107,6 +134,14 @@ describe('SwapStepOne', () => {
     vi.mocked(useTokenAllowance).mockReturnValue(
       defaultAllowance as ReturnType<typeof useTokenAllowance>,
     )
+    vi.mocked(useSwapTokens).mockReturnValue({
+      tokens: swapTokensRecord,
+    } as ReturnType<typeof useSwapTokens>)
+  })
+
+  it('renders token dropdowns for from/to when the flow exposes multiple assets', () => {
+    renderStepOne()
+    expect(screen.getAllByTestId('dropdown-trigger')).toHaveLength(2)
   })
 
   it('renders one Pool fee / Auto control for multihop RIF↔USDRIF (no second hop picker)', () => {
