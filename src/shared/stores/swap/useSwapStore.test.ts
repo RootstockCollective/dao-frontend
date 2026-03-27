@@ -29,4 +29,37 @@ describe('useSwapStore token selection', () => {
     expect(useSwapStore.getState().tokenIn).toBe(RIF)
     expect(useSwapStore.getState().tokenOut).toBe(USDRIF)
   })
+
+  it('setTokenOut swaps tokenIn when it would match the new tokenOut (RIF collision)', () => {
+    useSwapStore.setState({ tokenIn: RIF, tokenOut: USDRIF })
+    useSwapStore.getState().setTokenOut(RIF)
+    expect(useSwapStore.getState().tokenOut).toBe(RIF)
+    expect(useSwapStore.getState().tokenIn).toBe(USDT0)
+  })
+
+  it('toggleTokens swaps sides and resets selectedFeeTier to Auto', () => {
+    useSwapStore.setState({
+      tokenIn: USDT0,
+      tokenOut: USDRIF,
+      selectedFeeTier: 500,
+      typedAmount: '12.5',
+    })
+    useSwapStore.getState().toggleTokens()
+    const s = useSwapStore.getState()
+    expect(s.tokenIn).toBe(USDRIF)
+    expect(s.tokenOut).toBe(USDT0)
+    expect(s.selectedFeeTier).toBeNull()
+    expect(s.typedAmount).toBe('')
+  })
+
+  it('setTokenIn clears typedAmount and swapError', () => {
+    useSwapStore.setState({
+      typedAmount: '99',
+      swapError: new Error('prior'),
+    })
+    useSwapStore.getState().setTokenIn(USDRIF)
+    const s = useSwapStore.getState()
+    expect(s.typedAmount).toBe('')
+    expect(s.swapError).toBeNull()
+  })
 })
