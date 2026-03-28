@@ -8,8 +8,8 @@ import { Tooltip } from '@/components/Tooltip'
 import { executeTxFlow } from '@/shared/notification'
 
 import { useActionEligibility } from '../hooks/useActionEligibility'
-import { useBtcVaultSharesAllowance } from '../hooks/useBtcVaultSharesAllowance'
 import { useBtcVaultInvalidation } from '../hooks/useBtcVaultInvalidation'
+import { useBtcVaultSharesAllowance } from '../hooks/useBtcVaultSharesAllowance'
 import { useSubmitDeposit } from '../hooks/useSubmitDeposit'
 import { useSubmitWithdrawal } from '../hooks/useSubmitWithdrawal'
 import { REQUEST_SUBMITTING_REASON } from '../services/constants'
@@ -17,7 +17,11 @@ import type { DepositRequestParams } from '../services/types'
 import { BtcDepositModal } from './BtcDepositModal'
 import { BtcWithdrawModal } from './BtcWithdrawModal'
 
-export const BtcVaultActions = () => {
+interface BtcVaultActionsProps {
+  onRequestSubmitted?: () => void
+}
+
+export const BtcVaultActions = ({ onRequestSubmitted }: BtcVaultActionsProps) => {
   const { address } = useAccount()
   const { data: actionEligibility } = useActionEligibility(address)
   const { invalidateAfterSubmit } = useBtcVaultInvalidation()
@@ -73,10 +77,11 @@ export const BtcVaultActions = () => {
         onSuccess: () => {
           setIsDepositModalOpen(false)
           invalidateAfterSubmit()
+          setTimeout(() => onRequestSubmitted?.(), 1000)
         },
       })
     },
-    [onRequestDeposit, invalidateAfterSubmit],
+    [onRequestDeposit, invalidateAfterSubmit, onRequestSubmitted],
   )
 
   const handleApproveWithdrawShares = useCallback(
@@ -100,10 +105,11 @@ export const BtcVaultActions = () => {
         onSuccess: () => {
           setIsWithdrawModalOpen(false)
           invalidateAfterSubmit()
+          setTimeout(() => onRequestSubmitted?.(), 1000)
         },
       })
     },
-    [onRequestRedeem, invalidateAfterSubmit],
+    [onRequestRedeem, invalidateAfterSubmit, onRequestSubmitted],
   )
 
   return (

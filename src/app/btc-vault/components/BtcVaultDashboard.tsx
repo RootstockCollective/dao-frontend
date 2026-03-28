@@ -27,7 +27,11 @@ function metricAmount(isLoading: boolean, isError: boolean, value: string | unde
  * Investor dashboard showing 7 position metrics in two rows.
  * Returns null when wallet is disconnected so the page section renders empty.
  */
-export const BtcVaultDashboard = () => {
+interface BtcVaultDashboardProps {
+  onRequestSubmitted?: () => void
+}
+
+export const BtcVaultDashboard = ({ onRequestSubmitted }: BtcVaultDashboardProps) => {
   const { address, isConnected } = useAccount()
   const { data, isLoading, isError } = useUserPosition(address)
 
@@ -112,7 +116,7 @@ export const BtcVaultDashboard = () => {
       </div>
 
       <div className="mt-10" data-testid="btc-vault-actions">
-        <BtcVaultActions />
+        <BtcVaultActions onRequestSubmitted={onRequestSubmitted} />
       </div>
     </SectionContainer>
   )
