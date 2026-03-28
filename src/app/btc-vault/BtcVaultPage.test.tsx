@@ -77,6 +77,10 @@ vi.mock('./ActiveRequestSection', () => ({
   ActiveRequestSection: () => null,
 }))
 
+vi.mock('./hooks/useActiveRequests', () => ({
+  useActiveRequests: () => ({ data: undefined, refetch: vi.fn() }),
+}))
+
 vi.mock('./components/capital-allocation/CapitalAllocationSection', () => ({
   CapitalAllocationSection: () => null,
 }))
