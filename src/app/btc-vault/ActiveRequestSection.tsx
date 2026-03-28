@@ -1,17 +1,16 @@
 'use client'
 
-import { useAccount } from 'wagmi'
-
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
 
 import { RequestProcessingBlock } from './components/RequestProcessingBlock'
-import { useActiveRequests } from './hooks/useActiveRequests'
+import type { ActiveRequestDisplay } from './services/ui/types'
 
-export function ActiveRequestSection() {
-  const { address } = useAccount()
-  const { data } = useActiveRequests(address)
+interface ActiveRequestSectionProps {
+  data: ActiveRequestDisplay[] | undefined
+}
 
-  if (!address || !data?.length) return null
+export function ActiveRequestSection({ data }: ActiveRequestSectionProps) {
+  if (!data?.length) return null
 
   return (
     <section data-testid="btc-vault-active-request" className="w-full">
