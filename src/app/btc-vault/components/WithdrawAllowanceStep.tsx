@@ -1,8 +1,8 @@
 'use client'
 
 import { useCallback } from 'react'
-import { formatEther } from 'viem'
 
+import { formatSymbol } from '@/app/shared/formatter'
 import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
 import { Button } from '@/components/Button'
 import { Divider } from '@/components/Divider'
@@ -17,6 +17,8 @@ interface WithdrawAllowanceStepProps {
   isAllowanceTxFailed: boolean
   onRequestAllowance: () => Promise<void>
   onBack: () => void
+  /** Human-readable shares (e.g. user input); preferred over dashboard-style formatting for small balances. */
+  sharesDisplayAmount?: string
   allowanceTxHash?: string
 }
 
@@ -24,16 +26,17 @@ export const WithdrawAllowanceStep = ({
   sharesWei,
   isAllowanceReadLoading,
   isApproving,
-  allowanceTxHash,
   isAllowanceTxFailed,
   onRequestAllowance,
   onBack,
+  sharesDisplayAmount,
+  allowanceTxHash,
 }: WithdrawAllowanceStepProps) => {
   const handlePrimary = useCallback(() => {
     void onRequestAllowance()
   }, [onRequestAllowance])
 
-  const sharesLabel = formatEther(sharesWei)
+  const sharesLabel = sharesDisplayAmount ?? formatSymbol(sharesWei, 'ctokenvault')
 
   return (
     <div className="flex-1 flex flex-col" data-testid="WithdrawAllowanceStep">

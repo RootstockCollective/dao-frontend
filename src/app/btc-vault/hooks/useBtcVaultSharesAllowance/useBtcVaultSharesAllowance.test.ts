@@ -2,8 +2,12 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { describe, expect, it, vi, beforeEach } from 'vitest'
 
 import { rbtcVault } from '@/lib/contracts'
+import { VAULT_SHARE_MULTIPLIER, WeiPerEther } from '@/lib/constants'
 
 import { useBtcVaultSharesAllowance } from './useBtcVaultSharesAllowance'
+
+const FIVE_SHARES_RAW = 5n * WeiPerEther * VAULT_SHARE_MULTIPLIER
+const TWO_SHARES_RAW = 2n * WeiPerEther * VAULT_SHARE_MULTIPLIER
 
 const mockRefetch = vi.fn()
 const mockWriteContractAsync = vi.fn()
@@ -11,7 +15,7 @@ const mockWriteContractAsync = vi.fn()
 vi.mock('wagmi', () => ({
   useAccount: () => ({ address: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa' }),
   useReadContract: () => ({
-    data: 5_000_000_000_000_000_000n,
+    data: 5_000_000_000_000_000_000_000_000n,
     refetch: mockRefetch,
     isLoading: false,
     isFetching: false,
@@ -30,7 +34,7 @@ vi.mock('@/shared/hooks/useTransactionStatus', () => ({
 describe('useBtcVaultSharesAllowance', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockRefetch.mockResolvedValue({ data: 5_000_000_000_000_000_000n, status: 'success' })
+    mockRefetch.mockResolvedValue({ data: FIVE_SHARES_RAW, status: 'success' })
     mockWriteContractAsync.mockResolvedValue('0xabc' as `0x${string}`)
   })
 
@@ -54,7 +58,7 @@ describe('useBtcVaultSharesAllowance', () => {
 
   it('requestApproveShares uses vault as ERC-20 token and spender', async () => {
     const { result } = renderHook(() => useBtcVaultSharesAllowance())
-    const shares = 2_000_000_000_000_000_000n
+    const shares = TWO_SHARES_RAW
     await result.current.requestApproveShares(shares)
 
     await waitFor(() => {

@@ -1,6 +1,8 @@
 import { renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { VAULT_SHARE_MULTIPLIER } from '@/lib/constants'
+
 import { useActiveRequests } from './useActiveRequests'
 
 const mockUseReadContracts = vi.fn()
@@ -21,6 +23,7 @@ vi.mock('@/shared/context/PricesContext', () => ({
 
 const ADDRESS = '0x1234567890123456789012345678901234567890'
 const ONE_ETHER = 10n ** 18n
+const ONE_SHARE_RAW = ONE_ETHER * VAULT_SHARE_MULTIPLIER
 
 function phase1Result(deposit: readonly [bigint, bigint], redeem: readonly [bigint, bigint]) {
   return {
@@ -86,7 +89,7 @@ describe('useActiveRequests', () => {
           phase2Result([
             { status: 'success', result: assets },
             { status: 'success', result: 0n },
-            snapshotResult(100n * ONE_ETHER, 50n * ONE_ETHER),
+            snapshotResult(100n * ONE_ETHER, 50n * ONE_SHARE_RAW),
           ]),
         )
 
@@ -103,7 +106,7 @@ describe('useActiveRequests', () => {
       const epochId = 1n
       const assets = ONE_ETHER
       const assetsAtClose = 100n * ONE_ETHER
-      const supplyAtClose = 50n * ONE_ETHER
+      const supplyAtClose = 50n * ONE_SHARE_RAW
       mockUseReadContracts
         .mockReturnValueOnce(phase1Result([epochId, assets], [0n, 0n]))
         .mockReturnValueOnce(
@@ -127,14 +130,14 @@ describe('useActiveRequests', () => {
   describe('redeem request', () => {
     it('returns one display with status pending when redeem is pending', () => {
       const epochId = 2n
-      const shares = 2n * ONE_ETHER
+      const shares = 2n * ONE_SHARE_RAW
       mockUseReadContracts
         .mockReturnValueOnce(phase1Result([0n, 0n], [epochId, shares]))
         .mockReturnValueOnce(
           phase2Result([
             { status: 'success', result: shares },
             { status: 'success', result: 0n },
-            snapshotResult(200n * ONE_ETHER, 100n * ONE_ETHER),
+            snapshotResult(200n * ONE_ETHER, 100n * ONE_SHARE_RAW),
           ]),
         )
 
@@ -150,14 +153,16 @@ describe('useActiveRequests', () => {
 
     it('returns one display with status claimable when redeem is claimable', () => {
       const epochId = 2n
-      const shares = 2n * ONE_ETHER
+      const shares = 2n * ONE_SHARE_RAW
+      const assetsAtClose = 200n * ONE_ETHER
+      const supplyAtClose = 100n * ONE_SHARE_RAW
       mockUseReadContracts
         .mockReturnValueOnce(phase1Result([0n, 0n], [epochId, shares]))
         .mockReturnValueOnce(
           phase2Result([
             { status: 'success', result: 0n },
             { status: 'success', result: shares },
-            snapshotResult(200n * ONE_ETHER, 100n * ONE_ETHER),
+            snapshotResult(assetsAtClose, supplyAtClose),
           ]),
         )
 
@@ -175,15 +180,15 @@ describe('useActiveRequests', () => {
       const depEpochId = 1n
       const redEpochId = 2n
       mockUseReadContracts
-        .mockReturnValueOnce(phase1Result([depEpochId, ONE_ETHER], [redEpochId, 3n * ONE_ETHER]))
+        .mockReturnValueOnce(phase1Result([depEpochId, ONE_ETHER], [redEpochId, 3n * ONE_SHARE_RAW]))
         .mockReturnValueOnce(
           phase2Result([
             { status: 'success', result: ONE_ETHER },
             { status: 'success', result: 0n },
-            snapshotResult(100n * ONE_ETHER, 50n * ONE_ETHER),
+            snapshotResult(100n * ONE_ETHER, 50n * ONE_SHARE_RAW),
             { status: 'success', result: 0n },
-            { status: 'success', result: 3n * ONE_ETHER },
-            snapshotResult(200n * ONE_ETHER, 100n * ONE_ETHER),
+            { status: 'success', result: 3n * ONE_SHARE_RAW },
+            snapshotResult(200n * ONE_ETHER, 100n * ONE_SHARE_RAW),
           ]),
         )
 

@@ -1,10 +1,13 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { useState } from 'react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { RBTC } from '@/lib/constants'
+import { RBTC, VAULT_SHARE_MULTIPLIER, WeiPerEther } from '@/lib/constants'
 
 import { WithdrawAmountStep } from './WithdrawAmountStep'
+
+const FIVE_SHARES_RAW = 5n * WeiPerEther * VAULT_SHARE_MULTIPLIER
 
 vi.mock('@/shared/hooks/useIsDesktop', () => ({
   useIsDesktop: () => true,
@@ -17,8 +20,8 @@ vi.mock('@/shared/context', () => ({
 const defaultProps = {
   amount: '',
   setAmount: vi.fn(),
-  vaultTokensFormatted: '5.0',
-  vaultTokensRaw: 5_000_000_000_000_000_000n,
+  vaultTokensFormatted: '5.00',
+  vaultTokensRaw: FIVE_SHARES_RAW,
   rbtcEquivalent: '0',
   withdrawalFee: '0',
   onNext: vi.fn(),
@@ -40,7 +43,7 @@ describe('WithdrawAmountStep', () => {
   it('shows shares balance', () => {
     render(<WithdrawAmountStep {...defaultProps} />)
 
-    expect(screen.getByTestId('SharesBalanceLabel')).toHaveTextContent('Shares balance: 5.0')
+    expect(screen.getByTestId('SharesBalanceLabel')).toHaveTextContent('Shares balance: 5.00')
   })
 
   it('shows rBTC equivalent in metrics when amount is set', () => {
@@ -91,6 +94,47 @@ describe('WithdrawAmountStep', () => {
 
     await user.click(screen.getByTestId('50Button'))
     expect(setAmount).toHaveBeenCalledWith('2.5')
+  })
+
+  /** Raw balance where naive division + input rounding up caused "over balance" on Max (24 vs 18 decimals). */
+  const EDGE_SHARES_RAW = 124008768643060800082n
+
+  it('floors percentage amounts to 18 decimals so Max does not exceed vaultTokensRaw', async () => {
+    const user = userEvent.setup()
+    const setAmount = vi.fn()
+    render(
+      <WithdrawAmountStep
+        {...defaultProps}
+        setAmount={setAmount}
+        vaultTokensRaw={EDGE_SHARES_RAW}
+        vaultTokensFormatted="0.00012400876864306"
+      />,
+    )
+
+    await user.click(screen.getByTestId('MaxButton'))
+    expect(setAmount).toHaveBeenCalledWith('0.00012400876864306')
+  })
+
+  it('does not show over-balance error after Max with edge-case raw balance', async () => {
+    const user = userEvent.setup()
+
+    const Harness = () => {
+      const [amount, setAmount] = useState('')
+      return (
+        <WithdrawAmountStep
+          {...defaultProps}
+          amount={amount}
+          setAmount={setAmount}
+          vaultTokensRaw={EDGE_SHARES_RAW}
+          vaultTokensFormatted="0.00012400876864306"
+        />
+      )
+    }
+
+    render(<Harness />)
+    await user.click(screen.getByTestId('MaxButton'))
+    expect(screen.queryByTestId('ErrorText')).not.toBeInTheDocument()
+    expect(screen.getByTestId('ContinueButton')).not.toBeDisabled()
   })
 
   it('shows the disclaimer text', () => {

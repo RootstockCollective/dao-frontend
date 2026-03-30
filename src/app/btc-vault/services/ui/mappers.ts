@@ -28,6 +28,7 @@ import type {
   VaultRequest,
   WalletBalance,
 } from '../types'
+import { lockedSharePriceFromEpochSnapshot, lockedSharePriceToNavPerHumanShareWei } from '../vaultShareNav'
 import type { BtcVaultHistoryApiResponse, BtcVaultHistoryItemWithStatus } from './api-types'
 import {
   formatApyPercent,
@@ -104,10 +105,11 @@ const REQUEST_STATUS_TO_DISPLAY_RESOLVER = new Map<
  * @returns Display object with formatted TVL, APY, and Price Per Share strings
  */
 export function toVaultMetricsDisplay(raw: VaultMetrics): VaultMetricsDisplay {
+  const pricePerShareHumanWei = lockedSharePriceToNavPerHumanShareWei(raw.pricePerShare)
   return {
     tvlFormatted: formatSymbol(raw.tvl, RBTC),
     apyFormatted: formatApyPercent(raw.apy),
-    pricePerShareFormatted: formatSymbol(raw.pricePerShare, RBTC),
+    pricePerShareFormatted: formatSymbol(pricePerShareHumanWei, RBTC),
     timestamp: raw.timestamp,
     tvlRaw: raw.tvl,
     pricePerShareRaw: raw.pricePerShare,
@@ -158,7 +160,7 @@ export function toUserPositionDisplay(raw: UserPosition, rbtcPrice: number): Use
 
   return {
     rbtcBalanceFormatted: formatSymbol(raw.rbtcBalance, RBTC),
-    vaultTokensFormatted: formatSymbol(raw.vaultTokens, RBTC),
+    vaultTokensFormatted: formatSymbol(raw.vaultTokens, 'ctokenvault'),
     positionValueFormatted: formatSymbol(raw.positionValue, RBTC),
     percentOfVaultFormatted: formatPercent(raw.percentOfVault),
     vaultTokensRaw: raw.vaultTokens,
@@ -286,28 +288,38 @@ export function toActiveRequestDisplay(
   rbtcPrice: number,
 ): ActiveRequestDisplay {
   const lastUpdated = req.timestamps.updated ?? req.timestamps.created
-  const isTerminal = req.status === 'done' || req.status === 'cancelled' || req.status === 'failed'
   const hasSharePrice = claimableInfo?.lockedSharePrice != null && claimableInfo.lockedSharePrice > 0n
 
   const sharesFormatted =
     req.type === 'withdrawal'
-      ? formatEther(req.amount)
+      ? formatSymbol(req.amount, 'ctokenvault')
       : hasSharePrice
-        ? formatEther((req.amount * WEI_PER_ETHER) / claimableInfo!.lockedSharePrice)
+        ? formatSymbol((req.amount * WEI_PER_ETHER) / claimableInfo!.lockedSharePrice, 'ctokenvault')
         : '—'
 
-  // For withdrawals, amount is shares — rBTC value is only known post-settlement.
-  // Terminal requests (done/cancelled/failed) fall back to the raw amount.
+  // Withdrawals: rBTC from epoch snapshot proportion — same as shares × NAV with on-chain rounding:
+  // `(shares * (assetsAtClose+1)) / (supplyAtClose+1)`. `supplyAtClose` must use the same raw share units as `req.amount`.
+  // Fallback to `lockedSharePrice` when snapshot totals are absent (tests / legacy).
+  // Withdrawals without epoch data must show '—': `req.amount` is 24-decimal shares, not 18-decimal rBTC (never formatEther on it).
   const amountFormatted =
     req.type === 'withdrawal' && hasSharePrice
-      ? formatEther((req.amount * claimableInfo!.lockedSharePrice) / WEI_PER_ETHER)
-      : req.type === 'withdrawal' && !isTerminal
+      ? (() => {
+          const a = claimableInfo!.assetsAtCloseWei
+          const s = claimableInfo!.supplyAtCloseWei
+          if (a != null && s != null && s + 1n > 0n) {
+            return formatEther((req.amount * lockedSharePriceFromEpochSnapshot(a, s)) / WEI_PER_ETHER)
+          }
+          const nav = claimableInfo!.lockedSharePrice
+          return formatEther((req.amount * nav) / WEI_PER_ETHER)
+        })()
+      : req.type === 'withdrawal'
         ? '—'
         : formatEther(req.amount)
 
-  const amountNumber = amountFormatted !== '—' ? Number(amountFormatted) : 0
   const usdEquivalentFormatted =
-    rbtcPrice > 0 && amountNumber > 0 ? formatCurrencyWithLabel(Big(amountNumber).mul(rbtcPrice)) : null
+    amountFormatted !== '—' && rbtcPrice > 0 && Big(amountFormatted).gt(0)
+      ? formatCurrencyWithLabel(Big(amountFormatted).mul(rbtcPrice))
+      : null
   return {
     id: req.id,
     type: req.type,
@@ -316,7 +328,9 @@ export function toActiveRequestDisplay(
     createdAtFormatted: formatTimestamp(req.timestamps.created),
     claimable: claimableInfo?.claimable ?? false,
     lockedSharePriceFormatted:
-      claimableInfo?.lockedSharePrice != null ? `${formatEther(claimableInfo.lockedSharePrice)}/share` : null,
+      claimableInfo?.lockedSharePrice != null
+        ? `${formatEther(lockedSharePriceToNavPerHumanShareWei(claimableInfo.lockedSharePrice))}/share`
+        : null,
     finalizeId: req.type === 'deposit' ? req.epochId : req.batchRedeemId,
     epochId: req.epochId,
     batchRedeemId: req.batchRedeemId,
@@ -392,16 +406,23 @@ export function toPaginatedHistoryDisplay(
         req.failureReason,
       )
       const isDeposit = req.type === 'deposit'
-      const amountNumber = Number(formatEther(req.amount))
-      const fiatAmountFormatted =
-        isDeposit && rbtcPrice > 0 ? formatCurrencyWithLabel(Big(amountNumber).mul(rbtcPrice)) : null
+      let amountFormatted: string
+      let fiatAmountFormatted: string | null = null
+      if (isDeposit) {
+        amountFormatted = formatEther(req.amount)
+        if (rbtcPrice > 0) {
+          fiatAmountFormatted = formatCurrencyWithLabel(getFiatAmount(req.amount, rbtcPrice))
+        }
+      } else {
+        amountFormatted = formatSymbol(req.amount, 'ctokenvault')
+      }
 
       const updatedAt = req.timestamps.updated ?? req.timestamps.created
 
       return {
         id: req.id,
         type: req.type,
-        amountFormatted: formatEther(req.amount),
+        amountFormatted,
         status: req.status,
         createdAtFormatted: formatTimestamp(req.timestamps.created),
         finalizedAtFormatted: req.timestamps.finalized ? formatTimestamp(req.timestamps.finalized) : null,
@@ -509,7 +530,7 @@ export function apiHistoryToPaginatedDisplay(
     return {
       id: item.id,
       type,
-      amountFormatted: formatEther(amountWei),
+      amountFormatted: isDeposit ? formatEther(amountWei) : formatSymbol(amountWei, 'ctokenvault'),
       status,
       createdAtFormatted: formatDateMonthFirst(item.timestamp),
       finalizedAtFormatted: null,
@@ -521,7 +542,7 @@ export function apiHistoryToPaginatedDisplay(
       displayStatusLabel,
       fiatAmountFormatted:
         isDeposit && rbtcPrice > 0
-          ? formatCurrencyWithLabel(Big(Number(formatEther(amountWei))).mul(rbtcPrice))
+          ? formatCurrencyWithLabel(Big(formatEther(amountWei)).mul(rbtcPrice))
           : null,
       claimTokenType: isDeposit ? ('rbtc' as const) : ('shares' as const),
       updatedAtFormatted: formatDateShort(item.timestamp),

@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 
+import { lockedSharePriceToNavPerHumanShareWei } from '@/app/btc-vault/services/vaultShareNav'
 import { formatMetrics } from '@/app/shared/formatter'
 import { RBTC, SECONDS_PER_YEAR, WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
@@ -60,11 +61,12 @@ export const useRbtcVaultMetrics = () => {
     const pendingWithdrawals = totalRedeemRequiredAssets - totalRedeemPaidAssets
     const netPending = totalPendingDepositAssets - pendingWithdrawals
 
-    // price = assets / supply
-    const pricePerShareWei =
+    // Fixed-point NAV per raw share basis (same encoding as `VaultMetrics.pricePerShare`); convert for display/fiat.
+    const pricePerShareRawWei =
       lastClosedEpoch && lastClosedEpoch.supplyAtClose > 0n
         ? (lastClosedEpoch.assetsAtClose * WeiPerEther) / lastClosedEpoch.supplyAtClose
         : 0n
+    const pricePerShareHumanWei = lockedSharePriceToNavPerHumanShareWei(pricePerShareRawWei)
 
     return {
       row1: {
@@ -83,7 +85,7 @@ export const useRbtcVaultMetrics = () => {
         pendingDepositCapital: formatMetrics(totalPendingDepositAssets, rbtcPrice, RBTC),
         pendingWithdrawalCapital: formatMetrics(pendingWithdrawals, rbtcPrice, RBTC),
         netPendingCapital: formatMetrics(netPending, rbtcPrice, RBTC),
-        pricePerShare: formatMetrics(pricePerShareWei, rbtcPrice, RBTC),
+        pricePerShare: formatMetrics(pricePerShareHumanWei, rbtcPrice, RBTC),
       },
       isLoading,
       error,

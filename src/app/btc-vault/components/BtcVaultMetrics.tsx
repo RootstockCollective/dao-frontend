@@ -15,6 +15,7 @@ import { usePricesContext } from '@/shared/context'
 import { useEpochState } from '../hooks/useEpochState'
 import { useVaultMetrics } from '../hooks/useVaultMetrics'
 import { formatDateClosingOn, formatDateMonthFirst } from '../services/ui/formatters'
+import { lockedSharePriceToNavPerHumanShareWei } from '../services/vaultShareNav'
 
 const PLACEHOLDER = '—'
 const APY_TOOLTIP = 'Annual Percentage Yield — the annualized return on deposited rBTC'
@@ -41,7 +42,8 @@ export const BtcVaultMetrics = () => {
 
   const pricePerShareUsd = useMemo(() => {
     if (!metrics?.pricePerShareRaw || !rbtcPrice) return null
-    return formatCurrencyWithLabel(getFiatAmount(metrics.pricePerShareRaw, rbtcPrice))
+    const perHumanShareWei = lockedSharePriceToNavPerHumanShareWei(metrics.pricePerShareRaw)
+    return formatCurrencyWithLabel(getFiatAmount(perHumanShareWei, rbtcPrice))
   }, [metrics?.pricePerShareRaw, rbtcPrice])
 
   const depositWindowLabel = useMemo(
