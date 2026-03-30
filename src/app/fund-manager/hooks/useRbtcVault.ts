@@ -105,6 +105,10 @@ export const useRbtcVault = () => {
       totalPendingDepositAssets,
       totalRedeemRequiredAssets,
       totalRedeemPaidAssets,
+      /** True while batched vault reads (incl. `reportedOffchainAssets`) are still loading. */
+      isBatchLoading,
+      /** Set when the batched vault multicall fails; `reportedOffchainAssets` may be defaulted and unreliable. */
+      vaultBatchError: batchError,
       isLoading,
       error,
       refetchVault,
