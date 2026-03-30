@@ -1,3 +1,5 @@
+import { cacheLife } from 'next/cache'
+
 import {
   betaBuilders,
   cultivatorCommunity,
@@ -16,14 +18,13 @@ import { getEnvFlag } from '@/shared/context/FeatureFlag/flags.utils'
 import { ResponsiveCommunityItemHOC } from './components/ResponsiveCommunityItemHOC'
 import { SectionContainer } from './components/SectionContainer'
 
-export const dynamic = 'force-static'
-
 /**
- * Server Component: Renders the Communities page as a static route (SSG) using 'force-static' mode.
- * The page is generated at build time and won't change until the next deployment
- * Client-side interactivity is managed by injected client components
+ * Server Component: Cached with the `max` profile — regenerated on deployments.
+ * Client-side interactivity is managed by injected client components.
  */
-export default function Communities() {
+export default async function Communities() {
+  'use cache'
+  cacheLife('max')
   const showCultivator = getEnvFlag('cultivator')
 
   return (
