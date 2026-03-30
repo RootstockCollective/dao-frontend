@@ -2,7 +2,7 @@ import { render, within } from '@testing-library/react'
 import { Hash } from 'viem'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { RBTC } from '@/lib/constants'
+import { RBTC, WRBTC } from '@/lib/constants'
 
 import { AmountFlowContextValue } from './createAmountFlowContext'
 import { createConfirmStep } from './createConfirmStep'
@@ -180,7 +180,7 @@ describe('createConfirmStep', () => {
       )
     })
 
-    it('shows Back button with correct onClick for native token', () => {
+    it('Back button calls onGoToStep(0) for native token', () => {
       const onGoToStep = vi.fn()
       const setButtonActions = vi.fn()
       const ConfirmStep = createConfirmStep({
@@ -192,13 +192,38 @@ describe('createConfirmStep', () => {
 
       render(<ConfirmStep {...defaultProps} onGoToStep={onGoToStep} setButtonActions={setButtonActions} />)
 
-      expect(setButtonActions).toHaveBeenCalledWith(
-        expect.objectContaining({
-          secondary: expect.objectContaining({
-            label: 'Back',
+      const lastCall = setButtonActions.mock.calls.at(-1)?.[0] as {
+        secondary?: { label: string; onClick: () => void }
+      }
+      expect(lastCall?.secondary?.label).toBe('Back')
+      lastCall?.secondary?.onClick()
+      expect(onGoToStep).toHaveBeenCalledWith(0)
+    })
+
+    it('Back button calls onGoToStep(0) for non-native token (wrBTC)', () => {
+      const onGoToStep = vi.fn()
+      const setButtonActions = vi.fn()
+      const ConfirmStep = createConfirmStep({
+        useFlowContext: () =>
+          createMockContext({
+            amount: '1',
+            isNative: false,
+            selectedToken: WRBTC,
+            requiresAllowance: true,
           }),
-        }),
-      )
+        useTransaction: () => createMockTransaction(),
+        actionName: 'vaultDeposit',
+        getRecipientAddress: () => RECIPIENT_ADDRESS,
+      })
+
+      render(<ConfirmStep {...defaultProps} onGoToStep={onGoToStep} setButtonActions={setButtonActions} />)
+
+      const lastCall = setButtonActions.mock.calls.at(-1)?.[0] as {
+        secondary?: { label: string; onClick: () => void }
+      }
+      expect(lastCall?.secondary?.label).toBe('Back')
+      lastCall?.secondary?.onClick()
+      expect(onGoToStep).toHaveBeenCalledWith(0)
     })
   })
 })
