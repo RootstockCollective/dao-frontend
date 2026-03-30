@@ -10,3 +10,11 @@ vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
   unstable_cache: vi.fn((fn: () => unknown) => fn),
 }))
+
+vi.mock('next/server', async importOriginal => {
+  const mod = await importOriginal<typeof import('next/server')>()
+  return {
+    ...mod,
+    connection: vi.fn(() => Promise.resolve()),
+  }
+})
