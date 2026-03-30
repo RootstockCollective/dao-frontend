@@ -1,14 +1,38 @@
+import { cacheLife } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
-import { Address, isAddress, getAddress } from 'viem'
-import { uniswapProvider } from '@/lib/swap/providers/uniswap'
-import { SWAP_TOKEN_ADDRESSES } from '@/lib/swap/constants'
-import { getTokenDecimalsBatch, scaleAmount, isValidAmount } from '@/lib/swap/utils'
+import { Address, getAddress, isAddress } from 'viem'
 
-/**
- * Cache quotes for 30 seconds
- * Quotes are time-sensitive, so we use a short cache duration
- */
-export const revalidate = 30
+import { SWAP_TOKEN_ADDRESSES } from '@/lib/swap/constants'
+import { uniswapProvider } from '@/lib/swap/providers/uniswap'
+import { getTokenDecimalsBatch, isValidAmount, scaleAmount } from '@/lib/swap/utils'
+
+async function getCachedSwapQuote(tokenIn: Address, tokenOut: Address, amountParam: string) {
+  'use cache'
+  cacheLife({ revalidate: 30 })
+
+  const decimalsMap = await getTokenDecimalsBatch([tokenIn, tokenOut])
+  const tokenInDecimals = decimalsMap[getAddress(tokenIn)]
+  const tokenOutDecimals = decimalsMap[getAddress(tokenOut)]
+
+  if (typeof tokenInDecimals !== 'number' || typeof tokenOutDecimals !== 'number') {
+    return { error: 'Failed to read token decimals' as const }
+  }
+
+  const amountIn = scaleAmount(amountParam, tokenInDecimals)
+  const providers = [uniswapProvider]
+
+  const quotePromises = providers.map(provider =>
+    provider.getQuote({ tokenIn, tokenOut, amountIn, tokenInDecimals, tokenOutDecimals }).catch(error => ({
+      provider: provider.name,
+      amountOut: '0',
+      amountOutRaw: '0',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    })),
+  )
+
+  const quotes = await Promise.all(quotePromises)
+  return { quotes }
+}
 
 /**
  * GET /api/swap/quote
@@ -28,8 +52,6 @@ export async function GET(request: NextRequest) {
   const amountParam = searchParams.get('amount')
 
   try {
-    // For this iteration, tokenIn is always USDT0 and tokenOut is always USDRIF
-    // But we validate the params if provided
     const tokenIn = (
       tokenInParam && isAddress(tokenInParam) ? tokenInParam : SWAP_TOKEN_ADDRESSES.USDT0
     ) as Address
@@ -37,7 +59,6 @@ export async function GET(request: NextRequest) {
       tokenOutParam && isAddress(tokenOutParam) ? tokenOutParam : SWAP_TOKEN_ADDRESSES.USDRIF
     ) as Address
 
-    // Validate amount
     if (!amountParam || !isValidAmount(amountParam)) {
       return NextResponse.json(
         { error: 'Invalid amount. Amount must be a positive number.' },
@@ -45,43 +66,13 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Read decimals for both tokens in parallel
-    // getTokenDecimalsBatch returns map with normalized (checksummed) addresses as keys
-    const decimalsMap = await getTokenDecimalsBatch([tokenIn, tokenOut])
-    const tokenInDecimals = decimalsMap[getAddress(tokenIn)]
-    const tokenOutDecimals = decimalsMap[getAddress(tokenOut)]
+    const result = await getCachedSwapQuote(tokenIn, tokenOut, amountParam)
 
-    if (typeof tokenInDecimals !== 'number' || typeof tokenOutDecimals !== 'number') {
-      return NextResponse.json({ error: 'Failed to read token decimals' }, { status: 500 })
+    if ('error' in result && typeof result.error === 'string' && !('quotes' in result)) {
+      return NextResponse.json({ error: result.error }, { status: 500 })
     }
 
-    // Scale the input amount to contract format
-    const amountIn = scaleAmount(amountParam, tokenInDecimals)
-
-    // Initialize providers (for now, just Uniswap)
-    const providers = [uniswapProvider]
-
-    // Get quotes from all providers in parallel
-    const quotePromises = providers.map(provider =>
-      provider
-        .getQuote({
-          tokenIn,
-          tokenOut,
-          amountIn,
-          tokenInDecimals,
-          tokenOutDecimals,
-        })
-        .catch(error => ({
-          provider: provider.name,
-          amountOut: '0',
-          amountOutRaw: '0',
-          error: error instanceof Error ? error.message : 'Unknown error',
-        })),
-    )
-
-    const quotes = await Promise.all(quotePromises)
-
-    return NextResponse.json({ quotes }, { status: 200 })
+    return NextResponse.json({ quotes: result.quotes }, { status: 200 })
   } catch (error) {
     console.error('Error fetching swap quotes:', error)
     return NextResponse.json(

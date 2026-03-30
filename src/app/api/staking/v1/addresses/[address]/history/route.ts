@@ -1,3 +1,7 @@
+import { cacheLife } from 'next/cache'
+import { NextRequest } from 'next/server'
+import { z } from 'zod'
+
 import {
   getStakingHistoryCountFromDB,
   getStakingHistoryFromDB,
@@ -5,8 +9,6 @@ import {
 import { handleApiError, queryParam } from '@/app/api/utils/helpers'
 import type { PaginationResponse } from '@/app/api/utils/types'
 import { AddressSchema, SortDirectionEnum } from '@/app/api/utils/validators'
-import { NextRequest } from 'next/server'
-import { z } from 'zod'
 
 const SortFieldEnum = z.enum(['period', 'amount', 'action'])
 const QuerySchema = z
@@ -24,7 +26,22 @@ const QuerySchema = z
     return { ...q, offset }
   })
 
-export const revalidate = 60
+async function getCachedStakingData(
+  address: string,
+  limit: number,
+  offset: number,
+  sort_field: 'period' | 'amount' | 'action',
+  sort_direction: 'asc' | 'desc',
+  type?: ('stake' | 'unstake')[],
+) {
+  'use cache'
+  cacheLife({ revalidate: 60 })
+  const [stakingHistory, total] = await Promise.all([
+    getStakingHistoryFromDB({ address, limit, offset, sort_field, sort_direction, type }),
+    getStakingHistoryCountFromDB(address, type),
+  ])
+  return { stakingHistory, total }
+}
 
 export async function GET(req: NextRequest, context: { params: Promise<{ address: string }> }) {
   try {
@@ -44,15 +61,14 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
       type: typeParams.length > 0 ? typeParams : undefined,
     })
 
-    const stakingHistory = await getStakingHistoryFromDB({
+    const { stakingHistory, total } = await getCachedStakingData(
       address,
-      limit: parsed.limit,
-      offset: parsed.offset,
-      sort_field: parsed.sort_field,
-      sort_direction: parsed.sort_direction,
-      type: parsed.type,
-    })
-    const total = await getStakingHistoryCountFromDB(address, parsed.type)
+      parsed.limit,
+      parsed.offset,
+      parsed.sort_field,
+      parsed.sort_direction,
+      parsed.type,
+    )
     const pagination: PaginationResponse = {
       limit: parsed.limit,
       offset: parsed.offset,

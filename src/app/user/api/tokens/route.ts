@@ -1,7 +1,9 @@
-import { publicClient, transformMulticallResults } from '@/lib/viemPublicClient'
-import { tokenContracts } from '@/lib/contracts'
-import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
+import { cacheLife } from 'next/cache'
 import { Address } from 'viem'
+
+import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
+import { tokenContracts } from '@/lib/contracts'
+import { publicClient, transformMulticallResults } from '@/lib/viemPublicClient'
 
 export interface TokenInfo {
   symbol?: string
@@ -45,12 +47,14 @@ async function getTokenData() {
   }, {})
 }
 
-export const revalidate = 180
+async function getCachedTokenData() {
+  'use cache'
+  cacheLife({ revalidate: 180 })
+  return getTokenData()
+}
 
-// Return data of token
 export async function GET() {
-  const result = await getTokenData()
-
+  const result = await getCachedTokenData()
   return Response.json(result)
 }
 

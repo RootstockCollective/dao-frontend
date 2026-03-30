@@ -1,4 +1,4 @@
-import { unstable_cache } from 'next/cache'
+import { cacheLife, cacheTag } from 'next/cache'
 
 import {
   type EpochSettledEvent,
@@ -81,7 +81,9 @@ export async function fetchEpochHistory(): Promise<EpochHistoryResult> {
   return { epochs: [], source: null, errors }
 }
 
-export const getCachedEpochHistory = unstable_cache(fetchEpochHistory, ['cached_btc_vault_epoch_history'], {
-  revalidate: 20,
-  tags: ['cached_btc_vault_epoch_history'],
-})
+export async function getCachedEpochHistory() {
+  'use cache'
+  cacheLife({ revalidate: 20 })
+  cacheTag('cached_btc_vault_epoch_history')
+  return fetchEpochHistory()
+}

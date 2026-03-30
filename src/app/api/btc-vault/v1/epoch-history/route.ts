@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server'
 
 import { getCachedEpochHistory } from './action'
 
-export const revalidate = 20
-
 export async function GET() {
   try {
     const { epochs, source, errors } = await getCachedEpochHistory()

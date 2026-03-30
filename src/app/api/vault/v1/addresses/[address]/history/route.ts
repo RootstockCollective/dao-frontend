@@ -1,12 +1,14 @@
+import { cacheLife } from 'next/cache'
+import { NextRequest } from 'next/server'
+import { z } from 'zod'
+
+import { handleApiError, queryParam } from '@/app/api/utils/helpers'
+import type { PaginationResponse } from '@/app/api/utils/types'
+import { AddressSchema, SortDirectionEnum } from '@/app/api/utils/validators'
 import {
   getVaultHistoryCountFromDB,
   getVaultHistoryFromDB,
 } from '@/app/api/vault/v1/addresses/[address]/history/action'
-import { handleApiError, queryParam } from '@/app/api/utils/helpers'
-import type { PaginationResponse } from '@/app/api/utils/types'
-import { AddressSchema, SortDirectionEnum } from '@/app/api/utils/validators'
-import { NextRequest } from 'next/server'
-import { z } from 'zod'
 
 const SortFieldEnum = z.enum(['period', 'assets', 'action'])
 const QuerySchema = z.object({
@@ -17,7 +19,22 @@ const QuerySchema = z.object({
   type: z.array(z.enum(['deposit', 'withdraw'])).optional(),
 })
 
-export const revalidate = 60
+async function getCachedVaultData(
+  address: string,
+  limit: number,
+  page: number,
+  sort_field: 'period' | 'assets' | 'action',
+  sort_direction: 'asc' | 'desc',
+  type?: ('deposit' | 'withdraw')[],
+) {
+  'use cache'
+  cacheLife({ revalidate: 60 })
+  const [vaultHistory, total] = await Promise.all([
+    getVaultHistoryFromDB({ address, limit, page, sort_field, sort_direction, type }),
+    getVaultHistoryCountFromDB(address, type),
+  ])
+  return { vaultHistory, total }
+}
 
 export async function GET(req: NextRequest, context: { params: Promise<{ address: string }> }) {
   try {
@@ -37,15 +54,14 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
       type: typeParams.length > 0 ? typeParams : undefined,
     })
 
-    const vaultHistory = await getVaultHistoryFromDB({
+    const { vaultHistory, total } = await getCachedVaultData(
       address,
-      limit: parsed.limit,
-      page: parsed.page,
-      sort_field: parsed.sort_field,
-      sort_direction: parsed.sort_direction,
-      type: parsed.type,
-    })
-    const total = await getVaultHistoryCountFromDB(address, parsed.type)
+      parsed.limit,
+      parsed.page,
+      parsed.sort_field,
+      parsed.sort_direction,
+      parsed.type,
+    )
     const totalPages = Math.ceil(total / parsed.limit)
     const offset = (parsed.page - 1) * parsed.limit
     const pagination: PaginationResponse = {

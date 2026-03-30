@@ -1,3 +1,4 @@
+import { cacheLife } from 'next/cache'
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
@@ -6,8 +7,13 @@ import type { PaginationResponse } from '@/app/api/utils/types'
 
 import { BtcVaultGlobalHistoryQuerySchema } from '../schemas'
 import { fetchBtcVaultHistoryPageAndEnrich } from './action'
+import type { BtcVaultHistoryQueryParams } from './types'
 
-export const revalidate = 20
+async function getCachedBtcVaultHistoryPage(params: BtcVaultHistoryQueryParams) {
+  'use cache'
+  cacheLife({ revalidate: 20 })
+  return fetchBtcVaultHistoryPageAndEnrich(params)
+}
 
 /**
  * GET /api/btc-vault/v1/history
@@ -46,7 +52,7 @@ export async function GET(req: NextRequest) {
 
     const address = parsed.address?.toLowerCase()
 
-    const { data, total, source, errors } = await fetchBtcVaultHistoryPageAndEnrich({
+    const { data, total, source, errors } = await getCachedBtcVaultHistoryPage({
       limit: parsed.limit,
       page: parsed.page,
       sort_field: parsed.sort_field,
