@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { connection, NextRequest, NextResponse } from 'next/server'
+
 import { extractTopicIdFromDiscourseUrl, getDiscourseTopicApiUrl } from '@/lib/discourse'
 
 /**
@@ -15,6 +16,7 @@ import { extractTopicIdFromDiscourseUrl, getDiscourseTopicApiUrl } from '@/lib/d
  * GET /api/discourse/topic?topicId=123
  */
 export async function GET(request: NextRequest) {
+  await connection()
   const searchParams = request.nextUrl.searchParams
   const discourseUrl = searchParams.get('url')
   const topicIdParam = searchParams.get('topicId')

@@ -1,5 +1,5 @@
 import { cacheLife } from 'next/cache'
-import { NextRequest, NextResponse } from 'next/server'
+import { connection, NextRequest, NextResponse } from 'next/server'
 import { Address, getAddress, isAddress } from 'viem'
 
 import { SWAP_TOKEN_ADDRESSES } from '@/lib/swap/constants'
@@ -46,6 +46,7 @@ async function getCachedSwapQuote(tokenIn: Address, tokenOut: Address, amountPar
  * GET /api/swap/quote?tokenIn=0x779dED0C9e1022225F8e0630b35A9B54Be713736&tokenOut=0x3A15461d8AE0f0Fb5fA2629e9dA7D66A794a6E37&amount=100
  */
 export async function GET(request: NextRequest) {
+  await connection()
   const searchParams = request.nextUrl.searchParams
   const tokenInParam = searchParams.get('tokenIn')
   const tokenOutParam = searchParams.get('tokenOut')

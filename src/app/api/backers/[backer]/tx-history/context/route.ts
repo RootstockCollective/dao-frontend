@@ -1,9 +1,10 @@
-import { NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { connection, NextResponse } from 'next/server'
 import { Address, isAddress } from 'viem'
-import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
-import { paginateQuery } from '@/app/api/utils/paginateQuery'
+
 import { TX_HISTORY_COLUMNS } from '@/app/api/db/constants'
+import { paginateQuery } from '@/app/api/utils/paginateQuery'
+import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
+import { db } from '@/lib/db'
 
 interface PriceParam {
   token: string
@@ -84,6 +85,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
   }
 
   try {
+    await connection()
     const url = new URL(req.url || '')
     const search = url.searchParams
 

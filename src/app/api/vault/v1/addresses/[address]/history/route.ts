@@ -1,5 +1,5 @@
 import { cacheLife } from 'next/cache'
-import { NextRequest } from 'next/server'
+import { connection, NextRequest } from 'next/server'
 import { z } from 'zod'
 
 import { handleApiError, queryParam } from '@/app/api/utils/helpers'
@@ -37,6 +37,7 @@ async function getCachedVaultData(
 }
 
 export async function GET(req: NextRequest, context: { params: Promise<{ address: string }> }) {
+  await connection()
   try {
     const { address: addressParam } = await context.params
     const address = AddressSchema.parse(addressParam).toLowerCase()

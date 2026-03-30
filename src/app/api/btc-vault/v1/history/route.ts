@@ -1,5 +1,5 @@
 import { cacheLife } from 'next/cache'
-import { NextRequest, NextResponse } from 'next/server'
+import { connection, NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 import { handleApiError, queryParam } from '@/app/api/utils/helpers'
@@ -35,6 +35,7 @@ async function getCachedBtcVaultHistoryPage(params: BtcVaultHistoryQueryParams) 
  * 400 on validation error (body includes error, details); 500 when no source could return data.
  */
 export async function GET(req: NextRequest) {
+  await connection()
   try {
     const searchParams = new URL(req.url).searchParams
     const qp = queryParam(searchParams)

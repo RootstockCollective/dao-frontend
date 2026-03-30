@@ -1,5 +1,5 @@
 import { cacheLife } from 'next/cache'
-import { NextRequest, NextResponse } from 'next/server'
+import { connection, NextRequest, NextResponse } from 'next/server'
 import type { Address } from 'viem'
 
 import { handleApiError, queryParam } from '@/app/api/utils/helpers'
@@ -19,6 +19,7 @@ async function getCachedUserPrincipal(address: Address) {
  * Response: { principal: string } where principal is wei as a decimal string.
  */
 export async function GET(req: NextRequest) {
+  await connection()
   try {
     const searchParams = new URL(req.url).searchParams
     const rawAddress = queryParam(searchParams)('address')
