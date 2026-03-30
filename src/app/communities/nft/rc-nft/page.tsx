@@ -3,13 +3,14 @@
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header } from '@/components/Typography'
 import { ROOTCAMP_NFT_ADDRESS } from '@/lib/constants'
+import { withFeatureFlag } from '@/shared/context/FeatureFlag'
 
 import { AddAddressesForm } from './AddAddressesForm'
 import { MintersTable } from './MintersTable'
 import { useRcNft } from './useRcNft'
 
 /** Admin page for managing Rootcamp NFT minting whitelist and permissions. */
-export default function RcNft() {
+function RcNft() {
   const { loading, pending } = useRcNft()
 
   if (!ROOTCAMP_NFT_ADDRESS) {
@@ -49,3 +50,5 @@ export default function RcNft() {
     </div>
   )
 }
+
+export default withFeatureFlag(RcNft, { feature: 'rootcamp', redirectTo: '/communities' })
