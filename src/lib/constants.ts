@@ -120,6 +120,7 @@ const FEATURE_FLAGS: Record<Feature, string> = {
   sentry_error_tracking: process.env.NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_ERROR_TRACKING ?? '',
   sentry_replay: process.env.NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY ?? '',
   cultivator: process.env.NEXT_PUBLIC_ENABLE_FEATURE_CULTIVATOR ?? '',
+  rootcamp: process.env.NEXT_PUBLIC_ENABLE_FEATURE_ROOTCAMP ?? '',
 }
 
 export const getFeatureEnvFlags = (): Record<Feature, string> => FEATURE_FLAGS
