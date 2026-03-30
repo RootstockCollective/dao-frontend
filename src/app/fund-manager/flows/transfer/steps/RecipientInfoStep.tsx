@@ -23,11 +23,12 @@ export const RecipientInfoStep = ({ onGoNext, setButtonActions }: FlowStepProps)
     handleAmountChange,
     handlePercentageClick,
     setSelectedToken,
+    recipientAddress,
     setRecipientAddress,
   } = useTransferToManagerContext()
 
   const { control, watch } = useForm<RecipientInfoForm>({
-    defaultValues: { recipientAddress: '' },
+    defaultValues: { recipientAddress },
     mode: 'onTouched',
     reValidateMode: 'onChange',
     resolver: zodResolver(recipientInfoFormSchema),
