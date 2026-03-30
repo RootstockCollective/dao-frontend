@@ -180,23 +180,25 @@ export function useActiveRequests(address: string | undefined): {
       ) as bigint
       const status = claimableAssets > 0n ? ('claimable' as const) : ('pending' as const)
       let claimableInfo: ClaimableInfo | null = null
-      if (status === 'claimable' && phase2Data[snapshotIdx]?.status === 'success') {
-        const snap = phase2Data[snapshotIdx].result as readonly [bigint, bigint, bigint, bigint]
-        const assetsAtClose = snap[1]
-        const supplyAtClose = snap[2]
-        const navPerShare = lockedSharePriceFromEpochSnapshot(assetsAtClose, supplyAtClose)
-        claimableInfo = {
-          claimable: true,
-          lockedSharePrice: navPerShare,
-          assetsAtCloseWei: assetsAtClose,
-          supplyAtCloseWei: supplyAtClose,
-        }
-      }
       const depHistory = historyData?.data.find(
         h =>
           (h.action === 'DEPOSIT_REQUEST' || h.action === 'DEPOSIT_CLAIMABLE') &&
           h.epochId === String(depEpochId),
       )
+      const depDisplayStatus = depHistory?.displayStatus
+      const depIsApproved = status === 'pending' && depDisplayStatus === 'approved'
+      if ((status === 'claimable' || depIsApproved) && phase2Data[snapshotIdx]?.status === 'success') {
+        const snap = phase2Data[snapshotIdx].result as readonly [bigint, bigint, bigint, bigint]
+        const assetsAtClose = snap[1]
+        const supplyAtClose = snap[2]
+        const navPerShare = lockedSharePriceFromEpochSnapshot(assetsAtClose, supplyAtClose)
+        claimableInfo = {
+          claimable: status === 'claimable',
+          lockedSharePrice: navPerShare,
+          assetsAtCloseWei: assetsAtClose,
+          supplyAtCloseWei: supplyAtClose,
+        }
+      }
       requests.push({
         req: {
           id: `dep-${depEpochId}`,
@@ -207,6 +209,7 @@ export function useActiveRequests(address: string | undefined): {
           batchRedeemId: null,
           timestamps: { created: depHistory?.timestamp ?? 0 },
           txHashes: depHistory?.transactionHash ? { submit: depHistory.transactionHash } : {},
+          ...(depDisplayStatus && { displayStatus: depDisplayStatus }),
         },
         claimableInfo,
       })
@@ -223,18 +226,6 @@ export function useActiveRequests(address: string | undefined): {
       ) as bigint
       const status = claimableShares > 0n ? ('claimable' as const) : ('pending' as const)
       let claimableInfo: ClaimableInfo | null = null
-      if (status === 'claimable' && phase2Data[snapshotIdx]?.status === 'success') {
-        const snap = phase2Data[snapshotIdx].result as readonly [bigint, bigint, bigint, bigint]
-        const assetsAtClose = snap[1]
-        const supplyAtClose = snap[2]
-        const navPerShare = lockedSharePriceFromEpochSnapshot(assetsAtClose, supplyAtClose)
-        claimableInfo = {
-          claimable: true,
-          lockedSharePrice: navPerShare,
-          assetsAtCloseWei: assetsAtClose,
-          supplyAtCloseWei: supplyAtClose,
-        }
-      }
       const redHistory = historyData?.data.find(
         h =>
           (h.action === 'REDEEM_REQUEST' ||
@@ -242,6 +233,20 @@ export function useActiveRequests(address: string | undefined): {
             h.action === 'REDEEM_CLAIMABLE') &&
           h.epochId === String(redEpochId),
       )
+      const redDisplayStatus = redHistory?.displayStatus
+      const redIsApproved = status === 'pending' && redDisplayStatus === 'approved'
+      if ((status === 'claimable' || redIsApproved) && phase2Data[snapshotIdx]?.status === 'success') {
+        const snap = phase2Data[snapshotIdx].result as readonly [bigint, bigint, bigint, bigint]
+        const assetsAtClose = snap[1]
+        const supplyAtClose = snap[2]
+        const navPerShare = lockedSharePriceFromEpochSnapshot(assetsAtClose, supplyAtClose)
+        claimableInfo = {
+          claimable: status === 'claimable',
+          lockedSharePrice: navPerShare,
+          assetsAtCloseWei: assetsAtClose,
+          supplyAtCloseWei: supplyAtClose,
+        }
+      }
       requests.push({
         req: {
           id: `red-${redEpochId}`,
@@ -252,6 +257,7 @@ export function useActiveRequests(address: string | undefined): {
           batchRedeemId: String(redEpochId),
           timestamps: { created: redHistory?.timestamp ?? 0 },
           txHashes: redHistory?.transactionHash ? { submit: redHistory.transactionHash } : {},
+          ...(redDisplayStatus && { displayStatus: redDisplayStatus }),
         },
         claimableInfo,
       })

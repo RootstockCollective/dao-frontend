@@ -337,6 +337,7 @@ export function toActiveRequestDisplay(
     lastUpdatedFormatted: formatDateShort(lastUpdated),
     sharesFormatted,
     usdEquivalentFormatted,
+    ...(req.displayStatus && { displayStatus: req.displayStatus }),
   }
 }
 

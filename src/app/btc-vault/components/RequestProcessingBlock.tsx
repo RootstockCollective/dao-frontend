@@ -45,7 +45,11 @@ export function RequestProcessingBlock({ request, className, ...props }: Request
       className={cn('flex flex-col gap-6 w-full', className)}
       {...props}
     >
-      <RequestStatusStepper status={request.status} type={request.type} />
+      <RequestStatusStepper
+        status={request.status}
+        type={request.type}
+        displayStatus={request.displayStatus}
+      />
 
       <div className="flex gap-6 self-stretch">
         <div className="flex flex-1 min-w-0 flex-col gap-2">
