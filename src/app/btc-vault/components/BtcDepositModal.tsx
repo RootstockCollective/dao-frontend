@@ -1,12 +1,13 @@
 'use client'
 
 import { useCallback, useMemo, useState } from 'react'
-import { formatEther, parseEther } from 'viem'
+import { formatUnits, parseEther } from 'viem'
 import { useAccount } from 'wagmi'
 
 import { Modal } from '@/components/Modal'
 import { ProgressBar } from '@/components/ProgressBarNew'
 import { Header } from '@/components/Typography'
+import { VAULT_SHARE_DECIMALS } from '@/lib/constants'
 
 import { useUserPosition } from '../hooks/useUserPosition'
 import { useVaultMetrics } from '../hooks/useVaultMetrics'
@@ -37,7 +38,7 @@ export const BtcDepositModal = ({ onClose, onSubmit, isSubmitting }: BtcDepositM
   const rbtcBalanceFormatted = userPosition?.rbtcBalanceFormatted ?? '0'
   const rbtcBalanceRaw = userPosition?.rbtcBalanceRaw ?? 0n
 
-  // Price Per Share = NAV per share (convertToAssets(1e18)) renamed for clarity
+  // Chain spot NAV per raw share basis — pairs with raw `sharesWei` in estimates (see `VaultMetrics.pricePerShare`).
   const pricePerShareRaw = vaultMetrics?.pricePerShareRaw ?? 0n
 
   const estimatedShares = useMemo(() => {
@@ -45,7 +46,7 @@ export const BtcDepositModal = ({ onClose, onSubmit, isSubmitting }: BtcDepositM
     try {
       const amountWei = parseEther(amount)
       const sharesWei = (amountWei * 10n ** 18n) / pricePerShareRaw
-      return formatEther(sharesWei)
+      return formatUnits(sharesWei, VAULT_SHARE_DECIMALS)
     } catch {
       return '0'
     }

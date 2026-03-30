@@ -44,7 +44,8 @@ describe('BtcVaultMetrics', () => {
     pricePerShareFormatted: '1.02',
     timestamp: 1709000000,
     tvlRaw: 50_000_000_000_000_000_000n,
-    pricePerShareRaw: 1_020_000_000_000_000_000n,
+    // chain spot wei per raw basis (1.02e12 × 1e6 → 1.02 rBTC / human share for fiat)
+    pricePerShareRaw: 1_020_000_000_000n,
   }
 
   /** Epoch open with endTime 23 Feb 2025 00:00 UTC → "closing on February 23" */

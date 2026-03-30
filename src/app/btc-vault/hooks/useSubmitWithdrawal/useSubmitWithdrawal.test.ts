@@ -43,7 +43,7 @@ describe('useSubmitWithdrawal', () => {
   })
 
   it('calls writeContractAsync with correct config when onRequestRedeem is invoked', async () => {
-    const shares = 1_000_000_000_000_000_000n
+    const shares = 1_000_000_000_000_000_000_000_000n // 1 share, 24-decimal raw
     const txHash = '0xmockhash'
     mockWriteContractAsync.mockResolvedValue(txHash)
 
@@ -62,7 +62,7 @@ describe('useSubmitWithdrawal', () => {
   it('rejects when wallet is disconnected', async () => {
     mockUseAccount.mockReturnValue({ address: undefined })
     const { result } = renderHook(() => useSubmitWithdrawal())
-    await expect(result.current.onRequestRedeem(1_000_000_000_000_000_000n)).rejects.toThrow(
+    await expect(result.current.onRequestRedeem(1_000_000_000_000_000_000_000_000n)).rejects.toThrow(
       'Wallet not connected',
     )
   })
