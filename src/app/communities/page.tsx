@@ -25,6 +25,10 @@ export const dynamic = 'force-static'
  */
 export default function Communities() {
   const showCultivator = getEnvFlag('cultivator')
+  const showRootcamp = getEnvFlag('rootcamp')
+  const clubsGridClass = ({ 2: 'lg:grid-cols-2', 3: 'lg:grid-cols-3', 4: 'lg:grid-cols-4' } as const)[
+    2 + (showCultivator ? 1 : 0) + (showRootcamp ? 1 : 0)
+  ]
 
   return (
     <div>
@@ -56,13 +60,13 @@ export default function Communities() {
           title="CLUBS"
           rightContent="These are essentially a group where people with likeminded interests can discuss ideas. Some are gated with NFTs, and in the future it may be possible to give anyone the ability to request a  club is created. The more you participate — from proposals to governance to community — the more opportunities you have to collect. "
         >
-          <div className={`grid grid-cols-1 ${showCultivator ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-2`}>
+          <div className={`grid grid-cols-1 ${clubsGridClass} gap-2`}>
             {showCultivator && <ResponsiveCommunityItemHOC {...cultivatorCommunity} enableDebris />}
             <div className="flex flex-col gap-2 lg:col-span-2">
               <ResponsiveCommunityItemHOC {...betaBuilders} variant="landscape" enableDebris />
               <ResponsiveCommunityItemHOC {...rootstockHacktivator} variant="landscape" enableDebris />
             </div>
-            <ResponsiveCommunityItemHOC {...rootcampNft} enableDebris />
+            {showRootcamp && <ResponsiveCommunityItemHOC {...rootcampNft} enableDebris />}
           </div>
         </SectionContainer>
       </div>
