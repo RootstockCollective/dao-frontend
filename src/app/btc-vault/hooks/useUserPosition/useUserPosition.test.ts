@@ -1,6 +1,8 @@
 import { renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { VAULT_SHARE_MULTIPLIER } from '@/lib/constants'
+
 import { useUserPosition } from './useUserPosition'
 
 const mockUseBalance = vi.fn()
@@ -26,6 +28,7 @@ vi.mock('./useUserPrincipal', () => ({
 
 const CONNECTED_ADDRESS = '0x1234567890abcdef1234567890abcdef12345678'
 const ONE_ETHER = 1_000_000_000_000_000_000n
+const ONE_SHARE_RAW = ONE_ETHER * VAULT_SHARE_MULTIPLIER
 
 function setupMocks({
   balance,
@@ -94,8 +97,8 @@ describe('useUserPosition', () => {
     })
 
     it('returns formatted position data from contract reads', () => {
-      const vaultTokens = 5n * ONE_ETHER
-      const totalSupply = 50n * ONE_ETHER
+      const vaultTokens = 5n * ONE_SHARE_RAW
+      const totalSupply = 50n * ONE_SHARE_RAW
       const totalAssets = 51n * ONE_ETHER
 
       setupMocks({
@@ -107,7 +110,7 @@ describe('useUserPosition', () => {
 
       expect(result.current.data).toBeDefined()
       expect(result.current.data?.rbtcBalanceFormatted).toBe('2')
-      expect(result.current.data?.vaultTokensFormatted).toBe('5')
+      expect(result.current.data?.vaultTokensFormatted).toBe('5.00')
       expect(result.current.data?.positionValueFormatted).toBe('5.1')
       expect(result.current.data?.percentOfVaultFormatted).toBe('10.00%')
     })
@@ -133,7 +136,7 @@ describe('useUserPosition', () => {
     it('defaults totalDepositedPrincipal to 0n when principal API has not loaded', () => {
       setupMocks({
         balance: { value: ONE_ETHER },
-        multicall: [{ result: ONE_ETHER }, { result: 10n * ONE_ETHER }, { result: 10n * ONE_ETHER }],
+        multicall: [{ result: ONE_SHARE_RAW }, { result: 10n * ONE_SHARE_RAW }, { result: 10n * ONE_ETHER }],
       })
 
       const { result } = renderHook(() => useUserPosition(CONNECTED_ADDRESS))
@@ -145,7 +148,7 @@ describe('useUserPosition', () => {
       const principal = 3n * ONE_ETHER
       setupMocks({
         balance: { value: ONE_ETHER },
-        multicall: [{ result: ONE_ETHER }, { result: 10n * ONE_ETHER }, { result: 10n * ONE_ETHER }],
+        multicall: [{ result: ONE_SHARE_RAW }, { result: 10n * ONE_SHARE_RAW }, { result: 10n * ONE_ETHER }],
         principal,
       })
 
@@ -167,7 +170,7 @@ describe('useUserPosition', () => {
     it('returns zero positionValue and percentOfVault when user has no vault tokens', () => {
       setupMocks({
         balance: { value: 3n * ONE_ETHER },
-        multicall: [{ result: 0n }, { result: 100n * ONE_ETHER }, { result: 100n * ONE_ETHER }],
+        multicall: [{ result: 0n }, { result: 100n * ONE_SHARE_RAW }, { result: 100n * ONE_ETHER }],
       })
 
       const { result } = renderHook(() => useUserPosition(CONNECTED_ADDRESS))
@@ -182,7 +185,7 @@ describe('useUserPosition', () => {
       // 1/3 of total supply → 33.33% (integer math: (1 * 10000) / 3 = 3333, / 100 = 33.33)
       setupMocks({
         balance: { value: ONE_ETHER },
-        multicall: [{ result: ONE_ETHER }, { result: 3n * ONE_ETHER }, { result: 3n * ONE_ETHER }],
+        multicall: [{ result: ONE_SHARE_RAW }, { result: 3n * ONE_SHARE_RAW }, { result: 3n * ONE_ETHER }],
       })
 
       const { result } = renderHook(() => useUserPosition(CONNECTED_ADDRESS))

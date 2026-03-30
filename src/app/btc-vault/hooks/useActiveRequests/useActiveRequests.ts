@@ -14,10 +14,9 @@ import type { ClaimableInfo, VaultRequest } from '../../services/types'
 import type { BtcVaultHistoryApiResponse } from '../../services/ui/api-types'
 import { toActiveRequestDisplay } from '../../services/ui/mappers'
 import type { ActiveRequestDisplay } from '../../services/ui/types'
+import { lockedSharePriceFromEpochSnapshot } from '../../services/vaultShareNav'
 
 const HISTORY_API_PATH = '/api/btc-vault/v1/history'
-
-const WEI_PER_ETHER = 10n ** 18n
 
 /**
  * Reads the user's active deposit and redeem requests from the BTC vault contract
@@ -185,9 +184,13 @@ export function useActiveRequests(address: string | undefined): {
         const snap = phase2Data[snapshotIdx].result as readonly [bigint, bigint, bigint, bigint]
         const assetsAtClose = snap[1]
         const supplyAtClose = snap[2]
-        const navPerShare =
-          supplyAtClose + 1n > 0n ? ((assetsAtClose + 1n) * WEI_PER_ETHER) / (supplyAtClose + 1n) : 0n
-        claimableInfo = { claimable: true, lockedSharePrice: navPerShare }
+        const navPerShare = lockedSharePriceFromEpochSnapshot(assetsAtClose, supplyAtClose)
+        claimableInfo = {
+          claimable: true,
+          lockedSharePrice: navPerShare,
+          assetsAtCloseWei: assetsAtClose,
+          supplyAtCloseWei: supplyAtClose,
+        }
       }
       const depHistory = historyData?.data.find(
         h =>
@@ -224,9 +227,13 @@ export function useActiveRequests(address: string | undefined): {
         const snap = phase2Data[snapshotIdx].result as readonly [bigint, bigint, bigint, bigint]
         const assetsAtClose = snap[1]
         const supplyAtClose = snap[2]
-        const navPerShare =
-          supplyAtClose + 1n > 0n ? ((assetsAtClose + 1n) * WEI_PER_ETHER) / (supplyAtClose + 1n) : 0n
-        claimableInfo = { claimable: true, lockedSharePrice: navPerShare }
+        const navPerShare = lockedSharePriceFromEpochSnapshot(assetsAtClose, supplyAtClose)
+        claimableInfo = {
+          claimable: true,
+          lockedSharePrice: navPerShare,
+          assetsAtCloseWei: assetsAtClose,
+          supplyAtCloseWei: supplyAtClose,
+        }
       }
       const redHistory = historyData?.data.find(
         h =>

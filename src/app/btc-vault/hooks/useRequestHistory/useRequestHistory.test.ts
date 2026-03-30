@@ -24,7 +24,7 @@ const API_RESPONSE = {
       user: '0xuser2',
       action: 'REDEEM_CLAIMED',
       assets: '0',
-      shares: '2000000000000000000',
+      shares: '2000000000000000000000000',
       epochId: '2',
       timestamp: 1700003600,
       blockNumber: '456',
@@ -140,7 +140,7 @@ describe('useRequestHistory', () => {
     expect(data.rows[0].amountFormatted).toBe('1')
     expect(data.rows[0].claimTokenType).toBe('rbtc')
     expect(data.rows[1].displayStatus).toBe('successful')
-    expect(data.rows[1].amountFormatted).toBe('2')
+    expect(data.rows[1].amountFormatted).toBe('2.00')
     expect(data.rows[1].claimTokenType).toBe('shares')
     expect(data.rawRowCountBeforeStatusFilter).toBeUndefined()
   })

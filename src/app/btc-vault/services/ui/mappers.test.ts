@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
+import { formatEther } from 'viem'
 
-import { WeiPerEther } from '@/lib/constants'
+import { VAULT_SHARE_MULTIPLIER, WeiPerEther } from '@/lib/constants'
+
+/** One human share in raw on-chain units (18 + 6 decimals). */
+const ONE_SHARE_RAW = WeiPerEther * VAULT_SHARE_MULTIPLIER
+const ONE_ETHER = WeiPerEther
 
 import type { EligibilityStatus, PauseState, VaultRequest } from '@/app/btc-vault/services/types'
 import {
@@ -66,11 +71,12 @@ describe('toEpochDisplay', () => {
 })
 
 describe('toVaultMetricsDisplay', () => {
-  it('formats raw metrics', () => {
+  it('formats raw metrics (price per share shown per 1.0 human share)', () => {
+    const rawSpotWei = 1_020_000_000_000n // chain: wei rBTC per raw basis → 1.02 rBTC per human share
     const result = toVaultMetricsDisplay({
       tvl: 50_000_000_000_000_000_000n,
       apy: 0.085,
-      pricePerShare: 1_020_000_000_000_000_000n,
+      pricePerShare: rawSpotWei,
       timestamp: 1700000000,
     })
     expect(result.tvlFormatted).toBe('50')
@@ -78,7 +84,7 @@ describe('toVaultMetricsDisplay', () => {
     expect(result.pricePerShareFormatted).toBe('1.02')
     expect(result.timestamp).toBe(1700000000)
     expect(result.tvlRaw).toBe(50_000_000_000_000_000_000n)
-    expect(result.pricePerShareRaw).toBe(1_020_000_000_000_000_000n)
+    expect(result.pricePerShareRaw).toBe(rawSpotWei)
   })
 })
 
@@ -89,7 +95,7 @@ describe('toUserPositionDisplay', () => {
     const result = toUserPositionDisplay(
       {
         rbtcBalance: 2n * WeiPerEther,
-        vaultTokens: 5n * WeiPerEther,
+        vaultTokens: 5n * ONE_SHARE_RAW,
         positionValue: (51n * WeiPerEther) / 10n,
         percentOfVault: 10.2,
         totalDepositedPrincipal: 5n * WeiPerEther,
@@ -97,10 +103,10 @@ describe('toUserPositionDisplay', () => {
       TEST_RBTC_PRICE,
     )
     expect(result.rbtcBalanceFormatted).toBe('2')
-    expect(result.vaultTokensFormatted).toBe('5')
+    expect(result.vaultTokensFormatted).toBe('5.00')
     expect(result.positionValueFormatted).toBe('5.1')
     expect(result.percentOfVaultFormatted).toBe('10.20%')
-    expect(result.vaultTokensRaw).toBe(5n * WeiPerEther)
+    expect(result.vaultTokensRaw).toBe(5n * ONE_SHARE_RAW)
     expect(result.rbtcBalanceRaw).toBe(2n * WeiPerEther)
   })
 
@@ -108,7 +114,7 @@ describe('toUserPositionDisplay', () => {
     const result = toUserPositionDisplay(
       {
         rbtcBalance: 0n,
-        vaultTokens: 5n * WeiPerEther,
+        vaultTokens: 5n * ONE_SHARE_RAW,
         positionValue: (51n * WeiPerEther) / 10n,
         percentOfVault: 10.2,
         totalDepositedPrincipal: 5n * WeiPerEther,
@@ -124,7 +130,7 @@ describe('toUserPositionDisplay', () => {
     const result = toUserPositionDisplay(
       {
         rbtcBalance: 0n,
-        vaultTokens: 4n * WeiPerEther,
+        vaultTokens: 4n * ONE_SHARE_RAW,
         positionValue: 4n * WeiPerEther,
         percentOfVault: 8.0,
         totalDepositedPrincipal: 5n * WeiPerEther,
@@ -156,7 +162,7 @@ describe('toUserPositionDisplay', () => {
     const result = toUserPositionDisplay(
       {
         rbtcBalance: 0n,
-        vaultTokens: 10n * WeiPerEther,
+        vaultTokens: 10n * ONE_SHARE_RAW,
         positionValue: 11n * WeiPerEther,
         percentOfVault: 50,
         totalDepositedPrincipal: 10n * WeiPerEther,
@@ -170,7 +176,7 @@ describe('toUserPositionDisplay', () => {
     const result = toUserPositionDisplay(
       {
         rbtcBalance: 2n * WeiPerEther,
-        vaultTokens: 5n * WeiPerEther,
+        vaultTokens: 5n * ONE_SHARE_RAW,
         positionValue: (51n * WeiPerEther) / 10n,
         percentOfVault: 10.2,
         totalDepositedPrincipal: 5n * WeiPerEther,
@@ -205,7 +211,7 @@ describe('toUserPositionDisplay', () => {
     const result = toUserPositionDisplay(
       {
         rbtcBalance: 2n * WeiPerEther,
-        vaultTokens: 5n * WeiPerEther,
+        vaultTokens: 5n * ONE_SHARE_RAW,
         positionValue: (51n * WeiPerEther) / 10n,
         percentOfVault: 10.2,
         totalDepositedPrincipal: 5n * WeiPerEther,
@@ -393,19 +399,21 @@ describe('toActiveRequestDisplay', () => {
     const req = {
       id: 'req-2',
       type: 'withdrawal' as const,
-      amount: 1_000_000_000_000_000_000n,
+      amount: ONE_SHARE_RAW,
       status: 'claimable' as const,
       epochId: null,
       batchRedeemId: 'batch-1',
       timestamps: { created: 1700000000 },
       txHashes: { submit: '0xdef' },
     }
-    const claimable = { claimable: true, lockedSharePrice: 1_020_000_000_000_000_000n }
+    // Fixed-point NAV ((assets+1)*1e18)/(supply+1): 1 ONE_SHARE_RAW redeems to 1.02 rBTC via (amount * nav) / 1e18
+    const lockedSharePrice = 1_020_000_000_000n
+    const claimable = { claimable: true, lockedSharePrice }
     const result = toActiveRequestDisplay(req, claimable, 50000)
     expect(result.claimable).toBe(true)
     expect(result.lockedSharePriceFormatted).toBe('1.02/share')
     expect(result.finalizeId).toBe('batch-1')
-    expect(result.sharesFormatted).toBe('1')
+    expect(result.sharesFormatted).toBe('1.00')
     // 1 share * 1.02 rBTC/share = 1.02 rBTC * $50,000 = $51,000
     expect(result.usdEquivalentFormatted).toBe('$51,000.00 USD')
   })
@@ -455,14 +463,14 @@ describe('toActiveRequestDisplay', () => {
     const withdrawalReq = {
       id: 'w1',
       type: 'withdrawal' as const,
-      amount: 3_500_000_000_000_000_000n,
+      amount: (35n * ONE_SHARE_RAW) / 10n,
       status: 'pending' as const,
       epochId: null,
       batchRedeemId: null,
       timestamps: { created: 1700000000 },
       txHashes: {},
     }
-    expect(toActiveRequestDisplay(withdrawalReq, null, 0).sharesFormatted).toBe('3.5')
+    expect(toActiveRequestDisplay(withdrawalReq, null, 0).sharesFormatted).toBe('3.50')
   })
 
   it('claimable deposit shows computed shares from lockedSharePrice', () => {
@@ -476,16 +484,55 @@ describe('toActiveRequestDisplay', () => {
       timestamps: { created: 1700000000 },
       txHashes: {},
     }
-    // lockedSharePrice = 1 rBTC per share → 2 rBTC deposit = 2 shares
-    const claimableInfo = { claimable: true, lockedSharePrice: 1_000_000_000_000_000_000n }
-    expect(toActiveRequestDisplay(depositReq, claimableInfo, 0).sharesFormatted).toBe('2')
+    // lockedSharePrice = 1e12 wei per raw unit → 2 rBTC deposit → 2e24 raw shares = 2 human shares
+    const claimableInfo = { claimable: true, lockedSharePrice: 1_000_000_000_000n }
+    expect(toActiveRequestDisplay(depositReq, claimableInfo, 0).sharesFormatted).toBe('2.00')
+  })
+
+  it('approved deposit (wire displayStatus) shows computed shares from epoch snapshot lockedSharePrice', () => {
+    const depositReq = {
+      id: 'd-approved',
+      type: 'deposit' as const,
+      amount: 2_000_000_000_000_000_000n, // 2 rBTC
+      status: 'pending' as const,
+      displayStatus: 'approved' as const,
+      epochId: '1',
+      batchRedeemId: null,
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    const claimableInfo = { claimable: false, lockedSharePrice: 1_000_000_000_000n }
+    expect(toActiveRequestDisplay(depositReq, claimableInfo, 0).sharesFormatted).toBe('2.00')
+  })
+
+  it('approved withdrawal (wire displayStatus) shows snapshot-based rBTC same as claimable/terminal', () => {
+    const req = {
+      id: 'w-approved',
+      type: 'withdrawal' as const,
+      amount: ONE_SHARE_RAW,
+      status: 'pending' as const,
+      displayStatus: 'approved' as const,
+      epochId: null,
+      batchRedeemId: '1',
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    const claimableInfo = {
+      claimable: false,
+      lockedSharePrice: WeiPerEther,
+      assetsAtCloseWei: 100n * ONE_ETHER,
+      supplyAtCloseWei: 100n * ONE_SHARE_RAW,
+    }
+    const result = toActiveRequestDisplay(req, claimableInfo, 0)
+    expect(result.amountFormatted).toBe('1')
+    expect(result.sharesFormatted).toBe('1.00')
   })
 
   it('pending withdrawal shows "—" for amountFormatted (rBTC unknown pre-settlement)', () => {
     const req = {
       id: 'w1',
       type: 'withdrawal' as const,
-      amount: 3_500_000_000_000_000_000n, // 3.5 shares
+      amount: (35n * ONE_SHARE_RAW) / 10n,
       status: 'pending' as const,
       epochId: null,
       batchRedeemId: '1',
@@ -495,25 +542,120 @@ describe('toActiveRequestDisplay', () => {
     const result = toActiveRequestDisplay(req, null, 50000)
     expect(result.amountFormatted).toBe('—')
     expect(result.usdEquivalentFormatted).toBeNull()
-    expect(result.sharesFormatted).toBe('3.5')
+    expect(result.sharesFormatted).toBe('3.50')
   })
 
   it('claimable withdrawal shows computed rBTC value from lockedSharePrice', () => {
     const req = {
       id: 'w2',
       type: 'withdrawal' as const,
-      amount: 2_000_000_000_000_000_000n, // 2 shares
+      amount: 2n * ONE_SHARE_RAW,
       status: 'claimable' as const,
       epochId: null,
       batchRedeemId: '2',
       timestamps: { created: 1700000000 },
       txHashes: {},
     }
-    // lockedSharePrice = 1.5 rBTC per share → 2 shares = 3 rBTC
-    const claimableInfo = { claimable: true, lockedSharePrice: 1_500_000_000_000_000_000n }
+    // Snapshot proportion: 2 raw shares × 150 rBTC / 100 raw total supply → 3 rBTC
+    const claimableInfo = {
+      claimable: true,
+      lockedSharePrice: 1_500_000_000_000n,
+      assetsAtCloseWei: 150n * ONE_ETHER,
+      supplyAtCloseWei: 100n * ONE_SHARE_RAW,
+    }
     const result = toActiveRequestDisplay(req, claimableInfo, 0)
     expect(result.amountFormatted).toBe('3')
-    expect(result.sharesFormatted).toBe('2')
+    expect(result.sharesFormatted).toBe('2.00')
+  })
+
+  it('claimable withdrawal uses epoch snapshot totals × shares (ignores misleading lockedSharePrice)', () => {
+    const req = {
+      id: 'w3',
+      type: 'withdrawal' as const,
+      amount: ONE_SHARE_RAW,
+      status: 'claimable' as const,
+      epochId: null,
+      batchRedeemId: '3',
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    // ~0.000124 rBTC: one full raw share × 124e12 wei assets / same raw supply (toy closed system)
+    const assetsAtCloseWei = 124_000_000_000_000n
+    const supplyAtCloseWei = ONE_SHARE_RAW
+    const claimableInfo = {
+      claimable: true,
+      lockedSharePrice: WeiPerEther,
+      assetsAtCloseWei,
+      supplyAtCloseWei,
+    }
+    const expectedWei = (ONE_SHARE_RAW * (assetsAtCloseWei + 1n)) / (supplyAtCloseWei + 1n)
+    const result = toActiveRequestDisplay(req, claimableInfo, 50_000)
+    expect(result.amountFormatted).toBe(formatEther(expectedWei))
+    expect(result.usdEquivalentFormatted).toBe('$6.20 USD')
+  })
+
+  it('claimable withdrawal snapshot proportion yields 1 rBTC for one share at par snapshot', () => {
+    const req = {
+      id: 'w4',
+      type: 'withdrawal' as const,
+      amount: ONE_SHARE_RAW,
+      status: 'claimable' as const,
+      epochId: null,
+      batchRedeemId: '4',
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    const claimableInfo = {
+      claimable: true,
+      lockedSharePrice: WeiPerEther,
+      assetsAtCloseWei: 100n * ONE_ETHER,
+      supplyAtCloseWei: 100n * ONE_SHARE_RAW,
+    }
+    const result = toActiveRequestDisplay(req, claimableInfo, 0)
+    expect(result.amountFormatted).toBe('1')
+  })
+
+  it('terminal done withdrawal uses epoch snapshot totals × shares (same as claimable)', () => {
+    const req = {
+      id: 'w5',
+      type: 'withdrawal' as const,
+      amount: ONE_SHARE_RAW,
+      status: 'done' as const,
+      epochId: null,
+      batchRedeemId: '5',
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    const assetsAtCloseWei = 124_000_000_000_000n
+    const supplyAtCloseWei = ONE_SHARE_RAW
+    const claimableInfo = {
+      claimable: false,
+      lockedSharePrice: WeiPerEther,
+      assetsAtCloseWei,
+      supplyAtCloseWei,
+    }
+    const expectedWei = (ONE_SHARE_RAW * (assetsAtCloseWei + 1n)) / (supplyAtCloseWei + 1n)
+    const result = toActiveRequestDisplay(req, claimableInfo, 50_000)
+    expect(result.amountFormatted).toBe(formatEther(expectedWei))
+    expect(result.usdEquivalentFormatted).toBe('$6.20 USD')
+    expect(result.sharesFormatted).toBe('1.00')
+  })
+
+  it('terminal done withdrawal without claimableInfo shows em dash for rBTC value (shares are not formatEther)', () => {
+    const req = {
+      id: 'w6',
+      type: 'withdrawal' as const,
+      amount: ONE_SHARE_RAW,
+      status: 'done' as const,
+      epochId: null,
+      batchRedeemId: '6',
+      timestamps: { created: 1700000000 },
+      txHashes: {},
+    }
+    const result = toActiveRequestDisplay(req, null, 50_000)
+    expect(result.amountFormatted).toBe('—')
+    expect(result.usdEquivalentFormatted).toBeNull()
+    expect(result.sharesFormatted).toBe('1.00')
   })
 })
 
@@ -633,7 +775,7 @@ describe('toPaginatedHistoryDisplay', () => {
         {
           id: 'req-3',
           type: 'withdrawal' as const,
-          amount: 600_000_000_000_000_000_000n,
+          amount: 600n * ONE_SHARE_RAW,
           status: 'done' as const,
           epochId: null,
           batchRedeemId: 'batch-1',
@@ -731,16 +873,16 @@ describe('getTxHistoryStatusLabel', () => {
     requestType: 'deposit' | 'withdrawal'
     expected: string
   }[] = [
-    { displayStatus: 'approved', requestType: 'withdrawal', expected: 'Approved' },
-    { displayStatus: 'approved', requestType: 'deposit', expected: 'Approved' },
-    { displayStatus: 'claim_pending', requestType: 'withdrawal', expected: 'Ready to withdraw' },
-    { displayStatus: 'claim_pending', requestType: 'deposit', expected: 'Claim pending' },
-    { displayStatus: 'successful', requestType: 'withdrawal', expected: 'Withdrawn' },
-    { displayStatus: 'successful', requestType: 'deposit', expected: 'Successful' },
-    { displayStatus: 'pending', requestType: 'withdrawal', expected: 'Pending' },
-    { displayStatus: 'open_to_claim', requestType: 'deposit', expected: 'Ready to claim' },
-    { displayStatus: 'cancelled', requestType: 'withdrawal', expected: 'Cancelled' },
-  ]
+      { displayStatus: 'approved', requestType: 'withdrawal', expected: 'Approved' },
+      { displayStatus: 'approved', requestType: 'deposit', expected: 'Approved' },
+      { displayStatus: 'claim_pending', requestType: 'withdrawal', expected: 'Ready to withdraw' },
+      { displayStatus: 'claim_pending', requestType: 'deposit', expected: 'Claim pending' },
+      { displayStatus: 'successful', requestType: 'withdrawal', expected: 'Withdrawn' },
+      { displayStatus: 'successful', requestType: 'deposit', expected: 'Successful' },
+      { displayStatus: 'pending', requestType: 'withdrawal', expected: 'Pending' },
+      { displayStatus: 'open_to_claim', requestType: 'deposit', expected: 'Ready to claim' },
+      { displayStatus: 'cancelled', requestType: 'withdrawal', expected: 'Cancelled' },
+    ]
 
   it.each(cases)('$requestType + $displayStatus → $expected', ({ displayStatus, requestType, expected }) => {
     expect(getTxHistoryStatusLabel(displayStatus, requestType)).toBe(expected)
@@ -768,7 +910,7 @@ describe('apiHistoryToPaginatedDisplay', () => {
           user: '0xuser2',
           action: 'REDEEM_CLAIMED',
           assets: '0',
-          shares: '2000000000000000000',
+          shares: '2000000000000000000000000',
           epochId: '2',
           timestamp: 1700003600,
           blockNumber: '456',
@@ -846,7 +988,7 @@ describe('apiHistoryToPaginatedDisplay', () => {
           user: '0xu',
           action: 'REDEEM_REQUEST',
           assets: '0',
-          shares: '1000000000000000000',
+          shares: '1000000000000000000000000',
           epochId: '2',
           timestamp: 1700086400,
           blockNumber: '2',
@@ -879,7 +1021,7 @@ describe('apiHistoryToPaginatedDisplay', () => {
           user: '0xu',
           action: 'REDEEM_REQUEST',
           assets: '0',
-          shares: '3000000000000000000',
+          shares: '3000000000000000000000000',
           epochId: '2',
           timestamp: 1700086400,
           blockNumber: '2',
@@ -900,7 +1042,7 @@ describe('apiHistoryToPaginatedDisplay', () => {
     const result = apiHistoryToPaginatedDisplay(response)
     const row = result.rows[0]
     expect(row.type).toBe('withdrawal')
-    expect(row.amountFormatted).toBe('3')
+    expect(row.amountFormatted).toBe('3.00')
     expect(row.claimTokenType).toBe('shares')
     expect(row.displayStatus).toBe('claim_pending')
     expect(row.displayStatusLabel).toBe('Ready to withdraw')
@@ -1022,7 +1164,7 @@ describe('apiHistoryToPaginatedDisplay', () => {
           user: '0xu',
           action: 'REDEEM_REQUEST',
           assets: '0',
-          shares: '1000000000000000000',
+          shares: '1000000000000000000000000',
           epochId: '1',
           timestamp: 1700000000,
           blockNumber: '1',
@@ -1082,7 +1224,7 @@ describe('mapApiItemToVaultRequest', () => {
       user: '0xabc',
       action: 'REDEEM_REQUEST',
       assets: '0',
-      shares: '1000000000000000000',
+      shares: '1000000000000000000000000',
       epochId: '1',
       timestamp: 1700000000,
       blockNumber: '1',
@@ -1100,7 +1242,7 @@ describe('mapApiItemToVaultRequest', () => {
       user: '0xabc',
       action: 'REDEEM_REQUEST',
       assets: '0',
-      shares: '1000000000000000000',
+      shares: '1000000000000000000000000',
       epochId: '2',
       timestamp: 1700000000,
       blockNumber: '2',
@@ -1119,7 +1261,7 @@ describe('toRequestDetailDisplay', () => {
     const req: VaultRequest = {
       id: 'req-1',
       type: 'withdrawal',
-      amount: WeiPerEther,
+      amount: ONE_SHARE_RAW,
       status: 'pending',
       epochId: null,
       batchRedeemId: '1',
@@ -1135,7 +1277,7 @@ describe('toRequestDetailDisplay', () => {
     const req: VaultRequest = {
       id: 'req-2',
       type: 'withdrawal',
-      amount: WeiPerEther,
+      amount: ONE_SHARE_RAW,
       status: 'pending',
       displayStatus: 'approved',
       epochId: null,
@@ -1152,7 +1294,7 @@ describe('toRequestDetailDisplay', () => {
     const req: VaultRequest = {
       id: 'req-3',
       type: 'withdrawal',
-      amount: WeiPerEther,
+      amount: ONE_SHARE_RAW,
       status: 'claimable',
       displayStatus: 'claim_pending',
       epochId: null,
@@ -1196,7 +1338,7 @@ describe('toRequestDetailDisplay', () => {
     const cancelledReq: VaultRequest = {
       id: 'req-cancelled',
       type: 'withdrawal',
-      amount: WeiPerEther,
+      amount: ONE_SHARE_RAW,
       status: 'cancelled',
       epochId: null,
       batchRedeemId: '1',

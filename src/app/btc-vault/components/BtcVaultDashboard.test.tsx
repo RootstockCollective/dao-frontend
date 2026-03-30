@@ -3,8 +3,12 @@ import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
 
+import { VAULT_SHARE_MULTIPLIER, WeiPerEther } from '@/lib/constants'
+
 import type { UserPositionDisplay } from '../services/ui/types'
 import { BtcVaultDashboard } from './BtcVaultDashboard'
+
+const FIVE_SHARES_RAW = 5n * WeiPerEther * VAULT_SHARE_MULTIPLIER
 
 function Wrapper({ children }: { children: ReactNode }) {
   return <TooltipProvider>{children}</TooltipProvider>
@@ -27,10 +31,10 @@ vi.mock('./BtcVaultActions', () => ({
 
 const MOCK_DISPLAY: UserPositionDisplay = {
   rbtcBalanceFormatted: '2',
-  vaultTokensFormatted: '5',
+  vaultTokensFormatted: '5.00',
   positionValueFormatted: '5.1',
   percentOfVaultFormatted: '10.20%',
-  vaultTokensRaw: 5_000_000_000_000_000_000n,
+  vaultTokensRaw: FIVE_SHARES_RAW,
   rbtcBalanceRaw: 2_000_000_000_000_000_000n,
   totalDepositedPrincipalFormatted: '5',
   totalDepositedPrincipalRaw: 5_000_000_000_000_000_000n,
@@ -84,7 +88,7 @@ describe('BtcVaultDashboard', () => {
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
 
     expect(screen.getByTestId('metric-wallet')).toHaveTextContent('2')
-    expect(screen.getByTestId('metric-vault-shares')).toHaveTextContent('5')
+    expect(screen.getByTestId('metric-vault-shares')).toHaveTextContent('5.00')
     expect(screen.getByTestId('metric-share-of-vault')).toHaveTextContent('10.20%')
     expect(screen.getByTestId('metric-principal')).toHaveTextContent('5')
     expect(screen.getByTestId('metric-earnings')).toHaveTextContent('0.1')

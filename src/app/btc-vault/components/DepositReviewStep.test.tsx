@@ -54,7 +54,7 @@ describe('DepositReviewStep', () => {
   it('formats large share count with thousands separator', () => {
     render(<DepositReviewStep {...defaultProps} estimatedShares="2000.5" />)
 
-    expect(screen.getByTestId('review-shares')).toHaveTextContent('2,001')
+    expect(screen.getByTestId('review-shares')).toHaveTextContent('2,000.5')
   })
 
   it('displays deposit fee', () => {

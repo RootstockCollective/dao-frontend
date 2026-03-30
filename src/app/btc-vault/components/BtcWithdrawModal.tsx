@@ -2,12 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { Hash } from 'viem'
-import { formatEther, parseEther } from 'viem'
+import { formatEther, parseUnits } from 'viem'
 import { useAccount } from 'wagmi'
 
 import { Modal } from '@/components/Modal'
 import { ProgressBar } from '@/components/ProgressBarNew'
 import { Header } from '@/components/Typography'
+import { VAULT_SHARE_DECIMALS } from '@/lib/constants'
 
 import { useUserPosition } from '../hooks/useUserPosition'
 import { useVaultMetrics } from '../hooks/useVaultMetrics'
@@ -58,12 +59,13 @@ export const BtcWithdrawModal = ({
 
   const vaultTokensFormatted = userPosition?.vaultTokensFormatted ?? '0'
   const vaultTokensRaw = userPosition?.vaultTokensRaw ?? 0n
+  // Chain spot NAV per raw share basis (pairs with `shares` in raw 24-decimal units).
   const pricePerShareRaw = vaultMetrics?.pricePerShareRaw ?? 0n
 
   const rbtcEquivalent = useMemo(() => {
     if (!amount || pricePerShareRaw === 0n) return '0'
     try {
-      const shares = parseEther(amount)
+      const shares = parseUnits(amount, VAULT_SHARE_DECIMALS)
       const rbtcWei = (shares * pricePerShareRaw) / 10n ** 18n
       return formatEther(rbtcWei)
     } catch {
@@ -83,7 +85,7 @@ export const BtcWithdrawModal = ({
   const handleAmountContinue = useCallback(async () => {
     if (!amount) return
     try {
-      const sw = parseEther(amount)
+      const sw = parseUnits(amount, VAULT_SHARE_DECIMALS)
       setIsCheckingAllowance(true)
       setSharesWei(sw)
       if (await hasAllowanceFor(sw)) {
@@ -94,7 +96,7 @@ export const BtcWithdrawModal = ({
         setStep('allowance')
       }
     } catch {
-      // parseEther or allowance check failed — stay on amount
+      // parseUnits(amount, VAULT_SHARE_DECIMALS) or allowance check failed — stay on amount
     } finally {
       setIsCheckingAllowance(false)
     }
@@ -151,6 +153,7 @@ export const BtcWithdrawModal = ({
         {step === 'allowance' && (
           <WithdrawAllowanceStep
             sharesWei={sharesWei}
+            sharesDisplayAmount={amount}
             isAllowanceReadLoading={isAllowanceReadLoading}
             isApproving={isApprovingShares}
             allowanceTxHash={allowanceTxHash}
