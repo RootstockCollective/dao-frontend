@@ -78,7 +78,7 @@ export const WithdrawModal = ({ onCloseModal, onTransactionSuccess }: Props) => 
 
   const handlePercentageClick = useCallback(
     (percentage: number) => {
-      const calculatedAmount = Big(userUsdrifBalanceString).mul(percentage).toString()
+      const calculatedAmount = Big(userUsdrifBalanceString).mul(percentage).toFixedNoTrailing(18)
       setAmount(calculatedAmount)
     },
     [userUsdrifBalanceString],

@@ -126,6 +126,18 @@ describe('useAmountInput', () => {
       })
       expect(result.current.amount).toBe('2')
     })
+
+    it('handlePercentageClick(1) uses decimal notation for tiny balances (avoids Big.js scientific notation)', () => {
+      // 2 gwei — Big().mul(1).toString() would be "2e-9", which viem parseUnits rejects
+      const { result } = renderHook(() =>
+        useAmountInput({ balance: 2_000_000_000n, isNative: false }),
+      )
+      act(() => {
+        result.current.handlePercentageClick(1)
+      })
+      expect(result.current.amount).toBe('0.000000002')
+      expect(result.current.amount).not.toMatch(/e[+-]/i)
+    })
   })
 
   describe('percentage shortcuts - native token', () => {

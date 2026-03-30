@@ -65,11 +65,15 @@ export const WithdrawAmountStep = ({
 
   const handlePercentageClick = useCallback(
     (percentage: number) => {
-      const calculatedAmount = Big(vaultTokensRaw.toString())
-        .mul(percentage)
-        .div(Big(10).pow(VAULT_SHARE_DECIMALS))
-        .toFixedNoTrailing(18, 0)
-      setAmount(calculatedAmount)
+      const divisor = Big(10).pow(VAULT_SHARE_DECIMALS)
+      if (percentage === 1) {
+        const maxStr = Big(vaultTokensRaw.toString()).div(divisor).toFixedNoTrailing(18, 0)
+        setAmount(maxStr)
+      } else {
+        const balanceStr = Big(vaultTokensRaw.toString()).div(divisor).toString()
+        const calculatedAmount = Big(balanceStr).mul(percentage).toFixedNoTrailing(18)
+        setAmount(calculatedAmount)
+      }
     },
     [vaultTokensRaw, setAmount],
   )

@@ -150,7 +150,7 @@ export const DepositModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
 
   const handlePercentageClick = useCallback(
     (percentage: number) => {
-      const calculatedAmount = Big(usdrifBalance.balance).mul(percentage).toString()
+      const calculatedAmount = Big(usdrifBalance.balance).mul(percentage).toFixedNoTrailing(18)
       setAmount(calculatedAmount)
     },
     [usdrifBalance.balance],

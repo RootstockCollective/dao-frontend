@@ -65,11 +65,11 @@ export const DepositAmountStep = ({
   const handlePercentageClick = useCallback(
     (percentage: number) => {
       if (percentage === 1) {
-        const maxStr = Big(rbtcBalanceRaw.toString()).div(Big(10).pow(18)).toString()
+        const maxStr = Big(rbtcBalanceRaw.toString()).div(Big(10).pow(18)).toFixedNoTrailing(18)
         setAmount(maxStr)
       } else {
         const balanceStr = Big(rbtcBalanceRaw.toString()).div(Big(10).pow(18)).toString()
-        const calculatedAmount = Big(balanceStr).mul(percentage).toString()
+        const calculatedAmount = Big(balanceStr).mul(percentage).toFixedNoTrailing(18)
         setAmount(calculatedAmount)
       }
     },

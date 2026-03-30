@@ -202,10 +202,11 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
 
   const handlePercentageClick = useCallback(
     (percentage: number) => {
-      const calculatedAmount = Big(tokenInBalance).mul(percentage).toString()
+      const decimals = tokenInData.decimals ?? 18
+      const calculatedAmount = Big(tokenInBalance).mul(percentage).toFixedNoTrailing(decimals)
       setAmountIn(calculatedAmount)
     },
-    [tokenInBalance, setAmountIn],
+    [tokenInBalance, setAmountIn, tokenInData.decimals],
   )
 
   const feeTierOptions = useMemo(
