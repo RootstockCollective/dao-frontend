@@ -64,18 +64,16 @@ FROM node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e5
 # Set the working directory
 WORKDIR /app
 
-# Copy the standalone server output (includes only the node_modules needed at runtime)
-COPY --from=builder /app/.next/standalone ./
-# Static assets and public files are not included in standalone output
-COPY --from=builder /app/.next/static ./.next/static
+# Copy the built application from the builder stage
+COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
+COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/.env.local ./.env.local
+COPY --from=builder /app/node_modules ./node_modules
 
 # Copy Prisma schema and migrations
 COPY --from=builder /app/prisma ./prisma
 
-# Prisma CLI is not included in standalone output; install it for migrate deploy
-RUN npm install --no-save prisma
 
 # Download AWS RDS CA certificate
 RUN apk add --no-cache wget && \
@@ -85,6 +83,5 @@ RUN apk add --no-cache wget && \
 # Expose the port that Next.js will run on
 EXPOSE 3000
 
-# Run Prisma migrations and start the standalone Next.js server
-# "next start" is not compatible with output: 'standalone'; use node server.js directly
-CMD ["sh", "-c", "npx prisma migrate deploy; node server.js"]
+# Run Prisma migrations and start the Next.js application
+CMD ["sh", "-c", "npx prisma migrate deploy; npm start"]
