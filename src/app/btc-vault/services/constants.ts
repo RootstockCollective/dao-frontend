@@ -57,3 +57,6 @@ export const DEPOSIT_EXPECTED_COMPLETION = '7 days'
  * TODO(DAO-2066): align with product/config when final; countdown UI may show fallback when endTime is 0.
  */
 export const EPOCH_DURATION_SEC = 7 * 24 * 3600 // 6 days
+
+/** UTC midnight 31 Mar 2026 as Unix seconds. Fallback epoch start when previous epoch `closedAt` is missing or zero. */
+export const EPOCH_FALLBACK_START_UNIX_SEC = 1_774_915_200 // 2026-03-31T00:00:00.000Z

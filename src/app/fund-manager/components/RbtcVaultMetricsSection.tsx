@@ -140,7 +140,7 @@ export const RbtcVaultMetricsSection = () => {
         />
         <RbtcVaultMetricCard
           title="Price per Share"
-          tooltipContent="Fixed synthetic yield rate configured for the vault. Reflected in the vault's overall performance."
+          tooltipContent="Value of one vault share based on the latest confirmed NAV. Used to calculate deposits and withdrawals."
           amount={pricePerShare.amount}
           tokenSymbol={RBTC}
           fiatAmount={pricePerShare.fiatAmount}

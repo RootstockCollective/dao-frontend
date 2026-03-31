@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { parseUnits } from 'viem'
 
 import { Button } from '@/components/Button'
 import { Divider } from '@/components/Divider'
@@ -15,9 +16,6 @@ import { cn, formatCurrency, handleAmountInput } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 
 import { BTC_VAULT_DEPOSIT_DISCLAIMER } from '../services/constants'
-
-/** Conservative gas reserve for native rBTC deposits (0.001 rBTC ≈ $0.10) */
-const GAS_RESERVE_WEI = 1_000_000_000_000_000n // 0.001 rBTC
 
 interface DepositAmountStepProps {
   amount: string
@@ -67,8 +65,7 @@ export const DepositAmountStep = ({
   const handlePercentageClick = useCallback(
     (percentage: number) => {
       if (percentage === 1) {
-        const maxWei = rbtcBalanceRaw > GAS_RESERVE_WEI ? rbtcBalanceRaw - GAS_RESERVE_WEI : 0n
-        const maxStr = Big(maxWei.toString()).div(Big(10).pow(18)).toString()
+        const maxStr = Big(rbtcBalanceRaw.toString()).div(Big(10).pow(18)).toString()
         setAmount(maxStr)
       } else {
         const balanceStr = Big(rbtcBalanceRaw.toString()).div(Big(10).pow(18)).toString()
@@ -93,8 +90,17 @@ export const DepositAmountStep = ({
     if (isAmountOverBalance) {
       return `This is more than the available ${RBTC} balance. Please update the amount.`
     }
+    if (!amount || amount === '0') return ''
+    try {
+      const amountWei = parseUnits(amount, 18)
+      if (amountWei >= rbtcBalanceRaw && rbtcBalanceRaw > 0n) {
+        return 'Using your full balance may not leave enough for gas fees, which could cause the transaction to fail.'
+      }
+    } catch {
+      // invalid amount string
+    }
     return ''
-  }, [isAmountOverBalance])
+  }, [isAmountOverBalance, amount, rbtcBalanceRaw])
 
   const isValid = useMemo(() => {
     if (!amount) return false
