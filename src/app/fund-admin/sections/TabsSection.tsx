@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react'
 
 import { SolidTabs } from '@/components/Tabs'
 
+import { AuditLogSection } from './audit-log/AuditLogSection'
 import { VaultControlsSection } from './vault-controls/VaultControlsSection'
 import { WhitelistSection } from './whitelist/WhitelistSection'
 
@@ -28,7 +29,7 @@ export function TabsSection() {
       <div className="mt-6 rounded-sm">
         {activeTab === 'Whitelist' && <WhitelistSection />}
         {activeTab === 'Vault controls' && <VaultControlsSection />}
-        {activeTab === 'Audit log' && 'Audit log table'}
+        {activeTab === 'Audit log' && <AuditLogSection />}
       </div>
     </SolidTabs>
   )
