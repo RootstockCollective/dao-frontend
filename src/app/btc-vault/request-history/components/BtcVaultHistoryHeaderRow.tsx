@@ -27,9 +27,9 @@ const OrderIndicator = ({ columnId }: OrderIndicatorProps) => {
   const { sort } = useTableContext<ColumnId, BtcVaultHistoryCellDataMap>()
 
   if (!sort) return null
-  if (sort.columnId !== columnId) return <ArrowsUpDown />
-  if (sort.direction === 'asc') return <ArrowUpWFill />
-  return <ArrowDownWFill />
+  if (sort.columnId !== columnId) return <ArrowsUpDown color="white" />
+  if (sort.direction === 'asc') return <ArrowUpWFill color="white" />
+  return <ArrowDownWFill color="white" />
 }
 
 const dispatchSortRoundRobin = (
