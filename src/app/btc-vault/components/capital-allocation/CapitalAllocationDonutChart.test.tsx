@@ -88,6 +88,26 @@ describe('CapitalAllocationDonutChart', () => {
     expect(screen.getAllByText('Unallocated capital').length).toBeGreaterThanOrEqual(1)
   })
 
+  it('renders empty state when all categories are zero', () => {
+    const mockDataAllZero: CapitalAllocationDisplay = {
+      categories: [
+        { label: 'Deployed capital', amountFormatted: '0', percentFormatted: '0%', fiatAmountFormatted: '$0.00 USD' },
+        { label: 'Liquidity reserve', amountFormatted: '0', percentFormatted: '0%', fiatAmountFormatted: '$0.00 USD' },
+        { label: 'Unallocated capital', amountFormatted: '0', percentFormatted: '0%', fiatAmountFormatted: '$0.00 USD' },
+      ],
+      wallets: [],
+    }
+
+    const { container } = renderWithTooltip(
+      <CapitalAllocationDonutChart data={mockDataAllZero} isAnimationActive={false} />,
+    )
+
+    expect(within(container).getAllByTestId('capital-allocation-donut-chart').length).toBeGreaterThanOrEqual(1)
+    expect(within(container).getAllByTestId('capital-allocation-empty').length).toBeGreaterThanOrEqual(1)
+    expect(within(container).getAllByText('No capital allocated yet').length).toBeGreaterThanOrEqual(1)
+    expect(within(container).queryAllByTestId('capital-allocation-legend')).toHaveLength(0)
+  })
+
   it('renders with custom className and data-testid', () => {
     renderWithTooltip(
       <CapitalAllocationDonutChart
