@@ -151,7 +151,7 @@
     "@reown/appkit-adapter-wagmi": {
       "@wagmi/connectors": "6.2.0"
     },
-    "axios": "^1.13.5"
+    "axios": "1.13.5"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --fix"
