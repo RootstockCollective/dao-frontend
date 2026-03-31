@@ -5,6 +5,7 @@ import {
   formatTimestamp,
   formatDateShort,
   formatDateClosingOn,
+  formatDateFullMonthPaddedDayUtc,
   shortenTxHash,
   formatCountdown,
 } from './formatters'
@@ -79,5 +80,16 @@ describe('formatDateClosingOn', () => {
   it('formats March 19', () => {
     const result = formatDateClosingOn(1742342400) // 19 Mar 2025 00:00:00 UTC
     expect(result).toMatch(/March 19/)
+  })
+})
+
+describe('formatDateFullMonthPaddedDayUtc', () => {
+  it('formats with full month and zero-padded day (e.g. April 06)', () => {
+    // 6 Apr 2026 00:00:00 UTC
+    const result = formatDateFullMonthPaddedDayUtc(1775433600)
+    expect(result).toBe('April 06')
+  })
+  it('pads single-digit days', () => {
+    expect(formatDateFullMonthPaddedDayUtc(1775347200)).toBe('April 05') // 5 Apr 2026 UTC
   })
 })
