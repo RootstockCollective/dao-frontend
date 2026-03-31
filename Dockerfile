@@ -36,9 +36,6 @@ ARG PROFILE
 ARG NEXT_PUBLIC_BUILD_ID
 ARG SENTRY_AUTH_TOKEN
 ARG ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL
-# Base64-encoded AES key (16/24/32 raw bytes); stabilizes Server Action IDs across ECS tasks.
-# See https://nextjs.org/docs/messages/failed-to-find-server-action
-ARG NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
 
 # Inject build args into the profile env file BEFORE copying
 # This is critical because next.config.mjs loads from .env.${PROFILE} with override: true
@@ -51,10 +48,14 @@ RUN cp .env.${PROFILE} .env.local
 # Also export as environment variable for the build step
 ENV NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}
 ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
-ENV NEXT_SERVER_ACTIONS_ENCRYPTION_KEY=${NEXT_SERVER_ACTIONS_ENCRYPTION_KEY}
 
 # Build the Next.js application
-RUN --mount=type=cache,target=/app/.next/cache npm run build
+# Server Actions encryption key must be set at build time to be embedded into output.
+# Use a BuildKit secret so it's not persisted into image metadata or build args.
+# See https://nextjs.org/docs/messages/failed-to-find-server-action
+RUN --mount=type=cache,target=/app/.next/cache \
+    --mount=type=secret,id=NEXT_SERVER_ACTIONS_ENCRYPTION_KEY \
+    sh -c 'KEY=""; if [ -f /run/secrets/NEXT_SERVER_ACTIONS_ENCRYPTION_KEY ]; then KEY="$(cat /run/secrets/NEXT_SERVER_ACTIONS_ENCRYPTION_KEY)"; fi; NEXT_SERVER_ACTIONS_ENCRYPTION_KEY="$KEY" npm run build'
 
 # Clean node_modules for production after build
 RUN npm prune --production
