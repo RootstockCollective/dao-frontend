@@ -45,7 +45,7 @@ export function CapitalAllocationDonutChart({
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
-            data={segments}
+            data={total > 0 ? segments : [{ name: 'empty', value: 1 }]}
             dataKey="value"
             cx="50%"
             cy="50%"
@@ -56,19 +56,23 @@ export function CapitalAllocationDonutChart({
             startAngle={90}
             endAngle={-270}
           >
-            {segments.map((_, index) => (
-              <Cell
-                key={`cell-${index}`}
-                fill={CAPITAL_ALLOCATION_CHART_COLORS[index] ?? '#888'}
-                stroke="none"
-              />
-            ))}
+            {total > 0 ? (
+              segments.map((_, index) => (
+                <Cell
+                  key={`cell-${index}`}
+                  fill={CAPITAL_ALLOCATION_CHART_COLORS[index] ?? '#888'}
+                  stroke="none"
+                />
+              ))
+            ) : (
+              <Cell fill="var(--color-bg-20, #333)" stroke="none" />
+            )}
           </Pie>
         </PieChart>
       </ResponsiveContainer>
 
-      {total > 0 && (
-        <div className="pointer-events-auto absolute inset-0 flex items-center justify-center">
+      <div className="pointer-events-auto absolute inset-0 flex items-center justify-center">
+        {total > 0 ? (
           <ul
             className="flex w-max list-none flex-col items-start gap-6 p-0"
             data-testid="capital-allocation-legend"
@@ -121,8 +125,12 @@ export function CapitalAllocationDonutChart({
               </li>
             ))}
           </ul>
-        </div>
-      )}
+        ) : (
+          <Span variant="body-s" className="text-white/50" data-testid="capital-allocation-empty">
+            No capital allocated yet
+          </Span>
+        )}
+      </div>
     </div>
   )
 }
