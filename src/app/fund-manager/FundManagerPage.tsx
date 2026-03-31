@@ -8,7 +8,7 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header } from '@/components/Typography'
 import { usePermissionsManager } from '@/shared/hooks/contracts'
 
-import { RbtcVaultMetricsSection } from './components'
+import { RbtcVaultMetricsSection } from './sections/RbtcVaultMetricsSection'
 import { TabsSection } from './sections/TabsSection'
 
 const NAME = 'Fund Manager Dashboard'

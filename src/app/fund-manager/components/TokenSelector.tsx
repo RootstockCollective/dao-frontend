@@ -12,16 +12,16 @@ import { Span } from '@/components/Typography'
 import { RBTC, WRBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
-import { SelectedToken } from '../hooks/useTokenSelection'
+import { RbtcToken } from '../sections/metrics/hooks/useRbtcTokenSelection'
 
-const TOKEN_OPTIONS: { value: SelectedToken; label: string }[] = [
+const TOKEN_OPTIONS = [
   { value: RBTC, label: RBTC },
   { value: WRBTC, label: WRBTC },
 ]
 
 interface Props {
-  selectedToken: SelectedToken
-  onTokenChange: (token: SelectedToken) => void
+  selectedToken: RbtcToken
+  onTokenChange: (token: RbtcToken) => void
 }
 
 /**
@@ -31,7 +31,7 @@ interface Props {
  * When inside a modal, the dropdown list portals into the modal container (via SingleSelectDropdown context).
  */
 export const TokenSelector = ({ selectedToken, onTokenChange }: Props) => (
-  <Dropdown value={selectedToken} onValueChange={value => onTokenChange(value as SelectedToken)}>
+  <Dropdown value={selectedToken} onValueChange={value => onTokenChange(value as RbtcToken)}>
     <DropdownTrigger
       className={cn(
         'w-auto min-w-[100px] shrink-0 px-2 py-1.5 gap-2',
@@ -49,11 +49,11 @@ export const TokenSelector = ({ selectedToken, onTokenChange }: Props) => (
       </div>
     </DropdownTrigger>
     <DropdownContent>
-      {TOKEN_OPTIONS.map(opt => (
-        <DropdownItem key={opt.value} value={opt.value}>
+      {TOKEN_OPTIONS.map(({ value, label }) => (
+        <DropdownItem key={value} value={value}>
           <div className="flex items-center gap-2">
             <TokenImage symbol={RBTC} size={20} />
-            <Span bold>{opt.label}</Span>
+            <Span bold>{label}</Span>
           </div>
         </DropdownItem>
       ))}

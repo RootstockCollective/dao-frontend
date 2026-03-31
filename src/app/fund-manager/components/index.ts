@@ -1,1 +1,1 @@
-export { RbtcVaultMetricsSection } from './RbtcVaultMetricsSection'
+export { RbtcVaultMetricsSection } from '@/app/fund-manager/sections/RbtcVaultMetricsSection'
