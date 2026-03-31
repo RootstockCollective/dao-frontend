@@ -11,7 +11,7 @@ import { Paragraph } from '@/components/Typography'
 import { executeTxFlow } from '@/shared/notification'
 
 import { useGrantWhitelistedUserRole } from '../hooks/useGrantWhitelistedUserRole'
-import { type BTCAddWhitelistForm, btcAddWhitelistSchema } from '../schemas/grantWhitelistForm'
+import { type BTCAddWhitelistForm, btcAddWhitelistSchema } from '../schema'
 import { WhitelistAddressInput } from './GrantWhitelistAddressInput'
 
 export type { BTCAddWhitelistForm }

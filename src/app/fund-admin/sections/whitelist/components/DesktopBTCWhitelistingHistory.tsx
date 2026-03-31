@@ -22,7 +22,7 @@ import {
   type WhitelistCellDataMap,
   type WhitelistStatus,
   type WhitelistTable,
-} from './BTCWhitelistingHistoryTable.config'
+} from '../config'
 
 interface ChildrenWithClassNameProps {
   children: React.ReactNode
