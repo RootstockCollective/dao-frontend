@@ -36,6 +36,9 @@ ARG PROFILE
 ARG NEXT_PUBLIC_BUILD_ID
 ARG SENTRY_AUTH_TOKEN
 ARG ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL
+# Base64-encoded AES key (16/24/32 raw bytes); stabilizes Server Action IDs across ECS tasks.
+# See https://nextjs.org/docs/messages/failed-to-find-server-action
+ARG NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
 
 # Inject build args into the profile env file BEFORE copying
 # This is critical because next.config.mjs loads from .env.${PROFILE} with override: true
@@ -48,6 +51,7 @@ RUN cp .env.${PROFILE} .env.local
 # Also export as environment variable for the build step
 ENV NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}
 ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
+ENV NEXT_SERVER_ACTIONS_ENCRYPTION_KEY=${NEXT_SERVER_ACTIONS_ENCRYPTION_KEY}
 
 # Build the Next.js application
 RUN --mount=type=cache,target=/app/.next/cache npm run build
