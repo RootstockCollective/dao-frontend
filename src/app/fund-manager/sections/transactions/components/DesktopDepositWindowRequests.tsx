@@ -15,12 +15,8 @@ import { cn } from '@/lib/utils'
 import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { SORT_DIRECTION_ASC, SORT_DIRECTIONS } from '@/shared/context/TableContext/constants'
 
-import type {
-  ColumnId,
-  DepositWindowCellDataMap,
-  DepositWindowTable,
-} from './DepositWindowRequestsTable.config'
-import { COLUMN_TRANSFORMS, SORT_LABELS } from './DepositWindowRequestsTable.config'
+import type { ColumnId, DepositWindowCellDataMap, DepositWindowTable } from '../config'
+import { COLUMN_TRANSFORMS, SORT_LABELS } from '../config'
 
 // ─── Header ──────────────────────────────────────────────────────────
 
