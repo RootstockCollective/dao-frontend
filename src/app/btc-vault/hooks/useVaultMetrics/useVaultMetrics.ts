@@ -81,7 +81,7 @@ export function useVaultMetrics() {
     if (!phase1Data || phase1Data.length < 3) return null
     const totalAssets = (phase1Data[0]?.result as bigint | undefined) ?? 0n
     const totalSupply = (phase1Data[1]?.result as bigint | undefined) ?? 0n
-    const pricePerShare = totalSupply > 0n ? (totalAssets * ONE_SHARE) / totalSupply : ONE_SHARE
+    const pricePerShare = totalSupply > 0n ? (totalAssets * ONE_SHARE) / totalSupply : 0n
 
     let apy = 0
     if (phase2Data && phase2Data.length >= 2) {
