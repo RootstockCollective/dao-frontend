@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { render } from '@testing-library/react'
 
 vi.mock('@/shared/context/FeatureFlag', () => ({
@@ -78,6 +78,14 @@ vi.mock('./components/BtcVaultMetrics', () => ({
 }))
 
 describe('BtcVault page', () => {
+  beforeAll(() => {
+    global.ResizeObserver = vi.fn().mockImplementation(() => ({
+      observe: vi.fn(),
+      unobserve: vi.fn(),
+      disconnect: vi.fn(),
+    }))
+  })
+
   it('wraps BtcVaultPage with withServerFeatureFlag using btc_vault feature and redirect', async () => {
     const { withServerFeatureFlag } = await import('@/shared/context/FeatureFlag')
     // Import the page module to trigger the withServerFeatureFlag call
