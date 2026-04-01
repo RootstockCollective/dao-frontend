@@ -1,4 +1,4 @@
-import { Address } from 'viem'
+import { type Address, isAddress } from 'viem'
 
 import { BLOCKSCOUT_URL } from '@/lib/constants'
 import { logger } from '@/lib/logger'
@@ -12,13 +12,10 @@ export interface StrategyNamesResponse {
   [address: Address]: string | undefined
 }
 
-/** Strict EVM address: only allows hex so path/query injection into Blockscout URLs is impossible. */
-const STRICT_HEX_ADDRESS = /^0x[a-fA-F0-9]{40}$/
-
 const MAX_STRATEGY_ADDRESSES = 100
 
 function isSafeHexAddress(value: unknown): value is Address {
-  return typeof value === 'string' && STRICT_HEX_ADDRESS.test(value)
+  return typeof value === 'string' && isAddress(value)
 }
 
 /**
@@ -27,7 +24,7 @@ function isSafeHexAddress(value: unknown): value is Address {
  */
 function blockscoutAddressMetadataUrl(address: Address): string {
   const normalized = address.toLowerCase()
-  if (!STRICT_HEX_ADDRESS.test(normalized)) {
+  if (!isAddress(normalized)) {
     throw new TypeError('Invalid address for Blockscout request')
   }
   const base = BLOCKSCOUT_URL.trim().replace(/\/+$/, '')
