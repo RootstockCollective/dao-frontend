@@ -40,6 +40,10 @@ vi.mock('../../hooks/useClaimRequest', () => ({
   useClaimRequest: (...args: unknown[]) => mockUseClaimRequest(...args),
 }))
 
+vi.mock('../../hooks/useClaimableInfo', () => ({
+  useClaimableInfo: () => null,
+}))
+
 vi.mock('@/shared/notification', () => ({
   executeTxFlow: (args: unknown) => mockExecuteTxFlow(args),
 }))
@@ -137,7 +141,7 @@ describe('TransactionDetailPage', () => {
       address: '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb29266',
       isConnected: true,
     })
-    mockUseRequestById.mockReturnValue({ data: MOCK_WITHDRAWAL_PENDING, isLoading: false })
+    mockUseRequestById.mockReturnValue({ data: { request: MOCK_WITHDRAWAL_PENDING, claimableInfo: null }, isLoading: false })
     mockUseClaimRequest.mockReturnValue({
       claim: mockClaim,
       canClaim: false,
@@ -159,7 +163,7 @@ describe('TransactionDetailPage', () => {
   })
 
   it('renders "DEPOSIT REQUEST" title for a deposit', () => {
-    mockUseRequestById.mockReturnValue({ data: MOCK_DEPOSIT_DONE, isLoading: false })
+    mockUseRequestById.mockReturnValue({ data: { request: MOCK_DEPOSIT_DONE, claimableInfo: null }, isLoading: false })
     render(<TransactionDetailPage id="req-deposit-done" />)
     expect(screen.getByText('DEPOSIT REQUEST')).toBeInTheDocument()
   })
@@ -172,7 +176,7 @@ describe('TransactionDetailPage', () => {
   })
 
   it('does not render cancel button for non-pending request', () => {
-    mockUseRequestById.mockReturnValue({ data: MOCK_DEPOSIT_DONE, isLoading: false })
+    mockUseRequestById.mockReturnValue({ data: { request: MOCK_DEPOSIT_DONE, claimableInfo: null }, isLoading: false })
     render(<TransactionDetailPage id="req-deposit-done" />)
     expect(screen.getByTestId('request-detail-grid')).toBeInTheDocument()
     expect(screen.queryByTestId('cancel-request-button')).not.toBeInTheDocument()
@@ -210,14 +214,14 @@ describe('TransactionDetailPage', () => {
   })
 
   it('does not render cancel button for approved withdrawal', () => {
-    mockUseRequestById.mockReturnValue({ data: MOCK_WITHDRAWAL_APPROVED, isLoading: false })
+    mockUseRequestById.mockReturnValue({ data: { request: MOCK_WITHDRAWAL_APPROVED, claimableInfo: null }, isLoading: false })
     render(<TransactionDetailPage id="req-withdrawal-approved" />)
     expect(screen.getByTestId('request-detail-grid')).toBeInTheDocument()
     expect(screen.queryByTestId('cancel-request-button')).not.toBeInTheDocument()
   })
 
   it('renders claim button with "Claim rBTC" for claimable withdrawal', () => {
-    mockUseRequestById.mockReturnValue({ data: MOCK_WITHDRAWAL_CLAIMABLE, isLoading: false })
+    mockUseRequestById.mockReturnValue({ data: { request: MOCK_WITHDRAWAL_CLAIMABLE, claimableInfo: null }, isLoading: false })
     mockUseClaimRequest.mockReturnValue({
       claim: mockClaim,
       canClaim: true,
@@ -233,7 +237,7 @@ describe('TransactionDetailPage', () => {
   })
 
   it('renders claim button with "Claim Shares" for claimable deposit', () => {
-    mockUseRequestById.mockReturnValue({ data: MOCK_DEPOSIT_CLAIMABLE, isLoading: false })
+    mockUseRequestById.mockReturnValue({ data: { request: MOCK_DEPOSIT_CLAIMABLE, claimableInfo: { claimable: true, lockedSharePrice: ONE_BTC } }, isLoading: false })
     mockUseClaimRequest.mockReturnValue({
       claim: mockClaim,
       canClaim: true,
@@ -249,7 +253,7 @@ describe('TransactionDetailPage', () => {
   })
 
   it('calls executeTxFlow with btcVaultClaim action when claim is clicked', async () => {
-    mockUseRequestById.mockReturnValue({ data: MOCK_WITHDRAWAL_CLAIMABLE, isLoading: false })
+    mockUseRequestById.mockReturnValue({ data: { request: MOCK_WITHDRAWAL_CLAIMABLE, claimableInfo: null }, isLoading: false })
     mockClaim.mockResolvedValue('0xclaimhash')
     mockExecuteTxFlow.mockResolvedValue('0xclaimhash')
     mockUseClaimRequest.mockReturnValue({

@@ -143,7 +143,8 @@ describe('useActiveRequests', () => {
       expect(result.current.data).toHaveLength(1)
       expect(result.current.data?.[0].type).toBe('withdrawal')
       expect(result.current.data?.[0].status).toBe('pending')
-      expect(result.current.data?.[0].amountFormatted).toBe('2')
+      // Pending withdrawal: rBTC value unknown pre-settlement
+      expect(result.current.data?.[0].amountFormatted).toBe('—')
       expect(result.current.data?.[0].id).toBe('red-2')
     })
 

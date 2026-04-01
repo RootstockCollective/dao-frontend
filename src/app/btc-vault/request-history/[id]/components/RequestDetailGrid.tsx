@@ -39,22 +39,28 @@ export function RequestDetailGrid({ detail }: RequestDetailGridProps) {
             <Label variant="tag" className="text-bg-0">
               Shares value
             </Label>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1">
-                <Span variant="body-l" className="text-100">
-                  {detail.amountFormatted}
-                </Span>
-                <TokenImage symbol={RBTC} size={16} />
-                <Span variant="body-l" className="text-100">
-                  {RBTC}
-                </Span>
+            {detail.amountFormatted === '—' ? (
+              <Span variant="body-l" className="text-100">
+                —
+              </Span>
+            ) : (
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1">
+                  <Span variant="body-l" className="text-100">
+                    {detail.amountFormatted}
+                  </Span>
+                  <TokenImage symbol={RBTC} size={16} />
+                  <Span variant="body-l" className="text-100">
+                    {RBTC}
+                  </Span>
+                </div>
+                {detail.usdEquivalentFormatted && (
+                  <Span variant="body-xs" bold className="text-bg-0">
+                    {detail.usdEquivalentFormatted}
+                  </Span>
+                )}
               </div>
-              {detail.usdEquivalentFormatted && (
-                <Span variant="body-xs" bold className="text-bg-0">
-                  {detail.usdEquivalentFormatted}
-                </Span>
-              )}
-            </div>
+            )}
           </div>
         </>
       ) : (

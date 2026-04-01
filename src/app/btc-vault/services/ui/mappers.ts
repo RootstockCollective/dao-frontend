@@ -55,6 +55,8 @@ import type {
 } from './types'
 import { DISPLAY_STATUS_LABELS, WITHDRAWAL_TX_HISTORY_STATUS_LABELS } from './types'
 
+const WEI_PER_ETHER = 10n ** 18n
+
 const DISPLAY_STATUS_TO_REQUEST_STATUS = new Map<DisplayStatus, RequestStatus>([
   ['pending', 'pending'],
   ['approved', 'pending'],
@@ -284,14 +286,32 @@ export function toActiveRequestDisplay(
   rbtcPrice: number,
 ): ActiveRequestDisplay {
   const lastUpdated = req.timestamps.updated ?? req.timestamps.created
-  const sharesFormatted = req.type === 'withdrawal' ? formatEther(req.amount) : '—'
-  const amountNumber = Number(formatEther(req.amount))
+  const isTerminal = req.status === 'done' || req.status === 'cancelled' || req.status === 'failed'
+  const hasSharePrice = claimableInfo?.lockedSharePrice != null && claimableInfo.lockedSharePrice > 0n
+
+  const sharesFormatted =
+    req.type === 'withdrawal'
+      ? formatEther(req.amount)
+      : hasSharePrice
+        ? formatEther((req.amount * WEI_PER_ETHER) / claimableInfo!.lockedSharePrice)
+        : '—'
+
+  // For withdrawals, amount is shares — rBTC value is only known post-settlement.
+  // Terminal requests (done/cancelled/failed) fall back to the raw amount.
+  const amountFormatted =
+    req.type === 'withdrawal' && hasSharePrice
+      ? formatEther((req.amount * claimableInfo!.lockedSharePrice) / WEI_PER_ETHER)
+      : req.type === 'withdrawal' && !isTerminal
+        ? '—'
+        : formatEther(req.amount)
+
+  const amountNumber = amountFormatted !== '—' ? Number(amountFormatted) : 0
   const usdEquivalentFormatted =
-    rbtcPrice > 0 ? formatCurrencyWithLabel(Big(amountNumber).mul(rbtcPrice)) : null
+    rbtcPrice > 0 && amountNumber > 0 ? formatCurrencyWithLabel(Big(amountNumber).mul(rbtcPrice)) : null
   return {
     id: req.id,
     type: req.type,
-    amountFormatted: formatEther(req.amount),
+    amountFormatted,
     status: req.status,
     createdAtFormatted: formatTimestamp(req.timestamps.created),
     claimable: claimableInfo?.claimable ?? false,
@@ -404,10 +424,14 @@ export function toPaginatedHistoryDisplay(
 }
 
 /**
- * Maps a single API history item to VaultRequest for use by TransactionDetailPage.
- * Enables toRequestDetailDisplay(request, null, rbtcPrice, address) without changing the detail UI.
+ * Maps a single API history item to VaultRequest and optional ClaimableInfo for use by TransactionDetailPage.
+ * For claimable deposits, derives ClaimableInfo from the API's assets/shares fields so the detail page
+ * can display the share count without additional contract reads.
  */
-export function mapApiItemToVaultRequest(item: BtcVaultHistoryItemWithStatus): VaultRequest {
+export function mapApiItemToVaultRequest(item: BtcVaultHistoryItemWithStatus): {
+  request: VaultRequest
+  claimableInfo: ClaimableInfo | null
+} {
   const actionUpper = item.action.toUpperCase()
   const isDeposit = DEPOSIT_ACTIONS.includes(actionUpper)
   const type: RequestType = isDeposit ? 'deposit' : 'withdrawal'
@@ -417,7 +441,7 @@ export function mapApiItemToVaultRequest(item: BtcVaultHistoryItemWithStatus): V
   const txHash = item.transactionHash?.trim() || undefined
   const failureReason = DISPLAY_STATUS_TO_FAILURE_REASON.get(displayStatus)
 
-  return {
+  const request: VaultRequest = {
     id: item.id,
     type,
     amount,
@@ -432,6 +456,8 @@ export function mapApiItemToVaultRequest(item: BtcVaultHistoryItemWithStatus): V
     txHashes: { submit: txHash },
     ...(failureReason && { failureReason }),
   }
+
+  return { request, claimableInfo: null }
 }
 
 /**
