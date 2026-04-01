@@ -20,6 +20,16 @@ interface BlockscoutLogsResponse {
 /**
  * Typed subset of Blockscout `module=logs&action=getLogs` query fields.
  * Only these keys are serialized; avoids open-ended query objects at call sites.
+ *
+ * @example Minimal query (serializes to URL query params; `module`/`action` added by the client):
+ * ```json
+ * {
+ *   "address": "0xc4b091d97ad25cea5922f09fe80711b7acbbb16f",
+ *   "topic0": "0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef",
+ *   "fromBlock": "0",
+ *   "toBlock": "latest"
+ * }
+ * ```
  */
 export interface BlockscoutGetLogsQuery {
   address: Address
@@ -100,6 +110,28 @@ function buildPageParams(query: BlockscoutGetLogsQuery, fromBlock: string): Reco
  * @see {@link fetchLogsByTopic} — Maps rows to viem `RpcLog` (omits Blockscout-only fields like `timeStamp`).
  *
  * @throws On non-OK HTTP, Blockscout `status !== '1'`, or missing `result` when success is claimed.
+ *
+ * @example HTTP JSON body shape (one row in `result`; fields mirror Blockscout RPC):
+ * ```json
+ * {
+ *   "status": "1",
+ *   "message": "OK",
+ *   "result": [
+ *     {
+ *       "address": "0x…",
+ *       "blockNumber": "0x1a2b3c",
+ *       "data": "0x0de0b6b3a7640000",
+ *       "logIndex": "0x0",
+ *       "timeStamp": "0x5f5e100",
+ *       "topics": ["0xddf2…", "0x000…", "0x000…"],
+ *       "transactionHash": "0xabc…",
+ *       "transactionIndex": "0x0",
+ *       "gasPrice": "0x0",
+ *       "gasUsed": "0x0"
+ *     }
+ *   ]
+ * }
+ * ```
  */
 export async function fetchBlockscoutGetLogsPaginated({
   query,

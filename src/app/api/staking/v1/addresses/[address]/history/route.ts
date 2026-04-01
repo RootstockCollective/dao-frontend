@@ -27,6 +27,43 @@ export const revalidate = 60
  * GET `/api/staking/v1/addresses/:address/history` — paginated staking history with multi-source fallback.
  * Response: `{ data, pagination }`.
  * Headers: `X-Source` = `source-0` | `source-1` (index); `x-source-name` = `database` | `blockscout`.
+ *
+ * @example Query string (repeat `type` for multiple filters):
+ * ```
+ * ?limit=20&offset=0&sort_field=period&sort_direction=desc&type=stake
+ * ```
+ *
+ * @example JSON response (200):
+ * ```json
+ * {
+ *   "data": [
+ *     {
+ *       "period": "2025-03",
+ *       "action": "STAKE",
+ *       "amount": "1000000000000000000",
+ *       "transactions": [
+ *         {
+ *           "user": "0xabc…",
+ *           "action": "STAKE",
+ *           "amount": "1000000000000000000",
+ *           "blockNumber": "12345",
+ *           "blockHash": null,
+ *           "timestamp": 1710000000,
+ *           "transactionHash": "0xdef…"
+ *         }
+ *       ]
+ *     }
+ *   ],
+ *   "pagination": {
+ *     "limit": 20,
+ *     "offset": 0,
+ *     "page": 1,
+ *     "sort_field": "period",
+ *     "sort_direction": "desc",
+ *     "total": 42
+ *   }
+ * }
+ * ```
  */
 export async function GET(req: NextRequest, context: { params: Promise<{ address: string }> }) {
   try {

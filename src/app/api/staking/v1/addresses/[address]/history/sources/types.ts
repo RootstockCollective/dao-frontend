@@ -3,7 +3,21 @@ import type { StakingHistoryByPeriodAndAction } from '../types'
 /** Identifies which backend served the history response (observability). */
 export type StakingHistoryDataSourceName = 'database' | 'blockscout'
 
-/** Request context shared by every staking history source (DB, Blockscout, …). */
+/**
+ * Request context shared by every staking history source (DB, Blockscout, …).
+ *
+ * @example
+ * ```json
+ * {
+ *   "address": "0xabc…",
+ *   "limit": 20,
+ *   "offset": 0,
+ *   "sort_field": "period",
+ *   "sort_direction": "desc",
+ *   "type": ["stake"]
+ * }
+ * ```
+ */
 export interface StakingHistorySourceParams {
   address: string
   limit: number
@@ -13,6 +27,17 @@ export interface StakingHistorySourceParams {
   type?: ('stake' | 'unstake')[]
 }
 
+/**
+ * One page from a single staking history source.
+ *
+ * @example
+ * ```json
+ * {
+ *   "data": [{ "period": "2025-01", "action": "STAKE", "amount": "1", "transactions": [] }],
+ *   "total": 100
+ * }
+ * ```
+ */
 export interface StakingHistoryPageResult {
   data: StakingHistoryByPeriodAndAction[]
   total: number

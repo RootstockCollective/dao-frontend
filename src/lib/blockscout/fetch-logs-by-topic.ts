@@ -4,14 +4,23 @@ import type { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
 import { fetchBlockscoutGetLogsPaginated } from './fetch-blockscout-get-logs-paginated'
 
+/**
+ * Arguments forwarded into {@link fetchBlockscoutGetLogsPaginated}'s `query` (topic2 / extra operators not exposed here).
+ */
 interface FetchLogsByTopicParams {
+  /** Contract that emitted the logs. */
   address: Address
+  /** Event signature topic (keccak hex). */
   topic0: Hex
+  /** Pagination start as decimal string; default `'0'`. */
   fromBlock?: string
+  /** Optional indexed argument topic. */
   topic1?: Hex
+  /** How `topic0` and `topic1` combine when both are set. */
   topic0_1_opr?: 'and' | 'or'
 }
 
+/** Maps a Blockscout log row into viem {@link RpcLog}; strips `null` entries from `topics`. */
 function toRpcLog(log: BackendEventByTopic0ResponseValue): RpcLog {
   return {
     address: log.address as Address,
@@ -41,6 +50,36 @@ function toRpcLog(log: BackendEventByTopic0ResponseValue): RpcLog {
  * @see {@link fetchBlockscoutGetLogsPaginated} — Use directly when you need `topic2`, extra operators, or raw rows.
  *
  * @throws Same as {@link fetchBlockscoutGetLogsPaginated} (HTTP errors, Blockscout error status, missing `result`).
+ *
+ * @example Request-style input (TypeScript call):
+ * ```ts
+ * await fetchLogsByTopic({
+ *   address: '0xYourContract',
+ *   topic0: '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+ *   fromBlock: '0',
+ *   topic1: '0x0000000000000000000000000000000000000000000000000000000000000000',
+ *   topic0_1_opr: 'and',
+ * })
+ * ```
+ *
+ * @example Return payload (viem `RpcLog`; no Blockscout `timeStamp`):
+ * ```json
+ * {
+ *   "data": [
+ *     {
+ *       "address": "0x…",
+ *       "blockHash": null,
+ *       "blockNumber": "0x1a2b3c",
+ *       "data": "0x0de0b6b3a7640000",
+ *       "logIndex": "0x0",
+ *       "transactionHash": "0xabc…",
+ *       "transactionIndex": "0x0",
+ *       "removed": false,
+ *       "topics": ["0xddf2…", "0x…"]
+ *     }
+ *   ]
+ * }
+ * ```
  */
 export async function fetchLogsByTopic({
   address,

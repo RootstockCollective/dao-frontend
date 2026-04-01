@@ -8,7 +8,6 @@ import { STRIF_ADDRESS } from '@/lib/constants'
 import type { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
 import type { StakingAction, StakingHistoryByPeriodAndAction, StakingHistoryTransaction } from '../../types'
-import { txTimestamp } from '../shared/query'
 
 /** ERC-20 `Transfer(address,address,uint256)` topic0. */
 const TRANSFER_TOPIC0 = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef' as Hex
@@ -92,7 +91,7 @@ function groupByPeriodAndAction(
   const groups = new Map<string, StakingHistoryByPeriodAndAction>()
 
   for (const tx of transactions) {
-    const date = new Date(txTimestamp(tx) * 1000)
+    const date = new Date(Number(tx.timestamp) * 1000)
     const period = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`
     const key = `${period}:${tx.action}`
 
@@ -123,6 +122,28 @@ function groupByPeriodAndAction(
  * @see {@link fetchBlockscoutGetLogsPaginated} — Shared pagination, dedupe, and error handling.
  *
  * @throws Propagates Blockscout client errors (HTTP failure, `status !== '1'`, missing `result`).
+ *
+ * @example Return value (array of monthly buckets; amounts are decimal strings of wei):
+ * ```json
+ * [
+ *   {
+ *     "period": "2025-03",
+ *     "action": "STAKE",
+ *     "amount": "1000000000000000000",
+ *     "transactions": [
+ *       {
+ *         "user": "0xabc…",
+ *         "action": "STAKE",
+ *         "amount": "1000000000000000000",
+ *         "blockNumber": "9000000",
+ *         "blockHash": null,
+ *         "timestamp": 1710000000,
+ *         "transactionHash": "0xdef…"
+ *       }
+ *     ]
+ *   }
+ * ]
+ * ```
  */
 export async function fetchStakingHistoryFromBlockscout(
   address: string,

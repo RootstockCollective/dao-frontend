@@ -5,6 +5,18 @@ import type { StakingHistoryByPeriodAndAction, StakingHistoryDatabaseRow } from 
 
 /**
  * Retrieves staking history from the database grouped by period and action.
+ *
+ * @example `params` payload:
+ * ```json
+ * {
+ *   "address": "0xabc…",
+ *   "limit": 20,
+ *   "offset": 0,
+ *   "sort_field": "period",
+ *   "sort_direction": "desc",
+ *   "type": ["stake"]
+ * }
+ * ```
  */
 export async function getStakingHistoryFromDB(params: {
   address: string
@@ -64,6 +76,8 @@ export async function getStakingHistoryFromDB(params: {
 
 /**
  * Counts distinct period+action combinations for an address in the staking DB.
+ *
+ * @example Call shape: `getStakingHistoryCountFromDB('0xabc…', ['stake'])` → `42`.
  */
 export async function getStakingHistoryCountFromDB(
   address: string,

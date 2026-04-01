@@ -1,6 +1,9 @@
 import type { StakingHistorySource } from '../types'
 import { getStakingHistoryCountFromDB, getStakingHistoryFromDB } from './fetch-from-database'
 
+/**
+ * Primary staking history source (Postgres). See `StakingHistorySourceParams` / `StakingHistoryPageResult` in `../types.ts` for sample payloads.
+ */
 export const stakingHistoryDatabaseSource: StakingHistorySource = {
   name: 'database',
   async fetchPageAndTotal(params) {

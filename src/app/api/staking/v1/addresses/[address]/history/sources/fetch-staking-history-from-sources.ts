@@ -14,10 +14,27 @@ export const stakingHistorySources: readonly StakingHistorySource[] = [
   stakingHistoryBlockscoutSource,
 ]
 
+/**
+ * Successful page from {@link fetchStakingHistoryFromSources}: one source supplied both the slice and total count.
+ *
+ * @example
+ * ```json
+ * {
+ *   "data": [{ "period": "2025-01", "action": "STAKE", "amount": "1", "transactions": [] }],
+ *   "total": 100,
+ *   "sourceName": "database",
+ *   "sourceIndex": 0
+ * }
+ * ```
+ */
 export interface StakingHistoryFetchSuccess {
+  /** Period/action groups for the requested `limit` / `offset`. */
   data: StakingHistoryByPeriodAndAction[]
+  /** Total groups across all pages for this source (not just `data.length`). */
   total: number
+  /** Which backend answered (`database` or `blockscout`). */
   sourceName: StakingHistoryDataSourceName
+  /** Index into {@link stakingHistorySources} (`0` = database, `1` = blockscout). */
   sourceIndex: number
 }
 
@@ -26,6 +43,8 @@ export interface StakingHistoryFetchSuccess {
  * Empty history from a source that did not throw is a valid success (unlike proposals’ non-empty gate).
  *
  * @throws Error `name` `ALL_STAKING_HISTORY_SOURCES_FAILED` if every source throws.
+ *
+ * @returns {@link StakingHistoryFetchSuccess} — shape documented on that interface (`@example` there).
  */
 export async function fetchStakingHistoryFromSources(
   params: StakingHistorySourceParams,

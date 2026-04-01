@@ -6,6 +6,26 @@ import { filterSortStakingHistoryGroups } from './shared/query'
 
 /**
  * Result of choosing how to build the staking history CSV: batched DB reads or a full in-memory Blockscout list.
+ *
+ * @example `database` plan (first batch + metadata for streaming further DB pages):
+ * ```json
+ * {
+ *   "kind": "database",
+ *   "firstBatch": [],
+ *   "totalCount": 500,
+ *   "pageSize": 200,
+ *   "address": "0xabc…",
+ *   "sortParams": { "sort_field": "period", "sort_direction": "desc" }
+ * }
+ * ```
+ *
+ * @example `blockscout` plan (entire filtered/sorted list in memory):
+ * ```json
+ * {
+ *   "kind": "blockscout",
+ *   "groups": [{ "period": "2025-01", "action": "STAKE", "amount": "1", "transactions": [] }]
+ * }
+ * ```
  */
 export type StakingHistoryCsvPlan =
   | {
@@ -26,6 +46,8 @@ export type StakingHistoryCsvPlan =
  * Same source order as {@link fetchStakingHistoryFromSources}.
  *
  * @throws Error with `name` `ALL_STAKING_HISTORY_SOURCES_FAILED` if both paths fail.
+ *
+ * @example Arguments: `address` checksummed/lowercased wallet; `sortParams` like `{ "sort_field": "period", "sort_direction": "desc" }`; `pageSize` e.g. `200` for DB batch size.
  */
 export async function resolveStakingHistoryCsvPlan(
   address: string,
@@ -67,6 +89,11 @@ export async function resolveStakingHistoryCsvPlan(
  * Response headers identifying which data source satisfied the CSV plan (aligned with JSON history route).
  *
  * @param plan — `database` → source index `0`; `blockscout` → `1`.
+ *
+ * @example Return value:
+ * ```json
+ * { "X-Source": "source-0", "x-source-name": "database" }
+ * ```
  */
 export function stakingHistoryCsvSourceHeaders(plan: StakingHistoryCsvPlan): {
   'X-Source': string

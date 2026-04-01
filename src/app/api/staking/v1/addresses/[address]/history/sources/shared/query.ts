@@ -2,26 +2,37 @@ import type { StakingAction, StakingHistoryByPeriodAndAction } from '../../types
 
 export type StakingHistorySortField = 'period' | 'amount' | 'action'
 
-/** Sort and filter only (no pagination) — used for CSV export from Blockscout. */
+/**
+ * Sort and filter only (no pagination) — used for CSV export from Blockscout.
+ *
+ * @example
+ * ```json
+ * { "sort_field": "period", "sort_direction": "desc", "type": ["stake", "unstake"] }
+ * ```
+ */
 export interface StakingHistorySortParams {
   sort_direction: 'asc' | 'desc'
   sort_field: StakingHistorySortField
   type?: ('stake' | 'unstake')[]
 }
 
-/** Pagination + sort/filter params for staking history (DB or in-memory Blockscout path). */
+/**
+ * Pagination + sort/filter params for staking history (DB or in-memory Blockscout path).
+ *
+ * @example
+ * ```json
+ * {
+ *   "limit": 20,
+ *   "offset": 0,
+ *   "sort_field": "period",
+ *   "sort_direction": "desc",
+ *   "type": ["unstake"]
+ * }
+ * ```
+ */
 export interface StakingHistoryQueryParams extends StakingHistorySortParams {
   limit: number
   offset: number
-}
-
-/**
- * Normalizes a transaction timestamp to a number (seconds since epoch) for sorting and date math.
- *
- * @param tx — Object carrying `timestamp` from DB or Blockscout-derived rows.
- */
-export function txTimestamp(tx: { timestamp: number | string }): number {
-  return Number(tx.timestamp)
 }
 
 /** Sorts `transactions` inside each group according to `sort_direction` (mutates `groups`). */
@@ -31,7 +42,7 @@ function sortTransactionsInPlace(
 ): void {
   const mul = sort_direction === 'asc' ? 1 : -1
   for (const g of groups) {
-    g.transactions.sort((a, b) => (txTimestamp(a) - txTimestamp(b)) * mul)
+    g.transactions.sort((a, b) => (Number(a.timestamp) - Number(b.timestamp)) * mul)
   }
 }
 
@@ -56,6 +67,17 @@ function compareGroups(
 /**
  * Filter by action type, sort transactions within groups, sort groups — full list (no slice).
  * Matches DB ordering semantics for export and Blockscout fallback.
+ *
+ * @example Input `groups` / `params` (abbreviated); output is the same shape, reordered/filtered.
+ * ```json
+ * {
+ *   "groups": [
+ *     { "period": "2025-02", "action": "STAKE", "amount": "2", "transactions": [] },
+ *     { "period": "2025-01", "action": "UNSTAKE", "amount": "1", "transactions": [] }
+ *   ],
+ *   "params": { "sort_field": "period", "sort_direction": "desc", "type": ["stake"] }
+ * }
+ * ```
  */
 export function filterSortStakingHistoryGroups(
   groups: StakingHistoryByPeriodAndAction[],
@@ -82,6 +104,14 @@ export function filterSortStakingHistoryGroups(
 /**
  * Applies the same filter, sort, and pagination semantics as the DB-backed staking history query,
  * on in-memory groups (e.g. from Blockscout).
+ *
+ * @example Return payload:
+ * ```json
+ * {
+ *   "data": [{ "period": "2025-01", "action": "STAKE", "amount": "1", "transactions": [] }],
+ *   "total": 25
+ * }
+ * ```
  */
 export function filterSortPaginateStakingHistory(
   groups: StakingHistoryByPeriodAndAction[],

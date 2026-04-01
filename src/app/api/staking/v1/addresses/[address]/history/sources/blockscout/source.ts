@@ -5,6 +5,8 @@ import { fetchStakingHistoryFromBlockscout } from './fetch-from-blockscout'
 /**
  * Staking history source backed by Blockscout `getLogs` for the stRIF contract (`STRIF_ADDRESS` in `@/lib/constants`).
  * Second in the ordered chain after the database (DAO-2058).
+ *
+ * @example `fetchPageAndTotal` input matches `StakingHistorySourceParams`; output matches `StakingHistoryPageResult` (see `sources/types.ts` for sample payloads).
  */
 export const stakingHistoryBlockscoutSource: StakingHistorySource = {
   name: 'blockscout',

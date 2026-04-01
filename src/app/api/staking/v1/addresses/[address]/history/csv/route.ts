@@ -83,6 +83,11 @@ const escapeCsvValue = (value: string): string => {
  * @param encoder — UTF-8 encoder for row chunks.
  * @param groups — Already filtered/sorted staking history groups.
  * @param rifPrice — Spot price for fiat column via {@link getFiatAmount}.
+ *
+ * @example One encoded line (after `escapeCsvValue`; columns match `row` array order in code):
+ * ```text
+ * March 2025,2025-03,"15 Mar 2025, 14:30",STAKE,1.000000,stRIF,0.42,0xabc…
+ * ```
  */
 function enqueueHistoryGroupsAsCsvRows(
   controller: ReadableStreamDefaultController<Uint8Array>,
@@ -123,6 +128,16 @@ async function getRifPrice(): Promise<number> {
 /**
  * GET CSV export for staking history. Uses DB batched reads when healthy; falls back to Blockscout (DAO-2058 Phase 2).
  * Headers `X-Source` and `x-source-name` match the JSON history route.
+ *
+ * @example Query string (same sort/filter vocabulary as JSON history; no pagination in query — stream is full export):
+ * ```
+ * ?sort_field=period&sort_direction=desc&type=stake&type=unstake
+ * ```
+ *
+ * @example First streamed row (columns: human period, `YYYY-MM`, tx datetime, action, amount, symbol, USD, tx hash):
+ * ```csv
+ * March 2025,2025-03,"15 Mar 2025, 14:30",STAKE,1.000000,stRIF,0.42,0xabc…
+ * ```
  */
 export async function GET(req: NextRequest, context: { params: Promise<{ address: string }> }) {
   try {
