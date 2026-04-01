@@ -1,7 +1,8 @@
-import { Metric, MetricTitle } from '@/components/Metric'
-import { Header, Paragraph } from '@/components/Typography'
 import { AnnualBackerIncentivesLoader } from '@/app/shared/components/AnnualBackersIncentivesLoader'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { Metric, MetricTitle } from '@/components/Metric'
+import { Header, Paragraph } from '@/components/Typography'
+
 import { ABIFormula } from '../ABIFormula'
 
 export const GlobalAnnualBackersIncentives = () => {

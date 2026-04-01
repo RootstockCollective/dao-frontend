@@ -1,8 +1,10 @@
+import { FC, isValidElement, ReactNode } from 'react'
+
+import { MetricTitle } from '@/components/Metric/MetricTitle'
 import { cn } from '@/lib/utils'
-import { FC, ReactNode, isValidElement } from 'react'
+
 import { CommonComponentProps } from '../../components/commonProps'
 import { MetricContent } from './MetricContent'
-import { MetricTitle } from '@/components/Metric/MetricTitle'
 
 type MetricProps = CommonComponentProps & {
   title: ReactNode

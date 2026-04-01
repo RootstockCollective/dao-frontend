@@ -1,6 +1,7 @@
 'use client'
-import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
+
+import { cn } from '@/lib/utils'
 
 // Footer section (always visible)
 interface Props {

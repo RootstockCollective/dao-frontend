@@ -1,9 +1,10 @@
-import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { tokenContracts } from '@/lib/contracts'
+import { useQuery } from '@tanstack/react-query'
 import { formatUnits } from 'viem'
 import { useAccount, useReadContracts } from 'wagmi'
+
 import { getCachedProposalSharedDetails } from '@/app/proposals/actions/proposalsAction'
-import { useQuery } from '@tanstack/react-query'
+import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
+import { tokenContracts } from '@/lib/contracts'
 
 export const useVotingPower = () => {
   const { address } = useAccount()

@@ -1,6 +1,7 @@
-import { Span } from '@/components/Typography'
 import Link from 'next/link'
+
 import { ArrowRightIconKoto, ArrowUpRightLightIcon } from '@/components/Icons'
+import { Span } from '@/components/Typography'
 
 interface CommunityItemButtonHandlerProps {
   nftAddress?: string
@@ -26,7 +27,7 @@ export const CommunityItemButtonHandler = ({
   'data-testid': dataTestId,
 }: CommunityItemButtonHandlerProps) => {
   let href = nftAddress ? `/communities/nft/${nftAddress}` : '/communities'
-  let target = undefined
+  let target
   if (readMoreLink) {
     href = readMoreLink
     target = '_blank'

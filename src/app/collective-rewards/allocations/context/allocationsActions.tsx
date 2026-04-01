@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from 'react'
-import { Allocations, AllocationsActions, Backer, InitialState, Selections } from './AllocationsContext'
 import { Address } from 'viem'
+
+import { Allocations, AllocationsActions, Backer, InitialState, Selections } from './AllocationsContext'
 export const createActions = (
   setResetVersion: Dispatch<SetStateAction<number>>,
   setSelections: Dispatch<SetStateAction<Selections>>,

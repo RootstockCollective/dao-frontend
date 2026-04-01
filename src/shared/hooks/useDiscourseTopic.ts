@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+
 import { extractTopicIdFromDiscourseUrl } from '@/lib/discourse'
 import type { DiscourseTopicResponse } from '@/shared/types/discourse'
 

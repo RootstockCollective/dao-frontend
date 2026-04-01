@@ -1,5 +1,6 @@
 import * as Sentry from '@sentry/nextjs'
-import { createSentryWrapper, createInitSentryIfEnabled } from './sentry-common'
+
+import { createInitSentryIfEnabled, createSentryWrapper } from './sentry-common'
 
 export const sentryServer = createSentryWrapper()
 

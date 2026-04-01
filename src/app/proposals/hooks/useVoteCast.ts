@@ -1,9 +1,10 @@
-import { governor } from '@/lib/contracts'
 import { useQuery } from '@tanstack/react-query'
-import { Address, Log, parseEventLogs, zeroAddress } from 'viem'
-import { fetchVoteCastEventByAccountAddress } from '@/app/user/Balances/actions'
-import { Vote, VOTES_MAP } from '@/shared/types'
 import { useEffect, useState } from 'react'
+import { Address, Log, parseEventLogs, zeroAddress } from 'viem'
+
+import { fetchVoteCastEventByAccountAddress } from '@/app/user/Balances/actions'
+import { governor } from '@/lib/contracts'
+import { Vote, VOTES_MAP } from '@/shared/types'
 
 export const parseVoteCastEvents = async (address: Address) => {
   try {
@@ -30,7 +31,7 @@ export const useGetVoteForSpecificProposal = (
   address: Address = zeroAddress,
   proposalId: string,
 ): [Vote | undefined, (vote: Vote | undefined) => void] => {
-  const [vote, setVote] = useState<Vote | undefined>(undefined)
+  const [vote, setVote] = useState<Vote | undefined>()
 
   const { data: voteEvents } = useQuery({
     queryFn: () => parseVoteCastEvents(address),

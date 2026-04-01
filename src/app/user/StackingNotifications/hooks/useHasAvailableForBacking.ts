@@ -1,7 +1,8 @@
-import { useGetVotingPower } from '@/app/collective-rewards/allocations/hooks'
-import { useReadBackersManager } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
 import { Address, zeroAddress } from 'viem'
+
+import { useGetVotingPower } from '@/app/collective-rewards/allocations/hooks'
+import { useReadBackersManager } from '@/shared/hooks/contracts'
 
 export const useHasAvailableBacking = (backerAddress: Address) => {
   const { data: votingPower, isLoading: isVotingPowerLoading, error: votingPowerError } = useGetVotingPower()

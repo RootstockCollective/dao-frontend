@@ -1,6 +1,7 @@
-import { useMemo } from 'react'
-import { cn } from '@/lib/utils'
 import type { PaginationState } from '@tanstack/react-table'
+import { useMemo } from 'react'
+
+import { cn } from '@/lib/utils'
 
 interface PaginationPageNumbersProps {
   pagination: PaginationState

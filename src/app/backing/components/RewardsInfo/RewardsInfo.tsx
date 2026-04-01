@@ -1,3 +1,5 @@
+import { FC, useMemo } from 'react'
+
 import { TokenRewards } from '@/app/collective-rewards/rewards/types'
 import { weiToPercentage } from '@/app/collective-rewards/settings/utils'
 import { BackerRewardPercentage } from '@/app/collective-rewards/types'
@@ -7,7 +9,7 @@ import { getMetricTokens } from '@/app/shared/utils'
 import { Paragraph } from '@/components/Typography'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
-import { FC, useMemo } from 'react'
+
 import { BackerRewardsPercentage } from '../BackerPercentage/BackerRewardsPercentage'
 import { LabeledContent } from '../LabeledContent/LabeledContent'
 

@@ -1,5 +1,7 @@
-import { cn } from '@/lib/utils'
 import { forwardRef } from 'react'
+
+import { cn } from '@/lib/utils'
+
 import { AllocationItem } from './types'
 import { checkerboardStyle, valueToPercentage } from './utils'
 

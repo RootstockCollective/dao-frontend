@@ -1,3 +1,5 @@
+import { ReactNode } from 'react'
+
 import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
 import { MetricToken } from '@/app/components/Metric/types'
 import { createMetricToken } from '@/app/components/Metric/utils'
@@ -5,7 +7,6 @@ import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/Fiat
 import { Paragraph } from '@/components/Typography'
 import { REWARD_TOKEN_KEYS, RewardTokenKey, TOKENS } from '@/lib/tokens'
 import { cn, formatCurrency } from '@/lib/utils'
-import { ReactNode } from 'react'
 
 type TokenValues = Record<`${RewardTokenKey}Value`, bigint>
 type TokenPrices = Record<`${RewardTokenKey}Price`, number>

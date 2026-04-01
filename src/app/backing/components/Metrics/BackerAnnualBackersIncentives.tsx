@@ -1,12 +1,14 @@
-import { useGetBackerABI } from '@/app/collective-rewards/shared'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
+
+import { useGetBackerABI } from '@/app/collective-rewards/shared'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
 import { Header, Label, Span } from '@/components/Typography'
-import { ABIFormula } from '../ABIFormula'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+
+import { ABIFormula } from '../ABIFormula'
 
 export const BackerAnnualBackersIncentives = () => {
   const isDesktop = useIsDesktop()

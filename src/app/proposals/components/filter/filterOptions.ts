@@ -1,5 +1,6 @@
-import { MILESTONE_SEPARATOR } from '@/app/proposals/shared/utils'
 import { Milestones } from '@/app/proposals/shared/types'
+import { MILESTONE_SEPARATOR } from '@/app/proposals/shared/utils'
+
 import { FilterItem, FilterType } from './types'
 
 export interface FilterOption {

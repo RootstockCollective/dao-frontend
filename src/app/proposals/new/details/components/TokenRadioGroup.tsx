@@ -1,10 +1,12 @@
 'use client'
 
-import { Controller, Control, FieldPath } from 'react-hook-form'
-import { SYMBOLS, type TokenFormData } from '../schemas/TokenSchema'
-import { cn } from '@/lib/utils'
+import { Control, Controller, FieldPath } from 'react-hook-form'
+
 import { TokenImage } from '@/components/TokenImage'
 import { Span } from '@/components/Typography'
+import { cn } from '@/lib/utils'
+
+import { SYMBOLS, type TokenFormData } from '../schemas/TokenSchema'
 
 interface TokenRadioGroupProps<T extends TokenFormData> {
   name: FieldPath<T>

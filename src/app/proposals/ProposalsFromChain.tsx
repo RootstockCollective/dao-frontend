@@ -1,8 +1,10 @@
-import { useFetchAllProposals } from './hooks/useFetchLatestProposals'
 import { useMemo } from 'react'
+
 import { LatestProposalsTableMemoized } from '@/app/proposals/components/LatestProposalsTable'
-import { ProposalsSummary } from '@/app/proposals/ProposalsSummary'
 import { useProposalListData } from '@/app/proposals/hooks/useProposalListData'
+import { ProposalsSummary } from '@/app/proposals/ProposalsSummary'
+
+import { useFetchAllProposals } from './hooks/useFetchLatestProposals'
 
 export function ProposalsFromChain() {
   const { latestProposals } = useFetchAllProposals()

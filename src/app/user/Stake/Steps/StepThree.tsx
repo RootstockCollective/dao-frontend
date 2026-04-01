@@ -1,8 +1,10 @@
+import { useEffect } from 'react'
+
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
 import { executeTxFlow } from '@/shared/notification'
-import { useEffect } from 'react'
+
 import { StakeTokenAmountDisplay } from '../components/StakeTokenAmountDisplay'
 import { TransactionStatus } from '../components/TransactionStatus'
 import { useStakeRIF } from '../hooks/useStakeRIF'

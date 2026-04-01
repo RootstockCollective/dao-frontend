@@ -1,7 +1,8 @@
+import { Address } from 'viem'
 import { useAccount, useReadContracts } from 'wagmi'
+
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
-import { Address } from 'viem'
 
 /**
  * Snapshot = blockNumber

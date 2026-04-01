@@ -1,12 +1,14 @@
+import { useRouter } from 'next/navigation'
+import { useEffect, useMemo } from 'react'
+
+import { RBTC, RIF } from '@/lib/constants'
 import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
 import { useModal } from '@/shared/hooks/useModal'
-import { useEffect, useMemo } from 'react'
+
 import { useBalancesContext } from '../Balances/context/BalancesContext'
 import { IMAGE_CONFIG } from './config'
 import { useRequiredTokens } from './hooks/useRequiredTokens'
-import { useRouter } from 'next/navigation'
 import { IntroModalContent } from './IntroModalContent'
-import { RBTC, RIF } from '@/lib/constants'
 
 export const IntroModal = () => {
   const { isModalOpened, openModal, closeModal } = useModal()

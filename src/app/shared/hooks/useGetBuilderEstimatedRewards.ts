@@ -1,14 +1,14 @@
+import { useMemo } from 'react'
+
 import { useGetCycleRewards } from '@/app/collective-rewards/shared/hooks/useGetCycleRewards'
 import { BuilderEstimatedRewards, CompleteBuilder } from '@/app/collective-rewards/types'
 import { filterBuildersByState } from '@/app/collective-rewards/user'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
 import { WeiPerEther } from '@/lib/constants'
+import { REWARD_TOKEN_KEYS, type RewardTokenKey, TOKENS } from '@/lib/tokens' // adjust import path
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
-import { useMemo } from 'react'
-
-import { REWARD_TOKEN_KEYS, TOKENS, type RewardTokenKey } from '@/lib/tokens' // adjust import path
 
 interface TokenAmount {
   amount: {

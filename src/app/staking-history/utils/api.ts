@@ -1,4 +1,5 @@
 import { getStakingHistoryEndpoint } from '@/lib/endpoints'
+
 import { StakingHistoryItem } from './types'
 
 export interface StakingHistoryResponse {

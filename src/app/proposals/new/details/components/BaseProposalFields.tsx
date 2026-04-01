@@ -1,9 +1,11 @@
 'use client'
 
-import { TextInput, MarkdownEditor } from '@/components/FormFields'
-import type { FieldValues, Control, Path } from 'react-hook-form'
-import { type BaseProposalFormData, BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
+import type { Control, FieldValues, Path } from 'react-hook-form'
+
+import { MarkdownEditor, TextInput } from '@/components/FormFields'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+
+import { BASE_PROPOSAL_LIMITS, type BaseProposalFormData } from '../schemas/BaseProposalSchema'
 
 interface BaseProposalFieldsProps<T extends BaseProposalFormData & FieldValues> {
   control: Control<T>

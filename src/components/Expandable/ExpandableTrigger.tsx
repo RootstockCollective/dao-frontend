@@ -1,6 +1,8 @@
 'use client'
-import { cn } from '@/lib/utils'
 import { FC } from 'react'
+
+import { cn } from '@/lib/utils'
+
 import { KotoChevronDownIcon } from '../Icons'
 import { useExpandableContext } from './ExpandableContext'
 

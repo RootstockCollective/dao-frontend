@@ -1,5 +1,7 @@
-import { logger } from '@/lib/logger'
 import { NextResponse } from 'next/server'
+
+import { logger } from '@/lib/logger'
+
 import { type HealthCheckType, runHealthCheck } from './healthCheck'
 import { WrongHealthCheckTypeError } from './healthCheck.errors'
 

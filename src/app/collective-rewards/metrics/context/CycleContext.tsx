@@ -1,6 +1,8 @@
-import { useReadCycleTimeKeeper } from '@/shared/hooks/contracts'
 import { DateTime, Duration } from 'luxon'
 import { createContext, FC, ReactNode, useContext, useMemo, useState } from 'react'
+
+import { useReadCycleTimeKeeper } from '@/shared/hooks/contracts'
+
 import { useIntervalTimestamp } from '../hooks/useIntervalTimestamp'
 
 export interface Cycle {

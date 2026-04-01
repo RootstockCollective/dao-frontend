@@ -1,23 +1,25 @@
 'use client'
 
-import { useCallback, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import type { Address } from 'viem'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
+import { useCallback, useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import type { Address } from 'viem'
+
+import { useReviewProposal } from '@/app/providers'
+import { TextInput } from '@/components/FormFields'
+import { Header } from '@/components/Typography'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { ProposalCategory } from '@/shared/types'
+
 import { ProposalSubfooter } from '../../components/ProposalSubfooter'
 import { BaseProposalFields, ProposalInfoSidebar } from '../components'
-import { useReviewProposal } from '@/app/providers'
-import { ProposalCategory } from '@/shared/types'
-import { TextInput } from '@/components/FormFields'
 import {
   ACTIVATION_PROPOSAL_LIMITS,
   type ActivationProposal,
   ActivationProposalSchema,
 } from '../schemas/ActivationProposalSchema'
 import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
-import { Header } from '@/components/Typography'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 export default function ActivationProposalForm() {
   const isDesktop = useIsDesktop()

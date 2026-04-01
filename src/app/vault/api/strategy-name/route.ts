@@ -1,5 +1,6 @@
-import { BLOCKSCOUT_URL } from '@/lib/constants'
 import { Address } from 'viem'
+
+import { BLOCKSCOUT_URL } from '@/lib/constants'
 
 export interface StrategyNameInfo {
   address: Address

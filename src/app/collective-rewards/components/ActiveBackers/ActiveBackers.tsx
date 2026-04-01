@@ -1,7 +1,9 @@
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useQuery } from '@tanstack/react-query'
-import { CountMetric } from '../CountMetric'
+
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+
 import { useHandleErrors } from '../../utils'
+import { CountMetric } from '../CountMetric'
 
 export const ActiveBackers = () => {
   const { data, isLoading, error } = useQuery<{ count: number }, Error>({

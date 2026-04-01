@@ -1,5 +1,6 @@
-import { RBTC, RIF, USDRIF } from '@/lib/constants'
 import { z } from 'zod'
+
+import { RBTC, RIF, USDRIF } from '@/lib/constants'
 
 // list of available tokens
 export const SYMBOLS = [USDRIF, RIF, RBTC] as const

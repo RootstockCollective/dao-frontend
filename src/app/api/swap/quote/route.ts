@@ -1,9 +1,10 @@
-import { logger } from '@/lib/logger'
 import { NextRequest, NextResponse } from 'next/server'
-import { Address, isAddress, getAddress } from 'viem'
-import { uniswapProvider } from '@/lib/swap/providers/uniswap'
+import { Address, getAddress, isAddress } from 'viem'
+
+import { logger } from '@/lib/logger'
 import { SWAP_TOKEN_ADDRESSES } from '@/lib/swap/constants'
-import { getTokenDecimalsBatch, scaleAmount, isValidAmount } from '@/lib/swap/utils'
+import { uniswapProvider } from '@/lib/swap/providers/uniswap'
+import { getTokenDecimalsBatch, isValidAmount, scaleAmount } from '@/lib/swap/utils'
 
 /**
  * Cache quotes for 30 seconds

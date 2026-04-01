@@ -1,17 +1,19 @@
+import { ReactElement, useContext } from 'react'
+
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
-import { formatSymbol } from '@/app/shared/formatter'
 import {
   BuilderInactiveState,
   builderInactiveStateMessage,
   getBuilderInactiveState,
 } from '@/app/collective-rewards/utils'
+import { formatSymbol } from '@/app/shared/formatter'
 import { Circle } from '@/components/Circle'
 import { CommonComponentProps } from '@/components/commonProps'
 import { HourglassIcon } from '@/components/Icons/HourglassIcon'
 import { Span } from '@/components/Typography'
 import { STRIF } from '@/lib/constants'
 import { cn, truncate } from '@/lib/utils'
-import { ReactElement, useContext } from 'react'
+
 import {
   BarTooltipContent,
   BarTooltipLabelItem,

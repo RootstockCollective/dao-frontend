@@ -1,8 +1,10 @@
+import { useCallback, useEffect, useState } from 'react'
+
 import { ConfirmationModal } from '@/components/Modal'
 import { Paragraph } from '@/components/Typography'
 import { VAULT_TERMS_CONDITIONS_URL } from '@/lib/constants'
+
 import { useVaultTermsAcceptance } from '../hooks/useVaultTermsAcceptance'
-import { useState, useCallback, useEffect } from 'react'
 
 const termsAndConditionsModalText = {
   modalTitle: 'TERMS & CONDITIONS',

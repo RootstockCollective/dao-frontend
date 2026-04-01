@@ -1,6 +1,8 @@
-import { cn } from '@/lib/utils'
 import { HTMLAttributes } from 'react'
-import type { ColoredSegment, Color } from './types'
+
+import { cn } from '@/lib/utils'
+
+import type { Color, ColoredSegment } from './types'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   segments: ColoredSegment[] // Array of pizza chart segments

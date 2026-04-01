@@ -1,3 +1,5 @@
+import { Address } from 'viem'
+
 import { useCycleContext } from '@/app/collective-rewards/metrics/context/CycleContext'
 import {
   getNotifyRewardAmount,
@@ -6,7 +8,6 @@ import {
 } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { TOKENS } from '@/lib/tokens'
-import { Address } from 'viem'
 
 interface UseBuilderLastCycleRewardsProps {
   gauge: Address

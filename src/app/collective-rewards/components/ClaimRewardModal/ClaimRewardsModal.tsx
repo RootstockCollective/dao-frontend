@@ -1,13 +1,15 @@
+import { useEffect, useMemo, useState } from 'react'
+import { Address } from 'viem'
+import { useAccount } from 'wagmi'
+
 import { useBackerRewardsContext } from '@/app/collective-rewards/rewards/backers'
-import { getFiatAmount } from '@/app/shared/formatter'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { TOKENS, REWARD_TOKEN_KEYS } from '@/lib/tokens'
+import { getFiatAmount } from '@/app/shared/formatter'
+import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
-import { useMemo, useState, useEffect } from 'react'
-import { Address } from 'viem'
-import { useAccount } from 'wagmi'
+
 import { useClaimBackerRewards } from '../../rewards/backers/hooks/useClaimBackerRewards'
 import { useClaimBuilderRewards } from '../../rewards/builders/hooks/useClaimBuilderRewards'
 import { ClaimRewardsModalView } from './ClaimRewardsModalView'
@@ -16,7 +18,7 @@ import { ClaimRewardType } from './types'
 const getRewardTokenAddress = (value: ClaimRewardType) => {
   switch (value) {
     case 'all':
-      return undefined // Claim all rewards
+      return // Claim all rewards
     default:
       return TOKENS[value as keyof typeof TOKENS]?.address
   }

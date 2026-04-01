@@ -1,7 +1,9 @@
 import { ReactNode } from 'react'
+
 import { ConditionalTooltip } from '@/app/components'
 import { ConnectTooltipContent } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltipContent'
-import { SelectBuildersTooltipContent, NonHoverableBuilderTooltipContent } from './TooltipContents'
+
+import { NonHoverableBuilderTooltipContent, SelectBuildersTooltipContent } from './TooltipContents'
 
 interface BuilderRowConditionalTooltipProps {
   children: ReactNode

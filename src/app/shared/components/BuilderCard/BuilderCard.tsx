@@ -1,3 +1,6 @@
+import { AnimatePresence, motion } from 'motion/react'
+import { useState } from 'react'
+
 import {
   AllocationInput,
   AllocationInputProps,
@@ -19,8 +22,7 @@ import { CommonComponentProps, StylableComponentProps } from '@/components/commo
 import { WarningIcon } from '@/components/Icons'
 import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { AnimatePresence, motion } from 'motion/react'
-import { useState } from 'react'
+
 import { getBuilderColor } from '../utils'
 import { WindshieldWiperAnimation } from './WindshieldWiperAnimation'
 

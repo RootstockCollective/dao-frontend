@@ -1,10 +1,11 @@
+import { useEffect, useState } from 'react'
+import { Address } from 'viem'
+
 import { CopySvg } from '@/components/CopySvg'
 import { ArrowUpRightLightIcon } from '@/components/Icons'
 import { Span } from '@/components/Typography'
 import { EXPLORER_URL } from '@/lib/constants'
 import { cn, shortAddress } from '@/lib/utils'
-import { useEffect, useState } from 'react'
-import { Address } from 'viem'
 
 const BASE_CLASSNAME = 'hover:text-text-60 transition-colors duration-100'
 

@@ -1,6 +1,8 @@
+import { ReactElement, ReactNode } from 'react'
+
 import { Button, ButtonProps } from '@/components/Button'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
-import { ReactElement, ReactNode } from 'react'
+
 import { ConnectTooltip } from '../../Tooltip/ConnectTooltip/ConnectTooltip'
 import { ConnectTooltipContent } from '../../Tooltip/ConnectTooltip/ConnectTooltipContent'
 

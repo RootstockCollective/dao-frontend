@@ -1,3 +1,6 @@
+import { FC } from 'react'
+import { Address } from 'viem'
+
 import {
   Token,
   useGetBackerRBI,
@@ -8,8 +11,7 @@ import { useStateSyncHealthCheck } from '@/app/collective-rewards/shared/hooks/u
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { useFeatureFlags } from '@/shared/context/FeatureFlag'
-import { FC } from 'react'
-import { Address } from 'viem'
+
 import { RewardCard } from '../../components/RewardCard'
 
 interface RBIContentProps {

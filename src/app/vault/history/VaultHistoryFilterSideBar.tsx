@@ -1,8 +1,9 @@
 'use client'
 
 import { useMemo } from 'react'
+
 import { FilterSideBar } from '@/components/FilterSideBar'
-import { FilterGroup, ActiveFilter } from '@/components/FilterSideBar/types'
+import { ActiveFilter, FilterGroup } from '@/components/FilterSideBar/types'
 
 interface VaultHistoryFilterSideBarProps {
   isOpen: boolean

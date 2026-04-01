@@ -1,11 +1,12 @@
-import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
-import { GovernorAbi } from '@/lib/abis/Governor'
-import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
 import { useQuery, UseQueryResult } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import type { Log } from 'viem'
 import { getAddress, parseEventLogs, prepareEncodeFunctionData } from 'viem'
+
 import { ADDRESS_PADDING_LENGTH, RELAY_PARAMETER_PADDING_LENGTH } from '@/app/proposals/shared/utils'
+import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
+import { GovernorAbi } from '@/lib/abis/Governor'
+import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
 import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 

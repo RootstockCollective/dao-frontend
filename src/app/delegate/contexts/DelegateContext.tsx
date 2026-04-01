@@ -1,4 +1,9 @@
 'use client'
+import { produce } from 'immer'
+import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react'
+import { formatEther } from 'viem'
+import { useAccount, useReadContract } from 'wagmi'
+
 import { initialContextState, initialDataState, initialUIState } from '@/app/delegate/lib/constants'
 import {
   DelegateContextState,
@@ -11,10 +16,6 @@ import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import Big from '@/lib/big'
 import { tokenContracts } from '@/lib/contracts'
 import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDelegatedAmount'
-import { produce } from 'immer'
-import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react'
-import { formatEther } from 'viem'
-import { useAccount, useReadContract } from 'wagmi'
 
 // Context
 const DelegateContext = createContext<DelegateContextState>(initialContextState)
@@ -79,7 +80,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
       )
 
       // Calculate voting weight as percentage of total supply
-      let votingWeight: string | undefined = undefined
+      let votingWeight: string | undefined
       const delegateeVotingPower = delegatee?.votingPower?.toString()
       if (delegateeVotingPower && totalSupply) {
         const votingPowerNumber = Big(delegateeVotingPower)

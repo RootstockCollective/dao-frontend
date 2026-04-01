@@ -1,7 +1,8 @@
 import { FC, ReactNode } from 'react'
-import { cn } from '@/lib/utils'
-import { Paragraph } from '@/components/Typography'
+
 import { EmptyPlaceholder } from '@/components/Table/components'
+import { Paragraph } from '@/components/Typography'
+import { cn } from '@/lib/utils'
 
 // Mobile row wrapper component
 const MobileRowWrapper: FC<{ children: ReactNode; className?: string }> = ({ children, className }) => (
@@ -92,4 +93,4 @@ export const MobileDataSection: FC<{
 }
 
 // Export wrapper components for use in other mobile sections
-export { MobileRowWrapper, MobileTwoColumnWrapper, MobileColumnItem, MobileSectionWrapper, EmptyPlaceholder }
+export { EmptyPlaceholder, MobileColumnItem, MobileRowWrapper, MobileSectionWrapper, MobileTwoColumnWrapper }

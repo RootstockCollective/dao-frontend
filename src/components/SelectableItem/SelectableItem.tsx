@@ -1,7 +1,7 @@
+import { ReactNode } from 'react'
+
 import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-
-import { ReactNode } from 'react'
 
 export interface SelectableOption {
   label: string

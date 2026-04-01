@@ -1,13 +1,14 @@
-import { useCommunity } from '@/shared/hooks/useCommunity'
-import { communitiesMapByContract } from '@/app/communities/communityUtils'
-import { useAccount } from 'wagmi'
 import { useEffect, useRef, useState } from 'react'
-import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import type { Address } from 'viem'
-import { CardPlaceholder } from '@/components/loading-components'
-import { SectionContainer } from '@/app/communities/components/SectionContainer'
+import { useAccount } from 'wagmi'
+
+import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { HeroCommunitiesComponent, type HeroCommuntiesSectionProps } from '@/app/communities/components'
 import { ResponsiveCommunityItemHOC } from '@/app/communities/components/ResponsiveCommunityItemHOC'
+import { SectionContainer } from '@/app/communities/components/SectionContainer'
+import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
+import { CardPlaceholder } from '@/components/loading-components'
+import { useCommunity } from '@/shared/hooks/useCommunity'
 
 const nftAddresses: string[] = Object.keys(communitiesMapByContract)
 

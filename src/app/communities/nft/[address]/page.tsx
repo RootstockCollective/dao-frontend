@@ -1,7 +1,8 @@
 import { type Address } from 'viem'
+
+import { CommunityInfoHeader } from './_sections/CommunityInfoHeader'
 import { NftHoldersSection } from './_sections/NftHoldersSection'
 import { CommunityNFTProvider } from './CommunityNFTContext'
-import { CommunityInfoHeader } from './_sections/CommunityInfoHeader'
 
 interface PageProps {
   params: Promise<{ address?: string }>

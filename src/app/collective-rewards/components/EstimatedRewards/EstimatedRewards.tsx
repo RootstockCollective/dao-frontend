@@ -1,20 +1,22 @@
+import Big from 'big.js'
+
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { FiatTooltipLabel } from '@/app/components'
 import { MetricBar } from '@/app/components/Metric/MetricBar'
 import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
 import { MetricToken } from '@/app/components/Metric/types'
+import { createMetricToken } from '@/app/components/Metric/utils'
+import { withDataFallback } from '@/app/shared/components/Fallback'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric } from '@/components/Metric'
 import { Header } from '@/components/Typography'
 import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import Big from 'big.js'
-import { createMetricToken } from '@/app/components/Metric/utils'
-import { useGetLastCycleRewardsFromChain, useGetLastCycleRewardsWithStateSync } from '../../shared/hooks'
-import { withDataFallback } from '@/app/shared/components/Fallback'
-import { CycleData } from '../../shared/hooks/useGetABI'
+
 import { useCycleContext } from '../../metrics/context'
+import { useGetLastCycleRewardsFromChain, useGetLastCycleRewardsWithStateSync } from '../../shared/hooks'
+import { CycleData } from '../../shared/hooks/useGetABI'
 
 const usePrimaryNormalized = () => {
   const { data, isLoading, error } = useGetLastCycleRewardsWithStateSync()

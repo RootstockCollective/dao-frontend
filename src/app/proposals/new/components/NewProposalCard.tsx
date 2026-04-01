@@ -1,12 +1,14 @@
 import Image from 'next/image'
-import { type NewProposalCardBaseData } from '../newProposalCards.data'
 import { HTMLAttributes } from 'react'
-import { cn } from '@/lib/utils'
-import type { ProposalCategory } from '@/shared/types'
-import { Header } from '@/components/Typography'
-import { Expandable, ExpandableHeader, ExpandableContent } from '@/components/Expandable'
+
 import { Button } from '@/components/Button'
+import { Expandable, ExpandableContent, ExpandableHeader } from '@/components/Expandable'
+import { Header } from '@/components/Typography'
+import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import type { ProposalCategory } from '@/shared/types'
+
+import { type NewProposalCardBaseData } from '../newProposalCards.data'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   card: NewProposalCardBaseData

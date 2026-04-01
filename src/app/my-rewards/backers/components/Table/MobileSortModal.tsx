@@ -1,13 +1,15 @@
-import { Modal } from '@/components/Modal/Modal'
+import { FC, useEffect, useState } from 'react'
+
 import { Button } from '@/components/Button'
-import { Paragraph } from '@/components/Typography'
-import { SelectableItem } from '@/components/SelectableItem'
-import { ColumnId, SORT_LABELS, BackerRewardsCellDataMap } from './BackerRewardsTable.config'
-import { FC, useState, useEffect } from 'react'
 import { TrashIcon } from '@/components/Icons'
+import { Modal } from '@/components/Modal/Modal'
+import { SelectableItem } from '@/components/SelectableItem'
+import { Paragraph } from '@/components/Typography'
+import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { SORT_DIRECTION_ASC, SORT_DIRECTION_DESC } from '@/shared/context/TableContext/constants'
 import { SortDirection } from '@/shared/context/TableContext/types'
-import { useTableContext, useTableActionsContext } from '@/shared/context'
+
+import { BackerRewardsCellDataMap, ColumnId, SORT_LABELS } from './BackerRewardsTable.config'
 
 interface MobileSortModalProps {
   isOpen: boolean

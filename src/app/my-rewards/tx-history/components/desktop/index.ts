@@ -1,2 +1,2 @@
+export { AmountCell, CycleCell, DateCell, FromToCell, TotalAmountCell, TypeCell } from './Cells'
 export { DesktopTransactionHistory } from './DesktopTransactionHistory'
-export { CycleCell, DateCell, FromToCell, TypeCell, AmountCell, TotalAmountCell } from './Cells'

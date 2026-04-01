@@ -1,8 +1,9 @@
-import { Header, Paragraph } from '@/components/Typography'
-import { Button } from '@/components/Button'
 import Image from 'next/image'
-import CollapsibleWithPreview from '@/components/CollapsibleWithPreview/CollapsibleWithPreview'
 import { useRouter } from 'next/navigation'
+
+import { Button } from '@/components/Button'
+import CollapsibleWithPreview from '@/components/CollapsibleWithPreview/CollapsibleWithPreview'
+import { Header, Paragraph } from '@/components/Typography'
 
 const ExpandedContent = () => {
   const router = useRouter()

@@ -1,11 +1,13 @@
-import { cn } from '@/lib/utils'
-import { type HTMLAttributes, useState, useEffect, useMemo } from 'react'
+import { type HTMLAttributes, useEffect, useMemo, useState } from 'react'
+
 import { Button } from '@/components/Button'
-import { Modal } from '@/components/Modal'
 import { TrashIcon } from '@/components/Icons'
+import { Modal } from '@/components/Modal'
+import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { FilterGroup, ActiveFilter, FilterOption } from './types'
+
 import { FilterSection } from './FilterSection'
+import { ActiveFilter, FilterGroup, FilterOption } from './types'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   isOpen: boolean

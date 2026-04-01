@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react'
-import { getCachedNftHoldersShepherds } from '@/app/user/Delegation/server/fetchNftHoldersWithVotingPower'
+import { useCallback, useEffect, useState } from 'react'
+
 import { ContributorApiResponse } from '@/app/proposals/shared/types'
+import { getCachedNftHoldersShepherds } from '@/app/user/Delegation/server/fetchNftHoldersWithVotingPower'
 
 interface NftHolder {
   address: string

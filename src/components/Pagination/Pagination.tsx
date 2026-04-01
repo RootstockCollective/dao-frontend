@@ -1,6 +1,7 @@
-import type { Table, PaginationState } from '@tanstack/react-table'
-import { useSearchParams, useRouter } from 'next/navigation'
+import type { PaginationState, Table } from '@tanstack/react-table'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Dispatch, SetStateAction, useEffect, useMemo } from 'react'
+
 import PaginationArrowButton from './PaginationArrowButton'
 import PaginationPageNumbers from './PaginationPageNumbers'
 import PaginationPageSizeSelector from './PaginationPageSizeSelector'

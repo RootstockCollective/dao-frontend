@@ -1,7 +1,8 @@
-import Big from '@/lib/big'
-import { USD, WeiPerEther, VAULT_BASIS_POINTS, RBTC_SYMBOLS, RBTC } from '@/lib/constants'
-import { formatCurrencyWithLabel } from '@/lib/utils'
 import { BigSource } from 'big.js'
+
+import Big from '@/lib/big'
+import { RBTC, RBTC_SYMBOLS, USD, VAULT_BASIS_POINTS, WeiPerEther } from '@/lib/constants'
+import { formatCurrencyWithLabel } from '@/lib/utils'
 
 export const formatMetrics = (amount: bigint, price: BigSource, symbol: string, currency: string = USD) => {
   const fiatAmount = getFiatAmount(amount, price)

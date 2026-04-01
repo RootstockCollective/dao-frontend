@@ -65,17 +65,13 @@ Big.prototype.floor = function (decimalPlaces = 0) {
 
 Big.prototype.toFixedNoTrailing = function (dp?: number, rm?: RoundingMode) {
   // Validate dp (decimal places)
-  if (dp !== undefined) {
-    if (dp !== ~~dp || dp < 0 || dp > 1e6) {
-      throw new Error('Invalid dp argument for toFixedNoTrailing')
-    }
+  if (dp !== undefined && (dp !== ~~dp || dp < 0 || dp > 1e6)) {
+    throw new Error('Invalid dp argument for toFixedNoTrailing')
   }
 
   // Validate rm (rounding mode)
-  if (rm !== undefined) {
-    if (rm !== ~~rm || rm < 0 || rm > 3) {
-      throw new Error('Invalid rm argument for toFixedNoTrailing')
-    }
+  if (rm !== undefined && (rm !== ~~rm || rm < 0 || rm > 3)) {
+    throw new Error('Invalid rm argument for toFixedNoTrailing')
   }
 
   // Get the regular toFixed result

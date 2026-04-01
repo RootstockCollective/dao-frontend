@@ -1,7 +1,8 @@
-import Big from '@/lib/big'
 import moment from 'moment'
-import { ProposalState, ProposalCategory } from '@/shared/types'
+
 import { Proposal } from '@/app/proposals/shared/types'
+import Big from '@/lib/big'
+import { ProposalCategory, ProposalState } from '@/shared/types'
 
 // Mock data structure based on useProposalListData return type
 export const mockProposalListData: Proposal[] = [

@@ -1,4 +1,7 @@
 import { useCallback } from 'react'
+import { Address, encodeFunctionData } from 'viem'
+import { useAccount, useWriteContract } from 'wagmi'
+
 import {
   checkCanCreateProposal,
   createProposal,
@@ -8,8 +11,6 @@ import { NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
 import { BuilderRegistryAddress, GovernorAddress } from '@/lib/contracts'
-import { Address, encodeFunctionData } from 'viem'
-import { useAccount, useWriteContract } from 'wagmi'
 
 export const useRemoveBuilderProposal = () => {
   const { address: userAddress } = useAccount()

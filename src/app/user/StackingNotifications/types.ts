@@ -1,5 +1,6 @@
-import { BannerContentProps } from '@/components/StackableBanner/BannerContent'
 import type { useRouter } from 'next/navigation'
+
+import { BannerContentProps } from '@/components/StackableBanner/BannerContent'
 
 /**
  * Configuration object for a single banner notification.

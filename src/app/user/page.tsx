@@ -1,16 +1,18 @@
 'use client'
 
-import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
 import { useSearchParams } from 'next/navigation'
 import { useAccount } from 'wagmi'
-import { IntroModal } from './IntroModal'
+
+import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
 import { StackingNotifications } from '@/app/user/StackingNotifications/StackingNotifications'
-import { TreasuryContextProviderWithPrices } from '../treasury/contexts/TreasuryContext'
-import { MyActivityAndBalances } from './my-holdings/MyActivityAndBalances'
-import { TopHeroComponentNotConnected } from './components/top-hero'
-import { CollectiveBalancesSection } from './components/collective-balances-section'
-import { LatestCollectiveSection } from './latest-collective'
+
 import { useGetProposalsWithGraph } from '../proposals/hooks/useGetProposalsWithGraph'
+import { TreasuryContextProviderWithPrices } from '../treasury/contexts/TreasuryContext'
+import { CollectiveBalancesSection } from './components/collective-balances-section'
+import { TopHeroComponentNotConnected } from './components/top-hero'
+import { IntroModal } from './IntroModal'
+import { LatestCollectiveSection } from './latest-collective'
+import { MyActivityAndBalances } from './my-holdings/MyActivityAndBalances'
 
 export default function User() {
   const { isConnected } = useAccount()

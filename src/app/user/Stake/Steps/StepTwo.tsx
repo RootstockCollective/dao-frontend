@@ -1,8 +1,10 @@
+import { useCallback, useEffect, useRef } from 'react'
+
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
 import { Header, Label } from '@/components/Typography'
 import { executeTxFlow } from '@/shared/notification'
-import { useCallback, useEffect, useRef } from 'react'
+
 import { StakeTokenAmountDisplay } from '../components/StakeTokenAmountDisplay'
 import { TransactionStatus } from '../components/TransactionStatus'
 import { useAllowance } from '../hooks/useAllowance'

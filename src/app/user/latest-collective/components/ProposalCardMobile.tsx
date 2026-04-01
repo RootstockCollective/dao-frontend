@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 import { Category } from '@/app/proposals/components/category'
 import { ProposerColumn } from '@/app/proposals/components/table-columns/ProposalNameColumn'
 import { QuorumColumn, VotesColumn } from '@/app/proposals/components/table-columns/VotesColumn'
@@ -8,7 +10,6 @@ import { SmallLineSeparator } from '@/components/Separators/SmallLineSeparator'
 import { Status } from '@/components/Status'
 import { Paragraph, Span } from '@/components/Typography'
 import Big from '@/lib/big'
-import { useState } from 'react'
 
 interface Props {
   proposal: Proposal

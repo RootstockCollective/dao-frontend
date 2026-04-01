@@ -17,7 +17,7 @@ const CSV_HEADERS = ['Deposit Window', 'Start Date', 'End Date', 'TVL', 'TVL (US
 
 function escapeCsvValue(value: string): string {
   if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-    return `"${value.replace(/"/g, '""')}"`
+    return `"${value.replaceAll('"', '""')}"`
   }
   return value
 }

@@ -1,13 +1,14 @@
 'use server'
 
-import { publicClient } from '@/lib/viemPublicClient'
+import { gql as apolloGQL } from '@apollo/client'
+import { unstable_cache } from 'next/cache'
+import { Address } from 'viem'
+
+import { GovernorAbi } from '@/lib/abis/Governor'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { GovernorAddress, tokenContracts } from '@/lib/contracts'
-import { GovernorAbi } from '@/lib/abis/Governor'
-import { unstable_cache } from 'next/cache'
-import { gql as apolloGQL } from '@apollo/client'
+import { publicClient } from '@/lib/viemPublicClient'
 import { daoClient } from '@/shared/components/ApolloClient'
-import { Address } from 'viem'
 
 const fetchProposalSharedDetails = async () => {
   // Proposal Threshold (from governor)

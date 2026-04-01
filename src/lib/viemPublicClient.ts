@@ -1,4 +1,5 @@
 import { publicActions } from 'viem'
+
 import { config } from '@/config'
 
 /**

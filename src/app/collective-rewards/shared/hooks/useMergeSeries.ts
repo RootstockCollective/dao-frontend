@@ -1,6 +1,7 @@
-import { BackingPoint, CycleWindow, RewardsPoint } from '@/app/collective-rewards/types'
 import { useMemo } from 'react'
+
 import { ONE_DAY_IN_MS, ONE_DAY_IN_SECONDS } from '@/app/collective-rewards/constants/chartConstants'
+import { BackingPoint, CycleWindow, RewardsPoint } from '@/app/collective-rewards/types'
 import { convertToTimestamp, formatDateKey } from '@/app/collective-rewards/utils/chartUtils'
 
 const calculateCycleDay = (date: Date, cycles: CycleWindow[]) => {

@@ -1,13 +1,15 @@
 'use client'
 
 import { ReactNode } from 'react'
+import { Address } from 'viem'
+
+import { Builder } from '@/app/collective-rewards/types'
 import { Label, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { Builder } from '@/app/collective-rewards/types'
-import { AmountDisplay, BuilderAvatar, MultipleBuildersAvatar, UsdValue } from '..'
-import { TransactionHistoryType } from '../../utils/types'
+
 import { TransactionAmount } from '../../config/table.config'
-import { Address } from 'viem'
+import { TransactionHistoryType } from '../../utils/types'
+import { AmountDisplay, BuilderAvatar, MultipleBuildersAvatar, UsdValue } from '..'
 
 interface MobileCellWrapperProps {
   label: string

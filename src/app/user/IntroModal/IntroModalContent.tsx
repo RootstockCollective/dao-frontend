@@ -1,12 +1,14 @@
+import Image from 'next/image'
+
 import { Button } from '@/components/Button'
 import { ArrowRightIcon, ArrowUpRightLightIcon } from '@/components/Icons'
 import { Modal } from '@/components/Modal'
 import { Header, Label, Paragraph, Span } from '@/components/Typography'
 import Big from '@/lib/big'
 import { cn, formatNumberWithCommas } from '@/lib/utils'
-import Image from 'next/image'
-import { CONTENT_CONFIG, IMAGE_CONFIG, type IntroModalContentProps, type IntroModalStatus } from './config'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+
+import { CONTENT_CONFIG, IMAGE_CONFIG, type IntroModalContentProps, type IntroModalStatus } from './config'
 
 const GLASS_STYLE =
   'rounded bg-[rgba(255,255,255,0.16)] shadow-[inset_0px_0px_14px_0px_rgba(255,255,255,0.25)] backdrop-blur-[3px]'

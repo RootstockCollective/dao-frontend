@@ -1,12 +1,13 @@
+import { Moment } from 'moment'
+import { ClassNameValue } from 'tailwind-merge'
+import { Address } from 'viem'
+
 import { Category } from '@/app/proposals/components/category'
 import { ProposerColumn } from '@/app/proposals/components/table-columns/ProposalNameColumn'
 import { SmallLineSeparator } from '@/components/Separators/SmallLineSeparator'
 import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { ProposalCategory } from '@/shared/types'
-import { Moment } from 'moment'
-import { ClassNameValue } from 'tailwind-merge'
-import { Address } from 'viem'
 
 interface CreatorRowComponentProps {
   proposer: Address

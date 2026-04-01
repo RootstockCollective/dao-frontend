@@ -2,8 +2,9 @@ import { ArrowRightIcon } from '@/components/Icons/ArrowRightIcon'
 import { ExternalLink } from '@/components/Link'
 import { Modal } from '@/components/Modal'
 import { Label, Paragraph, Span } from '@/components/Typography'
-import InfoIcon from '../../review/components/InfoIcon'
 import { useModal } from '@/shared/hooks/useModal'
+
+import InfoIcon from '../../review/components/InfoIcon'
 
 export const MilestoneInfoSidebar = () => {
   const { isModalOpened, openModal, closeModal } = useModal()

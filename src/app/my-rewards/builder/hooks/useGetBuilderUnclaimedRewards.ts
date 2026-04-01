@@ -1,7 +1,8 @@
+import { Address } from 'viem'
+
 import { Token } from '@/app/collective-rewards/rewards'
 import { TOKENS } from '@/lib/tokens'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
-import { Address } from 'viem'
 
 interface UseBuilderUnclaimedRewardsProps {
   builder: Address

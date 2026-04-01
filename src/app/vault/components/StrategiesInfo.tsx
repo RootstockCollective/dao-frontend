@@ -1,20 +1,22 @@
 'use client'
 
-import { useMemo } from 'react'
 import { createColumnHelper, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import { GridTable } from '@/components/Table'
+import { useMemo } from 'react'
+
+import { formatApy, formatSymbol } from '@/app/shared/formatter'
 import { MetricsContainer } from '@/components/containers'
-import { Header } from '@/components/Typography'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
-import { useStrategies, StrategyInfo } from '../hooks/useStrategies'
-import { formatSymbol, formatApy } from '@/app/shared/formatter'
-import { useVaultBalance } from '../hooks/useVaultBalance'
-import { useSubsidyPool } from '../hooks/useSubsidyPool'
-import { truncateMiddle } from '@/lib/utils'
-import { USDRIF } from '@/lib/constants'
 import { CopyButton } from '@/components/CopyButton'
+import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { GridTable } from '@/components/Table'
+import { Header } from '@/components/Typography'
 import { Paragraph } from '@/components/Typography'
+import { USDRIF } from '@/lib/constants'
+import { truncateMiddle } from '@/lib/utils'
+
+import { StrategyInfo, useStrategies } from '../hooks/useStrategies'
+import { useSubsidyPool } from '../hooks/useSubsidyPool'
+import { useVaultBalance } from '../hooks/useVaultBalance'
 import { CircularProgress } from './CircularProgress'
 
 /**

@@ -1,9 +1,11 @@
-import { Label } from '@/components/Typography'
-import { cn } from '@/lib/utils'
-import { BaseColumnId } from '@/shared/context/TableContext'
 import * as DropdownMenuPrimitive from '@radix-ui/react-dropdown-menu'
 import { motion } from 'motion/react'
 import { ReactNode, useState } from 'react'
+
+import { Label } from '@/components/Typography'
+import { cn } from '@/lib/utils'
+import { BaseColumnId } from '@/shared/context/TableContext'
+
 import { MultipleSelectDropdownItem } from './MultipleSelectDropdownItem'
 
 export interface SelectorOption<ColumnId extends BaseColumnId = BaseColumnId> {

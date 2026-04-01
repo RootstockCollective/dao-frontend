@@ -1,9 +1,11 @@
 'use client'
-import { Jdenticon } from '@/components/Header/Jdenticon'
-import { CopyButton } from '../CopyButton'
 import { ChevronDown } from 'lucide-react'
 import { Address } from 'viem'
+
 import { BuilderStatus } from '@/components/Header'
+import { Jdenticon } from '@/components/Header/Jdenticon'
+
+import { CopyButton } from '../CopyButton'
 
 interface Props {
   address: string | undefined

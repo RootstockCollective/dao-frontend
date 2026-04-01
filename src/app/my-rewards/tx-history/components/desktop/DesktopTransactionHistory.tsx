@@ -1,8 +1,10 @@
-import { Row } from '@/shared/context/TableContext/types'
-import { ColumnId, TransactionHistoryCellDataMap } from '../../config'
-import { DesktopHeaderRow } from './DesktopHeaderRow'
-import { DesktopDataRow } from './DesktopDataRow'
 import { Suspense } from 'react'
+
+import { Row } from '@/shared/context/TableContext/types'
+
+import { ColumnId, TransactionHistoryCellDataMap } from '../../config'
+import { DesktopDataRow } from './DesktopDataRow'
+import { DesktopHeaderRow } from './DesktopHeaderRow'
 
 export const DesktopTransactionHistory = ({
   rows,

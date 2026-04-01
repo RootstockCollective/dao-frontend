@@ -1,5 +1,6 @@
-import { useReadRewardDistributor } from '@/shared/hooks/contracts'
 import { useMemo } from 'react'
+
+import { useReadRewardDistributor } from '@/shared/hooks/contracts'
 
 export const useGetCycleRewards = () => {
   const {

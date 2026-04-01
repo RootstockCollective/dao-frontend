@@ -1,6 +1,7 @@
+import { useEffect, useState } from 'react'
+
 import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
-import { useEffect, useState } from 'react'
 
 interface WindshieldWiperAnimationProps extends CommonComponentProps {
   className?: string

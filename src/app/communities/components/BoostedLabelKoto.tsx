@@ -1,6 +1,7 @@
-import { Paragraph } from '@/components/Typography'
-import { RocketIconKoto } from '@/components/Icons'
 import { HTMLAttributes, ReactNode } from 'react'
+
+import { RocketIconKoto } from '@/components/Icons'
+import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {

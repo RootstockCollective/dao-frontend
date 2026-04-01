@@ -1,10 +1,11 @@
 import React, { ComponentProps } from 'react'
+import { Address } from 'viem'
+
 import { BuilderHeader } from '@/app/backing/components/BuilderHeader/BuilderHeader'
 import { Button } from '@/components/Button'
-import { cn } from '@/lib/utils'
-import { Address } from 'viem'
-import { Label, Paragraph } from '@/components/Typography'
 import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
+import { Label, Paragraph } from '@/components/Typography'
+import { cn } from '@/lib/utils'
 
 interface DelegateCardProps {
   address: Address

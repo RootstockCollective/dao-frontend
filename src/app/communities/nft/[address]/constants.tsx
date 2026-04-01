@@ -1,5 +1,6 @@
-import { ToastAlertOptions } from '@/shared/notification'
 import { formatEther } from 'viem'
+
+import { ToastAlertOptions } from '@/shared/notification'
 
 const GENERIC_ERROR_TITLE = 'Error adding NFT to Wallet'
 

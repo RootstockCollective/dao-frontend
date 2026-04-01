@@ -1,6 +1,7 @@
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useQuery } from '@tanstack/react-query'
+
 import { DailyAllocationItem } from '@/app/collective-rewards/types'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 export const useGetChartBackingData = () => {
   const { data, isLoading, error } = useQuery<DailyAllocationItem[], Error>({

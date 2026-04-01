@@ -1,9 +1,9 @@
-import { useReadGauges } from '@/shared/hooks/contracts'
 import { createContext, FC, ReactNode, useContext, useMemo } from 'react'
 
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { BackerEstimatedRewards } from '@/app/collective-rewards/types'
 import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
+import { useReadGauges } from '@/shared/hooks/contracts'
 
 interface BackingContextValue {
   data: BackerEstimatedRewards[]

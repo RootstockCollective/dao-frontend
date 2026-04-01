@@ -1,8 +1,10 @@
 import { type HTMLAttributes, useMemo } from 'react'
-import { FilterItem, FilterType } from './types'
-import { categoryFilterOptions, statusFilterOptions, timeFilterOptions, createFilter } from './filterOptions'
+
+import type { ActiveFilter, FilterGroup } from '@/components/FilterSideBar'
 import { FilterSideBar } from '@/components/FilterSideBar'
-import type { FilterGroup, ActiveFilter } from '@/components/FilterSideBar'
+
+import { categoryFilterOptions, createFilter, statusFilterOptions, timeFilterOptions } from './filterOptions'
+import { FilterItem, FilterType } from './types'
 
 interface ProposalsFilterSideBarProps extends HTMLAttributes<HTMLDivElement> {
   isOpen: boolean

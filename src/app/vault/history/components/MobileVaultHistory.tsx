@@ -1,7 +1,9 @@
 import { memo } from 'react'
-import { useVaultHistoryTable } from './VaultHistoryTable.config'
-import { MobileVaultHistoryCard } from './MobileVaultHistoryCard'
+
 import { Header, Paragraph } from '@/components/Typography'
+
+import { MobileVaultHistoryCard } from './MobileVaultHistoryCard'
+import { useVaultHistoryTable } from './VaultHistoryTable.config'
 
 export const MobileVaultHistory = memo(() => {
   const { rows, totalAmount } = useVaultHistoryTable()

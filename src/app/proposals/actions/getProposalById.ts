@@ -1,5 +1,7 @@
 import { unstable_cache } from 'next/cache'
+
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
+
 import { getCachedProposals } from './fetchAllProposals'
 
 /**
