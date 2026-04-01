@@ -1,91 +1,71 @@
+import type { Hex } from 'viem'
+
+import {
+  type BlockscoutGetLogsQuery,
+  fetchBlockscoutGetLogsPaginated,
+} from '@/lib/blockscout/fetchBlockscoutGetLogsPaginated'
+import { STRIF_ADDRESS } from '@/lib/constants'
+import type { BackendEventByTopic0ResponseValue } from '@/shared/utils'
+
 import type { StakingAction, StakingHistoryByPeriodAndAction, StakingHistoryTransaction } from '../../types'
 import { txTimestamp } from '../shared/query'
 
-const BLOCKSCOUT_URL = (
-  process.env.NEXT_PUBLIC_BLOCKSCOUT_URL ?? 'https://rootstock-testnet.blockscout.com'
-).replace(/\/$/, '')
-const STRIF_CONTRACT = (
-  process.env.NEXT_PUBLIC_STRIF_ADDRESS ?? '0xC4b091d97AD25ceA5922f09fe80711B7ACBbb16f'
-).toLowerCase()
+/** ERC-20 `Transfer(address,address,uint256)` topic0. */
+const TRANSFER_TOPIC0 = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef' as Hex
+/** 32-byte zero topic used for mint/burn-style `Transfer` filters on stRIF. */
+const ZERO_TOPIC = '0x0000000000000000000000000000000000000000000000000000000000000000' as Hex
 
-const TRANSFER_TOPIC0 = '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
-const ZERO_TOPIC = '0x0000000000000000000000000000000000000000000000000000000000000000'
-
-interface BlockscoutLog {
-  blockNumber: string
-  data: string
-  logIndex: string
-  timeStamp: string
-  topics: Array<string | null>
-  transactionHash: string
-}
-
-interface BlockscoutResponse {
-  status: string
-  result: BlockscoutLog[] | string
-}
-
+/**
+ * Pads a 20-byte `0x` address to a 32-byte log topic (64 hex digits after `0x`), as required by indexed `Transfer` args.
+ *
+ * @param address — Normalized 42-char EVM address (validated upstream).
+ */
 function padAddress(address: string): string {
   return `0x${address.slice(2).toLowerCase().padStart(64, '0')}`
 }
 
-async function fetchAllLogs(params: Record<string, string>): Promise<BlockscoutLog[]> {
-  const allLogs: BlockscoutLog[] = []
-  const seen = new Set<string>()
-  let fromBlock = '0'
-
-  while (true) {
-    const url = new URL(`${BLOCKSCOUT_URL}/api`)
-    const queryParams = { ...params, fromBlock, toBlock: 'latest' }
-    for (const [k, v] of Object.entries(queryParams)) {
-      url.searchParams.append(k, v)
-    }
-
-    const response = await fetch(url.toString(), { next: { revalidate: 60 } })
-    if (!response.ok) {
-      throw new Error(`Blockscout staking history: HTTP ${response.status}`)
-    }
-
-    const data = (await response.json()) as BlockscoutResponse
-    if (data.status !== '1' || !Array.isArray(data.result) || data.result.length === 0) {
-      break
-    }
-
-    const lastBlockHex = data.result[data.result.length - 1].blockNumber
-    const lastBlock = parseInt(lastBlockHex, 16).toString()
-
-    for (const log of data.result) {
-      const key = `${log.transactionHash}:${log.logIndex}`
-      if (!seen.has(key)) {
-        seen.add(key)
-        allLogs.push(log)
-      }
-    }
-
-    if (lastBlock === fromBlock) break
-    fromBlock = lastBlock
-  }
-
-  return allLogs
-}
-
-function buildLogParams(paddedUser: string, action: StakingAction): Record<string, string> {
+/**
+ * Builds a Blockscout `getLogs` query for stRIF `Transfer` logs via {@link STRIF_ADDRESS}:
+ * mint-style stake (`topic1` zero, `topic2` user) vs burn-style unstake (`topic1` user, `topic2` zero).
+ *
+ * @param paddedUser — 32-byte topic form of the wallet (see {@link padAddress}).
+ * @param action — `STAKE` or `UNSTAKE` selects which indexed slot holds the user.
+ */
+function buildStakingTransferLogQuery(paddedUser: string, action: StakingAction): BlockscoutGetLogsQuery {
   const isStake = action === 'STAKE'
+  const userTopic = paddedUser as Hex
   return {
-    module: 'logs',
-    action: 'getLogs',
-    address: STRIF_CONTRACT,
+    address: STRIF_ADDRESS,
     topic0: TRANSFER_TOPIC0,
-    topic1: isStake ? ZERO_TOPIC : paddedUser,
-    topic2: isStake ? paddedUser : ZERO_TOPIC,
+    topic1: isStake ? ZERO_TOPIC : userTopic,
+    topic2: isStake ? userTopic : ZERO_TOPIC,
     topic0_1_opr: 'and',
     topic0_2_opr: 'and',
     topic1_2_opr: 'and',
   }
 }
 
+/**
+ * Loads all paginated logs for one action from Blockscout (60s Next.js revalidate).
+ *
+ * @see {@link fetchBlockscoutGetLogsPaginated}
+ */
+async function fetchStakingTransferLogs(
+  paddedUser: string,
+  action: StakingAction,
+): Promise<BackendEventByTopic0ResponseValue[]> {
+  return fetchBlockscoutGetLogsPaginated({
+    query: buildStakingTransferLogQuery(paddedUser, action),
+    fetchInit: { next: { revalidate: 60 } },
+  })
+}
+
+/**
+ * Maps one Blockscout row to {@link StakingHistoryTransaction}: `data` is the transfer value (wei as hex),
+ * `timeStamp` and `blockNumber` are parsed as hex, `blockHash` is unset (explorer row has no usable hash here).
+ */
 function logToTransaction(
-  log: BlockscoutLog,
+  log: BackendEventByTopic0ResponseValue,
   action: StakingAction,
   user: string,
 ): StakingHistoryTransaction {
@@ -100,6 +80,12 @@ function logToTransaction(
   }
 }
 
+/**
+ * Groups transactions by `YYYY-MM` (UTC) and {@link StakingAction}, summing `amount` and appending to `transactions`
+ * (same aggregate shape as the database staking history source).
+ *
+ * @returns Groups in `Map` insertion order (first seen period+action first); sort client-side if a stable order is required.
+ */
 function groupByPeriodAndAction(
   transactions: StakingHistoryTransaction[],
 ): StakingHistoryByPeriodAndAction[] {
@@ -128,12 +114,15 @@ function groupByPeriodAndAction(
 }
 
 /**
- * Loads staking history for an address from Blockscout ERC-20 Transfer logs (stRIF mint/burn style topics).
- * Used when the staking DB is unavailable. Results are grouped by UTC month and action like the DB path.
+ * Loads staking history for an address from Blockscout stRIF `Transfer` logs (mint/burn topic pattern).
+ * Used when the staking DB is unavailable (DAO-2058). Output matches the DB source: UTC monthly buckets per action.
  *
- * @param address — Lowercase 0x-prefixed wallet address (already validated by the route).
- * @returns All period+action groups for the address (no pagination).
- * @throws If Blockscout responds with an error or unexpected payload.
+ * @param address — Lowercase `0x`-prefixed wallet (validated by the API route).
+ * @returns All period+action groups for the wallet (full history; caller paginates if needed).
+ *
+ * @see {@link fetchBlockscoutGetLogsPaginated} — Shared pagination, dedupe, and error handling.
+ *
+ * @throws Propagates Blockscout client errors (HTTP failure, `status !== '1'`, missing `result`).
  */
 export async function fetchStakingHistoryFromBlockscout(
   address: string,
@@ -141,8 +130,8 @@ export async function fetchStakingHistoryFromBlockscout(
   const paddedUser = padAddress(address)
 
   const [stakeLogs, unstakeLogs] = await Promise.all([
-    fetchAllLogs(buildLogParams(paddedUser, 'STAKE')),
-    fetchAllLogs(buildLogParams(paddedUser, 'UNSTAKE')),
+    fetchStakingTransferLogs(paddedUser, 'STAKE'),
+    fetchStakingTransferLogs(paddedUser, 'UNSTAKE'),
   ])
 
   const transactions: StakingHistoryTransaction[] = [
