@@ -11,42 +11,86 @@ import {
 } from '@/app/user/Balances/types'
 import { GetPricesResult } from '@/app/user/types'
 import { fetchLogsByTopic } from '@/lib/blockscout/fetchLogsByTopic'
-import { BLOCKSCOUT_URL, RIF_WALLET_SERVICES_URL } from '@/lib/constants'
+import { BLOCKSCOUT_URL } from '@/lib/constants'
 import { GovernorAddress, tokenContracts } from '@/lib/contracts'
-import { fetchPricesEndpoint } from '@/lib/endpoints'
 import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
-const rws = RIF_WALLET_SERVICES_URL ?? ''
-
-async function fetchRws<T = unknown>(path: string): Promise<{ data: T }> {
-  const res = await fetch(`${rws}${path}`)
-  if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
-  const data = (await res.json()) as T
-  return { data }
+// CoinMarketCap IDs for tokens that have market prices
+const CMC_TOKEN_IDS: Record<string, number> = {
+  RBTC: 3626,
+  RIF: 3701,
+  USDT0: 825, // USDT
 }
 
-export const fetchPrices = async () => {
-  return fetchRws<GetPricesResult>(
-    fetchPricesEndpoint
-      .replace(
-        '{{addresses}}',
-        Object.values(tokenContracts)
-          .filter(address => address && isAddress(address))
-          .join(','),
-      )
-      .replace('{{convert}}', 'USD'),
-  ).then(({ data: prices }) => {
-    const pricesReturn: GetPricesResult = {}
-    for (const contract in prices) {
-      const contractFromEnv = (Object.keys(tokenContracts) as Array<keyof typeof tokenContracts>).find(
-        contractName => tokenContracts[contractName] === contract,
-      )
-      if (contractFromEnv) {
-        pricesReturn[contractFromEnv] = prices[contract]
+// Tokens with a fixed $1.0 price (stablecoins)
+const STABLECOIN_TOKENS = new Set(['USDRIF'])
+
+// Tokens that mirror another token's price
+const MIRROR_TOKENS: Record<string, string> = {
+  STRIF: 'RIF', // staked RIF, 1:1 ratio
+}
+
+interface CmcQuote {
+  quote: {
+    USD: {
+      price: number
+      last_updated: string
+    }
+  }
+}
+
+interface CmcResponse {
+  data: Record<string, CmcQuote>
+}
+
+// CoinMarketCap free tier: 10,000 calls/month ≈ 1 call every 5 minutes.
+// next.revalidate on the fetch() call caches the response across requests.
+const CMC_REVALIDATE_SECONDS = 5 * 60
+
+export const fetchPrices = async (): Promise<GetPricesResult> => {
+  const cmcKey = process.env.COIN_MARKET_CAP_KEY
+  const tokenNames = Object.keys(tokenContracts) as Array<keyof typeof tokenContracts>
+  const now = new Date().toISOString()
+  const result: GetPricesResult = {}
+
+  for (const name of tokenNames) {
+    if (STABLECOIN_TOKENS.has(String(name))) {
+      result[name] = { price: 1.0, lastUpdated: now }
+    }
+  }
+
+  const idsToFetch = tokenNames.filter(name => CMC_TOKEN_IDS[name]).map(name => CMC_TOKEN_IDS[name])
+  const idToName = Object.fromEntries(
+    tokenNames.filter(name => CMC_TOKEN_IDS[name]).map(name => [CMC_TOKEN_IDS[name].toString(), name]),
+  )
+
+  if (idsToFetch.length > 0 && cmcKey) {
+    const url = `https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest?id=${idsToFetch.join(',')}&convert=USD`
+    const res = await fetch(url, {
+      headers: { 'X-CMC_PRO_API_KEY': cmcKey },
+      next: { revalidate: CMC_REVALIDATE_SECONDS },
+    })
+    if (res.ok) {
+      const { data } = (await res.json()) as CmcResponse
+      for (const [id, quote] of Object.entries(data)) {
+        const tokenName = idToName[id]
+        if (tokenName) {
+          result[tokenName] = {
+            price: quote.quote.USD.price,
+            lastUpdated: quote.quote.USD.last_updated,
+          }
+        }
       }
     }
-    return pricesReturn
-  })
+  }
+
+  for (const [mirror, source] of Object.entries(MIRROR_TOKENS)) {
+    if (tokenNames.includes(mirror as keyof typeof tokenContracts) && result[source]) {
+      result[mirror] = result[source]
+    }
+  }
+
+  return result
 }
 
 // keccak256('ProposalCreated(uint256,address,address[],uint256[],string[],bytes[],uint256,uint256,string)')
