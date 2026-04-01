@@ -1,4 +1,4 @@
-import type { Hex, RpcLog } from 'viem'
+import type { Address, Hash, Hex, RpcLog } from 'viem'
 
 import { BLOCKSCOUT_URL } from '@/lib/constants'
 import type { BackendEventByTopic0ResponseValue } from '@/shared/utils'
@@ -13,22 +13,22 @@ interface BlockscoutLogsResponse {
 }
 
 interface FetchLogsByTopicParams {
-  address: string
+  address: Address
   topic0: Hex
   fromBlock?: string
   topic1?: Hex
-  topic0_1_opr?: 'and'
+  topic0_1_opr?: 'and' | 'or'
 }
 
 function toRpcLog(log: BackendEventByTopic0ResponseValue): RpcLog {
   return {
-    address: log.address as `0x${string}`,
+    address: log.address as Address,
     blockHash: null,
-    blockNumber: log.blockNumber as `0x${string}`,
-    data: log.data as `0x${string}`,
-    logIndex: log.logIndex as `0x${string}`,
-    transactionHash: log.transactionHash as `0x${string}`,
-    transactionIndex: log.transactionIndex as `0x${string}`,
+    blockNumber: log.blockNumber as Hex,
+    data: log.data as Hex,
+    logIndex: log.logIndex as Hex,
+    transactionHash: log.transactionHash as Hash,
+    transactionIndex: log.transactionIndex as Hex,
     removed: false,
     topics: log.topics.filter((t): t is string => t !== null) as [] | [Hex, ...Hex[]],
   }
@@ -79,11 +79,20 @@ export async function fetchLogsByTopic({
 
     const data = (await response.json()) as BlockscoutLogsResponse
 
-    if (data.status !== '1' || !data.result) {
-      break
+    // Blockscout returns status: '1' on success, other values indicate errors
+    if (data.status !== '1') {
+      throw new Error(`Blockscout error: ${data.message || 'unknown error'} (status: ${data.status})`)
     }
 
-    if (data.result.length === 0) break
+    // Handle missing result field
+    if (!data.result) {
+      throw new Error('Blockscout error: missing result field')
+    }
+
+    // No more logs found
+    if (data.result.length === 0) {
+      break
+    }
 
     for (const row of data.result) {
       const key = `${row.transactionHash}-${row.logIndex}`
@@ -92,9 +101,12 @@ export async function fetchLogsByTopic({
       allLogs.push(toRpcLog(row))
     }
 
+    // Blockscout returns blockNumber as hex string (0x...). Convert to decimal for pagination.
     const lastBlockNumberHex = data.result[data.result.length - 1].blockNumber
     const lastBlockNumber = parseInt(lastBlockNumberHex, 16).toString()
 
+    // If we're still on the same block, pagination is complete
+    // (all logs from this block have been retrieved)
     if (lastBlockNumber === fromBlock) {
       break
     }
@@ -102,5 +114,7 @@ export async function fetchLogsByTopic({
     fromBlock = lastBlockNumber
   }
 
+  // Note: if pagination hits MAX_PAGES limit, results may be incomplete.
+  // Consider monitoring logs if this becomes an issue in production.
   return { data: allLogs }
 }
