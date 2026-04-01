@@ -28,7 +28,7 @@ describe('DepositWindowBanner', () => {
     status: 'open' as const,
     statusSummary: 'Closes in 5d',
     isAcceptingRequests: true,
-    endTime: Math.floor(Date.now() / 1000) + 86400 * 6,
+    endTime: Math.floor(new Date('2025-02-23T00:00:00.000Z').getTime() / 1000),
     closesAtFormatted: '23 Feb 2025',
   }
 
@@ -47,7 +47,7 @@ describe('DepositWindowBanner', () => {
     expect(screen.getByTestId('DepositWindowBanner')).toBeInTheDocument()
     expect(screen.getByText(/DEPOSIT WINDOW 1/)).toBeInTheDocument()
     expect(
-      screen.getByText(/For the current cycle, deposits can be made until 23 Feb 2025\./),
+      screen.getByText(/For the current cycle, deposits can be made until February 23\./),
     ).toBeInTheDocument()
     expect(screen.getByTestId('countdown')).toHaveTextContent('5d 23h 59m')
   })
