@@ -1,7 +1,6 @@
-import { DateTime } from 'luxon'
-
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { Metric } from '@/components/Metric'
+import { DateTime } from 'luxon'
 
 const CycleEndingOnContent = ({ cycleNext }: { cycleNext: DateTime }) => {
   return (

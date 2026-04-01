@@ -1,17 +1,15 @@
-import { useQuery } from '@tanstack/react-query'
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Address } from 'viem'
-import { useAccount, useReadContracts, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { readContracts } from 'wagmi/actions'
-
-import { communitiesMapByContract } from '@/app/communities/communityUtils'
+import { useMemo, useCallback, useEffect, useState } from 'react'
+import { abiContractsMap, DEFAULT_NFT_CONTRACT_ABI } from '@/lib/contracts'
+import { Address } from 'viem'
+import { useReadContracts, useAccount, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+import { fetchIpfsNftMeta, ipfsGatewayUrl } from '@/lib/ipfs'
+import { NftMeta, CommunityData } from '../types'
 import { config } from '@/config'
 import Big from '@/lib/big'
-import { abiContractsMap, DEFAULT_NFT_CONTRACT_ABI } from '@/lib/contracts'
-import { fetchIpfsNftMeta, ipfsGatewayUrl } from '@/lib/ipfs'
+import { useQuery } from '@tanstack/react-query'
 import { splitWords } from '@/lib/utils'
-
-import { CommunityData, NftMeta } from '../types'
+import { communitiesMapByContract } from '@/app/communities/communityUtils'
 
 /**
  * Hook for loading NFT metadata from IPFS

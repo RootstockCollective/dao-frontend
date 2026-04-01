@@ -1,10 +1,9 @@
-import { Address } from 'viem'
-
 import { Button } from '@/components/Button'
 import { IpfsAvatar } from '@/components/IpfsAvatar'
 import { Modal } from '@/components/Modal'
 import { Header, Paragraph } from '@/components/Typography'
 import { shortAddress } from '@/lib/utils'
+import { Address } from 'viem'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface Props {

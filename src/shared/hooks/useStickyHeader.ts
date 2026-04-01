@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useRef, useEffect, useState, useCallback } from 'react'
 
 interface UseStickyHeaderOptions {
   isEnabled?: boolean
@@ -13,11 +13,11 @@ interface UseStickyHeaderOptions {
 
 // Type-safe helper to convert React.CSSProperties key to CSS property name (kebab-case)
 const toCSSPropertyName = (key: string): string => {
-  return key.replaceAll(/([A-Z])/g, '-$1').toLowerCase()
+  return key.replace(/([A-Z])/g, '-$1').toLowerCase()
 }
 
 export const useStickyHeader = (options: UseStickyHeaderOptions = {}) => {
-  const { isEnabled = true, style, threshold = 10, mode = 'position-based' } = options
+  const { isEnabled = true, style = undefined, threshold = 10, mode = 'position-based' } = options
 
   const headerRef = useRef<HTMLDivElement>(null)
   const originalHeaderTop = useRef<number>(0)

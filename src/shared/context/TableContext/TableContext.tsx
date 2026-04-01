@@ -1,9 +1,7 @@
 'use client'
 
-import { createContext, useContext } from 'react'
-
 import { NoContextProviderError } from '@/lib/errors/ContextError'
-
+import { createContext, useContext } from 'react'
 import { BaseColumnId, TableState } from '.'
 
 export const initialState: TableState = {

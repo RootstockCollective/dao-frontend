@@ -1,7 +1,6 @@
-import { ReactNode } from 'react'
-
 import { Tooltip, TooltipProps } from '@/components/Tooltip'
 import { cn } from '@/lib/utils'
+import { ReactNode } from 'react'
 
 export interface TooltipConditionPair {
   condition: () => boolean

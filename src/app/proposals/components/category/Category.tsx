@@ -1,13 +1,11 @@
 import { type ComponentProps } from 'react'
-
 import { Tooltip } from '@/components/Tooltip'
-import { Span } from '@/components/Typography'
-import { cn } from '@/lib/utils'
-import { ProposalCategory } from '@/shared/types'
-
-import { Milestones } from '../../shared/types'
 import { GrantsIcon, HammerIcon } from '../icons'
+import { ProposalCategory } from '@/shared/types'
+import { cn } from '@/lib/utils'
 import { MilestoneIcon } from '../MilestoneIcon'
+import { Milestones } from '../../shared/types'
+import { Span } from '@/components/Typography'
 
 interface Props extends ComponentProps<'div'> {
   category: ProposalCategory

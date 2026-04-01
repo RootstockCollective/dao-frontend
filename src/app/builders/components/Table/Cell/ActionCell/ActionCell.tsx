@@ -1,12 +1,11 @@
 // FIXME: move to @/app/builders/components/Table folder
-import { ReactNode } from 'react'
-
 import { Builder } from '@/app/collective-rewards/types'
 import { isBuilderActive } from '@/app/collective-rewards/utils'
 import { Button } from '@/components/Button'
-import { CommonComponentProps } from '@/components/commonProps'
 import { CogIcon, HandshakeIcon, TrashIcon } from '@/components/Icons/v3design'
+import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
+import { ReactNode } from 'react'
 
 const ACTION_CONFIG = {
   removeBacking: { text: 'Remove Backing', icon: <TrashIcon size={20} /> },

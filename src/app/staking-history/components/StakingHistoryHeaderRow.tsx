@@ -1,23 +1,21 @@
 'use client'
 
+import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { ReactNode, Suspense } from 'react'
-import { Dispatch } from 'react'
-
-import { ArrowDownWFill } from '@/components/Icons/v3design/ArrowDownWFill'
-import { ArrowsUpDown } from '@/components/Icons/v3design/ArrowsUpDown'
-import { ArrowUpWFill } from '@/components/Icons/v3design/ArrowUpWFill'
 import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
 import { Label } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { SORT_DIRECTION_ASC, SORT_DIRECTIONS } from '@/shared/context/TableContext/constants'
-
+import { Dispatch } from 'react'
 import {
-  COLUMN_TRANSFORMS,
-  ColumnId,
   StakingHistoryCellDataMap,
   StakingHistoryTable,
+  COLUMN_TRANSFORMS,
+  ColumnId,
 } from './StakingHistoryTable.config'
+import { ArrowsUpDown } from '@/components/Icons/v3design/ArrowsUpDown'
+import { ArrowDownWFill } from '@/components/Icons/v3design/ArrowDownWFill'
+import { ArrowUpWFill } from '@/components/Icons/v3design/ArrowUpWFill'
 
 interface OrderIndicatorContainerProps {
   children: ReactNode

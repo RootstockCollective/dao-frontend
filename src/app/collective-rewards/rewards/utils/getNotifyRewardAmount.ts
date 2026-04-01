@@ -1,6 +1,5 @@
-import { Address, isAddressEqual } from 'viem'
-
 import { GaugeNotifyRewardEventLog } from '@/app/collective-rewards/rewards'
+import { Address, isAddressEqual } from 'viem'
 
 export const getNotifyRewardAmount = (
   notifyRewardEvents: Record<Address, GaugeNotifyRewardEventLog>,

@@ -1,9 +1,8 @@
-import { Address } from 'viem'
-
 import { fetchTokenHoldersOfAddress } from '@/app/user/Balances/actions'
-import { NextPageParams, ServerResponseV2, TokenHoldersResponse } from '@/app/user/Balances/types'
-import { useInfinitePagination } from '@/shared/hooks/useInfinitePagination'
+import { Address } from 'viem'
+import { NextPageParams, TokenHoldersResponse, ServerResponseV2 } from '@/app/user/Balances/types'
 import { usePaginationUi } from '@/shared/hooks/usePaginationUi'
+import { useInfinitePagination } from '@/shared/hooks/useInfinitePagination'
 
 export const useFetchTokenHolders = (address: Address) => {
   const query = useInfinitePagination<

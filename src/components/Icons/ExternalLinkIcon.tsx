@@ -1,5 +1,5 @@
-import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
 import { type IconProps } from './types'
+import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
 
 export function ExternalLinkIcon({
   'aria-label': ariaLabel = 'External Link Icon',

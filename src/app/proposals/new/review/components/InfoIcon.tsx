@@ -1,5 +1,5 @@
-import { type IconProps } from '@/components/Icons'
 import { DEFAULT_ICON_SIZE } from '@/components/Icons/constants'
+import { type IconProps } from '@/components/Icons'
 import { cn } from '@/lib/utils'
 
 export default function InfoIcon({ size = DEFAULT_ICON_SIZE, className, ...props }: IconProps) {

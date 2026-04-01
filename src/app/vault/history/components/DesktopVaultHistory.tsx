@@ -1,8 +1,7 @@
-import { memo, Suspense } from 'react'
-
-import { VaultHistoryDataRow } from '@/app/vault/history/components/VaultHistoryDataRow'
+import { Suspense, memo } from 'react'
 import { VaultHistoryHeaderRow } from '@/app/vault/history/components/VaultHistoryHeaderRow'
 import { useVaultHistoryTable } from '@/app/vault/history/components/VaultHistoryTable.config'
+import { VaultHistoryDataRow } from '@/app/vault/history/components/VaultHistoryDataRow'
 import { Paragraph } from '@/components/Typography'
 
 export const DesktopVaultHistory = memo(() => {

@@ -2,7 +2,6 @@ import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderE
 import { InfoContainer } from '@/components/containers'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
-
 import { useHandleErrors } from '../../utils'
 import { BackersCallToAction } from '../BackersCallToAction'
 import { BuildersCallToAction } from '../BuildersCallToAction'

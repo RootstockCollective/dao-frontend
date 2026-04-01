@@ -1,14 +1,12 @@
-import Big, { BigSource } from 'big.js'
 import { Duration } from 'luxon'
-import { Address, getAddress } from 'viem'
-
 import { FIRST_CYCLE_START_SECONDS } from '@/app/collective-rewards/constants/chartConstants'
-import { getFiatAmount } from '@/app/shared/formatter'
+import { TransactionHistoryItem } from './types'
 import { GetPricesResult } from '@/app/user/types'
 import { tokenContracts } from '@/lib/contracts'
 import { TOKENS_BY_ADDRESS } from '@/lib/tokens'
-
-import { TransactionHistoryItem } from './types'
+import { getFiatAmount } from '@/app/shared/formatter'
+import { Address, getAddress } from 'viem'
+import Big, { BigSource } from 'big.js'
 
 export const formatExpandedDate = (timestamp: string): string => {
   const date = new Date(Number(timestamp) * 1000)

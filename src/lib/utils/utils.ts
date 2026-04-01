@@ -1,10 +1,9 @@
+import Big from '@/lib/big'
 import { BigSource } from 'big.js'
 import { ClassValue, clsx } from 'clsx'
 import { Duration } from 'luxon'
 import { twMerge } from 'tailwind-merge'
 import { Address, formatEther, getAddress, isAddress } from 'viem'
-
-import Big from '@/lib/big'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
@@ -210,7 +209,7 @@ export function millify(num: BigSource | bigint, separator = '', units = shortDe
  * splitWords("ABCdef") // returns "AB Cdef"
  */
 export function splitWords(str?: string) {
-  return str ? str.replaceAll(/([A-Z]+)([A-Z][a-z])/g, '$1 $2').replaceAll(/([a-z])([A-Z])/g, '$1 $2') : ''
+  return str ? str.replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2').replace(/([a-z])([A-Z])/g, '$1 $2') : ''
 }
 
 /**

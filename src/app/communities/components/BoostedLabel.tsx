@@ -1,10 +1,9 @@
 'use client'
 
-import { ReactNode } from 'react'
-
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { BoltSvg } from '@/components/BoltSvg'
 import { GlowingLabel } from '@/components/Label/GlowingLabel'
+import { ReactNode } from 'react'
 
 interface BoostedLabelProps {
   nftAddress: string

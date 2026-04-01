@@ -1,12 +1,10 @@
 import type { HTMLAttributes } from 'react'
-
-import { Hamburger } from '@/components/Hamburger'
 import { NetworkLogo } from '@/components/NetworkLogo'
-import { cn } from '@/lib/utils'
-import { useStickyHeader } from '@/shared/hooks'
-import { UserConnectionManager } from '@/shared/walletConnection'
-
 import { useLayoutContext } from '../LayoutProvider'
+import { Hamburger } from '@/components/Hamburger'
+import { cn } from '@/lib/utils'
+import { UserConnectionManager } from '@/shared/walletConnection'
+import { useStickyHeader } from '@/shared/hooks'
 
 export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { isSidebarOpen, toggleSidebar } = useLayoutContext()

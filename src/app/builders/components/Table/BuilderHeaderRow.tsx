@@ -1,7 +1,7 @@
 'use client'
 
+import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { ReactElement, Suspense, useMemo } from 'react'
-import { Dispatch, FC, ReactNode } from 'react'
 import { Address } from 'viem'
 
 import { Button } from '@/components/Button'
@@ -14,14 +14,13 @@ import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
 import { Tooltip, TooltipProps } from '@/components/Tooltip'
 import { Label, Paragraph, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { SORT_DIRECTION_ASC, SORT_DIRECTIONS } from '@/shared/context/TableContext/constants'
-
+import { Dispatch, FC, ReactNode } from 'react'
 import { BuilderCellDataMap, BuilderTable, COLUMN_TRANSFORMS, ColumnId, LABELS } from './BuilderTable.config'
 import { Action, ActionCell } from './Cell/ActionCell'
 import { SelectorHeaderCell } from './Cell/SelectorHeaderCell'
-import { TableColumnDropdown } from './TableColumnDropdown'
 import { getSelectedBuildersActionState } from './utils/builderRowUtils'
+import { TableColumnDropdown } from './TableColumnDropdown'
 
 export const useSelectedBuildersActions = (actions: Action[]) => {
   const { selectedRows } = useTableContext<ColumnId, BuilderCellDataMap>()

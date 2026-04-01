@@ -1,10 +1,8 @@
-import { flexRender, Row, type Table as ReactTable } from '@tanstack/react-table'
-import { useState } from 'react'
-
 import { Expandable, ExpandableContent, ExpandableHeader } from '@/components/Expandable'
-import { Span } from '@/components/Typography'
-
+import { flexRender, Row, type Table as ReactTable } from '@tanstack/react-table'
 import { Proposal } from '../shared/types'
+import { useState } from 'react'
+import { Span } from '@/components/Typography'
 
 // Proposals table component for mobile
 export const ProposalsTableMobile = ({ table }: { table: ReactTable<Proposal> }) => {

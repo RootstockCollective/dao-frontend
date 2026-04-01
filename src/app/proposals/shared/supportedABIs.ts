@@ -1,9 +1,8 @@
-import { AbiFunction } from 'viem'
-
 import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
 import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
+import { AbiFunction } from 'viem'
 
 export const abis = [
   DAOTreasuryAbi,

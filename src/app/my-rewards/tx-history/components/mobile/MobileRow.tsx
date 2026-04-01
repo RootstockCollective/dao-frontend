@@ -4,7 +4,6 @@ import { Expandable, ExpandableContent, ExpandableHeader } from '@/components/Ex
 import { SmallLineSeparator } from '@/components/Separators/SmallLineSeparator'
 import { Paragraph } from '@/components/Typography'
 import { Row } from '@/shared/context/TableContext/types'
-
 import { ColumnId, TransactionHistoryCellDataMap } from '../../config'
 import { MobileAmountCell, MobileFromToCell, MobileTotalAmountCell, MobileTypeCell } from './MobileCells'
 import { MobileGroupedDetails } from './MobileGroupedDetails'

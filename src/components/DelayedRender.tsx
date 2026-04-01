@@ -1,6 +1,6 @@
 'use client'
 
-import { PropsWithChildren, ReactNode, useEffect, useState } from 'react'
+import { useState, useEffect, PropsWithChildren, ReactNode } from 'react'
 
 /**
  * A component that prevents hydration mismatch by only rendering its children after client-side hydration is complete.

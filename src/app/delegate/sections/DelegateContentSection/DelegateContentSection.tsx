@@ -1,8 +1,7 @@
 'use client'
-import { useAccount } from 'wagmi'
-
-import { ConnectedSection } from './ConnectedSection'
 import { NotConnectedSection } from './NotConnectedSection'
+import { ConnectedSection } from './ConnectedSection'
+import { useAccount } from 'wagmi'
 
 export const DelegateContentSection = () => {
   const { isConnected } = useAccount()

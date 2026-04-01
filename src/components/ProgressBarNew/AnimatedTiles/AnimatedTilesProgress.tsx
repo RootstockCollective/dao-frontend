@@ -1,12 +1,11 @@
-import { animate, motion, useMotionValue, useTransform } from 'motion/react'
-import { HTMLAttributes, useEffect, useId, useMemo, useRef } from 'react'
-
-import type { Color } from '../colors'
+import { useId, useEffect, useMemo, useRef, HTMLAttributes } from 'react'
+import { motion, useMotionValue, useTransform, animate } from 'motion/react'
 import { GradientDef } from './GradientDef'
+import type { Color } from '../colors'
 
 type GradientColors = Color | [Color] | [Color, Color] | [Color, Color, Color]
-import { cn } from '@/lib/utils'
 import { useResizeObserver } from '@/shared/hooks/useResizeObserver'
+import { cn } from '@/lib/utils'
 
 interface AnimatedTilesProps extends HTMLAttributes<SVGSVGElement> {
   /** Size of each tile (square side, in px) */

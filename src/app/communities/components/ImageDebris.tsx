@@ -1,7 +1,6 @@
 'use client'
-import { type ComponentProps, useEffect, useRef, useState } from 'react'
-
-import { ConfigResult, PIXEL_CONFIGS, usePixelExtractor } from '@/app/communities/hooks/usePixelExtractor'
+import { ConfigResult, usePixelExtractor, PIXEL_CONFIGS } from '@/app/communities/hooks/usePixelExtractor'
+import { useEffect, useState, useRef, type ComponentProps } from 'react'
 
 interface Props extends ComponentProps<'div'> {
   image: string

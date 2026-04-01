@@ -1,21 +1,19 @@
 'use client'
 
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Trash2 } from 'lucide-react'
 import type { ComponentProps } from 'react'
 import { useEffect, useRef } from 'react'
-import { useFieldArray, useForm } from 'react-hook-form'
-import { Controller } from 'react-hook-form'
 import { type Address, getAddress, isAddress } from 'viem'
+import { useFieldArray, useForm } from 'react-hook-form'
 import { z } from 'zod'
-
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Header } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { XCircleIcon } from '@/components/Icons'
-import { Tooltip } from '@/components/Tooltip'
-import { Header } from '@/components/Typography'
+import { Trash2 } from 'lucide-react'
+import { Controller } from 'react-hook-form'
 import { cn } from '@/lib/utils'
-
 import { useRootlingsS1 } from './useRootlingsS1'
+import { Tooltip } from '@/components/Tooltip'
 
 const maxFields = 10
 const AddressesSchema = z.object({

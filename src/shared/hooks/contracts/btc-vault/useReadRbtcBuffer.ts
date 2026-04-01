@@ -1,12 +1,10 @@
+import { BufferAbi } from '@/lib/abis/btc-vault'
+import { buffer } from '@/lib/contracts'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useReadContract } from 'wagmi'
 import { UseReadContractReturnType } from 'wagmi'
 import { UseReadContractParameters } from 'wagmi'
-
-import { BufferAbi } from '@/lib/abis/btc-vault'
 import { getAbi } from '@/lib/abis/btc-vault'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { buffer } from '@/lib/contracts'
-
 import { UseReadContractConfig, ViewPureFunctionName } from '../types'
 
 type BufferFunctionName = ViewPureFunctionName<BufferAbi>

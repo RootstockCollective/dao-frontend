@@ -1,13 +1,12 @@
+import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
+import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
+import { BuilderRegistryAddress } from '@/lib/contracts'
 import {
   useWaitForTransactionReceipt,
   UseWaitForTransactionReceiptReturnType,
   useWriteContract,
   UseWriteContractReturnType,
 } from 'wagmi'
-
-import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
-import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
-import { BuilderRegistryAddress } from '@/lib/contracts'
 
 export type SetBackerRewardsForBuilder = {
   data: UseWriteContractReturnType['data']

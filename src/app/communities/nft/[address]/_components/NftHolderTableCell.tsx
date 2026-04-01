@@ -1,9 +1,8 @@
-import type { Cell, Row } from '@tanstack/react-table'
 import Image from 'next/image'
-
-import type { NftHolderItem } from '@/app/user/Balances/types'
 import { Paragraph } from '@/components/Typography/Paragraph'
 import { EXPLORER_URL } from '@/lib/constants'
+import type { Row, Cell } from '@tanstack/react-table'
+import type { NftHolderItem } from '@/app/user/Balances/types'
 
 interface Props {
   icon: string

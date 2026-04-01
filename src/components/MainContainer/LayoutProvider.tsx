@@ -1,12 +1,11 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
-import type { PropsWithChildren, ReactNode } from 'react'
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
-import useLocalStorageState from 'use-local-storage-state'
-
 import { NoContextProviderError } from '@/lib/errors/ContextError'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { createContext, useContext, useMemo, useState, useEffect, useRef, useCallback } from 'react'
+import type { PropsWithChildren, ReactNode } from 'react'
+import { usePathname } from 'next/navigation'
+import useLocalStorageState from 'use-local-storage-state'
 
 interface LayoutState {
   isSidebarOpen: boolean

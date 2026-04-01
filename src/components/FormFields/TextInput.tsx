@@ -1,11 +1,9 @@
-import { type InputHTMLAttributes, type ReactNode, useId, useState } from 'react'
+import { cn } from '@/lib/utils'
+import { type ReactNode, useId, useState, type InputHTMLAttributes } from 'react'
+import { FloatingLabel } from './FloatingLabel'
+import { ErrorMessage } from './ErrorMessage'
 import type { Control, FieldPath, FieldValues } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
-
-import { cn } from '@/lib/utils'
-
-import { ErrorMessage } from './ErrorMessage'
-import { FloatingLabel } from './FloatingLabel'
 
 interface Props<T extends FieldValues> extends InputHTMLAttributes<HTMLInputElement> {
   label: string

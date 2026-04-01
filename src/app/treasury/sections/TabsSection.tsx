@@ -1,14 +1,12 @@
 'use client'
-import { useCallback, useState } from 'react'
-
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { SolidTabs } from '@/components/Tabs'
 import { Label, Paragraph } from '@/components/Typography'
 import { cn, formatCurrencyWithLabel } from '@/lib/utils'
-
 import { AddressLink } from '../components/AddressLink'
 import { useTreasuryTabs } from '../hooks/useTreasuryTabs'
 import { TreasuryTabKey } from '../types'
+import { useCallback, useState } from 'react'
 
 /**
  * Displays a tabbed section with metrics for different treasury categories: Grant, Growth, General.

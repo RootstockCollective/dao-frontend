@@ -1,4 +1,4 @@
 export * from './ActionMetricsContainer'
-export * from './ActionsContainer'
-export * from './InfoContainer'
 export * from './MetricsContainer'
+export * from './InfoContainer'
+export * from './ActionsContainer'

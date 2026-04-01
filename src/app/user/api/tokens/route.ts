@@ -1,8 +1,7 @@
-import { Address } from 'viem'
-
-import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
-import { tokenContracts } from '@/lib/contracts'
 import { publicClient, transformMulticallResults } from '@/lib/viemPublicClient'
+import { tokenContracts } from '@/lib/contracts'
+import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
+import { Address } from 'viem'
 
 export interface TokenInfo {
   symbol?: string

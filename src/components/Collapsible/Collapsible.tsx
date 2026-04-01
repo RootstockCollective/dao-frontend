@@ -1,9 +1,8 @@
-import { ChevronDownIcon } from 'lucide-react'
-import { AnimatePresence, motion } from 'motion/react'
-import { createContext, ReactNode, useContext, useState } from 'react'
-
 import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
+import { ChevronDownIcon } from 'lucide-react'
+import { motion, AnimatePresence } from 'motion/react'
+import { createContext, ReactNode, useContext, useState } from 'react'
 
 // TODO: this component can be replaced by Radix Collapsible
 // https://www.radix-ui.com/primitives/docs/components/collapsible

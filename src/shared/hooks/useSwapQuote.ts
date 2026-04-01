@@ -1,8 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Address, isAddress } from 'viem'
-
-import { sentryClient } from '@/lib/sentry/sentry-client'
 import { SWAP_TOKEN_ADDRESSES } from '@/lib/swap/constants'
+import { sentryClient } from '@/lib/sentry/sentry-client'
 
 /**
  * Response type from the swap quote API

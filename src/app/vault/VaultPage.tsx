@@ -1,8 +1,8 @@
 'use client'
 
+import { VaultMetricsContainer } from './components/VaultMetricsContainer'
 import { StrategiesInfo } from './components/StrategiesInfo'
 import { VaultDisclaimer } from './components/VaultDisclaimer'
-import { VaultMetricsContainer } from './components/VaultMetricsContainer'
 import { VaultDepositValidationProvider } from './context'
 
 const NAME = 'USD Vault'

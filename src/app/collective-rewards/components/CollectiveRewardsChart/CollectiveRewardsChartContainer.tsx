@@ -1,15 +1,13 @@
-import { useMemo } from 'react'
-
-import { FIVE_MONTHS_IN_MS, FOUR_MONTHS_IN_MS } from '@/app/collective-rewards/constants/chartConstants'
 import { useGetChartBackingData } from '@/app/collective-rewards/rewards/hooks/useGetChartBackingData'
 import { CycleRewardsItem, DailyAllocationItem } from '@/app/collective-rewards/types'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { transformApiDataToChartData } from '@/app/collective-rewards/utils/chartUtils'
+import { FOUR_MONTHS_IN_MS, FIVE_MONTHS_IN_MS } from '@/app/collective-rewards/constants/chartConstants'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-
+import { useMemo } from 'react'
 import { useGetChartRewardsData } from '../../rewards/hooks/useGetChartRewardsData'
 import { CollectiveRewardsDualAxisChart } from './CollectiveRewardsChart'
 

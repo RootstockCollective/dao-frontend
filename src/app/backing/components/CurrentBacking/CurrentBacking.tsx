@@ -1,9 +1,7 @@
-import { FC } from 'react'
-
-import { formatSymbol } from '@/app/shared/formatter'
 import { Label } from '@/components/Typography'
-
+import { FC } from 'react'
 import { RIFToken } from '../RIFToken/RIFToken'
+import { formatSymbol } from '@/app/shared/formatter'
 
 interface CurrentBackingProps {
   existentAllocation: bigint

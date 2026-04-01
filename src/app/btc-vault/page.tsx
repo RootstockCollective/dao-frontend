@@ -1,5 +1,4 @@
 import { withServerFeatureFlag } from '@/shared/context/FeatureFlag'
-
 import { BtcVaultPage } from './BtcVaultPage'
 
 const BtcVaultPageWithFeature = withServerFeatureFlag(BtcVaultPage, {

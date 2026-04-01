@@ -1,19 +1,18 @@
-import { Address } from 'viem'
-
 import { useGetTotalAllocation } from '@/app/collective-rewards/metrics/hooks/useGetTotalAllocation'
+import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
 import { TokenImage } from '@/components/TokenImage'
 import { Header } from '@/components/Typography'
 import { Paragraph } from '@/components/Typography/Paragraph'
 import { Span } from '@/components/Typography/Span'
-import { RIF, STRIF } from '@/lib/constants'
-import { formatCurrencyWithLabel } from '@/lib/utils'
-import { usePricesContext } from '@/shared/context/PricesContext'
+import { Address } from 'viem'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { formatCurrencyWithLabel } from '@/lib/utils'
+import { RIF, STRIF } from '@/lib/constants'
 
 export const TotalBacking = () => {
   const { builders, isLoading: isLoadingBuilders, error: errorBuilders } = useBuilderContext()

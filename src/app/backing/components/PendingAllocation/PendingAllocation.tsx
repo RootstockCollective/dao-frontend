@@ -1,8 +1,7 @@
 import { FC, useState } from 'react'
-
-import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
 import { NewPopover } from '@/components/NewPopover'
 import { Span } from '@/components/Typography'
+import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
 import { formatNumberWithCommas } from '@/lib/utils/utils'
 
 interface PendingAllocationProps {

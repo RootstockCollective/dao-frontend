@@ -1,5 +1,5 @@
-import type { Log, ParameterizedString } from '@sentry/core'
 import * as Sentry from '@sentry/nextjs'
+import type { ParameterizedString, Log } from '@sentry/core'
 
 import { toError } from '@/components/ErrorPage/commonErrors'
 import { getEnvFlag } from '@/shared/context/FeatureFlag/flags.utils'

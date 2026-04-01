@@ -1,8 +1,7 @@
-import { Separator } from '@radix-ui/react-select'
-
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
 import { Paragraph } from '@/components/Typography'
+import { Separator } from '@radix-ui/react-select'
 
 interface Props {
   onStay: () => void // Function to call when user wants to STAY on the current page ("Take me back")

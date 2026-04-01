@@ -1,9 +1,8 @@
-import { FC } from 'react'
-
-import { CommonComponentProps } from '@/components/commonProps'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric } from '@/components/Metric'
 import { Header, Label } from '@/components/Typography'
+import { FC } from 'react'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { CommonComponentProps } from '@/components/commonProps'
 
 interface CountMetricProps extends CommonComponentProps {
   title: string

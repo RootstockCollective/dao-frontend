@@ -1,11 +1,9 @@
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
-
 import { CommonComponentProps } from '@/components/commonProps'
 import { MoreIcon } from '@/components/Icons/MoreIcon'
 import { Tooltip } from '@/components/Tooltip'
 import { cn } from '@/lib/utils'
-
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 import { AllocationBarDragHandle } from './AllocationBarDragHandle'
 import { AllocationBarSegmentVisual } from './AllocationBarSegmentVisual'
 import { AllocationBarTooltip, AllocationBarTooltipProps } from './AllocationBarTooltip'

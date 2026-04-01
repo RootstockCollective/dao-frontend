@@ -1,9 +1,7 @@
-import { useMemo } from 'react'
-import { useAccount, useReadContracts } from 'wagmi'
-
+import { useReadContracts, useAccount } from 'wagmi'
 import { VaultDepositLimiterAbi } from '@/lib/abis/VaultDepositLimiterAbi'
+import { useMemo } from 'react'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-
 import { useVaultDepositLimiterAddress } from './useVaultDepositLimiterAddress'
 
 /**

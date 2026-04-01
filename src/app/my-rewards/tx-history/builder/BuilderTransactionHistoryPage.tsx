@@ -1,14 +1,12 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import { useAccount } from 'wagmi'
-
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { useIsBuilder } from '@/app/user/my-holdings/hooks/useIsBuilder'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header } from '@/components/Typography'
-
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { useAccount } from 'wagmi'
 import { Section } from '../../components/Section'
 import BuilderTransactionHistoryContainer from './components/BuilderTransactionHistoryContainer'
 

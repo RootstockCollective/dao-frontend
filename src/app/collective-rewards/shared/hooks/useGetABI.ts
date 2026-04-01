@@ -1,15 +1,13 @@
+import Big from '@/lib/big'
+import { RBTC, RIF, USDRIF, WeiPerEther, ABI_CYCLES_LIMIT } from '@/lib/constants'
+import { usePricesContext } from '@/shared/context/PricesContext'
 import { useMemo } from 'react'
 import { Address } from 'viem'
-
 import { getBackerRewardPercentage } from '@/app/collective-rewards/rewards'
-import Big from '@/lib/big'
-import { ABI_CYCLES_LIMIT, RBTC, RIF, USDRIF, WeiPerEther } from '@/lib/constants'
-import { TOKENS } from '@/lib/tokens'
-import { usePricesContext } from '@/shared/context/PricesContext'
-
-import { BuilderStateFlags } from '../../types'
-import { isBuilderRewardable } from '../../utils'
 import { getCyclePayout } from './getCyclePayout'
+import { isBuilderRewardable } from '../../utils'
+import { BuilderStateFlags } from '../../types'
+import { TOKENS } from '@/lib/tokens'
 
 export interface CycleData {
   id: string

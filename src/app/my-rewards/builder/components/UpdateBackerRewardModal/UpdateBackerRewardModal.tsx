@@ -1,18 +1,16 @@
-import { DateTime, Duration } from 'luxon'
-import { useEffect, useMemo, useState } from 'react'
-
 import { useBuilderSettingsContext } from '@/app/collective-rewards/settings/builder/context'
 import { percentageToWei, weiToPercentage } from '@/app/collective-rewards/settings/utils/weiUtils'
-import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
-
 import UpdateBackerRewardViewModal from './UpdateBackerRewardViewModal'
+import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
+import { DateTime, Duration } from 'luxon'
+import { useState, useEffect, useMemo } from 'react'
 
 interface Props {
   onClose: () => void
 }
 
 function formatDuration(duration: bigint | undefined) {
-  if (!duration) return
+  if (!duration) return undefined
   return Duration.fromObject({ seconds: Number(duration) }).shiftTo('days', 'hours', 'minutes')
 }
 

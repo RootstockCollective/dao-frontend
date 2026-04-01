@@ -1,11 +1,9 @@
-import { useMemo } from 'react'
-
 import { filterBuildersByState, useBuilderContext } from '@/app/collective-rewards/user'
-import { TOKENS } from '@/lib/tokens'
 import { useReadGauges } from '@/shared/hooks/contracts'
-
+import { useMemo } from 'react'
 import { CompleteBuilder } from '../../types'
 import { BuilderData, useGetABI } from './useGetABI'
+import { TOKENS } from '@/lib/tokens'
 import { useGetRewardDistributionRewardsLogs } from './useGetRewardsDistributionRewards'
 
 export const useGetABIFromChain = () => {

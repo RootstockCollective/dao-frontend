@@ -1,9 +1,8 @@
-import { FC } from 'react'
-
 import { TokenImage } from '@/components/TokenImage'
-import { Span } from '@/components/Typography'
 import { RIF } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+import { FC } from 'react'
+import { Span } from '@/components/Typography'
 
 export const RIFToken: FC<{ size?: number; className?: string; textClassName?: string }> = ({
   className,

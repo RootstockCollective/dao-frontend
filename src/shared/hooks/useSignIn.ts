@@ -1,7 +1,6 @@
 import { useAccount, useSignMessage } from 'wagmi'
-
+import { useSiweStore, selectIsAuthenticated } from '@/lib/auth/siweStore'
 import type { RequestChallengeResult, VerifySignatureResult } from '@/lib/auth/actions'
-import { selectIsAuthenticated, useSiweStore } from '@/lib/auth/siweStore'
 
 interface UseSignInReturn {
   signIn: () => Promise<string | null>

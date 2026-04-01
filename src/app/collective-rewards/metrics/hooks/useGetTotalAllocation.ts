@@ -1,6 +1,5 @@
-import { Address } from 'viem'
-
 import { useReadGauges } from '@/shared/hooks/contracts'
+import { Address } from 'viem'
 
 export const useGetTotalAllocation = (gauges: Address[]) => {
   const { data, isLoading, error } = useReadGauges({ addresses: gauges, functionName: 'totalAllocation' })

@@ -1,12 +1,11 @@
-import { formatEther } from 'viem'
-
-import { BaseProposalInput, ProposalTransformFunctions } from '@/app/proposals/shared/types'
+import Big from '@/lib/big'
 import {
   getProposalCategoryFromParsedData,
   getProposalEventArguments,
   serializeBigInts,
 } from '@/app/proposals/shared/utils'
-import Big from '@/lib/big'
+import { formatEther } from 'viem'
+import { BaseProposalInput, ProposalTransformFunctions } from '@/app/proposals/shared/types'
 
 const ONE_ETHER = Big('1e18')
 

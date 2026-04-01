@@ -1,7 +1,6 @@
-import { useCallback, useState } from 'react'
-
+import { useState, useCallback } from 'react'
+import { FilterItem, FilterState, FilterActions, FilterType } from './types'
 import { createAllFilters, createSearchFilter } from './filterOptions'
-import { FilterActions, FilterItem, FilterState, FilterType } from './types'
 
 export const useProposalFilters = (): FilterState & FilterActions => {
   const [activeFilters, setActiveFilters] = useState<FilterItem[]>(createAllFilters())

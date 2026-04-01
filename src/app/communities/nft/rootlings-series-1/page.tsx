@@ -1,13 +1,11 @@
 import 'server-only'
 
 import type { Metadata } from 'next'
-
 import { Header } from '@/components/Typography'
-
 import { AddAddressesForm } from './AddAddressesForm'
 import { ContractsReadSpinner } from './ContractsReadSpinner'
-import { ContractWriteSpinner } from './ContractWriteSpinner'
 import { MintersTable } from './MintersTable'
+import { ContractWriteSpinner } from './ContractWriteSpinner'
 
 export const metadata: Metadata = {
   title: 'Rootlings Series 1',

@@ -1,9 +1,8 @@
-import Image from 'next/image'
-
 import { ExternalLink } from '@/components/Link/ExternalLink'
 import { Paragraph, Span } from '@/components/Typography'
 import { EXPLORER_URL } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+import Image from 'next/image'
 
 interface Props {
   txHash?: string

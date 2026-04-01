@@ -1,6 +1,5 @@
 import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
-
 import { BackMoreBuildersCard } from '../BuilderCard'
 
 interface SpotlightBuildersGridProps extends CommonComponentProps {

@@ -1,6 +1,5 @@
 import { redirect } from 'next/navigation'
 import type { ComponentType, FC } from 'react'
-
 import { type FeatureFlag, getEnvFlag } from './flags.utils'
 
 export interface FeatureHandleConfig {

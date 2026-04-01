@@ -1,6 +1,6 @@
 'use client'
 
-import { type RefObject, useCallback, useEffect } from 'react'
+import { useCallback, useEffect, type RefObject } from 'react'
 
 export interface UseAutoHeightOptions {
   /** Selector for the element to measure (e.g., 'textarea', '.my-input') */

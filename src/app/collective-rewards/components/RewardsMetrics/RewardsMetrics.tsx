@@ -1,6 +1,3 @@
-import Big from 'big.js'
-import { FC } from 'react'
-
 import { FiatTooltipLabel } from '@/app/components'
 import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
 import { MetricToken } from '@/app/components/Metric/types'
@@ -10,6 +7,8 @@ import { Header, Label } from '@/components/Typography'
 import { REWARD_TOKENS } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
+import Big from 'big.js'
+import { FC } from 'react'
 
 export type TokenWithValue = (typeof REWARD_TOKENS)[number] & {
   value: bigint

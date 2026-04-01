@@ -1,8 +1,7 @@
-import { ReactElement } from 'react'
-
 import { CommonComponentProps } from '@/components/commonProps'
 import { Paragraph } from '@/components/Typography'
 import { ConnectButtonComponentSecondary } from '@/shared/walletConnection'
+import { ReactElement } from 'react'
 
 export const ConnectTooltipContent = ({
   children,

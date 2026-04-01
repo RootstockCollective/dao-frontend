@@ -1,6 +1,5 @@
-import { ExternalLink } from '@/components/Link'
 import { Paragraph, Span } from '@/components/Typography'
-
+import { ExternalLink } from '@/components/Link'
 import InfoIcon from '../../review/components/InfoIcon'
 
 interface ProposalInfoSidebarProps {

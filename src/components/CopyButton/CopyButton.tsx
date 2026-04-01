@@ -1,8 +1,6 @@
-import { FC, HTMLAttributes, ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
-
-import { cn } from '@/lib/utils'
-
+import { FC, useState, useEffect, ReactNode, ReactElement, useRef, HTMLAttributes } from 'react'
 import { BiCopyIcon } from '../Icons'
+import { cn } from '@/lib/utils'
 
 export interface CopyButtonProps extends HTMLAttributes<HTMLDivElement> {
   /**

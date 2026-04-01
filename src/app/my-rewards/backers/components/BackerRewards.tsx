@@ -1,12 +1,10 @@
+import { BackerRewardsContextProvider } from '@/app/collective-rewards/rewards/backers/context/BackerRewardsContext'
+import { TOKENS } from '@/lib/tokens'
 import { FC } from 'react'
 import { Address } from 'viem'
-
-import { BackerRewardsContextProvider } from '@/app/collective-rewards/rewards/backers/context/BackerRewardsContext'
-import { BackingContextProvider } from '@/app/shared/context/BackingContext'
-import { TOKENS } from '@/lib/tokens'
-
 import { BackerRewardsMetrics } from './BackerRewardsMetrics'
 import { BackerRewardsTableContainer } from './Table'
+import { BackingContextProvider } from '@/app/shared/context/BackingContext'
 
 export const BackerRewards: FC<{ backer: Address }> = ({ backer }) => {
   return (

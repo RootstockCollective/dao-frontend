@@ -1,7 +1,6 @@
-import { FC, ReactNode } from 'react'
-
 import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
+import { FC, ReactNode } from 'react'
 
 interface BackingInfoContainerProps extends CommonComponentProps {
   title: ReactNode

@@ -1,5 +1,3 @@
-import { useMemo } from 'react'
-
 import { useCycleContext } from '@/app/collective-rewards/metrics'
 import { getNotifyRewardAmount, useGetLastCycleDistribution } from '@/app/collective-rewards/rewards'
 import { useGetGaugesNotifyReward } from '@/app/collective-rewards/rewards/hooks/useGetGaugesNotifyReward'
@@ -9,6 +7,7 @@ import { USD } from '@/lib/constants'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context'
 import { useReadGauges } from '@/shared/hooks/contracts'
+import { useMemo } from 'react'
 
 export const useGetBuilderRewardsSummary = (currency = USD) => {
   const { rif, rbtc, usdrif } = TOKENS

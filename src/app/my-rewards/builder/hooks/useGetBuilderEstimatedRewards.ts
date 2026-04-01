@@ -1,7 +1,3 @@
-import Big from 'big.js'
-import { useMemo } from 'react'
-import { Address } from 'viem'
-
 import { getBackerRewardPercentage, useGetPerTokenRewards } from '@/app/collective-rewards/rewards'
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
@@ -9,6 +5,9 @@ import { WeiPerEther } from '@/lib/constants'
 import { REWARD_TOKEN_KEYS, RewardTokenKey } from '@/lib/tokens'
 import { useReadBackersManager, useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
+import Big from 'big.js'
+import { useMemo } from 'react'
+import { Address } from 'viem'
 
 interface UseBuilderEstimatedRewardsProps {
   builder: Address

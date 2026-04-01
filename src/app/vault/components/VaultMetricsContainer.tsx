@@ -1,9 +1,8 @@
 'use client'
 
 import { MetricsContainer } from '@/components/containers'
-
-import { VaultMetrics } from './VaultMetrics'
 import { VaultUserMetricsContainer } from './VaultUserMetricsContainer'
+import { VaultMetrics } from './VaultMetrics'
 
 /**
  * Container component that wraps all vault metrics in a single MetricsContainer

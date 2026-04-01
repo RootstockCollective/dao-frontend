@@ -1,15 +1,13 @@
-import { FC, useEffect, useState } from 'react'
-
-import { Button } from '@/components/Button'
-import { TrashIcon } from '@/components/Icons'
 import { Modal } from '@/components/Modal/Modal'
-import { SelectableItem } from '@/components/SelectableItem'
+import { Button } from '@/components/Button'
 import { Paragraph } from '@/components/Typography'
-import { SORT_DIRECTION_ASC, SORT_DIRECTION_DESC } from '@/shared/context/TableContext/constants'
-import { SortDirection } from '@/shared/context/TableContext/types'
-
+import { SelectableItem } from '@/components/SelectableItem'
 import { BuilderFilterOption, BuilderFilterOptionId } from './BuilderFilterDropdown'
 import { ColumnId, SORT_OPTIONS } from './BuilderTable.config'
+import { FC, useState, useEffect } from 'react'
+import { TrashIcon } from '@/components/Icons'
+import { SORT_DIRECTION_ASC, SORT_DIRECTION_DESC } from '@/shared/context/TableContext/constants'
+import { SortDirection } from '@/shared/context/TableContext/types'
 
 interface MobileFilterModalProps {
   isOpen: boolean

@@ -1,9 +1,7 @@
-import { FC, ReactNode } from 'react'
-
 import { KotoQuestionMarkIcon } from '@/components/Icons/KotoQuestionMarkIcon'
 import { Tooltip, type TooltipProps } from '@/components/Tooltip'
 import { cn } from '@/lib/utils'
-
+import { FC, ReactNode } from 'react'
 import { CommonComponentProps } from '../commonProps'
 
 export interface InfoIconButtonProps extends CommonComponentProps, Omit<TooltipProps, 'text' | 'children'> {

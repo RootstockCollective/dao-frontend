@@ -1,26 +1,24 @@
 /** biome-ignore-all assist/source/organizeImports: shut up */
 'use client'
 
+import { useState } from 'react'
 import {
+  type PaginationState,
   createColumnHelper,
   getCoreRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  type PaginationState,
   useReactTable,
 } from '@tanstack/react-table'
-import { useState } from 'react'
-
 import { Button } from '@/components/Button'
 import { CopyButton } from '@/components/CopyButton'
-import { Pagination } from '@/components/Pagination'
 import { GridTable } from '@/components/Table'
-import { Tooltip } from '@/components/Tooltip'
 import { Header } from '@/components/Typography'
+import { Pagination } from '@/components/Pagination'
+import { Tooltip } from '@/components/Tooltip'
 import { truncateMiddle } from '@/lib/utils'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-
 import { useRootlingsS1 } from './useRootlingsS1'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 /**
  * Table component displaying whitelisted minter addresses with ability to revoke minter roles.

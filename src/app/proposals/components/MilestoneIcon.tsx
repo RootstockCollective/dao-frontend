@@ -1,6 +1,5 @@
-import { IconProps } from '@/components/Icons'
-
 import { Milestones } from '../shared/types'
+import { IconProps } from '@/components/Icons'
 import { SharedGradient } from './icons/SharedGradient'
 
 interface Props extends IconProps {

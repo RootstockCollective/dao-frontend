@@ -1,12 +1,11 @@
 import { useCallback, useMemo } from 'react'
-import { Address, encodeFunctionData, parseEther, zeroAddress } from 'viem'
-import { useAccount, useWriteContract } from 'wagmi'
-
 import { checkCanCreateProposal, createProposal } from '@/app/proposals/hooks/proposalUtils'
 import { NoVotingPowerError } from '@/app/proposals/shared/errors'
 import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress, TreasuryAddress } from '@/lib/contracts'
+import { Address, encodeFunctionData, parseEther, zeroAddress } from 'viem'
+import { useWriteContract, useAccount } from 'wagmi'
 
 const DEFAULT_DAO_CONFIG = {
   abi: GovernorAbi,

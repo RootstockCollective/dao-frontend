@@ -1,14 +1,12 @@
+import { logger } from '@/lib/logger'
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
-
-import { confirmProposalExists } from '@/app/proposals/actions/getProposalById'
 import { JWTPayload } from '@/lib/auth/jwt'
 import { withAuth } from '@/lib/auth/withAuth'
-import { ENV } from '@/lib/constants'
-import { logger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
-
-import { bigIntToBuffer, ProposalIdSchema } from './shared'
+import { confirmProposalExists } from '@/app/proposals/actions/getProposalById'
+import { ENV } from '@/lib/constants'
+import { ProposalIdSchema, bigIntToBuffer } from './shared'
 
 const LikeRequestSchema = z.object({
   proposalId: ProposalIdSchema,

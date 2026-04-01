@@ -1,15 +1,13 @@
-import Image from 'next/image'
-import Link from 'next/link'
 import { type HTMLAttributes } from 'react'
-
-import { Button } from '@/components/Button'
-import { Divider } from '@/components/Divider'
-import { Header } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-
+import Image from 'next/image'
 import { NewProposalCardData } from '../newProposalCards.data'
 import { CardParagraph } from './CardParagraph'
+import { Header } from '@/components/Typography'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { Button } from '@/components/Button'
+import { Divider } from '@/components/Divider'
+import Link from 'next/link'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   card: NewProposalCardData

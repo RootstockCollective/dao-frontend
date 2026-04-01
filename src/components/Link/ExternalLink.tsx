@@ -1,7 +1,5 @@
-import { FC } from 'react'
-
 import { cn } from '@/lib/utils'
-
+import { FC } from 'react'
 import { ArrowRight, ArrowUpRightLightIcon } from '../Icons'
 import { ExternalLinkProps } from './types'
 

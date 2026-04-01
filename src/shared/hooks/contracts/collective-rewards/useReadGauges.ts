@@ -1,10 +1,8 @@
+import { getAbi, type GaugeAbi } from '@/lib/abis/tok'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useMemo } from 'react'
 import { Abi } from 'viem'
 import { UseReadContractParameters, UseReadContractReturnType, useReadContracts } from 'wagmi'
-
-import { type GaugeAbi, getAbi } from '@/lib/abis/tok'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-
 import { UseReadContractsConfig, ViewPureFunctionName } from '../types'
 
 type GaugeFunctionName = ViewPureFunctionName<GaugeAbi>

@@ -1,15 +1,13 @@
-import { useMemo } from 'react'
-
+import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { MetricBar } from '@/app/components/Metric/MetricBar'
 import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
 import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/FiatTooltipLabel'
-import { RewardCard } from '@/app/my-rewards/components/RewardCard'
-import { getMetricTokens } from '@/app/shared/utils'
 import { Header } from '@/components/Typography'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
-
+import { useMemo } from 'react'
+import { getMetricTokens } from '@/app/shared/utils'
 import { useBackerTotalEarned } from '../hooks/useBackerTotalEarned'
 
 export const TotalEarned = () => {

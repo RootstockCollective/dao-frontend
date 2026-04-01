@@ -1,10 +1,8 @@
 'use client'
 
-import { type ReactNode } from 'react'
-
-import { VotingPowerLoading } from '@/components/LoadingSpinner'
-
 import { useVotingPowerRedirect } from '../../hooks/useVotingPowerRedirect'
+import { VotingPowerLoading } from '@/components/LoadingSpinner'
+import { type ReactNode } from 'react'
 
 interface VotingPowerWrapperProps {
   children: ReactNode

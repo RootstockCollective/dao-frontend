@@ -1,7 +1,5 @@
-import { HTMLAttributes, ReactElement } from 'react'
-
 import { cn } from '@/lib/utils'
-
+import { HTMLAttributes, ReactElement } from 'react'
 import { CommonComponentProps } from '../commonProps'
 
 export type BarSegmentProps = CommonComponentProps &

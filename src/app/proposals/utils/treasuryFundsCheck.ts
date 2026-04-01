@@ -1,10 +1,9 @@
 import { Address, decodeFunctionData, DecodeFunctionDataReturnType, Hash } from 'viem'
-
-import { SupportedProposalActionName } from '@/app/proposals/shared/supportedABIs'
-import { extractTreasuryTransferInfo, TreasuryTransferInfo } from '@/app/proposals/shared/treasuryUtils'
-import { DecodedData } from '@/app/proposals/shared/utils'
 import { DAOTreasuryAbi } from '@/lib/abis/DAOTreasuryAbi'
 import { treasuryContracts } from '@/lib/contracts'
+import { extractTreasuryTransferInfo, TreasuryTransferInfo } from '@/app/proposals/shared/treasuryUtils'
+import { DecodedData } from '@/app/proposals/shared/utils'
+import { SupportedProposalActionName } from '@/app/proposals/shared/supportedABIs'
 
 /**
  * Checks if an address is a treasury contract

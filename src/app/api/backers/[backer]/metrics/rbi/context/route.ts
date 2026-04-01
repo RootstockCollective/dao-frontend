@@ -1,8 +1,7 @@
-import { NextResponse } from 'next/server'
-import { isAddress } from 'viem'
-
-import { db } from '@/lib/db'
 import { logger } from '@/lib/logger'
+import { NextResponse } from 'next/server'
+import { db } from '@/lib/db'
+import { isAddress } from 'viem'
 
 const DB_COMMAND_COALESCE = `
   COALESCE(

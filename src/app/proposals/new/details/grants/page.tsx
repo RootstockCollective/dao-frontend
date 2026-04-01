@@ -1,23 +1,21 @@
 'use client'
 
+import { useReviewProposal } from '@/app/providers'
+import { NumberInput, SelectField } from '@/components/FormFields'
+import { Header } from '@/components/Typography'
+import { ProposalCategory } from '@/shared/types'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import type { Address } from 'viem'
-
-import { labeledMilestones } from '@/app/proposals/shared/utils'
-import { useReviewProposal } from '@/app/providers'
-import { NumberInput, SelectField } from '@/components/FormFields'
-import { Header } from '@/components/Typography'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { ProposalCategory } from '@/shared/types'
-
 import { ProposalSubfooter } from '../../components/ProposalSubfooter'
 import { BaseProposalFields, ProposalInfoSidebar, TokenRadioGroup } from '../components'
-import { MilestoneInfoSidebar } from '../components/MilestoneInfoSidebar'
 import { type GrantProposal, GrantProposalSchema } from '../schemas/GrantProposalSchema'
 import { TOKEN_FIELD_LIMITS } from '../schemas/TokenSchema'
+import { labeledMilestones } from '@/app/proposals/shared/utils'
+import { MilestoneInfoSidebar } from '../components/MilestoneInfoSidebar'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { RnsAddressInput } from './RnsAddressInput'
 
 export default function GrantsProposalForm() {

@@ -1,12 +1,11 @@
-import { memo, Suspense } from 'react'
-
-import { StakingHistoryDataRow } from '@/app/staking-history/components/StakingHistoryDataRow'
+import { Row } from '@/shared/context'
+import { Suspense, memo } from 'react'
 import { StakingHistoryHeaderRow } from '@/app/staking-history/components/StakingHistoryHeaderRow'
 import {
   ColumnId,
   StakingHistoryCellDataMap,
 } from '@/app/staking-history/components/StakingHistoryTable.config'
-import { Row } from '@/shared/context'
+import { StakingHistoryDataRow } from '@/app/staking-history/components/StakingHistoryDataRow'
 
 export const DesktopStakingHistory = memo(
   ({ rows }: { rows: Row<ColumnId, Row['id'], StakingHistoryCellDataMap>[] }) => {

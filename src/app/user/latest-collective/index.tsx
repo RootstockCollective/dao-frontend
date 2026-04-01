@@ -1,5 +1,3 @@
-import { useRouter } from 'next/navigation'
-
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { ButtonAction } from '@/app/proposals/components/vote-details'
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
@@ -7,7 +5,7 @@ import { Proposal } from '@/app/proposals/shared/types'
 import { BuilderCardControl } from '@/app/shared/components/BuilderCard'
 import { SpotlightBuildersGrid } from '@/app/shared/components/SpotlightBuildersGrid'
 import { Header } from '@/components/Typography'
-
+import { useRouter } from 'next/navigation'
 import { LatestActiveProposalCard, LatestProposalCard } from './components'
 
 interface LatestCollectiveSectionProps {

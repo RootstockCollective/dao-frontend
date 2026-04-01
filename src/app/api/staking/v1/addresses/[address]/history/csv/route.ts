@@ -1,16 +1,15 @@
-import Big from 'big.js'
+import { logger } from '@/lib/logger'
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
-
 import {
-  getStakingHistoryCountFromDB,
   getStakingHistoryFromDB,
+  getStakingHistoryCountFromDB,
 } from '@/app/api/staking/v1/addresses/[address]/history/action'
 import { queryParam } from '@/app/api/utils/helpers'
 import { AddressSchema, SortDirectionEnum } from '@/app/api/utils/validators'
-import { getFiatAmount } from '@/app/shared/formatter'
 import { RIF, STRIF } from '@/lib/constants'
-import { logger } from '@/lib/logger'
+import { getFiatAmount } from '@/app/shared/formatter'
+import Big from 'big.js'
 
 const SortFieldEnum = z.enum(['period', 'amount', 'action'])
 const QuerySchema = z.object({
@@ -69,7 +68,7 @@ const formatDateForCsv = (timestamp: string | number): string => {
 
 const escapeCsvValue = (value: string): string => {
   if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-    return `"${value.replaceAll('"', '""')}"`
+    return `"${value.replace(/"/g, '""')}"`
   }
   return value
 }

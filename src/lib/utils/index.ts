@@ -1,2 +1,2 @@
-export * from './formatPercentage'
 export * from './utils'
+export * from './formatPercentage'

@@ -1,6 +1,5 @@
-import * as Sentry from '@sentry/nextjs'
-
 import { initSentryIfEnabled } from '@/lib/sentry/sentry-client'
+import * as Sentry from '@sentry/nextjs'
 import { getEnvFlag } from '@/shared/context/FeatureFlag/flags.utils'
 
 const enableReplay = getEnvFlag('sentry_replay') ?? false

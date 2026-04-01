@@ -1,10 +1,8 @@
-import { ReactElement } from 'react'
-
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Label } from '@/components/Typography'
 import { RBTC, USD } from '@/lib/constants'
 import { cn, formatCurrency } from '@/lib/utils'
-
+import { ReactElement } from 'react'
 import { MetricToken } from './types'
 
 export interface MetricTooltipContentProps {

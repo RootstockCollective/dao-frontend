@@ -1,17 +1,15 @@
 'use client'
-import { useCallback, useRef, useState } from 'react'
-import { Address } from 'viem'
-import { useAccount } from 'wagmi'
-
-import { DelegateModal } from '@/app/delegate/components/DelegateModal'
-import { useDelegateContext } from '@/app/delegate/contexts/DelegateContext'
 import { DelegatesContainer } from '@/app/delegate/sections/DelegateContentSection/DelegatesContainer'
+import { useDelegateContext } from '@/app/delegate/contexts/DelegateContext'
 import { DelegationDetailsSection } from '@/app/delegate/sections/DelegateContentSection/DelegationDetailsSection'
-import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
-import { cn, formatNumberWithCommas } from '@/lib/utils'
+import { Address } from 'viem'
+import { useCallback, useRef, useState } from 'react'
+import { DelegateModal } from '@/app/delegate/components/DelegateModal'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 import { executeTxFlow } from '@/shared/notification/executeTxFlow'
-
+import { useAccount } from 'wagmi'
+import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
+import { cn, formatNumberWithCommas } from '@/lib/utils'
 import { DelegateeState } from '../../lib/types'
 
 export const ConnectedSection = () => {

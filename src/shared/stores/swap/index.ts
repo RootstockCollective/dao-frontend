@@ -6,13 +6,13 @@ export { useSwapTokens } from './useSwapTokens'
 
 // Hooks
 export {
+  useSwapInput,
+  useTokenSelection,
+  useTokenAllowance,
   usePermitSigning,
   useSwapExecution,
-  useSwapInput,
-  useTokenAllowance,
-  useTokenSelection,
 } from './hooks'
 
 // Types
-export type { QuoteResult, SwapMode, SwapStore, SwapTokenSymbol } from './types'
+export type { SwapStore, SwapTokenSymbol, SwapMode, QuoteResult } from './types'
 export type { SwapToken } from './useSwapTokens'

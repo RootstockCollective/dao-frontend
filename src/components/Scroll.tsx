@@ -1,8 +1,7 @@
 'use client'
+import { MAIN_CONTAINER_ID } from '@/lib/constants'
 import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
-
-import { MAIN_CONTAINER_ID } from '@/lib/constants'
 
 /**
  * Dirty component to solve the issue of page not scrolling to the top of the page when clicking a <Link> from Next.js.

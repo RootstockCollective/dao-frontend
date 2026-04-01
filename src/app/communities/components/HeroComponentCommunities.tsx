@@ -1,5 +1,5 @@
-import { CommunityItemButtonHandler } from '@/app/communities/components/CommunityItemButtonHandler'
 import { HeroComponent, type HeroComponentProps } from '@/components/HeroComponent'
+import { CommunityItemButtonHandler } from '@/app/communities/components/CommunityItemButtonHandler'
 
 export interface HeroCommuntiesSectionProps extends Partial<HeroComponentProps> {
   shouldShowLearnMore?: boolean

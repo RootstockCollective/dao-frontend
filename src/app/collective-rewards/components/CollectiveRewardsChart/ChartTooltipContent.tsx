@@ -1,14 +1,13 @@
-import { TooltipPayload } from '@/app/collective-rewards/types'
-import { formatSymbol } from '@/app/shared/formatter'
 import { Metric } from '@/components/Metric'
 import { TokenImage } from '@/components/TokenImage'
-import { Header } from '@/components/Typography'
-import { Label } from '@/components/Typography/Label'
 import { Span } from '@/components/Typography/Span'
-import { STRIF, USD } from '@/lib/constants'
+import { Label } from '@/components/Typography/Label'
+import { formatSymbol } from '@/app/shared/formatter'
+import { TooltipPayload } from '@/app/collective-rewards/types'
 import { formatCurrency } from '@/lib/utils'
-
 import { ONE_DAY_IN_MS } from '../../constants/chartConstants'
+import { Header } from '@/components/Typography'
+import { STRIF, USD } from '@/lib/constants'
 
 interface ChartTooltipProps {
   active?: boolean

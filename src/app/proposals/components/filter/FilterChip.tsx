@@ -1,9 +1,8 @@
-import { Button } from '@/components/Button'
 import { TrashIcon } from '@/components/Icons'
-import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-
 import { FilterItem } from './types'
+import { Paragraph } from '@/components/Typography'
+import { Button } from '@/components/Button'
 
 interface FilterChipProps {
   filter: FilterItem

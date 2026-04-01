@@ -1,8 +1,7 @@
-import { useRouter } from 'next/navigation'
-
 import { BuilderAllocationBar } from '@/app/backing/components/BuilderAllocationBar'
 import { RightArrowIcon } from '@/components/Icons'
 import { Span } from '@/components/Typography'
+import { useRouter } from 'next/navigation'
 
 export const BackersAllocations = () => {
   const router = useRouter()

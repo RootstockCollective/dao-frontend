@@ -1,6 +1,3 @@
-import { Duration } from 'luxon'
-import Image from 'next/image'
-
 import { AlwaysEnabledButton } from '@/app/components'
 import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
 import { Button } from '@/components/Button'
@@ -11,7 +8,9 @@ import { Modal } from '@/components/Modal/Modal'
 import { Tooltip } from '@/components/Tooltip'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import { cn, durationToLabel } from '@/lib/utils'
+import Image from 'next/image'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { Duration } from 'luxon'
 
 interface Props {
   onClose: () => void

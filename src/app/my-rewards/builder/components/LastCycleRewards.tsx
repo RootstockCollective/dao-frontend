@@ -1,15 +1,14 @@
-import { useMemo } from 'react'
-import { Address } from 'viem'
-
 import { MetricBar } from '@/app/components/Metric/MetricBar'
 import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
 import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/FiatTooltipLabel'
 import { useGetBuilderLastCycleRewards } from '@/app/my-rewards/builder/hooks/useGetBuilderLastCycleRewards'
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'
-import { getMetricTokens } from '@/app/shared/utils'
 import { Header } from '@/components/Typography'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
+import { Address } from 'viem'
+import { getMetricTokens } from '@/app/shared/utils'
+import { useMemo } from 'react'
 
 export const LastCycleRewards = ({ gauge }: { gauge: Address }) => {
   const {

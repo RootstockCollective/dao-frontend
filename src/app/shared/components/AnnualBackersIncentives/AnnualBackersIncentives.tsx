@@ -1,8 +1,8 @@
-import { ABIFormula } from '@/app/backing/components/ABIFormula'
-import { AnnualBackerIncentivesLoader } from '@/app/shared/components/AnnualBackersIncentivesLoader/AnnualBackerIncentivesLoader'
 import { CommonComponentProps } from '@/components/commonProps'
 import { LoadingSpinner } from '@/components/LoadingSpinner/LoadingSpinner'
+import { AnnualBackerIncentivesLoader } from '@/app/shared/components/AnnualBackersIncentivesLoader/AnnualBackerIncentivesLoader'
 import { Metric, MetricTitle } from '@/components/Metric'
+import { ABIFormula } from '@/app/backing/components/ABIFormula'
 import { Header, Paragraph } from '@/components/Typography'
 
 interface AnnualBackersIncentivesProps extends CommonComponentProps {}

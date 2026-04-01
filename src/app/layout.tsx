@@ -1,18 +1,15 @@
-import './globals.css'
-
-import { GoogleTagManager } from '@next/third-parties/google'
 import type { Metadata } from 'next'
-import { Open_Sans } from 'next/font/google'
-import { headers } from 'next/headers'
-import Script from 'next/script'
 import type { ReactNode } from 'react'
-import { cookieToInitialState } from 'wagmi'
-
-import { MainContainer } from '@/components/MainContainer'
-import { wagmiAdapterConfig } from '@/config'
-import { GOOGLE_TAG_ID } from '@/lib/constants'
-
+import { Open_Sans } from 'next/font/google'
+import './globals.css'
 import { ContextProviders } from './providers'
+import { GoogleTagManager } from '@next/third-parties/google'
+import { GOOGLE_TAG_ID } from '@/lib/constants'
+import { cookieToInitialState } from 'wagmi'
+import { headers } from 'next/headers'
+import { wagmiAdapterConfig } from '@/config'
+import { MainContainer } from '@/components/MainContainer'
+import Script from 'next/script'
 
 const openSans = Open_Sans({
   variable: '--font-open-sans',

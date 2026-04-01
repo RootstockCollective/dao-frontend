@@ -1,11 +1,5 @@
 'use client'
 
-import { AnimatePresence, motion } from 'motion/react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useContext, useMemo, useState } from 'react'
-import { Address } from 'viem'
-import { useAccount } from 'wagmi'
-
 import { BackingBanner } from '@/app/backing/components/BackingBanner/BackingBanner'
 import { BackingInfoTitleControl } from '@/app/backing/components/BackingInfoTitle/BackingInfoTitleControl'
 import { BackingInfoContainer } from '@/app/backing/components/Container/BackingInfoContainer/BackingInfoContainer'
@@ -30,10 +24,14 @@ import { currentLinks } from '@/lib/links'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useContext, useMemo, useState } from 'react'
+import { Address } from 'viem'
+import { useAccount } from 'wagmi'
 import { useBuilderContext } from '../collective-rewards/user'
 import { BuilderAllocationBar } from './components/BuilderAllocationBar'
 import { Spotlight } from './components/Spotlight'
+import { AnimatePresence, motion } from 'motion/react'
 
 const NAME = 'Backing'
 
@@ -186,10 +184,10 @@ export const BackingPage = () => {
 
   const availableForBackingStatus = useMemo(() => {
     if (isAllocationTxPending) return 'pending'
-    if (!hasUnsavedChanges) return
+    if (!hasUnsavedChanges) return undefined
     if (availableForBacking > availableToAllocate) return 'increasing'
     if (availableForBacking < availableToAllocate) return 'decreasing'
-    return
+    return undefined
   }, [availableForBacking, availableToAllocate, isAllocationTxPending, hasUnsavedChanges])
 
   return (

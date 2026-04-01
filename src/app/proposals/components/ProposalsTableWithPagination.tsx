@@ -1,16 +1,4 @@
 'use client'
-import {
-  createColumnHelper,
-  getCoreRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  PaginationState,
-  type SortingState,
-  useReactTable,
-} from '@tanstack/react-table'
-import { useSearchParams } from 'next/navigation'
-import { forwardRef, memo, useCallback, useImperativeHandle, useMemo, useState } from 'react'
-
 import { Proposal } from '@/app/proposals/shared/types'
 import { Countdown } from '@/components/Countdown'
 import { Pagination } from '@/components/Pagination'
@@ -18,12 +6,22 @@ import { Status } from '@/components/Status'
 import { GridTable } from '@/components/Table'
 import { Paragraph } from '@/components/Typography'
 import Big from '@/lib/big'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-
+import {
+  createColumnHelper,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  PaginationState,
+  useReactTable,
+  type SortingState,
+} from '@tanstack/react-table'
+import { useSearchParams } from 'next/navigation'
+import { forwardRef, memo, useCallback, useImperativeHandle, useMemo, useState } from 'react'
 import { Category } from '../components/category'
-import { ProposalsTableMobile } from './ProposalsTableMobile'
 import { ProposalNameColumn, ProposerColumn } from './table-columns/ProposalNameColumn'
 import { QuorumColumn, VotesColumn } from './table-columns/VotesColumn'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { ProposalsTableMobile } from './ProposalsTableMobile'
 
 interface ProposalsTableWithPaginationProps {
   proposals: Proposal[]

@@ -1,6 +1,5 @@
-import { getAddress, isAddress } from 'viem'
 import z from 'zod'
-
+import { getAddress, isAddress } from 'viem'
 import { BaseProposalSchema } from './BaseProposalSchema'
 
 export const ACTIVATION_PROPOSAL_LIMITS = {

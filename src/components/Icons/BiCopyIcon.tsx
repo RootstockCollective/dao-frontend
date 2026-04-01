@@ -1,4 +1,4 @@
-import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
+import { DEFAULT_ICON_SIZE, DEFAULT_ICON_COLOR } from './constants'
 import { IconProps } from './types'
 
 export function BiCopyIcon({

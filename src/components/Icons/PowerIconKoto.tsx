@@ -1,5 +1,5 @@
-import { DEFAULT_ICON_COLOR } from './constants'
 import { type IconProps } from './types'
+import { DEFAULT_ICON_COLOR } from './constants'
 
 export function PowerIconKoto({
   'aria-label': ariaLabel = 'Power Icon Koto',

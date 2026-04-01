@@ -1,10 +1,8 @@
 'use client'
-import { FC, ReactNode } from 'react'
-
-import { Expandable, ExpandableContent, ExpandableFooter, ExpandableHeader } from '@/components/Expandable'
 import { cn } from '@/lib/utils'
-
+import { FC, ReactNode } from 'react'
 import { Header, Paragraph, Span } from '../Typography'
+import { Expandable, ExpandableHeader, ExpandableContent, ExpandableFooter } from '@/components/Expandable'
 import { BulletPoint } from './BulletPoint'
 
 export interface HeroComponentMobileProps {

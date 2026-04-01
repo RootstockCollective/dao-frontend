@@ -1,26 +1,23 @@
-import { useQuery } from '@tanstack/react-query'
-import moment from 'moment'
 import { useMemo } from 'react'
-import { Address, formatEther } from 'viem'
 import { useBlockNumber } from 'wagmi'
+import { useQuery } from '@tanstack/react-query'
 import { useReadContracts } from 'wagmi'
-
-import { ProposalApiResponse } from '@/app/proposals/shared/types'
-import { GovernorAbi } from '@/lib/abis/Governor'
-import Big from '@/lib/big'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { GOVERNOR_ADDRESS } from '@/lib/constants'
+import Big from '@/lib/big'
 import { ProposalState } from '@/shared/types'
-
 import { Proposal } from '../shared/types'
+import { ProposalApiResponse } from '@/app/proposals/shared/types'
+import moment from 'moment'
+import { GovernorAbi } from '@/lib/abis/Governor'
+import { GOVERNOR_ADDRESS } from '@/lib/constants'
+import { formatEther, Address } from 'viem'
 
 function toProposalState(value: number | string | undefined): ProposalState {
-  if (
-    typeof value === 'number' && // Validate that the number is a valid ProposalState enum value
-    value >= 0 &&
-    value <= 7
-  ) {
-    return value as ProposalState
+  if (typeof value === 'number') {
+    // Validate that the number is a valid ProposalState enum value
+    if (value >= 0 && value <= 7) {
+      return value as ProposalState
+    }
   }
   if (typeof value === 'string') {
     const stateMap: Record<string, ProposalState> = {

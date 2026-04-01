@@ -1,11 +1,10 @@
-import { Address, formatEther } from 'viem'
-
 import { BuilderHeader } from '@/app/backing/components/BuilderHeader/BuilderHeader'
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Span } from '@/components/Typography'
 import Big from '@/lib/big'
-import { EXPLORER_URL } from '@/lib/constants'
 import { formatAmount } from '@/lib/utils'
+import { Address, formatEther } from 'viem'
+import { EXPLORER_URL } from '@/lib/constants'
 
 interface HolderCardProps {
   amount: string

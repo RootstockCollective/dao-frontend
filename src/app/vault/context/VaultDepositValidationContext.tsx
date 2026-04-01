@@ -1,7 +1,6 @@
 'use client'
 
 import { createContext, ReactNode, useContext, useMemo } from 'react'
-
 import { useCanDepositToVault } from '../hooks/useCanDepositToVault'
 
 interface VaultDepositValidationContextType {

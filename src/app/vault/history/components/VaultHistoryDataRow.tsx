@@ -1,11 +1,9 @@
 'use client'
 
-import { FC, Fragment, memo, useCallback, useState } from 'react'
-
+import { FC, useState, Fragment, memo, useCallback } from 'react'
 import { cn } from '@/lib/utils'
-
-import { ActionCell, ActionsCell, AssetsCell, PeriodCell, TotalUsdCell } from './Cells'
 import { VaultHistoryTable } from './VaultHistoryTable.config'
+import { PeriodCell, ActionCell, AssetsCell, TotalUsdCell, ActionsCell } from './Cells'
 
 interface VaultHistoryDataRowProps {
   row: VaultHistoryTable['Row']

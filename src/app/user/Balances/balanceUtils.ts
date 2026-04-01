@@ -1,10 +1,9 @@
-import { formatUnits } from 'viem'
-
-import { formatSymbol, getSymbolDecimals } from '@/app/shared/formatter'
 import { GetAddressTokenResult, TokenBalance } from '@/app/user/types'
-import Big from '@/lib/big'
-import { RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
+import { formatUnits } from 'viem'
+import Big from '@/lib/big'
+import { RIF, RBTC, STRIF, USDRIF, USDT0 } from '@/lib/constants'
+import { formatSymbol, getSymbolDecimals } from '@/app/shared/formatter'
 
 // Explicitly type the supported token symbols
 type SupportedTokenSymbol = typeof RIF | typeof RBTC | typeof STRIF | typeof USDRIF | typeof USDT0

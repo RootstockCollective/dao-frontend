@@ -1,6 +1,6 @@
 /** State to be used by the Context */
-import { ReactNode } from 'react'
 import { Address } from 'viem'
+import { ReactNode } from 'react'
 
 interface CardState {
   contentValue?: ReactNode | string | undefined

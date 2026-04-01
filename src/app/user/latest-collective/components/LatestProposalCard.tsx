@@ -1,8 +1,6 @@
-import Link from 'next/link'
-
 import { Proposal } from '@/app/proposals/shared/types'
 import { Paragraph } from '@/components/Typography'
-
+import Link from 'next/link'
 import { CreatorRowComponent } from './CreatorRowComponent'
 
 interface LatestProposalCardProps {

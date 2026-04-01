@@ -1,5 +1,4 @@
 import type { useRouter } from 'next/navigation'
-
 import { BannerConfig } from '@/app/user/StackingNotifications/types'
 
 /**

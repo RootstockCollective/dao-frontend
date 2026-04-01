@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useState } from 'react'
+import { useEffect, useState, RefObject } from 'react'
 
 interface UseResizeObserverOptions {
   /** Initial width value */

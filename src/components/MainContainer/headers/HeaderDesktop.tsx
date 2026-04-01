@@ -1,12 +1,10 @@
 import type { HTMLAttributes } from 'react'
-
-import { Breadcrumbs } from '@/components/Breadcrumbs'
-import { Tooltip } from '@/components/Tooltip'
-import { cn } from '@/lib/utils'
-import { UserConnectionManager } from '@/shared/walletConnection'
-
 import { SideBarClosedIcon, SideBarOpenedIcon } from '../icons'
+import { UserConnectionManager } from '@/shared/walletConnection'
+import { cn } from '@/lib/utils'
 import { useLayoutContext } from '../LayoutProvider'
+import { Tooltip } from '@/components/Tooltip'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
 
 export function HeaderDesktop({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { isSidebarOpen, toggleSidebar } = useLayoutContext()

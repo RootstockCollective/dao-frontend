@@ -1,12 +1,11 @@
-import { useQuery } from '@tanstack/react-query'
-import { useCallback } from 'react'
-import { Address } from 'viem'
 import { useBalance, useReadContracts } from 'wagmi'
-
-import { AddressToken } from '@/app/user/types'
+import { Address } from 'viem'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
+import { tokenContracts, MulticallAddress } from '@/lib/contracts'
+import { AddressToken } from '@/app/user/types'
+import { useQuery } from '@tanstack/react-query'
 import { AVERAGE_BLOCKTIME, RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
-import { MulticallAddress, tokenContracts } from '@/lib/contracts'
+import { useCallback } from 'react'
 
 const getTokenFunction = (
   tokenAddress: Address,

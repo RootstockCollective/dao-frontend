@@ -1,6 +1,5 @@
 'use client'
 import { ConnectButtonComponent } from '@/shared/walletConnection/components/ConnectButtonComponent'
-
 import { ConnectWorkflowProps } from '../types'
 import { useAppKitFlow } from './useAppKitFlow'
 

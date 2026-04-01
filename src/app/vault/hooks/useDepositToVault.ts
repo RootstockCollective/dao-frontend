@@ -1,11 +1,9 @@
-import { useMemo } from 'react'
-import { parseEther } from 'viem'
 import { useAccount, useReadContract } from 'wagmi'
-
-import { useContractWrite } from '@/app/user/Stake/hooks/useContractWrite'
+import { parseEther } from 'viem'
 import { vault } from '@/lib/contracts'
-
+import { useContractWrite } from '@/app/user/Stake/hooks/useContractWrite'
 import { calculateMinSharesOut, DEFAULT_SLIPPAGE_PERCENTAGE } from '../utils/slippage'
+import { useMemo } from 'react'
 
 /**
  * Hook to deposit USDRIF to the vault with slippage protection

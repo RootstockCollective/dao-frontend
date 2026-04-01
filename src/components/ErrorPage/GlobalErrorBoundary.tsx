@@ -1,20 +1,18 @@
 import { ReactNode, useEffect, useState } from 'react'
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary'
-
-import { Button } from '@/components/Button'
-import { HeaderText } from '@/components/HeaderText/HeaderText'
-import { sentryClient } from '@/lib/sentry/sentry-client'
 import { cn } from '@/lib/utils'
 import { BG_IMG_CLASSES } from '@/shared/utils'
-
-import { Header, Paragraph } from '../Typography'
+import { HeaderText } from '@/components/HeaderText/HeaderText'
+import { Button } from '@/components/Button'
 import {
-  attemptChunkReloadRecovery,
   checkForCommonErrors,
-  clearChunkReloadAttempts,
   isChunkLoadError,
+  attemptChunkReloadRecovery,
   shouldAttemptChunkRecovery,
+  clearChunkReloadAttempts,
 } from './commonErrors'
+import { Header, Paragraph } from '../Typography'
+import { sentryClient } from '@/lib/sentry/sentry-client'
 
 function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
   const [isRecovering, setIsRecovering] = useState(false)

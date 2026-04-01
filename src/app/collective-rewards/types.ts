@@ -1,9 +1,7 @@
-import { Dispatch, SetStateAction } from 'react'
-import { AbiFunction, Address } from 'viem'
-
 import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
 import { ProposalState } from '@/shared/types'
-
+import { Dispatch, SetStateAction } from 'react'
+import { AbiFunction, Address } from 'viem'
 import { TokenRewards } from './rewards'
 
 // API Response Types

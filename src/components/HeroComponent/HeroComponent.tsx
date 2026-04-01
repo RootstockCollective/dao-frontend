@@ -1,8 +1,7 @@
 'use client'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-
-import { HeroComponentDesktop } from './HeroComponentDesktop'
 import { HeroComponentMobile } from './HeroComponentMobile'
+import { HeroComponentDesktop } from './HeroComponentDesktop'
 import { HeroComponentProps } from './types'
 
 export const HeroComponent = (props: HeroComponentProps) => {

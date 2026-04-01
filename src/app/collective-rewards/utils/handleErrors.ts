@@ -1,7 +1,6 @@
 import { useEffect } from 'react'
-
-import { sentryClient } from '@/lib/sentry/sentry-client'
 import { showToast } from '@/shared/notification'
+import { sentryClient } from '@/lib/sentry/sentry-client'
 
 interface ErrorHandlerParams {
   title: string

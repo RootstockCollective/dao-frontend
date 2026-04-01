@@ -1,11 +1,10 @@
+import { logger } from '@/lib/logger'
 import { NextRequest, NextResponse } from 'next/server'
-import { isAddress } from 'viem'
-
-import { BACKER_TO_BUILDER_COLUMNS } from '@/app/api/db/constants'
+import { db } from '@/lib/db'
 import { paginateQuery } from '@/app/api/utils/paginateQuery'
 import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
-import { db } from '@/lib/db'
-import { logger } from '@/lib/logger'
+import { BACKER_TO_BUILDER_COLUMNS } from '@/app/api/db/constants'
+import { isAddress } from 'viem'
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ backer: string }> }) {
   const { backer } = await params

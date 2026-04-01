@@ -1,9 +1,8 @@
+import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
+import { tokenContracts } from '@/lib/contracts'
 import { Address } from 'viem'
 import { useReadContract } from 'wagmi'
-
-import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { tokenContracts } from '@/lib/contracts'
 
 const stRifContract = {
   abi: StRIFTokenAbi,

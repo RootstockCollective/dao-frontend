@@ -1,8 +1,7 @@
-import { useMemo } from 'react'
 import { useReadContracts } from 'wagmi'
-
-import { SubsidyPoolAbi } from '@/lib/abis/SubsidyPoolAbi'
 import { vault } from '@/lib/contracts'
+import { SubsidyPoolAbi } from '@/lib/abis/SubsidyPoolAbi'
+import { useMemo } from 'react'
 
 /**
  * Hook for fetching subsidy pool data

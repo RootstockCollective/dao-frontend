@@ -1,11 +1,10 @@
-import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react'
-import { ReactNode } from 'react'
-
-import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Paragraph, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
+import { ReactNode } from 'react'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
+import { ArrowDownIcon, ArrowUpIcon } from 'lucide-react'
 
 interface Props {
   amount: string

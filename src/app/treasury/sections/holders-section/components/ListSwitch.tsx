@@ -1,6 +1,5 @@
-import { motion } from 'motion/react'
-
 import { GridIcon, ListIcon } from '@/components/Icons'
+import { motion } from 'motion/react'
 
 interface ListSwitchProps {
   isGridMode: boolean

@@ -1,5 +1,4 @@
 import { FC } from 'react'
-
 import { BackersPercentageCell, BackersPercentageProps } from '../Cell/BackersPercentageCell'
 import { MobileDataSection } from './MobileDataSection'
 

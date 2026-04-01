@@ -1,6 +1,5 @@
-import { FC, TableHTMLAttributes } from 'react'
-
 import { cn } from '@/lib/utils'
+import { FC, TableHTMLAttributes } from 'react'
 
 /**
  * Tailwind styled wrapper around `tbody` element

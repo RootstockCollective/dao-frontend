@@ -1,8 +1,7 @@
-import { Address } from 'viem'
-
-import { buildProposal } from '@/app/proposals/actions/utils'
-import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { db } from '@/lib/db'
+import { ProposalApiResponse } from '@/app/proposals/shared/types'
+import { buildProposal } from '@/app/proposals/actions/utils'
+import { Address } from 'viem'
 
 interface ProposalDBRow {
   proposalId: string

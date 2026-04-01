@@ -1,7 +1,6 @@
-import { useQuery } from '@tanstack/react-query'
-
-import { CycleRewardsItem } from '@/app/collective-rewards/types'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { useQuery } from '@tanstack/react-query'
+import { CycleRewardsItem } from '@/app/collective-rewards/types'
 
 export const useGetChartRewardsData = () => {
   const { data, isLoading, error } = useQuery<CycleRewardsItem[], Error>({

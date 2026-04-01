@@ -1,9 +1,8 @@
-import { HTMLAttributes } from 'react'
-
-import { TwitterXIcon } from '@/components/Icons'
-import { GithubIcon, TelegramIcon } from '@/components/Icons'
 import { BUILD_ID, ENV, GITHUB_ORG } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+import { TwitterXIcon } from '@/components/Icons'
+import { GithubIcon, TelegramIcon } from '@/components/Icons'
+import { HTMLAttributes } from 'react'
 
 export const FooterDesktop = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => (
   <footer

@@ -1,9 +1,9 @@
-import { formatExpandedDate } from '@/app/my-rewards/tx-history/utils/utils'
-import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
-import { StakingHistoryTable } from '@/app/staking-history/components/StakingHistoryTable.config'
-import { StakingHistoryItem } from '@/app/staking-history/utils/types'
 import { GetPricesResult } from '@/app/user/types'
+import { StakingHistoryItem } from '@/app/staking-history/utils/types'
+import { StakingHistoryTable } from '@/app/staking-history/components/StakingHistoryTable.config'
+import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { RIF, STRIF } from '@/lib/constants'
+import { formatExpandedDate } from '@/app/my-rewards/tx-history/utils/utils'
 
 const formatPeriod = (period: string): string => {
   const [year, month] = period.split('-')
@@ -22,7 +22,8 @@ export const convertDataToRowData = (
   // Pre-allocate array size for better performance
   const rows: StakingHistoryTable['Row'][] = new Array(data.length)
 
-  for (const [i, staking] of data.entries()) {
+  for (let i = 0; i < data.length; i++) {
+    const staking = data[i]
     const itemAmount = BigInt(staking.amount)
     const usdAmount = getFiatAmount(itemAmount, price)
 

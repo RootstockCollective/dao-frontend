@@ -1,7 +1,5 @@
 import React from 'react'
-
 import { IconProps } from '@/components/Icons/types'
-
 import { SharedGradient } from './SharedGradient'
 
 interface GrantsIconProps extends IconProps {

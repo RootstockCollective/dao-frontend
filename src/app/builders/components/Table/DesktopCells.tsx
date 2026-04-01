@@ -1,12 +1,10 @@
 import { HtmlHTMLAttributes, ReactElement, ReactNode } from 'react'
-import { useAccount } from 'wagmi'
-
-import { Jdenticon } from '@/components/Header/Jdenticon'
 import { cn } from '@/lib/utils'
 import { useTableContext } from '@/shared/context'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-
-import { BuilderCellDataMap, COLUMN_TRANSFORMS, ColumnId, ColumnTransforms } from './BuilderTable.config'
+import { useAccount } from 'wagmi'
+import { Jdenticon } from '@/components/Header/Jdenticon'
+import { BuilderCellDataMap, ColumnId, COLUMN_TRANSFORMS, ColumnTransforms } from './BuilderTable.config'
 import { ActionCell, ActionCellProps } from './Cell/ActionCell'
 import { BackersPercentageCell, BackersPercentageProps } from './Cell/BackersPercentageCell'
 import { BackingCell, BackingCellProps } from './Cell/BackingCell'

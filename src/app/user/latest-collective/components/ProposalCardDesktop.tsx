@@ -1,14 +1,12 @@
-import Link from 'next/link'
-import { ClassNameValue } from 'tailwind-merge'
-
 import { QuorumColumn, VotesColumn } from '@/app/proposals/components/table-columns/VotesColumn'
 import { Proposal } from '@/app/proposals/shared/types'
 import { Countdown } from '@/components/Countdown'
 import { Paragraph, Span } from '@/components/Typography'
 import Big from '@/lib/big'
 import { cn } from '@/lib/utils'
-
+import Link from 'next/link'
 import { CreatorRowComponent } from './CreatorRowComponent'
+import { ClassNameValue } from 'tailwind-merge'
 
 const columnStyle: ClassNameValue = 'flex flex-col justify-start items-start'
 

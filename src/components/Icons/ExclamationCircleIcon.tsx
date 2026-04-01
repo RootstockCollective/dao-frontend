@@ -1,5 +1,5 @@
-import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
 import { type IconProps } from './types'
+import { DEFAULT_ICON_SIZE, DEFAULT_ICON_COLOR } from './constants'
 
 export function ExclamationCircleIcon({
   'aria-label': ariaLabel = 'Exclamation Circle Icon',

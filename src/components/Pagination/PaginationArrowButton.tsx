@@ -1,6 +1,5 @@
-import { cn } from '@/lib/utils'
-
 import { Chevron } from './Chevron'
+import { cn } from '@/lib/utils'
 
 interface PaginationArrowButtonProps {
   direction: 'prev' | 'next'

@@ -1,5 +1,4 @@
 import { cn } from '@/lib/utils'
-
 import { CommonComponentProps } from '../commonProps'
 
 export type BarProps = CommonComponentProps & {}

@@ -1,12 +1,10 @@
 'use client'
 
 import { useAppKit } from '@reown/appkit/react'
-import { createContext, ReactNode, useState } from 'react'
-
+import { createContext, useState, ReactNode } from 'react'
+import { parseWalletConnectionError } from '../utils'
 import { showToast } from '@/shared/notification'
 import { DisclaimerFlow } from '@/shared/walletConnection/components/DisclaimerFlowModal'
-
-import { parseWalletConnectionError } from '../utils'
 
 interface ConnectWalletContextType {
   handleConnectWallet: () => void

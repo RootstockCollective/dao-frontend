@@ -1,14 +1,12 @@
-import { useRouter } from 'next/navigation'
-import { ReactElement } from 'react'
-import { zeroAddress } from 'viem'
-import { useAccount } from 'wagmi'
-
 import { Button } from '@/components/Button'
 import { Collapsible } from '@/components/Collapsible'
 import { StylableComponentProps } from '@/components/commonProps'
 import { Header, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-
+import { useRouter } from 'next/navigation'
+import { ReactElement } from 'react'
+import { zeroAddress } from 'viem'
+import { useAccount } from 'wagmi'
 import { useBuilderContext } from '../../user'
 import { ActiveBuilders } from '../ActiveBuilders'
 import { Banner } from '../Banner'

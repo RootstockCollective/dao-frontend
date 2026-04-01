@@ -1,11 +1,9 @@
+import { logger } from '@/lib/logger'
 import { NextRequest } from 'next/server'
-
 import { JWTPayload } from '@/lib/auth/jwt'
 import { withAuth } from '@/lib/auth/withAuth'
-import { logger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
-
-import { bigIntToBuffer, ProposalIdSchema } from '../shared'
+import { ProposalIdSchema, bigIntToBuffer } from '../shared'
 
 /**
  * GET /api/like/user?proposalId=<BigInt string>

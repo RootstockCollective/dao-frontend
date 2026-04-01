@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, type PropsWithChildren, useContext, useMemo, useState } from 'react'
+import { createContext, useState, useMemo, type PropsWithChildren, useContext } from 'react'
 
 export const ProposalStep = {
   None: 'None',

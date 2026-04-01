@@ -1,10 +1,9 @@
 'use client'
 import { FC, ReactNode } from 'react'
-
 import { Expandable } from './Expandable'
+import { ExpandableHeader } from './ExpandableHeader'
 import { ExpandableContent } from './ExpandableContent'
 import { ExpandableFooter } from './ExpandableFooter'
-import { ExpandableHeader } from './ExpandableHeader'
 
 // Convenience component for the entire expandable structure
 interface Props {

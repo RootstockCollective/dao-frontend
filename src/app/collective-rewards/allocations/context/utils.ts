@@ -1,7 +1,6 @@
 import { Address } from 'viem'
-
-import { Builder } from '../../types'
 import { Allocations, Backer } from './AllocationsContext'
+import { Builder } from '../../types'
 
 export interface ValidateAllocationsStateParams {
   backer: Pick<Backer, 'amountToAllocate' | 'balance' | 'cumulativeAllocation'>

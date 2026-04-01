@@ -1,11 +1,9 @@
 'use client'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useQuery } from '@tanstack/react-query'
 import { createContext, ReactNode, useCallback, useContext, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-
 import { fetchBoostData, fetchLatestFile } from './boost.utils'
 
 interface HolderRewards {

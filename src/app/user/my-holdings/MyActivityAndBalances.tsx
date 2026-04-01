@@ -1,11 +1,10 @@
 'use client'
 
-import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { SectionContainerWithSpinner } from '@/app/communities/components/SectionContainer'
-
-import { BalancesSection } from '../Balances/BalancesSection'
 import { MyBacking } from './components/backing'
+import { SectionContainerWithSpinner } from '@/app/communities/components/SectionContainer'
+import { BalancesSection } from '../Balances/BalancesSection'
 import { useIsBuilder } from './hooks/useIsBuilder'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 
 const Separator = () => <hr className="w-full bg-bg-60 border-none h-px md:my-10 my-6" />
 

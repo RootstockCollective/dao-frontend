@@ -1,16 +1,14 @@
-import Big from 'big.js'
+import { TransactionHistoryItem } from '../../utils/types'
+import { GroupedTransactionDetail, TransactionHistoryTable } from '../../config'
 import { Duration } from 'luxon'
-import { Address, getAddress } from 'viem'
-
-import { Builder } from '@/app/collective-rewards/types'
-import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { GetPricesResult } from '@/app/user/types'
 import { tokenContracts } from '@/lib/contracts'
 import { TOKENS_BY_ADDRESS } from '@/lib/tokens'
+import Big from 'big.js'
+import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
+import { Address, getAddress } from 'viem'
 import { formatCurrency } from '@/lib/utils'
-
-import { GroupedTransactionDetail, TransactionHistoryTable } from '../../config'
-import { TransactionHistoryItem } from '../../utils/types'
+import { Builder } from '@/app/collective-rewards/types'
 import { calculateCycleNumber, formatDateRange } from '../../utils/utils'
 
 export const convertDataToRowData = (
@@ -111,7 +109,7 @@ export const convertDataToRowData = (
       const transactionType = firstItem.type
 
       const amountsByToken: Record<Address, { symbol: string; amount: bigint; price: number }> = {}
-      let increased: boolean | undefined
+      let increased: boolean | undefined = undefined
 
       builderItems.forEach(item => {
         if (item.type === 'Claim' && item.amount && item.rewardToken) {
@@ -194,7 +192,7 @@ export const convertDataToRowData = (
       const amountsByToken: Record<Address, { symbol: string; amount: bigint }> = {}
 
       let totalUsdValue = Big(0)
-      let increased: boolean | undefined
+      let increased: boolean | undefined = undefined
       const groupedDetails: GroupedTransactionDetail[] = []
 
       Object.entries(groupedByBuilder).forEach(([builderAddr, builderItems]) => {
@@ -202,7 +200,7 @@ export const convertDataToRowData = (
         const builder = getBuilderByAddress(builderAddress)
 
         const builderAmountsByToken: Record<Address, { symbol: string; amount: bigint; price: number }> = {}
-        let builderIncreased: boolean | undefined
+        let builderIncreased: boolean | undefined = undefined
 
         builderItems.forEach(item => {
           if (item.type === 'Claim' && item.amount && item.rewardToken) {

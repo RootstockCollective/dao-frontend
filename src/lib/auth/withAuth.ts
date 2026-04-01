@@ -1,5 +1,4 @@
 import { NextRequest } from 'next/server'
-
 import { JWTPayload } from './jwt'
 import { requireAuth } from './session'
 import { sanitizeError } from './utils'

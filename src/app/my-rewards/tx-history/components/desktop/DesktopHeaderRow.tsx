@@ -1,24 +1,22 @@
 'use client'
 
+import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { ReactElement, Suspense } from 'react'
-import { Dispatch, FC } from 'react'
-
-import { ArrowDownWFill } from '@/components/Icons/v3design/ArrowDownWFill'
-import { ArrowsUpDown } from '@/components/Icons/v3design/ArrowsUpDown'
-import { ArrowUpWFill } from '@/components/Icons/v3design/ArrowUpWFill'
 import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
 import { Label, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { useTableActionsContext, useTableContext } from '@/shared/context'
+import { useTotalAmount } from '../../hooks/useTotalAmount'
 import { SORT_DIRECTION_ASC, SORT_DIRECTIONS } from '@/shared/context/TableContext/constants'
-
+import { Dispatch, FC } from 'react'
 import {
-  COLUMN_TRANSFORMS,
-  ColumnId,
   TransactionHistoryCellDataMap,
   TransactionHistoryTable,
+  COLUMN_TRANSFORMS,
+  ColumnId,
 } from '../../config'
-import { useTotalAmount } from '../../hooks/useTotalAmount'
+import { ArrowsUpDown } from '@/components/Icons/v3design/ArrowsUpDown'
+import { ArrowDownWFill } from '@/components/Icons/v3design/ArrowDownWFill'
+import { ArrowUpWFill } from '@/components/Icons/v3design/ArrowUpWFill'
 
 interface ChildrenWithClassNameProps {
   children: React.ReactNode

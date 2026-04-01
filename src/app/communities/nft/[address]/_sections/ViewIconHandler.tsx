@@ -1,6 +1,5 @@
-import { GridIcon, ListIcon } from '@/components/Icons'
 import { cn } from '@/lib/utils'
-
+import { GridIcon, ListIcon } from '@/components/Icons'
 import { useBadgeView } from './useBadgeView'
 
 export const ViewIconHandler = () => {

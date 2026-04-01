@@ -1,14 +1,13 @@
 'use server'
 
-import { unstable_cache } from 'next/cache'
-import { formatEther } from 'viem'
-
 import { fetchNftHoldersOfAddress } from '@/app/user/Balances/actions'
-import Big from '@/lib/big'
 import { OG_CONTRIBUTORS_NFT_ADDRESS } from '@/lib/constants'
 import { stRif } from '@/lib/contracts'
-import { resolveRnsDomain } from '@/lib/rns'
 import { publicClient } from '@/lib/viemPublicClient'
+import { formatEther } from 'viem'
+import Big from '@/lib/big'
+import { unstable_cache } from 'next/cache'
+import { resolveRnsDomain } from '@/lib/rns'
 
 async function fetchNftHoldersShepherds() {
   const holders = await fetchNftHoldersOfAddress(OG_CONTRIBUTORS_NFT_ADDRESS, null)

@@ -1,24 +1,22 @@
-import { useRouter } from 'next/navigation'
-import React from 'react'
-import { Address } from 'viem'
-
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
 import { UpdateBackerRewardModal } from '@/app/my-rewards/builder/components/UpdateBackerRewardModal'
-import { Button } from '@/components/Button'
 import { Collapsible } from '@/components/Collapsible'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
-import { HistoryIcon } from '@/components/Icons/HistoryIcon'
 import { Header } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { useModal } from '@/shared/hooks/useModal'
-
+import React from 'react'
+import { Address } from 'viem'
 import { AdjustBackersRewardsButton } from './AdjustBackersRewardButton'
 import { AllTimeShare } from './AllTimeShare'
 import { EstimatedCycleRewards } from './EstimatedCycleRewards'
 import { LastCycleRewards } from './LastCycleRewards'
 import { TotalEarned } from './TotalEarned'
 import { UnclaimedRewards } from './UnclaimedRewards'
+import { Button } from '@/components/Button'
+import { HistoryIcon } from '@/components/Icons/HistoryIcon'
+import { useRouter } from 'next/navigation'
 
 const BuilderRewardsContainer = ({
   children,

@@ -3,8 +3,8 @@
 import * as AccordionPrimitive from '@radix-ui/react-accordion'
 import * as React from 'react'
 
-import { MinusCircleIcon, PlusCircleIcon } from '@/components/Icons'
 import { cn } from '@/lib/utils'
+import { MinusCircleIcon, PlusCircleIcon } from '@/components/Icons'
 
 const Accordion = AccordionPrimitive.Root
 

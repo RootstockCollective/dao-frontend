@@ -1,11 +1,9 @@
 'use client'
+import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import { FC, ReactNode, useMemo } from 'react'
-
-import { cn } from '@/lib/utils'
-import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
-
 import { Header, Paragraph, Span } from '../Typography'
+import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
 import { BulletPoint } from './BulletPoint'
 import { HeroComponentProps } from './types'
 

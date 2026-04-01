@@ -1,28 +1,26 @@
 'use client'
 
+import type { Address } from 'viem'
+import { useFetchNftHolders } from '@/shared/hooks/useFetchNftHolders'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { cn, truncateMiddle } from '@/lib/utils'
+import { useState } from 'react'
+import { applyPinataImageOptions } from '@/lib/ipfs'
+import { Paragraph, Header, Span } from '@/components/Typography'
+import { ViewIconHandler } from './ViewIconHandler'
+import { useBadgeView } from './useBadgeView'
 import {
   createColumnHelper,
-  getCoreRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
 } from '@tanstack/react-table'
-import { useState } from 'react'
-import type { Address } from 'viem'
-
-import type { NftHolderItem } from '@/app/user/Balances/types'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { TablePager } from '@/components/TableNew/TablePager'
-import { Header, Paragraph, Span } from '@/components/Typography'
-import { applyPinataImageOptions } from '@/lib/ipfs'
-import { cn, truncateMiddle } from '@/lib/utils'
-import { useFetchNftHolders } from '@/shared/hooks/useFetchNftHolders'
-
-import { NftCard } from '../_components/NftCard'
 import { NftHoldersTable } from '../_components/NftHoldersTable'
+import { NftCard } from '../_components/NftCard'
+import type { NftHolderItem } from '@/app/user/Balances/types'
 import { NftHolderTableCell } from '../_components/NftHolderTableCell'
-import { useBadgeView } from './useBadgeView'
-import { ViewIconHandler } from './ViewIconHandler'
+import { TablePager } from '@/components/TableNew/TablePager'
 
 const STEP = 15
 

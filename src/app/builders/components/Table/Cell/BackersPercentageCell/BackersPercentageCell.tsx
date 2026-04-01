@@ -1,10 +1,9 @@
-import { FC } from 'react'
-
-import { weiToPercentage } from '@/app/collective-rewards/settings'
 import { BackerRewardPercentage } from '@/app/collective-rewards/types'
-import { StylableComponentProps } from '@/components/commonProps'
+import { weiToPercentage } from '@/app/collective-rewards/settings'
 import { DeltaIndicator } from '@/components/DeltaIndicator/DeltaIndicator'
 import { cn } from '@/lib/utils'
+import { FC } from 'react'
+import { StylableComponentProps } from '@/components/commonProps'
 
 export interface BackersPercentageProps extends StylableComponentProps<HTMLDivElement> {
   percentage?: BackerRewardPercentage

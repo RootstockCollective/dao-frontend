@@ -1,13 +1,11 @@
 'use client'
 
+import { CycleContextProvider } from '@/app/collective-rewards/metrics'
+import { Header } from '@/components/Typography'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import { useAccount } from 'wagmi'
-
-import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { Section } from '@/app/my-rewards/components/Section'
-import { Header } from '@/components/Typography'
-
 import TransactionHistoryTableContainer from './components/TransactionHistoryTableContainer'
 
 const NAME = 'Transactions History'

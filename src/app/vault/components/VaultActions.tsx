@@ -1,24 +1,22 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useCallback, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
-
-import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
-import { SwappingFlow } from '@/app/user/Swap'
 import { Button } from '@/components/Button'
-import { HistoryIcon, MoneyIconKoto } from '@/components/Icons'
 import { NewPopover } from '@/components/NewPopover'
 import { Span } from '@/components/Typography'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { useModal } from '@/shared/hooks/useModal'
-import { ConnectButtonComponent } from '@/shared/walletConnection/components/ConnectButtonComponent'
-import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
-
-import { useVaultBalance } from '../hooks/useVaultBalance'
+import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
+import { ConnectButtonComponent } from '@/shared/walletConnection/components/ConnectButtonComponent'
+import { useModal } from '@/shared/hooks/useModal'
 import { DepositModal } from './DepositModal'
 import { WithdrawModal } from './WithdrawModal'
+import { HistoryIcon, MoneyIconKoto } from '@/components/Icons'
+import { SwappingFlow } from '@/app/user/Swap'
+import { useVaultBalance } from '../hooks/useVaultBalance'
+import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 
 /**
  * Component providing deposit and withdraw actions for the vault

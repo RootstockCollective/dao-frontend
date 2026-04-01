@@ -1,10 +1,9 @@
 'use client'
-import { HTMLAttributes } from 'react'
-import { useAccount } from 'wagmi'
-
-import { useCommunityNFT } from '@/app/communities/nft/[address]/CommunityNFTContext'
 import { Button } from '@/components/Button'
-import { Paragraph, Span } from '@/components/Typography'
+import { Span, Paragraph } from '@/components/Typography'
+import { useCommunityNFT } from '@/app/communities/nft/[address]/CommunityNFTContext'
+import { useAccount } from 'wagmi'
+import { HTMLAttributes } from 'react'
 
 export const ClaimItButton = (props: HTMLAttributes<HTMLButtonElement>) => {
   const { handleMinting, tokensAvailable, isClaiming, isChecking } = useCommunityNFT()

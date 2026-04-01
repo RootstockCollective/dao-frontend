@@ -1,9 +1,8 @@
-import { formatSymbol } from '@/app/shared/formatter'
-import { ExternalLink } from '@/components/Link'
 import { Span } from '@/components/Typography'
-import { USDRIF, VAULT_KYC_URL } from '@/lib/constants'
-
+import { ExternalLink } from '@/components/Link'
+import { VAULT_KYC_URL, USDRIF } from '@/lib/constants'
 import { useVaultDepositLimiter } from '../hooks/useVaultDepositLimiter'
+import { formatSymbol } from '@/app/shared/formatter'
 
 interface VaultDepositKycPopoverProps {
   className?: string

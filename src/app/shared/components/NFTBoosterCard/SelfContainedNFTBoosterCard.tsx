@@ -1,8 +1,7 @@
-import { FC } from 'react'
-
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { NFTBoosterCard } from '@/app/shared/components'
+import { FC } from 'react'
 
 interface SelfContainedNFTBoosterCardPros {
   forceRender?: boolean

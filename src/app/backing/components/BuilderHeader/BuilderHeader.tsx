@@ -1,10 +1,9 @@
-import Link from 'next/link'
-import { ComponentProps, FC } from 'react'
-import { Address } from 'viem'
-
-import { IpfsAvatar } from '@/components/IpfsAvatar'
 import { Header } from '@/components/Typography'
+import { IpfsAvatar } from '@/components/IpfsAvatar'
+import { ComponentProps, FC } from 'react'
 import { cn, shortAddress, truncate } from '@/lib/utils'
+import Link from 'next/link'
+import { Address } from 'viem'
 
 interface BuilderHeaderProps {
   address: Address

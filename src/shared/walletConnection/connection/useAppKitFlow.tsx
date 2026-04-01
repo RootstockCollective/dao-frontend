@@ -1,7 +1,6 @@
 'use client'
 
 import { useContext } from 'react'
-
 import { ConnectWalletContext } from './ConnectWalletProvider'
 
 export const useAppKitFlow = () => {

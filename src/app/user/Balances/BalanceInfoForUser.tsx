@@ -1,14 +1,13 @@
-import { useState } from 'react'
-
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { BalanceInfo } from '@/components/BalanceInfo'
-import { Button } from '@/components/Button'
-import { Paragraph } from '@/components/Typography'
-import Big from '@/lib/big'
-import { RBTC } from '@/lib/constants'
 import { SupportedTokens, tokenContracts } from '@/lib/contracts'
+import { BalanceInfo } from '@/components/BalanceInfo'
+import Big from '@/lib/big'
 import { formatCurrency, formatCurrencyWithLabel } from '@/lib/utils'
+import { Paragraph } from '@/components/Typography'
+import { Button } from '@/components/Button'
+import { useState } from 'react'
 import { requestProviderToAddToken } from '@/shared/utils'
+import { RBTC } from '@/lib/constants'
 
 interface TooltipComponentProps {
   text: string

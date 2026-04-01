@@ -1,5 +1,5 @@
-export { MarkdownEditor } from './MarkdownEditor'
+export { TextInput } from './TextInput'
+export { TextArea } from './TextArea'
 export { NumberInput } from './NumberInput'
 export { SelectField } from './SelectField'
-export { TextArea } from './TextArea'
-export { TextInput } from './TextInput'
+export { MarkdownEditor } from './MarkdownEditor'

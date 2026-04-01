@@ -1,7 +1,6 @@
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { DateTime } from 'luxon'
 import { useEffect, useState } from 'react'
-
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 export const useIntervalTimestamp = () => {
   const [timestamp, setTimestamp] = useState(BigInt(DateTime.now().toUnixInteger()))

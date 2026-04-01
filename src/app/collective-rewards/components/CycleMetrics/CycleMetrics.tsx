@@ -1,10 +1,9 @@
 import { useCycleContext } from '@/app/collective-rewards/metrics/context'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-
 import { CycleDay } from './CycleDay'
 import { CycleEndingOn } from './CycleEndingOn'
 import { CycleNumber } from './CycleNumber'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 export const CycleMetrics = () => {
   const {

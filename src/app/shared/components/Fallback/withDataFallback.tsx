@@ -1,6 +1,5 @@
 import { FC, ReactNode } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
-
 import { withFallbackRetry } from './FallbackWithRetry'
 
 interface DataLoaderProps<T> {

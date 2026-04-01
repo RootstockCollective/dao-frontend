@@ -1,5 +1,5 @@
-import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
 import { type IconProps } from './types'
+import { DEFAULT_ICON_COLOR, DEFAULT_ICON_SIZE } from './constants'
 
 export function ChevronDownIcon({
   'aria-label': ariaLabel = 'Chevron Down Icon',

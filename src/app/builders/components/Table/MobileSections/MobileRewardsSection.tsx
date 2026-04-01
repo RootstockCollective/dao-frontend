@@ -1,14 +1,12 @@
 import { FC } from 'react'
-
-import { EmptyPlaceholder } from '@/components/Table/components'
-
 import { RewardsCell, RewardsCellProps } from '../Cell/RewardsCell'
 import {
-  MobileColumnItem,
   MobileDataSection,
-  MobileSectionWrapper,
   MobileTwoColumnWrapper,
+  MobileColumnItem,
+  MobileSectionWrapper,
 } from './MobileDataSection'
+import { EmptyPlaceholder } from '@/components/Table/components'
 
 const hasValidValue = (rewards: RewardsCellProps) =>
   rewards.usdValue != null || rewards.rbtcValue != null || rewards.rifValue != null

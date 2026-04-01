@@ -1,8 +1,7 @@
-import { Address } from 'viem'
-import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
-
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
+import { Address } from 'viem'
+import { useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 
 const DEFAULT_DAO = {
   address: GovernorAddress as Address,

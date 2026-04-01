@@ -1,7 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
-
-import { extractTopicIdFromDiscourseUrl, getDiscourseTopicApiUrl } from '@/lib/discourse'
 import { logger } from '@/lib/logger'
+import { NextRequest, NextResponse } from 'next/server'
+import { extractTopicIdFromDiscourseUrl, getDiscourseTopicApiUrl } from '@/lib/discourse'
 
 /**
  * Discourse API route to fetch topic data

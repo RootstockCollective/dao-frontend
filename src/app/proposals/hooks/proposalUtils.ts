@@ -1,4 +1,4 @@
-import { readContracts } from '@wagmi/core'
+import { GovernorAbi } from '@/lib/abis/Governor'
 import {
   Abi,
   Address,
@@ -8,10 +8,9 @@ import {
   Hash,
   keccak256,
 } from 'viem'
-
-import { config } from '@/config'
-import { GovernorAbi } from '@/lib/abis/Governor'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
+import { readContracts } from '@wagmi/core'
+import { config } from '@/config'
 import { GovernorAddress, tokenContracts } from '@/lib/contracts'
 
 const DEFAULT_DAO_CONFIG = {

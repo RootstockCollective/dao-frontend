@@ -1,6 +1,5 @@
-import { type Address, SwitchChainError, UserRejectedRequestError } from 'viem'
 import { createConnector } from 'wagmi'
-
+import { type Address, UserRejectedRequestError, SwitchChainError } from 'viem'
 import { showToast, type ToastAlertOptions } from '@/shared/notification'
 
 interface LedgerConnectorOptions {

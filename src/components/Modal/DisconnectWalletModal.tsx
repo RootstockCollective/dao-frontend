@@ -1,8 +1,7 @@
-import { FC } from 'react'
-
+import { Header, Paragraph, Span } from '@/components/Typography'
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
-import { Header, Paragraph, Span } from '@/components/Typography'
+import { FC } from 'react'
 
 interface Props {
   onClose: () => void

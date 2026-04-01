@@ -1,12 +1,11 @@
-import { Address } from 'viem'
-
 import { CompleteBuilder } from '@/app/collective-rewards/types'
 import { filterBuildersByState, useBuilderContext } from '@/app/collective-rewards/user'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { useGetBuilderAllTimeShare } from '@/app/my-rewards/builder/hooks/useGetBuilderAllTimeShare'
-import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 import { Span } from '@/components/Typography'
 import { TOKENS } from '@/lib/tokens'
+import { Address } from 'viem'
+import { useGetBuilderAllTimeShare } from '@/app/my-rewards/builder/hooks/useGetBuilderAllTimeShare'
+import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 
 export const AllTimeShare = ({ gauge }: { gauge: Address }) => {
   const { builders, isLoading: isBuildersLoading, error: buildersError } = useBuilderContext()

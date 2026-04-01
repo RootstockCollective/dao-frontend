@@ -1,9 +1,9 @@
 'use client'
 
 import * as SwitchPrimitive from '@radix-ui/react-switch'
-import { ComponentPropsWithoutRef, ElementRef, forwardRef } from 'react'
 
 import { cn } from '@/lib/utils'
+import { ComponentPropsWithoutRef, ElementRef, forwardRef } from 'react'
 
 const SWITCH_DEFAULT_CLASSES = `
 relative 

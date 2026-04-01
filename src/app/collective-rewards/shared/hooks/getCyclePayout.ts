@@ -1,6 +1,5 @@
-import { parseEther } from 'viem'
-
 import { WeiPerEther } from '@/lib/constants'
+import { parseEther } from 'viem'
 
 export const getCyclePayout = (
   rifPrice: number,

@@ -1,6 +1,3 @@
-import { useMemo } from 'react'
-import { Address } from 'viem'
-
 import ClaimRewardsModal from '@/app/collective-rewards/components/ClaimRewardModal/ClaimRewardsModal'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { MetricBar } from '@/app/components/Metric/MetricBar'
@@ -9,11 +6,13 @@ import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/Fiat
 import { useGetBuilderUnclaimedRewards } from '@/app/my-rewards/builder/hooks/useGetBuilderUnclaimedRewards'
 import { ClaimRewardsButton } from '@/app/my-rewards/components/ClaimRewardsButton'
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'
-import { getMetricTokens } from '@/app/shared/utils'
 import { Header } from '@/components/Typography'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 import { useModal } from '@/shared/hooks/useModal'
+import { Address } from 'viem'
+import { getMetricTokens } from '@/app/shared/utils'
+import { useMemo } from 'react'
 
 export const UnclaimedRewards = ({ builder, gauge }: { builder: Address; gauge: Address }) => {
   const { isModalOpened, openModal, closeModal } = useModal()

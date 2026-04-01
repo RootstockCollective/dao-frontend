@@ -1,11 +1,9 @@
 import { useId, useState } from 'react'
-import { Control, Controller, FieldPath, FieldValues } from 'react-hook-form'
-import { NumericFormat, NumericFormatProps } from 'react-number-format'
-
-import { cn } from '@/lib/utils'
-
 import { ErrorMessage } from './ErrorMessage'
 import { FloatingLabel } from './FloatingLabel'
+import { cn } from '@/lib/utils'
+import { NumericFormat, NumericFormatProps } from 'react-number-format'
+import { Controller, Control, FieldPath, FieldValues } from 'react-hook-form'
 
 interface Props<T extends FieldValues> extends NumericFormatProps {
   label: string

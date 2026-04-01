@@ -1,9 +1,7 @@
-import * as RadioGroup from '@radix-ui/react-radio-group'
-import { FC, ReactNode } from 'react'
-
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header, Span } from '@/components/Typography'
-
+import * as RadioGroup from '@radix-ui/react-radio-group'
+import { FC, ReactNode } from 'react'
 import { ClaimRewardType } from './types'
 
 interface ClaimRewardRadioOptionProps {

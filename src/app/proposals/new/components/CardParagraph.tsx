@@ -1,7 +1,6 @@
-import Link from 'next/link'
-
 import { ArrowUpRightLightIcon } from '@/components/Icons'
 import { Label, Paragraph } from '@/components/Typography'
+import Link from 'next/link'
 
 interface Props extends React.PropsWithChildren {
   header: string

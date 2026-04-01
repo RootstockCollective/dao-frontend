@@ -1,10 +1,9 @@
-import { useMemo } from 'react'
-
 import { useIntervalTimestamp } from '@/app/collective-rewards/metrics/hooks/useIntervalTimestamp'
 import { BackerStakingHistory, Token, useBackerRewardsContext } from '@/app/collective-rewards/rewards'
 import Big from '@/lib/big'
 import { WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
+import { useMemo } from 'react'
 
 const useGetTokenRewards = ({ address, symbol }: Token) => {
   const { prices } = usePricesContext()

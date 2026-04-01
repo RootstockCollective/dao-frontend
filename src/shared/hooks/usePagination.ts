@@ -1,7 +1,6 @@
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useQuery, UseQueryResult } from '@tanstack/react-query'
 import { useCallback, useMemo, useState } from 'react'
-
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 interface UsePaginatedQueryOptions<T> {
   queryKey: string[]

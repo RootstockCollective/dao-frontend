@@ -2,10 +2,8 @@
 
 import { useMemo } from 'react'
 import { Address } from 'viem'
-
+import { USDT0, USDRIF, USDT0_ADDRESS, USDRIF_ADDRESS } from '@/lib/constants'
 import { getSymbolDecimals } from '@/app/shared/formatter'
-import { USDRIF, USDRIF_ADDRESS, USDT0, USDT0_ADDRESS } from '@/lib/constants'
-
 import type { SwapTokenSymbol } from './types'
 
 /**

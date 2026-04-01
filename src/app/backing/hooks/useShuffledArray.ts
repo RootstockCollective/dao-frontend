@@ -1,5 +1,4 @@
 import { useRef } from 'react'
-
 import { seededShuffle } from '@/lib/math.utils'
 
 export const useShuffledArray = <T>(array: T[] | undefined): T[] => {

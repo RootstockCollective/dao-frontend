@@ -1,9 +1,8 @@
 'use client'
 
+import { cn } from '@/lib/utils'
 import { ChevronDownIcon } from 'lucide-react'
 import React, { useEffect, useRef, useState } from 'react'
-
-import { cn } from '@/lib/utils'
 
 const PADDING = 32 // 16px * 2 for m-4 padding
 

@@ -1,9 +1,8 @@
 /******************
  * Components Types
  *******************/
-import { ComponentType, HTMLAttributes } from 'react'
-
 import { CommonComponentProps } from '@/components/commonProps'
+import { ComponentType, HTMLAttributes } from 'react'
 
 export interface DisclaimerFlowProps {
   onAgree: () => void

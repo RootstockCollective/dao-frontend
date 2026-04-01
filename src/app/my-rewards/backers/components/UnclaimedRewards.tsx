@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 
 import ClaimRewardsModal from '@/app/collective-rewards/components/ClaimRewardModal/ClaimRewardsModal'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
@@ -7,12 +7,12 @@ import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipConte
 import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/FiatTooltipLabel'
 import { useBackerUnclaimedRewards } from '@/app/my-rewards/backers/hooks/useBackerUnclaimedRewards'
 import { ClaimRewardsButton } from '@/app/my-rewards/components/ClaimRewardsButton'
-import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 import { getMetricTokens } from '@/app/shared/utils'
 import { Header } from '@/components/Typography'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 import { useModal } from '@/shared/hooks/useModal'
+import { useMemo } from 'react'
 
 export const UnclaimedRewards = () => {
   const { isModalOpened, openModal, closeModal } = useModal()

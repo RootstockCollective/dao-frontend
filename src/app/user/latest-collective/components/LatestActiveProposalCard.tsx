@@ -1,11 +1,9 @@
-import { ClassNameValue } from 'tailwind-merge'
-
 import { ButtonAction } from '@/app/proposals/components/vote-details'
 import { VotingPowerWithActionComponent } from '@/app/proposals/components/voting-power-with-action'
 import { Proposal } from '@/app/proposals/shared/types'
 import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-
+import { ClassNameValue } from 'tailwind-merge'
 import { ProposalCardDesktop } from './ProposalCardDesktop'
 import { ProposalCardMobile } from './ProposalCardMobile'
 

@@ -1,8 +1,6 @@
 'use client'
-import { FC, ReactNode, useState } from 'react'
-
 import { cn } from '@/lib/utils'
-
+import { FC, ReactNode, useState } from 'react'
 import { ExpandableContext } from './ExpandableContext'
 
 // Main container component

@@ -1,12 +1,11 @@
 'use client'
 
-import Link from 'next/link'
-import { Address } from 'viem'
-
-import { Builder } from '@/app/collective-rewards/types'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 import { Paragraph } from '@/components/Typography'
 import { cn, shortAddress, truncate } from '@/lib/utils'
+import { Builder } from '@/app/collective-rewards/types'
+import Link from 'next/link'
+import { Address } from 'viem'
 
 export interface BuilderAvatarProps {
   variant: 'desktop' | 'mobile'

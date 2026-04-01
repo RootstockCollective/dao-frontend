@@ -1,8 +1,7 @@
-import { ReactElement } from 'react'
-
 import { Button } from '@/components/Button'
+import { Span, Paragraph } from '@/components/Typography'
 import { CommonComponentProps } from '@/components/commonProps'
-import { Paragraph, Span } from '@/components/Typography'
+import { ReactElement } from 'react'
 
 export const SiweTooltipContent = ({ onClick }: CommonComponentProps<HTMLButtonElement>): ReactElement => (
   <div className="flex flex-col items-start p-6 gap-2 self-stretch rounded-sm bg-v3-text-80 text-shadow-[0_8px_24px_0_rgba(23,20,18,0.14)]">

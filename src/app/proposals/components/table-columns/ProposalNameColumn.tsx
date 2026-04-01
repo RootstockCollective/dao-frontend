@@ -1,10 +1,9 @@
 import Link from 'next/link'
 import { Address } from 'viem'
-
-import { CopyButton } from '@/components/CopyButton'
-import { Tooltip } from '@/components/Tooltip'
 import { Paragraph, Span } from '@/components/Typography'
+import { CopyButton } from '@/components/CopyButton'
 import { shortAddress } from '@/lib/utils'
+import { Tooltip } from '@/components/Tooltip'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface ProposalNameColumnProps {

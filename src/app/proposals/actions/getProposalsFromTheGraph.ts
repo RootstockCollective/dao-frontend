@@ -1,6 +1,6 @@
 import { fetchProposals, ProposalGraphQLResponse } from '@/app/proposals/actions/proposalsAction'
-import { buildProposal } from '@/app/proposals/actions/utils'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
+import { buildProposal } from '@/app/proposals/actions/utils'
 
 function transformGraphQLProposal(proposal: ProposalGraphQLResponse): ProposalApiResponse {
   return buildProposal(proposal, {

@@ -1,8 +1,7 @@
-import { useMemo } from 'react'
-import { useAccount, useReadContracts } from 'wagmi'
-
+import { useReadContracts, useAccount } from 'wagmi'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { tokenContracts } from '@/lib/contracts'
+import { useMemo } from 'react'
 
 const stRifContract = {
   abi: StRIFTokenAbi,

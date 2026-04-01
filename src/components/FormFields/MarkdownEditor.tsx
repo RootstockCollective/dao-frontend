@@ -12,17 +12,15 @@
  */
 'use client'
 
-import { commands, type ICommand } from '@uiw/react-md-editor'
-import { Heading1, Heading2, Heading3, type LucideIcon } from 'lucide-react'
-import { motion } from 'motion/react'
 import dynamic from 'next/dynamic'
-import { useId, useRef, useState } from 'react'
+import { useId, useState, useRef } from 'react'
 import type { Control, FieldPath, FieldValues } from 'react-hook-form'
 import { Controller } from 'react-hook-form'
-
-import { useAutoHeight } from '@/shared/hooks'
-
+import { motion } from 'motion/react'
+import { Heading1, Heading2, Heading3, type LucideIcon } from 'lucide-react'
 import { ErrorMessage } from './ErrorMessage'
+import { commands, type ICommand } from '@uiw/react-md-editor'
+import { useAutoHeight } from '@/shared/hooks'
 
 // Dynamic import to avoid SSR issues
 const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })

@@ -1,5 +1,5 @@
-import { DEFAULT_ICON_COLOR } from './constants'
 import { type IconProps } from './types'
+import { DEFAULT_ICON_COLOR } from './constants'
 
 export function ArrowDownSFillIcon({
   'aria-label': ariaLabel = 'Arrow Down Icon',

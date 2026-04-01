@@ -1,15 +1,13 @@
-import { useQuery } from '@tanstack/react-query'
+import { useReadContract, useReadContracts } from 'wagmi'
 import { useMemo } from 'react'
 import { Address, zeroAddress } from 'viem'
-import { useReadContract, useReadContracts } from 'wagmi'
-
-import type { StrategyNamesReturnType } from '@/app/vault/api/strategy-name/route'
-import { StrategyAbi } from '@/lib/abis/StrategyAbi'
-import Big from '@/lib/big'
-import { VAULT_BASIS_POINTS } from '@/lib/constants'
 import { vault } from '@/lib/contracts'
-
+import { StrategyAbi } from '@/lib/abis/StrategyAbi'
 import { useVaultBalance } from './useVaultBalance'
+import { VAULT_BASIS_POINTS } from '@/lib/constants'
+import Big from '@/lib/big'
+import { useQuery } from '@tanstack/react-query'
+import type { StrategyNamesReturnType } from '@/app/vault/api/strategy-name/route'
 
 export interface StrategyInfo {
   address: Address
@@ -160,7 +158,9 @@ export function useStrategies() {
     const totalAssetsBig = Big(totalAssets.toString())
 
     // Build strategies with calculated percentages and APY
-    for (const [i, address] of strategyAddresses.entries()) {
+    for (let i = 0; i < strategyAddresses.length; i++) {
+      const address = strategyAddresses[i]
+
       const totalDeposited = (strategyData[i * 2]?.result as bigint | undefined) ?? 0n
       const estimatedApyRaw = (strategyData[i * 2 + 1]?.result as bigint | undefined) ?? 0n
 

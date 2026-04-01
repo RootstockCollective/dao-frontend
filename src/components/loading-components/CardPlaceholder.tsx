@@ -1,6 +1,6 @@
+import { FC } from 'react'
 import { motion, Variants } from 'framer-motion'
 import Image from 'next/image'
-import { FC } from 'react'
 
 /**
  * This "shimmer" animation simply moves the background gradient

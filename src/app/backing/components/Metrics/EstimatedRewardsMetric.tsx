@@ -1,5 +1,3 @@
-import { useMemo } from 'react'
-
 import { getFiatAmount, useHandleErrors } from '@/app/collective-rewards/utils'
 import { FiatTooltipLabel } from '@/app/components'
 import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
@@ -13,6 +11,7 @@ import Big from '@/lib/big'
 import { REWARD_TOKEN_KEYS, RewardTokenKey, TOKENS } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
+import { useMemo } from 'react'
 
 export const EstimatedRewardsMetric = () => {
   const { prices } = usePricesContext()

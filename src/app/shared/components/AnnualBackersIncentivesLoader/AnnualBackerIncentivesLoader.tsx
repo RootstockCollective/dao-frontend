@@ -1,6 +1,3 @@
-import Big from 'big.js'
-import { FC, ReactNode } from 'react'
-
 import {
   useGetABIFromChain,
   useGetMetricsAbiWithGraph,
@@ -9,6 +6,8 @@ import {
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { withDataFallback } from '@/app/shared/components/Fallback/'
 import { useFeatureFlags } from '@/shared/context/FeatureFlag'
+import Big from 'big.js'
+import { FC, ReactNode } from 'react'
 
 interface AnnualBackerIncentivesLoaderProps {
   render: (props: { data: Big; isLoading: boolean }) => ReactNode

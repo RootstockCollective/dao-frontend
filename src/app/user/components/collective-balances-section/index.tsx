@@ -1,16 +1,15 @@
-import { useMemo } from 'react'
-import { useAccount } from 'wagmi'
-
 import { useTreasuryContext } from '@/app/treasury/contexts/TreasuryContext'
 import { useStRifHoldings } from '@/app/treasury/hooks/useStRifHoldings'
-import { formatTokenBalance, getTokenBalance } from '@/app/user/Balances/balanceUtils'
-import { useGetAddressTokens } from '@/app/user/Balances/hooks/useGetAddressTokens'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { Header } from '@/components/Typography'
-import Big from '@/lib/big'
-import { RBTC, RIF, STRIF, USDRIF } from '@/lib/constants'
-import { treasuryContracts } from '@/lib/contracts'
 import { formatCurrencyWithLabel } from '@/lib/utils'
+import Big from '@/lib/big'
+import { formatTokenBalance, getTokenBalance } from '@/app/user/Balances/balanceUtils'
+import { RBTC, RIF, STRIF, USDRIF } from '@/lib/constants'
+import { useGetAddressTokens } from '@/app/user/Balances/hooks/useGetAddressTokens'
+import { useAccount } from 'wagmi'
+import { useMemo } from 'react'
+import { treasuryContracts } from '@/lib/contracts'
 
 type BucketTokenSymbol = typeof RBTC | typeof RIF | typeof USDRIF
 type BucketTokenType = 'amount' | 'fiatAmount'

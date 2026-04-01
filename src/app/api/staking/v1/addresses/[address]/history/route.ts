@@ -1,6 +1,3 @@
-import { NextRequest } from 'next/server'
-import { z } from 'zod'
-
 import {
   getStakingHistoryCountFromDB,
   getStakingHistoryFromDB,
@@ -8,6 +5,8 @@ import {
 import { handleApiError, queryParam } from '@/app/api/utils/helpers'
 import type { PaginationResponse } from '@/app/api/utils/types'
 import { AddressSchema, SortDirectionEnum } from '@/app/api/utils/validators'
+import { NextRequest } from 'next/server'
+import { z } from 'zod'
 
 const SortFieldEnum = z.enum(['period', 'amount', 'action'])
 const QuerySchema = z

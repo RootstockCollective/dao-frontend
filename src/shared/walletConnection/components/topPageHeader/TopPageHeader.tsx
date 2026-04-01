@@ -1,10 +1,8 @@
+import { TopPageHeaderLeftSlotStrategy } from './TopPageHeaderLeftSlotStrategy'
 import { usePathname } from 'next/navigation'
-
-import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { SelfContainedNFTBoosterCard } from '@/app/shared/components/NFTBoosterCard/SelfContainedNFTBoosterCard'
 import { collectiveRewards, home } from '@/shared/constants'
-
-import { TopPageHeaderLeftSlotStrategy } from './TopPageHeaderLeftSlotStrategy'
+import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 /**
  * This component will render first for all pages. It should contain the user connection workflow.
  * It will also render the left slot strategy component.

@@ -1,15 +1,13 @@
-import Big from 'big.js'
+import { TransactionHistoryItem } from '../../utils/types'
+import { TransactionHistoryTable } from '../../config'
 import { Duration } from 'luxon'
-import { Address, getAddress } from 'viem'
-
-import { Builder } from '@/app/collective-rewards/types'
-import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { GetPricesResult } from '@/app/user/types'
 import { TOKENS_BY_ADDRESS } from '@/lib/tokens'
+import Big from 'big.js'
+import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
+import { Address, getAddress } from 'viem'
 import { formatCurrency } from '@/lib/utils'
-
-import { TransactionHistoryTable } from '../../config'
-import { TransactionHistoryItem } from '../../utils/types'
+import { Builder } from '@/app/collective-rewards/types'
 import { calculateCycleNumber, formatDateRange } from '../../utils/utils'
 
 /**

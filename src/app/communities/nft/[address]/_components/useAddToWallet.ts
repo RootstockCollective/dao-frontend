@@ -1,16 +1,14 @@
 'use client'
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCurrentUserNFTInWallet } from '../utilsClient'
 import type { Address } from 'viem'
-import { useAccount } from 'wagmi'
-
-import { useCommunityNFT } from '@/app/communities/nft/[address]/CommunityNFTContext'
-import { nftAlertMessages } from '@/app/communities/nft/[address]/constants'
+import { useCallback, useMemo, useState } from 'react'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
+import { nftAlertMessages } from '@/app/communities/nft/[address]/constants'
+import { useCommunityNFT } from '@/app/communities/nft/[address]/CommunityNFTContext'
 import { showToast } from '@/shared/notification/toastUtils'
 import { requestProviderToAddToken } from '@/shared/utils'
-
-import { useCurrentUserNFTInWallet } from '../utilsClient'
+import { useAccount } from 'wagmi'
 
 /**
  * Component that encapsulates the logic of the add to wallet

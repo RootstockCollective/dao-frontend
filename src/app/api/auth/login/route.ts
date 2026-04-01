@@ -1,8 +1,7 @@
+import { logger } from '@/lib/logger'
 import { NextRequest, NextResponse } from 'next/server'
-
 import { verifySignature } from '@/lib/auth/actions'
 import { sanitizeError } from '@/lib/auth/utils'
-import { logger } from '@/lib/logger'
 
 const isProduction = process.env.NODE_ENV === 'production'
 

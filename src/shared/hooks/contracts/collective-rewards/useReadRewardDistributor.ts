@@ -1,9 +1,7 @@
-import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
-
 import { getAbi, type RewardDistributorAbi } from '@/lib/abis/tok'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { RewardDistributorAddress } from '@/lib/contracts'
-
+import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
 import { UseReadContractConfig, ViewPureFunctionName } from '../types'
 
 type RewardDistributorFunctionName = ViewPureFunctionName<RewardDistributorAbi>

@@ -1,7 +1,5 @@
-import type { Metadata } from 'next'
-
 import { Header } from '@/components/Typography'
-
+import type { Metadata } from 'next'
 import { ProposalStepper } from '../components/stepper/ProposalStepper'
 import { VotingPowerWrapper } from './components/VotingPowerWrapper'
 

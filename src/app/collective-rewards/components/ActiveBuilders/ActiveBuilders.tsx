@@ -1,5 +1,5 @@
-import { CountMetric } from '@/app/collective-rewards/components/CountMetric'
 import { useGetActiveBuildersCount } from '@/app/collective-rewards/shared/hooks/useGetActiveBuildersCount'
+import { CountMetric } from '@/app/collective-rewards/components/CountMetric'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 
 export const ActiveBuilders = () => {

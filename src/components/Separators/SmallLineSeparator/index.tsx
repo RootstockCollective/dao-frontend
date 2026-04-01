@@ -1,6 +1,5 @@
-import { ClassNameValue } from 'tailwind-merge'
-
 import { cn } from '@/lib/utils'
+import { ClassNameValue } from 'tailwind-merge'
 
 interface Props {
   className?: ClassNameValue

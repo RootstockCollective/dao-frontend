@@ -1,8 +1,7 @@
-import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
-
 import { StakingToken } from '@/app/user/Stake/types'
 import Big from '@/lib/big'
 import { formatCurrencyWithLabel } from '@/lib/utils'
+import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
 
 interface StakePreviewToken {
   amount: string

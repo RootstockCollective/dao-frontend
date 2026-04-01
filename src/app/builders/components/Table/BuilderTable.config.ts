@@ -1,12 +1,10 @@
-import { HtmlHTMLAttributes } from 'react'
-
 import {
   BUILDER_ACTIVE,
   BUILDER_IN_PROGRESS,
   builderInactiveStates,
 } from '@/app/collective-rewards/utils/isBuilderOperational'
 import { BaseColumnId, Column, TypedTable } from '@/shared/context'
-
+import { HtmlHTMLAttributes } from 'react'
 import { ActionCellProps } from './Cell/ActionCell'
 import { BackersPercentageProps } from './Cell/BackersPercentageCell'
 import { BackingCellProps } from './Cell/BackingCell'

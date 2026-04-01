@@ -1,10 +1,9 @@
 import { useMemo } from 'react'
 import { useReadContract, useWriteContract } from 'wagmi'
-
+import { GovernorAddress } from '@/lib/contracts'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { TimelockControllerAbi } from '@/lib/abis/TimelockController'
 import Big from '@/lib/big'
-import { GovernorAddress } from '@/lib/contracts'
 
 const DAO_DEFAULT_PARAMS = {
   abi: GovernorAbi,
@@ -50,7 +49,7 @@ export const useExecuteProposal = (proposalId: string) => {
 
   // Memoized calculations
   const proposalQueuedTime = useMemo(() => {
-    if (!proposalEta || !minDelay) return
+    if (!proposalEta || !minDelay) return undefined
     return Big(proposalEta.toString()).minus(minDelay.toString())
   }, [proposalEta, minDelay])
 

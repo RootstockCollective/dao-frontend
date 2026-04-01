@@ -2,30 +2,28 @@
 
 import React, { useMemo } from 'react'
 import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ReferenceArea,
-  ReferenceLine,
   ResponsiveContainer,
-  Tooltip,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
+  Tooltip,
+  ReferenceArea,
+  ReferenceLine,
+  CartesianGrid,
 } from 'recharts'
-
-import {
-  CHART_BUFFER_PERCENTAGE,
-  DEFAULT_CHART_HEIGHT,
-  ONE_DAY_IN_MS,
-  REWARDS_DOMAIN_BUFFER,
-  X_DOMAIN_BUFFER,
-} from '@/app/collective-rewards/constants/chartConstants'
-import { useMergedSeries } from '@/app/collective-rewards/shared/hooks/useMergeSeries'
 import { BackingPoint, CycleWindow, RewardsPoint } from '@/app/collective-rewards/types'
 import { convertToTimestamp, formatShort } from '@/app/collective-rewards/utils/chartUtils'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-
+import { useMergedSeries } from '@/app/collective-rewards/shared/hooks/useMergeSeries'
 import { ChartTooltipContent } from './ChartTooltipContent'
+import {
+  CHART_BUFFER_PERCENTAGE,
+  REWARDS_DOMAIN_BUFFER,
+  DEFAULT_CHART_HEIGHT,
+  X_DOMAIN_BUFFER,
+  ONE_DAY_IN_MS,
+} from '@/app/collective-rewards/constants/chartConstants'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 /**
  * Custom cursor component that draws a vertical line from the X-axis to the backing data point.
@@ -171,7 +169,7 @@ export function CollectiveRewardsDualAxisChart({
   }, [data])
 
   const xDomain = useMemo<[number, number] | undefined>(() => {
-    if (!data.length) return
+    if (!data.length) return undefined
     const first = data[0].day instanceof Date ? data[0].day.getTime() : +new Date(data[0].day)
     const last =
       data[data.length - 1].day instanceof Date

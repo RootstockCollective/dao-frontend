@@ -1,5 +1,4 @@
 import { FC } from 'react'
-
 import { EmphaseVariants, HeaderVariants, HtmlTypographyTag } from './types'
 import { BaseTypography, BaseTypographyProps } from './Typography'
 

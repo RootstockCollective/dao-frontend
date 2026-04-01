@@ -1,7 +1,7 @@
-import { VotingPowerContainer } from '@/app/delegate/components/VotingPowerContainer/VotingPowerContainer'
 import { CardsState } from '@/app/delegate/lib/types'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
+import { VotingPowerContainer } from '@/app/delegate/components/VotingPowerContainer/VotingPowerContainer'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 export const NotConnectedVotingPowerContainer = () => {
   const cards: CardsState = {

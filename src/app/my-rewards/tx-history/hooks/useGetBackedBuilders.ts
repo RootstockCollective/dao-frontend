@@ -1,9 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { Address, isAddressEqual } from 'viem'
-
-import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { shortAddress } from '@/lib/utils'
+import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 
 type BackerToBuilderResponse = Array<{
   id: string

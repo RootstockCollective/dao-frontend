@@ -1,4 +1,4 @@
-import { useCallback, useRef } from 'react'
+import { useRef, useCallback } from 'react'
 
 interface ExtractionCoordinates {
   x: number

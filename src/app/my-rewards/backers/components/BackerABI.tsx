@@ -1,10 +1,9 @@
-import { FC } from 'react'
-import { Address } from 'viem'
-
-import { ABIFormula } from '@/app/backing/components/ABIFormula'
-import { useGetBackerABI } from '@/app/collective-rewards/shared'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'
+import { FC } from 'react'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { Address } from 'viem'
+import { useGetBackerABI } from '@/app/collective-rewards/shared'
+import { ABIFormula } from '@/app/backing/components/ABIFormula'
 
 interface BackerABIProps {
   backer: Address

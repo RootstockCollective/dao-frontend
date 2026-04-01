@@ -1,8 +1,8 @@
 'use client'
 import { TreasuryContextProviderWithPrices } from '@/app/treasury/contexts/TreasuryContext'
-import { HoldersSection } from '@/app/treasury/sections/holders-section'
-import { MetricsSection } from '@/app/treasury/sections/MetricsSection'
 import { TabsSection } from '@/app/treasury/sections/TabsSection'
+import { MetricsSection } from '@/app/treasury/sections/MetricsSection'
+import { HoldersSection } from '@/app/treasury/sections/holders-section'
 
 export default function Treasury() {
   return (

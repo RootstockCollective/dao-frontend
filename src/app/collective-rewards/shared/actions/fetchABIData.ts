@@ -1,11 +1,9 @@
 'use server'
 
+import { client } from '@/shared/components/ApolloClient'
 import { gql as apolloGQL } from '@apollo/client'
 import { unstable_cache } from 'next/cache'
-
 import { CACHE_REVALIDATE_SECONDS } from '@/lib/constants'
-import { client } from '@/shared/components/ApolloClient'
-
 import { BuilderData } from '../hooks/useGetABI'
 
 const query = apolloGQL`

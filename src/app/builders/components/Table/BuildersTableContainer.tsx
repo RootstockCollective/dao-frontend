@@ -1,20 +1,18 @@
-import { ReactElement, useMemo, useState } from 'react'
-
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { useGetBuilders } from '@/app/collective-rewards/user'
 import { ActionsContainer } from '@/components/containers'
-import { useTableActionsContext, useTableContext, withTableContext } from '@/shared/context'
+import { withTableContext, useTableContext, useTableActionsContext } from '@/shared/context'
 import { SortDirection } from '@/shared/context/TableContext/types'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { useModal } from '@/shared/hooks/useModal'
-
+import { ReactElement, useMemo, useState } from 'react'
 import { BuilderFilterOption, BuilderFilterOptionId, builderFilterOptions } from './BuilderFilterDropdown'
 import { BuildersTable } from './BuildersTable'
-import { BuildersTableTitle } from './BuildersTableTitle'
 import { BuilderCellDataMap, ColumnId } from './BuilderTable.config'
-import { MobileCurrentFilter } from './MobileCurrentFilter'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { MobileFilterModal } from './MobileFilterModal'
 import { builderFilterMap } from './utils/builderFilters'
+import { useModal } from '@/shared/hooks/useModal'
+import { BuildersTableTitle } from './BuildersTableTitle'
+import { MobileCurrentFilter } from './MobileCurrentFilter'
 
 const BuildersTableHeader = ({
   onSelected,

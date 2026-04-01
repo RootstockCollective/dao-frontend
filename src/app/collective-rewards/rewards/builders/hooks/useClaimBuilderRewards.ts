@@ -1,11 +1,10 @@
-import { Address } from 'viem'
-import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
-
 import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { GaugeAbi } from '@/lib/abis/tok/GaugeAbi'
 import { TOKENS } from '@/lib/tokens'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
+import { Address } from 'viem'
+import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 
 const useClaimBuilderReward = (builder: Address, gauge: Address, rewardToken?: Address) => {
   const { writeContractAsync, error: executionError, data: hash, isPending } = useWriteContract()

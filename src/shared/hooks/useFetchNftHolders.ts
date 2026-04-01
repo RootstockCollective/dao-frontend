@@ -1,9 +1,8 @@
-import { Address } from 'viem'
-
 import { getCachedNftHolders } from '@/app/communities/nft/server/fetchNftHolders'
 import { NftHolderItem } from '@/app/user/Balances/types'
 import { usePagination } from '@/shared/hooks/usePagination'
 import { usePaginationUi } from '@/shared/hooks/usePaginationUi'
+import { Address } from 'viem'
 
 export const useFetchNftHolders = (address: Address) => {
   const query = usePagination<NftHolderItem>({

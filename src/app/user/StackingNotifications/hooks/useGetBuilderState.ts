@@ -1,7 +1,6 @@
+import { useReadBuilderRegistry } from '@/shared/hooks/contracts/collective-rewards/useReadBuilderRegistry'
 import { zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
-
-import { useReadBuilderRegistry } from '@/shared/hooks/contracts/collective-rewards/useReadBuilderRegistry'
 
 export const useGetBuilderState = () => {
   const { address } = useAccount()

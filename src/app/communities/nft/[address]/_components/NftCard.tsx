@@ -1,10 +1,9 @@
 import Image from 'next/image'
-import type { ComponentProps } from 'react'
-
-import { Header, Paragraph } from '@/components/Typography'
-import { EXPLORER_URL } from '@/lib/constants'
-import { applyPinataImageOptions } from '@/lib/ipfs'
 import { cn, truncateMiddle } from '@/lib/utils'
+import { applyPinataImageOptions } from '@/lib/ipfs'
+import { EXPLORER_URL } from '@/lib/constants'
+import { Paragraph, Header } from '@/components/Typography'
+import type { ComponentProps } from 'react'
 
 interface NftCardProps extends ComponentProps<'div'> {
   image: string

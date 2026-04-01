@@ -1,6 +1,5 @@
-import { FC, useEffect, useState } from 'react'
-
 import { CommonComponentProps } from '@/components/commonProps'
+import { FC, useEffect, useState } from 'react'
 import {
   Dropdown,
   DropdownContent,
@@ -8,8 +7,7 @@ import {
   DropdownTrigger,
   DropdownValue,
 } from '@/components/SingleSelectDropdown/SingleSelectDropdown'
-
-import { type BuilderFilterOption, type BuilderFilterOptionId, builderFilterOptions } from './constants'
+import { builderFilterOptions, type BuilderFilterOption, type BuilderFilterOptionId } from './constants'
 
 interface BuilderFilterDropdownProps extends CommonComponentProps {
   onSelected: (optionId: BuilderFilterOptionId) => void

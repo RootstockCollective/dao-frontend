@@ -1,14 +1,12 @@
 import { type StaticImageData } from 'next/image'
-
-import { Paragraph } from '@/components/Typography'
-import { ProposalCategory } from '@/shared/types'
-
 import grantImage from './images/grant.png'
+import rewardsImage from './images/rewards.png'
 import grantBigImage from './images/grant-big.png'
 import grantSmallImage from './images/grant-small.png'
-import rewardsImage from './images/rewards.png'
 import rewardsBigImage from './images/rewards-big.png'
 import rewardsSmallImage from './images/rewards-small.png'
+import { ProposalCategory } from '@/shared/types'
+import { Paragraph } from '@/components/Typography'
 
 interface NewProposalCardCoreProps {
   type: ProposalCategory

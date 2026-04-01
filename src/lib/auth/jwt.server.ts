@@ -1,8 +1,6 @@
-import { jwtVerify, SignJWT } from 'jose'
-import { NextRequest } from 'next/server'
-
 import { logger } from '@/lib/logger'
-
+import { SignJWT, jwtVerify } from 'jose'
+import { NextRequest } from 'next/server'
 import { JWTPayload } from './jwt'
 
 const JWT_ALGORITHM = 'HS256'

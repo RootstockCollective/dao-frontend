@@ -1,5 +1,4 @@
 import { useMediaQuery } from 'react-responsive'
-
 import { MOBILE_DESKTOP_BREAKPOINT } from '@/lib/constants'
 
 /**

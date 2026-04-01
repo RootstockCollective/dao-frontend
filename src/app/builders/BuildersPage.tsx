@@ -3,9 +3,8 @@
 
 import { MetricsContainer } from '@/components/containers'
 import { Header } from '@/components/Typography'
-
-import BecomeBuilderBanner from './components/BecomeBuilderBanner/BecomeBuilderBanner'
 import { Metrics } from './components/Metrics'
+import BecomeBuilderBanner from './components/BecomeBuilderBanner/BecomeBuilderBanner'
 import BuildersTableContainer from './components/Table/BuildersTableContainer'
 
 const NAME = 'Builders'

@@ -1,12 +1,11 @@
 import { FC } from 'react'
-
 import { BackingCell, BackingCellProps } from '../Cell/BackingCell'
 import { BackingShareCell } from '../Cell/BackingShareCell'
 import {
-  MobileColumnItem,
   MobileDataSection,
-  MobileSectionWrapper,
   MobileTwoColumnWrapper,
+  MobileColumnItem,
+  MobileSectionWrapper,
 } from './MobileDataSection'
 
 export const MobileBackingSection: FC<{

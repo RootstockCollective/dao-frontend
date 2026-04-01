@@ -3,7 +3,6 @@ import { AnnualBackersIncentives } from '@/app/shared/components/AnnualBackersIn
 import { TokenAmount } from '@/components/TokenAmount'
 import { Header } from '@/components/Typography'
 import { RBTC, RIF } from '@/lib/constants'
-
 import { RewardCard } from '../../components/RewardCard'
 import { useBackersEstimatedRewards } from '../hooks/useBackersEstimatedRewards'
 

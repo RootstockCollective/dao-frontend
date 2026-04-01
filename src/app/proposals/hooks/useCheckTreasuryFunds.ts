@@ -1,14 +1,12 @@
+import { useReadContract, useReadContracts, useBalance } from 'wagmi'
 import { useMemo } from 'react'
 import { Address } from 'viem'
-import { useBalance, useReadContract, useReadContracts } from 'wagmi'
-
-import type { TreasuryTransferInfo } from '@/app/proposals/shared/treasuryUtils'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
-import { RIF, USDRIF } from '@/lib/constants'
 import { GovernorAddress, tokenContracts } from '@/lib/contracts'
-
-import { decodeTreasuryTransfer, isTreasuryContract } from '../utils/treasuryFundsCheck'
+import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
+import { isTreasuryContract, decodeTreasuryTransfer } from '../utils/treasuryFundsCheck'
+import type { TreasuryTransferInfo } from '@/app/proposals/shared/treasuryUtils'
+import { RIF, USDRIF } from '@/lib/constants'
 
 export interface TreasuryFundsCheckResult {
   hasEnoughFunds: boolean
@@ -40,8 +38,8 @@ export const useCheckTreasuryFunds = (proposalId: string): TreasuryFundsCheckRes
 
     const interactions: Array<{ target: Address; transferInfo: TreasuryTransferInfo }> = []
 
-    for (const [i, target_] of targets.entries()) {
-      const target = target_ as Address
+    for (let i = 0; i < targets.length; i++) {
+      const target = targets[i] as Address
       const calldata = calldatas[i] as string
 
       if (isTreasuryContract(target) && calldata) {

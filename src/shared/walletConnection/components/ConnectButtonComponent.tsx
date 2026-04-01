@@ -1,7 +1,6 @@
 import { Button } from '@/components/Button'
 import { Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-
 import { ConnectButtonComponentProps } from '../types'
 
 /**

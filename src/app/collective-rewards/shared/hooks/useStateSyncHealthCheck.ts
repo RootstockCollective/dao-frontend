@@ -1,7 +1,6 @@
-import { useQuery, UseQueryOptions } from '@tanstack/react-query'
-
 import type { HealthCheckResult } from '@/app/api/health/healthCheck.utils'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { useQuery, UseQueryOptions } from '@tanstack/react-query'
 import { sentryClient } from '@/lib/sentry/sentry-client'
 
 export const useStateSyncHealthCheck = (

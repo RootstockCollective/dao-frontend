@@ -1,8 +1,7 @@
 import { Metadata } from 'next'
-import { headers } from 'next/headers'
 import { PropsWithChildren } from 'react'
-
 import { getProposalById } from '../actions/getProposalById'
+import { headers } from 'next/headers'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -65,7 +64,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   // Remove DiscourseLink: prefix and URL if present
   const discourseLinkPattern = /DiscourseLink:\s*https?:\/\/[^\s]+/gi
-  description = description.replaceAll(discourseLinkPattern, '').trim()
+  description = description.replace(discourseLinkPattern, '').trim()
 
   // If description contains semicolon (DAO format), use the part after the semicolon
   if (description.includes(';')) {

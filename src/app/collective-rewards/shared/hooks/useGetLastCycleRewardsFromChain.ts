@@ -1,7 +1,6 @@
-import { TOKENS } from '@/lib/tokens'
-
 import { CycleData } from './useGetABI'
 import { useGetRewardDistributionRewardsLogs } from './useGetRewardsDistributionRewards'
+import { TOKENS } from '@/lib/tokens'
 
 export const useGetLastCycleRewardsFromChain = () => {
   const { data: rewardDistributionRewardsLogs, isLoading, error } = useGetRewardDistributionRewardsLogs()

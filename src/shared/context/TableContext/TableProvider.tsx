@@ -1,9 +1,7 @@
 'use client'
 
-import { FC, ReactElement, useReducer } from 'react'
-
 import { CommonComponentProps } from '@/components/commonProps'
-
+import { FC, ReactElement, useReducer } from 'react'
 import { TableActionsContext } from './TableActionsContext'
 import { initialState, TableContext } from './TableContext'
 import { tableReducer } from './tableReducer'

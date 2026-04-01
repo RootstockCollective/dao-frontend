@@ -1,14 +1,12 @@
-import { createContext, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
-import { Address, zeroAddress } from 'viem'
-import { useAccount } from 'wagmi'
-
 import { useGetVotingPower } from '@/app/collective-rewards/allocations/hooks'
 import { Builder, CompleteBuilder } from '@/app/collective-rewards/types'
 import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
-
-import { filterBuildersByState, useBuilderContext } from '../../user'
+import { createContext, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { Address, zeroAddress } from 'viem'
+import { useAccount } from 'wagmi'
 import { createActions } from './allocationsActions'
 import { validateAllocationsState } from './utils'
+import { filterBuildersByState, useBuilderContext } from '../../user'
 
 export interface Allocations {
   [K: Address]: bigint

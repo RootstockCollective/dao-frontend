@@ -1,6 +1,5 @@
 import Image from 'next/image'
 import { FC } from 'react'
-
 import { applyPinataImageOptions } from '@/lib/ipfs'
 
 interface NFTBoosterCardProps {

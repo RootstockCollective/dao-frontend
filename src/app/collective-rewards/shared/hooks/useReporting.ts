@@ -1,9 +1,8 @@
-import { useEffect } from 'react'
-import { UseWaitForTransactionReceiptReturnType, UseWriteContractReturnType } from 'wagmi'
-
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { showToast } from '@/shared/notification'
 import { Merge, Rename } from '@/shared/utility'
+import { useEffect } from 'react'
+import { UseWaitForTransactionReceiptReturnType, UseWriteContractReturnType } from 'wagmi'
 
 type AwaitedTxProps = Rename<
   Pick<UseWriteContractReturnType, 'error' | 'isSuccess' | 'isPending' | 'data'>,

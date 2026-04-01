@@ -1,13 +1,11 @@
-import Big from 'big.js'
-import { useMemo } from 'react'
-import { Address, parseEther } from 'viem'
-
-import { useBackingContext } from '@/app/shared/context/BackingContext'
 import { RBTC, RIF, USDRIF, WeiPerEther } from '@/lib/constants'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadBackersManager } from '@/shared/hooks/contracts'
-
+import Big from 'big.js'
+import { Address, parseEther } from 'viem'
+import { useMemo } from 'react'
 import { calculateAbi } from './useGetABI'
+import { useBackingContext } from '@/app/shared/context/BackingContext'
 
 export const useGetBackerABI = (backer: Address) => {
   const {

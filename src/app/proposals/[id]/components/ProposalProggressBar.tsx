@@ -1,9 +1,8 @@
-import { Fragment, useCallback, useLayoutEffect, useRef, useState } from 'react'
-
-import { ProgressBar } from '@/components/ProgressBarNew'
+import { Fragment, useRef, useLayoutEffect, useState, useCallback } from 'react'
 import { Span } from '@/components/Typography'
-import { cn } from '@/lib/utils'
+import { ProgressBar } from '@/components/ProgressBarNew'
 import { ProposalState } from '@/shared/types'
+import { cn } from '@/lib/utils'
 
 interface ProgressBarProps {
   proposalState?: ProposalState

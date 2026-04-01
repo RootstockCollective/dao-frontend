@@ -1,11 +1,9 @@
-import Big from 'big.js'
-import { ClassNameValue } from 'tailwind-merge'
 import { formatEther } from 'viem'
-
-import { Button } from '@/components/Button'
+import Big from 'big.js'
 import { Header, Span } from '@/components/Typography'
 import { cn, formatNumberWithCommas } from '@/lib/utils'
-
+import { Button } from '@/components/Button'
+import { ClassNameValue } from 'tailwind-merge'
 import { ButtonAction } from '../vote-details'
 
 interface Props {

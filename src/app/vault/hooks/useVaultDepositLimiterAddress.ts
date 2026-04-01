@@ -1,7 +1,6 @@
-import { Address } from 'viem'
 import { useReadContract } from 'wagmi'
-
 import { vault } from '@/lib/contracts'
+import { Address } from 'viem'
 
 /**
  * Hook to read the deposit limiter address from the vault contract

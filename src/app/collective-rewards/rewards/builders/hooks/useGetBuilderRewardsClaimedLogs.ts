@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { Address, getAddress, parseEventLogs } from 'viem'
-
 import { fetchBuilderRewardsClaimed } from '@/app/collective-rewards/actions'
+import { Address, getAddress, parseEventLogs } from 'viem'
 import { GaugeAbi } from '@/lib/abis/tok/GaugeAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 

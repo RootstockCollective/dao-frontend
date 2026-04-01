@@ -1,8 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
-
-import { extractTokenFromRequest, verifyJWT } from '@/lib/auth/jwt.server'
-import { sanitizeError } from '@/lib/auth/utils'
 import { logger } from '@/lib/logger'
+import { NextRequest, NextResponse } from 'next/server'
+import { verifyJWT, extractTokenFromRequest } from '@/lib/auth/jwt.server'
+import { sanitizeError } from '@/lib/auth/utils'
 
 /**
  * POST /api/auth/verify

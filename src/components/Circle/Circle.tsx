@@ -1,5 +1,4 @@
 import { cn } from '@/lib/utils/utils'
-
 import { CommonComponentProps } from '../commonProps'
 
 export const Circle = ({ color, className }: CommonComponentProps<HTMLSpanElement> & { color: string }) => (

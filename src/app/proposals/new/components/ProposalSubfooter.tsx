@@ -1,17 +1,15 @@
 'use client'
 
-import { usePathname, useRouter } from 'next/navigation'
-import { useNavigationGuard } from 'next-navigation-guard'
-import { useCallback, useEffect, useState } from 'react'
-
+import { useRouter, usePathname } from 'next/navigation'
+import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { useState, useCallback, useEffect } from 'react'
+import { LeavingProposalModal } from './LeavingProposalModal'
 import { Button } from '@/components/Button'
 import { Divider } from '@/components/Divider'
-import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
+import { useNavigationGuard } from 'next-navigation-guard'
 import { cn } from '@/lib/utils'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useModal } from '@/shared/hooks/useModal'
-
-import { LeavingProposalModal } from './LeavingProposalModal'
 
 interface Props {
   submitForm: () => void

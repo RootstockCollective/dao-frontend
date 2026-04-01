@@ -1,6 +1,5 @@
-import { CSSProperties, FC, HTMLAttributes } from 'react'
-
 import { cn } from '@/lib/utils'
+import { FC, HTMLAttributes, CSSProperties } from 'react'
 
 type GlowingLabelProps = HTMLAttributes<HTMLDivElement> & {
   showGlow?: boolean

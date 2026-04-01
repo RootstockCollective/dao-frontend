@@ -1,8 +1,7 @@
-import { flexRender, type SortDirection, type Table as ReactTable } from '@tanstack/react-table'
-import type { PropsWithChildren, TableHTMLAttributes } from 'react'
-
-import { ArrowIcon } from '@/components/Table/components/icons/ArrowIcon'
+import { flexRender, type Table as ReactTable, type SortDirection } from '@tanstack/react-table'
+import type { TableHTMLAttributes, PropsWithChildren } from 'react'
 import { DoubleArrowIcon } from '@/components/Table/components/icons/DoubleArrowIcon'
+import { ArrowIcon } from '@/components/Table/components/icons/ArrowIcon'
 import { cn } from '@/lib/utils'
 
 interface SortIndicatorProps extends PropsWithChildren {

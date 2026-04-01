@@ -1,8 +1,7 @@
-import Image from 'next/image'
-import { useState } from 'react'
-import { Address } from 'viem'
-
 import { Jdenticon } from '@/components/Header/Jdenticon'
+import { useState } from 'react'
+import Image from 'next/image'
+import { Address } from 'viem'
 import { ipfsGatewayUrl } from '@/lib/ipfs'
 import { cn } from '@/lib/utils'
 

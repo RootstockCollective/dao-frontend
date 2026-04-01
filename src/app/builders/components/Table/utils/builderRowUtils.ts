@@ -1,15 +1,13 @@
-import { redirect, RedirectType } from 'next/navigation'
-
-import { Allocations } from '@/app/collective-rewards/allocations/context'
+import { formatSymbol } from '@/app/shared/formatter'
 import { BuilderRewardsSummary } from '@/app/collective-rewards/types'
 import { getCombinedFiatAmount, getFiatAmount } from '@/app/collective-rewards/utils'
-import { formatSymbol } from '@/app/shared/formatter'
 import { GetPricesResult } from '@/app/user/types'
 import { RBTC, RIF, STRIF, USD, USDRIF } from '@/lib/constants'
 import { formatCurrency } from '@/lib/utils'
-
+import { redirect, RedirectType } from 'next/navigation'
 import { BuilderTable } from '../BuilderTable.config'
-import { Action, getActionType } from '../Cell/ActionCell'
+import { getActionType, Action } from '../Cell/ActionCell'
+import { Allocations } from '@/app/collective-rewards/allocations/context'
 
 type RowStyle = 'selected' | 'unselected' | 'base'
 

@@ -1,6 +1,5 @@
 import { PaginationResponse } from '@/app/api/utils/types'
 import { getVaultHistoryEndpoint } from '@/lib/endpoints'
-
 import { VaultHistoryItemAPI } from './types'
 
 export interface VaultHistoryResponse {

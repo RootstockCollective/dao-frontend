@@ -1,11 +1,9 @@
-import { createContext, FC, ReactNode, useCallback, useContext, useMemo } from 'react'
-import { Address } from 'viem'
-
 import { useShuffledArray } from '@/app/backing/hooks/useShuffledArray'
 import { Builder } from '@/app/collective-rewards/types'
 import { useGetBuilders } from '@/app/collective-rewards/user'
 import { withPricesContextProvider } from '@/shared/context/PricesContext'
-
+import { createContext, FC, ReactNode, useCallback, useContext, useMemo } from 'react'
+import { Address } from 'viem'
 import { isBuilderRewardable } from '../../utils'
 
 const SPOTLIGHT_BUILDERS = 4

@@ -1,10 +1,8 @@
 'use client'
-import { FC, ReactNode } from 'react'
-
 import { cn } from '@/lib/utils'
-
-import { useExpandableContext } from './ExpandableContext'
+import { FC, ReactNode } from 'react'
 import { ExpandableTrigger } from './ExpandableTrigger'
+import { useExpandableContext } from './ExpandableContext'
 
 // Header section (always visible)
 interface Props {

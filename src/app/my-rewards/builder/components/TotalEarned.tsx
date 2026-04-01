@@ -1,6 +1,3 @@
-import { useMemo } from 'react'
-import { Address } from 'viem'
-
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { MetricBar } from '@/app/components/Metric/MetricBar'
 import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
@@ -11,6 +8,8 @@ import { getMetricTokens } from '@/app/shared/utils'
 import { Header } from '@/components/Typography'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
+import { useMemo } from 'react'
+import { Address } from 'viem'
 
 export const TotalEarned = ({ gauge }: { gauge: Address }) => {
   const { isLoading, error, ...tokens } = useGetBuilderAllTimeRewards({
