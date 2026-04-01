@@ -6,12 +6,6 @@ import { NextPageParams, NftHolderItem } from '@/app/user/Balances/types'
 import { ipfsGatewayUrl } from '@/lib/ipfs'
 
 /**
- * Removes newline and carriage return characters to prevent log injection.
- * Preserves semantic content while ensuring log format integrity.
- */
-const sanitizeForLog = (value: string): string => value.replaceAll(/[\r\n]/g, '')
-
-/**
  * Fetches all NFT holders and returns them sorted in ascending order (starting from the oldest holder).
  */
 const getAllNftHolders = async (nftAddress: string) => {
@@ -24,9 +18,9 @@ const getAllNftHolders = async (nftAddress: string) => {
       nextPageParams = next
     } while (nextPageParams)
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : 'Unknown error'
-    const safeErrorMessage = sanitizeForLog(errorMessage)
-    console.log('getAllNftHolders No holders found:', safeErrorMessage)
+    const rawErrorMessage = err instanceof Error ? err.message : String(err ?? 'Unknown error')
+    const sanitizedErrorMessage = rawErrorMessage.replaceAll(/[\x00-\x1f\x7f]/g, ' ')
+    console.log('getAllNftHolders No holders found:', sanitizedErrorMessage)
   }
   return (
     allData
