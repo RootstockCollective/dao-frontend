@@ -1,17 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { resolveStakingHistoryCsvPlan, stakingHistoryCsvSourceHeaders } from './resolveStakingHistoryCsvPlan'
+import { resolveStakingHistoryCsvPlan, stakingHistoryCsvSourceHeaders } from './resolve-staking-history-csv-plan'
 
-vi.mock('./database/fetchFromDatabase', () => ({
+vi.mock('./database/fetch-from-database', () => ({
   getStakingHistoryFromDB: vi.fn(),
   getStakingHistoryCountFromDB: vi.fn(),
 }))
 
-vi.mock('./blockscout/fetchFromBlockscout', () => ({
+vi.mock('./blockscout/fetch-from-blockscout', () => ({
   fetchStakingHistoryFromBlockscout: vi.fn(),
 }))
 
-import { fetchStakingHistoryFromBlockscout } from './blockscout/fetchFromBlockscout'
-import { getStakingHistoryCountFromDB, getStakingHistoryFromDB } from './database/fetchFromDatabase'
+import { fetchStakingHistoryFromBlockscout } from './blockscout/fetch-from-blockscout'
+import { getStakingHistoryCountFromDB, getStakingHistoryFromDB } from './database/fetch-from-database'
 import type { StakingHistoryByPeriodAndAction } from '../types'
 
 const address = '0xa18f4fbee88592bee3d51d90ba791e769a9b902f'

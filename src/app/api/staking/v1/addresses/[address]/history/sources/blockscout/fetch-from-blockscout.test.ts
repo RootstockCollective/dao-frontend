@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-import { fetchBlockscoutGetLogsPaginated } from '@/lib/blockscout/fetchBlockscoutGetLogsPaginated'
+import { fetchBlockscoutGetLogsPaginated } from '@/lib/blockscout/fetch-blockscout-get-logs-paginated'
 import { STRIF_ADDRESS } from '@/lib/constants'
 import type { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
-import { fetchStakingHistoryFromBlockscout } from './fetchFromBlockscout'
+import { fetchStakingHistoryFromBlockscout } from './fetch-from-blockscout'
 
-vi.mock('@/lib/blockscout/fetchBlockscoutGetLogsPaginated', () => ({
+vi.mock('@/lib/blockscout/fetch-blockscout-get-logs-paginated', () => ({
   fetchBlockscoutGetLogsPaginated: vi.fn(),
 }))
 

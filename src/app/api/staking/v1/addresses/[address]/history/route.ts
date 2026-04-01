@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 
-import { fetchStakingHistoryFromSources } from '@/app/api/staking/v1/addresses/[address]/history/sources/fetchStakingHistoryFromSources'
+import { fetchStakingHistoryFromSources } from '@/app/api/staking/v1/addresses/[address]/history/sources/fetch-staking-history-from-sources'
 import { handleApiError, queryParam } from '@/app/api/utils/helpers'
 import type { PaginationResponse } from '@/app/api/utils/types'
 import { AddressSchema, SortDirectionEnum } from '@/app/api/utils/validators'

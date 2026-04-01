@@ -10,7 +10,7 @@ import {
   TokenHoldersResponse,
 } from '@/app/user/Balances/types'
 import { GetPricesResult } from '@/app/user/types'
-import { fetchLogsByTopic } from '@/lib/blockscout/fetchLogsByTopic'
+import { fetchLogsByTopic } from '@/lib/blockscout/fetch-logs-by-topic'
 import { BLOCKSCOUT_URL, RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
 import { GovernorAddress, tokenContracts } from '@/lib/contracts'
 

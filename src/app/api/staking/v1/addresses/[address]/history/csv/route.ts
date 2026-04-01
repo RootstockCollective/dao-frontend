@@ -5,7 +5,7 @@ import { getStakingHistoryFromDB } from '@/app/api/staking/v1/addresses/[address
 import {
   resolveStakingHistoryCsvPlan,
   stakingHistoryCsvSourceHeaders,
-} from '@/app/api/staking/v1/addresses/[address]/history/sources/resolveStakingHistoryCsvPlan'
+} from '@/app/api/staking/v1/addresses/[address]/history/sources/resolve-staking-history-csv-plan'
 import { queryParam } from '@/app/api/utils/helpers'
 import { AddressSchema, SortDirectionEnum } from '@/app/api/utils/validators'
 import { getFiatAmount } from '@/app/shared/formatter'
@@ -76,6 +76,14 @@ const escapeCsvValue = (value: string): string => {
   return value
 }
 
+/**
+ * Writes one CSV line per transaction under `groups` into the stream (period, raw period, date, action, amount, symbol, USD, tx hash).
+ *
+ * @param controller — Stream controller for the CSV `Response` body.
+ * @param encoder — UTF-8 encoder for row chunks.
+ * @param groups — Already filtered/sorted staking history groups.
+ * @param rifPrice — Spot price for fiat column via {@link getFiatAmount}.
+ */
 function enqueueHistoryGroupsAsCsvRows(
   controller: ReadableStreamDefaultController<Uint8Array>,
   encoder: TextEncoder,

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
-import { fetchBlockscoutGetLogsPaginated } from './fetchBlockscoutGetLogsPaginated'
+import { fetchBlockscoutGetLogsPaginated } from './fetch-blockscout-get-logs-paginated'
 
 vi.mock('@/lib/constants', () => ({
   BLOCKSCOUT_URL: 'https://blockscout.test',

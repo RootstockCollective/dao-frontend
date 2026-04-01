@@ -2,7 +2,7 @@
 
 import type { Address, Hex } from 'viem'
 
-import { fetchLogsByTopic } from '@/lib/blockscout/fetchLogsByTopic'
+import { fetchLogsByTopic } from '@/lib/blockscout/fetch-logs-by-topic'
 import { EVENTS_FROM_BLOCK } from '@/lib/constants'
 import { BackersManagerAddress } from '@/lib/contracts'
 

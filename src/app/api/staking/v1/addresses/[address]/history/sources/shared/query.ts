@@ -9,15 +9,22 @@ export interface StakingHistorySortParams {
   type?: ('stake' | 'unstake')[]
 }
 
+/** Pagination + sort/filter params for staking history (DB or in-memory Blockscout path). */
 export interface StakingHistoryQueryParams extends StakingHistorySortParams {
   limit: number
   offset: number
 }
 
+/**
+ * Normalizes a transaction timestamp to a number (seconds since epoch) for sorting and date math.
+ *
+ * @param tx — Object carrying `timestamp` from DB or Blockscout-derived rows.
+ */
 export function txTimestamp(tx: { timestamp: number | string }): number {
   return Number(tx.timestamp)
 }
 
+/** Sorts `transactions` inside each group according to `sort_direction` (mutates `groups`). */
 function sortTransactionsInPlace(
   groups: StakingHistoryByPeriodAndAction[],
   sort_direction: 'asc' | 'desc',
@@ -28,6 +35,7 @@ function sortTransactionsInPlace(
   }
 }
 
+/** Comparator for two period+action groups using `sort_field` and `sort_direction`. */
 function compareGroups(
   a: StakingHistoryByPeriodAndAction,
   b: StakingHistoryByPeriodAndAction,

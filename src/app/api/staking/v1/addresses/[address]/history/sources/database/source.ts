@@ -1,5 +1,5 @@
 import type { StakingHistorySource } from '../types'
-import { getStakingHistoryCountFromDB, getStakingHistoryFromDB } from './fetchFromDatabase'
+import { getStakingHistoryCountFromDB, getStakingHistoryFromDB } from './fetch-from-database'
 
 export const stakingHistoryDatabaseSource: StakingHistorySource = {
   name: 'database',

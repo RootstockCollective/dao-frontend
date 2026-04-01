@@ -2,7 +2,7 @@ import type { Address, Hash, Hex, RpcLog } from 'viem'
 
 import type { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
-import { fetchBlockscoutGetLogsPaginated } from './fetchBlockscoutGetLogsPaginated'
+import { fetchBlockscoutGetLogsPaginated } from './fetch-blockscout-get-logs-paginated'
 
 interface FetchLogsByTopicParams {
   address: Address

@@ -3,7 +3,7 @@ import type { Hex } from 'viem'
 import {
   type BlockscoutGetLogsQuery,
   fetchBlockscoutGetLogsPaginated,
-} from '@/lib/blockscout/fetchBlockscoutGetLogsPaginated'
+} from '@/lib/blockscout/fetch-blockscout-get-logs-paginated'
 import { STRIF_ADDRESS } from '@/lib/constants'
 import type { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 

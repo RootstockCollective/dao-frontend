@@ -5,8 +5,8 @@ vi.mock('@/app/user/Balances/actions', () => ({
   fetchPrices: vi.fn(),
 }))
 
-vi.mock('../sources/resolveStakingHistoryCsvPlan', async importOriginal => {
-  const actual = await importOriginal<typeof import('../sources/resolveStakingHistoryCsvPlan')>()
+vi.mock('../sources/resolve-staking-history-csv-plan', async importOriginal => {
+  const actual = await importOriginal<typeof import('../sources/resolve-staking-history-csv-plan')>()
   return {
     ...actual,
     resolveStakingHistoryCsvPlan: vi.fn(),
@@ -14,7 +14,7 @@ vi.mock('../sources/resolveStakingHistoryCsvPlan', async importOriginal => {
 })
 
 import { fetchPrices } from '@/app/user/Balances/actions'
-import { resolveStakingHistoryCsvPlan } from '../sources/resolveStakingHistoryCsvPlan'
+import { resolveStakingHistoryCsvPlan } from '../sources/resolve-staking-history-csv-plan'
 import { RIF } from '@/lib/constants'
 import type { StakingHistoryByPeriodAndAction } from '../types'
 

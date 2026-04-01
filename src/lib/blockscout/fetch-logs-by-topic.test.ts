@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
-import { fetchLogsByTopic } from './fetchLogsByTopic'
+import { fetchLogsByTopic } from './fetch-logs-by-topic'
 
 vi.mock('@/lib/constants', () => ({
   BLOCKSCOUT_URL: 'https://blockscout.test',

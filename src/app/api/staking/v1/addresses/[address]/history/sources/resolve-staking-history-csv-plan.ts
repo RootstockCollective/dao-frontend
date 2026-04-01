@@ -1,6 +1,6 @@
 import type { StakingHistoryByPeriodAndAction } from '../types'
-import { fetchStakingHistoryFromBlockscout } from './blockscout/fetchFromBlockscout'
-import { getStakingHistoryCountFromDB, getStakingHistoryFromDB } from './database/fetchFromDatabase'
+import { fetchStakingHistoryFromBlockscout } from './blockscout/fetch-from-blockscout'
+import { getStakingHistoryCountFromDB, getStakingHistoryFromDB } from './database/fetch-from-database'
 import type { StakingHistorySortParams } from './shared/query'
 import { filterSortStakingHistoryGroups } from './shared/query'
 
@@ -63,6 +63,11 @@ export async function resolveStakingHistoryCsvPlan(
   }
 }
 
+/**
+ * Response headers identifying which data source satisfied the CSV plan (aligned with JSON history route).
+ *
+ * @param plan — `database` → source index `0`; `blockscout` → `1`.
+ */
 export function stakingHistoryCsvSourceHeaders(plan: StakingHistoryCsvPlan): {
   'X-Source': string
   'x-source-name': string

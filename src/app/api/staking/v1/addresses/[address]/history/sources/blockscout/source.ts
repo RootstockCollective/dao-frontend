@@ -1,6 +1,6 @@
 import { filterSortPaginateStakingHistory } from '../shared/query'
 import type { StakingHistorySource } from '../types'
-import { fetchStakingHistoryFromBlockscout } from './fetchFromBlockscout'
+import { fetchStakingHistoryFromBlockscout } from './fetch-from-blockscout'
 
 /**
  * Staking history source backed by Blockscout `getLogs` for the stRIF contract (`STRIF_ADDRESS` in `@/lib/constants`).

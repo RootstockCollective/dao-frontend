@@ -1,17 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { GET } from './route'
 
-vi.mock('./sources/database/fetchFromDatabase', () => ({
+vi.mock('./sources/database/fetch-from-database', () => ({
   getStakingHistoryFromDB: vi.fn(),
   getStakingHistoryCountFromDB: vi.fn(),
 }))
 
-vi.mock('./sources/blockscout/fetchFromBlockscout', () => ({
+vi.mock('./sources/blockscout/fetch-from-blockscout', () => ({
   fetchStakingHistoryFromBlockscout: vi.fn(),
 }))
 
-import { fetchStakingHistoryFromBlockscout } from './sources/blockscout/fetchFromBlockscout'
-import { getStakingHistoryCountFromDB, getStakingHistoryFromDB } from './sources/database/fetchFromDatabase'
+import { fetchStakingHistoryFromBlockscout } from './sources/blockscout/fetch-from-blockscout'
+import { getStakingHistoryCountFromDB, getStakingHistoryFromDB } from './sources/database/fetch-from-database'
 import type { StakingHistoryByPeriodAndAction } from './types'
 
 const mockGetStakingHistoryFromDB = vi.mocked(getStakingHistoryFromDB)
