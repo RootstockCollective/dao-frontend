@@ -1,5 +1,7 @@
 import type { RpcLog } from 'viem'
 import { Address } from 'viem'
+
+import { RIF_WALLET_SERVICES_URL } from '@/lib/constants'
 import { BackersManagerAddress } from '@/lib/contracts'
 import {
   fetchBackerRewardsClaimedLogsByAddress,
@@ -8,7 +10,6 @@ import {
   fetchRewardDistributionFinishedLogsByAddress,
   fetchRewardDistributionRewardsLogsByAddress,
 } from '@/lib/endpoints'
-import { RIF_WALLET_SERVICES_URL } from '@/lib/constants'
 
 const rws = RIF_WALLET_SERVICES_URL ?? ''
 
