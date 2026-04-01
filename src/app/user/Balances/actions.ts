@@ -1,4 +1,7 @@
-import { Address, isAddress, padHex } from 'viem'
+'use server'
+
+import type { Address, Hex } from 'viem'
+import { isAddress, padHex } from 'viem'
 
 import {
   NextPageParams,
@@ -7,15 +10,10 @@ import {
   TokenHoldersResponse,
 } from '@/app/user/Balances/types'
 import { GetPricesResult } from '@/app/user/types'
+import { fetchLogsByTopic } from '@/lib/blockscout/fetchLogsByTopic'
 import { RIF_WALLET_SERVICES_URL } from '@/lib/constants'
 import { GovernorAddress, tokenContracts } from '@/lib/contracts'
-import {
-  fetchPricesEndpoint,
-  fetchProposalsCreatedByGovernorAddress,
-  fetchVoteCastEventEndpoint,
-  getNftHolders,
-  getTokenHoldersOfAddress,
-} from '@/lib/endpoints'
+import { fetchPricesEndpoint, getNftHolders, getTokenHoldersOfAddress } from '@/lib/endpoints'
 import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
 const rws = RIF_WALLET_SERVICES_URL ?? ''
@@ -27,8 +25,8 @@ async function fetchRws<T = unknown>(path: string): Promise<{ data: T }> {
   return { data }
 }
 
-export const fetchPrices = () =>
-  fetchRws<GetPricesResult>(
+export const fetchPrices = async () => {
+  return fetchRws<GetPricesResult>(
     fetchPricesEndpoint
       .replace(
         '{{addresses}}',
@@ -49,22 +47,30 @@ export const fetchPrices = () =>
     }
     return pricesReturn
   })
+}
 
-export const fetchProposalCreated = (fromBlock = 0) =>
-  fetchRws(
-    fetchProposalsCreatedByGovernorAddress
-      .replace('{{address}}', GovernorAddress)
-      .replace('{{fromBlock}}', fromBlock.toString()),
-  )
+// keccak256('ProposalCreated(uint256,address,address[],uint256[],string[],bytes[],uint256,uint256,string)')
+const PROPOSAL_CREATED_EVENT: Hex = '0x7d84a6263ae0d98d3329bd7b46bb4e8d6f98cd35a7adb45c274c8b7fd5ebd5e0'
 
-//TODO: refactor this out of Balances folder as it does not related to Balances
-// the suggestion is to move it up the folder in User or moving it to shared
-export const fetchVoteCastEventByAccountAddress = (address: Address) =>
-  fetchRws(
-    fetchVoteCastEventEndpoint
-      .replace('{{address}}', GovernorAddress)
-      .replace('{{topic1}}', padHex(address, { size: 32 })),
-  )
+export const fetchProposalCreated = async (fromBlock = 0) => {
+  return fetchLogsByTopic({
+    address: GovernorAddress,
+    topic0: PROPOSAL_CREATED_EVENT,
+    fromBlock: fromBlock.toString(),
+  })
+}
+
+// keccak256('VoteCast(address,uint256,uint8,uint256,string)')
+const CAST_VOTE_EVENT: Hex = '0xb8e138887d0aa13bab447e82de9d5c1777041ecd21ca36ba824ff1e6c07ddda4'
+
+export const fetchVoteCastEventByAccountAddress = async (address: Address) => {
+  return fetchLogsByTopic({
+    address: GovernorAddress,
+    topic0: CAST_VOTE_EVENT,
+    topic1: padHex(address, { size: 32 }),
+    topic0_1_opr: 'and',
+  })
+}
 
 export const fetchProposalsCreatedCached = async (): Promise<{
   data: BackendEventByTopic0ResponseValue[]
