@@ -48,7 +48,7 @@ export function RequestStatusStepper({ status, type, displayStatus }: RequestSta
 
   return (
     <div data-testid="request-status-stepper">
-      <ProgressStepper stages={stages} currentStage={currentStage} showSeparators />
+      <ProgressStepper stages={stages} currentStage={currentStage} />
     </div>
   )
 }
