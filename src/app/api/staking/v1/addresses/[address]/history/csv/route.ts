@@ -1,4 +1,3 @@
-import Big from 'big.js'
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 
@@ -10,6 +9,7 @@ import {
 import { queryParam } from '@/app/api/utils/helpers'
 import { AddressSchema, SortDirectionEnum } from '@/app/api/utils/validators'
 import { getFiatAmount } from '@/app/shared/formatter'
+import Big from '@/lib/big'
 import { RIF, STRIF } from '@/lib/constants'
 import { logger } from '@/lib/logger'
 

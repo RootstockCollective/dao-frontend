@@ -1,3 +1,5 @@
+import { logger } from '@/lib/logger'
+
 import type { StakingHistoryByPeriodAndAction } from '../types'
 import { stakingHistoryBlockscoutSource } from './blockscout/source'
 import { stakingHistoryDatabaseSource } from './database/source'
@@ -33,7 +35,10 @@ export async function fetchStakingHistoryFromSources(
       const { data, total } = await source.fetchPageAndTotal(params)
       return { data, total, sourceName: source.name, sourceIndex: i }
     } catch (error) {
-      console.error(`Failed to fetch staking history from source "${source.name}":`, error)
+      logger.error(
+        { err: error, sourceName: source.name, sourceIndex: i },
+        'Failed to fetch staking history from source',
+      )
     }
   }
 
