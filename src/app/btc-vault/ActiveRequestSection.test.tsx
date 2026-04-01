@@ -59,11 +59,22 @@ describe('ActiveRequestSection', () => {
     expect(container.innerHTML).toBe('')
   })
 
+  it('renders nothing when data is undefined (still loading)', () => {
+    mockedUseAccount.mockReturnValue({
+      address: '0x1234567890abcdef1234567890abcdef12345678',
+    } as unknown as ReturnType<typeof useAccount>)
+    mockedUseActiveRequests.mockReturnValue({ data: undefined })
+
+    const { container } = render(<ActiveRequestSection />)
+    expect(container.innerHTML).toBe('')
+  })
+
   it('renders RequestProcessingBlock when user has an active request', () => {
     render(<ActiveRequestSection data={[MOCK_REQUEST]} />)
 
     expect(screen.getByTestId('btc-vault-active-request')).toBeInTheDocument()
     expect(screen.getByTestId('request-processing-block')).toBeInTheDocument()
+    expect(screen.getByText('0.5')).toBeInTheDocument()
   })
 
   it('renders inside a SectionContainer with REQUEST PROCESSING title', () => {
