@@ -1,8 +1,9 @@
-import { Fragment, useRef, useLayoutEffect, useState, useCallback } from 'react'
+import { Fragment } from 'react'
+
+import { PannableProgressStepRow, ProgressBar } from '@/components/ProgressBarNew'
 import { Span } from '@/components/Typography'
-import { ProgressBar } from '@/components/ProgressBarNew'
-import { ProposalState } from '@/shared/types'
 import { cn } from '@/lib/utils'
+import { ProposalState } from '@/shared/types'
 
 interface ProgressBarProps {
   proposalState?: ProposalState
@@ -75,82 +76,26 @@ const renderStatusPath = (proposalState: ProposalState) => {
 }
 
 export const ProposalProggressBar = ({ proposalState }: ProgressBarProps) => {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const contentRef = useRef<HTMLDivElement>(null)
-  const [offset, setOffset] = useState(0)
-
-  // Calculate offset to keep active label in view
-  const calculateOffset = useCallback(() => {
-    if (!containerRef.current || !contentRef.current) {
-      return 0
-    }
-
-    const containerWidth = containerRef.current.offsetWidth
-    const contentWidth = contentRef.current.scrollWidth
-
-    // If content fits in container, no offset needed
-    if (contentWidth <= containerWidth) {
-      return 0
-    }
-
-    const currentStepIndex = getCurrentStepIndex(proposalState!)
-
-    // Calculate position of current active step
-    // Each step is roughly: label (60px) + arrow (16px) = 76px
-    const stepWidth = 76
-    const currentStepPosition = currentStepIndex * stepWidth
-
-    // Calculate how much we need to slide to keep current step visible
-    const containerCenter = containerWidth / 2
-    const desiredOffset = Math.max(0, currentStepPosition - containerCenter + 40)
-
-    // Don't slide more than needed to keep content in bounds (with padding)
-    const maxOffset = contentWidth - containerWidth
-    return Math.min(desiredOffset, maxOffset)
-  }, [proposalState])
-
-  // Update offset when proposal state changes
-  useLayoutEffect(() => {
-    const newOffset = calculateOffset()
-    setOffset(newOffset)
-  }, [proposalState, calculateOffset])
-
-  // Handle window resize
-  useLayoutEffect(() => {
-    const handleResize = () => {
-      const newOffset = calculateOffset()
-      setOffset(newOffset)
-    }
-
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [proposalState, calculateOffset])
-
-  // Determine progress bar color based on proposal state
   const getProgressBarColor = () => {
     if (proposalState === ProposalState.Defeated || proposalState === ProposalState.Canceled) {
-      // Design spec: linear-gradient from Brand-RIF (blue) -> Primary-100 (orange) -> System-status-Error (red)
       return ['#4B5CF0', '#F47A2A', '#ff6688']
     }
-    // Design spec: linear-gradient from Brand-RIF (blue) -> Primary-100 (orange) -> System-status-Success (green)
-    // For successful states: ACTIVE -> SUCCEEDED -> QUEUED -> EXECUTED
     return ['#4B5CF0', '#F47A2A', '#1BC47D']
   }
 
   return (
-    <div className="flex flex-col w-full md:p-6 p-4 md:pb-10" ref={containerRef}>
-      <div
-        ref={contentRef}
-        className="flex flex-row justify-between w-full"
-        style={{ transform: offset > 0 ? `translateX(-${offset}px)` : undefined }}
-      >
-        {renderStatusPath(proposalState!)}
-      </div>
-      <ProgressBar
-        progress={proposalStateToProgressMap.get(proposalState) ?? 0}
-        className="mt-3"
-        color={getProgressBarColor()}
-      />
-    </div>
+    <PannableProgressStepRow
+      currentStepIndex={getCurrentStepIndex(proposalState!)}
+      measureContainerClassName="flex flex-col w-full md:p-6 p-4 md:pb-10"
+      footer={
+        <ProgressBar
+          progress={proposalStateToProgressMap.get(proposalState) ?? 0}
+          className="mt-3"
+          color={getProgressBarColor()}
+        />
+      }
+    >
+      {renderStatusPath(proposalState!)}
+    </PannableProgressStepRow>
   )
 }
