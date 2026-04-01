@@ -47,8 +47,8 @@ export function RequestProcessingBlock({ request, className, ...props }: Request
     >
       <RequestStatusStepper status={request.status} type={request.type} />
 
-      <div className="flex gap-6 self-stretch">
-        <div className="flex flex-1 min-w-0 flex-col gap-2">
+      <div className="flex w-full min-w-0 flex-col gap-4 md:flex-row md:gap-6">
+        <div className="flex min-w-0 flex-col gap-2 md:flex-1 md:min-w-0">
           <Label variant="tag" className="text-bg-0">
             Request type
           </Label>
@@ -56,36 +56,28 @@ export function RequestProcessingBlock({ request, className, ...props }: Request
             {getRequestTypeLabel(request.type)}
           </Span>
         </div>
-        <div className="flex flex-1 min-w-0 flex-col gap-2">
+        <div className="flex min-w-0 flex-col gap-2 md:flex-1 md:min-w-0">
           <Label variant="tag" className="text-bg-0">
             {getAmountLabel(request.type)}
           </Label>
-          <div className="flex flex-col">
-            {request.amountFormatted === '—' ? (
-              <Span variant="body-l" className="text-100">
-                —
+          <div className="flex min-w-0 flex-col">
+            <div className="flex min-w-0 items-center gap-1">
+              <Span variant="body-l" className="min-w-0 flex-1 overflow-hidden text-ellipsis text-100">
+                {request.amountFormatted}
               </Span>
-            ) : (
-              <>
-                <div className="flex items-center gap-1">
-                  <Span variant="body-l" className="text-100 overflow-hidden text-ellipsis">
-                    {request.amountFormatted}
-                  </Span>
-                  <TokenImage symbol={RBTC} size={16} />
-                  <Span variant="body-l" className="text-100">
-                    {RBTC}
-                  </Span>
-                </div>
-                {request.usdEquivalentFormatted && (
-                  <Span variant="body-xs" bold className="text-bg-0">
-                    {request.usdEquivalentFormatted}
-                  </Span>
-                )}
-              </>
+              <TokenImage symbol={RBTC} size={16} />
+              <Span variant="body-l" className="shrink-0 text-100">
+                {RBTC}
+              </Span>
+            </div>
+            {request.usdEquivalentFormatted && (
+              <Span variant="body-xs" bold className="text-bg-0">
+                {request.usdEquivalentFormatted}
+              </Span>
             )}
           </div>
         </div>
-        <div className="flex flex-1 min-w-0 flex-col gap-2">
+        <div className="flex min-w-0 flex-col gap-2 md:flex-1 md:min-w-0">
           <Label variant="tag" className="text-bg-0">
             Shares
           </Label>
@@ -93,7 +85,7 @@ export function RequestProcessingBlock({ request, className, ...props }: Request
             {request.sharesFormatted}
           </Span>
         </div>
-        <div className="flex flex-1 min-w-0 flex-col gap-2">
+        <div className="flex min-w-0 flex-col gap-2 md:flex-1 md:min-w-0">
           <Label variant="tag" className="text-bg-0">
             Last updated on
           </Label>

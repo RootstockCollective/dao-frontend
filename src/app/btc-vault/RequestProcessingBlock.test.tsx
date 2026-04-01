@@ -24,6 +24,10 @@ function getBlock(container: HTMLElement) {
   return container.querySelector('[data-testid="request-processing-block"]') as HTMLElement
 }
 
+function getDetailRow(block: HTMLElement) {
+  return block.querySelector('[data-testid="request-status-stepper"]')?.nextElementSibling as HTMLElement | null
+}
+
 function makeRequest(overrides: Partial<ActiveRequestDisplay> = {}): ActiveRequestDisplay {
   return {
     id: 'req-1',
@@ -85,6 +89,14 @@ describe('RequestProcessingBlock', () => {
     expect(within(block).getByText('Withdrawal')).toBeInTheDocument()
     expect(within(block).getAllByText('1.25').length).toBeGreaterThanOrEqual(1)
     expect(within(block).getByText('21 May 2025')).toBeInTheDocument()
+  })
+
+  it('uses mobile-first column layout for detail row with md row breakpoint', () => {
+    const { container } = render(<RequestProcessingBlock request={makeRequest()} />)
+    const block = getBlock(container)
+    const detailRow = getDetailRow(block)
+    expect(detailRow).toBeTruthy()
+    expect(detailRow).toHaveClass('flex-col', 'gap-4', 'md:flex-row', 'md:gap-6')
   })
 
   it('renders View requests history link with correct href', () => {
