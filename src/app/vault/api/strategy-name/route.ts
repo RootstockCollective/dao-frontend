@@ -74,7 +74,18 @@ export async function POST(req: Request) {
       return Response.json({ error: 'Invalid request: addresses array is required' }, { status: 400 })
     }
 
-    const addresses = body.addresses as Address[]
+    // Validate that all provided addresses are well-formed hex addresses
+    const rawAddresses = body.addresses as unknown[]
+    const addressPattern = /^0x[a-fA-F0-9]{40}$/
+    const validAddresses = rawAddresses.filter(
+      (addr): addr is Address => typeof addr === 'string' && addressPattern.test(addr),
+    )
+
+    if (validAddresses.length === 0) {
+      return Response.json({ error: 'Invalid request: no valid addresses provided' }, { status: 400 })
+    }
+
+    const addresses = validAddresses
 
     if (addresses.length === 0) {
       return Response.json({} as StrategyNamesResponse)
