@@ -16,9 +16,9 @@ Each source had trade-offs: The Graph requires a paid API key and can be slow; B
 
 ## What Changed
 
-### New Proposals Fetcher (`getProposalsFromEnvio.ts`)
+### New Proposals Fetcher (`get-proposals-from-envio.ts`)
 
-A new server-side fetcher was added at `src/app/proposals/actions/getProposalsFromEnvio.ts`. Key design decisions:
+A new server-side fetcher was added at `src/app/proposals/actions/get-proposals-from-envio.ts`. Key design decisions:
 
 - **Zod schema validation** — Runtime type safety for the Envio GraphQL response. If the indexer schema changes unexpectedly, the fetcher throws a clear validation error instead of silently producing bad data.
 - **Adapter pattern** — The Envio DTO is transformed into the internal `ProposalApiResponse` format via `buildProposal()`, keeping the domain model decoupled from the data source.
@@ -37,6 +37,8 @@ The proposals API route (`src/app/api/proposals/v1/route.ts`) now uses a four-so
 | 4        | Blockscout | `source-3`      | Block explorer API (last resort) |
 
 The `X-Source` response header indicates which source served the data. To verify Envio is being used, check for `X-Source: source-0` in the response headers.
+
+The fallback loop is implemented in `src/app/proposals/actions/fetch-all-proposals.ts` (`fetchAllProposals`).
 
 ### Environment Configuration
 
@@ -108,15 +110,15 @@ Browser
   ▼
 /api/proposals/v1  (Next.js API route)
   │
-  ├─ 1. getProposalsFromEnvio()    ◄── Envio GraphQL (ENVIO_GRAPHQL_URL)
+  ├─ 1. getProposalsFromEnvio()    ◄── `get-proposals-from-envio.ts` — Envio GraphQL (ENVIO_GRAPHQL_URL)
   │     └─ Zod validation
   │     └─ Adapter: DTO → ProposalApiResponse
   │
-  ├─ 2. getProposalsFromDB()       ◄── State Sync backend DB
+  ├─ 2. getProposalsFromDB()       ◄── `get-proposals-from-db.ts` — State Sync backend DB
   │
-  ├─ 3. getProposalsFromTheGraph() ◄── The Graph subgraph
+  ├─ 3. getProposalsFromTheGraph() ◄── `get-proposals-from-the-graph.ts` — The Graph subgraph (`proposals-action.ts`)
   │
-  └─ 4. getProposalsFromBlockscout() ◄── Blockscout API
+  └─ 4. getProposalsFromBlockscout() ◄── `get-proposals-from-blockscout.ts` — Blockscout API
         │
         ▼
   Response with X-Source header
@@ -141,7 +143,7 @@ The environment variable is missing. Ensure you're using an environment file tha
 
 **`Envio: Invalid response structure`**
 
-The indexer returned data that doesn't match the expected Zod schema. This usually means the indexer's GraphQL schema has changed. Compare the schema in `getProposalsFromEnvio.ts` with the indexer's `schema.graphql`.
+The indexer returned data that doesn't match the expected Zod schema. This usually means the indexer's GraphQL schema has changed. Compare the schema in `get-proposals-from-envio.ts` with the indexer's `schema.graphql`.
 
 **`Envio: Insufficient proposals`**
 

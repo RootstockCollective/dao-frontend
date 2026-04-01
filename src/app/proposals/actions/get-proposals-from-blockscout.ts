@@ -1,18 +1,19 @@
-import { logger } from '@/lib/logger'
-import Big from '@/lib/big'
-import { parseEventLogs, Log, Address, Hash, getAddress, isAddress, isHex } from 'viem'
 import { unstable_cache } from 'next/cache'
-import { GovernorAbi } from '@/lib/abis/Governor'
+import { Address, getAddress, Hash, isAddress, isHex, Log, parseEventLogs } from 'viem'
+
+import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import {
   EventArgumentsParameter,
   getProposalCategoryFromParsedData,
   getProposalEventArguments,
   serializeBigInts,
 } from '@/app/proposals/shared/utils'
-import { ProposalApiResponse } from '@/app/proposals/shared/types'
-import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
+import { GovernorAbi } from '@/lib/abis/Governor'
+import Big from '@/lib/big'
 import { BLOCKSCOUT_URL, GOVERNOR_ADDRESS } from '@/lib/constants'
 import { PROPOSAL_CREATED_EVENT } from '@/lib/endpoints'
+import { logger } from '@/lib/logger'
+import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
 type ElementType<T> = T extends (infer U)[] ? U : never
 

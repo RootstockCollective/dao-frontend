@@ -1,6 +1,6 @@
 import { getBlockNumber } from 'wagmi/actions'
 
-import { fetchProposals, ProposalGraphQLResponse } from '@/app/proposals/actions/proposalsAction'
+import { fetchProposals, ProposalGraphQLResponse } from '@/app/proposals/actions/proposals-action'
 import { buildProposal } from '@/app/proposals/actions/utils'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { config } from '@/config'

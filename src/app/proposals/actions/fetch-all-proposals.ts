@@ -3,10 +3,10 @@ import { unstable_cache } from 'next/cache'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { logger } from '@/lib/logger'
 
-import { getProposalsFromBlockscout } from './getProposalsFromBlockscout'
-import { getProposalsFromDB } from './getProposalsFromDB'
-import { getProposalsFromEnvio } from './getProposalsFromEnvio'
-import { getProposalsFromTheGraph } from './getProposalsFromTheGraph'
+import { getProposalsFromBlockscout } from './get-proposals-from-blockscout'
+import { getProposalsFromDB } from './get-proposals-from-db'
+import { getProposalsFromEnvio } from './get-proposals-from-envio'
+import { getProposalsFromTheGraph } from './get-proposals-from-the-graph'
 
 /**
  * Fetches all proposals from available sources with fallback.

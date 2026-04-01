@@ -18,7 +18,7 @@ vi.mock('@/lib/auth/session', () => ({
   requireAuth: vi.fn(),
 }))
 
-vi.mock('@/app/proposals/actions/getProposalById', () => ({
+vi.mock('@/app/proposals/actions/get-proposal-by-id', () => ({
   confirmProposalExists: vi.fn().mockResolvedValue(true),
 }))
 
@@ -193,7 +193,7 @@ describe('GET /api/like', () => {
     vi.clearAllMocks()
     vi.doMock('@/lib/prisma', () => ({ prisma: mockPrisma }))
     vi.doMock('@/lib/auth/session', () => ({ requireAuth: vi.fn() }))
-    vi.doMock('@/app/proposals/actions/getProposalById', () => ({
+    vi.doMock('@/app/proposals/actions/get-proposal-by-id', () => ({
       confirmProposalExists: vi.fn().mockResolvedValue(true),
     }))
   })
@@ -291,7 +291,7 @@ describe('GET /api/like (database not configured)', () => {
     vi.resetModules()
     vi.doMock('@/lib/prisma', () => ({ prisma: undefined }))
     vi.doMock('@/lib/auth/session', () => ({ requireAuth: vi.fn() }))
-    vi.doMock('@/app/proposals/actions/getProposalById', () => ({
+    vi.doMock('@/app/proposals/actions/get-proposal-by-id', () => ({
       confirmProposalExists: vi.fn().mockResolvedValue(true),
     }))
 
