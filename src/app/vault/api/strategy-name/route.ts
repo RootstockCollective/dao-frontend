@@ -1,5 +1,6 @@
-import { BLOCKSCOUT_URL } from '@/lib/constants'
 import { Address } from 'viem'
+
+import { BLOCKSCOUT_URL } from '@/lib/constants'
 
 export interface StrategyNameInfo {
   address: Address
@@ -57,9 +58,6 @@ async function getStrategyNames(addresses: Address[]): Promise<StrategyNamesResp
     return acc
   }, {})
 }
-
-// Cache for 1 hour (3600 seconds)
-export const revalidate = 3600
 
 /**
  * POST endpoint to fetch contract names for strategy addresses

@@ -1,11 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
-import { paginateQuery } from '@/app/api/utils/paginateQuery'
-import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
-import { BACKER_TO_BUILDER_COLUMNS } from '@/app/api/db/constants'
+import { connection, NextRequest, NextResponse } from 'next/server'
 import { isAddress } from 'viem'
 
+import { BACKER_TO_BUILDER_COLUMNS } from '@/app/api/db/constants'
+import { paginateQuery } from '@/app/api/utils/paginateQuery'
+import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
+import { db } from '@/lib/db'
+
 export async function GET(req: NextRequest, { params }: { params: Promise<{ backer: string }> }) {
+  await connection()
   const { backer } = await params
 
   if (!isAddress(backer)) {

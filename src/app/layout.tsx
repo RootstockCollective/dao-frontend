@@ -1,15 +1,19 @@
-import type { Metadata } from 'next'
-import type { ReactNode } from 'react'
-import { Open_Sans } from 'next/font/google'
 import './globals.css'
-import { ContextProviders } from './providers'
+
 import { GoogleTagManager } from '@next/third-parties/google'
-import { GOOGLE_TAG_ID } from '@/lib/constants'
-import { cookieToInitialState } from 'wagmi'
+import type { Metadata } from 'next'
+import { Open_Sans } from 'next/font/google'
 import { headers } from 'next/headers'
-import { wagmiAdapterConfig } from '@/config'
-import { MainContainer } from '@/components/MainContainer'
 import Script from 'next/script'
+import type { ReactNode } from 'react'
+import { Suspense } from 'react'
+import { cookieToInitialState } from 'wagmi'
+
+import { MainContainer } from '@/components/MainContainer'
+import { wagmiAdapterConfig } from '@/config'
+import { GOOGLE_TAG_ID } from '@/lib/constants'
+
+import { ContextProviders } from './providers'
 
 const openSans = Open_Sans({
   variable: '--font-open-sans',
@@ -30,8 +34,12 @@ interface Props {
   children: ReactNode
 }
 
-export default async function RootLayout({ children }: Readonly<Props>) {
+async function DynamicProviders({ children }: Readonly<Props>) {
   const initialState = cookieToInitialState(wagmiAdapterConfig, (await headers()).get('cookie'))
+  return <ContextProviders initialState={initialState}>{children}</ContextProviders>
+}
+
+export default function RootLayout({ children }: Readonly<Props>) {
   return (
     <html lang="en" data-theme="default">
       {process.env.NODE_ENV === 'development' && (
@@ -53,9 +61,11 @@ export default async function RootLayout({ children }: Readonly<Props>) {
           ></iframe>
         </noscript>
         {/* End Google Tag Manager (noscript) */}
-        <ContextProviders initialState={initialState}>
-          <MainContainer>{children}</MainContainer>
-        </ContextProviders>
+        <Suspense>
+          <DynamicProviders>
+            <MainContainer>{children}</MainContainer>
+          </DynamicProviders>
+        </Suspense>
       </body>
     </html>
   )

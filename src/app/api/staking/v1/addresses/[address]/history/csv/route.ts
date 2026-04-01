@@ -1,14 +1,15 @@
-import { NextRequest } from 'next/server'
+import Big from 'big.js'
+import { connection, NextRequest } from 'next/server'
 import { z } from 'zod'
+
 import {
-  getStakingHistoryFromDB,
   getStakingHistoryCountFromDB,
+  getStakingHistoryFromDB,
 } from '@/app/api/staking/v1/addresses/[address]/history/action'
 import { queryParam } from '@/app/api/utils/helpers'
 import { AddressSchema, SortDirectionEnum } from '@/app/api/utils/validators'
-import { RIF, STRIF } from '@/lib/constants'
 import { getFiatAmount } from '@/app/shared/formatter'
-import Big from 'big.js'
+import { RIF, STRIF } from '@/lib/constants'
 
 const SortFieldEnum = z.enum(['period', 'amount', 'action'])
 const QuerySchema = z.object({
@@ -67,7 +68,7 @@ const formatDateForCsv = (timestamp: string | number): string => {
 
 const escapeCsvValue = (value: string): string => {
   if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-    return `"${value.replace(/"/g, '""')}"`
+    return `"${value.replaceAll('"', '""')}"`
   }
   return value
 }
@@ -80,6 +81,7 @@ async function getRifPrice(): Promise<number> {
 }
 
 export async function GET(req: NextRequest, context: { params: Promise<{ address: string }> }) {
+  await connection()
   try {
     const { address: addressParam } = await context.params
     const address = AddressSchema.parse(addressParam).toLowerCase()

@@ -1,9 +1,11 @@
-import { NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { connection, NextResponse } from 'next/server'
+
 import { paginateQuery } from '@/app/api/utils/paginateQuery'
 import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
+import { db } from '@/lib/db'
 
 export async function GET(req: Request) {
+  await connection()
   try {
     const paginationResult = parsePaginationParams(req.url || '')
 

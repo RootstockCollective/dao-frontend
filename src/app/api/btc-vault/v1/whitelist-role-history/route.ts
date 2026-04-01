@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { connection, NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 import { handleApiError, queryParam } from '@/app/api/utils/helpers'
@@ -15,6 +15,7 @@ import { fetchBtcVaultWhitelistedUsersPage } from './action'
  * sort_field (lastUpdated | account | status), sort_direction (asc | desc).
  */
 export async function GET(req: NextRequest) {
+  await connection()
   try {
     const searchParams = new URL(req.url).searchParams
     const qp = queryParam(searchParams)

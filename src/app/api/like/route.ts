@@ -1,11 +1,13 @@
-import { NextRequest } from 'next/server'
+import { connection, NextRequest } from 'next/server'
 import { z } from 'zod'
+
+import { confirmProposalExists } from '@/app/proposals/actions/getProposalById'
 import { JWTPayload } from '@/lib/auth/jwt'
 import { withAuth } from '@/lib/auth/withAuth'
-import { prisma } from '@/lib/prisma'
-import { confirmProposalExists } from '@/app/proposals/actions/getProposalById'
 import { ENV } from '@/lib/constants'
-import { ProposalIdSchema, bigIntToBuffer } from './shared'
+import { prisma } from '@/lib/prisma'
+
+import { bigIntToBuffer, ProposalIdSchema } from './shared'
 
 const LikeRequestSchema = z.object({
   proposalId: ProposalIdSchema,
@@ -40,6 +42,7 @@ const LikeRequestSchema = z.object({
  * { success: true, proposalId: string, reactions: Record<string, number> }
  */
 export async function GET(request: NextRequest) {
+  await connection()
   if (!prisma) {
     return Response.json({ success: false, error: 'Database not configured' }, { status: 503 })
   }

@@ -67,13 +67,8 @@ const corsBypassRewrite = () => {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'standalone',
+  cacheComponents: true,
   webpack: config => {
-    config.optimization.splitChunks = {
-      chunks: 'all',
-      maxInitialRequests: 2,
-      maxAsyncRequests: 2,
-    }
-
     config.resolve.fallback = {
       ...config.resolve.fallback,
       '@react-native-async-storage/async-storage': false,
@@ -164,6 +159,10 @@ export default withSentryConfig(exportedNextConfig, {
     // https://docs.sentry.io/product/crons/
     // https://vercel.com/docs/cron-jobs
     automaticVercelMonitors: true,
+
+    // Disable server component wrapping: conflicts with cacheComponents (e.g. crypto during prerender)
+    // and server-side Sentry reporting is not used for this app.
+    autoInstrumentAppDirectory: false,
 
     // Tree-shaking options for reducing bundle size
     treeshake: {

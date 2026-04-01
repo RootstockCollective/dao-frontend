@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { cacheLife } from 'next/cache'
+import { connection, NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 import { handleApiError, queryParam } from '@/app/api/utils/helpers'
@@ -6,8 +7,13 @@ import type { PaginationResponse } from '@/app/api/utils/types'
 
 import { BtcVaultGlobalHistoryQuerySchema } from '../schemas'
 import { fetchBtcVaultHistoryPageAndEnrich } from './action'
+import type { BtcVaultHistoryQueryParams } from './types'
 
-export const revalidate = 20
+async function getCachedBtcVaultHistoryPage(params: BtcVaultHistoryQueryParams) {
+  'use cache'
+  cacheLife({ revalidate: 20 })
+  return fetchBtcVaultHistoryPageAndEnrich(params)
+}
 
 /**
  * GET /api/btc-vault/v1/history
@@ -29,6 +35,7 @@ export const revalidate = 20
  * 400 on validation error (body includes error, details); 500 when no source could return data.
  */
 export async function GET(req: NextRequest) {
+  await connection()
   try {
     const searchParams = new URL(req.url).searchParams
     const qp = queryParam(searchParams)
@@ -46,7 +53,7 @@ export async function GET(req: NextRequest) {
 
     const address = parsed.address?.toLowerCase()
 
-    const { data, total, source, errors } = await fetchBtcVaultHistoryPageAndEnrich({
+    const { data, total, source, errors } = await getCachedBtcVaultHistoryPage({
       limit: parsed.limit,
       page: parsed.page,
       sort_field: parsed.sort_field,

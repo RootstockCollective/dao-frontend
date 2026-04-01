@@ -1,8 +1,10 @@
-import { NextRequest } from 'next/server'
+import { connection, NextRequest } from 'next/server'
+
 import { JWTPayload } from '@/lib/auth/jwt'
 import { withAuth } from '@/lib/auth/withAuth'
 import { prisma } from '@/lib/prisma'
-import { ProposalIdSchema, bigIntToBuffer } from '../shared'
+
+import { bigIntToBuffer, ProposalIdSchema } from '../shared'
 
 /**
  * GET /api/like/user?proposalId=<BigInt string>
@@ -13,6 +15,7 @@ import { ProposalIdSchema, bigIntToBuffer } from '../shared'
  * { success: true, proposalId: string, reactions: string[] }
  */
 export const GET = withAuth(async (request: NextRequest, session: JWTPayload) => {
+  await connection()
   if (!prisma) {
     return Response.json({ success: false, error: 'Database not configured' }, { status: 503 })
   }
