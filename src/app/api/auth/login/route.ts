@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { NextRequest, NextResponse } from 'next/server'
 import { verifySignature } from '@/lib/auth/actions'
 import { sanitizeError } from '@/lib/auth/utils'
@@ -44,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     return response
   } catch (error) {
-    console.error('Login error:', error)
+    logger.error({ err: error, route: '/api/auth/login' }, 'Login error')
     const message = error instanceof Error ? error.message : 'Internal server error'
     const sanitizedMessage = sanitizeError(message)
     const status = message.includes('Authentication failed') || message.includes('expired') ? 401 : 400

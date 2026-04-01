@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { paginateQuery } from '@/app/api/utils/paginateQuery'
@@ -54,7 +55,7 @@ export async function GET(req: Request) {
 
     return NextResponse.json({ data, count, page, pageSize })
   } catch (err) {
-    console.error(err)
+    logger.error({ err, route: '/api/builders' }, 'Database error')
     return NextResponse.json({ error: 'Database error' }, { status: 500 })
   }
 }

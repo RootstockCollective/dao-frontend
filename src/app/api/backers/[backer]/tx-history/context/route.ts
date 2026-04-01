@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { Address, isAddress } from 'viem'
@@ -247,7 +248,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ backer: 
 
     return NextResponse.json({ data, count, page, pageSize })
   } catch (error) {
-    console.error('Error fetching transaction history:', error)
+    logger.error(
+      { err: error, route: '/api/backers/[backer]/tx-history/context' },
+      'Error fetching transaction history',
+    )
     return NextResponse.json({ error: 'Database error' }, { status: 500 })
   }
 }

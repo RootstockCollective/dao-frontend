@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { NextRequest } from 'next/server'
 import { JWTPayload } from '@/lib/auth/jwt'
 import { withAuth } from '@/lib/auth/withAuth'
@@ -40,7 +41,7 @@ export const GET = withAuth(async (request: NextRequest, session: JWTPayload) =>
 
     return Response.json({ success: true, proposalId: parsed.data, reactions })
   } catch (error) {
-    console.error('Error in GET /api/like/user:', error)
+    logger.error({ err: error, route: '/api/like/user' }, 'Error in GET /api/like/user')
     return Response.json({ success: false, error: 'Internal server error' }, { status: 500 })
   }
 })

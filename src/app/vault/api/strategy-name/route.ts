@@ -1,5 +1,7 @@
+import { type Address, isAddress } from 'viem'
+
 import { BLOCKSCOUT_URL } from '@/lib/constants'
-import { Address } from 'viem'
+import { logger } from '@/lib/logger'
 
 export interface StrategyNameInfo {
   address: Address
@@ -8,6 +10,37 @@ export interface StrategyNameInfo {
 
 export interface StrategyNamesResponse {
   [address: Address]: string | undefined
+}
+
+const MAX_STRATEGY_ADDRESSES = 100
+
+function isSafeHexAddress(value: unknown): value is Address {
+  return typeof value === 'string' && isAddress(value)
+}
+
+/**
+ * Builds an absolute Blockscout URL for the address metadata endpoint.
+ * Uses URL parsing + encodeURIComponent so user input cannot alter host or path structure (SSRF hardening).
+ */
+function blockscoutAddressMetadataUrl(address: Address): string {
+  const normalized = address.toLowerCase()
+  if (!isAddress(normalized)) {
+    throw new TypeError('Invalid address for Blockscout request')
+  }
+  const base = BLOCKSCOUT_URL.trim().replace(/\/+$/, '')
+  const pathSegment = encodeURIComponent(normalized)
+  return new URL(`/api/v2/addresses/${pathSegment}`, `${base}/`).toString()
+}
+
+/**
+ * Logs errors without placing user-controlled strings in the primary message (avoids format-string / log-injection patterns).
+ */
+function logStrategyNameFetchError(address: Address, error: unknown): void {
+  const err =
+    error instanceof Error
+      ? { name: error.name, message: error.message.replaceAll(/[\r\n]/g, ' ') }
+      : { name: 'Unknown', message: String(error).replaceAll(/[\r\n]/g, ' ') }
+  logger.error({ address, err, route: '/vault/api/strategy-name' }, 'Error fetching strategy contract name')
 }
 
 /**
@@ -19,8 +52,8 @@ async function getStrategyNames(addresses: Address[]): Promise<StrategyNamesResp
   // Fetch contract data from Blockscout for all addresses in parallel
   const contractDataPromises = addresses.map(async (address): Promise<StrategyNameInfo> => {
     try {
-      const response = await fetch(`${BLOCKSCOUT_URL}/api/v2/addresses/${address}`, {
-        // Add cache headers to reduce API load
+      const url = blockscoutAddressMetadataUrl(address)
+      const response = await fetch(url, {
         next: { revalidate: 3600 },
       })
 
@@ -42,8 +75,7 @@ async function getStrategyNames(addresses: Address[]): Promise<StrategyNamesResp
 
       return { address, name }
     } catch (error) {
-      // On error, return address without name
-      console.error(`Error fetching contract name for ${address}:`, error)
+      logStrategyNameFetchError(address, error)
       return { address, name: undefined }
     }
   })
@@ -68,23 +100,40 @@ export const revalidate = 3600
  */
 export async function POST(req: Request) {
   try {
-    const body = await req.json()
+    const body: unknown = await req.json()
 
-    if (!body || !Array.isArray(body.addresses)) {
+    if (
+      body === null ||
+      typeof body !== 'object' ||
+      !('addresses' in body) ||
+      !Array.isArray((body as { addresses: unknown }).addresses)
+    ) {
       return Response.json({ error: 'Invalid request: addresses array is required' }, { status: 400 })
     }
 
-    const addresses = body.addresses as Address[]
+    const rawAddresses = (body as { addresses: unknown[] }).addresses
+    const validAddresses = rawAddresses.filter(isSafeHexAddress)
 
-    if (addresses.length === 0) {
-      return Response.json({} as StrategyNamesResponse)
+    if (validAddresses.length === 0) {
+      return Response.json({ error: 'Invalid request: no valid addresses provided' }, { status: 400 })
     }
 
-    const result = await getStrategyNames(addresses)
+    if (validAddresses.length > MAX_STRATEGY_ADDRESSES) {
+      return Response.json(
+        { error: `Invalid request: at most ${MAX_STRATEGY_ADDRESSES} addresses allowed` },
+        { status: 400 },
+      )
+    }
+
+    const result = await getStrategyNames(validAddresses)
 
     return Response.json(result)
   } catch (error) {
-    console.error('Error in strategy-name API route:', error)
+    const err =
+      error instanceof Error
+        ? { name: error.name, message: error.message.replaceAll(/[\r\n]/g, ' ') }
+        : { name: 'Unknown', message: String(error).replaceAll(/[\r\n]/g, ' ') }
+    logger.error({ err, route: '/vault/api/strategy-name' }, 'Error in strategy-name API route')
     return Response.json(
       { error: error instanceof Error ? error.message : 'Internal server error' },
       { status: 500 },

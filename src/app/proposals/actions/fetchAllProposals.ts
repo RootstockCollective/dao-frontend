@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { unstable_cache } from 'next/cache'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { getProposalsFromDB } from './getProposalsFromDB'
@@ -27,7 +28,7 @@ export async function fetchAllProposals(): Promise<{
         return { proposals, sourceIndex: i }
       }
     } catch (error) {
-      console.error(`Failed to fetch proposals from source:`, error)
+      logger.error({ err: error, sourceIndex: i }, 'Failed to fetch proposals from source')
     }
   }
 

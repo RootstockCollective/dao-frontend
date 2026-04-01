@@ -1,3 +1,4 @@
+import { logger } from '@/lib/logger'
 import { NextRequest, NextResponse } from 'next/server'
 import { verifyJWT, extractTokenFromRequest } from '@/lib/auth/jwt.server'
 import { sanitizeError } from '@/lib/auth/utils'
@@ -44,7 +45,7 @@ export async function POST(request: NextRequest) {
         }
       } catch (error) {
         // No body or invalid JSON
-        console.log('Error parsing request body:', error)
+        logger.error({ err: error, route: '/api/auth/verify' }, 'Error parsing request body')
         return NextResponse.json(
           {
             valid: false,
@@ -87,7 +88,7 @@ export async function POST(request: NextRequest) {
       userAddress: payload.userAddress,
     })
   } catch (error) {
-    console.error('JWT verify error:', error)
+    logger.error({ err: error, route: '/api/auth/verify' }, 'JWT verify error')
     return NextResponse.json({ valid: false, error: 'Internal server error' }, { status: 500 })
   }
 }

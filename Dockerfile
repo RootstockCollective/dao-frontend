@@ -76,6 +76,9 @@ RUN apk add --no-cache wget && \
     wget -O rds-ca-cert.pem https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
 
 
+# Enable source maps so stack traces reference original TypeScript files
+ENV NODE_OPTIONS="--enable-source-maps"
+
 # Expose the port that Next.js will run on
 EXPOSE 3000
 
