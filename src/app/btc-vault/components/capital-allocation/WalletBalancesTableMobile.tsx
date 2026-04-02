@@ -40,8 +40,8 @@ function MobileExpandBalance({ row }: { row: Row<WalletBalanceDisplay> }) {
 
 function ExpandableWalletRow({ row }: { row: Row<WalletBalanceDisplay> }) {
   return (
-    <div role="row" data-testid={`wallet-mobile-row-${row.index}`}>
-      <Expandable className="mb-5 border-b border-b-bg-60 pb-5">
+    <div role="row" className="mb-5 last:mb-0" data-testid={`wallet-mobile-row-${row.index}`}>
+      <Expandable className="border-b border-b-bg-60 pb-5">
         <ExpandableHeader triggerColor="var(--color-bg-0)">{renderCell(row, 'wallet')}</ExpandableHeader>
         <ExpandableContent>
           <div className="flex flex-col gap-3 pt-2">
