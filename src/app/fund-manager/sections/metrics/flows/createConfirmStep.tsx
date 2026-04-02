@@ -3,7 +3,7 @@
 import { useCallback, useEffect } from 'react'
 import { Address, Hash } from 'viem'
 
-import { ConfirmationDetail } from '@/app/fund-manager/components/ConfirmationDetail'
+import { ConfirmationDetail } from '@/app/fund-manager/components'
 import { FlowStepProps } from '@/app/fund-manager/types'
 import { TokenImage } from '@/components/TokenImage'
 import { Span } from '@/components/Typography'

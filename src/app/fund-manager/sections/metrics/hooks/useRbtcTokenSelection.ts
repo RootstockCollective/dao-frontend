@@ -4,11 +4,7 @@ import { useAccount, useBalance, useReadContract } from 'wagmi'
 
 import { AVERAGE_BLOCKTIME, RBTC, WRBTC, WRBTC_ADDRESS } from '@/lib/constants'
 
-/** Native symbol from `RBTC` (env); wrapped from `WRBTC` (fixed). */
 export type RbtcToken = typeof RBTC | typeof WRBTC
-
-/** @deprecated Use `RbtcToken` instead. */
-export type SelectedToken = RbtcToken
 
 /**
  * Manages native RBTC / WrBTC token selection and reads the balance for the selected token.
@@ -56,6 +52,3 @@ export const useRbtcTokenSelection = () => {
     setSelectedToken: handleTokenChange,
   }
 }
-
-/** @deprecated Use `useRbtcTokenSelection` instead. */
-export const useTokenSelection = useRbtcTokenSelection

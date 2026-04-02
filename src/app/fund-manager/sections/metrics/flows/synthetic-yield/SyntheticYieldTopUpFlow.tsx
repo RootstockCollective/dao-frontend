@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 
-import { FundManagerFlowModal } from '@/app/fund-manager/components/FundManagerFlowModal'
+import { FundManagerFlowModal } from '@/app/fund-manager/components'
 
 import { SyntheticYieldTopUpProvider, useSyntheticYieldTopUpContext } from './SyntheticYieldTopUpContext'
 import { getSyntheticYieldTopUpStepConfig } from './syntheticYieldTopUpStepConfig'

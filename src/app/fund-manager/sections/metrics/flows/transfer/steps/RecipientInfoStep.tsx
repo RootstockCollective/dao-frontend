@@ -4,8 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { AmountInputSection } from '@/app/fund-manager/components/AmountInputSection'
-import { TokenSelector } from '@/app/fund-manager/components/TokenSelector'
+import { AmountInputSection, TokenSelector } from '@/app/fund-manager/components'
 import { FlowStepProps } from '@/app/fund-manager/types'
 import { TextInput } from '@/components/FormFields'
 

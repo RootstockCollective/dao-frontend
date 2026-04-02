@@ -3,7 +3,7 @@
 import Image from 'next/image'
 import { useCallback, useEffect } from 'react'
 
-import { SimpleAmountInputSection } from '@/app/fund-manager/components/SimpleAmountInputSection'
+import { SimpleAmountInputSection } from '@/app/fund-manager/components'
 import { FlowStepProps } from '@/app/fund-manager/types'
 import { TokenImage } from '@/components/TokenImage'
 import { Label, Span } from '@/components/Typography'

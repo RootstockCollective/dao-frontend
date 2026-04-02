@@ -3,8 +3,7 @@
 import { useEffect } from 'react'
 import { Address } from 'viem'
 
-import { AmountInputSection } from '@/app/fund-manager/components/AmountInputSection'
-import { TokenSelector } from '@/app/fund-manager/components/TokenSelector'
+import { AmountInputSection, TokenSelector } from '@/app/fund-manager/components'
 import { FlowStepProps } from '@/app/fund-manager/types'
 import { CopyButton } from '@/components/CopyButton'
 import { BiCopyIcon } from '@/components/Icons'

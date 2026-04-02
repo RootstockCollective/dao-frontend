@@ -1,6 +1,6 @@
 'use client'
 
-import { FundManagerFlowModal } from '@/app/fund-manager/components/FundManagerFlowModal'
+import { FundManagerFlowModal } from '@/app/fund-manager/components'
 
 import { UpdateNavProvider } from './UpdateNavContext'
 import { UPDATE_NAV_STEP_CONFIG } from './updateNavStepConfig'

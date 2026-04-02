@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 
-import { FundManagerFlowModal } from '@/app/fund-manager/components/FundManagerFlowModal'
+import { FundManagerFlowModal } from '@/app/fund-manager/components'
 
 import { DepositToVaultProvider, useDepositToVaultContext } from './DepositToVaultContext'
 import { getDepositToVaultStepConfig } from './depositToVaultStepConfig'

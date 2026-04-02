@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react'
 
-import { FundManagerFlowModal } from '@/app/fund-manager/components/FundManagerFlowModal'
+import { FundManagerFlowModal } from '@/app/fund-manager/components'
 
 import { TopUpBufferProvider, useTopUpBufferContext } from './TopUpBufferContext'
 import { getTopUpBufferStepConfig } from './topUpBufferStepConfig'
