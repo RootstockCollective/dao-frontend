@@ -1,10 +1,15 @@
 import { cleanup, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 import type { WalletBalanceDisplay } from '../../services/ui/types'
-
 import { WalletBalancesTable } from './WalletBalancesTable'
+
+vi.mock('@/shared/hooks/useIsDesktop', () => ({
+  useIsDesktop: vi.fn(() => true),
+}))
 
 beforeAll(() => {
   global.ResizeObserver = vi.fn().mockImplementation(() => ({
@@ -86,10 +91,16 @@ describe('WalletBalancesTable', () => {
     cleanup()
   })
 
+  beforeEach(() => {
+    vi.mocked(useIsDesktop).mockReturnValue(true)
+  })
+
   it('renders table with column headers showing totals for balance and percentage', () => {
     render(<WalletBalancesTable wallets={MOCK_WALLETS} />)
 
     expect(screen.getByTestId('wallet-balances-table')).toBeInTheDocument()
+    expect(screen.getByTestId('wallet-balances-table')).toHaveClass('w-full', 'md:overflow-x-auto')
+    expect(screen.getByTestId('wallet-grid-table')).toHaveClass('min-w-0', 'md:min-w-[540px]')
     expect(screen.getByText('On-chain wallet')).toBeInTheDocument()
     expect(screen.getByText('Tracking')).toBeInTheDocument()
     expect(screen.getByText('1069.99992')).toBeInTheDocument()
@@ -129,6 +140,7 @@ describe('WalletBalancesTable', () => {
     render(<WalletBalancesTable wallets={MOCK_WALLETS} />)
 
     expect(screen.getByTestId('show-all-wallets-button')).toBeInTheDocument()
+    expect(screen.getByTestId('show-all-wallets-button')).toHaveClass('h-11')
     expect(screen.getByText('Show all wallets')).toBeInTheDocument()
   })
 
@@ -280,6 +292,51 @@ describe('WalletBalancesTable', () => {
       await user.click(screen.getByTestId('ColumnHeader-wallet'))
 
       expect(screen.getByText('AAA First')).toBeInTheDocument()
+    })
+  })
+
+  describe('mobile viewport (useIsDesktop false)', () => {
+    beforeEach(() => {
+      vi.mocked(useIsDesktop).mockReturnValue(false)
+    })
+
+    it('omits the stacked first column header and shows three sortable headers', () => {
+      render(<WalletBalancesTable wallets={MOCK_WALLETS} />)
+
+      expect(screen.queryByText('On-chain wallet')).not.toBeInTheDocument()
+      expect(screen.getByText('Tracking')).toBeInTheDocument()
+      expect(screen.getByText('1069.99992')).toBeInTheDocument()
+      expect(screen.getByText('100.00%')).toBeInTheDocument()
+      expect(screen.getAllByRole('columnheader')).toHaveLength(3)
+    })
+
+    it('uses full-width wrapper without base overflow-x-auto and stacks rows via GridTable', () => {
+      render(<WalletBalancesTable wallets={MOCK_WALLETS} />)
+
+      const wrapper = screen.getByTestId('wallet-balances-table')
+      expect(wrapper).toHaveClass('w-full', 'md:overflow-x-auto')
+      expect(wrapper.className.split(/\s+/).filter(Boolean)).not.toContain('overflow-x-auto')
+
+      const grid = screen.getByTestId('wallet-grid-table')
+      expect(grid).toHaveClass('min-w-0', 'md:min-w-[540px]')
+    })
+
+    it('keeps show-all, sorting by balance, and tracking links working', async () => {
+      const user = userEvent.setup()
+      render(<WalletBalancesTable wallets={MOCK_WALLETS} />)
+
+      expect(screen.getByTestId('show-all-wallets-button')).toHaveClass('h-11')
+
+      expect(screen.queryByText('Fordefi 5')).not.toBeInTheDocument()
+      await user.click(screen.getByTestId('show-all-wallets-button'))
+      expect(screen.getByText('Fordefi 5')).toBeInTheDocument()
+
+      await user.click(screen.getByTestId('ColumnHeader-balance'))
+      const rows = screen.getAllByRole('row')
+      expect(within(rows[0]).getByText('Fordefi 2')).toBeInTheDocument()
+
+      const trackingInFirstRow = within(rows[0]).getByRole('link', { name: 'Nimbus' })
+      expect(trackingInFirstRow).toHaveAttribute('href', 'https://app.nimbus.io')
     })
   })
 })

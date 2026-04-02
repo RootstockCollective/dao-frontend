@@ -53,7 +53,7 @@ export function CapitalAllocationSection() {
                 data && <CapitalAllocationDonutChart data={data} />
               )}
             </div>
-            <div className="min-h-[200px] flex-1">
+            <div className="min-h-[200px] min-w-0 flex-1">
               {isLoading ? (
                 <div data-testid="wallet-loading" className="min-h-[200px]" />
               ) : (
