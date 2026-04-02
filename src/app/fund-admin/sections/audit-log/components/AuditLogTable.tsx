@@ -88,6 +88,12 @@ export const AuditLogTable = () => {
     }
   }, [sort.columnId, sort.direction])
 
+  // Reset pager when filters change
+  useEffect(() => {
+    setPageEnd(AUDIT_LOG_PAGE_SIZE)
+    setPagerKey(k => k + 1)
+  }, [activeFilters])
+
   return (
     <div className="w-full flex flex-col gap-8 md:gap-10">
       <div className="flex items-center justify-between h-14">
