@@ -46,7 +46,7 @@ export function CapitalAllocationSection() {
       >
         {isDetailed ? (
           <div data-testid="capital-allocation-detailed" className="flex flex-col gap-6 xl:flex-row">
-            <div className="w-full xl:max-w-[480px] xl:shrink-0">
+            <div className="w-full max-md:overflow-x-visible xl:max-w-[480px] xl:shrink-0">
               {isLoading ? (
                 <div data-testid="detailed-loading" className="min-h-[200px]" />
               ) : (

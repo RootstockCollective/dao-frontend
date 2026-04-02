@@ -8,3 +8,6 @@ export const CAPITAL_ALLOCATION_CHART_COLORS: [string, string, string] = [
 export const DONUT_CHART_SIZE = 480
 export const DONUT_INNER_RADIUS_PERCENT = 90
 export const DONUT_OUTER_RADIUS_PERCENT = 95
+
+/** Max width of HTML legend vs chart box (~inner hole diameter for innerRadius 90%). */
+export const DONUT_LEGEND_MAX_WIDTH_RATIO = 82
