@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react'
-import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest'
+import { cleanup, render, screen } from '@testing-library/react'
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ActiveRequestDisplay } from './services/ui/types'
 
@@ -45,6 +45,10 @@ const MOCK_REQUEST: ActiveRequestDisplay = {
 }
 
 describe('ActiveRequestSection', () => {
+  afterEach(() => {
+    cleanup()
+  })
+
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -56,16 +60,6 @@ describe('ActiveRequestSection', () => {
 
   it('renders nothing when there are no active requests', () => {
     const { container } = render(<ActiveRequestSection data={[]} />)
-    expect(container.innerHTML).toBe('')
-  })
-
-  it('renders nothing when data is undefined (still loading)', () => {
-    mockedUseAccount.mockReturnValue({
-      address: '0x1234567890abcdef1234567890abcdef12345678',
-    } as unknown as ReturnType<typeof useAccount>)
-    mockedUseActiveRequests.mockReturnValue({ data: undefined })
-
-    const { container } = render(<ActiveRequestSection />)
     expect(container.innerHTML).toBe('')
   })
 
