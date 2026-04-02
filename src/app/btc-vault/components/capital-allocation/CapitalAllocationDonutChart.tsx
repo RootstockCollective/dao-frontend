@@ -106,7 +106,7 @@ export function CapitalAllocationDonutChart({
                   />
                   <span className="min-w-0 wrap-break-word">{cat.label}</span>
                   {CAPITAL_ALLOCATION_TOOLTIP_MAP[cat.label] && (
-                    <Tooltip text={CAPITAL_ALLOCATION_TOOLTIP_MAP[cat.label]}>
+                    <Tooltip text={CAPITAL_ALLOCATION_TOOLTIP_MAP[cat.label]} side="top">
                       <KotoQuestionMarkIcon
                         size={14}
                         className="shrink-0 cursor-help"
