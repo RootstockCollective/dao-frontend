@@ -16,6 +16,7 @@ import { TokenImage } from '@/components/TokenImage'
 import { Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 import type { WalletBalanceDisplay } from '../../services/ui/types'
 import { DEFAULT_VISIBLE_WALLETS } from './WalletBalancesTable.constants'
@@ -28,6 +29,7 @@ interface Props extends HTMLAttributes<HTMLDivElement> {
 const { accessor } = createColumnHelper<WalletBalanceDisplay>()
 
 export function WalletBalancesTable({ wallets, className, 'data-testid': testId, ...props }: Props) {
+  const isDesktop = useIsDesktop()
   const [showAll, setShowAll] = useState(false)
   const [sorting, setSorting] = useState<SortingState>([{ id: 'percentage', desc: true }])
 
@@ -182,14 +184,15 @@ export function WalletBalancesTable({ wallets, className, 'data-testid': testId,
   return (
     <div
       data-testid={testId ?? 'wallet-balances-table'}
-      className={cn('w-full overflow-x-auto', className)}
+      className={cn('w-full md:overflow-x-auto', className)}
       {...props}
     >
       <GridTable
+        stackFirstColumn={!isDesktop}
         table={table}
         rowStyles="py-2"
         headerClassName="pb-[5px]"
-        className="min-w-[540px]"
+        className="min-w-0 md:min-w-[540px]"
         data-testid="wallet-grid-table"
       />
       {wallets.length > DEFAULT_VISIBLE_WALLETS && (
@@ -197,7 +200,7 @@ export function WalletBalancesTable({ wallets, className, 'data-testid': testId,
           <button
             type="button"
             onClick={() => setShowAll(prev => !prev)}
-            className="rounded-sm border border-text-60 px-4 py-2 font-rootstock-sans text-sm transition-colors hover:bg-text-80"
+            className="inline-flex h-11 items-center rounded-sm border border-text-60 px-4 font-rootstock-sans text-sm transition-colors hover:bg-text-80"
             data-testid="show-all-wallets-button"
           >
             {showAll ? 'Show fewer wallets' : 'Show all wallets'}
