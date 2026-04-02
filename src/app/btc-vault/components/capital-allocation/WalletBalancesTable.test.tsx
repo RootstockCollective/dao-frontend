@@ -222,7 +222,9 @@ describe('WalletBalancesTable', () => {
     ]
 
     const getRowLabels = () =>
-      screen.getAllByRole('row').map(row => within(row).queryByText(/Wallet/)?.textContent)
+      screen
+        .getAllByRole('row')
+        .map(row => within(row).queryByText(/Wallet/)?.textContent)
         .filter(Boolean)
 
     it('clicking "On-chain wallet" header sorts rows alphabetically', async () => {
@@ -300,43 +302,42 @@ describe('WalletBalancesTable', () => {
       vi.mocked(useIsDesktop).mockReturnValue(false)
     })
 
-    it('omits the stacked first column header and shows three sortable headers', () => {
+    it('matches proposals mobile: no table header row; collapsed card shows wallet name only', () => {
       render(<WalletBalancesTable wallets={MOCK_WALLETS} />)
 
+      expect(screen.queryAllByRole('columnheader')).toHaveLength(0)
+      expect(screen.queryByTestId('ColumnHeader-wallet')).not.toBeInTheDocument()
       expect(screen.queryByText('On-chain wallet')).not.toBeInTheDocument()
-      expect(screen.getByText('Tracking')).toBeInTheDocument()
-      expect(screen.getByText('1069.99992')).toBeInTheDocument()
-      expect(screen.getByText('100.00%')).toBeInTheDocument()
-      expect(screen.getAllByRole('columnheader')).toHaveLength(3)
+      expect(screen.queryByText('1069.99992')).not.toBeInTheDocument()
+      expect(screen.getByTestId('wallet-mobile-row-0')).toHaveTextContent('Fordefi 1')
     })
 
-    it('uses full-width wrapper without base overflow-x-auto and stacks rows via GridTable', () => {
+    it('uses expandable rows instead of GridTable and keeps full-width wrapper without overflow-x-auto', () => {
       render(<WalletBalancesTable wallets={MOCK_WALLETS} />)
 
       const wrapper = screen.getByTestId('wallet-balances-table')
       expect(wrapper).toHaveClass('w-full', 'md:overflow-x-auto')
       expect(wrapper.className.split(/\s+/).filter(Boolean)).not.toContain('overflow-x-auto')
 
-      const grid = screen.getByTestId('wallet-grid-table')
-      expect(grid).toHaveClass('min-w-0', 'md:min-w-[540px]')
+      expect(screen.queryByTestId('wallet-grid-table')).not.toBeInTheDocument()
+      expect(screen.getByTestId('wallet-balances-mobile')).toBeInTheDocument()
+      expect(screen.getByTestId('wallet-mobile-row-0')).toBeInTheDocument()
     })
 
-    it('keeps show-all, sorting by balance, and tracking links working', async () => {
+    it('keeps show-all working; tracking link is in expandable content after expand', async () => {
       const user = userEvent.setup()
       render(<WalletBalancesTable wallets={MOCK_WALLETS} />)
 
       expect(screen.getByTestId('show-all-wallets-button')).toHaveClass('h-11')
 
-      expect(screen.queryByText('Fordefi 5')).not.toBeInTheDocument()
+      expect(screen.queryAllByText('Fordefi 5')).toHaveLength(0)
       await user.click(screen.getByTestId('show-all-wallets-button'))
-      expect(screen.getByText('Fordefi 5')).toBeInTheDocument()
+      expect(screen.getAllByText('Fordefi 5').length).toBeGreaterThanOrEqual(1)
 
-      await user.click(screen.getByTestId('ColumnHeader-balance'))
-      const rows = screen.getAllByRole('row')
-      expect(within(rows[0]).getByText('Fordefi 2')).toBeInTheDocument()
-
-      const trackingInFirstRow = within(rows[0]).getByRole('link', { name: 'Nimbus' })
-      expect(trackingInFirstRow).toHaveAttribute('href', 'https://app.nimbus.io')
+      const firstRow = screen.getByTestId('wallet-mobile-row-0')
+      await user.click(within(firstRow).getByTestId('ExpandableTrigger'))
+      const nimbusLink = within(firstRow).getByRole('link', { name: 'Nimbus' })
+      expect(nimbusLink).toHaveAttribute('href', 'https://app.nimbus.io')
     })
   })
 })
