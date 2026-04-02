@@ -18,7 +18,7 @@ import {
   type AuditLogTableModel,
   type ColumnId,
   type SortableColumnId,
-} from '../AuditLogTable.config'
+} from '../config'
 
 const ROLE_STYLES: Record<AuditLogUserRole, string> = {
   Admin: 'bg-[#08ffd0] text-v3-text-0',
