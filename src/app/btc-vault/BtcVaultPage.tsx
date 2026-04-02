@@ -1,7 +1,5 @@
 'use client'
 
-import { useAccount } from 'wagmi'
-
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
 
 import { ActiveRequestSection } from './ActiveRequestSection'
@@ -11,13 +9,10 @@ import { BtcVaultDisclosureSection } from './components/BtcVaultDisclosureSectio
 import { BtcVaultMetrics } from './components/BtcVaultMetrics'
 import { BtcVaultWalletDisconnectedSection } from './components/BtcVaultWalletDisconnectedSection'
 import { CapitalAllocationSection } from './components/capital-allocation/CapitalAllocationSection'
-import { useActiveRequests } from './hooks/useActiveRequests'
 
 const NAME = 'BTC Vault'
 
 export const BtcVaultPage = () => {
-  const { address } = useAccount()
-  const { data: activeRequests, refetch: refetchActiveRequests } = useActiveRequests(address)
   return (
     <div
       data-testid={NAME} // TODO: DAO-2029 Standardize data-test-ids to using kebab-case only
@@ -25,7 +20,7 @@ export const BtcVaultPage = () => {
     >
       <BtcVaultBanners />
       {/* Active Request Zone - F7 (STORY-EPIC-7-001) */}
-      <ActiveRequestSection data={activeRequests} />
+      <ActiveRequestSection />
       {/* Vault Metrics Zone - F3 */}
       <section data-testid="btc-vault-metrics" className="w-full">
         <SectionContainer title="VAULT METRICS" headerVariant="h3">
@@ -34,7 +29,7 @@ export const BtcVaultPage = () => {
       </section>
 
       {/* Dashboard Zone - F4 */}
-      <BtcVaultDashboard onRequestSubmitted={refetchActiveRequests} />
+      <BtcVaultDashboard />
 
       {/* Capital Allocation Transparency - DAO-2017 */}
       <CapitalAllocationSection />
