@@ -3,12 +3,13 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useState } from 'react'
 
-import { BTCAddWhitelist } from '@/app/fund-admin/sections/whitelist/components/BTCAddWhitelist'
-import { BTCWhitelistingHistoryTable } from '@/app/fund-admin/sections/whitelist/components/BTCWhitelistingHistoryTable'
-import type { ColumnId, WhitelistCellDataMap } from '@/app/fund-admin/sections/whitelist/config'
-import { BTC_VAULT_WHITELISTED_USERS_QUERY_KEY } from '@/app/fund-admin/sections/whitelist/hooks/useGetBTCWhitelistingHistory'
 import { SolidTabs } from '@/components/Tabs'
 import { TableProvider } from '@/shared/context'
+
+import { BTCAddWhitelist } from './whitelist/components/BTCAddWhitelist'
+import { BTCWhitelistingHistoryTable } from './whitelist/components/BTCWhitelistingHistoryTable'
+import type { ColumnId, WhitelistCellDataMap } from './whitelist/config'
+import { BTC_VAULT_WHITELISTED_USERS_QUERY_KEY } from './whitelist/hooks/useGetBTCWhitelistingHistory'
 
 const ADMIN_TABS = ['Whitelist', 'Vault controls', 'Audit log'] as const
 type AdminTab = (typeof ADMIN_TABS)[number]
