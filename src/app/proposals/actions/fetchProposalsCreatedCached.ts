@@ -1,4 +1,4 @@
-import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
+import type { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
 export const fetchProposalsCreatedCached = async (): Promise<{
   data: BackendEventByTopic0ResponseValue[]
