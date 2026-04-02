@@ -8,6 +8,7 @@ import { Switch, SwitchThumb } from '@/components/Switch'
 import { TokenImage } from '@/components/TokenImage'
 import { Label, Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 
 import { useCapitalAllocation } from '../../hooks/useCapitalAllocation'
 import { CapitalAllocationDonutChart } from './CapitalAllocationDonutChart'
@@ -53,7 +54,7 @@ export function CapitalAllocationSection() {
                 data && <CapitalAllocationDonutChart data={data} />
               )}
             </div>
-            <div className="min-h-[200px] min-w-0 flex-1">
+            <div className={cn('min-w-0 flex-1', isLoading ? 'min-h-[200px]' : 'min-h-0')}>
               {isLoading ? (
                 <div data-testid="wallet-loading" className="min-h-[200px]" />
               ) : (
