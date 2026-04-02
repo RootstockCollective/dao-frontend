@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { AUDIT_LOG_PAGE_SIZE, useGetAuditLog } from '@/app/fund-admin/hooks/useAuditLog'
-import { CsvIcon } from '@/components/Icons/CsvIcon'
 import { FilterIcon } from '@/components/Icons/FilterIcon'
 import { TablePager } from '@/components/TableNew'
 import { Header, Paragraph } from '@/components/Typography'
@@ -16,6 +15,7 @@ import {
   DEFAULT_HEADERS,
   type SortableColumnId,
 } from '../config'
+import { AuditLogCsvButton } from './AuditLogCsvButton'
 import { DesktopAuditLogHistory } from './DesktopAuditLogHistory'
 
 function isSortableColumnId(id: ColumnId | null): id is SortableColumnId {
@@ -75,10 +75,7 @@ export const AuditLogTable = () => {
           RECORD OF OPERATIONAL ACTIONS
         </Header>
         <div className="flex items-center gap-4">
-          {/* TODO: Add CSV export and filters */}
-          <button type="button" aria-label="Export CSV" className="cursor-pointer">
-            <CsvIcon size={24} color="white" />
-          </button>
+          <AuditLogCsvButton sortField={sortField} sortDirection={sort.direction} />
           <button type="button" aria-label="Open filters" className="cursor-pointer">
             <FilterIcon size={24} color="white" />
           </button>
