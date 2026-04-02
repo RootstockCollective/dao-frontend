@@ -6,7 +6,13 @@ import { useAccount } from 'wagmi'
 import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
 import { Header } from '@/components/Typography'
 
+import {
+  ELIGIBILITY_DEPOSIT_CARD_DEBRIS_CREAM,
+  ELIGIBILITY_DEPOSIT_CARD_DEBRIS_DARK,
+  ELIGIBILITY_DEPOSIT_CARD_GRADIENT,
+} from './components/btcVaultBannerGradients'
 import { BtcVaultEligibilityAndDepositCard } from './components/BtcVaultEligibilityAndDepositCard'
+import { BtcVaultPrototypeBannerContent } from './components/BtcVaultPrototypeBannerContent'
 import { DepositWindowSection } from './components/DepositWindowSection'
 import { DisclosureContent } from './components/DisclosureContent'
 import { PauseBannerContent } from './components/PauseBannerContent'
@@ -34,13 +40,24 @@ export const BtcVaultBanners = () => {
 
   if (!address || !isConnected) {
     const showDepositWindow = Boolean(epoch?.isAcceptingRequests && epoch?.endTime != null)
-    const sections: ReactNode[] = []
+    const sections: ReactNode[] = [<BtcVaultPrototypeBannerContent key="btc-vault-prototype" />]
     if (showDepositWindow && epoch) {
       sections.push(<DepositWindowSection key="deposit-window" epoch={epoch} />)
     }
     sections.push(<DisclosureSection key="disclosure" />)
 
-    return <StackableBanner testId="DisclosureBanner">{sections}</StackableBanner>
+    return (
+      <StackableBanner
+        testId="DisclosureBanner"
+        background={ELIGIBILITY_DEPOSIT_CARD_GRADIENT}
+        mobileBackground={ELIGIBILITY_DEPOSIT_CARD_GRADIENT}
+        decorativeImageColor={ELIGIBILITY_DEPOSIT_CARD_DEBRIS_CREAM}
+        decorativeSecondaryColor={ELIGIBILITY_DEPOSIT_CARD_DEBRIS_DARK}
+        className="isolate"
+      >
+        {sections}
+      </StackableBanner>
+    )
   }
 
   const pauseState = eligibilityData?.pauseState
