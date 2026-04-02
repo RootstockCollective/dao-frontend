@@ -1,7 +1,7 @@
 'use client'
 
 import { type CSSProperties, type HTMLAttributes, useMemo } from 'react'
-import { Cell, Pie, PieChart, ResponsiveContainer } from 'recharts'
+import { Pie, PieChart, type PieSectorShapeProps, ResponsiveContainer, Sector } from 'recharts'
 
 import { KotoQuestionMarkIcon } from '@/components/Icons/KotoQuestionMarkIcon'
 import { TokenImage } from '@/components/TokenImage'
@@ -20,6 +20,10 @@ import {
 import { segmentsFromDisplay } from './CapitalAllocationDonutChart.utils'
 import { CAPITAL_ALLOCATION_TOOLTIP_MAP } from './CapitalAllocationSection.constants'
 
+function capitalAllocationPieSector(props: PieSectorShapeProps) {
+  return <Sector {...props} stroke="none" />
+}
+
 export interface CapitalAllocationDonutChartProps extends HTMLAttributes<HTMLDivElement> {
   data: CapitalAllocationDisplay
   /** Disable animation (e.g. in tests for stable DOM). */
@@ -32,7 +36,13 @@ export function CapitalAllocationDonutChart({
   className,
   ...props
 }: CapitalAllocationDonutChartProps) {
-  const segments = useMemo(() => segmentsFromDisplay(data), [data])
+  const segments = useMemo(() => {
+    const base = segmentsFromDisplay(data)
+    return base.map((s, i) => ({
+      ...s,
+      fill: CAPITAL_ALLOCATION_CHART_COLORS[i] ?? '#888',
+    }))
+  }, [data])
   const total = useMemo(() => segments.reduce((s, seg) => s + seg.value, 0), [segments])
 
   return (
@@ -61,19 +71,8 @@ export function CapitalAllocationDonutChart({
             isAnimationActive={isAnimationActive}
             startAngle={90}
             endAngle={-270}
-          >
-            {total > 0 ? (
-              segments.map((_, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={CAPITAL_ALLOCATION_CHART_COLORS[index] ?? '#888'}
-                  stroke="none"
-                />
-              ))
-            ) : (
-              <Cell fill="var(--color-bg-20, #333)" stroke="none" />
-            )}
-          </Pie>
+            shape={capitalAllocationPieSector}
+          />
         </PieChart>
       </ResponsiveContainer>
 
