@@ -1,8 +1,4 @@
-import { Fragment } from 'react'
-
-import { PannableProgressStepRow, ProgressBar } from '@/components/ProgressBarNew'
-import { Span } from '@/components/Typography'
-import { cn } from '@/lib/utils'
+import { PannableProgressStepRow } from '@/components/ProgressBarNew'
 import { ProposalState } from '@/shared/types'
 
 interface ProgressBarProps {
@@ -44,38 +40,10 @@ const getCurrentStepIndex = (proposalState: ProposalState) => {
   }
 }
 
-const renderStatusPath = (proposalState: ProposalState) => {
-  const steps = getStatusSteps(proposalState)
-  const currentStepIndex = getCurrentStepIndex(proposalState)
-
-  const classname = 'text-base leading-normal tracking-[1.28px] uppercase'
-
-  return (
-    <>
-      {steps.map((step, index) => (
-        <Fragment key={step}>
-          <Span
-            variant="body-s"
-            className={cn(
-              classname,
-              'font-medium flex-shrink-0',
-              index === currentStepIndex ? 'text-text-100' : 'text-bg-0',
-            )}
-          >
-            {step}
-          </Span>
-          {index < steps.length - 1 && (
-            <Span variant="body-s" className={cn(classname, 'text-xl flex-shrink-0 mx-2 text-bg-0')}>
-              {'>'}
-            </Span>
-          )}
-        </Fragment>
-      ))}
-    </>
-  )
-}
-
 export const ProposalProggressBar = ({ proposalState }: ProgressBarProps) => {
+  const steps = getStatusSteps(proposalState!)
+  const currentStepIndex = getCurrentStepIndex(proposalState!)
+
   const getProgressBarColor = () => {
     if (proposalState === ProposalState.Defeated || proposalState === ProposalState.Canceled) {
       return ['#4B5CF0', '#F47A2A', '#ff6688']
@@ -85,17 +53,15 @@ export const ProposalProggressBar = ({ proposalState }: ProgressBarProps) => {
 
   return (
     <PannableProgressStepRow
-      currentStepIndex={getCurrentStepIndex(proposalState!)}
+      steps={steps}
+      currentStepIndex={currentStepIndex}
+      stepLabelVariant="proposal"
       measureContainerClassName="flex flex-col w-full md:p-6 p-4 md:pb-10"
-      footer={
-        <ProgressBar
-          progress={proposalStateToProgressMap.get(proposalState) ?? 0}
-          className="mt-3"
-          color={getProgressBarColor()}
-        />
-      }
-    >
-      {renderStatusPath(proposalState!)}
-    </PannableProgressStepRow>
+      progressBar={{
+        progress: proposalStateToProgressMap.get(proposalState) ?? 0,
+        className: 'mt-3',
+        color: getProgressBarColor(),
+      }}
+    />
   )
 }
