@@ -20,6 +20,7 @@ import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 import type { WalletBalanceDisplay } from '../../services/ui/types'
 import { DEFAULT_VISIBLE_WALLETS } from './WalletBalancesTable.constants'
+import { WalletBalancesTableMobile } from './WalletBalancesTableMobile'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   wallets: WalletBalanceDisplay[]
@@ -187,14 +188,17 @@ export function WalletBalancesTable({ wallets, className, 'data-testid': testId,
       className={cn('w-full md:overflow-x-auto', className)}
       {...props}
     >
-      <GridTable
-        stackFirstColumn={!isDesktop}
-        table={table}
-        rowStyles="py-2"
-        headerClassName="pb-[5px]"
-        className="min-w-0 md:min-w-[540px]"
-        data-testid="wallet-grid-table"
-      />
+      {isDesktop ? (
+        <GridTable
+          table={table}
+          rowStyles="py-2"
+          headerClassName="pb-[5px]"
+          className="min-w-0 md:min-w-[540px]"
+          data-testid="wallet-grid-table"
+        />
+      ) : (
+        <WalletBalancesTableMobile table={table} />
+      )}
       {wallets.length > DEFAULT_VISIBLE_WALLETS && (
         <div className="flex justify-start pt-4">
           <button
