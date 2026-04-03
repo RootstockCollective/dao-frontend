@@ -96,10 +96,10 @@ describe('DepositReviewStep', () => {
     expect(screen.getByTestId('SubmitRequestButton')).toHaveTextContent('Send request')
   })
 
-  it('shows In progress button when isSubmitting is true', () => {
+  it('shows In Progress button when isSubmitting is true', () => {
     render(<DepositReviewStep {...defaultProps} isSubmitting />)
 
-    expect(screen.getByText('In progress')).toBeInTheDocument()
+    expect(screen.getByText('In Progress')).toBeInTheDocument()
     expect(screen.queryByTestId('SubmitRequestButton')).not.toBeInTheDocument()
     expect(screen.getByTestId('BackButton')).toBeInTheDocument()
   })
