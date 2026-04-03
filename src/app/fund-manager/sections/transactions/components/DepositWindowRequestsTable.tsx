@@ -2,16 +2,16 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { useGetBtcVaultEntitiesHistory } from '@/app/fund-manager/hooks/useGetBtcVaultEntitiesHistory'
+import { useGetBtcVaultEntitiesHistory } from '@/app/fund-manager/sections/transactions/hooks/useGetBtcVaultEntitiesHistory'
 import { TablePager } from '@/components/TableNew'
 import { Header } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
-import { convertDataToRowData } from './convertDataToRowData'
-import type { ColumnId, DepositWindowCellDataMap } from './DepositWindowRequestsTable.config'
-import { DEFAULT_HEADERS, PAGE_SIZE } from './DepositWindowRequestsTable.config'
+import type { ColumnId, DepositWindowCellDataMap } from '../config'
+import { DEFAULT_HEADERS, PAGE_SIZE } from '../config'
+import { convertDataToRowData } from '../utils'
 import { DesktopDepositWindowRequests } from './DesktopDepositWindowRequests'
 
 const SORT_FIELD_BY_COLUMN: Partial<Record<ColumnId, 'timestamp' | 'assets'>> = {
