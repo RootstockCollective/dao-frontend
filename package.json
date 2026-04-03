@@ -1,6 +1,6 @@
 {
   "name": "dao-frontend",
-  "version": "1.18.1",
+  "version": "1.19.2",
   "scripts": {
     "prepare": "husky",
     "dev": "NODE_OPTIONS='--enable-source-maps' next dev | pino-pretty",
@@ -151,7 +151,7 @@
     "@reown/appkit-adapter-wagmi": {
       "@wagmi/connectors": "6.2.0"
     },
-    "axios": "~1.13.5"
+    "axios": "1.13.5"
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --fix"

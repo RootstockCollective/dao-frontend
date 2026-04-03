@@ -59,9 +59,10 @@ describe('BtcDepositModal', () => {
       data: {
         tvlFormatted: '50',
         apyFormatted: '8.50',
-        pricePerShareFormatted: '1.02',
+        pricePerShareFormatted: '0',
         timestamp: 1709000000,
-        pricePerShareRaw: 1_020_000_000_000_000_000n,
+        // 1e12 wei per raw unit → ~1 human share per 1 rBTC for estimates in this test
+        pricePerShareRaw: 1_000_000_000_000n,
       },
       isLoading: false,
     })

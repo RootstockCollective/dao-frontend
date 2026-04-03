@@ -10,7 +10,7 @@ import { PercentageButtons } from '@/components/PercentageButtons'
 import { TokenImage } from '@/components/TokenImage'
 import { Label, Paragraph } from '@/components/Typography'
 import Big from '@/lib/big'
-import { RBTC } from '@/lib/constants'
+import { RBTC, VAULT_SHARE_DECIMALS } from '@/lib/constants'
 import { cn, formatCurrency, handleAmountInput } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 
@@ -65,8 +65,10 @@ export const WithdrawAmountStep = ({
 
   const handlePercentageClick = useCallback(
     (percentage: number) => {
-      const balanceStr = Big(vaultTokensRaw.toString()).div(Big(10).pow(18)).toString()
-      const calculatedAmount = Big(balanceStr).mul(percentage).toString()
+      const calculatedAmount = Big(vaultTokensRaw.toString())
+        .mul(percentage)
+        .div(Big(10).pow(VAULT_SHARE_DECIMALS))
+        .toFixedNoTrailing(18, 0)
       setAmount(calculatedAmount)
     },
     [vaultTokensRaw, setAmount],
@@ -75,7 +77,7 @@ export const WithdrawAmountStep = ({
   const isAmountOverBalance = useMemo(() => {
     if (!amount || amount === '0') return false
     try {
-      const amountWei = Big(amount).mul(Big(10).pow(18))
+      const amountWei = Big(amount).mul(Big(10).pow(VAULT_SHARE_DECIMALS))
       return amountWei.gt(Big(vaultTokensRaw.toString()))
     } catch {
       return false

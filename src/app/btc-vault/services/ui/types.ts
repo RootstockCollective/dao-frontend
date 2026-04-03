@@ -62,7 +62,11 @@ export interface VaultMetricsDisplay {
   timestamp: number
   /** Raw tvl bigint kept for fiat conversion calculations */
   tvlRaw: bigint
-  /** Raw pricePerShare bigint kept for form calculations (e.g. estimated shares = amount / pricePerShare) */
+  /**
+   * Chain spot NAV `(totalAssets * 1e18) / totalSupply` — rBTC wei per **raw** share basis (same units
+   * as `VaultMetrics.pricePerShare`). Kept for deposit/withdraw estimates (pair with raw share amounts).
+   * `pricePerShareFormatted` is per **1.0 human** share via `lockedSharePriceToNavPerHumanShareWei`.
+   */
   pricePerShareRaw: bigint
   /** Optional TVL as percentage of total supply or similar; when absent UI shows "—". */
   tvlPercentFormatted?: string

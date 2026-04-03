@@ -11,6 +11,7 @@ import {
 import { RBTC } from '@/lib/constants'
 import { rbtcVault } from '@/lib/contracts'
 import { usePricesContext } from '@/shared/context/PricesContext'
+import { useReadRbtcBuffer } from '@/shared/hooks/contracts/btc-vault'
 
 import type { CapitalAllocation } from '../../services/types'
 import { toCapitalAllocationDisplay } from '../../services/ui/mappers'
@@ -18,17 +19,23 @@ import { toCapitalAllocationDisplay } from '../../services/ui/mappers'
 const CAPITAL_ALLOCATION_CONTRACTS = [
   { ...rbtcVault, functionName: 'totalAssets' } as const,
   { ...rbtcVault, functionName: 'freeOnchainLiquidity' } as const,
-  { ...rbtcVault, functionName: 'reservedOnchainAssets' } as const,
   { ...rbtcVault, functionName: 'reportedOffchainAssets' } as const,
 ] as const
 
 /**
  * Reads vault capital allocation from chain and enriches with transparency wallet native balance.
- * `isLoading` reflects vault multicall only; the wallet balance loads in parallel and updates the table when ready.
+ * Liquidity reserve sums vault `freeOnchainLiquidity` and RBTC Buffer `bufferAssets` (same source as `useRbtcBuffer`).
+ * `isLoading` reflects vault multicall and buffer read; the wallet balance loads in parallel and updates the table when ready.
  */
 export function useCapitalAllocation() {
   const { prices } = usePricesContext()
   const rbtcPrice = prices[RBTC]?.price ?? 0
+
+  const {
+    data: bufferAssets,
+    isLoading: isBufferLoading,
+    error: bufferError,
+  } = useReadRbtcBuffer({ functionName: 'bufferAssets' })
 
   const {
     data,
@@ -48,14 +55,14 @@ export function useCapitalAllocation() {
     },
   })
 
-  /** Vault reads only — do not block UI on native balance fetch (balance updates when ready). */
-  const isLoading = isContractsLoading
+  /** Vault + buffer reads; do not block UI on native balance fetch (balance updates when ready). */
+  const isLoading = isContractsLoading || isBufferLoading
 
   const rawAllocation = useMemo((): CapitalAllocation => {
     const totalAssets = (data?.[0]?.result as bigint | undefined) ?? 0n
     const freeOnchainLiquidity = (data?.[1]?.result as bigint | undefined) ?? 0n
-    const reservedOnchainAssets = (data?.[2]?.result as bigint | undefined) ?? 0n
-    const reportedOffchainAssets = (data?.[3]?.result as bigint | undefined) ?? 0n
+    const reportedOffchainAssets = (data?.[2]?.result as bigint | undefined) ?? 0n
+    const bufferAssetsWei = bufferAssets ?? 0n
 
     const wallets: CapitalAllocation['wallets'] = [
       {
@@ -71,22 +78,22 @@ export function useCapitalAllocation() {
     return {
       categories: [
         { label: 'Deployed capital', amount: reportedOffchainAssets },
-        { label: 'Liquidity reserve', amount: freeOnchainLiquidity },
-        { label: 'Unallocated capital', amount: reservedOnchainAssets },
+        { label: 'Liquidity reserve', amount: freeOnchainLiquidity + bufferAssetsWei },
+        { label: 'Unallocated capital', amount: freeOnchainLiquidity },
       ],
       totalCapital: totalAssets,
       wallets,
     }
-  }, [data, transparencyBalance?.value])
+  }, [data, transparencyBalance?.value, bufferAssets])
 
   const display = useMemo(() => {
-    if (isContractsLoading || error) return
+    if (isContractsLoading || isBufferLoading || error || bufferError) return
     return toCapitalAllocationDisplay(rawAllocation, rbtcPrice)
-  }, [rawAllocation, rbtcPrice, isContractsLoading, error])
+  }, [rawAllocation, rbtcPrice, isContractsLoading, isBufferLoading, error, bufferError])
 
   return {
     data: display,
     isLoading,
-    isError: !!error,
+    isError: !!(error ?? bufferError),
   }
 }

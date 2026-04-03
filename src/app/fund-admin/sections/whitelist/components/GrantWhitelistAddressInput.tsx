@@ -6,7 +6,7 @@ import { Control, useFormContext } from 'react-hook-form'
 import { TextInput } from '@/components/FormFields'
 import { useFormAddressResolution } from '@/shared/hooks'
 
-import type { BTCAddWhitelistForm } from '../schemas/grantWhitelistForm'
+import { type BTCAddWhitelistForm } from '../schema'
 
 export function WhitelistAddressInput({
   control,

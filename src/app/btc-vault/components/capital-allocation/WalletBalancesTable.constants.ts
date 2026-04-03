@@ -8,7 +8,7 @@ export const TRANSPARENCY_WALLET_ADDRESS =
 
 export const TRANSPARENCY_WALLET_LABEL = 'Foredefi 1'
 
-export const TRANSPARENCY_WALLET_LABEL_URL = `https://rootstock-testnet.blockscout.com/address/${TRANSPARENCY_WALLET_ADDRESS}?tab=coin_balance_history`
+export const TRANSPARENCY_WALLET_LABEL_URL = `https://rootstock.blockscout.com/address/${TRANSPARENCY_WALLET_ADDRESS}?tab=coin_balance_history`
 
 export const TRANSPARENCY_STRATEGY_LABEL = 'Simulated strategy 1'
 

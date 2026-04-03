@@ -8,17 +8,12 @@ import { TablePager } from '@/components/TableNew'
 import { Header } from '@/components/Typography'
 import { useTableActionsContext, useTableContext } from '@/shared/context'
 
+import { type ColumnId, DEFAULT_HEADERS, PAGE_SIZE, type WhitelistCellDataMap } from '../config'
 import {
   BTC_VAULT_WHITELISTED_USERS_QUERY_KEY,
   useGetBTCWhitelistingHistory,
 } from '../hooks/useGetBTCWhitelistingHistory'
-import {
-  type ColumnId,
-  DEFAULT_HEADERS,
-  PAGE_SIZE,
-  type WhitelistCellDataMap,
-} from './BTCWhitelistingHistoryTable.config'
-import { convertDataToRowData } from './convertDataToRowData'
+import { convertDataToRowData } from '../utils'
 import { DesktopBTCWhitelistingHistory } from './DesktopBTCWhitelistingHistory'
 import { DeWhitelistConfirmModal } from './DeWhitelistConfirmModal'
 
@@ -74,7 +69,8 @@ export const BTCWhitelistingHistoryTable = ({ onWhitelistDataChange }: BTCWhitel
   useEffect(() => {
     dispatch({ type: 'SET_COLUMNS', payload: DEFAULT_HEADERS })
     dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: 'date', direction: 'desc' } })
-  }, [dispatch])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // Intentionally run once on mount
 
   useEffect(() => {
     dispatch({ type: 'SET_ROWS', payload: rowData })

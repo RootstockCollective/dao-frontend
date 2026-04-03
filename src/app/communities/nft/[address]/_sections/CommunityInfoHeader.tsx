@@ -1,24 +1,26 @@
 'use client'
 
-import { useMemo } from 'react'
 import Image from 'next/image'
-import { useCommunityNFT } from '../CommunityNFTContext'
+import { useMemo } from 'react'
 import type { Address } from 'viem'
 import { useAccount } from 'wagmi'
+
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
-import { cn, truncateMiddle } from '@/lib/utils'
+import { BoostedLabelKoto } from '@/app/communities/components'
 import { ImageDebris } from '@/app/communities/components/ImageDebris'
-import { useAddToWallet } from '../_components/useAddToWallet'
-import { Button } from '@/components/Button'
-import { Header, Paragraph } from '@/components/Typography'
-import { CopyButton } from '@/components/CopyButton'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
+import { Button } from '@/components/Button'
+import { CopyButton } from '@/components/CopyButton'
+import { Divider } from '@/components/Divider'
+import { ArrowUpRightLightIcon } from '@/components/Icons'
+import { Header, Paragraph } from '@/components/Typography'
+import { cn, truncateMiddle } from '@/lib/utils'
 import type { ConnectButtonComponentProps } from '@/shared/walletConnection'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
+
 import { ClaimItButton } from '../_components/ClaimItButton'
-import { ArrowUpRightLightIcon } from '@/components/Icons'
-import { BoostedLabelKoto } from '@/app/communities/components'
-import { Divider } from '@/components/Divider'
+import { useAddToWallet } from '../_components/useAddToWallet'
+import { useCommunityNFT } from '../CommunityNFTContext'
 
 // Responsive button styles - mobile: sticky bottom with background, desktop: normal positioning
 const mobileButtonSx = 'fixed bottom-0 left-0 right-0 z-sticky bg-bg-100 p-4'
@@ -110,7 +112,7 @@ export function CommunityInfoHeader({ address: nftAddress }: { address: Address 
               text={
                 <div>
                   <Paragraph caps className="tracking-wider font-medium">
-                    {boostData?.boostPercentage}% rewards boost
+                    {boostData?.boostPercentage ?? 0}% rewards boost
                   </Paragraph>
                   <Paragraph className="normal-case">Take it while it lasts!</Paragraph>
                 </div>

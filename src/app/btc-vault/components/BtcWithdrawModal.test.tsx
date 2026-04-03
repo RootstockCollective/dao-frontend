@@ -2,7 +2,12 @@ import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { VAULT_SHARE_MULTIPLIER, WeiPerEther } from '@/lib/constants'
+
 import { BtcWithdrawModal } from './BtcWithdrawModal'
+
+const ONE_SHARE_RAW = WeiPerEther * VAULT_SHARE_MULTIPLIER
+const TWO_SHARES_RAW = 2n * ONE_SHARE_RAW
 
 const mockUseAccount = vi.fn()
 const mockUseUserPosition = vi.fn()
@@ -56,8 +61,8 @@ describe('BtcWithdrawModal', () => {
       data: {
         rbtcBalanceFormatted: '2.0',
         rbtcBalanceRaw: 2_000_000_000_000_000_000n,
-        vaultTokensFormatted: '5.0',
-        vaultTokensRaw: 5_000_000_000_000_000_000n,
+        vaultTokensFormatted: '5.00',
+        vaultTokensRaw: 5n * ONE_SHARE_RAW,
         positionValueFormatted: '5.1',
         percentOfVaultFormatted: '10.20%',
       },
@@ -68,7 +73,7 @@ describe('BtcWithdrawModal', () => {
         apyFormatted: '8.50',
         pricePerShareFormatted: '1.02',
         timestamp: 1709000000,
-        pricePerShareRaw: 1_020_000_000_000_000_000n,
+        pricePerShareRaw: 1_020_000_000_000n,
       },
       isLoading: false,
     })
@@ -144,7 +149,7 @@ describe('BtcWithdrawModal', () => {
     await user.click(screen.getByTestId('ContinueButton'))
     await user.click(screen.getByTestId('SubmitRequestButton'))
 
-    expect(onRequestWithdraw).toHaveBeenCalledWith(2_000_000_000_000_000_000n)
+    expect(onRequestWithdraw).toHaveBeenCalledWith(TWO_SHARES_RAW)
   })
 
   it('calls onClose when the close button is clicked', async () => {
@@ -159,7 +164,7 @@ describe('BtcWithdrawModal', () => {
   it('shows shares balance from useUserPosition', () => {
     render(<BtcWithdrawModal {...defaultProps} />)
 
-    expect(screen.getByTestId('SharesBalanceLabel')).toHaveTextContent('5.0')
+    expect(screen.getByTestId('SharesBalanceLabel')).toHaveTextContent('5.00')
   })
 
   it('keeps WITHDRAW rBTC title on confirm step', async () => {

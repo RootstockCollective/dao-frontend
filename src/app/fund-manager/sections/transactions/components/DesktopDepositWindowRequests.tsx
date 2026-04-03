@@ -1,6 +1,6 @@
 'use client'
 
-import { type Dispatch, memo, type ReactNode, Suspense, useCallback, useState } from 'react'
+import { type Dispatch, memo, type ReactNode, Suspense, useState } from 'react'
 
 import { RequestStatusBadge } from '@/app/btc-vault/request-history/components/RequestStatusBadge'
 import { ArrowDownWFill } from '@/components/Icons/v3design/ArrowDownWFill'
@@ -15,12 +15,8 @@ import { cn } from '@/lib/utils'
 import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { SORT_DIRECTION_ASC, SORT_DIRECTIONS } from '@/shared/context/TableContext/constants'
 
-import type {
-  ColumnId,
-  DepositWindowCellDataMap,
-  DepositWindowTable,
-} from './DepositWindowRequestsTable.config'
-import { COLUMN_TRANSFORMS, SORT_LABELS } from './DepositWindowRequestsTable.config'
+import type { ColumnId, DepositWindowCellDataMap, DepositWindowTable } from '../config'
+import { COLUMN_TRANSFORMS, SORT_LABELS } from '../config'
 
 // ─── Header ──────────────────────────────────────────────────────────
 
@@ -113,33 +109,31 @@ const HeaderCell = ({ children, columnId, className }: HeaderCellProps) => {
 }
 
 const DepositWindowHeaderRow = () => (
-  <Suspense fallback={<div>Loading table headers...</div>}>
-    <thead>
-      <tr
-        className="flex border-b border-b-v3-text-60 select-none gap-4 pb-4 pl-4"
-        data-testid="deposit-window-header-row"
-      >
-        <HeaderCell columnId="date">
-          <HeaderTitle>{SORT_LABELS.date}</HeaderTitle>
-        </HeaderCell>
-        <HeaderCell columnId="investor">
-          <HeaderTitle>{SORT_LABELS.investor}</HeaderTitle>
-        </HeaderCell>
-        <HeaderCell columnId="entity">
-          <HeaderTitle>{SORT_LABELS.entity}</HeaderTitle>
-        </HeaderCell>
-        <HeaderCell columnId="type">
-          <HeaderTitle>{SORT_LABELS.type}</HeaderTitle>
-        </HeaderCell>
-        <HeaderCell columnId="amount">
-          <HeaderTitle>{SORT_LABELS.amount}</HeaderTitle>
-        </HeaderCell>
-        <HeaderCell columnId="status">
-          <HeaderTitle>{SORT_LABELS.status}</HeaderTitle>
-        </HeaderCell>
-      </tr>
-    </thead>
-  </Suspense>
+  <thead>
+    <tr
+      className="flex border-b border-b-v3-text-60 select-none gap-4 pb-4 pl-4"
+      data-testid="deposit-window-header-row"
+    >
+      <HeaderCell columnId="date">
+        <HeaderTitle>{SORT_LABELS.date}</HeaderTitle>
+      </HeaderCell>
+      <HeaderCell columnId="investor">
+        <HeaderTitle>{SORT_LABELS.investor}</HeaderTitle>
+      </HeaderCell>
+      <HeaderCell columnId="entity">
+        <HeaderTitle>{SORT_LABELS.entity}</HeaderTitle>
+      </HeaderCell>
+      <HeaderCell columnId="type">
+        <HeaderTitle>{SORT_LABELS.type}</HeaderTitle>
+      </HeaderCell>
+      <HeaderCell columnId="amount">
+        <HeaderTitle>{SORT_LABELS.amount}</HeaderTitle>
+      </HeaderCell>
+      <HeaderCell columnId="status">
+        <HeaderTitle>{SORT_LABELS.status}</HeaderTitle>
+      </HeaderCell>
+    </tr>
+  </thead>
 )
 
 // ─── Data Row ────────────────────────────────────────────────────────
@@ -165,84 +159,86 @@ const TableCell = ({ children, columnId, className }: TableCellProps) => {
   )
 }
 
-interface DataRowProps {
-  row: DepositWindowTable['Row']
-}
+const DepositWindowDataRow = memo(
+  ({
+    date,
+    user,
+    investor,
+    entity,
+    type,
+    amount,
+    fiatAmountFormatted,
+    status,
+    displayStatusLabel,
+  }: DepositWindowCellDataMap) => {
+    const [isHovered, setIsHovered] = useState(false)
 
-const DepositWindowDataRow = memo(({ row }: DataRowProps) => {
-  const { data } = row
-  const [isHovered, setIsHovered] = useState(false)
-  const handleMouseEnter = useCallback(() => setIsHovered(true), [])
-  const handleMouseLeave = useCallback(() => setIsHovered(false), [])
+    const textColor = isHovered ? 'text-black' : 'text-v3-text-100'
 
-  const textColor = isHovered ? 'text-black' : 'text-v3-text-100'
+    return (
+      <tr
+        className={cn(
+          'flex border-b-v3-bg-accent-60 border-b gap-4 pl-4 py-3 min-h-[65px]',
+          isHovered && 'bg-v3-text-100',
+        )}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        data-testid="deposit-window-data-row"
+      >
+        <TableCell columnId="date">
+          <Paragraph variant="body-s" className={textColor}>
+            {date}
+          </Paragraph>
+        </TableCell>
 
-  return (
-    <tr
-      className={cn(
-        'flex border-b-v3-bg-accent-60 border-b gap-4 pl-4 py-3 min-h-[65px]',
-        isHovered && 'bg-v3-text-100',
-      )}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      data-testid="deposit-window-data-row"
-    >
-      <TableCell columnId="date">
-        <Paragraph variant="body-s" className={textColor}>
-          {data.date}
-        </Paragraph>
-      </TableCell>
+        <TableCell columnId="investor">
+          <a
+            href={`${EXPLORER_URL}/address/${user}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-v3-primary"
+          >
+            <Paragraph variant="body-s">{investor}</Paragraph>
+          </a>
+        </TableCell>
 
-      <TableCell columnId="investor">
-        <a
-          href={`${EXPLORER_URL}/address/${data.user}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-1 text-v3-primary"
-        >
-          <Paragraph variant="body-s">{data.investor}</Paragraph>
-        </a>
-      </TableCell>
+        <TableCell columnId="entity">
+          <Paragraph variant="body-s" className={textColor}>
+            {entity}
+          </Paragraph>
+        </TableCell>
 
-      <TableCell columnId="entity">
-        <Paragraph variant="body-s" className={textColor}>
-          {data.entity}
-        </Paragraph>
-      </TableCell>
+        <TableCell columnId="type">
+          <Paragraph variant="body" className={textColor}>
+            {type}
+          </Paragraph>
+        </TableCell>
 
-      <TableCell columnId="type">
-        <Paragraph variant="body" className={textColor}>
-          {data.type}
-        </Paragraph>
-      </TableCell>
-
-      <TableCell columnId="amount">
-        <div className="grid grid-cols-[1fr_auto] gap-2 items-center justify-items-center">
-          <div className="text-right">
-            <div>
-              <Paragraph className={textColor}>{data.amount}</Paragraph>
-            </div>
-            <div>
-              <Span variant="body-xs" className="text-text-40">
-                {data.fiatAmount}
-              </Span>
+        <TableCell columnId="amount">
+          <div className="grid grid-cols-[1fr_auto] gap-2 items-center justify-items-center">
+            <div className="text-right">
+              <div className="flex gap-1">
+                <Paragraph className={textColor}>{amount}</Paragraph>
+                <TokenImage symbol={RBTC} size={16} />
+              </div>
+              <div>
+                {fiatAmountFormatted && (
+                  <Span variant="body-xs" className="text-text-40">
+                    {fiatAmountFormatted}
+                  </Span>
+                )}
+              </div>
             </div>
           </div>
-          <div className="flex flex-col items-start h-full justify-around gap-1">
-            <TokenImage symbol={RBTC} size={16} />
-            <Span variant="body-xs" className="text-text-40">
-              USD
-            </Span>
-          </div>
-        </div>
-      </TableCell>
+        </TableCell>
 
-      <TableCell columnId="status">
-        <RequestStatusBadge displayStatus={data.status} label={data.displayStatusLabel} />
-      </TableCell>
-    </tr>
-  )
-})
+        <TableCell columnId="status">
+          <RequestStatusBadge displayStatus={status} label={displayStatusLabel} />
+        </TableCell>
+      </tr>
+    )
+  },
+)
 
 DepositWindowDataRow.displayName = 'DepositWindowDataRow'
 
@@ -293,7 +289,7 @@ export const DesktopDepositWindowRequests = memo(({ isLoading }: DesktopDepositW
         <Suspense fallback={<div>Loading table data...</div>}>
           <tbody data-testid="deposit-window-table-body">
             {rows.map(row => (
-              <DepositWindowDataRow key={row.id} row={row} />
+              <DepositWindowDataRow key={row.id} {...row.data} />
             ))}
           </tbody>
         </Suspense>

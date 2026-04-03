@@ -6,11 +6,12 @@ import { FormProvider, useForm, useWatch } from 'react-hook-form'
 import { getAddress, isAddress } from 'viem'
 
 import { Button } from '@/components/Button'
+import { TransactionInProgressButton } from '@/components/StepActionButtons'
 import { Paragraph } from '@/components/Typography'
 import { executeTxFlow } from '@/shared/notification'
 
 import { useGrantWhitelistedUserRole } from '../hooks/useGrantWhitelistedUserRole'
-import { type BTCAddWhitelistForm, btcAddWhitelistSchema } from '../schemas/grantWhitelistForm'
+import { type BTCAddWhitelistForm, btcAddWhitelistSchema } from '../schema'
 import { WhitelistAddressInput } from './GrantWhitelistAddressInput'
 
 export type { BTCAddWhitelistForm }
@@ -42,31 +43,26 @@ export function BTCAddWhitelist({ onGrantSuccess }: BTCAddWhitelistProps) {
 
   const { onRequestTransaction, isRequesting, isTxPending, canSubmit } = useGrantWhitelistedUserRole(account)
 
-  const isBusy = isRequesting || isTxPending
+  const onSubmit = useCallback(() => {
+    if (!canSubmit) return
+    void executeTxFlow({
+      action: 'btcVaultWhitelistGrant',
+      onRequestTx: onRequestTransaction,
+      onSuccess: () => {
+        reset({
+          walletAddressInput: '',
+          walletAddress: '',
+          walletAddressError: '',
+          walletAddressRNS: '',
+        })
+        onGrantSuccess?.()
+      },
+    })
+  }, [canSubmit, onGrantSuccess, onRequestTransaction, reset])
 
-  const onSubmit = useCallback(
-    (_data: BTCAddWhitelistForm) => {
-      if (!canSubmit) return
-      void executeTxFlow({
-        action: 'btcVaultWhitelistGrant',
-        onRequestTx: onRequestTransaction,
-        onSuccess: () => {
-          reset({
-            walletAddressInput: '',
-            walletAddress: '',
-            walletAddressError: '',
-            walletAddressRNS: '',
-          })
-          onGrantSuccess?.()
-        },
-      })
-    },
-    [canSubmit, onGrantSuccess, onRequestTransaction, reset],
-  )
+  const addDisabled = !formState.isValid || !canSubmit || isRequesting
 
-  const addDisabled = !formState.isValid || !canSubmit || isBusy
-
-  const buttonLabel = isRequesting ? 'Signing...' : isTxPending ? 'Confirming...' : 'Add to whitelist'
+  const buttonLabel = isRequesting ? 'Signing...' : 'Add to whitelist'
 
   return (
     <FormProvider {...methods}>
@@ -75,12 +71,16 @@ export function BTCAddWhitelist({ onGrantSuccess }: BTCAddWhitelistProps) {
           Add an address to whitelist
         </Paragraph>
 
-        <WhitelistAddressInput control={control} disabled={isBusy} />
+        <WhitelistAddressInput control={control} disabled={isRequesting} />
 
         <div className="flex justify-center">
-          <Button variant="primary" type="submit" data-testid="AddToWhitelistButton" disabled={addDisabled}>
-            {buttonLabel}
-          </Button>
+          {isTxPending ? (
+            <TransactionInProgressButton />
+          ) : (
+            <Button variant="primary" type="submit" data-testid="AddToWhitelistButton" disabled={addDisabled}>
+              {buttonLabel}
+            </Button>
+          )}
         </div>
       </form>
     </FormProvider>

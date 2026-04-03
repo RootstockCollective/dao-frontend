@@ -2,13 +2,11 @@
 
 import { useCallback, useState } from 'react'
 
-import { DepositWindowRequestsTable } from '@/app/fund-manager/components/DepositWindowRequestsTable'
-import type {
-  ColumnId,
-  DepositWindowCellDataMap,
-} from '@/app/fund-manager/components/DepositWindowRequestsTable.config'
 import { SolidTabs } from '@/components/Tabs'
 import { TableProvider } from '@/shared/context'
+
+import { DepositWindowRequestsTable } from './transactions/components/DepositWindowRequestsTable'
+import type { ColumnId, DepositWindowCellDataMap } from './transactions/config'
 
 const FUND_MANAGER_TABS = ['Transactions', 'NAV History', 'Ongoing'] as const
 type FundManagerTab = (typeof FUND_MANAGER_TABS)[number]

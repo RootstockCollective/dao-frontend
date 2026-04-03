@@ -109,6 +109,19 @@ describe('useEpochState', () => {
       expect(result.current.data?.endTime).toBeGreaterThanOrEqual(0)
       expect(result.current.data?.closesAtFormatted).toMatch(/\d{2} \w{3} \d{4}/)
     })
+
+    it('does not use previous epoch closedAt=0 as startTime (avoids 1970 deposit window)', () => {
+      setupMocks({
+        currentEpoch: 1n,
+        batchData: makeBatchResult(0n, false, 0n, 0n),
+        prevSnapshotData: [0n, 10n ** 18n, 10n ** 18n, 0n],
+      })
+
+      const { result } = renderHook(() => useEpochState())
+
+      expect(result.current.data?.closesAtFormatted).not.toMatch(/1970/)
+      expect(result.current.data?.endTime ?? 0).toBeGreaterThan(1_000_000_000)
+    })
   })
 
   describe('settling path (closedAt > 0, not claimable)', () => {

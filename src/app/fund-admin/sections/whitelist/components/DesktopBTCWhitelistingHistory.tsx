@@ -22,7 +22,7 @@ import {
   type WhitelistCellDataMap,
   type WhitelistStatus,
   type WhitelistTable,
-} from './BTCWhitelistingHistoryTable.config'
+} from '../config'
 
 interface ChildrenWithClassNameProps {
   children: React.ReactNode
@@ -200,14 +200,11 @@ function WhitelistDataRow({ row, onAction }: DataRowProps) {
             isRowActive && showActionInsteadOfStatus && 'text-v3-bg-accent-100',
           )}
         >
-          <Paragraph variant="body-l">{data.address}</Paragraph>
+          <Paragraph>{data.address}</Paragraph>
         </a>
       </TableCell>
       <TableCell columnId="institution">
-        <Paragraph
-          variant="body-l"
-          className={isRowActive && showActionInsteadOfStatus ? 'text-v3-bg-accent-100' : undefined}
-        >
+        <Paragraph className={isRowActive && showActionInsteadOfStatus ? 'text-v3-bg-accent-100' : undefined}>
           {data.institution}
         </Paragraph>
       </TableCell>

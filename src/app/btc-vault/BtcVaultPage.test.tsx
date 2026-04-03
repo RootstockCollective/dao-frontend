@@ -77,6 +77,10 @@ vi.mock('./ActiveRequestSection', () => ({
   ActiveRequestSection: () => null,
 }))
 
+vi.mock('./hooks/useActiveRequests', () => ({
+  useActiveRequests: () => ({ data: undefined, refetch: vi.fn() }),
+}))
+
 vi.mock('./components/capital-allocation/CapitalAllocationSection', () => ({
   CapitalAllocationSection: () => null,
 }))
@@ -101,7 +105,7 @@ vi.mock('./hooks/useVaultMetrics', () => ({
       apyFormatted: '8.50',
       pricePerShareFormatted: '1.02',
       timestamp: 1709000000,
-      pricePerShareRaw: 1_020_000_000_000_000_000n,
+      pricePerShareRaw: 1_020_000_000_000n,
     },
     isLoading: false,
   }),

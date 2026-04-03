@@ -13,7 +13,6 @@ import { GetPricesResult } from '@/app/user/types'
 import { fetchLogsByTopic } from '@/lib/blockscout/fetchLogsByTopic'
 import { BLOCKSCOUT_URL } from '@/lib/constants'
 import { GovernorAddress, tokenContracts } from '@/lib/contracts'
-import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
 // CoinMarketCap IDs for tokens that have market prices
 const CMC_TOKEN_IDS: Record<string, number> = {
@@ -114,14 +113,6 @@ export const fetchVoteCastEventByAccountAddress = async (address: Address) => {
     topic1: padHex(address, { size: 32 }),
     topic0_1_opr: 'and',
   })
-}
-
-export const fetchProposalsCreatedCached = async (): Promise<{
-  data: BackendEventByTopic0ResponseValue[]
-}> => {
-  const res = await fetch('/proposals/api')
-  const data = (await res.json()) as BackendEventByTopic0ResponseValue[]
-  return { data }
 }
 
 function buildPaginationParams(nextParams: NextPageParams | null): string {

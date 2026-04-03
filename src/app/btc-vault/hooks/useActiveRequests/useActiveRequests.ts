@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import type { Address } from 'viem'
 import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
@@ -14,10 +14,9 @@ import type { ClaimableInfo, VaultRequest } from '../../services/types'
 import type { BtcVaultHistoryApiResponse } from '../../services/ui/api-types'
 import { toActiveRequestDisplay } from '../../services/ui/mappers'
 import type { ActiveRequestDisplay } from '../../services/ui/types'
+import { lockedSharePriceFromEpochSnapshot } from '../../services/vaultShareNav'
 
 const HISTORY_API_PATH = '/api/btc-vault/v1/history'
-
-const WEI_PER_ETHER = 10n ** 18n
 
 /**
  * Reads the user's active deposit and redeem requests from the BTC vault contract
@@ -29,7 +28,10 @@ const WEI_PER_ETHER = 10n ** 18n
  * @param address - User wallet address (controller); undefined disables reads
  * @returns { data } - ActiveRequestDisplay[] for dashboard, or undefined while loading/error
  */
-export function useActiveRequests(address: string | undefined): { data: ActiveRequestDisplay[] | undefined } {
+export function useActiveRequests(address: string | undefined): {
+  data: ActiveRequestDisplay[] | undefined
+  refetch: () => void
+} {
   const { prices } = usePricesContext()
   const rbtcPrice = prices[RBTC]?.price ?? 0
 
@@ -54,6 +56,7 @@ export function useActiveRequests(address: string | undefined): { data: ActiveRe
     data: phase1Data,
     isLoading: isLoading1,
     error: error1,
+    refetch: refetchPhase1,
   } = useReadContracts({
     contracts: phase1Contracts,
     query: { enabled: !!address },
@@ -112,13 +115,14 @@ export function useActiveRequests(address: string | undefined): { data: ActiveRe
     data: phase2Raw,
     isLoading: isLoading2,
     error: error2,
+    refetch: refetchPhase2,
   } = useReadContracts({
     contracts: phase2Contracts,
     query: { enabled: !!address && needsPhase2 },
   })
 
   // Fetch recent DEPOSIT_REQUEST / REDEEM_REQUEST history entries to get real timestamps & tx hashes
-  const { data: historyData } = useQuery({
+  const { data: historyData, refetch: refetchHistory } = useQuery({
     queryKey: ['btc-vault', 'active-requests-history', address],
     queryFn: async () => {
       const params = new URLSearchParams()
@@ -180,9 +184,13 @@ export function useActiveRequests(address: string | undefined): { data: ActiveRe
         const snap = phase2Data[snapshotIdx].result as readonly [bigint, bigint, bigint, bigint]
         const assetsAtClose = snap[1]
         const supplyAtClose = snap[2]
-        const navPerShare =
-          supplyAtClose + 1n > 0n ? ((assetsAtClose + 1n) * WEI_PER_ETHER) / (supplyAtClose + 1n) : 0n
-        claimableInfo = { claimable: true, lockedSharePrice: navPerShare }
+        const navPerShare = lockedSharePriceFromEpochSnapshot(assetsAtClose, supplyAtClose)
+        claimableInfo = {
+          claimable: true,
+          lockedSharePrice: navPerShare,
+          assetsAtCloseWei: assetsAtClose,
+          supplyAtCloseWei: supplyAtClose,
+        }
       }
       const depHistory = historyData?.data.find(
         h =>
@@ -219,9 +227,13 @@ export function useActiveRequests(address: string | undefined): { data: ActiveRe
         const snap = phase2Data[snapshotIdx].result as readonly [bigint, bigint, bigint, bigint]
         const assetsAtClose = snap[1]
         const supplyAtClose = snap[2]
-        const navPerShare =
-          supplyAtClose + 1n > 0n ? ((assetsAtClose + 1n) * WEI_PER_ETHER) / (supplyAtClose + 1n) : 0n
-        claimableInfo = { claimable: true, lockedSharePrice: navPerShare }
+        const navPerShare = lockedSharePriceFromEpochSnapshot(assetsAtClose, supplyAtClose)
+        claimableInfo = {
+          claimable: true,
+          lockedSharePrice: navPerShare,
+          assetsAtCloseWei: assetsAtClose,
+          supplyAtCloseWei: supplyAtClose,
+        }
       }
       const redHistory = historyData?.data.find(
         h =>
@@ -259,5 +271,16 @@ export function useActiveRequests(address: string | undefined): { data: ActiveRe
     historyData,
   ])
 
-  return { data }
+  // Narrow refetch types to avoid wagmi's "excessively deep" type instantiation in useCallback deps
+  const doRefetchPhase1: () => void = refetchPhase1
+  const doRefetchPhase2: () => void = refetchPhase2
+  const doRefetchHistory: () => void = refetchHistory
+
+  const refetch = useCallback(() => {
+    doRefetchPhase1()
+    doRefetchPhase2()
+    doRefetchHistory()
+  }, [doRefetchPhase1, doRefetchPhase2, doRefetchHistory])
+
+  return { data, refetch }
 }

@@ -5,12 +5,18 @@ import type { Column, TypedTable } from '@/shared/context'
 export type VisibleColumnId = 'date' | 'investor' | 'entity' | 'type' | 'amount' | 'status'
 
 /** Data-only keys carried on each row but not rendered as columns. */
-type DataColumnId = 'fiatAmount' | 'tokenSymbol' | 'user' | 'requestType' | 'timestamp' | 'displayStatusLabel'
+type DataColumnId =
+  | 'fiatAmountFormatted'
+  | 'tokenSymbol'
+  | 'user'
+  | 'requestType'
+  | 'timestamp'
+  | 'displayStatusLabel'
 
 export type ColumnId = VisibleColumnId | DataColumnId
 
 const DATA_COLUMN_IDS: DataColumnId[] = [
-  'fiatAmount',
+  'fiatAmountFormatted',
   'tokenSymbol',
   'user',
   'requestType',
@@ -66,7 +72,7 @@ export interface DepositWindowCellDataMap {
   /** Wire `displayStatus` key (same as btc-vault history table `status` column). */
   status: DisplayStatus
   displayStatusLabel: HistoryRowStatusLabel
-  fiatAmount: string | null
+  fiatAmountFormatted: string | null
   tokenSymbol: string
   user: string
   requestType: 'deposit' | 'withdrawal'
