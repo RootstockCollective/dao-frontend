@@ -1,12 +1,20 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
 import { VAULT_SHARE_MULTIPLIER, WeiPerEther } from '@/lib/constants'
 
 import { WithdrawAllowanceStep } from './WithdrawAllowanceStep'
 
 const TWO_SHARES_RAW = 2n * WeiPerEther * VAULT_SHARE_MULTIPLIER
+
+beforeAll(() => {
+  global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+  }))
+})
 
 describe('WithdrawAllowanceStep', () => {
   afterEach(() => {
@@ -65,5 +73,21 @@ describe('WithdrawAllowanceStep', () => {
 
     await user.click(screen.getByTestId('RequestAllowanceButton'))
     expect(onRequestAllowance).toHaveBeenCalledOnce()
+  })
+
+  it('shows In Progress via TransactionInProgressButton when isApproving is true', () => {
+    render(
+      <WithdrawAllowanceStep
+        sharesWei={1n}
+        isAllowanceReadLoading={false}
+        isApproving
+        isAllowanceTxFailed={false}
+        onRequestAllowance={vi.fn().mockResolvedValue(undefined)}
+        onBack={vi.fn()}
+      />,
+    )
+
+    expect(screen.getByText('In Progress')).toBeInTheDocument()
+    expect(screen.queryByTestId('RequestAllowanceButton')).not.toBeInTheDocument()
   })
 })

@@ -6,6 +6,7 @@ import { formatSymbol } from '@/app/shared/formatter'
 import { TransactionStatus } from '@/app/user/Stake/components/TransactionStatus'
 import { Button } from '@/components/Button'
 import { Divider } from '@/components/Divider'
+import { TransactionInProgressButton } from '@/components/StepActionButtons'
 import { Label, Paragraph } from '@/components/Typography'
 
 import { BTC_VAULT_WITHDRAW_TWO_TX_MESSAGE } from '../services/constants'
@@ -71,15 +72,19 @@ export const WithdrawAllowanceStep = ({
           >
             Back
           </Button>
-          <Button
-            variant="primary"
-            onClick={handlePrimary}
-            disabled={isAllowanceReadLoading || isApproving || sharesWei <= 0n}
-            data-testid="RequestAllowanceButton"
-            className="whitespace-nowrap"
-          >
-            {isApproving ? 'Requesting...' : 'Request allowance'}
-          </Button>
+          {isApproving ? (
+            <TransactionInProgressButton />
+          ) : (
+            <Button
+              variant="primary"
+              onClick={handlePrimary}
+              disabled={isAllowanceReadLoading || sharesWei <= 0n}
+              data-testid="RequestAllowanceButton"
+              className="whitespace-nowrap"
+            >
+              Request allowance
+            </Button>
+          )}
         </div>
       </div>
     </div>

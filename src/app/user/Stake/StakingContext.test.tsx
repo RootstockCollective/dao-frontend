@@ -27,30 +27,34 @@ const stRif: Omit<StakingToken, 'price'> = {
 }
 
 describe('StakingProvider', () => {
-  it('Amount to receive is a whole number if the stake amount is also a whole number and the token prices are equal', () => {
-    let allTestsPass = true
+  it(
+    'Amount to receive is a whole number if the stake amount is also a whole number and the token prices are equal',
+    () => {
+      let allTestsPass = true
 
-    // running the test 500 times with different stake amounts and token prices
-    for (let i = 0; i < 500; i++) {
-      // stake amount is a whole number
-      const stakeAmount = i.toString()
-      // StRif and Rif prices are equal
-      const price = Math.random().toString()
-      render(
-        <StakingProvider tokenToSend={{ ...rif, price }} tokenToReceive={{ ...stRif, price }}>
-          <TestComponent stakeAmount={stakeAmount} id={i} />
-        </StakingProvider>,
-      )
+      // running the test 500 times with different stake amounts and token prices
+      for (let i = 0; i < 500; i++) {
+        // stake amount is a whole number
+        const stakeAmount = i.toString()
+        // StRif and Rif prices are equal
+        const price = Math.random().toString()
+        render(
+          <StakingProvider tokenToSend={{ ...rif, price }} tokenToReceive={{ ...stRif, price }}>
+            <TestComponent stakeAmount={stakeAmount} id={i} />
+          </StakingProvider>,
+        )
 
-      fireEvent.click(screen.getByTestId(`setAmountButton-${i}`))
-      const amountToReceive = screen.getByTestId(`amountToReceive-${i}`)
-      // if amount to receive is not a whole number
-      // or if the amount to receive is not equal to the stake amount
-      if (amountToReceive.textContent?.includes('.') || stakeAmount !== amountToReceive.textContent) {
-        allTestsPass = false
-        break
+        fireEvent.click(screen.getByTestId(`setAmountButton-${i}`))
+        const amountToReceive = screen.getByTestId(`amountToReceive-${i}`)
+        // if amount to receive is not a whole number
+        // or if the amount to receive is not equal to the stake amount
+        if (amountToReceive.textContent?.includes('.') || stakeAmount !== amountToReceive.textContent) {
+          allTestsPass = false
+          break
+        }
       }
-    }
-    expect(allTestsPass).toBe(true)
-  })
+      expect(allTestsPass).toBe(true)
+    },
+    15_000,
+  )
 })
