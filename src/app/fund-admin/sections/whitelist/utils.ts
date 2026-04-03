@@ -5,7 +5,7 @@ import { formatDateMonthFirst } from '@/app/btc-vault/services/ui/formatters'
 import { shortAddress } from '@/lib/utils'
 import type { Row } from '@/shared/context/TableContext/types'
 
-import type { ColumnId, WhitelistCellDataMap, WhitelistStatus } from './BTCWhitelistingHistoryTable.config'
+import type { ColumnId, WhitelistCellDataMap, WhitelistStatus } from './config'
 
 function subgraphStatusToRowStatus(status: string): WhitelistStatus {
   const s = status.toUpperCase()

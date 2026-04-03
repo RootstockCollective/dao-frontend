@@ -6,6 +6,7 @@ import { Address, getAddress, isAddress } from 'viem'
 import { Button } from '@/components/Button'
 import { Divider } from '@/components/Divider'
 import { Modal } from '@/components/Modal'
+import { TransactionInProgressButton } from '@/components/StepActionButtons'
 import { Paragraph } from '@/components/Typography'
 import { shortAddress } from '@/lib/utils'
 import { executeTxFlow } from '@/shared/notification'
@@ -23,8 +24,6 @@ export function DeWhitelistConfirmModal({ fullAddress, onClose, onSuccess }: DeW
 
   const { onRequestTransaction, isRequesting, isTxPending, canSubmit } = useRevokeWhitelistedUserRole(account)
 
-  const isBusy = isRequesting || isTxPending
-
   const handleConfirm = useCallback(() => {
     if (!canSubmit) return
     void executeTxFlow({
@@ -37,7 +36,7 @@ export function DeWhitelistConfirmModal({ fullAddress, onClose, onSuccess }: DeW
     })
   }, [canSubmit, onClose, onRequestTransaction, onSuccess])
 
-  const confirmLabel = isRequesting ? 'Signing...' : isTxPending ? 'Confirming...' : 'Yes, de-whitelist'
+  const confirmLabel = isRequesting ? 'Signing...' : 'Yes, de-whitelist'
 
   return (
     <Modal onClose={onClose} data-testid="DeWhitelistConfirmModal" className="md:max-w-[688px]">
@@ -53,18 +52,27 @@ export function DeWhitelistConfirmModal({ fullAddress, onClose, onSuccess }: DeW
           <Divider className="mb-0" />
 
           <div className="flex flex-wrap justify-end gap-4">
-            <Button variant="secondary-outline" onClick={onClose} data-testid="Nevermind" disabled={isBusy}>
+            <Button
+              variant="secondary-outline"
+              onClick={onClose}
+              data-testid="Nevermind"
+              disabled={isRequesting}
+            >
               Nevermind
             </Button>
-            <Button
-              variant="primary"
-              onClick={handleConfirm}
-              data-testid="DeWhitelistConfirm"
-              textClassName="text-black"
-              disabled={!canSubmit || isBusy}
-            >
-              {confirmLabel}
-            </Button>
+            {isTxPending ? (
+              <TransactionInProgressButton />
+            ) : (
+              <Button
+                variant="primary"
+                onClick={handleConfirm}
+                data-testid="DeWhitelistConfirm"
+                textClassName="text-black"
+                disabled={!canSubmit || isRequesting}
+              >
+                {confirmLabel}
+              </Button>
+            )}
           </div>
         </div>
       </div>
