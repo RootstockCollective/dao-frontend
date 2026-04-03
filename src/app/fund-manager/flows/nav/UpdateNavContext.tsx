@@ -4,24 +4,36 @@ import { createContext, ReactNode, useCallback, useContext, useMemo, useState } 
 import { parseEther } from 'viem'
 
 import { formatMetrics } from '@/app/shared/formatter'
-import Big from '@/lib/big'
 import { RBTC } from '@/lib/constants'
-import { formatCurrencyWithLabel, handleAmountInput } from '@/lib/utils'
+import { handleAmountInput } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 
 import { useRbtcBuffer } from '../../hooks/useRbtcBuffer'
 import { useRbtcVault } from '../../hooks/useRbtcVault'
-import { reportedOffchainForTargetTotalAssets } from '../../utils'
+import { reportedOffchainWarningMessages } from './reportedOffchainWarnings'
+import {
+  computeNavAfterWei,
+  formatBpsAsPercent,
+  formatPartAsPercentOfWhole,
+  navChangeBps,
+  navDeltaWei,
+  type NavUpdateReview,
+  reportedDeltaWei,
+} from './updateNavImpact'
 
 interface UpdateNavContextValue {
-  navAmount: string
-  handleNavAmountChange: (value: string) => void
-  usdEquivalent: string
+  /** RBTC amount string for reported off-chain assets (matches `reportOffchainAssetsAndProcessFunding` arg) */
+  reportedOffchainAmount: string
+  handleReportedOffchainAmountChange: (value: string) => void
   isValidAmount: boolean
   errorMessage: string
   currentNav: ReturnType<typeof formatMetrics>
-  effectiveOnDisplay: string
+  /** Before-update snapshot (same as current on-chain NAV) */
+  navUpdateReview: NavUpdateReview | null
+  currentReportedOffchain: ReturnType<typeof formatMetrics>
   reportedOffchainWei: bigint | null
+  /** Manager-review warnings (do not block submit) */
+  reportedOffchainWarnings: string[]
   vaultReadsLoading: boolean
   refetchNav: () => Promise<void>
 }
@@ -42,6 +54,7 @@ export const UpdateNavProvider = ({ children }: Props) => {
     totalPendingDepositAssets,
     totalRedeemRequiredAssets,
     totalRedeemPaidAssets,
+    reportedOffchainAssets: currentReportedOffchainAssets,
     isLoading: isVaultLoading,
     refetchVault,
   } = useRbtcVault()
@@ -52,10 +65,10 @@ export const UpdateNavProvider = ({ children }: Props) => {
     await Promise.all([refetchVault(), refetchBuffer()])
   }, [refetchBuffer, refetchVault])
 
-  const [navAmount, setNavAmount] = useState('')
+  const [reportedOffchainAmount, setReportedOffchainAmount] = useState('')
 
-  const handleNavAmountChange = useCallback((value: string) => {
-    setNavAmount(handleAmountInput(value))
+  const handleReportedOffchainAmountChange = useCallback((value: string) => {
+    setReportedOffchainAmount(handleAmountInput(value))
   }, [])
 
   const outstandingRedeems =
@@ -63,79 +76,124 @@ export const UpdateNavProvider = ({ children }: Props) => {
 
   const currentNav = useMemo(() => formatMetrics(totalAssets, rbtcPrice, RBTC), [totalAssets, rbtcPrice])
 
-  const { usdEquivalent, isValidAmount, errorMessage, reportedOffchainWei } = useMemo(() => {
-    if (!navAmount) {
-      return { usdEquivalent: '', isValidAmount: false, errorMessage: '', reportedOffchainWei: null }
+  const currentReportedOffchain = useMemo(
+    () => formatMetrics(currentReportedOffchainAssets, rbtcPrice, RBTC),
+    [currentReportedOffchainAssets, rbtcPrice],
+  )
+
+  const liabilities = useMemo(
+    () => outstandingRedeems + totalPendingDepositAssets + bufferDebt,
+    [outstandingRedeems, totalPendingDepositAssets, bufferDebt],
+  )
+
+  const { isValidAmount, errorMessage, reportedOffchainWei, navUpdateReview } = useMemo(() => {
+    if (!reportedOffchainAmount) {
+      return {
+        isValidAmount: false,
+        errorMessage: '',
+        reportedOffchainWei: null,
+        navUpdateReview: null,
+      }
     }
 
-    let usdAmount = ''
     try {
-      if (rbtcPrice) {
-        usdAmount = formatCurrencyWithLabel(Big(rbtcPrice).mul(navAmount))
-      }
-    } catch {
-      usdAmount = ''
-    }
+      const reportedWei = parseEther(reportedOffchainAmount)
+      const navAfterWei = computeNavAfterWei(vaultAssetBalance, reportedWei, liabilities)
 
-    try {
-      if (!Big(navAmount).gt(0)) {
+      if (navAfterWei < 0n) {
         return {
-          usdEquivalent: usdAmount,
-          isValidAmount: false,
-          errorMessage: '',
-          reportedOffchainWei: null,
-        }
-      }
-
-      const targetWei = parseEther(navAmount)
-      const rawReported = reportedOffchainForTargetTotalAssets(
-        targetWei,
-        vaultAssetBalance,
-        outstandingRedeems,
-        totalPendingDepositAssets,
-        bufferDebt,
-      )
-
-      if (rawReported < 0n) {
-        return {
-          usdEquivalent: usdAmount,
           isValidAmount: false,
           errorMessage:
-            'This NAV implies negative reported off-chain assets, which the vault cannot accept. Enter a higher NAV.',
+            'This implies negative total assets (NAV) for the vault. Increase the reported off-chain amount until NAV is positive, or wait for on-chain liabilities to settle.',
           reportedOffchainWei: null,
+          navUpdateReview: null,
         }
       }
 
+      const navBeforeWei = totalAssets
+      const deltaNav = navDeltaWei(navBeforeWei, navAfterWei)
+      const deltaReported = reportedDeltaWei(reportedWei, currentReportedOffchainAssets)
+      const navBps = navChangeBps(deltaNav, navBeforeWei)
+
+      const navBeforeFmt = formatMetrics(navBeforeWei, rbtcPrice, RBTC)
+      const navAfterFmt = formatMetrics(navAfterWei, rbtcPrice, RBTC)
+      const reportedBeforeFmt = formatMetrics(currentReportedOffchainAssets, rbtcPrice, RBTC)
+      const reportedNewFmt = formatMetrics(reportedWei, rbtcPrice, RBTC)
+      const navDeltaFmt = formatMetrics(deltaNav, rbtcPrice, RBTC)
+      const reportedDeltaFmt = formatMetrics(deltaReported, rbtcPrice, RBTC)
+
+      const navUpdateReview: NavUpdateReview = {
+        navBeforeWei,
+        navBeforeDisplay: navBeforeFmt.amount,
+        navAfterDisplay: navAfterFmt.amount,
+        navDeltaDisplay: navDeltaFmt.amount,
+        reportedBeforeDisplay: reportedBeforeFmt.amount,
+        reportedNewDisplay: reportedNewFmt.amount,
+        reportedDeltaDisplay: reportedDeltaFmt.amount,
+        navDeltaPctDisplay: navBps !== null ? formatBpsAsPercent(navBps) : null,
+        reportedPctOfNavBeforeDisplay:
+          navBeforeWei === 0n ? null : formatPartAsPercentOfWhole(reportedWei, navBeforeWei),
+        navAfterFiatDisplay: navAfterFmt.fiatAmount ?? '',
+        reportedNewFiatDisplay: reportedNewFmt.fiatAmount ?? '',
+      }
+
       return {
-        usdEquivalent: usdAmount,
         isValidAmount: true,
         errorMessage: '',
-        reportedOffchainWei: rawReported,
+        reportedOffchainWei: reportedWei,
+        navUpdateReview,
       }
     } catch {
       return {
-        usdEquivalent: usdAmount,
         isValidAmount: false,
-        errorMessage: 'Enter a valid NAV amount.',
+        errorMessage: 'Enter a valid amount.',
         reportedOffchainWei: null,
+        navUpdateReview: null,
       }
     }
-  }, [navAmount, rbtcPrice, vaultAssetBalance, outstandingRedeems, totalPendingDepositAssets, bufferDebt])
+  }, [
+    reportedOffchainAmount,
+    rbtcPrice,
+    vaultAssetBalance,
+    liabilities,
+    totalAssets,
+    currentReportedOffchainAssets,
+  ])
+
+  const reportedOffchainWarnings = useMemo(() => {
+    if (reportedOffchainWei === null || navUpdateReview === null) return []
+    return reportedOffchainWarningMessages({
+      reportedWei: reportedOffchainWei,
+      currentReportedWei: currentReportedOffchainAssets,
+      currentTotalAssetsWei: totalAssets,
+      isFirstNonZeroReport: currentReportedOffchainAssets === 0n && reportedOffchainWei > 0n,
+      fmt: {
+        navBefore: navUpdateReview.navBeforeDisplay,
+        navAfter: navUpdateReview.navAfterDisplay,
+        navDelta: navUpdateReview.navDeltaDisplay,
+        navDeltaPct: navUpdateReview.navDeltaPctDisplay,
+        currentReported: navUpdateReview.reportedBeforeDisplay,
+        newReported: navUpdateReview.reportedNewDisplay,
+        reportedDelta: navUpdateReview.reportedDeltaDisplay,
+        pctNewReportedOfNavBefore: navUpdateReview.reportedPctOfNavBeforeDisplay,
+      },
+    })
+  }, [reportedOffchainWei, navUpdateReview, currentReportedOffchainAssets, totalAssets])
 
   const vaultReadsLoading = isVaultLoading || isBufferLoading
 
   const value: UpdateNavContextValue = {
-    navAmount,
-    usdEquivalent,
+    reportedOffchainAmount,
+    handleReportedOffchainAmountChange,
     isValidAmount,
     errorMessage,
     currentNav,
-    // Replace this with dynamic data if needed.
-    effectiveOnDisplay: 'Immediately',
+    navUpdateReview,
+    currentReportedOffchain,
     reportedOffchainWei,
+    reportedOffchainWarnings,
     vaultReadsLoading,
     refetchNav,
-    handleNavAmountChange,
   }
 
   return <UpdateNavContext.Provider value={value}>{children}</UpdateNavContext.Provider>
@@ -148,3 +206,5 @@ export const useUpdateNavContext = () => {
   }
   return ctx
 }
+
+export type { NavUpdateReview } from './updateNavImpact'

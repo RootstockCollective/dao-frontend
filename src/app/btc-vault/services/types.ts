@@ -10,10 +10,15 @@ export interface VaultMetrics {
   /** Total Value Locked — aggregate rBTC held by the vault. Wei, 18 decimals. */
   tvl: bigint
 
-  /** Annual Percentage Yield. Basis points where `VAULT_BASIS_POINTS = 1e9 = 100%`. */
-  apy: bigint
+  /** Annual Percentage Yield as a decimal (e.g. 0.085 for 8.5%). Derived from consecutive epoch snapshots. */
+  apy: number
 
-  /** Price per share — current price of one vault token in rBTC terms: (totalAssets * 1e18) / totalSupply. Wei, 18 decimals. */
+  /**
+   * Live spot NAV: `(totalAssets * 1e18) / totalSupply` with `totalSupply` in **24-decimal raw** share
+   * units (same as `epochSnapshot.supplyAtClose`). Fixed-point rBTC wei per **one raw** share basis
+   * (same dimensional encoding as `ClaimableInfo.lockedSharePrice`). For “rBTC per 1.0 human share”
+   * UI (and fiat), apply `lockedSharePriceToNavPerHumanShareWei` from `vaultShareNav.ts`.
+   */
   pricePerShare: bigint
 
   /** Unix timestamp (seconds) of when these metrics were last computed. */
@@ -108,7 +113,7 @@ export interface UserPosition {
   /** User's rBTC wallet balance (not in the vault). Wei, 18 decimals. */
   rbtcBalance: bigint
 
-  /** User's vault share tokens. Wei, 18 decimals. Represents ownership of the vault. */
+  /** User's vault share tokens. Raw units: 24 decimals (18 + VAULT_SHARE_MULTIPLIER). */
   vaultTokens: bigint
 
   /** BTC value of the user's vault position (`vaultTokens * navPerShare`). Wei, 18 decimals. */
@@ -184,7 +189,12 @@ export interface VaultRequest {
   /** Whether this is a deposit or withdrawal. */
   type: RequestType
 
-  /** Amount of rBTC (deposit) or vault tokens (withdrawal) requested. Wei, 18 decimals. */
+  /**
+   * Requested amount, units depend on `type`:
+   * - **Deposit** — rBTC wei (18 decimals).
+   * - **Withdrawal** — raw vault share units (24 decimals, same as `requestRedeem` / `supplyAtClose`;
+   *   pair with `lockedSharePrice` and proportional redemption math; format with `formatSymbol(..., 'ctokenvault')`).
+   */
   amount: bigint
 
   /** Current lifecycle status. See `RequestStatus` for the state machine. */
@@ -244,8 +254,27 @@ export interface ClaimableInfo {
   /** `true` if the request's epoch has settled and it can be finalized. */
   claimable: boolean
 
-  /** The NAV per share locked at epoch settlement. Wei, 18 decimals. Maps to `EpochState.navPerShare`. */
+  /**
+   * Fixed-point NAV at settlement: `((assetsAtClose+1)*1e18)/(supplyAtClose+1)`.
+   * Denomination: wei of rBTC per **one raw** share unit (supply is 24-decimal raw shares).
+   * Pair with raw share amounts (same units as `epochSnapshot.supplyAtClose` and `requestRedeem` shares).
+   * For “rBTC per 1.0 human share” UI, use `lockedSharePriceToNavPerHumanShareWei` from `vaultShareNav.ts`.
+   */
   lockedSharePrice: bigint
+
+  /**
+   * `epochSnapshot` result field `assetsAtClose` — total rBTC wei in the vault at epoch close (18 decimals).
+   * Call with `epochId` for deposits and `batchRedeemId` for withdrawals (claimable and terminal). With
+   * `supplyAtCloseWei`, drives proportional redemption: `(shares * (assets+1)) / (supply+1)`.
+   */
+  assetsAtCloseWei?: bigint
+
+  /**
+   * `epochSnapshot` result field `supplyAtClose` — total vault share supply at close, **same raw units** as
+   * `VaultRequest.amount` for withdrawals (24-decimal vault share wei including `VAULT_SHARE_MULTIPLIER`).
+   * Call with `epochId` for deposits and `batchRedeemId` for withdrawals (claimable and terminal).
+   */
+  supplyAtCloseWei?: bigint
 }
 
 // --- Write Operation Types ---

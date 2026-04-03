@@ -13,6 +13,9 @@ vi.mock('@/shared/context', () => ({
 
 const TWO_RBTC = 2000000000000000000n
 
+const FULL_BALANCE_GAS_WARNING =
+  'Using your full balance may not leave enough for gas fees, which could cause the transaction to fail.'
+
 const defaultProps = {
   amount: '',
   setAmount: vi.fn(),
@@ -84,6 +87,13 @@ describe('DepositAmountStep', () => {
     expect(screen.getByTestId('ContinueButton')).toBeDisabled()
   })
 
+  it('shows gas warning when amount equals full RBTC balance but Continue stays enabled', () => {
+    render(<DepositAmountStep {...defaultProps} amount="2" />)
+
+    expect(screen.getByTestId('ErrorText')).toHaveTextContent(FULL_BALANCE_GAS_WARNING)
+    expect(screen.getByTestId('ContinueButton')).not.toBeDisabled()
+  })
+
   it('calls onNext when Continue is clicked with valid amount', async () => {
     const user = userEvent.setup()
     const onNext = vi.fn()
@@ -102,22 +112,22 @@ describe('DepositAmountStep', () => {
     expect(setAmount).toHaveBeenCalledWith('1')
   })
 
-  it('calls setAmount with balance minus gas reserve when Max is clicked', async () => {
+  it('calls setAmount with full wallet balance when Max is clicked', async () => {
     const user = userEvent.setup()
     const setAmount = vi.fn()
     render(<DepositAmountStep {...defaultProps} setAmount={setAmount} />)
 
     await user.click(screen.getByTestId('MaxButton'))
-    expect(setAmount).toHaveBeenCalledWith('1.999')
+    expect(setAmount).toHaveBeenCalledWith('2')
   })
 
-  it('calls setAmount with 0 when Max is clicked and balance is less than gas reserve', async () => {
+  it('calls setAmount with formatted fraction when Max is clicked for a small balance', async () => {
     const user = userEvent.setup()
     const setAmount = vi.fn()
     const tinyBalance = 500_000_000_000_000n
     render(<DepositAmountStep {...defaultProps} rbtcBalanceRaw={tinyBalance} setAmount={setAmount} />)
 
     await user.click(screen.getByTestId('MaxButton'))
-    expect(setAmount).toHaveBeenCalledWith('0')
+    expect(setAmount).toHaveBeenCalledWith('0.0005')
   })
 })

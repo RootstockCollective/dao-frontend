@@ -84,4 +84,17 @@ describe('SelfContainedNFTBoosterCard', () => {
     await expect(() => findByText(notBoostedMessage)).rejects.toThrow()
     await expect(() => findByText(boostedMessage)).rejects.toThrow()
   })
+
+  test('should not render if boostData is undefined even with forceRender', async () => {
+    vi.mocked(useNFTBoosterContext).mockReturnValue({
+      boostData: undefined as unknown as BoostData,
+      hasActiveCampaign: false,
+      isBoosted: false,
+      isCampaignActive: () => false,
+    })
+    const { findByText } = render(<SelfContainedNFTBoosterCard forceRender={true} />)
+
+    await expect(() => findByText(notBoostedMessage)).rejects.toThrow()
+    await expect(() => findByText(boostedMessage)).rejects.toThrow()
+  })
 })

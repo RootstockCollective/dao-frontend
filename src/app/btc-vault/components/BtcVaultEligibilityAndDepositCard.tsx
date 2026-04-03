@@ -7,14 +7,14 @@ import { Label } from '@/components/Typography'
 
 import { useEpochState } from '../hooks/useEpochState'
 import { useKybStatus } from '../hooks/useKybStatus'
+import {
+  ELIGIBILITY_DEPOSIT_CARD_DEBRIS_CREAM,
+  ELIGIBILITY_DEPOSIT_CARD_DEBRIS_DARK,
+  ELIGIBILITY_DEPOSIT_CARD_GRADIENT,
+} from './btcVaultBannerGradients'
+import { BtcVaultPrototypeBannerContent } from './BtcVaultPrototypeBannerContent'
 import { DepositWindowSection } from './DepositWindowSection'
 import { EligibilityBannerContent } from './EligibilityBannerContent'
-
-/** Figma Frame 2018783054: 270deg, blue → cream at 52.61%. */
-const ELIGIBILITY_DEPOSIT_CARD_GRADIENT = 'linear-gradient(270deg, #0D4F7B 0%, #FFFDD9 52.61%)'
-/** Debris: cream matches gradient left; dark square uses page background so no blue shows at corner. */
-const DEBRIS_COLOR_CREAM = '#FFFDD9'
-const DEBRIS_COLOR_DARK = '#171412'
 
 const KYB_PASSED_WINDOW_CLOSED = 'KYB approved. Deposit window is currently closed.'
 
@@ -31,7 +31,7 @@ export function BtcVaultEligibilityAndDepositCard() {
   const showDepositWindow = Boolean(epoch?.isAcceptingRequests && epoch?.endTime != null)
   const showPassedClosed = status === 'passed' && !showDepositWindow
 
-  const sections: ReactNode[] = []
+  const sections: ReactNode[] = [<BtcVaultPrototypeBannerContent key="btc-vault-prototype" />]
   if (showEligibility) {
     sections.push(
       <EligibilityBannerContent
@@ -57,8 +57,9 @@ export function BtcVaultEligibilityAndDepositCard() {
       testId="btc-vault-eligibility-and-deposit-card"
       background={ELIGIBILITY_DEPOSIT_CARD_GRADIENT}
       className="isolate py-6 px-10"
-      decorativeImageColor={DEBRIS_COLOR_CREAM}
-      decorativeSecondaryColor={DEBRIS_COLOR_DARK}
+      mobileBackground={ELIGIBILITY_DEPOSIT_CARD_GRADIENT}
+      decorativeImageColor={ELIGIBILITY_DEPOSIT_CARD_DEBRIS_CREAM}
+      decorativeSecondaryColor={ELIGIBILITY_DEPOSIT_CARD_DEBRIS_DARK}
     >
       {sections}
     </StackableBanner>

@@ -1,7 +1,8 @@
+import { FC } from 'react'
+
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { NFTBoosterCard } from '@/app/shared/components'
-import { FC } from 'react'
 
 interface SelfContainedNFTBoosterCardPros {
   forceRender?: boolean
@@ -11,12 +12,12 @@ export const SelfContainedNFTBoosterCard: FC<SelfContainedNFTBoosterCardPros> = 
 
   const { title, leftImageSrc } = communitiesMapByContract[boostData?.nftContractAddress ?? ''] ?? {}
 
-  if (!title || !forceRender) {
+  if (!boostData || !title || !forceRender) {
     return null
   }
 
   // FIXME: conversion to number seems silly. Either use bigint or number, not both.
-  const boostValue = Number(boostData?.boostPercentage)
+  const boostValue = Number(boostData?.boostPercentage ?? 0)
 
   const content = userHasRewards
     ? `You're earning ${boostValue}% more rewards thanks to your ${title} NFT.`

@@ -5,7 +5,7 @@ import { useReadContract, useReadContracts } from 'wagmi'
 
 import { rbtcVault } from '@/lib/contracts'
 
-import { EPOCH_DURATION_SEC } from '../../services/constants'
+import { EPOCH_DURATION_SEC, EPOCH_FALLBACK_START_UNIX_SEC } from '../../services/constants'
 import type { EpochState, EpochStatus } from '../../services/types'
 import { toEpochDisplay } from '../../services/ui/mappers'
 
@@ -98,10 +98,11 @@ export function useEpochState() {
     const totalDepositAssets = pendingAssetsResult.result as bigint
     const totalRedemptionShares = totalRedeemResult.result as bigint
 
-    const startTime =
+    const prevClosedAt =
       epochId > 0n && prevSnapshotData !== undefined
         ? Number((prevSnapshotData as EpochSnapshotResult)[0])
-        : 0
+        : null
+    const startTime = prevClosedAt !== null && prevClosedAt > 0 ? prevClosedAt : EPOCH_FALLBACK_START_UNIX_SEC
     const endTime = startTime + EPOCH_DURATION_SEC
 
     let status: EpochStatus

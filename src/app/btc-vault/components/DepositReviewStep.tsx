@@ -46,7 +46,7 @@ export const DepositReviewStep = ({
   const sharesFormatted = useMemo(() => {
     if (!estimatedShares) return '0'
     try {
-      return formatNumberWithCommas(Big(estimatedShares).round(0))
+      return formatNumberWithCommas(Big(estimatedShares))
     } catch {
       return '0'
     }
