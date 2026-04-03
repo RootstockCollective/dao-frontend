@@ -75,6 +75,7 @@ export function Breadcrumbs() {
       <ol className="flex gap-2">
         {breadcrumbs.map(({ title, href }, idx) => {
           const isLast = idx === breadcrumbs.length - 1
+          const isDelimiterBeforeCurrent = idx === breadcrumbs.length - 2
           return (
             <li key={href} className={isLast ? 'min-w-0 truncate' : 'flex items-center gap-2 shrink-0'}>
               {isLast ? (
@@ -85,12 +86,12 @@ export function Breadcrumbs() {
                 <>
                   <Link
                     href={href}
-                    className="text-sm text-warm-gray hover:underline"
+                    className="text-sm text-primary hover:underline"
                     data-testid="breadcrumb-link"
                   >
                     {title}
                   </Link>
-                  <span className="text-warm-gray">/</span>
+                  <span className={isDelimiterBeforeCurrent ? 'text-warm-gray' : 'text-primary'}>/</span>
                 </>
               )}
             </li>

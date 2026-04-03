@@ -1,12 +1,20 @@
-import { logger } from '@/lib/logger'
+import type { PrismaClient } from '@prisma/client'
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
+
+import { confirmProposalExists } from '@/app/proposals/actions/getProposalById'
 import { JWTPayload } from '@/lib/auth/jwt'
 import { withAuth } from '@/lib/auth/withAuth'
-import { prisma } from '@/lib/prisma'
-import { confirmProposalExists } from '@/app/proposals/actions/getProposalById'
 import { ENV } from '@/lib/constants'
-import { ProposalIdSchema, bigIntToBuffer } from './shared'
+import { logger } from '@/lib/logger'
+import { prisma } from '@/lib/prisma'
+
+import { bigIntToBuffer, ProposalIdSchema } from './shared'
+
+type PrismaTransactionClient = Omit<
+  PrismaClient,
+  '$connect' | '$disconnect' | '$on' | '$transaction' | '$extends'
+>
 
 const LikeRequestSchema = z.object({
   proposalId: ProposalIdSchema,
@@ -106,7 +114,7 @@ export const POST = withAuth(async (request, session: JWTPayload) => {
       return Response.json({ success: false, error: 'Proposal not found in the Governor' }, { status: 404 })
     }
 
-    const liked = await prisma.$transaction(async tx => {
+    const liked = await prisma.$transaction(async (tx: PrismaTransactionClient) => {
       const existing = await tx.proposalLike.findFirst({
         where: { proposalId: proposalIdBuffer, userAddress, reaction },
       })

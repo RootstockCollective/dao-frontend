@@ -1,12 +1,12 @@
 import { publicActions } from 'viem'
-import { config } from '@/config'
+
+import { config, currentEnvChain } from '@/config'
 
 /**
  * This fetches the current client that is being used in the project to make calls such as multicall, readContract, etc...
- * ts-ignore because chainId is detected as string and it must be 30 31 32
+ * Use the same chain as `createConfig` so `getClient` is never undefined when env chain id disagrees with `ENV`.
  */
-// @ts-ignore
-const client = config.getClient({ chainId: Number(process.env.NEXT_PUBLIC_CHAIN_ID) || 31 })
+const client = config.getClient({ chainId: currentEnvChain.id })
 
 export const publicClient = client.extend(publicActions)
 

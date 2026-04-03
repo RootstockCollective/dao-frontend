@@ -1,9 +1,11 @@
-import { logger } from '@/lib/logger'
 import { NextRequest } from 'next/server'
+
 import { JWTPayload } from '@/lib/auth/jwt'
 import { withAuth } from '@/lib/auth/withAuth'
+import { logger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
-import { ProposalIdSchema, bigIntToBuffer } from '../shared'
+
+import { bigIntToBuffer, ProposalIdSchema } from '../shared'
 
 /**
  * GET /api/like/user?proposalId=<BigInt string>
@@ -37,7 +39,7 @@ export const GET = withAuth(async (request: NextRequest, session: JWTPayload) =>
       select: { reaction: true },
     })
 
-    const reactions = rows.map(row => row.reaction)
+    const reactions = rows.map((row: (typeof rows)[number]) => row.reaction)
 
     return Response.json({ success: true, proposalId: parsed.data, reactions })
   } catch (error) {
