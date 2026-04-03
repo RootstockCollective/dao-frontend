@@ -62,10 +62,10 @@ describe('WithdrawReviewStep', () => {
     expect(onSubmit).toHaveBeenCalledOnce()
   })
 
-  it('shows In progress button when isSubmitting is true', () => {
+  it('shows In Progress button when isSubmitting is true', () => {
     render(<WithdrawReviewStep {...defaultProps} isSubmitting />)
 
-    expect(screen.getByText('In progress')).toBeInTheDocument()
+    expect(screen.getByText('In Progress')).toBeInTheDocument()
     expect(screen.queryByTestId('SubmitRequestButton')).not.toBeInTheDocument()
     expect(screen.getByTestId('BackButton')).toBeInTheDocument()
   })

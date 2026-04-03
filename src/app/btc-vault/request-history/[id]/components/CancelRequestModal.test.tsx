@@ -44,9 +44,9 @@ describe('CancelRequestModal', () => {
     expect(onClose).not.toHaveBeenCalled()
   })
 
-  it('shows In progress button when isLoading is true', () => {
+  it('shows In Progress button when isLoading is true', () => {
     render(<CancelRequestModal onClose={onClose} onConfirm={onConfirm} isLoading />)
-    expect(screen.getByText('In progress')).toBeInTheDocument()
+    expect(screen.getByText('In Progress')).toBeInTheDocument()
     expect(screen.queryByTestId('CancelRequestConfirm')).not.toBeInTheDocument()
     expect(screen.getByTestId('CancelRequestNevermind')).toBeInTheDocument()
   })
