@@ -1,9 +1,9 @@
+import { fetchProposalsCreatedCached } from '@/app/proposals/actions/fetchProposalsCreatedCached'
 import {
-  ProposalQueryResult,
+  type ProposalQueryResult,
   useFetchCreateBuilderProposals,
 } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { ADDRESS_PADDING_LENGTH, RELAY_PARAMETER_PADDING_LENGTH } from '@/app/proposals/shared/utils'
-import { fetchProposalsCreatedCached } from '@/app/user/Balances/actions'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
@@ -11,7 +11,7 @@ import { renderHook, waitFor } from '@testing-library/react'
 import { prepareEncodeFunctionData, parseEventLogs } from 'viem'
 import { Mock, beforeEach, describe, expect, it, vi } from 'vitest'
 
-vi.mock('@/app/user/Balances/actions', () => ({
+vi.mock('@/app/proposals/actions/fetchProposalsCreatedCached', () => ({
   fetchProposalsCreatedCached: vi.fn(),
 }))
 
