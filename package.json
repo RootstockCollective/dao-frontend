@@ -8,6 +8,7 @@
     "dev:dev": "PROFILE=dev next dev",
     "dev:webpack": "next dev",
     "build": "next build --webpack",
+    "build:turbo": "next build --turbopack",
     "start": "next start",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

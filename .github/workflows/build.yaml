@@ -67,4 +67,4 @@ jobs:
           NEXT_PUBLIC_BUILD_ID: ${{ github.sha }}
         run: |
           cp .env.dev .env.local
-          npm run build
+          npm run build:turbo
