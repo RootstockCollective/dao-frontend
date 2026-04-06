@@ -84,14 +84,13 @@ export async function fetchIpfsNftMeta(cid: string): Promise<NftMeta> {
  * @throws {Error} If no gateway is provided or found in environment variables
  */
 export function ipfsGatewayUrl(cid: string) {
-  if (!cid) return ''
-
-  if (cid.startsWith('https://') || cid.startsWith('http://')) {
-    return cid
-  }
-
   const gateway = process.env.NEXT_PUBLIC_IPFS_GATEWAY
   if (!gateway) return ''
+
+  // If already a full HTTPS URL, return as-is (already converted by API or another gateway)
+  if (cid && (cid.startsWith('https://') || cid.startsWith('http://'))) {
+    return cid
+  }
 
   cid = removeIpfsPrefix(cid)
   return `https://${gateway}/ipfs/${cid}`
