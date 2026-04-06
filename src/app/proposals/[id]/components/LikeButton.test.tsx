@@ -1,8 +1,9 @@
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen } from '@testing-library/react'
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { LikeButton } from './LikeButton'
 import { SiweTooltipContent } from './SiweTooltipContent'
@@ -41,16 +42,67 @@ vi.mock('wagmi', () => ({
   useAccount: () => ({ isConnected: true }),
 }))
 
-const toggleLike = vi.fn()
-vi.mock('../hooks/useLike', () => ({
-  useLike: () => ({
-    count: 2,
-    liked: false,
-    isLoading: false,
-    isToggling: false,
-    toggleLike,
-  }),
-}))
+vi.mock('@/lib/auth/siweStore', async () => {
+  const { create: createStore } = await import('zustand')
+  const useSiweStore = createStore<{ jwtToken: string | null; signOut: () => void }>(set => ({
+    jwtToken: null,
+    signOut: () => set({ jwtToken: null }),
+  }))
+  return { useSiweStore }
+})
+
+import { useSiweStore } from '@/lib/auth/siweStore'
+
+const originalFetch = globalThis.fetch
+
+function proposalIdFromRequest(input: RequestInfo | URL, init?: RequestInit): string {
+  const url = typeof input === 'string' ? input : input.toString()
+  if (url.includes('proposalId=')) {
+    return new URL(url, 'http://localhost').searchParams.get('proposalId') ?? 'p0'
+  }
+  if (init?.body && typeof init.body === 'string') {
+    try {
+      const body = JSON.parse(init.body) as { proposalId?: string }
+      return body.proposalId ?? 'p0'
+    } catch {
+      return 'p0'
+    }
+  }
+  return 'p0'
+}
+
+function installLikeApiFetchMock() {
+  globalThis.fetch = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
+    const url = typeof input === 'string' ? input : input.toString()
+    const method = init?.method ?? 'GET'
+    const pid = proposalIdFromRequest(input, init)
+
+    if (url.includes('/api/like/user')) {
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({ success: true, proposalId: pid, reactions: [] }),
+      } as Response)
+    }
+    if (url.includes('/api/like') && method === 'POST') {
+      return Promise.resolve({
+        ok: true,
+        status: 200,
+        json: async () => ({ success: true, liked: true, reaction: 'heart' }),
+      } as Response)
+    }
+    if (url.includes('/api/like')) {
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({
+          success: true,
+          proposalId: pid,
+          reactions: { heart: 1 },
+        }),
+      } as Response)
+    }
+    return Promise.resolve({ ok: false, json: async () => ({}) } as Response)
+  }) as typeof fetch
+}
 
 const wrapper = ({ children }: { children: ReactNode }) => {
   const client = new QueryClient({
@@ -63,12 +115,26 @@ const wrapper = ({ children }: { children: ReactNode }) => {
   )
 }
 
+function encodeJwtPayload(payload: Record<string, unknown>): string {
+  const header = Buffer.from(JSON.stringify({ alg: 'none', typ: 'JWT' })).toString('base64url')
+  const body = Buffer.from(JSON.stringify(payload)).toString('base64url')
+  return `${header}.${body}.x`
+}
+
 describe('LikeButton', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     signInMockState.error = null
     signInMockState.isAuthenticated = false
     signInMockState.isLoading = false
+    signInMockState.signIn.mockReset()
+    useSiweStore.setState({ jwtToken: null })
+    installLikeApiFetchMock()
+  })
+
+  afterEach(() => {
+    cleanup()
+    globalThis.fetch = originalFetch
   })
 
   it('shows a toast when useSignIn reports an error', () => {
@@ -103,6 +169,25 @@ describe('LikeButton', () => {
     signInMockState.error = new Error('Login failed')
     rerender(<LikeButton proposalId="p1" />)
     expect(mockShowToast).toHaveBeenCalledTimes(2)
+  })
+
+  it('when the wallet is connected but the user is not SIWE-authenticated, clicking like invokes signIn', async () => {
+    const exp = Math.floor(Date.now() / 1000) + 3600
+    const freshJwt = encodeJwtPayload({
+      exp,
+      userAddress: '0x0000000000000000000000000000000000000002',
+    })
+    signInMockState.signIn.mockResolvedValue(freshJwt)
+
+    const user = userEvent.setup()
+    const { container } = render(<LikeButton proposalId="p-integration" />, { wrapper })
+    const likeButton = within(container).getByRole('button', { name: /like proposal/i })
+
+    await waitFor(() => expect(likeButton).toHaveTextContent('1'))
+
+    await user.click(likeButton)
+
+    expect(signInMockState.signIn).toHaveBeenCalledTimes(1)
   })
 })
 
