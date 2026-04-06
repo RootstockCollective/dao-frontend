@@ -8,17 +8,19 @@ import { RIF, USDRIF, USDT0 } from '@/lib/constants'
 import { useSwapStore } from '@/shared/stores/swap'
 
 import { getSmartDefaultSwapDirection } from '../utils/smart-default-direction'
+import { useSwapBtcSideBalances } from './useSwapBtcSideBalances'
 
 /**
  * Applies a smart default swap direction when the modal opens.
  *
- * When the user has no spendable USDT0, prefers USDRIF or RIF as "From" so they can swap
- * without switching tokens first. Runs once per modal mount after balances load.
+ * When the user has no spendable USDT0, prefers USDRIF, RIF, or BTC-side (native + WrBTC) as "From"
+ * so they can swap without switching tokens first. Runs once per modal mount after balances load.
  * Does not re-apply on balance refetches, preserving any manual toggle the user makes.
  */
 export const useSwapSmartDefault = () => {
   const hasAppliedRef = useRef(false)
   const { balances, isBalancesLoading } = useBalancesContext()
+  const { combinedBalanceFormatted, isLoading: isBtcSideLoading } = useSwapBtcSideBalances()
   const { tokenIn, tokenOut, setTokenIn, setTokenOut } = useSwapStore(
     useShallow(state => ({
       tokenIn: state.tokenIn,
@@ -30,18 +32,32 @@ export const useSwapSmartDefault = () => {
 
   // Apply smart default once when balances finish loading on modal mount
   useEffect(() => {
-    if (isBalancesLoading || hasAppliedRef.current) return
+    if (isBalancesLoading || isBtcSideLoading || hasAppliedRef.current) return
 
     hasAppliedRef.current = true
 
     const usdt0Balance = balances[USDT0]?.balance ?? '0'
     const usdrifBalance = balances[USDRIF]?.balance ?? '0'
     const rifBalance = balances[RIF]?.balance ?? '0'
-    const smartDefault = getSmartDefaultSwapDirection(usdt0Balance, usdrifBalance, rifBalance)
+    const smartDefault = getSmartDefaultSwapDirection(
+      usdt0Balance,
+      usdrifBalance,
+      rifBalance,
+      combinedBalanceFormatted,
+    )
 
     if (smartDefault.tokenIn !== tokenIn || smartDefault.tokenOut !== tokenOut) {
       setTokenIn(smartDefault.tokenIn)
       setTokenOut(smartDefault.tokenOut)
     }
-  }, [isBalancesLoading, balances, tokenIn, tokenOut, setTokenIn, setTokenOut])
+  }, [
+    isBalancesLoading,
+    isBtcSideLoading,
+    balances,
+    combinedBalanceFormatted,
+    tokenIn,
+    tokenOut,
+    setTokenIn,
+    setTokenOut,
+  ])
 }
