@@ -59,19 +59,18 @@ describe('resolveSwapRoute', () => {
     expect(reverse.split(':')).toHaveLength(3)
   })
 
-  // Vitest default project uses NEXT_PUBLIC_ENV=testnet: RIF↔WRBTC falls back via USDT0 (no assumed direct pool).
-  it('returns RIF → USDT0 → WRBTC for RIF to WRBTC on testnet config', () => {
+  it('returns a direct path for RIF to WRBTC', () => {
     const wrbtc = getAddress(SWAP_TOKEN_ADDRESSES.WRBTC)
     const route = resolveSwapRoute(rif, wrbtc)
-    expect(route.tokens).toEqual([rif, usdt0, wrbtc])
-    expect(isMultihopRoute(route)).toBe(true)
+    expect(route.tokens).toEqual([rif, wrbtc])
+    expect(isMultihopRoute(route)).toBe(false)
   })
 
-  it('returns WRBTC → USDT0 → RIF for WRBTC to RIF on testnet config', () => {
+  it('returns a direct path for WRBTC to RIF', () => {
     const wrbtc = getAddress(SWAP_TOKEN_ADDRESSES.WRBTC)
     const route = resolveSwapRoute(wrbtc, rif)
-    expect(route.tokens).toEqual([wrbtc, usdt0, rif])
-    expect(isMultihopRoute(route)).toBe(true)
+    expect(route.tokens).toEqual([wrbtc, rif])
+    expect(isMultihopRoute(route)).toBe(false)
   })
 })
 
