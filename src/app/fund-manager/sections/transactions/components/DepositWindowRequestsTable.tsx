@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
-import { useGetBtcVaultEntitiesHistory } from '@/app/fund-manager/sections/transactions/hooks/useGetBtcVaultEntitiesHistory'
 import { TablePager } from '@/components/TableNew'
 import { Header } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
@@ -11,6 +10,7 @@ import { usePricesContext } from '@/shared/context/PricesContext'
 
 import type { ColumnId, DepositWindowCellDataMap } from '../config'
 import { DEFAULT_HEADERS, PAGE_SIZE } from '../config'
+import { useGetBtcVaultEntitiesHistory } from '../hooks/useGetBtcVaultEntitiesHistory'
 import { convertDataToRowData } from '../utils'
 import { DesktopDepositWindowRequests } from './DesktopDepositWindowRequests'
 

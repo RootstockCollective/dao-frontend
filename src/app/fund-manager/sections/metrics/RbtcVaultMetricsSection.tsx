@@ -5,14 +5,14 @@ import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { RBTC } from '@/lib/constants'
 import { useModal } from '@/shared/hooks/useModal'
 
-import { RbtcVaultMetricCard } from './metrics/components/RbtcVaultMetricCard'
-import { RbtcVaultMetricsRow } from './metrics/components/RbtcVaultMetricsRow'
-import { TopUpBufferFlow } from './metrics/flows/buffer/TopUpBufferFlow'
-import { DepositToVaultFlow } from './metrics/flows/deposit/DepositToVaultFlow'
-import { UpdateNavFlow } from './metrics/flows/nav/UpdateNavFlow'
-import { SyntheticYieldTopUpFlow } from './metrics/flows/synthetic-yield/SyntheticYieldTopUpFlow'
-import { TransferToManagerFlow } from './metrics/flows/transfer/TransferToManagerFlow'
-import { useRbtcVaultMetrics } from './metrics/hooks/useRbtcVaultMetrics'
+import { RbtcVaultMetricCard } from './components/RbtcVaultMetricCard'
+import { RbtcVaultMetricsRow } from './components/RbtcVaultMetricsRow'
+import { TopUpBufferFlow } from './flows/buffer/TopUpBufferFlow'
+import { DepositToVaultFlow } from './flows/deposit/DepositToVaultFlow'
+import { UpdateNavFlow } from './flows/nav/UpdateNavFlow'
+import { SyntheticYieldTopUpFlow } from './flows/synthetic-yield/SyntheticYieldTopUpFlow'
+import { TransferToManagerFlow } from './flows/transfer/TransferToManagerFlow'
+import { useRbtcVaultMetrics } from './hooks/useRbtcVaultMetrics'
 
 export const RbtcVaultMetricsSection = () => {
   const { row1, row2, row3, isLoading, error } = useRbtcVaultMetrics()

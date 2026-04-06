@@ -5,7 +5,7 @@ import { useCallback, useState } from 'react'
 import { SolidTabs } from '@/components/Tabs'
 import { TableProvider } from '@/shared/context'
 
-import { DepositWindowRequestsTable } from './transactions/components/DepositWindowRequestsTable'
+import { DepositWindowRequestsTable } from './transactions/components'
 import type { ColumnId, DepositWindowCellDataMap } from './transactions/config'
 
 const FUND_MANAGER_TABS = ['Transactions', 'NAV History', 'Ongoing'] as const
