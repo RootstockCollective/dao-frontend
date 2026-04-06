@@ -4,10 +4,8 @@ import { useCallback } from 'react'
 
 import { executeTxFlow } from '@/shared/notification'
 
-import { PauseCard } from './components/PauseCard'
-import { usePauseVaultDeposits } from './hooks/usePauseVaultDeposits'
-import { usePauseVaultWithdrawals } from './hooks/usePauseVaultWithdrawals'
-import { useVaultPauseState } from './hooks/useVaultPauseState'
+import { usePauseVaultDeposits, usePauseVaultWithdrawals, useVaultPauseState } from './hooks'
+import { PauseCard } from './PauseCard'
 
 export function VaultControlsSection() {
   const { depositsPaused, withdrawalsPaused, refetch } = useVaultPauseState()
