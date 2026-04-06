@@ -68,7 +68,7 @@ describe('ActiveRequestSection', () => {
 
   it('renders nothing when wallet is not connected', () => {
     mockedUseAccount.mockReturnValue({ address: undefined } as unknown as ReturnType<typeof useAccount>)
-    mockedUseActiveRequests.mockReturnValue({ data: undefined })
+    mockedUseActiveRequests.mockReturnValue({ data: undefined, refetch: vi.fn() })
 
     const { container } = render(<ActiveRequestSection />)
     expect(container.innerHTML).toBe('')
@@ -78,7 +78,7 @@ describe('ActiveRequestSection', () => {
     mockedUseAccount.mockReturnValue({
       address: '0x1234567890abcdef1234567890abcdef12345678',
     } as unknown as ReturnType<typeof useAccount>)
-    mockedUseActiveRequests.mockReturnValue({ data: [] })
+    mockedUseActiveRequests.mockReturnValue({ data: [], refetch: vi.fn() })
 
     const { container } = render(<ActiveRequestSection />)
     expect(container.innerHTML).toBe('')
@@ -88,7 +88,7 @@ describe('ActiveRequestSection', () => {
     mockedUseAccount.mockReturnValue({
       address: '0x1234567890abcdef1234567890abcdef12345678',
     } as unknown as ReturnType<typeof useAccount>)
-    mockedUseActiveRequests.mockReturnValue({ data: undefined })
+    mockedUseActiveRequests.mockReturnValue({ data: undefined, refetch: vi.fn() })
 
     const { container } = render(<ActiveRequestSection />)
     expect(container.innerHTML).toBe('')
@@ -98,7 +98,7 @@ describe('ActiveRequestSection', () => {
     mockedUseAccount.mockReturnValue({
       address: '0x1234567890abcdef1234567890abcdef12345678',
     } as unknown as ReturnType<typeof useAccount>)
-    mockedUseActiveRequests.mockReturnValue({ data: [MOCK_REQUEST] })
+    mockedUseActiveRequests.mockReturnValue({ data: [MOCK_REQUEST], refetch: vi.fn() })
 
     render(<ActiveRequestSection />)
 
@@ -111,7 +111,7 @@ describe('ActiveRequestSection', () => {
     mockedUseAccount.mockReturnValue({
       address: '0x1234567890abcdef1234567890abcdef12345678',
     } as unknown as ReturnType<typeof useAccount>)
-    mockedUseActiveRequests.mockReturnValue({ data: [MOCK_REQUEST] })
+    mockedUseActiveRequests.mockReturnValue({ data: [MOCK_REQUEST], refetch: vi.fn() })
 
     render(<ActiveRequestSection />)
 
