@@ -5,6 +5,8 @@ import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { encodeUnsignedJwtForTests } from '../encodeUnsignedJwtForTests'
+
 import { LikeButton } from './LikeButton'
 import { SiweTooltipContent } from './SiweTooltipContent'
 
@@ -115,12 +117,6 @@ const wrapper = ({ children }: { children: ReactNode }) => {
   )
 }
 
-function encodeJwtPayload(payload: Record<string, unknown>): string {
-  const header = Buffer.from(JSON.stringify({ alg: 'none', typ: 'JWT' })).toString('base64url')
-  const body = Buffer.from(JSON.stringify(payload)).toString('base64url')
-  return `${header}.${body}.x`
-}
-
 describe('LikeButton', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -137,7 +133,7 @@ describe('LikeButton', () => {
     globalThis.fetch = originalFetch
   })
 
-  it('shows a toast when useSignIn reports an error', () => {
+  it('should show a toast when useSignIn reports an error', () => {
     signInMockState.error = new Error('User rejected the request')
     render(<LikeButton proposalId="p1" />, { wrapper })
 
@@ -149,7 +145,7 @@ describe('LikeButton', () => {
     })
   })
 
-  it('does not repeat the same auth error toast on re-render', () => {
+  it('should not repeat the same auth error toast on re-render', () => {
     signInMockState.error = new Error('Challenge request failed')
     const { rerender } = render(<LikeButton proposalId="p1" />, { wrapper })
     expect(mockShowToast).toHaveBeenCalledTimes(1)
@@ -158,7 +154,7 @@ describe('LikeButton', () => {
     expect(mockShowToast).toHaveBeenCalledTimes(1)
   })
 
-  it('toasts again after the error clears and the same message returns', () => {
+  it('should toast again after the error clears and the same message returns', () => {
     signInMockState.error = new Error('Login failed')
     const { rerender } = render(<LikeButton proposalId="p1" />, { wrapper })
     expect(mockShowToast).toHaveBeenCalledTimes(1)
@@ -171,9 +167,9 @@ describe('LikeButton', () => {
     expect(mockShowToast).toHaveBeenCalledTimes(2)
   })
 
-  it('when the wallet is connected but the user is not SIWE-authenticated, clicking like invokes signIn', async () => {
+  it('should invoke signIn when the wallet is connected but the user is not SIWE-authenticated', async () => {
     const exp = Math.floor(Date.now() / 1000) + 3600
-    const freshJwt = encodeJwtPayload({
+    const freshJwt = encodeUnsignedJwtForTests({
       exp,
       userAddress: '0x0000000000000000000000000000000000000002',
     })
@@ -192,7 +188,7 @@ describe('LikeButton', () => {
 })
 
 describe('SiweTooltipContent', () => {
-  it('shows inline error copy when error is set', () => {
+  it('should show inline error copy when error is set', () => {
     render(<SiweTooltipContent onClick={vi.fn()} error={new Error('Wallet not connected')} />)
     expect(screen.getByRole('alert')).toHaveTextContent('Wallet not connected')
   })

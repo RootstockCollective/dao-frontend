@@ -46,7 +46,7 @@ const fetchUserReaction = async (proposalId: string, token: string): Promise<Use
  * 2. Fetches user's existing reaction before deciding to like or show existing state
  * 3. Sends the like/unlike request with optimistic UI updates
  * 4. Rolls back on failure
- * 5. Resets heart state on disconnect/logout
+ * 5. Resets heart state on disconnect, logout, or missing / client-expired JWT
  * 6. Guards against concurrent toggle requests
  *
  * Background effects:
@@ -141,10 +141,19 @@ export const useLike = (proposalId: string, isConnected: boolean, signIn: () => 
         }
       }
 
-      // Phase 3: Optimistic update
+      // Phase 3: Optimistic UI — update count and heart immediately before the network round-trip.
+      // If the request later fails (401, bad response, network error), the server never applied the
+      // change; without a matching rollback the UI would lie until the next refetch.
       const willLike = !currentLikedState
       setCount(prev => Math.max(0, prev + (willLike ? 1 : -1)))
       setLastLikedState(willLike)
+
+      // Reverts Phase 3: restore count and heart to `currentLikedState` / matching count whenever
+      // we learn the server did not successfully apply this toggle (401, parse error, !ok, or fetch threw).
+      const rollbackOptimistic = () => {
+        setCount(prev => Math.max(0, prev + (willLike ? -1 : 1)))
+        setLastLikedState(currentLikedState)
+      }
 
       // Phase 4: Send toggle request
       try {
@@ -157,19 +166,27 @@ export const useLike = (proposalId: string, isConnected: boolean, signIn: () => 
           body: JSON.stringify({ proposalId, reaction: 'heart' }),
         })
 
-        const result: ToggleLikeResponse = await response.json()
+        if (response.status === 401) {
+          useSiweStore.getState().signOut()
+          showToast({
+            severity: 'error',
+            title: 'Session expired',
+            content: 'Please sign in again to like this proposal.',
+          })
+          rollbackOptimistic()
+          return
+        }
+
+        let result: ToggleLikeResponse
+        try {
+          result = await response.json()
+        } catch {
+          rollbackOptimistic()
+          return
+        }
 
         if (!response.ok || !result.success) {
-          if (response.status === 401) {
-            useSiweStore.getState().signOut()
-            showToast({
-              severity: 'error',
-              title: 'Session expired',
-              content: 'Please sign in again to like this proposal.',
-            })
-          }
-          setCount(prev => Math.max(0, prev + (willLike ? -1 : 1)))
-          setLastLikedState(currentLikedState)
+          rollbackOptimistic()
           return
         }
 
@@ -180,9 +197,8 @@ export const useLike = (proposalId: string, isConnected: boolean, signIn: () => 
           queryKey: userReactionQueryKey(proposalId, token),
         })
       } catch {
-        // Network error — rollback optimistic update
-        setCount(prev => Math.max(0, prev + (willLike ? -1 : 1)))
-        setLastLikedState(currentLikedState)
+        // Fetch threw (e.g. offline) — same rollback as failed HTTP/body handling inside the try above.
+        rollbackOptimistic()
       }
     } finally {
       setIsToggling(false)

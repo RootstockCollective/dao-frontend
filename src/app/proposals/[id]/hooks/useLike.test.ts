@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { create } from 'zustand'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { testJwtExpiringInSeconds } from '../encodeUnsignedJwtForTests'
+
 import { useLike } from './useLike'
 
 vi.mock('@/shared/notification', () => ({
@@ -36,17 +38,6 @@ import { useSiweStore } from '@/lib/auth/siweStore'
 
 const mockedFetch = vi.fn()
 global.fetch = mockedFetch
-
-function encodeJwtPayload(payload: Record<string, unknown>): string {
-  const header = Buffer.from(JSON.stringify({ alg: 'none', typ: 'JWT' })).toString('base64url')
-  const body = Buffer.from(JSON.stringify(payload)).toString('base64url')
-  return `${header}.${body}.x`
-}
-
-function jwtExpiringIn(secondsFromNow: number): string {
-  const exp = Math.floor(Date.now() / 1000) + secondsFromNow
-  return encodeJwtPayload({ exp, userAddress: '0x0000000000000000000000000000000000000001' })
-}
 
 const proposalId = 'prop-1'
 
@@ -113,9 +104,9 @@ describe('useLike', () => {
     vi.useRealTimers()
   })
 
-  it('when JWT is expired, calls signOut and signIn before fetching user reaction; does not call /api/like/user with the expired Bearer token before signIn resolves', async () => {
-    const expiredJwt = jwtExpiringIn(-120)
-    const freshJwt = jwtExpiringIn(3600)
+  it('should call signOut and signIn when JWT is expired and should not call /api/like/user with the expired Bearer before signIn resolves', async () => {
+    const expiredJwt = testJwtExpiringInSeconds(-120)
+    const freshJwt = testJwtExpiringInSeconds(3600)
     useSiweStore.setState({ jwtToken: expiredJwt })
 
     let releaseSignIn!: (token: string | null) => void
@@ -167,8 +158,8 @@ describe('useLike', () => {
     })
   })
 
-  it('when JWT is valid, does not call signIn and completes the like flow', async () => {
-    const validJwt = jwtExpiringIn(3600)
+  it('should not call signIn when JWT is valid and should complete the like flow', async () => {
+    const validJwt = testJwtExpiringInSeconds(3600)
     useSiweStore.setState({ jwtToken: validJwt })
     const signIn = vi.fn()
 
@@ -212,8 +203,8 @@ describe('useLike', () => {
     expect(findPostLikeAuthHeader()).toBe(`Bearer ${validJwt}`)
   })
 
-  it('does not fetch /api/like/user from the user-reaction query when the persisted JWT is expired', async () => {
-    const expiredJwt = jwtExpiringIn(-60)
+  it('should not fetch /api/like/user from the user-reaction query when the persisted JWT is expired', async () => {
+    const expiredJwt = testJwtExpiringInSeconds(-60)
     useSiweStore.setState({ jwtToken: expiredJwt })
     const signIn = vi.fn()
 
@@ -232,7 +223,7 @@ describe('useLike', () => {
     expect(publicLikeFetches.length).toBeGreaterThanOrEqual(1)
   })
 
-  it('when signIn returns null (user reject), isToggling becomes false', async () => {
+  it('should set isToggling to false when signIn returns null (user reject)', async () => {
     useSiweStore.setState({ jwtToken: null })
     const signIn = vi.fn().mockResolvedValue(null)
 
@@ -251,8 +242,8 @@ describe('useLike', () => {
     expect(result.current.isToggling).toBe(false)
   })
 
-  it('on 401 from POST /api/like, calls signOut and shows session toast', async () => {
-    const validJwt = jwtExpiringIn(3600)
+  it('should call signOut and show session toast on 401 from POST /api/like', async () => {
+    const validJwt = testJwtExpiringInSeconds(3600)
     useSiweStore.setState({ jwtToken: validJwt })
     const signIn = vi.fn()
 

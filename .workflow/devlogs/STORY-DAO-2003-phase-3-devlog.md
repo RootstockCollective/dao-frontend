@@ -32,3 +32,16 @@
 
 - Expired-JWT test gates `signIn` with a pending promise and asserts no `/api/like/user` call used `Authorization: Bearer <expired>` before release.
 - For PR: confirm CI has the same `.env` / `NEXT_PUBLIC_*` expectations as local full builds if build is a required check.
+
+---
+
+## Code review follow-up (merge into canonical `STORY-DAO-2003-plan.md` on main)
+
+`.workflow/plans/` is gitignored in this worktree; copy these rows into **`## Plan Amendments`** when syncing workflow to the main repo:
+
+| Phase | Amendment | Reason | Date |
+| ----- | --------- | ------ | ---- |
+| 3 | `LikeButton.test.tsx` uses real `useLike` everywhere (no conditional stub) | Rules of Hooks / Strict Mode when stub omitted internal hooks | 2026-04-06 |
+| 3 | POST `/api/like` **401** + toast asserted in `useLike.test.ts` only | Avoid duplicating heavy mocks in `LikeButton` tests | 2026-04-06 |
+| Post-CR | Shared `encodeUnsignedJwtForTests` + `testJwtExpiringInSeconds` in `src/app/proposals/[id]/encodeUnsignedJwtForTests.ts` | Deduplicate JWT fixtures across hook and component tests | 2026-04-06 |
+| Post-CR | `useLike` POST handler: check `response.status === 401` before `response.json()` so session toast runs even when the body is not JSON | Code review hardening | 2026-04-06 |
