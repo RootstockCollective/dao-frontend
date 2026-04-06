@@ -59,6 +59,12 @@ const usdt0 = {
   decimals: 6,
   displayDecimals: 2,
 }
+
+const wrbtc = {
+  decimals: 18,
+  displayDecimals: 8,
+}
+
 const symbols: { [key: string]: SymbolFormatOptions } = {
   rif,
   [RBTC.toLowerCase()]: rbtc, // Maps current env's RBTC symbol (rbtc or trbtc) to rbtc config
@@ -66,6 +72,7 @@ const symbols: { [key: string]: SymbolFormatOptions } = {
   usdrif,
   ctokenvault,
   usdt0,
+  wrbtc,
 }
 
 export const getSymbolDecimals = (symbol: string): number => {

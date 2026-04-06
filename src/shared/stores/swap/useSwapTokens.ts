@@ -4,7 +4,16 @@ import { useMemo } from 'react'
 import { Address } from 'viem'
 
 import { getSymbolDecimals } from '@/app/shared/formatter'
-import { RIF, RIF_ADDRESS, USDRIF, USDRIF_ADDRESS, USDT0, USDT0_ADDRESS } from '@/lib/constants'
+import {
+  RIF,
+  RIF_ADDRESS,
+  USDRIF,
+  USDRIF_ADDRESS,
+  USDT0,
+  USDT0_ADDRESS,
+  WRBTC,
+  WRBTC_ADDRESS,
+} from '@/lib/constants'
 
 import type { SwapTokenSymbol } from './types'
 
@@ -47,6 +56,12 @@ export const useSwapTokens = () => {
         address: RIF_ADDRESS,
         name: RIF,
         decimals: getSymbolDecimals(RIF),
+      },
+      [WRBTC]: {
+        symbol: WRBTC,
+        address: WRBTC_ADDRESS,
+        name: WRBTC,
+        decimals: getSymbolDecimals(WRBTC),
       },
     }),
     [],

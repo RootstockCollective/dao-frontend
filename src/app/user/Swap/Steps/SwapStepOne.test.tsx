@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 
-import { RIF, USDRIF, USDT0 } from '@/lib/constants'
+import { RIF, USDRIF, USDT0, WRBTC } from '@/lib/constants'
 import {
   useSwapInput,
   useTokenAllowance,
@@ -36,6 +36,12 @@ const swapTokensRecord = {
     symbol: RIF,
     address: '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5',
     name: RIF,
+    decimals: 18,
+  },
+  [WRBTC]: {
+    symbol: WRBTC,
+    address: '0x542fda317318ebf1d3deaf76e0b632741a7e677d',
+    name: WRBTC,
     decimals: 18,
   },
 } as const

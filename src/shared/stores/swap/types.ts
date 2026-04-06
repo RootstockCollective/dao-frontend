@@ -1,13 +1,13 @@
 import { Address, Hex } from 'viem'
 
-import { RIF, USDRIF, USDT0 } from '@/lib/constants'
+import { RIF, USDRIF, USDT0, WRBTC } from '@/lib/constants'
 import { PermitSingle } from '@/lib/swap/permit2'
 import type { SwapQuoteMode } from '@/lib/swap/types'
 
 /**
  * Supported swap tokens
  */
-export type SwapTokenSymbol = typeof USDT0 | typeof USDRIF | typeof RIF
+export type SwapTokenSymbol = typeof USDT0 | typeof USDRIF | typeof RIF | typeof WRBTC
 
 /**
  * Determines which input field the user is editing and the quote direction.
