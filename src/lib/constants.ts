@@ -3,7 +3,30 @@ import { type Address } from 'viem'
 import { Feature } from '@/config/features.conf'
 
 export const GITHUB_ORG = 'RootstockCollective'
-export const ENV = process.env.NEXT_PUBLIC_ENV as 'mainnet' | 'testnet' | 'fork'
+
+/** Keys must stay in sync with `envChains` in `src/config/config.ts`. */
+export const ENV_CHAIN_KEYS = ['mainnet', 'testnet', 'regtest', 'fork'] as const
+export type EnvChainKey = (typeof ENV_CHAIN_KEYS)[number]
+
+function resolveEnv(): EnvChainKey {
+  const raw = process.env.NEXT_PUBLIC_ENV
+  if (raw && (ENV_CHAIN_KEYS as readonly string[]).includes(raw)) {
+    return raw as EnvChainKey
+  }
+  if (process.env.NODE_ENV !== 'production') {
+    console.warn(
+      `[constants] Missing or invalid NEXT_PUBLIC_ENV (${JSON.stringify(raw)}). ` +
+        'Defaulting to "fork". Set PROFILE (e.g. PROFILE=fork) or NEXT_PUBLIC_ENV in your env file.',
+    )
+    return 'fork'
+  }
+  throw new Error(
+    `Missing or invalid NEXT_PUBLIC_ENV: ${String(raw)}. Expected one of: ${ENV_CHAIN_KEYS.join(', ')}`,
+  )
+}
+
+export const ENV: EnvChainKey = resolveEnv()
+export const RIF_WALLET_SERVICES_URL = process.env.NEXT_PUBLIC_RIF_WALLET_SERVICES
 export const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER
 export const BUILD_ID = process.env.NEXT_PUBLIC_BUILD_ID as string
 

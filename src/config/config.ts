@@ -1,12 +1,13 @@
-import { ENV, NODE_URL } from '@/lib/constants'
-import { Chain, defineChain } from 'viem'
-import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 import { rootstock, rootstockTestnet } from '@reown/appkit/networks'
-import { createConfig, http, cookieStorage, createStorage } from 'wagmi'
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
+import { Chain, defineChain } from 'viem'
+import { cookieStorage, createConfig, createStorage, http } from 'wagmi'
 import { injected } from 'wagmi/connectors'
+
+import { ledgerConnector } from '@/config/ledgerConnector'
+import { ENV, NODE_URL } from '@/lib/constants'
 import { REOWN_PROJECT_ID } from '@/lib/constants'
 import { trezorWalletConnector } from '@/shared/trezor-connector/trezor-connector'
-import { ledgerConnector } from '@/config/ledgerConnector'
 
 const rskRegtest = defineChain({
   id: 33,
@@ -51,7 +52,7 @@ const envChains = {
   fork: rootstockFork, // Local fork uses custom chain ID to avoid MetaMask conflicts
 } as const
 
-export const currentEnvChain: Chain = envChains[ENV as keyof typeof envChains]
+export const currentEnvChain: Chain = envChains[ENV]
 
 const connectors = [injected(), ledgerConnector({ chainId: currentEnvChain.id }), trezorWalletConnector()]
 

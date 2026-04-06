@@ -76,7 +76,7 @@ export function CapitalAllocationDonutChart({
         </PieChart>
       </ResponsiveContainer>
 
-      {total > 0 && (
+      {total > 0 ? (
         <div className="pointer-events-auto absolute inset-0 flex items-center justify-center p-1 md:p-0">
           <ul
             className={cn(
@@ -136,12 +136,12 @@ export function CapitalAllocationDonutChart({
               </li>
             ))}
           </ul>
-        ) : (
-          <Span variant="body-s" className="text-white/50" data-testid="capital-allocation-empty">
-            No capital allocated yet
-          </Span>
-        )}
-      </div>
+        </div>
+      ) : (
+        <Span variant="body-s" className="text-white/50" data-testid="capital-allocation-empty">
+          No capital allocated yet
+        </Span>
+      )}
     </div>
   )
 }
