@@ -58,7 +58,9 @@ RUN --mount=type=cache,target=/app/.next/cache npm run ${BUILD_SCRIPT}
 # ---------- stage 2: production-only deps (runs in parallel with build) ----------
 FROM base AS prod-deps
 
-RUN npm ci --omit=dev --verbose
+# --ignore-scripts skips the postinstall (prisma generate) which already
+# runs in the builder stage; the generated client is copied from there.
+RUN npm ci --omit=dev --ignore-scripts --verbose
 
 # ---------- stage 3: runner ----------
 FROM node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03 AS runner
