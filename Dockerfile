@@ -1,4 +1,5 @@
-FROM node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03 AS builder
+# ---------- shared base with native deps ----------
+FROM node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03 AS base
 
 # Install required dependencies for Trezor (and possibly Ledger)
 RUN apk add --no-cache \
@@ -7,10 +8,8 @@ RUN apk add --no-cache \
     g++ \
     eudev-dev \
     libusb-dev \
-    linux-headers 
+    linux-headers
 
-
-# Set the working directory
 WORKDIR /app
 
 # Copy package.json and package-lock.json
@@ -22,7 +21,10 @@ COPY prisma/schema.prisma ./prisma/schema.prisma
 # Skip cypress install
 ENV CYPRESS_INSTALL_BINARY 0
 
-# Install dependencies
+# ---------- stage 1: full install + build ----------
+FROM base AS builder
+
+# Install all dependencies (including devDependencies for the build)
 RUN npm ci --verbose
 
 # Copy the rest of the application code
@@ -43,7 +45,7 @@ ARG BUILD_SCRIPT=build
 RUN sed -i "s/^NEXT_PUBLIC_BUILD_ID=.*/NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}/" .env.${PROFILE} && \
     if [ -n "$ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL" ]; then sed -i "s|^ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL=.*|ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL=${ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL}|" .env.${PROFILE}; fi
 
-# Rename environment files based on PROFILE 
+# Rename environment files based on PROFILE
 RUN cp .env.${PROFILE} .env.local
 
 # Also export as environment variable for the build step
@@ -53,29 +55,31 @@ ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 # Build the Next.js application
 RUN --mount=type=cache,target=/app/.next/cache npm run ${BUILD_SCRIPT}
 
-# Clean node_modules for production after build
-RUN npm prune --production
+# ---------- stage 2: production-only deps (runs in parallel with build) ----------
+FROM base AS prod-deps
 
+RUN npm ci --omit=dev --verbose
+
+# ---------- stage 3: runner ----------
 FROM node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03 AS runner
 
-# Set the working directory
 WORKDIR /app
 
-# Copy the built application from the builder stage
+# Copy build output from builder stage
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/.env.local ./.env.local
-COPY --from=builder /app/node_modules ./node_modules
+
+# Copy production-only node_modules from prod-deps stage (built in parallel)
+COPY --from=prod-deps /app/node_modules ./node_modules
 
 # Copy Prisma schema and migrations
 COPY --from=builder /app/prisma ./prisma
 
-
 # Download AWS RDS CA certificate
 RUN apk add --no-cache wget && \
     wget -O rds-ca-cert.pem https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
-
 
 # Enable source maps so stack traces reference original TypeScript files
 ENV NODE_OPTIONS="--enable-source-maps"
