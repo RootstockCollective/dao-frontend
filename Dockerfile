@@ -36,6 +36,7 @@ ARG PROFILE
 ARG NEXT_PUBLIC_BUILD_ID
 ARG SENTRY_AUTH_TOKEN
 ARG ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL
+ARG BUILD_SCRIPT=build
 
 # Inject build args into the profile env file BEFORE copying
 # This is critical because next.config.mjs loads from .env.${PROFILE} with override: true
@@ -50,7 +51,7 @@ ENV NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}
 ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 
 # Build the Next.js application
-RUN --mount=type=cache,target=/app/.next/cache npm run build
+RUN --mount=type=cache,target=/app/.next/cache npm run ${BUILD_SCRIPT}
 
 # Clean node_modules for production after build
 RUN npm prune --production
