@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 import { isTokenExpired } from '@/lib/auth/jwt'
 import { useSiweStore } from '@/lib/auth/siweStore'
+import { showToast } from '@/shared/notification'
 
 interface LikeApiResponse {
   success: boolean
@@ -159,7 +160,14 @@ export const useLike = (proposalId: string, isConnected: boolean, signIn: () => 
         const result: ToggleLikeResponse = await response.json()
 
         if (!response.ok || !result.success) {
-          // Rollback optimistic update
+          if (response.status === 401) {
+            useSiweStore.getState().signOut()
+            showToast({
+              severity: 'error',
+              title: 'Session expired',
+              content: 'Please sign in again to like this proposal.',
+            })
+          }
           setCount(prev => Math.max(0, prev + (willLike ? -1 : 1)))
           setLastLikedState(currentLikedState)
           return
