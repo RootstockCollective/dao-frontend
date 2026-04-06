@@ -19,16 +19,36 @@ export interface UsePannableStepRowOffsetParams {
   containerRef: RefObject<HTMLElement | null>
   contentRef: RefObject<HTMLElement | null>
   currentStepIndex: number
+  /** When set, finds the active step via `data-stage` (1-based index). */
+  stageDataAttributes?: boolean
+  showStepSeparators?: boolean
+}
+
+function findStepElement(
+  contentEl: HTMLElement,
+  stepIndex: number,
+  stageDataAttributes: boolean,
+  showStepSeparators: boolean,
+): HTMLElement | null {
+  if (stageDataAttributes) {
+    const el = contentEl.querySelector(`[data-stage="${stepIndex + 1}"]`)
+    if (el instanceof HTMLElement) return el
+  }
+  const domIndex = showStepSeparators ? stepIndex * 2 : stepIndex
+  const child = contentEl.children[domIndex]
+  return child instanceof HTMLElement ? child : null
 }
 
 /**
- * Pan offset for a horizontal step row: same math and resize behavior as the
- * original proposal progress bar (76px-per-step heuristic, window resize only).
+ * Pan offset for a horizontal step row: scrolls so the active step stays in view
+ * using measured label positions (variable widths like "SHARES CLAIMED").
  */
 export function usePannableStepRowOffset({
   containerRef,
   contentRef,
   currentStepIndex,
+  stageDataAttributes = false,
+  showStepSeparators = true,
 }: UsePannableStepRowOffsetParams): number {
   const [offset, setOffset] = useState(0)
 
@@ -37,21 +57,41 @@ export function usePannableStepRowOffset({
       return 0
     }
 
-    const containerWidth = containerRef.current.offsetWidth
-    const contentWidth = contentRef.current.scrollWidth
+    const containerEl = containerRef.current
+    const contentEl = contentRef.current
+    const containerWidth = containerEl.offsetWidth
+    const contentWidth = contentEl.scrollWidth
 
     if (contentWidth <= containerWidth) {
       return 0
     }
 
-    const stepWidth = 76
-    const currentStepPosition = currentStepIndex * stepWidth
-    const containerCenter = containerWidth / 2
-    const desiredOffset = Math.max(0, currentStepPosition - containerCenter + 40)
     const maxOffset = contentWidth - containerWidth
+    const margin = 12
 
-    return Math.min(desiredOffset, maxOffset)
-  }, [containerRef, contentRef, currentStepIndex])
+    const stepEl = findStepElement(contentEl, currentStepIndex, stageDataAttributes, showStepSeparators)
+
+    let desiredOffset = 0
+
+    if (stepEl) {
+      const stepLeft = stepEl.offsetLeft
+      const stepRight = stepLeft + stepEl.offsetWidth
+
+      if (stepRight > containerWidth - margin) {
+        desiredOffset = stepRight - containerWidth + margin
+      }
+      if (stepLeft < desiredOffset + margin) {
+        desiredOffset = Math.max(0, stepLeft - margin)
+      }
+    } else {
+      const stepWidth = 76
+      const currentStepPosition = currentStepIndex * stepWidth
+      const containerCenter = containerWidth / 2
+      desiredOffset = Math.max(0, currentStepPosition - containerCenter + 40)
+    }
+
+    return Math.min(Math.max(0, desiredOffset), maxOffset)
+  }, [containerRef, contentRef, currentStepIndex, stageDataAttributes, showStepSeparators])
 
   useLayoutEffect(() => {
     setOffset(calculateOffset())
@@ -65,6 +105,19 @@ export function usePannableStepRowOffset({
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [calculateOffset])
+
+  useLayoutEffect(() => {
+    const el = containerRef.current
+    if (!el || typeof ResizeObserver === 'undefined') {
+      return
+    }
+
+    const ro = new ResizeObserver(() => {
+      setOffset(calculateOffset())
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [calculateOffset, containerRef])
 
   return offset
 }
@@ -117,6 +170,8 @@ export function PannableProgressStepRow({
     containerRef,
     contentRef,
     currentStepIndex,
+    stageDataAttributes,
+    showStepSeparators,
   })
 
   const { progress, color, className: progressBarClassName } = progressBar
