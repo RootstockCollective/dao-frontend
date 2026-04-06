@@ -7,6 +7,7 @@ import { PercentageButtonItem, PercentageButtons } from '@/components/Percentage
 import { SwapInputComponent, SwapInputToken } from '@/components/SwapInput'
 import { Label } from '@/components/Typography'
 import Big from '@/lib/big'
+import { WRBTC } from '@/lib/constants'
 import { feeTierToPercent, SWAP_FLOW_TOKEN_SYMBOLS, UNISWAP_FEE_TIERS } from '@/lib/swap/constants'
 import { formatForDisplay, handleAmountInput } from '@/lib/utils'
 import { useExecuteTxFlow } from '@/shared/notification'
@@ -19,6 +20,7 @@ import {
 } from '@/shared/stores/swap'
 
 import { SwapStepWarning } from '../components/SwapStepWarning'
+import { useSwapBtcSideBalances } from '../hooks/useSwapBtcSideBalances'
 import { SwapStepProps } from '../types'
 import { LOW_LIQUIDITY_WARNING_MESSAGE, shouldShowLowLiquidityWarning } from '../utils/low-liquidity-warning'
 
@@ -55,6 +57,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     useTokenSelection()
   const { tokens: swapTokenMeta } = useSwapTokens()
   const { balances, prices } = useBalancesContext()
+  const btcSide = useSwapBtcSideBalances()
   const { execute: executeTxFlow, isExecuting: isApproving } = useExecuteTxFlow()
   const { allowance, hasSufficientAllowance, approve, refetchAllowance, isCheckingAllowance } =
     useTokenAllowance()
@@ -62,9 +65,16 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   // Track which field the user is actively typing in (prevents loop from programmatic value updates)
   const activeFieldRef = useRef<'in' | 'out' | null>(null)
 
-  // Get balances and prices from context
-  const tokenInBalance = balances[tokenIn]?.balance ?? '0'
-  const tokenOutBalance = balances[tokenOut]?.balance ?? '0'
+  // Get balances and prices from context (WrBTC row uses chain reads: combined for max when selling BTC side)
+  const tokenInBalance = useMemo(() => {
+    if (tokenIn === WRBTC) return btcSide.combinedBalanceFormatted
+    return balances[tokenIn]?.balance ?? '0'
+  }, [balances, btcSide.combinedBalanceFormatted, tokenIn])
+
+  const tokenOutBalance = useMemo(() => {
+    if (tokenOut === WRBTC) return btcSide.wrbtcBalanceFormatted
+    return balances[tokenOut]?.balance ?? '0'
+  }, [balances, btcSide.wrbtcBalanceFormatted, tokenOut])
   const tokenInPrice = prices[tokenIn]?.price ?? 0
   const tokenOutPrice = prices[tokenOut]?.price ?? 0
 
@@ -123,6 +133,17 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     return Big(amountIn).gt(tokenInBalance)
   }, [amountIn, tokenInBalance])
 
+  /** Typed amount exceeds on-chain WrBTC balance while native could cover the rest — swap still needs ERC-20. */
+  const isWrbtcSpendShortage = useMemo(() => {
+    if (tokenIn !== WRBTC || !amountIn || !tokenInData.decimals) return false
+    try {
+      const req = parseUnits(amountIn, tokenInData.decimals)
+      return req > btcSide.wrbtcWei
+    } catch {
+      return false
+    }
+  }, [amountIn, btcSide.wrbtcWei, tokenIn, tokenInData.decimals])
+
   // Calculate required amount
   const requiredAmount = useMemo(() => {
     if (!amountIn || !tokenInData.decimals) return 0n
@@ -175,6 +196,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     const isDisabled =
       !hasValidAmount ||
       isAmountOverBalance ||
+      isWrbtcSpendShortage ||
       isQuoting ||
       !hasQuote ||
       isQuoteExpired ||
@@ -201,6 +223,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   }, [
     amountIn,
     isAmountOverBalance,
+    isWrbtcSpendShortage,
     amountOut,
     isQuoting,
     isQuoteExpired,
@@ -317,9 +340,11 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
           labelText="Amount to swap"
           isLoading={isQuoting && mode === 'exactOut'}
           errorText={
-            isAmountOverBalance
-              ? `This is more than your available ${tokenInData.symbol} balance. Please adjust the amount to swap, or transfer more ${tokenInData.symbol} into your wallet so you can swap it.`
-              : ''
+            isWrbtcSpendShortage
+              ? 'This swap spends WrBTC only. Wrap native rBTC in your wallet first, or enter an amount up to your WrBTC balance.'
+              : isAmountOverBalance
+                ? `This is more than your available ${tokenInData.symbol} balance. Please adjust the amount to swap, or transfer more ${tokenInData.symbol} into your wallet so you can swap it.`
+                : ''
           }
         />
 
@@ -386,6 +411,14 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
           errorText={quoteError ? 'Failed to get quote. Pool may have insufficient liquidity.' : ''}
           autoFocus={false}
         />
+
+        {(tokenIn === WRBTC || tokenOut === WRBTC) && (
+          <SwapStepWarning
+            message="You send and receive WrBTC (wrapped), not native rBTC. Unwrap WrBTC separately if you need native coin."
+            className="mt-2"
+            testId="swap-wrbtc-copy-warning"
+          />
+        )}
 
         {showLowLiquidityWarning && (
           <SwapStepWarning
