@@ -1,9 +1,10 @@
-import Big from '@/lib/big'
 import { BigSource } from 'big.js'
 import { ClassValue, clsx } from 'clsx'
 import { Duration } from 'luxon'
 import { twMerge } from 'tailwind-merge'
 import { Address, formatEther, getAddress, isAddress } from 'viem'
+
+import Big from '@/lib/big'
 
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
@@ -209,7 +210,7 @@ export function millify(num: BigSource | bigint, separator = '', units = shortDe
  * splitWords("ABCdef") // returns "AB Cdef"
  */
 export function splitWords(str?: string) {
-  return str ? str.replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2').replace(/([a-z])([A-Z])/g, '$1 $2') : ''
+  return str ? str.replaceAll(/([A-Z]+)([A-Z][a-z])/g, '$1 $2').replaceAll(/([a-z])([A-Z])/g, '$1 $2') : ''
 }
 
 /**
@@ -267,16 +268,19 @@ export const durationToLabel = (duration: Duration | undefined): string | undefi
 export const formatAmount = (amount: string) => formatNumberWithCommas(formatEther(BigInt(amount)).split('.')[0])
 
 /**
- * Formats a numeric string to a fixed number of decimal places for display
- * @param value - The numeric string to format
- * @param decimals - Number of decimal places (default: 2)
- * @returns The formatted string, or '0.00' if invalid
+ * Formats a numeric string to a fixed number of decimal places for display.
+ * Empty, invalid, or non-positive values → `"0.00"` (no long zero padding, e.g. for WrBTC balances).
  * @example formatForDisplay('123.456789') // '123.46'
  * @example formatForDisplay('1642.088864088341129143') // '1642.09'
+ * @example formatForDisplay('0', 8) // '0.00'
+ * @example formatForDisplay('0.00000001', 8) // '0.00000001'
  */
 export const formatForDisplay = (value: string, decimals = 2): string => {
   try {
-    return Big(value).toFixed(decimals)
+    if (!value.trim()) return '0.00'
+    const b = Big(value)
+    if (!b.gt(0)) return '0.00'
+    return b.toFixed(decimals)
   } catch {
     return '0.00'
   }

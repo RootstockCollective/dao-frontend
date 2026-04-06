@@ -55,12 +55,12 @@ describe('getSmartDefaultSwapDirection', () => {
     expect(result).toEqual({ tokenIn: USDT0, tokenOut: USDRIF })
   })
 
-  it('should return WrBTC → USDRIF when only BTC-side balance is positive', () => {
+  it('should return WrBTC → USDRIF when only WrBTC balance is positive', () => {
     const result = getSmartDefaultSwapDirection('0', '0', '0', '0.5')
     expect(result).toEqual({ tokenIn: WRBTC, tokenOut: USDRIF })
   })
 
-  it('should prefer RIF over BTC-side when both are positive', () => {
+  it('should prefer RIF over WrBTC when both are positive', () => {
     const result = getSmartDefaultSwapDirection('0', '0', '1', '100')
     expect(result).toEqual({ tokenIn: RIF, tokenOut: USDRIF })
   })

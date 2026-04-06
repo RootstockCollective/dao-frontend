@@ -36,8 +36,7 @@ describe('useSwapBtcSideBalances', () => {
 
     expect(result.current.nativeWei).toBe(1_000_000_000_000_000_000n)
     expect(result.current.wrbtcWei).toBe(2_000_000_000_000_000_000n)
-    expect(result.current.combinedWei).toBe(3_000_000_000_000_000_000n)
-    expect(result.current.combinedBalanceFormatted).toBe('3')
+    expect(result.current.nativeBalanceFormatted).toBe('1')
     expect(result.current.wrbtcBalanceFormatted).toBe('2')
     expect(result.current.isLoading).toBe(false)
   })
@@ -48,7 +47,7 @@ describe('useSwapBtcSideBalances', () => {
     const { result } = renderHook(() => useSwapBtcSideBalances())
 
     expect(result.current.wrbtcWei).toBe(0n)
-    expect(result.current.combinedWei).toBe(1_000_000_000_000_000_000n)
+    expect(result.current.nativeWei).toBe(1_000_000_000_000_000_000n)
   })
 
   it('returns zeros when wallet is disconnected', () => {
@@ -60,7 +59,6 @@ describe('useSwapBtcSideBalances', () => {
 
     expect(result.current.nativeWei).toBe(0n)
     expect(result.current.wrbtcWei).toBe(0n)
-    expect(result.current.combinedWei).toBe(0n)
     expect(result.current.isLoading).toBe(false)
   })
 

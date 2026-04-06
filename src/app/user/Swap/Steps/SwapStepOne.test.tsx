@@ -11,8 +11,7 @@ const { mockUseSwapBtcSideBalances } = vi.hoisted(() => ({
   mockUseSwapBtcSideBalances: vi.fn(() => ({
     nativeWei: 0n,
     wrbtcWei: 2n * 10n ** 18n,
-    combinedWei: 2n * 10n ** 18n,
-    combinedBalanceFormatted: '2',
+    nativeBalanceFormatted: '0',
     wrbtcBalanceFormatted: '2',
     isLoading: false,
   })),
@@ -198,12 +197,11 @@ describe('SwapStepOne', () => {
     expect(screen.getByTestId('swap-wrbtc-copy-warning')).toBeInTheDocument()
   })
 
-  it('uses combined native + WrBTC for the From balance when selling WrBTC', () => {
+  it('uses on-chain WrBTC balance for Amount to swap when selling WrBTC (not native rBTC)', () => {
     mockUseSwapBtcSideBalances.mockReturnValue({
       nativeWei: 10n ** 18n,
       wrbtcWei: 2n * 10n ** 18n,
-      combinedWei: 3n * 10n ** 18n,
-      combinedBalanceFormatted: '3',
+      nativeBalanceFormatted: '1',
       wrbtcBalanceFormatted: '2',
       isLoading: false,
     })
@@ -220,6 +218,6 @@ describe('SwapStepOne', () => {
 
     renderStepOne()
     const labels = screen.getAllByTestId('swap-balance-label')
-    expect(labels[0]).toHaveTextContent('3')
+    expect(labels[0]).toHaveTextContent('2')
   })
 })

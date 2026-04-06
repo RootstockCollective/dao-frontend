@@ -12,7 +12,7 @@ const mockGetSmartDefault = vi.fn()
 
 const { mockUseSwapBtcSideBalances } = vi.hoisted(() => ({
   mockUseSwapBtcSideBalances: vi.fn(() => ({
-    combinedBalanceFormatted: '0',
+    wrbtcBalanceFormatted: '0',
     isLoading: false,
   })),
 }))
@@ -53,7 +53,7 @@ describe('useSwapSmartDefault', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockUseSwapBtcSideBalances.mockReturnValue({
-      combinedBalanceFormatted: '0',
+      wrbtcBalanceFormatted: '0',
       isLoading: false,
     })
     mockBalancesContext.isBalancesLoading = false
@@ -94,9 +94,9 @@ describe('useSwapSmartDefault', () => {
     expect(mockSetTokenOut).not.toHaveBeenCalled()
   })
 
-  it('should not apply while BTC-side balances are loading', () => {
+  it('should not apply while WrBTC chain balance is loading', () => {
     mockUseSwapBtcSideBalances.mockReturnValue({
-      combinedBalanceFormatted: '0',
+      wrbtcBalanceFormatted: '0',
       isLoading: true,
     })
     mockGetSmartDefault.mockReturnValue({ tokenIn: USDT0, tokenOut: USDRIF })
@@ -131,9 +131,9 @@ describe('useSwapSmartDefault', () => {
     expect(mockGetSmartDefault).toHaveBeenCalledWith('0', '0', '0', '0')
   })
 
-  it('should pass combined BTC-side balance into the helper', () => {
+  it('should pass WrBTC balance into the helper', () => {
     mockUseSwapBtcSideBalances.mockReturnValue({
-      combinedBalanceFormatted: '0.25',
+      wrbtcBalanceFormatted: '0.25',
       isLoading: false,
     })
     mockGetSmartDefault.mockReturnValue({ tokenIn: USDT0, tokenOut: USDRIF })

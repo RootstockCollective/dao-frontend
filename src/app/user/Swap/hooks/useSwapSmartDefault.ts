@@ -13,14 +13,14 @@ import { useSwapBtcSideBalances } from './useSwapBtcSideBalances'
 /**
  * Applies a smart default swap direction when the modal opens.
  *
- * When the user has no spendable USDT0, prefers USDRIF, RIF, or BTC-side (native + WrBTC) as "From"
+ * When the user has no spendable USDT0, prefers USDRIF, RIF, or WrBTC (ERC-20) as "From"
  * so they can swap without switching tokens first. Runs once per modal mount after balances load.
  * Does not re-apply on balance refetches, preserving any manual toggle the user makes.
  */
 export const useSwapSmartDefault = () => {
   const hasAppliedRef = useRef(false)
   const { balances, isBalancesLoading } = useBalancesContext()
-  const { combinedBalanceFormatted, isLoading: isBtcSideLoading } = useSwapBtcSideBalances()
+  const { wrbtcBalanceFormatted, isLoading: isWrbtcBalanceLoading } = useSwapBtcSideBalances()
   const { tokenIn, tokenOut, setTokenIn, setTokenOut } = useSwapStore(
     useShallow(state => ({
       tokenIn: state.tokenIn,
@@ -32,7 +32,7 @@ export const useSwapSmartDefault = () => {
 
   // Apply smart default once when balances finish loading on modal mount
   useEffect(() => {
-    if (isBalancesLoading || isBtcSideLoading || hasAppliedRef.current) return
+    if (isBalancesLoading || isWrbtcBalanceLoading || hasAppliedRef.current) return
 
     hasAppliedRef.current = true
 
@@ -43,7 +43,7 @@ export const useSwapSmartDefault = () => {
       usdt0Balance,
       usdrifBalance,
       rifBalance,
-      combinedBalanceFormatted,
+      wrbtcBalanceFormatted,
     )
 
     if (smartDefault.tokenIn !== tokenIn || smartDefault.tokenOut !== tokenOut) {
@@ -52,9 +52,9 @@ export const useSwapSmartDefault = () => {
     }
   }, [
     isBalancesLoading,
-    isBtcSideLoading,
+    isWrbtcBalanceLoading,
     balances,
-    combinedBalanceFormatted,
+    wrbtcBalanceFormatted,
     tokenIn,
     tokenOut,
     setTokenIn,

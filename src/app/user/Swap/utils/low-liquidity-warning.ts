@@ -26,7 +26,7 @@ export const LOW_LIQUIDITY_WARNING_MESSAGE =
  *
  * When **both** tokens have a `price` defined and &gt; 0, compares **USD notionals**
  * (same idea as the fiat line under each input). Use that for cross-asset pairs
- * (e.g. RIF → USDRIF): raw token amounts are not comparable.
+ * (e.g. RIF → USDRIF, RIF → WrBTC when WrBTC uses the same USD reference as RBTC).
  *
  * Otherwise, if both symbols form a **USDT0 ↔ USDRIF** pair, compares human amounts (legacy).
  * For any other pair without two positive USD prices, returns **false** — raw amounts are not

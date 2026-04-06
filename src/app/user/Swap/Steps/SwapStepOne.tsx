@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { Hash, parseUnits } from 'viem'
 
+import { getSwapAmountDisplayDecimals } from '@/app/shared/formatter'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { ArrowsUpDown } from '@/components/Icons'
 import { PercentageButtonItem, PercentageButtons } from '@/components/PercentageButtons'
@@ -65,11 +66,11 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   // Track which field the user is actively typing in (prevents loop from programmatic value updates)
   const activeFieldRef = useRef<'in' | 'out' | null>(null)
 
-  // Get balances and prices from context (WrBTC row uses chain reads: combined for max when selling BTC side)
+  // WrBTC balance from chain read; other tokens from balances context (native rBTC is not WrBTC)
   const tokenInBalance = useMemo(() => {
-    if (tokenIn === WRBTC) return btcSide.combinedBalanceFormatted
+    if (tokenIn === WRBTC) return btcSide.wrbtcBalanceFormatted
     return balances[tokenIn]?.balance ?? '0'
-  }, [balances, btcSide.combinedBalanceFormatted, tokenIn])
+  }, [balances, btcSide.wrbtcBalanceFormatted, tokenIn])
 
   const tokenOutBalance = useMemo(() => {
     if (tokenOut === WRBTC) return btcSide.wrbtcBalanceFormatted
@@ -107,19 +108,21 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     [setTokenOut],
   )
 
-  // Display values: typed field shows raw, derived field shows formatted (2 decimals)
-  // When empty, return '' so the placeholder "0" shows
+  // Display: active field raw; derived field formatted (see `getSwapAmountDisplayDecimals` in formatter)
+  const displayDecimalsIn = getSwapAmountDisplayDecimals(tokenIn)
+  const displayDecimalsOut = getSwapAmountDisplayDecimals(tokenOut)
+
   const displayAmountIn = useMemo(() => {
     if (!amountIn) return ''
     if (mode === 'exactIn') return amountIn // User is typing, show raw
-    return formatForDisplay(amountIn) // Derived from quote, format it
-  }, [mode, amountIn])
+    return formatForDisplay(amountIn, displayDecimalsIn)
+  }, [mode, amountIn, displayDecimalsIn])
 
   const displayAmountOut = useMemo(() => {
     if (!amountOut) return ''
     if (mode === 'exactOut') return amountOut // User is typing, show raw
-    return formatForDisplay(amountOut) // Derived from quote, format it
-  }, [mode, amountOut])
+    return formatForDisplay(amountOut, displayDecimalsOut)
+  }, [mode, amountOut, displayDecimalsOut])
 
   useEffect(() => {
     if (inputRef.current) {
@@ -132,17 +135,6 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     if (!amountIn) return false
     return Big(amountIn).gt(tokenInBalance)
   }, [amountIn, tokenInBalance])
-
-  /** Typed amount exceeds on-chain WrBTC balance while native could cover the rest — swap still needs ERC-20. */
-  const isWrbtcSpendShortage = useMemo(() => {
-    if (tokenIn !== WRBTC || !amountIn || !tokenInData.decimals) return false
-    try {
-      const req = parseUnits(amountIn, tokenInData.decimals)
-      return req > btcSide.wrbtcWei
-    } catch {
-      return false
-    }
-  }, [amountIn, btcSide.wrbtcWei, tokenIn, tokenInData.decimals])
 
   // Calculate required amount
   const requiredAmount = useMemo(() => {
@@ -196,7 +188,6 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     const isDisabled =
       !hasValidAmount ||
       isAmountOverBalance ||
-      isWrbtcSpendShortage ||
       isQuoting ||
       !hasQuote ||
       isQuoteExpired ||
@@ -223,7 +214,6 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   }, [
     amountIn,
     isAmountOverBalance,
-    isWrbtcSpendShortage,
     amountOut,
     isQuoting,
     isQuoteExpired,
@@ -336,15 +326,13 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
           amount={displayAmountIn}
           onAmountChange={handleAmountChange}
           onFocus={handleInputFocus}
-          balance={formatForDisplay(tokenInBalance)}
+          balance={formatForDisplay(tokenInBalance, displayDecimalsIn)}
           labelText="Amount to swap"
           isLoading={isQuoting && mode === 'exactOut'}
           errorText={
-            isWrbtcSpendShortage
-              ? 'This swap spends WrBTC only. Wrap native rBTC in your wallet first, or enter an amount up to your WrBTC balance.'
-              : isAmountOverBalance
-                ? `This is more than your available ${tokenInData.symbol} balance. Please adjust the amount to swap, or transfer more ${tokenInData.symbol} into your wallet so you can swap it.`
-                : ''
+            isAmountOverBalance
+              ? `This is more than your available ${tokenInData.symbol} balance. Please adjust the amount to swap, or transfer more ${tokenInData.symbol} into your wallet so you can swap it.`
+              : ''
           }
         />
 
@@ -405,7 +393,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
           amount={displayAmountOut}
           onAmountChange={handleAmountOutChange}
           onFocus={handleOutputFocus}
-          balance={formatForDisplay(tokenOutBalance)}
+          balance={formatForDisplay(tokenOutBalance, displayDecimalsOut)}
           labelText="You will receive"
           isLoading={isQuoting && mode === 'exactIn'}
           errorText={quoteError ? 'Failed to get quote. Pool may have insufficient liquidity.' : ''}
