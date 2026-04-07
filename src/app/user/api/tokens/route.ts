@@ -1,7 +1,9 @@
-import { publicClient, transformMulticallResults } from '@/lib/viemPublicClient'
-import { tokenContracts } from '@/lib/contracts'
-import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { Address } from 'viem'
+
+import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
+import { WRBTC } from '@/lib/constants'
+import { tokenContracts } from '@/lib/contracts'
+import { publicClient, transformMulticallResults } from '@/lib/viemPublicClient'
 
 export interface TokenInfo {
   symbol?: string
@@ -17,6 +19,7 @@ const tokenAddresses = [
   tokenContracts.stRIF,
   tokenContracts.USDRIF,
   tokenContracts.USDT0,
+  tokenContracts[WRBTC],
 ] as Address[]
 
 async function getTokenData() {
