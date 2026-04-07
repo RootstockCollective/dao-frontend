@@ -2,24 +2,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
 
-import { RIF, USDT0, USDRIF } from '@/lib/constants'
+import { RIF, USDT0, USDRIF, WRBTC } from '@/lib/constants'
 
 import { useSwapSmartDefault } from './useSwapSmartDefault'
 
 const mockSetTokenIn = vi.fn()
 const mockSetTokenOut = vi.fn()
 const mockGetSmartDefault = vi.fn()
-
-const { mockUseSwapBtcSideBalances } = vi.hoisted(() => ({
-  mockUseSwapBtcSideBalances: vi.fn(() => ({
-    wrbtcBalanceFormatted: '0',
-    isLoading: false,
-  })),
-}))
-
-vi.mock('./useSwapBtcSideBalances', () => ({
-  useSwapBtcSideBalances: mockUseSwapBtcSideBalances,
-}))
 
 vi.mock('../utils/smart-default-direction', () => ({
   getSmartDefaultSwapDirection: (...args: unknown[]) => mockGetSmartDefault(...args),
@@ -40,6 +29,7 @@ const mockBalancesContext = {
     [USDT0]: { balance: '0' },
     [USDRIF]: { balance: '100' },
     [RIF]: { balance: '0' },
+    [WRBTC]: { balance: '0' },
   },
   isBalancesLoading: false,
   prices: {},
@@ -52,15 +42,12 @@ vi.mock('@/app/user/Balances/context/BalancesContext', () => ({
 describe('useSwapSmartDefault', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mockUseSwapBtcSideBalances.mockReturnValue({
-      wrbtcBalanceFormatted: '0',
-      isLoading: false,
-    })
     mockBalancesContext.isBalancesLoading = false
     mockBalancesContext.balances = {
       [USDT0]: { balance: '0' },
       [USDRIF]: { balance: '100' },
       [RIF]: { balance: '0' },
+      [WRBTC]: { balance: '0' },
     }
   })
 
@@ -94,18 +81,6 @@ describe('useSwapSmartDefault', () => {
     expect(mockSetTokenOut).not.toHaveBeenCalled()
   })
 
-  it('should not apply while WrBTC chain balance is loading', () => {
-    mockUseSwapBtcSideBalances.mockReturnValue({
-      wrbtcBalanceFormatted: '0',
-      isLoading: true,
-    })
-    mockGetSmartDefault.mockReturnValue({ tokenIn: USDT0, tokenOut: USDRIF })
-
-    renderHook(() => useSwapSmartDefault())
-
-    expect(mockGetSmartDefault).not.toHaveBeenCalled()
-  })
-
   it('should only apply once even if re-rendered', () => {
     mockGetSmartDefault.mockReturnValue({ tokenIn: USDRIF, tokenOut: USDT0 })
 
@@ -132,10 +107,7 @@ describe('useSwapSmartDefault', () => {
   })
 
   it('should pass WrBTC balance into the helper', () => {
-    mockUseSwapBtcSideBalances.mockReturnValue({
-      wrbtcBalanceFormatted: '0.25',
-      isLoading: false,
-    })
+    mockBalancesContext.balances[WRBTC] = { balance: '0.25' }
     mockGetSmartDefault.mockReturnValue({ tokenIn: USDT0, tokenOut: USDRIF })
 
     renderHook(() => useSwapSmartDefault())

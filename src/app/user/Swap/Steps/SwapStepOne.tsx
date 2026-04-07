@@ -21,7 +21,6 @@ import {
 } from '@/shared/stores/swap'
 
 import { SwapStepWarning } from '../components/SwapStepWarning'
-import { useSwapBtcSideBalances } from '../hooks/useSwapBtcSideBalances'
 import { SwapStepProps } from '../types'
 import { LOW_LIQUIDITY_WARNING_MESSAGE, shouldShowLowLiquidityWarning } from '../utils/low-liquidity-warning'
 
@@ -58,7 +57,6 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     useTokenSelection()
   const { tokens: swapTokenMeta } = useSwapTokens()
   const { balances, prices } = useBalancesContext()
-  const btcSide = useSwapBtcSideBalances()
   const { execute: executeTxFlow, isExecuting: isApproving } = useExecuteTxFlow()
   const { allowance, hasSufficientAllowance, approve, refetchAllowance, isCheckingAllowance } =
     useTokenAllowance()
@@ -66,16 +64,9 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   // Track which field the user is actively typing in (prevents loop from programmatic value updates)
   const activeFieldRef = useRef<'in' | 'out' | null>(null)
 
-  // WrBTC balance from chain read; other tokens from balances context (native rBTC is not WrBTC)
-  const tokenInBalance = useMemo(() => {
-    if (tokenIn === WRBTC) return btcSide.wrbtcBalanceFormatted
-    return balances[tokenIn]?.balance ?? '0'
-  }, [balances, btcSide.wrbtcBalanceFormatted, tokenIn])
+  const tokenInBalance = useMemo(() => balances[tokenIn]?.balance ?? '0', [balances, tokenIn])
 
-  const tokenOutBalance = useMemo(() => {
-    if (tokenOut === WRBTC) return btcSide.wrbtcBalanceFormatted
-    return balances[tokenOut]?.balance ?? '0'
-  }, [balances, btcSide.wrbtcBalanceFormatted, tokenOut])
+  const tokenOutBalance = useMemo(() => balances[tokenOut]?.balance ?? '0', [balances, tokenOut])
   const tokenInPrice = prices[tokenIn]?.price ?? 0
   const tokenOutPrice = prices[tokenOut]?.price ?? 0
 

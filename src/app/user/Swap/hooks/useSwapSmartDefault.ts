@@ -4,11 +4,10 @@ import { useEffect, useRef } from 'react'
 import { useShallow } from 'zustand/shallow'
 
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { RIF, USDRIF, USDT0 } from '@/lib/constants'
+import { RIF, USDRIF, USDT0, WRBTC } from '@/lib/constants'
 import { useSwapStore } from '@/shared/stores/swap'
 
 import { getSmartDefaultSwapDirection } from '../utils/smart-default-direction'
-import { useSwapBtcSideBalances } from './useSwapBtcSideBalances'
 
 /**
  * Applies a smart default swap direction when the modal opens.
@@ -20,7 +19,6 @@ import { useSwapBtcSideBalances } from './useSwapBtcSideBalances'
 export const useSwapSmartDefault = () => {
   const hasAppliedRef = useRef(false)
   const { balances, isBalancesLoading } = useBalancesContext()
-  const { wrbtcBalanceFormatted, isLoading: isWrbtcBalanceLoading } = useSwapBtcSideBalances()
   const { tokenIn, tokenOut, setTokenIn, setTokenOut } = useSwapStore(
     useShallow(state => ({
       tokenIn: state.tokenIn,
@@ -32,32 +30,19 @@ export const useSwapSmartDefault = () => {
 
   // Apply smart default once when balances finish loading on modal mount
   useEffect(() => {
-    if (isBalancesLoading || isWrbtcBalanceLoading || hasAppliedRef.current) return
+    if (isBalancesLoading || hasAppliedRef.current) return
 
     hasAppliedRef.current = true
 
     const usdt0Balance = balances[USDT0]?.balance ?? '0'
     const usdrifBalance = balances[USDRIF]?.balance ?? '0'
     const rifBalance = balances[RIF]?.balance ?? '0'
-    const smartDefault = getSmartDefaultSwapDirection(
-      usdt0Balance,
-      usdrifBalance,
-      rifBalance,
-      wrbtcBalanceFormatted,
-    )
+    const wrbtcBalance = balances[WRBTC]?.balance ?? '0'
+    const smartDefault = getSmartDefaultSwapDirection(usdt0Balance, usdrifBalance, rifBalance, wrbtcBalance)
 
     if (smartDefault.tokenIn !== tokenIn || smartDefault.tokenOut !== tokenOut) {
       setTokenIn(smartDefault.tokenIn)
       setTokenOut(smartDefault.tokenOut)
     }
-  }, [
-    isBalancesLoading,
-    isWrbtcBalanceLoading,
-    balances,
-    wrbtcBalanceFormatted,
-    tokenIn,
-    tokenOut,
-    setTokenIn,
-    setTokenOut,
-  ])
+  }, [isBalancesLoading, balances, tokenIn, tokenOut, setTokenIn, setTokenOut])
 }

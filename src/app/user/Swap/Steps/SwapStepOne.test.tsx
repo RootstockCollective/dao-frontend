@@ -2,24 +2,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 
-import { RIF, USDRIF, USDT0, WRBTC } from '@/lib/constants'
+import { RIF, USDRIF, USDT0, WRBTC, WRBTC_ADDRESS } from '@/lib/constants'
 import { useSwapInput, useTokenAllowance, useTokenSelection, useSwapTokens } from '@/shared/stores/swap'
 
 import { SwapStepOne } from './SwapStepOne'
-
-const { mockUseSwapBtcSideBalances } = vi.hoisted(() => ({
-  mockUseSwapBtcSideBalances: vi.fn(() => ({
-    nativeWei: 0n,
-    wrbtcWei: 2n * 10n ** 18n,
-    nativeBalanceFormatted: '0',
-    wrbtcBalanceFormatted: '2',
-    isLoading: false,
-  })),
-}))
-
-vi.mock('../hooks/useSwapBtcSideBalances', () => ({
-  useSwapBtcSideBalances: mockUseSwapBtcSideBalances,
-}))
 
 vi.mock('@/shared/stores/swap', () => ({
   useSwapInput: vi.fn(),
@@ -49,7 +35,7 @@ const swapTokensRecord = {
   },
   [WRBTC]: {
     symbol: WRBTC,
-    address: '0x542fda317318ebf1d3deaf76e0b632741a7e677d',
+    address: WRBTC_ADDRESS,
     name: WRBTC,
     decimals: 18,
   },
@@ -60,6 +46,7 @@ vi.mock('@/app/user/Balances/context/BalancesContext', () => ({
     balances: {
       [RIF]: { balance: '10' },
       [USDRIF]: { balance: '0' },
+      [WRBTC]: { balance: '2' },
     },
     prices: { [RIF]: { price: 0.1 }, [USDRIF]: { price: 1 } },
   }),
@@ -197,14 +184,7 @@ describe('SwapStepOne', () => {
     expect(screen.getByTestId('swap-wrbtc-copy-warning')).toBeInTheDocument()
   })
 
-  it('uses on-chain WrBTC balance for Amount to swap when selling WrBTC (not native rBTC)', () => {
-    mockUseSwapBtcSideBalances.mockReturnValue({
-      nativeWei: 10n ** 18n,
-      wrbtcWei: 2n * 10n ** 18n,
-      nativeBalanceFormatted: '1',
-      wrbtcBalanceFormatted: '2',
-      isLoading: false,
-    })
+  it('uses balances context WrBTC balance for Amount to swap when selling WrBTC', () => {
     vi.mocked(useTokenSelection).mockReturnValue({
       ...defaultTokenSelection,
       tokenIn: WRBTC,
