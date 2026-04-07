@@ -3,7 +3,6 @@
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header } from '@/components/Typography'
 import { ROOTCAMP_NFT_ADDRESS } from '@/lib/constants'
-import { withFeatureFlag } from '@/shared/context/FeatureFlag'
 
 import { AddAddressesForm } from './AddAddressesForm'
 import { MintersTable } from './MintersTable'
@@ -51,4 +50,4 @@ function RcNft() {
   )
 }
 
-export default withFeatureFlag(RcNft, { feature: 'rootcamp', redirectTo: '/communities' })
+export default RcNft
