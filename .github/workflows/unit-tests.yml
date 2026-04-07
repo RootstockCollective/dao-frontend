@@ -58,9 +58,16 @@ jobs:
           else
             echo "✅ ROOTSTOCK_RPC_URL secret is set (using private RPC)"
           fi
+          # Pin block (same as RS_FORK_BLOCK_NUMBER in .env.fork) for stable, cache-friendly forks
+          FORK_BLOCK=$(grep -E '^RS_FORK_BLOCK_NUMBER=' .env.fork | cut -d= -f2- | tr -d '\r')
+          if [ -z "$FORK_BLOCK" ]; then
+            echo "❌ RS_FORK_BLOCK_NUMBER missing in .env.fork"
+            exit 1
+          fi
+          echo "Fork block: $FORK_BLOCK"
           # Start Anvil fork in background for swap execution tests
           # Fork is required for testing swap execution (write operations) without spending real funds
-          anvil --fork-url $ROOTSTOCK_RPC_URL --chain-id 31337 > /tmp/anvil.log 2>&1 &
+          anvil --fork-url $ROOTSTOCK_RPC_URL --chain-id 31337 --fork-block-number $FORK_BLOCK --timeout 120000 > /tmp/anvil.log 2>&1 &
           echo $! > /tmp/anvil.pid
           # Wait for fork to be ready (with timeout)
           timeout=30

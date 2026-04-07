@@ -20,7 +20,7 @@
     "test": "vitest",
     "build:start": "next build && next start",
     "fork:stop": "pkill -f anvil || true",
-    "fork:anvil": "anvil --fork-url $ROOTSTOCK_RPC_URL --chain-id 31337",
+    "fork:anvil": "sh -c 'anvil --fork-url \"$ROOTSTOCK_RPC_URL\" --chain-id 31337 --fork-block-number \"${RS_FORK_BLOCK_NUMBER:-8707257}\" --timeout 120000'",
     "postinstall": "prisma generate",
     "db:migrate:dao": "prisma migrate deploy",
     "db:studio": "prisma studio",
