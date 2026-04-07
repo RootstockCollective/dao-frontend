@@ -11,22 +11,23 @@ import {
 } from '@/app/user/Balances/types'
 import { GetPricesResult } from '@/app/user/types'
 import { fetchLogsByTopic } from '@/lib/blockscout/fetchLogsByTopic'
-import { BLOCKSCOUT_URL } from '@/lib/constants'
+import { BLOCKSCOUT_URL, RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
 import { GovernorAddress, tokenContracts } from '@/lib/contracts'
 
-// CoinMarketCap IDs for tokens that have market prices
+// CoinMarketCap IDs for tokens that have market prices.
+// Keys must match tokenContracts keys (RBTC is 'tRBTC' on testnet, 'rBTC' on mainnet).
 const CMC_TOKEN_IDS: Record<string, number> = {
-  RBTC: 3626,
-  RIF: 3701,
-  USDT0: 825, // USDT
+  [RBTC]: 3626,
+  [RIF]: 3701,
+  [USDT0]: 825, // USDT
 }
 
 // Tokens with a fixed $1.0 price (stablecoins)
-const STABLECOIN_TOKENS = new Set(['USDRIF'])
+const STABLECOIN_TOKENS = new Set([USDRIF])
 
 // Tokens that mirror another token's price
 const MIRROR_TOKENS: Record<string, string> = {
-  STRIF: 'RIF', // staked RIF, 1:1 ratio
+  [STRIF]: RIF, // staked RIF, 1:1 ratio
 }
 
 interface CmcQuote {
