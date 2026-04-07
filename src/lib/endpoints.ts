@@ -13,16 +13,6 @@ const FROM_BLOCK_PARAM = `fromBlock=${EVENTS_FROM_BLOCK}`
 
 // keccak256('ProposalCreated(uint256,address,address[],uint256[],string[],bytes[],uint256,uint256,string)')
 export const PROPOSAL_CREATED_EVENT = '0x7d84a6263ae0d98d3329bd7b46bb4e8d6f98cd35a7adb45c274c8b7fd5ebd5e0'
-export const fetchProposalsCreatedByGovernorAddress = withChainId(
-  process.env.NEXT_PUBLIC_API_RWS_EVENTS_PROPOSALS_BY_ADDRESS ||
-    `/address/{{address}}/eventsByTopic0?topic0=${PROPOSAL_CREATED_EVENT}&fromBlock={{fromBlock}}`,
-)
-
-// keccak256('VoteCast(address,uint256,uint8,uint256,string)')
-const CAST_VOTE_EVENT = '0xb8e138887d0aa13bab447e82de9d5c1777041ecd21ca36ba824ff1e6c07ddda4'
-export const fetchVoteCastEventEndpoint = withChainId(
-  `/address/{{address}}/eventsByTopic0?topic0=${CAST_VOTE_EVENT}&topic1={{topic1}}&topic01Opr=and`,
-)
 
 // keccak256('NotifyReward(address,uint256,uint256)')
 const GAUGE_NOTIFY_REWARD_EVENT = '0x3c0f5c48b0ffa2c570c1a0f4fbf7b0f8982213afff9eb42cd258ead865cf3c9d'
