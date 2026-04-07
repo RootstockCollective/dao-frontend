@@ -453,7 +453,12 @@ export async function getAvailableFeeTiers(
   tokenOut: Address,
   tokenInDecimals: number,
 ): Promise<number[]> {
-  const testAmount = 10n ** BigInt(tokenInDecimals)
+  // One full token in raw units (e.g. 1e18 for 18 decimals). Used as the probe for small-decimal tokens.
+  const oneFullTokenRaw = 10n ** BigInt(tokenInDecimals)
+  // Cap probe size so high-decimal tokens (e.g. 18) do not always quote "1 whole token", which can revert
+  // or fail every multicall leg on forked nodes while smaller probes still prove the pool exists.
+  const maxProbeRaw = 10n ** 12n
+  const testAmount = oneFullTokenRaw > maxProbeRaw ? maxProbeRaw : oneFullTokenRaw
 
   const results = await publicClient.multicall({
     contracts: buildExactInputContracts(tokenIn, tokenOut, testAmount),
