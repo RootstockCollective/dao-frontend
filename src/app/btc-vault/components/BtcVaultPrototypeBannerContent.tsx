@@ -22,7 +22,7 @@ export function BtcVaultPrototypeBannerContent() {
           rel="noopener noreferrer"
           className="text-[#171412] text-base leading-[133%] font-bold underline-offset-2"
         >
-          Beta Tools documentation
+          Terms and conditions
         </ExternalLink>{' '}
         for more information.
       </Paragraph>

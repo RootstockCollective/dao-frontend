@@ -25,11 +25,7 @@ export const dynamic = 'force-static'
  */
 export default function Communities() {
   const showCultivator = getEnvFlag('cultivator')
-  const showRootcamp = getEnvFlag('rootcamp')
-  const hasSideItems = showCultivator || showRootcamp
-  const clubsGridClass = ({ 2: 'lg:grid-cols-2', 3: 'lg:grid-cols-3', 4: 'lg:grid-cols-4' } as const)[
-    2 + (showCultivator ? 1 : 0) + (showRootcamp ? 1 : 0)
-  ]
+  const clubsGridClass = ({ 3: 'lg:grid-cols-3', 4: 'lg:grid-cols-4' } as const)[3 + (showCultivator ? 1 : 0)]
 
   return (
     <div>
@@ -63,18 +59,11 @@ export default function Communities() {
         >
           <div className={`grid grid-cols-1 ${clubsGridClass} gap-2`}>
             {showCultivator && <ResponsiveCommunityItemHOC {...cultivatorCommunity} enableDebris />}
-            {hasSideItems ? (
-              <div className="flex flex-col gap-2 lg:col-span-2">
-                <ResponsiveCommunityItemHOC {...betaBuilders} variant="landscape" enableDebris />
-                <ResponsiveCommunityItemHOC {...rootstockHacktivator} variant="landscape" enableDebris />
-              </div>
-            ) : (
-              <>
-                <ResponsiveCommunityItemHOC {...betaBuilders} enableDebris />
-                <ResponsiveCommunityItemHOC {...rootstockHacktivator} enableDebris />
-              </>
-            )}
-            {showRootcamp && <ResponsiveCommunityItemHOC {...rootcampNft} enableDebris />}
+            <div className="flex flex-col gap-2 lg:col-span-2">
+              <ResponsiveCommunityItemHOC {...betaBuilders} variant="landscape" enableDebris />
+              <ResponsiveCommunityItemHOC {...rootstockHacktivator} variant="landscape" enableDebris />
+            </div>
+            <ResponsiveCommunityItemHOC {...rootcampNft} enableDebris />
           </div>
         </SectionContainer>
       </div>
