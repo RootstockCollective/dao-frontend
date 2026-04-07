@@ -22,12 +22,9 @@ const getAllNftHolders = async (nftAddress: string) => {
     const sanitizedErrorMessage = rawErrorMessage.replaceAll(/[\x00-\x1f\x7f]/g, ' ')
     console.log('getAllNftHolders No holders found:', sanitizedErrorMessage)
   }
-  return (
-    allData
-      // convert IPFS URLs to HTTP gateway URLs
-      .map(item => ({ ...item, image_url: ipfsGatewayUrl(item.image_url) }))
-      .sort((a, b) => Number(a.id) - Number(b.id))
-  )
+  return allData
+    .map(item => ({ ...item, image_url: ipfsGatewayUrl(item.image_url) }))
+    .sort((a, b) => Number(a.id) - Number(b.id))
 }
 
 export const getCachedNftHolders = unstable_cache(getAllNftHolders, ['cached_nft_holders'], {

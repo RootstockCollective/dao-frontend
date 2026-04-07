@@ -113,6 +113,18 @@ describe('IPFS Utils', () => {
       const url = ipfsGatewayUrl('Qm123456/image.jpg')
       expect(url).toBe('https://gateway.pinata.cloud/ipfs/Qm123456/image.jpg')
     })
+
+    it('should preserve already-converted HTTPS gateway URLs', () => {
+      const httpsUrl = 'https://dweb.link/ipfs/QmXzCQ9B1XaHdsfxpPVkAQNTvFw5o7BD7H8XZ96FKyRPnb'
+      const result = ipfsGatewayUrl(httpsUrl)
+      expect(result).toBe(httpsUrl)
+    })
+
+    it('should preserve already-converted HTTP gateway URLs', () => {
+      const httpUrl = 'http://example.com/ipfs/QmXzCQ9B1XaHdsfxpPVkAQNTvFw5o7BD7H8XZ96FKyRPnb'
+      const result = ipfsGatewayUrl(httpUrl)
+      expect(result).toBe(httpUrl)
+    })
   })
 
   describe('fetchIpfsNftMeta', () => {
