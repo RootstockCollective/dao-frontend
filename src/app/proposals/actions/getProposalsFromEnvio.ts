@@ -1,7 +1,8 @@
-import { z } from 'zod'
-import { ProposalApiResponse } from '@/app/proposals/shared/types'
-import { buildProposal } from '@/app/proposals/actions/utils'
 import { Address } from 'viem'
+import { z } from 'zod'
+
+import { buildProposal } from '@/app/proposals/actions/utils'
+import { ProposalApiResponse } from '@/app/proposals/shared/types'
 
 // =============================================================================
 // Configuration
