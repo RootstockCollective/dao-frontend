@@ -82,6 +82,15 @@ export const fetchPrices = async (): Promise<GetPricesResult> => {
         }
       }
     }
+  } else if (idsToFetch.length > 0 && !cmcKey && process.env.PRICES_API_URL) {
+    // Local development: fetch prices from a remote instance that has the CMC key
+    const res = await fetch(process.env.PRICES_API_URL, {
+      next: { revalidate: CMC_REVALIDATE_SECONDS },
+    })
+    if (res.ok) {
+      const remote = (await res.json()) as GetPricesResult
+      Object.assign(result, remote)
+    }
   }
 
   for (const [mirror, source] of Object.entries(MIRROR_TOKENS)) {
