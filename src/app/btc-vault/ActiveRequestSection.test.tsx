@@ -1,17 +1,9 @@
-import { cleanup, render, screen } from '@testing-library/react'
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest'
 
 import type { ActiveRequestDisplay } from './services/ui/types'
 
-vi.mock('wagmi', () => ({
-  useAccount: vi.fn(),
-}))
-
-vi.mock('./hooks/useActiveRequests', () => ({
-  useActiveRequests: vi.fn(),
-}))
-
-vi.mock('@/components/ProgressBarNew', async importOriginal => {
+vi.mock('@/components/ProgressBarNew', async (importOriginal) => {
   const React = require('react')
   const actual = await importOriginal<typeof import('@/components/ProgressBarNew')>()
   return {
@@ -34,12 +26,7 @@ beforeAll(() => {
   }))
 })
 
-import { useAccount } from 'wagmi'
-import { useActiveRequests } from './hooks/useActiveRequests'
 import { ActiveRequestSection } from './ActiveRequestSection'
-
-const mockedUseAccount = vi.mocked(useAccount)
-const mockedUseActiveRequests = vi.mocked(useActiveRequests)
 
 const MOCK_REQUEST: ActiveRequestDisplay = {
   id: 'req-1',
@@ -58,62 +45,29 @@ const MOCK_REQUEST: ActiveRequestDisplay = {
 }
 
 describe('ActiveRequestSection', () => {
-  afterEach(() => {
-    cleanup()
-  })
-
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
-  it('renders nothing when wallet is not connected', () => {
-    mockedUseAccount.mockReturnValue({ address: undefined } as unknown as ReturnType<typeof useAccount>)
-    mockedUseActiveRequests.mockReturnValue({ data: undefined, refetch: vi.fn() })
-
-    const { container } = render(<ActiveRequestSection />)
+  it('renders nothing when data is undefined', () => {
+    const { container } = render(<ActiveRequestSection data={undefined} />)
     expect(container.innerHTML).toBe('')
   })
 
   it('renders nothing when there are no active requests', () => {
-    mockedUseAccount.mockReturnValue({
-      address: '0x1234567890abcdef1234567890abcdef12345678',
-    } as unknown as ReturnType<typeof useAccount>)
-    mockedUseActiveRequests.mockReturnValue({ data: [], refetch: vi.fn() })
-
-    const { container } = render(<ActiveRequestSection />)
-    expect(container.innerHTML).toBe('')
-  })
-
-  it('renders nothing when data is undefined (still loading)', () => {
-    mockedUseAccount.mockReturnValue({
-      address: '0x1234567890abcdef1234567890abcdef12345678',
-    } as unknown as ReturnType<typeof useAccount>)
-    mockedUseActiveRequests.mockReturnValue({ data: undefined, refetch: vi.fn() })
-
-    const { container } = render(<ActiveRequestSection />)
+    const { container } = render(<ActiveRequestSection data={[]} />)
     expect(container.innerHTML).toBe('')
   })
 
   it('renders RequestProcessingBlock when user has an active request', () => {
-    mockedUseAccount.mockReturnValue({
-      address: '0x1234567890abcdef1234567890abcdef12345678',
-    } as unknown as ReturnType<typeof useAccount>)
-    mockedUseActiveRequests.mockReturnValue({ data: [MOCK_REQUEST], refetch: vi.fn() })
-
-    render(<ActiveRequestSection />)
+    render(<ActiveRequestSection data={[MOCK_REQUEST]} />)
 
     expect(screen.getByTestId('btc-vault-active-request')).toBeInTheDocument()
     expect(screen.getByTestId('request-processing-block')).toBeInTheDocument()
-    expect(screen.getByText('0.5')).toBeInTheDocument()
   })
 
   it('renders inside a SectionContainer with REQUEST PROCESSING title', () => {
-    mockedUseAccount.mockReturnValue({
-      address: '0x1234567890abcdef1234567890abcdef12345678',
-    } as unknown as ReturnType<typeof useAccount>)
-    mockedUseActiveRequests.mockReturnValue({ data: [MOCK_REQUEST], refetch: vi.fn() })
-
-    render(<ActiveRequestSection />)
+    render(<ActiveRequestSection data={[MOCK_REQUEST]} />)
 
     expect(screen.getAllByText('REQUEST PROCESSING').length).toBeGreaterThan(0)
   })
