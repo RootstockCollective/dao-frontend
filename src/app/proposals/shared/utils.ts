@@ -1,17 +1,19 @@
 import moment from 'moment'
 import { Address, decodeFunctionData, DecodeFunctionDataReturnType, Hash } from 'viem'
+
 import {
-  SupportedActionAbi,
   abis,
   FunctionEntry,
   FunctionInputs,
+  SupportedActionAbi,
   SupportedProposalActionName,
 } from '@/app/proposals/shared/supportedABIs'
 import { GovernorAbi } from '@/lib/abis/Governor'
+import Big from '@/lib/big'
 import { MAX_NAME_LENGTH_FOR_PROPOSAL, TALLY_DESCRIPTION_SEPARATOR } from '@/lib/constants'
 import { ProposalCategory } from '@/shared/types'
+
 import { Milestones } from './types'
-import Big from '@/lib/big'
 
 export interface EventArgumentsParameter {
   args: {
@@ -308,6 +310,7 @@ export function getProposalCategoryFromParsedData(
     ['communityBanBuilder', ProposalCategory.Deactivation],
     ['removeWhitelistedBuilder', ProposalCategory.Deactivation],
     ['dewhitelistBuilder', ProposalCategory.Deactivation],
+    ['revokeBuilderKYC', ProposalCategory.Deactivation],
   ])
 
   // Check for builder functions first
@@ -426,7 +429,7 @@ export function convertAmountToBigint(amount: bigint | string | undefined): bigi
   if (typeof amount === 'string') {
     // Handle string input - convert to bigint
     // Remove commas and any other non-numeric characters except decimal point
-    const cleanAmount = amount.replace(/,/g, '').replace(/[^\d.]/g, '')
+    const cleanAmount = amount.replaceAll(',', '').replaceAll(/[^\d.]/g, '')
     if (!cleanAmount || cleanAmount === '.') return 0n
 
     // Convert to wei (assuming 18 decimals) and then to bigint
