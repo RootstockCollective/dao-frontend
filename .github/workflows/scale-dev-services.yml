@@ -1,0 +1,51 @@
+name: Scale Dev ECS Services
+run-name: Scale ${{ inputs.service }} to ${{ inputs.desired_count }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      service:
+        description: Service to scale
+        required: true
+        type: choice
+        options:
+          - rscoll-dev-dao-dev
+          - rscoll-dev-dao-staging
+          - rscoll-dev-dao-rc-mainnet
+          - rscoll-dev-dao-qa
+          - rscoll-dev-bim-qa
+      desired_count:
+        description: Desired task count
+        required: true
+        type: choice
+        options:
+          - "0"
+          - "1"
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  scale:
+    name: Scale ${{ inputs.service }} to ${{ inputs.desired_count }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@8df5847569e6427dd6c4fb1cf565c83acfa8afa7 # v6
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN_ECS_SCALE }}
+          aws-region: us-east-1
+
+      - name: Scale service
+        run: |
+          aws ecs update-service \
+            --cluster rscoll-dev \
+            --service "${{ inputs.service }}" \
+            --desired-count "${{ inputs.desired_count }}"
+
+      - name: Wait for stable
+        run: |
+          aws ecs wait services-stable \
+            --cluster rscoll-dev \
+            --services "${{ inputs.service }}"
