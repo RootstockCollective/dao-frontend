@@ -87,13 +87,28 @@ export const fetchPrices = async (): Promise<GetPricesResult> => {
   } else if (idsToFetch.length > 0 && !cmcKey && process.env.PRICES_API_URL) {
     console.log('No COIN_MARKET_CAP_KEY defined — falling back to', process.env.PRICES_API_URL)
     const res = await fetch(process.env.PRICES_API_URL, {
+      headers: { 'X-Prices-Source': 'fallback' },
       next: { revalidate: CMC_REVALIDATE_SECONDS },
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     })
     if (res.ok) {
-      const remote = (await res.json()) as GetPricesResult
-      Object.assign(result, remote)
+      const remote = (await res.json()) as Record<string, unknown>
+      // Only merge tokens we actually need from the remote (CMC-priced ones),
+      // so we don't overwrite locally-set stablecoin prices.
+      for (const name of Object.keys(CMC_TOKEN_IDS)) {
+        const entry = remote[name]
+        if (entry != null && typeof entry === 'object' && 'price' in entry && 'lastUpdated' in entry) {
+          const { price, lastUpdated } = entry as { price: unknown; lastUpdated: unknown }
+          if (typeof price === 'number' && typeof lastUpdated === 'string') {
+            result[name] = { price, lastUpdated }
+          }
+        }
+      }
     }
+  } else if (idsToFetch.length > 0 && !cmcKey) {
+    console.warn(
+      'No COIN_MARKET_CAP_KEY and no PRICES_API_URL configured — market prices will be unavailable',
+    )
   }
 
   for (const [mirror, source] of Object.entries(MIRROR_TOKENS)) {
