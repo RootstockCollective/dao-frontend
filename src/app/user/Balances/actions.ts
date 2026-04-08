@@ -83,7 +83,7 @@ export const fetchPrices = async (): Promise<GetPricesResult> => {
       }
     }
   } else if (idsToFetch.length > 0 && !cmcKey && process.env.PRICES_API_URL) {
-    // Local development: fetch prices from a remote instance that has the CMC key
+    console.log('No COIN_MARKET_CAP_KEY defined — falling back to', process.env.PRICES_API_URL)
     const res = await fetch(process.env.PRICES_API_URL, {
       next: { revalidate: CMC_REVALIDATE_SECONDS },
     })
