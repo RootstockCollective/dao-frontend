@@ -2,7 +2,7 @@
  * useActionEligibility tests verify:
  *
  * 1. Contract wiring: the hook requests vault multicall (pause, requests, balanceOf) and uses
- *    `useWhitelistCheck` for deposit gating.
+ *    `useWhitelistCheck` for deposit and withdrawal gating.
  * 2. Derivation: raw multicall + whitelist state map to PauseState, activeRequests, share balance,
  *    and deposit whitelist — output matches expected UI state.
  * 3. Guard clauses: when address is missing, or vault data is not yet available, the hook returns
@@ -22,6 +22,7 @@ import {
   DEPOSIT_WHITELIST_BLOCK_REASON,
   NO_VAULT_SHARES_REASON,
   WITHDRAWAL_PAUSED_REASON,
+  WITHDRAWAL_WHITELIST_BLOCK_REASON,
 } from '../../services/constants'
 import { useActionEligibility } from './useActionEligibility'
 
@@ -248,14 +249,14 @@ describe('useActionEligibility', () => {
       expect(result.current.data?.withdrawBlockReason).toBe(WITHDRAWAL_PAUSED_REASON)
     })
 
-    it('disables deposit with whitelist reason when not whitelisted; withdraw still allowed with shares', () => {
+    it('disables deposit and withdraw with whitelist reason when not whitelisted', () => {
       setupMocks(makeVaultResults(), { isWhitelisted: false, isLoading: false })
       const { result } = renderHook(() => useActionEligibility(USER_ADDRESS))
 
       expect(result.current.data?.canDeposit).toBe(false)
       expect(result.current.data?.depositBlockReason).toBe(DEPOSIT_WHITELIST_BLOCK_REASON)
-      expect(result.current.data?.canWithdraw).toBe(true)
-      expect(result.current.data?.withdrawBlockReason).toBe('')
+      expect(result.current.data?.canWithdraw).toBe(false)
+      expect(result.current.data?.withdrawBlockReason).toBe(WITHDRAWAL_WHITELIST_BLOCK_REASON)
     })
 
     it('disables withdraw with NO_VAULT_SHARES_REASON when balanceOf is zero', () => {

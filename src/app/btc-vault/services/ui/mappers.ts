@@ -12,7 +12,9 @@ import {
   DEPOSIT_PAUSED_REASON,
   DEPOSIT_WHITELIST_BLOCK_REASON,
   NO_VAULT_SHARES_REASON,
+  WITHDRAWAL_ELIGIBILITY_LOADING_REASON,
   WITHDRAWAL_PAUSED_REASON,
+  WITHDRAWAL_WHITELIST_BLOCK_REASON,
 } from '../constants'
 import type {
   CapitalAllocation,
@@ -185,16 +187,15 @@ export function toUserPositionDisplay(raw: UserPosition, rbtcPrice: number): Use
 
 /**
  * Consolidates pause state, eligibility, active requests, vault share balance, and optional
- * deposit whitelist resolution into action eligibility.
+ * whitelist resolution into action eligibility.
  * Determines whether the user can deposit/withdraw and provides human-readable block reasons.
- * When `isWhitelisted` is provided, it gates deposit first (loading / not whitelisted); withdrawal
- * ignores whitelist and still uses pause, eligibility, active requests, and share balance.
- * When `isWhitelisted` is omitted, eligibility alone gates deposit (legacy callers).
+ * When `isWhitelisted` is provided, it gates both deposit and withdrawal (loading / not whitelisted).
+ * When `isWhitelisted` is omitted, eligibility alone gates both actions (legacy callers).
  * @param pause - Current pause state for deposits and withdrawals
- * @param eligibility - User's eligibility status (e.g. KYC); also used for withdraw when whitelist is supplied separately
+ * @param eligibility - User's eligibility status (e.g. KYC)
  * @param activeRequests - User's currently active vault requests
  * @param hasVaultShares - Whether the user holds a non-zero vault share balance (`balanceOf` > 0)
- * @param isWhitelisted - When provided: `false` blocks deposit with whitelist copy; `null` blocks deposit while loading; `true` applies pause/eligibility/active rules for deposit
+ * @param isWhitelisted - When provided: `false` blocks deposit/withdraw with whitelist copy; `null` blocks while loading; `true` applies pause/eligibility/active rules
  * @returns Object with canDeposit/canWithdraw booleans and block reason strings
  */
 export function toActionEligibility(
@@ -240,9 +241,9 @@ export function toActionEligibility(
   if (isWhitelisted === null) {
     return {
       canDeposit: false,
-      canWithdraw,
+      canWithdraw: false,
       depositBlockReason: DEPOSIT_ELIGIBILITY_LOADING_REASON,
-      withdrawBlockReason,
+      withdrawBlockReason: WITHDRAWAL_ELIGIBILITY_LOADING_REASON,
       pauseState: pause,
     }
   }
@@ -250,9 +251,9 @@ export function toActionEligibility(
   if (isWhitelisted === false) {
     return {
       canDeposit: false,
-      canWithdraw,
+      canWithdraw: false,
       depositBlockReason: DEPOSIT_WHITELIST_BLOCK_REASON,
-      withdrawBlockReason,
+      withdrawBlockReason: WITHDRAWAL_WHITELIST_BLOCK_REASON,
       pauseState: pause,
     }
   }
