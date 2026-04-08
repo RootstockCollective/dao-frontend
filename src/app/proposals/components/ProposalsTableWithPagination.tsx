@@ -38,7 +38,7 @@ const ProposalsTableWithPagination = forwardRef<ProposalsTableRef, ProposalsTabl
     const isDesktop = useIsDesktop()
 
     // React-table sorting state
-    const [sorting, setSorting] = useState<SortingState>([])
+    const [sorting, setSorting] = useState<SortingState>([{ id: 'date', desc: true }])
 
     // Convert 1-indexed URL page to 0-indexed internal page
     const [pagination, setPagination] = useState<PaginationState>(() => ({
