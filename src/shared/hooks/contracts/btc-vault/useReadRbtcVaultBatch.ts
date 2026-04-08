@@ -6,7 +6,7 @@ import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { rbtcVault } from '@/lib/contracts'
 
 import { UseReadContractConfig, ViewPureFunctionName } from '../types'
-import { ReadRbtcVaultQueryOverrides } from './types'
+import { QueryOverrides } from './types'
 
 type RbtcAsyncVaultFunctionName = ViewPureFunctionName<RBTCAsyncVaultAbi>
 
@@ -39,7 +39,7 @@ export type { RbtcAsyncVaultConfig, RbtcAsyncVaultFunctionName }
  */
 export function useReadRbtcVaultBatch<T extends readonly AnyRbtcVaultConfig[]>(
   configs: T,
-  query?: ReadRbtcVaultQueryOverrides,
+  query?: QueryOverrides,
 ): {
   data: RbtcVaultBatchDataTuple<T>
   isLoading: boolean

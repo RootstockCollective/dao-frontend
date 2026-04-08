@@ -14,16 +14,17 @@ const NAME = 'Admin'
 
 export const AdminPage = () => {
   const { isConnected } = useAccount()
-  const { isAdmin, isLoading } = usePermissionsManager()
+  const { isAdmin, isPauser, isLoading } = usePermissionsManager()
   const router = useRouter()
+  const hasAccess = isAdmin || isPauser
 
   useEffect(() => {
-    if (!isLoading && (!isConnected || !isAdmin)) {
+    if (!isLoading && (!isConnected || !hasAccess)) {
       router.push('/')
     }
-  }, [isConnected, isAdmin, isLoading, router])
+  }, [isConnected, hasAccess, isLoading, router])
 
-  if (!isConnected || isLoading || !isAdmin) {
+  if (!isConnected || isLoading || !hasAccess) {
     return <LoadingSpinner />
   }
 

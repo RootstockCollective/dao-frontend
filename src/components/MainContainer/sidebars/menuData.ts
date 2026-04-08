@@ -2,7 +2,7 @@ import type { ClassValue } from 'clsx'
 
 import { getEnvFlag } from '@/shared/context/FeatureFlag/flags.utils'
 
-export type RequiredRole = 'admin' | 'fundManager'
+export type RequiredRole = 'admin' | 'fundManager' | 'pauser'
 
 export interface MenuData {
   text: string
@@ -14,7 +14,7 @@ export interface MenuData {
   }
   type?: 'link' | 'category'
   iconUrl?: string
-  requiredRole?: RequiredRole
+  requiredRole?: RequiredRole[]
 }
 
 function getBetaToolsSection(): MenuData[] {
@@ -49,14 +49,14 @@ function getBetaToolsSection(): MenuData[] {
         text: 'Fund Manager Sandbox',
         buttonProps: { id: 'Button_Fund_Manager', name: 'fund-manager' },
         iconUrl: '/images/sidemenukoto/FundManager.svg',
-        requiredRole: 'fundManager',
+        requiredRole: ['fundManager'],
       },
       {
         href: 'fund-admin',
         text: 'Fund Admin Sandbox',
         buttonProps: { id: 'Button_Admin', name: 'fund-admin' },
         iconUrl: '/images/sidemenukoto/Admin.svg',
-        requiredRole: 'admin',
+        requiredRole: ['admin', 'pauser'],
       },
     )
   }
