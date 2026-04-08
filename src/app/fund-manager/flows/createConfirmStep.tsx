@@ -35,11 +35,9 @@ export const createConfirmStep = <TContext extends AmountFlowContextValue>({
 }: CreateConfirmStepConfig<TContext>) => {
   const ConfirmStep = ({ onGoToStep, onCloseModal, setButtonActions }: FlowStepProps) => {
     const context = useFlowContext()
-    const { amount, selectedToken, isNative, usdEquivalent } = context
+    const { amount, selectedToken, usdEquivalent } = context
     const { onRequestTransaction, isRequesting, isTxPending } = useTransaction(context)
     const recipientAddress = getRecipientAddress(context)
-
-    const confirmBackStepIndex = isNative ? 0 : 1
 
     const handleConfirm = useCallback(() => {
       executeTxFlow({
@@ -60,10 +58,10 @@ export const createConfirmStep = <TContext extends AmountFlowContextValue>({
         },
         secondary: {
           label: 'Back',
-          onClick: () => onGoToStep(confirmBackStepIndex),
+          onClick: () => onGoToStep(0),
         },
       })
-    }, [amount, confirmBackStepIndex, handleConfirm, isRequesting, isTxPending, onGoToStep, setButtonActions])
+    }, [amount, handleConfirm, isRequesting, isTxPending, onGoToStep, setButtonActions])
 
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-10">
