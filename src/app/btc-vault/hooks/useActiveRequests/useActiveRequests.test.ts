@@ -173,6 +173,48 @@ describe('useActiveRequests', () => {
       expect(result.current.data?.[0].status).toBe('claimable')
       expect(result.current.data?.[0].claimable).toBe(true)
     })
+
+    it('returns approved displayStatus and computed rBTC amount when history API says approved', () => {
+      const epochId = 2n
+      const shares = 2n * ONE_SHARE_RAW
+      const assetsAtClose = 200n * ONE_ETHER
+      const supplyAtClose = 100n * ONE_SHARE_RAW
+      mockUseReadContracts
+        .mockReturnValueOnce(phase1Result([0n, 0n], [epochId, shares]))
+        .mockReturnValueOnce(
+          phase2Result([
+            { status: 'success', result: shares },
+            { status: 'success', result: 0n },
+            snapshotResult(assetsAtClose, supplyAtClose),
+          ]),
+        )
+      mockUseQuery.mockReturnValue({
+        data: {
+          data: [
+            {
+              id: 'h1',
+              user: '0x1234',
+              action: 'REDEEM_ACCEPTED',
+              assets: '0',
+              shares: String(shares),
+              epochId: '2',
+              timestamp: 1700000000,
+              blockNumber: '100',
+              transactionHash: '0xabc',
+              displayStatus: 'approved',
+            },
+          ],
+        },
+      })
+
+      const { result } = renderHook(() => useActiveRequests(ADDRESS))
+
+      expect(result.current.data).toHaveLength(1)
+      expect(result.current.data?.[0].status).toBe('pending')
+      expect(result.current.data?.[0].displayStatus).toBe('approved')
+      expect(result.current.data?.[0].claimable).toBe(false)
+      expect(result.current.data?.[0].amountFormatted).not.toBe('—')
+    })
   })
 
   describe('when both deposit and redeem requests exist', () => {

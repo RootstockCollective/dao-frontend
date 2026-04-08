@@ -135,6 +135,8 @@ export interface ActiveRequestDisplay {
   sharesFormatted: string
   /** USD equivalent for display; mock or null in UI-only scope. */
   usdEquivalentFormatted: string | null
+  /** Wire display status from history API; drives stepper "Approved" state when on-chain is still `pending`. */
+  displayStatus?: DisplayStatus
 }
 
 export interface RequestHistoryRowDisplay {

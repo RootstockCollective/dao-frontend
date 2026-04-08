@@ -116,4 +116,22 @@ describe('RequestProcessingBlock', () => {
     const block = getBlock(container)
     expect(within(block).getByText('$42,000')).toBeInTheDocument()
   })
+
+  it('advances stepper to Approved when displayStatus is approved', () => {
+    const { container } = render(
+      <RequestProcessingBlock
+        request={makeRequest({
+          type: 'withdrawal',
+          status: 'pending',
+          displayStatus: 'approved',
+          amountFormatted: '1.5',
+        })}
+      />,
+    )
+    const block = getBlock(container)
+    const approvedLabel = within(block).getByText('Approved')
+    expect(approvedLabel).toHaveClass('font-semibold')
+    const pendingLabel = within(block).getByText('Pending')
+    expect(pendingLabel).not.toHaveClass('font-semibold')
+  })
 })
