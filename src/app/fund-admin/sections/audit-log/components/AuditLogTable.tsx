@@ -3,7 +3,6 @@
 import { motion } from 'motion/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { AUDIT_LOG_PAGE_SIZE, useGetAuditLog } from '@/app/fund-admin/hooks/useAuditLog'
 import { FilterButton } from '@/app/proposals/components/filter/FilterButton'
 import { ActiveFilter } from '@/components/FilterSideBar/types'
 import { TablePager } from '@/components/TableNew'
@@ -20,6 +19,8 @@ import {
   DEFAULT_HEADERS,
   type SortableColumnId,
 } from '../config'
+import { AUDIT_LOG_PAGE_SIZE } from '../constants'
+import { useGetAuditLog } from '../useAuditLog'
 import { AuditLogCsvButton } from './AuditLogCsvButton'
 import { AuditLogFilterSideBar } from './AuditLogFilterSideBar'
 import { DesktopAuditLogHistory } from './DesktopAuditLogHistory'

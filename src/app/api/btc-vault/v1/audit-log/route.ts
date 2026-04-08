@@ -4,11 +4,11 @@ import { z } from 'zod'
 import { handleApiError, queryParam } from '@/app/api/utils/helpers'
 import type { PaginationResponse } from '@/app/api/utils/types'
 
-import { FundAdminAuditLogQuerySchema } from '../schemas'
-import { fetchFundAdminAuditLogPage } from './action'
+import { BtcVaultAuditLogQuerySchema } from '../schemas'
+import { fetchBtcVaultAuditLogPage } from './action'
 
 /**
- * GET /api/fund-admin/v1/audit-log
+ * GET /api/btc-vault/v1/audit-log
  * Paginated audit log (mock or subgraph). Same layering as GET /api/btc-vault/v1/whitelist-role-history.
  */
 export async function GET(req: NextRequest) {
@@ -16,14 +16,14 @@ export async function GET(req: NextRequest) {
     const searchParams = new URL(req.url).searchParams
     const qp = queryParam(searchParams)
 
-    const parsed = FundAdminAuditLogQuerySchema.parse({
+    const parsed = BtcVaultAuditLogQuerySchema.parse({
       limit: qp('limit'),
       page: qp('page'),
       sort_field: qp('sort_field') || undefined,
       sort_direction: qp('sort_direction') || undefined,
     })
 
-    const { data, total } = await fetchFundAdminAuditLogPage(parsed)
+    const { data, total } = await fetchBtcVaultAuditLogPage(parsed)
 
     const totalPages = Math.ceil(total / parsed.limit) || 1
     const offset = (parsed.page - 1) * parsed.limit
@@ -52,6 +52,6 @@ export async function GET(req: NextRequest) {
         { status: 400 },
       )
     }
-    return handleApiError(error, 'fund admin audit log route')
+    return handleApiError(error, 'BTC vault audit log route')
   }
 }

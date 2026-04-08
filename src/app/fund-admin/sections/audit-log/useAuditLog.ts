@@ -3,12 +3,12 @@
 import { useQueries } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
-import type { FundAdminAuditLogSortField } from '@/app/api/fund-admin/v1/schemas'
+import type { BtcVaultAuditLogSortField } from '@/app/api/btc-vault/v1/schemas'
 import { AUDIT_LOG_PAGE_SIZE } from '@/app/fund-admin/sections/audit-log/constants'
 import type { AuditLogEntry } from '@/app/fund-admin/sections/audit-log/types'
-import { getFundAdminAuditLogEndpoint } from '@/lib/endpoints'
+import { getBtcVaultAuditLogEndpoint } from '@/lib/endpoints'
 
-/** Max `limit` per request (matches GET /api/fund-admin/v1/audit-log). */
+/** Max `limit` per request (matches GET /api/btc-vault/v1/audit-log). */
 const AUDIT_LOG_FETCH_LIMIT = 200
 
 interface AuditLogPagination {
@@ -29,7 +29,7 @@ interface AuditLogApiResponse {
 interface AuditLogHistoryPageParams {
   page: number
   limit: number
-  sortField?: FundAdminAuditLogSortField
+  sortField?: BtcVaultAuditLogSortField
   sortDirection?: 'asc' | 'desc'
 }
 
@@ -41,19 +41,19 @@ function buildAuditLogUrl(params: AuditLogHistoryPageParams): string {
     searchParams.set('sort_field', params.sortField)
     searchParams.set('sort_direction', params.sortDirection)
   }
-  return `${getFundAdminAuditLogEndpoint}?${searchParams.toString()}`
+  return `${getBtcVaultAuditLogEndpoint}?${searchParams.toString()}`
 }
 
 /** Prefix for React Query keys; use with `refetchQueries` / `invalidateQueries`. */
-export const FUND_ADMIN_AUDIT_LOG_QUERY_KEY = ['fund-admin', 'audit-log'] as const
+export const AUDIT_LOG_QUERY_KEY = ['audit-log'] as const
 
-export type { AuditLogEntry, FundAdminAuditLogSortField }
+export type { AuditLogEntry, BtcVaultAuditLogSortField }
 export { AUDIT_LOG_PAGE_SIZE }
 
 export interface UseGetAuditLogParams {
   /** Cumulative rows to show (expandable pager `end`). Fetches fixed-size API pages (max 200) and merges. */
   visibleItemCount: number
-  sortField: FundAdminAuditLogSortField | null
+  sortField: BtcVaultAuditLogSortField | null
   sortDirection: 'asc' | 'desc' | null
 }
 
@@ -66,7 +66,7 @@ export interface UseGetAuditLogResult {
 }
 
 /**
- * Fund admin audit log via GET /api/fund-admin/v1/audit-log (same pattern as `useGetBTCWhitelistingHistory`).
+ * Audit log via GET /api/btc-vault/v1/audit-log (same pattern as `useGetBTCWhitelistingHistory`).
  */
 export function useGetAuditLog({
   visibleItemCount,
@@ -82,7 +82,7 @@ export function useGetAuditLog({
       const page = i + 1
       const limit = AUDIT_LOG_FETCH_LIMIT
       return {
-        queryKey: [...FUND_ADMIN_AUDIT_LOG_QUERY_KEY, { page, limit, sortKey }] as const,
+        queryKey: [...AUDIT_LOG_QUERY_KEY, { page, limit, sortKey }] as const,
         queryFn: async ({ signal }): Promise<AuditLogApiResponse> => {
           const url = buildAuditLogUrl({
             page,
@@ -93,7 +93,7 @@ export function useGetAuditLog({
           const res = await fetch(url, { cache: 'no-store', signal })
           if (!res.ok) {
             const text = await res.text()
-            throw new Error(`Fund admin audit log API error: ${res.status} ${text}`)
+            throw new Error(`Audit log API error: ${res.status} ${text}`)
           }
           return (await res.json()) as AuditLogApiResponse
         },

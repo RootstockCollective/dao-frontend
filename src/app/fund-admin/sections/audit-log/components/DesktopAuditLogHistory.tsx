@@ -2,7 +2,6 @@
 
 import type { Dispatch } from 'react'
 
-import type { AuditLogEntry, AuditLogUserRole } from '@/app/fund-admin/sections/audit-log/types'
 import { ArrowDownWFill } from '@/components/Icons/v3design/ArrowDownWFill'
 import { ArrowsUpDown } from '@/components/Icons/v3design/ArrowsUpDown'
 import { ArrowUpWFill } from '@/components/Icons/v3design/ArrowUpWFill'
@@ -19,6 +18,7 @@ import {
   type ColumnId,
   type SortableColumnId,
 } from '../config'
+import type { AuditLogEntry, AuditLogUserRole } from '../types'
 
 const ROLE_STYLES: Record<AuditLogUserRole, string> = {
   Admin: 'bg-[#08ffd0] text-v3-text-0',

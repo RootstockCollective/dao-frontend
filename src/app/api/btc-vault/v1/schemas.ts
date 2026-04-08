@@ -52,3 +52,16 @@ export const BtcVaultWhitelistRoleHistoryQuerySchema = z.object({
   sort_field: BtcVaultWhitelistedUsersSortFieldEnum.default('lastUpdated'),
   sort_direction: SortDirectionEnum.default('desc'),
 })
+
+/** Sort fields for GET /api/btc-vault/v1/audit-log (UI columns; subgraph mapping TBD). */
+export const BtcVaultAuditLogSortFieldEnum = z.enum(['date', 'action', 'role'])
+
+export type BtcVaultAuditLogSortField = z.infer<typeof BtcVaultAuditLogSortFieldEnum>
+
+/** Query schema for GET /api/btc-vault/v1/audit-log */
+export const BtcVaultAuditLogQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(200).default(20),
+  page: z.coerce.number().int().min(1).default(1),
+  sort_field: BtcVaultAuditLogSortFieldEnum.optional(),
+  sort_direction: SortDirectionEnum.optional(),
+})

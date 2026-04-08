@@ -1,8 +1,10 @@
+'use client'
+
 import { ButtonHTMLAttributes, useState } from 'react'
 
-import type { FundAdminAuditLogSortField } from '@/app/api/fund-admin/v1/schemas'
+import type { BtcVaultAuditLogSortField } from '@/app/api/btc-vault/v1/schemas'
 import { CsvIcon } from '@/components/Icons/CsvIcon'
-import { getFundAdminAuditLogEndpoint } from '@/lib/endpoints'
+import { getBtcVaultAuditLogEndpoint } from '@/lib/endpoints'
 import { cn } from '@/lib/utils'
 import { showToast } from '@/shared/notification'
 
@@ -42,7 +44,7 @@ function generateCsv(rows: string[][]): string {
 function buildAuditLogUrl(params: {
   page: number
   limit: number
-  sortField?: FundAdminAuditLogSortField
+  sortField?: BtcVaultAuditLogSortField
   sortDirection?: 'asc' | 'desc'
 }): string {
   const searchParams = new URLSearchParams()
@@ -52,11 +54,11 @@ function buildAuditLogUrl(params: {
     searchParams.set('sort_field', params.sortField)
     searchParams.set('sort_direction', params.sortDirection)
   }
-  return `${getFundAdminAuditLogEndpoint}?${searchParams.toString()}`
+  return `${getBtcVaultAuditLogEndpoint}?${searchParams.toString()}`
 }
 
 async function fetchAllAuditLogEntries(
-  sortField: FundAdminAuditLogSortField | null,
+  sortField: BtcVaultAuditLogSortField | null,
   sortDirection: 'asc' | 'desc' | null,
 ): Promise<AuditLogEntry[]> {
   const limit = AUDIT_LOG_FETCH_LIMIT
@@ -94,7 +96,7 @@ async function fetchAllAuditLogEntries(
       const text = await res.text()
       throw new Error(`Failed to fetch audit log page ${page}: ${res.status} ${text}`)
     }
-    const json = (await res.json()) as AuditLogApiResponse
+    const json = (await firstRes.json()) as AuditLogApiResponse
     return json.data ?? []
   })
 
@@ -119,7 +121,7 @@ function entryToCsvRow(entry: AuditLogEntry): string[] {
 }
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
-  sortField: FundAdminAuditLogSortField | null
+  sortField: BtcVaultAuditLogSortField | null
   sortDirection: 'asc' | 'desc' | null
   disabled?: boolean
 }

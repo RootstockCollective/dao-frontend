@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest'
 
 import { GET } from './route'
 
-describe('GET /api/fund-admin/v1/audit-log', () => {
+describe('GET /api/btc-vault/v1/audit-log', () => {
   it('returns 200 with mock rows and pagination (defaults)', async () => {
-    const req = new NextRequest('http://localhost/api/fund-admin/v1/audit-log')
+    const req = new NextRequest('http://localhost/api/btc-vault/v1/audit-log')
     const res = await GET(req)
     expect(res.status).toBe(200)
     const body = (await res.json()) as {
@@ -21,7 +21,7 @@ describe('GET /api/fund-admin/v1/audit-log', () => {
   })
 
   it('respects limit and page for mock data', async () => {
-    const req = new NextRequest('http://localhost/api/fund-admin/v1/audit-log?limit=3&page=2')
+    const req = new NextRequest('http://localhost/api/btc-vault/v1/audit-log?limit=3&page=2')
     const res = await GET(req)
     expect(res.status).toBe(200)
     const body = (await res.json()) as { data: { id: string }[]; pagination: { total: number } }
@@ -31,7 +31,7 @@ describe('GET /api/fund-admin/v1/audit-log', () => {
   })
 
   it('returns 400 when limit is out of range', async () => {
-    const req = new NextRequest('http://localhost/api/fund-admin/v1/audit-log?limit=500')
+    const req = new NextRequest('http://localhost/api/btc-vault/v1/audit-log?limit=500')
     const res = await GET(req)
     expect(res.status).toBe(400)
   })

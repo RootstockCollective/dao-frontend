@@ -1,6 +1,6 @@
 import type { AuditLogEntry } from './types'
 
-/** Static mock rows for fund admin audit log until subgraph is wired (server + API route). */
+/** Static mock rows for BTC vault audit log until subgraph is wired (server + API route). */
 export const MOCK_AUDIT_LOG_ENTRIES: AuditLogEntry[] = [
   {
     id: '1',
