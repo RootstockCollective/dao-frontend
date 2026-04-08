@@ -511,31 +511,6 @@ The Graph is a decentralized indexing protocol for querying blockchain data via 
 
 ---
 
-### RIF Wallet Services (Backend API)
-
-RIF Wallet Services (RWS) is the Rootstock Collective backend that provides aggregated on-chain data including token balances, NFT ownership, token prices, event logs, and staking history. It serves as the primary REST API for most data needs.
-
-**How it's used:**
-- Token data: `GET /address/{address}/tokens` — fetches token balances for a wallet.
-- Price feeds: `GET /price?addresses={addresses}&convert={currency}` — returns token prices.
-- NFT queries: `GET /address/{address}/nfts/{nftAddress}` and `GET /nfts/{nftAddress}` — ownership and metadata.
-- Holder data: `GET /address/{address}/holders` and `GET /nfts/{address}/holders`.
-- Event logs: filtered by `topic0` for on-chain event lookups.
-- Staking history: `GET /api/staking/v1/addresses/{address}/history`.
-- Configured as an Axios instance with automatic `chainId` parameter injection.
-- Local development uses a CORS bypass proxy (`/cors_bypass` route in Next.js) to avoid cross-origin issues.
-
-**Config:** `NEXT_PUBLIC_RIF_WALLET_SERVICES`
-| Environment | URL |
-|-------------|-----|
-| Mainnet | `https://rws.app.rootstockcollective.xyz` |
-| Dev | `https://dev.rws.app.rootstockcollective.xyz` |
-| Fork/Local | `http://localhost:3000/cors_bypass` (proxied to dev) |
-
-**Key files:** `src/lib/constants.ts`, `src/lib/utils/utils.ts`, `src/lib/endpoints.ts`
-
----
-
 ### Pinata (IPFS Gateway)
 
 Pinata is a managed IPFS pinning service. The app uses Pinata's dedicated gateway to serve decentralized content (NFT metadata, images, proposal attachments) over HTTPS with image optimization.
@@ -764,7 +739,6 @@ The app links out to several external services for user-facing actions that happ
 
 - **DAO Contracts**: https://github.com/RootstockCollective/dao-contracts
 - **CR Smart Contracts**: https://github.com/RootstockCollective/collective-rewards-sc
-- **Backend Services**: https://github.com/RootstockCollective/dao-backend-services
 
 ## Code Conventions
 
@@ -1153,7 +1127,7 @@ Environment flags always take precedence over localStorage-persisted user toggle
 | Server-only | None | `JWT_SECRET`, `DAO_DATA_DB_CONNECTION_STRING` |
 | Contract addresses | `NEXT_PUBLIC_{NAME}_ADDRESS` | `NEXT_PUBLIC_RIF_ADDRESS` |
 | Feature flags | `NEXT_PUBLIC_ENABLE_FEATURE_{NAME}` | `NEXT_PUBLIC_ENABLE_FEATURE_VAULT` |
-| Service URLs | `NEXT_PUBLIC_{SERVICE}` | `NEXT_PUBLIC_RIF_WALLET_SERVICES` |
+| Service URLs | `NEXT_PUBLIC_{SERVICE}` | `NEXT_PUBLIC_BLOCKSCOUT_URL` |
 
 All contract addresses are centralized in `src/lib/constants.ts` — never hardcode addresses in components.
 
