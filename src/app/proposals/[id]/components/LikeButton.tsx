@@ -1,12 +1,16 @@
 import { Heart } from 'lucide-react'
+import { useEffect, useRef } from 'react'
 import { useAccount } from 'wagmi'
-import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
-import { useSignIn } from '@/shared/hooks/useSignIn'
+
 import { ConditionalTooltip } from '@/app/components/Tooltip/ConditionalTooltip'
 import { ConnectTooltipContent } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltipContent'
 import { Button } from '@/components/Button/Button'
-import { SiweTooltipContent } from './SiweTooltipContent'
+import { useSignIn } from '@/shared/hooks/useSignIn'
+import { showToast } from '@/shared/notification'
+import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
+
 import { useLike } from '../hooks/useLike'
+import { SiweTooltipContent } from './SiweTooltipContent'
 
 interface LikeButtonProps {
   proposalId: string
@@ -15,10 +19,25 @@ interface LikeButtonProps {
 export const LikeButton = ({ proposalId }: LikeButtonProps) => {
   const { isConnected } = useAccount()
   const { onConnectWalletButtonClick } = useAppKitFlow()
-  const { signIn, isAuthenticated, isLoading: isSigningIn } = useSignIn()
+  const { signIn, isAuthenticated, isLoading: isSigningIn, error: signInError } = useSignIn()
   const { count, liked, isLoading, isToggling, toggleLike } = useLike(proposalId, isConnected, signIn)
 
   const isBusy = isLoading || isToggling || isSigningIn
+
+  const lastAuthToastMessageRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!signInError?.message) {
+      lastAuthToastMessageRef.current = null
+      return
+    }
+    if (lastAuthToastMessageRef.current === signInError.message) return
+    lastAuthToastMessageRef.current = signInError.message
+    showToast({
+      severity: 'error',
+      title: 'Sign-in failed',
+      content: signInError.message,
+    })
+  }, [signInError])
 
   const handleClick = () => {
     if (isBusy) return
@@ -46,7 +65,7 @@ export const LikeButton = ({ proposalId }: LikeButtonProps) => {
         },
         {
           condition: () => !isAuthenticated,
-          lazyContent: () => <SiweTooltipContent onClick={handleClick} />,
+          lazyContent: () => <SiweTooltipContent onClick={handleClick} error={signInError} />,
         },
       ]}
     >

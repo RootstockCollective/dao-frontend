@@ -1,6 +1,9 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useRef, useState } from 'react'
+
+import { isTokenExpired } from '@/lib/auth/jwt'
 import { useSiweStore } from '@/lib/auth/siweStore'
+import { showToast } from '@/shared/notification'
 
 interface LikeApiResponse {
   success: boolean
@@ -39,21 +42,22 @@ const fetchUserReaction = async (proposalId: string, token: string): Promise<Use
  * useLike — manages the like/heart state for a proposal.
  *
  * Handles the full lifecycle on a single click:
- * 1. Triggers SIWE sign-in when needed (wallet connected but no JWT)
+ * 1. Triggers SIWE sign-in when needed (wallet connected but no JWT, or persisted JWT expired)
  * 2. Fetches user's existing reaction before deciding to like or show existing state
  * 3. Sends the like/unlike request with optimistic UI updates
  * 4. Rolls back on failure
- * 5. Resets heart state on disconnect/logout
+ * 5. Resets heart state on disconnect, logout, or missing / client-expired JWT
  * 6. Guards against concurrent toggle requests
  *
  * Background effects:
  * - Syncs user reaction from server when JWT becomes available (e.g. page load with persisted JWT)
  * - Keeps local count in sync with server count on refetch
- * - Clears liked state on disconnect/logout so heart shows unfilled
+ * - Clears liked state on disconnect, logout, or expired JWT so heart matches auth
  */
 export const useLike = (proposalId: string, isConnected: boolean, signIn: () => Promise<string | null>) => {
   const queryClient = useQueryClient()
   const jwtToken = useSiweStore(state => state.jwtToken)
+  const jwtValidForLikeApi = !!jwtToken && !isTokenExpired(jwtToken)
   const [isToggling, setIsToggling] = useState(false)
   const [count, setCount] = useState(0)
   const [lastLikedState, setLastLikedState] = useState<boolean | null>(null)
@@ -73,11 +77,11 @@ export const useLike = (proposalId: string, isConnected: boolean, signIn: () => 
     enabled: !!proposalId,
   })
 
-  // User's own reaction query (only when authenticated)
+  // User's own reaction query (only with a non-expired JWT — matches selectIsAuthenticated)
   const { data: userReactionData } = useQuery<UserReactionResponse>({
     queryKey: userReactionQueryKey(proposalId, jwtToken ?? ''),
     queryFn: () => fetchUserReaction(proposalId, jwtToken!),
-    enabled: !!proposalId && !!jwtToken,
+    enabled: !!proposalId && jwtValidForLikeApi,
   })
 
   // Sync server-side user reaction into local state (only when uninitialized)
@@ -93,21 +97,24 @@ export const useLike = (proposalId: string, isConnected: boolean, signIn: () => 
     setCount(serverCount)
   }, [serverCount])
 
-  // Reset liked state on disconnect or logout
+  // Reset liked state on disconnect, logout, or expired persisted JWT
   useEffect(() => {
-    if (!jwtToken || !isConnected) {
+    if (!jwtValidForLikeApi || !isConnected) {
       setLastLikedState(null)
     }
-  }, [jwtToken, isConnected])
+  }, [jwtValidForLikeApi, isConnected])
 
   const toggleLike = useCallback(async () => {
     if (isToggling) return
     setIsToggling(true)
 
     try {
-      // Phase 1: Ensure we have a valid JWT
+      // Phase 1: Ensure we have a valid JWT (missing or client-expired persisted token)
       let token = useSiweStore.getState().jwtToken
-      if (!token) {
+      if (!token || isTokenExpired(token)) {
+        if (token && isTokenExpired(token)) {
+          useSiweStore.getState().signOut()
+        }
         token = await signInRef.current()
         if (!token) return // Sign-in failed or user rejected
       }
@@ -134,10 +141,19 @@ export const useLike = (proposalId: string, isConnected: boolean, signIn: () => 
         }
       }
 
-      // Phase 3: Optimistic update
+      // Phase 3: Optimistic UI — update count and heart immediately before the network round-trip.
+      // If the request later fails (401, bad response, network error), the server never applied the
+      // change; without a matching rollback the UI would lie until the next refetch.
       const willLike = !currentLikedState
       setCount(prev => Math.max(0, prev + (willLike ? 1 : -1)))
       setLastLikedState(willLike)
+
+      // Reverts Phase 3: restore count and heart to `currentLikedState` / matching count whenever
+      // we learn the server did not successfully apply this toggle (401, parse error, !ok, or fetch threw).
+      const rollbackOptimistic = () => {
+        setCount(prev => Math.max(0, prev + (willLike ? -1 : 1)))
+        setLastLikedState(currentLikedState)
+      }
 
       // Phase 4: Send toggle request
       try {
@@ -150,12 +166,27 @@ export const useLike = (proposalId: string, isConnected: boolean, signIn: () => 
           body: JSON.stringify({ proposalId, reaction: 'heart' }),
         })
 
-        const result: ToggleLikeResponse = await response.json()
+        if (response.status === 401) {
+          useSiweStore.getState().signOut()
+          showToast({
+            severity: 'error',
+            title: 'Session expired',
+            content: 'Please sign in again to like this proposal.',
+          })
+          rollbackOptimistic()
+          return
+        }
+
+        let result: ToggleLikeResponse
+        try {
+          result = await response.json()
+        } catch {
+          rollbackOptimistic()
+          return
+        }
 
         if (!response.ok || !result.success) {
-          // Rollback optimistic update
-          setCount(prev => Math.max(0, prev + (willLike ? -1 : 1)))
-          setLastLikedState(currentLikedState)
+          rollbackOptimistic()
           return
         }
 
@@ -166,9 +197,8 @@ export const useLike = (proposalId: string, isConnected: boolean, signIn: () => 
           queryKey: userReactionQueryKey(proposalId, token),
         })
       } catch {
-        // Network error — rollback optimistic update
-        setCount(prev => Math.max(0, prev + (willLike ? -1 : 1)))
-        setLastLikedState(currentLikedState)
+        // Fetch threw (e.g. offline) — same rollback as failed HTTP/body handling inside the try above.
+        rollbackOptimistic()
       }
     } finally {
       setIsToggling(false)
