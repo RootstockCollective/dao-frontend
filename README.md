@@ -318,10 +318,6 @@ This workflow uses https://github.com/cypress-io/github-action
 
 ## How to run the dApp locally
 
-### Prerequisites
-
-You need to have the repository https://github.com/RootstockCollective/dao-backend-services running locally.
-
 ### Steps
 
 #### Setup frontend
@@ -330,15 +326,7 @@ You need to have the repository https://github.com/RootstockCollective/dao-backe
 - `npm i`
 - Create .env.local file
 - Carry over what is in .env.dev to .env.local
-- Replace NEXT_PUBLIC_RIF_WALLET_SERVICES env var with your localhost url:port, like:
-  NEXT_PUBLIC_RIF_WALLET_SERVICES=http://localhost:3001
 - npm run dev
-
-#### Setup backend
-
-You need to have the repository https://github.com/RootstockCollective/dao-backend-services running locally.
-
-`npm i`
 
 For mac:
 
