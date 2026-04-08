@@ -208,7 +208,10 @@ export function PannableProgressStepRow({
                 <Span
                   variant="tag"
                   caps
-                  className={cn('shrink-0 transition-colors', isCurrent ? 'text-text-100' : 'text-bg-0')}
+                  className={cn(
+                    'shrink-0 transition-colors',
+                    isCurrent ? 'text-text-100 font-semibold' : 'text-bg-0',
+                  )}
                   {...stageProps}
                 >
                   {step}
