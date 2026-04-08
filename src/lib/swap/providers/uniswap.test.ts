@@ -208,58 +208,29 @@ describe('uniswap provider - integration tests', () => {
       )
     })
 
-    describe('single-hop regression vs QuoterV2 (STORY-006 Phase 1)', () => {
-    /**
-     * AC-2 / plan: app quote matches same-chain quote within ≤ 1 wei (exact match on raw uint256).
-     */
-    it.skipIf(!hasRealAddresses)(
-      'getQuote with explicit fee matches quoteExactInputSingle for USDT0→USDRIF',
-      async () => {
-        const amountIn = parseUnits('1', tokenInDecimals)
-        const available = await getAvailableFeeTiers(realTokenIn, realTokenOut, tokenInDecimals)
-        expect(available.length).toBeGreaterThan(0)
-        const fee = available[0]
+    describe('single-hop: provider getQuote vs on-chain QuoterV2 (USDT0→USDRIF)', () => {
+      /**
+       * Cross-check `uniswapProvider.getQuote` against the same fork the tests use for
+       * `publicClient.readContract` / `multicall` on Uniswap QuoterV2.
+       *
+       * - Explicit fee: one pool tier; expect `amountOutRaw` to equal QuoterV2
+       *   `quoteExactInputSingle` (first return value), as a decimal string.
+       * - Auto (no fee): provider multicalls tiers internally; expect the same best
+       *   `amountOut` and `feeTier` as a manual multicall over every standard tier here.
+       */
+      it.skipIf(!hasRealAddresses)(
+        'getQuote with explicit fee matches quoteExactInputSingle for USDT0→USDRIF',
+        { timeout: 15_000, retry: 2 },
+        async () => {
+          const amountIn = parseUnits('1', tokenInDecimals)
+          const available = await getAvailableFeeTiers(realTokenIn, realTokenOut, tokenInDecimals)
+          expect(available.length).toBeGreaterThan(0)
+          const fee = available[0]
 
-        const onChain = (await publicClient.readContract({
-          address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
-          abi: UniswapQuoterV2Abi,
-          functionName: 'quoteExactInputSingle',
-          args: [
-            {
-              tokenIn: realTokenIn,
-              tokenOut: realTokenOut,
-              amountIn,
-              fee,
-              sqrtPriceLimitX96: 0n,
-            },
-          ],
-        })) as [bigint, bigint, number, bigint]
-        const amountOutOnChain = onChain[0]
-
-        const result = await uniswapProvider.getQuote({
-          tokenIn: realTokenIn,
-          tokenOut: realTokenOut,
-          amountIn,
-          tokenInDecimals,
-          tokenOutDecimals,
-          feeTier: fee,
-        })
-
-        expect(result.error).toBeUndefined()
-        expect(result.amountOutRaw).toBe(amountOutOnChain.toString())
-      },
-      15000,
-    )
-
-    it.skipIf(!hasRealAddresses)(
-      'getQuote auto mode matches best quoteExactInputSingle across tiers',
-      async () => {
-        const amountIn = parseUnits('1', tokenInDecimals)
-        const multicall = await publicClient.multicall({
-          contracts: UNISWAP_FEE_TIERS.map(fee => ({
+          const onChain = (await publicClient.readContract({
             address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
             abi: UniswapQuoterV2Abi,
-            functionName: 'quoteExactInputSingle' as const,
+            functionName: 'quoteExactInputSingle',
             args: [
               {
                 tokenIn: realTokenIn,
@@ -268,134 +239,175 @@ describe('uniswap provider - integration tests', () => {
                 fee,
                 sqrtPriceLimitX96: 0n,
               },
-            ] as const,
-          })),
-        })
+            ],
+          })) as [bigint, bigint, number, bigint]
+          const amountOutOnChain = onChain[0]
 
-        type TierResult = { amountOut: bigint; fee: number }
-        const ok: TierResult[] = []
-        multicall.forEach((row, index) => {
-          if (row.status !== 'success' || !Array.isArray(row.result)) return
-          const amountOut = row.result[0]
-          if (typeof amountOut !== 'bigint') return
-          ok.push({ amountOut, fee: UNISWAP_FEE_TIERS[index] })
-        })
-        expect(ok.length).toBeGreaterThan(0)
-        const best = ok.reduce((a, b) => (a.amountOut >= b.amountOut ? a : b))
+          const result = await uniswapProvider.getQuote({
+            tokenIn: realTokenIn,
+            tokenOut: realTokenOut,
+            amountIn,
+            tokenInDecimals,
+            tokenOutDecimals,
+            feeTier: fee,
+          })
 
-        const result = await uniswapProvider.getQuote({
-          tokenIn: realTokenIn,
-          tokenOut: realTokenOut,
-          amountIn,
-          tokenInDecimals,
-          tokenOutDecimals,
-        })
+          expect(result.error).toBeUndefined()
+          expect(result.amountOutRaw).toBe(amountOutOnChain.toString())
+        },
+      )
 
-        expect(result.error).toBeUndefined()
-        expect(result.amountOutRaw).toBe(best.amountOut.toString())
-        expect(result.feeTier).toBe(best.fee)
-      },
-      30000,
-    )
-  })
+      it.skipIf(!hasRealAddresses)(
+        'getQuote auto mode matches best quoteExactInputSingle across tiers',
+        { timeout: 30_000, retry: 2 },
+        async () => {
+          const amountIn = parseUnits('1', tokenInDecimals)
+          const multicall = await publicClient.multicall({
+            contracts: UNISWAP_FEE_TIERS.map(fee => ({
+              address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
+              abi: UniswapQuoterV2Abi,
+              functionName: 'quoteExactInputSingle' as const,
+              args: [
+                {
+                  tokenIn: realTokenIn,
+                  tokenOut: realTokenOut,
+                  amountIn,
+                  fee,
+                  sqrtPriceLimitX96: 0n,
+                },
+              ] as const,
+            })),
+          })
 
-  describe('USDRIF↔RIF multihop quotes (STORY-006 Phase 1)', () => {
-    it.skipIf(!hasRifToken)(
-      'getAvailableFeeTiers returns uniform-path tiers for USDRIF↔RIF multihop',
-      async () => {
-        const tiers = await getAvailableFeeTiers(SWAP_TOKEN_ADDRESSES.USDRIF, rifToken, tokenOutDecimals)
-        expect(Array.isArray(tiers)).toBe(true)
-        tiers.forEach(t => expect(UNISWAP_FEE_TIERS).toContain(t))
-      },
-      15000,
-    )
+          type TierResult = { amountOut: bigint; fee: number }
+          const ok: TierResult[] = []
+          multicall.forEach((row, index) => {
+            if (row.status !== 'success' || !Array.isArray(row.result)) return
+            const amountOut = row.result[0]
+            if (typeof amountOut !== 'bigint') return
+            ok.push({ amountOut, fee: UNISWAP_FEE_TIERS[index] })
+          })
+          expect(ok.length).toBeGreaterThan(0)
+          const best = ok.reduce((a, b) => (a.amountOut >= b.amountOut ? a : b))
 
-    it.skipIf(!hasRifToken)(
-      'getQuote with explicit fee matches quoteExactInput on uniform multihop path',
-      async () => {
-        const tiers = await getAvailableFeeTiers(SWAP_TOKEN_ADDRESSES.USDRIF, rifToken, tokenOutDecimals)
-        if (tiers.length === 0) return
+          const result = await uniswapProvider.getQuote({
+            tokenIn: realTokenIn,
+            tokenOut: realTokenOut,
+            amountIn,
+            tokenInDecimals,
+            tokenOutDecimals,
+          })
 
-        const tier = tiers[0]
-        const route = resolveSwapRoute(SWAP_TOKEN_ADDRESSES.USDRIF, rifToken)
-        const amountIn = parseUnits('1', tokenOutDecimals)
-        const path = encodeUniformFeeSwapPath(route.tokens, tier)
+          expect(result.error).toBeUndefined()
+          expect(result.amountOutRaw).toBe(best.amountOut.toString())
+          expect(result.feeTier).toBe(best.fee)
+        },
+      )
+    })
 
-        const rawDirect = await publicClient.readContract({
-          address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
-          abi: UniswapQuoterV2Abi,
-          functionName: 'quoteExactInput',
-          args: [path, amountIn],
-        })
-        expect(Array.isArray(rawDirect)).toBe(true)
-        const expectedOut = (rawDirect as [bigint])[0]
+    describe('multihop USDRIF↔RIF (via USDT0): quotes vs QuoterV2 and tier discovery', () => {
+      /**
+       * Route is two hops (e.g. USDRIF → USDT0 → RIF) from `resolveSwapRoute`.
+       * Tests compare the provider to direct QuoterV2 reads and to a reference
+       * multicall that scores every allowed per-hop fee combination.
+       */
+      it.skipIf(!hasRifToken)(
+        'getAvailableFeeTiers lists only uniform-multihop tiers (same fee each hop); may be empty when only mixed-hop fees quote',
+        { timeout: 15_000, retry: 2 },
+        async () => {
+          // tokenOutDecimals === USDRIF decimals here (realTokenOut is USDRIF); third arg is tokenInDecimals for USDRIF.
+          const tiers = await getAvailableFeeTiers(SWAP_TOKEN_ADDRESSES.USDRIF, rifToken, tokenOutDecimals)
+          expect(Array.isArray(tiers)).toBe(true)
+          tiers.forEach(t => expect(UNISWAP_FEE_TIERS).toContain(t))
+        },
+      )
 
-        const result = await uniswapProvider.getQuote({
-          tokenIn: SWAP_TOKEN_ADDRESSES.USDRIF,
-          tokenOut: rifToken,
-          amountIn,
-          tokenInDecimals: tokenOutDecimals,
-          tokenOutDecimals: rifDecimals,
-          feeTier: tier,
-        })
+      it.skipIf(!hasRifToken)(
+        'USDRIF→RIF multihop: when a uniform fee path exists, explicit tier matches quoteExactInput',
+        { timeout: 30_000, retry: 2 },
+        async () => {
+          const tiers = await getAvailableFeeTiers(SWAP_TOKEN_ADDRESSES.USDRIF, rifToken, tokenOutDecimals)
+          if (tiers.length === 0) return
 
-        expect(result.error).toBeUndefined()
-        expect(result.amountOutRaw).toBe(expectedOut.toString())
-        expect(result.hopFees).toEqual([tier, tier])
-      },
-      30000,
-    )
+          const tier = tiers[0]
+          const route = resolveSwapRoute(SWAP_TOKEN_ADDRESSES.USDRIF, rifToken)
+          const amountIn = parseUnits('1', tokenOutDecimals)
+          const path = encodeUniformFeeSwapPath(route.tokens, tier)
 
-    it.skipIf(!hasRifToken)(
-      'getQuote picks best output over all standard per-hop fee pairs',
-      async () => {
-        const route = resolveSwapRoute(SWAP_TOKEN_ADDRESSES.USDRIF, rifToken)
-        expect(route.tokens.length).toBe(3)
+          const rawDirect = await publicClient.readContract({
+            address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
+            abi: UniswapQuoterV2Abi,
+            functionName: 'quoteExactInput',
+            args: [path, amountIn],
+          })
+          expect(Array.isArray(rawDirect)).toBe(true)
+          const expectedOut = (rawDirect as [bigint])[0]
 
-        const amountIn = parseUnits('1', tokenOutDecimals)
-        const { bestOut, winningHops } = await getBestMultihopExactInputFromMulticall(route.tokens, amountIn)
+          const result = await uniswapProvider.getQuote({
+            tokenIn: SWAP_TOKEN_ADDRESSES.USDRIF,
+            tokenOut: rifToken,
+            amountIn,
+            tokenInDecimals: tokenOutDecimals,
+            tokenOutDecimals: rifDecimals,
+            feeTier: tier,
+          })
 
-        expect(bestOut > 0n).toBe(true)
+          expect(result.error).toBeUndefined()
+          expect(result.amountOutRaw).toBe(expectedOut.toString())
+          expect(result.hopFees).toEqual([tier, tier])
+        },
+      )
 
-        const result = await uniswapProvider.getQuote({
-          tokenIn: SWAP_TOKEN_ADDRESSES.USDRIF,
-          tokenOut: rifToken,
-          amountIn,
-          tokenInDecimals: tokenOutDecimals,
-          tokenOutDecimals: rifDecimals,
-        })
+      it.skipIf(!hasRifToken)(
+        'USDRIF→RIF multihop: auto mode matches best per-hop fee combination',
+        { timeout: 45_000, retry: 2 },
+        async () => {
+          const route = resolveSwapRoute(SWAP_TOKEN_ADDRESSES.USDRIF, rifToken)
+          expect(route.tokens.length).toBe(3)
 
-        expect(result.error).toBeUndefined()
-        expect(result.amountOutRaw).toBe(bestOut.toString())
-        expect(result.hopFees).toEqual(winningHops)
-      },
-      45000,
-    )
+          const amountIn = parseUnits('1', tokenOutDecimals)
+          const { bestOut, winningHops } = await getBestMultihopExactInputFromMulticall(route.tokens, amountIn)
 
-    it.skipIf(!hasRifToken)(
-      'reverse direction RIF→USDRIF matches best per-hop multicall',
-      async () => {
-        const route = resolveSwapRoute(rifToken, SWAP_TOKEN_ADDRESSES.USDRIF)
-        const amountIn = parseUnits('0.5', rifDecimals)
-        const { bestOut, winningHops } = await getBestMultihopExactInputFromMulticall(route.tokens, amountIn)
+          expect(bestOut > 0n).toBe(true)
 
-        expect(bestOut > 0n).toBe(true)
+          const result = await uniswapProvider.getQuote({
+            tokenIn: SWAP_TOKEN_ADDRESSES.USDRIF,
+            tokenOut: rifToken,
+            amountIn,
+            tokenInDecimals: tokenOutDecimals,
+            tokenOutDecimals: rifDecimals,
+          })
 
-        const result = await uniswapProvider.getQuote({
-          tokenIn: rifToken,
-          tokenOut: SWAP_TOKEN_ADDRESSES.USDRIF,
-          amountIn,
-          tokenInDecimals: rifDecimals,
-          tokenOutDecimals: tokenOutDecimals,
-        })
+          expect(result.error).toBeUndefined()
+          expect(result.amountOutRaw).toBe(bestOut.toString())
+          expect(result.hopFees).toEqual(winningHops)
+        },
+      )
 
-        expect(result.error).toBeUndefined()
-        expect(result.amountOutRaw).toBe(bestOut.toString())
-        expect(result.hopFees).toEqual(winningHops)
-      },
-      45000,
-    )
-  })
+      it.skipIf(!hasRifToken)(
+        'RIF→USDRIF multihop: auto mode matches best per-hop multicall',
+        { timeout: 45_000, retry: 2 },
+        async () => {
+          const route = resolveSwapRoute(rifToken, SWAP_TOKEN_ADDRESSES.USDRIF)
+          const amountIn = parseUnits('0.5', rifDecimals)
+          const { bestOut, winningHops } = await getBestMultihopExactInputFromMulticall(route.tokens, amountIn)
+
+          expect(bestOut > 0n).toBe(true)
+
+          const result = await uniswapProvider.getQuote({
+            tokenIn: rifToken,
+            tokenOut: SWAP_TOKEN_ADDRESSES.USDRIF,
+            amountIn,
+            tokenInDecimals: rifDecimals,
+            tokenOutDecimals: tokenOutDecimals,
+          })
+
+          expect(result.error).toBeUndefined()
+          expect(result.amountOutRaw).toBe(bestOut.toString())
+          expect(result.hopFees).toEqual(winningHops)
+        },
+      )
+    })
 
     describe('invalid explicit feeTier — not in [100,500,3000,10000]; treated like auto mode', () => {
       it.skipIf(!hasRealAddresses)(

@@ -94,9 +94,23 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
     [tokenOutData, tokenOutPrice],
   )
 
+  const swapInTokenForLiquidity = useMemo(
+    () => ({
+      symbol: tokenInData.symbol,
+      price: tokenInPrice || undefined,
+    }),
+    [tokenInData.symbol, tokenInPrice],
+  )
+
   const showLowLiquidityWarning = useMemo(
-    () => shouldShowLowLiquidityWarning(amountIn ?? '', amountOut ?? '', tokenInPrice, tokenOutPrice),
-    [amountIn, amountOut, tokenInPrice, tokenOutPrice],
+    () =>
+      shouldShowLowLiquidityWarning(
+        amountIn ?? '',
+        amountOut ?? '',
+        swapInTokenForLiquidity,
+        minimumOutputToken,
+      ),
+    [amountIn, amountOut, swapInTokenForLiquidity, minimumOutputToken],
   )
 
   const handleConfirmSwap = useCallback(() => {

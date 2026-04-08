@@ -1,7 +1,19 @@
+import type { SwapInputToken } from '@/components/SwapInput'
 import Big from '@/lib/big'
+import { USDRIF, USDT0 } from '@/lib/constants'
+
+export type LowLiquidityWarningToken = Pick<SwapInputToken, 'symbol' | 'price'>
 
 /** Show warning when user loses more than 5%: output below 95% of input. */
 const MIN_OUTPUT_FRACTION = 0.95
+
+/** Tokens we treat as ~$1 nominal; safe to compare human amounts when USD prices are missing. */
+const STABLE_NOMINAL_SWAP_SYMBOLS = new Set<string>([USDT0, USDRIF])
+
+function isStableNominalSwapPair(tokenInSymbol?: string, tokenOutSymbol?: string): boolean {
+  if (!tokenInSymbol || !tokenOutSymbol) return false
+  return STABLE_NOMINAL_SWAP_SYMBOLS.has(tokenInSymbol) && STABLE_NOMINAL_SWAP_SYMBOLS.has(tokenOutSymbol)
+}
 
 /**
  * Exact copy for the low-liquidity warning message (product requirement).
@@ -12,29 +24,32 @@ export const LOW_LIQUIDITY_WARNING_MESSAGE =
 /**
  * Returns true when effective output value is more than ~5% below input value.
  *
- * When **both** `priceInUsd` and `priceOutUsd` are defined and &gt; 0, compares
- * **USD notionals** (same logic as the fiat line under each field). Use this for
- * arbitrary pairs (e.g. RIF → USDRIF): raw token amounts are not comparable.
+ * When **both** tokens have a `price` defined and &gt; 0, compares **USD notionals**
+ * (same idea as the fiat line under each input). Use that for cross-asset pairs
+ * (e.g. RIF → USDRIF): raw token amounts are not comparable.
  *
- * Otherwise falls back to comparing **human amounts only** — only meaningful for
- * ~1:1 stable-style pairs (legacy USDT0 ↔ USDRIF behaviour when prices are missing).
+ * Otherwise, if both symbols form a **USDT0 ↔ USDRIF** pair, compares human amounts (legacy).
+ * For any other pair without two positive USD prices, returns **false** — raw amounts are not
+ * comparable (e.g. 1000 RIF vs 35 USDRIF would falsely look like &gt;5% loss).
  *
  * @param amountIn - Human-readable input amount
  * @param amountOut - Human-readable quoted output amount
- * @param priceInUsd - Optional USD price per 1 unit of token in (from balances context)
- * @param priceOutUsd - Optional USD price per 1 unit of token out
+ * @param tokenIn - Token-in `symbol` and optional USD `price` (e.g. `SwapInputToken` fields)
+ * @param tokenOut - Token-out `symbol` and optional USD `price`
  */
 export function shouldShowLowLiquidityWarning(
   amountIn: string,
   amountOut: string,
-  priceInUsd?: number,
-  priceOutUsd?: number,
+  tokenIn: LowLiquidityWarningToken,
+  tokenOut: LowLiquidityWarningToken,
 ): boolean {
   if (!amountIn || !amountOut) return false
   const inVal = new Big(amountIn)
   const outVal = new Big(amountOut)
   if (!inVal.gt(0)) return false
 
+  const priceInUsd = tokenIn.price
+  const priceOutUsd = tokenOut.price
   const useUsd = priceInUsd !== undefined && priceOutUsd !== undefined && priceInUsd > 0 && priceOutUsd > 0
 
   if (useUsd) {
@@ -44,5 +59,9 @@ export function shouldShowLowLiquidityWarning(
     return usdOut.lt(usdIn.times(MIN_OUTPUT_FRACTION))
   }
 
-  return outVal.lt(inVal.times(MIN_OUTPUT_FRACTION))
+  if (isStableNominalSwapPair(tokenIn.symbol, tokenOut.symbol)) {
+    return outVal.lt(inVal.times(MIN_OUTPUT_FRACTION))
+  }
+
+  return false
 }
