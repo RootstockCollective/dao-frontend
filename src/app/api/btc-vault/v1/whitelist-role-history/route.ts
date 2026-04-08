@@ -9,7 +9,7 @@ import { fetchBtcVaultWhitelistedUsersPage } from './action'
 
 /**
  * GET /api/btc-vault/v1/whitelist-role-history
- * Paginated BTC vault whitelist state from subgraph `btcVaultWhitelistedUsers`.
+ * Paginated BTC vault whitelist state from state-sync `BtcVaultWhitelistedUser`.
  *
  * Query: limit (1–200, default 20), page (default 1),
  * sort_field (lastUpdated | account | status), sort_direction (asc | desc).

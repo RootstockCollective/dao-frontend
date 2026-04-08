@@ -42,7 +42,7 @@ export const BtcVaultGlobalHistoryQuerySchema = baseHistoryQuerySchema.extend({
   address: AddressSchema.optional(),
 })
 
-/** Sort fields for GET /api/btc-vault/v1/whitelist-role-history (subgraph `BtcVaultWhitelistedUser_orderBy`). */
+/** Sort fields for GET /api/btc-vault/v1/whitelist-role-history (state-sync `BtcVaultWhitelistedUser` columns). */
 export const BtcVaultWhitelistedUsersSortFieldEnum = z.enum(['lastUpdated', 'account', 'status'])
 
 /** Query schema for GET /api/btc-vault/v1/whitelist-role-history */
