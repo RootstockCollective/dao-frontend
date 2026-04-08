@@ -1,6 +1,6 @@
 import { type Address, getAddress } from 'viem'
 
-import { RIF } from '@/lib/constants'
+import { RIF, WRBTC_ADDRESS } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
 
 import { SWAP_TOKEN_ADDRESSES } from './constants'
@@ -15,7 +15,9 @@ export interface SwapRoute {
 
 /**
  * Resolve the canonical token path for a swap.
- * USDRIF↔RIF uses a fixed two-hop bridge via USDT0; all other pairs default to a direct path.
+ * USDRIF↔RIF uses a fixed two-hop bridge via USDT0 (product topology, not an ENV switch).
+ * RIF↔WRBTC uses a direct single hop like other native DEX pairs; pools exist on the deployed chain (mainnet / fork). If a network has no pool, the quoter fails—same as any missing pool.
+ * All other pairs default to a direct path.
  * Addresses are normalized with {@link getAddress} for stable comparisons.
  */
 export function resolveSwapRoute(tokenIn: Address, tokenOut: Address): SwapRoute {
@@ -25,6 +27,7 @@ export function resolveSwapRoute(tokenIn: Address, tokenOut: Address): SwapRoute
   const usdt0 = getAddress(SWAP_TOKEN_ADDRESSES.USDT0)
   const usdrif = getAddress(SWAP_TOKEN_ADDRESSES.USDRIF)
   const rif = getAddress(tokenContracts[RIF])
+  const wrbtc = getAddress(WRBTC_ADDRESS)
 
   const isUsdrifRifPair = (a === usdrif && b === rif) || (a === rif && b === usdrif)
   if (isUsdrifRifPair) {
@@ -32,6 +35,11 @@ export function resolveSwapRoute(tokenIn: Address, tokenOut: Address): SwapRoute
       return { tokens: [usdrif, usdt0, rif] }
     }
     return { tokens: [rif, usdt0, usdrif] }
+  }
+
+  const isRifWrbbtcPair = (a === rif && b === wrbtc) || (a === wrbtc && b === rif)
+  if (isRifWrbbtcPair) {
+    return a === rif ? { tokens: [rif, wrbtc] } : { tokens: [wrbtc, rif] }
   }
 
   return { tokens: [a, b] }

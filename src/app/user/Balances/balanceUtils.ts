@@ -1,12 +1,19 @@
-import { GetAddressTokenResult, TokenBalance } from '@/app/user/types'
-import { tokenContracts } from '@/lib/contracts'
 import { formatUnits } from 'viem'
-import Big from '@/lib/big'
-import { RIF, RBTC, STRIF, USDRIF, USDT0 } from '@/lib/constants'
+
 import { formatSymbol, getSymbolDecimals } from '@/app/shared/formatter'
+import { GetAddressTokenResult, TokenBalance } from '@/app/user/types'
+import Big from '@/lib/big'
+import { RBTC, RIF, STRIF, USDRIF, USDT0, WRBTC } from '@/lib/constants'
+import { tokenContracts } from '@/lib/contracts'
 
 // Explicitly type the supported token symbols
-type SupportedTokenSymbol = typeof RIF | typeof RBTC | typeof STRIF | typeof USDRIF | typeof USDT0
+type SupportedTokenSymbol =
+  | typeof RIF
+  | typeof RBTC
+  | typeof STRIF
+  | typeof USDRIF
+  | typeof USDT0
+  | typeof WRBTC
 
 interface SymbolConfig {
   equivalentSymbols: string[]
@@ -19,6 +26,7 @@ const symbolsToGetFromArray = {
   [STRIF]: { equivalentSymbols: [STRIF, 'FIRts'], currentContract: tokenContracts[STRIF] },
   [USDRIF]: { equivalentSymbols: [USDRIF], currentContract: tokenContracts[USDRIF] },
   [USDT0]: { equivalentSymbols: [USDT0, 'USD₮0'], currentContract: tokenContracts[USDT0] },
+  [WRBTC]: { equivalentSymbols: [WRBTC], currentContract: tokenContracts[WRBTC] },
 } as const satisfies Record<string, SymbolConfig>
 
 // Token-specific formatting functions

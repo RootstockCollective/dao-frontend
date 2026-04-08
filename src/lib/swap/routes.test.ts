@@ -58,6 +58,20 @@ describe('resolveSwapRoute', () => {
     expect(forward.split(':')).toHaveLength(3)
     expect(reverse.split(':')).toHaveLength(3)
   })
+
+  it('returns a direct path for RIF to WRBTC', () => {
+    const wrbtc = getAddress(SWAP_TOKEN_ADDRESSES.WRBTC)
+    const route = resolveSwapRoute(rif, wrbtc)
+    expect(route.tokens).toEqual([rif, wrbtc])
+    expect(isMultihopRoute(route)).toBe(false)
+  })
+
+  it('returns a direct path for WRBTC to RIF', () => {
+    const wrbtc = getAddress(SWAP_TOKEN_ADDRESSES.WRBTC)
+    const route = resolveSwapRoute(wrbtc, rif)
+    expect(route.tokens).toEqual([wrbtc, rif])
+    expect(isMultihopRoute(route)).toBe(false)
+  })
 })
 
 describe('encodeUniformFeeSwapPath', () => {

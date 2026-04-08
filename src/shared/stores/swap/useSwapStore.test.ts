@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { RIF, USDRIF, USDT0 } from '@/lib/constants'
+import { RIF, USDRIF, USDT0, WRBTC } from '@/lib/constants'
 
 import { useSwapStore } from './useSwapStore'
 
@@ -35,6 +35,20 @@ describe('useSwapStore token selection', () => {
     useSwapStore.getState().setTokenOut(RIF)
     expect(useSwapStore.getState().tokenOut).toBe(RIF)
     expect(useSwapStore.getState().tokenIn).toBe(USDT0)
+  })
+
+  it('setTokenIn keeps a distinct tokenOut when selecting WrBTC', () => {
+    useSwapStore.setState({ tokenIn: USDT0, tokenOut: USDRIF })
+    useSwapStore.getState().setTokenIn(WRBTC)
+    expect(useSwapStore.getState().tokenIn).toBe(WRBTC)
+    expect(useSwapStore.getState().tokenOut).toBe(USDRIF)
+  })
+
+  it('setTokenOut avoids duplicate pair when choosing WRBTC from RIF', () => {
+    useSwapStore.setState({ tokenIn: RIF, tokenOut: USDRIF })
+    useSwapStore.getState().setTokenOut(WRBTC)
+    expect(useSwapStore.getState().tokenOut).toBe(WRBTC)
+    expect(useSwapStore.getState().tokenIn).toBe(RIF)
   })
 
   it('toggleTokens swaps sides and resets selectedFeeTier to Auto', () => {

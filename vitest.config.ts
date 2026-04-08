@@ -1,9 +1,36 @@
 import react from '@vitejs/plugin-react'
+import { readFileSync } from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { defineConfig } from 'vitest/config'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
+/** Read a single `KEY=value` from a repo `.env*` file so Vitest stays aligned with committed env (no duplicated literals). */
+function readDotenvKey(relativePath: string, key: string, fallback: string): string {
+  try {
+    const text = readFileSync(path.join(__dirname, relativePath), 'utf8')
+    for (const line of text.split('\n')) {
+      const t = line.trim()
+      if (!t || t.startsWith('#')) continue
+      if (t.startsWith(`${key}=`)) {
+        return t
+          .slice(key.length + 1)
+          .trim()
+          .replaceAll(/^['"]|['"]$/g, '')
+      }
+    }
+  } catch {
+    // missing file in some sandboxes / partial checkouts
+  }
+  return fallback
+}
+
+const wrbtcMainnetFromEnvFork = readDotenvKey(
+  '.env.fork',
+  'NEXT_PUBLIC_WRBTC_ADDRESS',
+  '0x542fda317318ebf1d3deaf76e0b632741a7e677d',
+)
 
 const alias = { '@': path.resolve(__dirname, './src') }
 const reactPlugin = react({ jsxRuntime: 'automatic' })
@@ -21,6 +48,7 @@ const unitTestnetEnv = {
   NEXT_PUBLIC_STRIF_ADDRESS: '0xC4b091d97AD25ceA5922f09fe80711B7ACBbb16f',
   NEXT_PUBLIC_USDRIF_ADDRESS: '0x8dbf326e12a9fF37ED6DDF75adA548C2640A6482',
   NEXT_PUBLIC_USDT0_ADDRESS: '0x5a2256DD0DfbC8cE121d923AC7D6E7A3fc7F9922',
+  NEXT_PUBLIC_WRBTC_ADDRESS: '0x69fe5cec81d5ef92600c1a0db1f11986ab3758ab',
   NEXT_PUBLIC_UNISWAP_QUOTER_V2_ADDRESS: '0xb51727c996C68E60F598A923a5006853cd2fEB31',
   NEXT_PUBLIC_UNISWAP_UNIVERSAL_ROUTER_ADDRESS: '0x244f68e77357f86a8522323eBF80b5FC2F814d3E',
   NEXT_PUBLIC_ICECREAMSWAP_ROUTER_ADDRESS: '0x63d3C7Ab37ca36A2A0A338076C163fF60c72527c',
@@ -36,6 +64,7 @@ const forkPublicEnv = {
   NEXT_PUBLIC_STRIF_ADDRESS: '0x5db91e24bd32059584bbdb831a901f1199f3d459',
   NEXT_PUBLIC_USDRIF_ADDRESS: '0x3a15461d8ae0f0fb5fa2629e9da7d66a794a6e37',
   NEXT_PUBLIC_USDT0_ADDRESS: '0x779Ded0c9e1022225f8E0630b35a9b54bE713736',
+  NEXT_PUBLIC_WRBTC_ADDRESS: wrbtcMainnetFromEnvFork,
   NEXT_PUBLIC_UNISWAP_QUOTER_V2_ADDRESS: '0xb51727c996C68E60F598A923a5006853cd2fEB31',
   NEXT_PUBLIC_UNISWAP_UNIVERSAL_ROUTER_ADDRESS: '0x244f68e77357f86a8522323eBF80b5FC2F814d3E',
   NEXT_PUBLIC_ICECREAMSWAP_ROUTER_ADDRESS: '0x63d3C7Ab37ca36A2A0A338076C163fF60c72527c',

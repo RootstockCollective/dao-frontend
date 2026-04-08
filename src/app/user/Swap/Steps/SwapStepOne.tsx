@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { Hash, parseUnits } from 'viem'
 
+import { getSwapAmountDisplayDecimals } from '@/app/shared/formatter'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { ArrowsUpDown } from '@/components/Icons'
 import { PercentageButtonItem, PercentageButtons } from '@/components/PercentageButtons'
 import { SwapInputComponent, SwapInputToken } from '@/components/SwapInput'
 import { Label } from '@/components/Typography'
 import Big from '@/lib/big'
+import { WRBTC } from '@/lib/constants'
 import { feeTierToPercent, SWAP_FLOW_TOKEN_SYMBOLS, UNISWAP_FEE_TIERS } from '@/lib/swap/constants'
 import { formatForDisplay, handleAmountInput } from '@/lib/utils'
 import { useExecuteTxFlow } from '@/shared/notification'
@@ -62,9 +64,9 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   // Track which field the user is actively typing in (prevents loop from programmatic value updates)
   const activeFieldRef = useRef<'in' | 'out' | null>(null)
 
-  // Get balances and prices from context
-  const tokenInBalance = balances[tokenIn]?.balance ?? '0'
-  const tokenOutBalance = balances[tokenOut]?.balance ?? '0'
+  const tokenInBalance = useMemo(() => balances[tokenIn]?.balance ?? '0', [balances, tokenIn])
+
+  const tokenOutBalance = useMemo(() => balances[tokenOut]?.balance ?? '0', [balances, tokenOut])
   const tokenInPrice = prices[tokenIn]?.price ?? 0
   const tokenOutPrice = prices[tokenOut]?.price ?? 0
 
@@ -97,19 +99,21 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
     [setTokenOut],
   )
 
-  // Display values: typed field shows raw, derived field shows formatted (2 decimals)
-  // When empty, return '' so the placeholder "0" shows
+  // Display: active field raw; derived field formatted (see `getSwapAmountDisplayDecimals` in formatter)
+  const displayDecimalsIn = getSwapAmountDisplayDecimals(tokenIn)
+  const displayDecimalsOut = getSwapAmountDisplayDecimals(tokenOut)
+
   const displayAmountIn = useMemo(() => {
     if (!amountIn) return ''
     if (mode === 'exactIn') return amountIn // User is typing, show raw
-    return formatForDisplay(amountIn) // Derived from quote, format it
-  }, [mode, amountIn])
+    return formatForDisplay(amountIn, displayDecimalsIn)
+  }, [mode, amountIn, displayDecimalsIn])
 
   const displayAmountOut = useMemo(() => {
     if (!amountOut) return ''
     if (mode === 'exactOut') return amountOut // User is typing, show raw
-    return formatForDisplay(amountOut) // Derived from quote, format it
-  }, [mode, amountOut])
+    return formatForDisplay(amountOut, displayDecimalsOut)
+  }, [mode, amountOut, displayDecimalsOut])
 
   useEffect(() => {
     if (inputRef.current) {
@@ -313,7 +317,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
           amount={displayAmountIn}
           onAmountChange={handleAmountChange}
           onFocus={handleInputFocus}
-          balance={formatForDisplay(tokenInBalance)}
+          balance={formatForDisplay(tokenInBalance, displayDecimalsIn)}
           labelText="Amount to swap"
           isLoading={isQuoting && mode === 'exactOut'}
           errorText={
@@ -380,12 +384,20 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
           amount={displayAmountOut}
           onAmountChange={handleAmountOutChange}
           onFocus={handleOutputFocus}
-          balance={formatForDisplay(tokenOutBalance)}
+          balance={formatForDisplay(tokenOutBalance, displayDecimalsOut)}
           labelText="You will receive"
           isLoading={isQuoting && mode === 'exactIn'}
           errorText={quoteError ? 'Failed to get quote. Pool may have insufficient liquidity.' : ''}
           autoFocus={false}
         />
+
+        {(tokenIn === WRBTC || tokenOut === WRBTC) && (
+          <SwapStepWarning
+            message="You send and receive WrBTC (wrapped), not native rBTC. Unwrap WrBTC separately if you need native coin."
+            className="mt-2"
+            testId="swap-wrbtc-copy-warning"
+          />
+        )}
 
         {showLowLiquidityWarning && (
           <SwapStepWarning

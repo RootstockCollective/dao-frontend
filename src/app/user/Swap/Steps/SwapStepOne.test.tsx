@@ -2,13 +2,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 
-import { RIF, USDRIF, USDT0 } from '@/lib/constants'
-import {
-  useSwapInput,
-  useTokenAllowance,
-  useTokenSelection,
-  useSwapTokens,
-} from '@/shared/stores/swap'
+import { RIF, USDRIF, USDT0, WRBTC, WRBTC_ADDRESS } from '@/lib/constants'
+import { useSwapInput, useTokenAllowance, useTokenSelection, useSwapTokens } from '@/shared/stores/swap'
 
 import { SwapStepOne } from './SwapStepOne'
 
@@ -38,6 +33,12 @@ const swapTokensRecord = {
     name: RIF,
     decimals: 18,
   },
+  [WRBTC]: {
+    symbol: WRBTC,
+    address: WRBTC_ADDRESS,
+    name: WRBTC,
+    decimals: 18,
+  },
 } as const
 
 vi.mock('@/app/user/Balances/context/BalancesContext', () => ({
@@ -45,6 +46,7 @@ vi.mock('@/app/user/Balances/context/BalancesContext', () => ({
     balances: {
       [RIF]: { balance: '10' },
       [USDRIF]: { balance: '0' },
+      [WRBTC]: { balance: '2' },
     },
     prices: { [RIF]: { price: 0.1 }, [USDRIF]: { price: 1 } },
   }),
@@ -132,9 +134,7 @@ describe('SwapStepOne', () => {
     vi.mocked(useTokenSelection).mockReturnValue(
       defaultTokenSelection as ReturnType<typeof useTokenSelection>,
     )
-    vi.mocked(useTokenAllowance).mockReturnValue(
-      defaultAllowance as ReturnType<typeof useTokenAllowance>,
-    )
+    vi.mocked(useTokenAllowance).mockReturnValue(defaultAllowance as ReturnType<typeof useTokenAllowance>)
     vi.mocked(useSwapTokens).mockReturnValue({
       tokens: swapTokensRecord,
     } as ReturnType<typeof useSwapTokens>)
@@ -166,5 +166,38 @@ describe('SwapStepOne', () => {
 
     renderStepOne()
     expect(screen.queryByTestId('swap-route-bridge-hint')).not.toBeInTheDocument()
+  })
+
+  it('shows WrBTC copy warning when the pair includes WrBTC', () => {
+    vi.mocked(useTokenSelection).mockReturnValue({
+      ...defaultTokenSelection,
+      tokenOut: WRBTC,
+      tokenOutData: {
+        symbol: WRBTC,
+        address: swapTokensRecord[WRBTC].address,
+        name: WRBTC,
+        decimals: 18,
+      },
+    } as ReturnType<typeof useTokenSelection>)
+
+    renderStepOne()
+    expect(screen.getByTestId('swap-wrbtc-copy-warning')).toBeInTheDocument()
+  })
+
+  it('uses balances context WrBTC balance for Amount to swap when selling WrBTC', () => {
+    vi.mocked(useTokenSelection).mockReturnValue({
+      ...defaultTokenSelection,
+      tokenIn: WRBTC,
+      tokenInData: {
+        symbol: WRBTC,
+        address: swapTokensRecord[WRBTC].address,
+        name: WRBTC,
+        decimals: 18,
+      },
+    } as ReturnType<typeof useTokenSelection>)
+
+    renderStepOne()
+    const labels = screen.getAllByTestId('swap-balance-label')
+    expect(labels[0]).toHaveTextContent('2')
   })
 })

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { formatUnits, Hash } from 'viem'
 
+import { getSwapAmountDisplayDecimals } from '@/app/shared/formatter'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { StakeTokenAmountDisplay } from '@/app/user/Stake/components/StakeTokenAmountDisplay'
@@ -42,6 +43,9 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
   const tokenInBalance = balances[tokenIn]?.balance ?? '0'
   const tokenOutBalance = balances[tokenOut]?.balance ?? '0'
 
+  const tokenInDisplayDp = getSwapAmountDisplayDecimals(tokenIn)
+  const tokenOutDisplayDp = getSwapAmountDisplayDecimals(tokenOut)
+
   const from = useMemo(() => {
     const amountInCurrency = Big(amountIn || '0')
       .times(tokenInPrice)
@@ -49,10 +53,10 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
     return {
       amount: formatForDisplay(amountIn || '0'),
       amountConvertedToCurrency: `$${amountInCurrency}`,
-      balance: formatForDisplay(tokenInBalance),
+      balance: formatForDisplay(tokenInBalance, tokenInDisplayDp),
       tokenSymbol: tokenInData.symbol,
     }
-  }, [amountIn, tokenInPrice, tokenInBalance, tokenInData.symbol])
+  }, [amountIn, tokenInPrice, tokenInBalance, tokenInData.symbol, tokenInDisplayDp])
 
   const to = useMemo(() => {
     const amountValue = amountOut || '0'
@@ -60,10 +64,10 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
     return {
       amount: formatForDisplay(amountValue),
       amountConvertedToCurrency: `$${amountOutCurrency}`,
-      balance: formatForDisplay(tokenOutBalance),
+      balance: formatForDisplay(tokenOutBalance, tokenOutDisplayDp),
       tokenSymbol: tokenOutData.symbol,
     }
-  }, [amountOut, tokenOutPrice, tokenOutBalance, tokenOutData.symbol])
+  }, [amountOut, tokenOutPrice, tokenOutBalance, tokenOutData.symbol, tokenOutDisplayDp])
 
   // Minimum out for Universal Router `V3_SWAP_EXACT_IN`:
   // - exactIn: `quote.amountOut` is the Quoter `quoteExactInput` result for the same path/hopFees as execution — slippage is applied to that.
@@ -76,11 +80,12 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
     return minimum > 0n ? minimum : 0n
   }, [quote?.amountOut, slippageTolerance])
 
-  // Format minimum amount for display (2 decimals)
+  const minReceivedDisplayDecimals = getSwapAmountDisplayDecimals(tokenOut)
+
   const formattedMinimumReceived = useMemo(() => {
     if (!amountOutMinimum || !tokenOutData.decimals) return null
-    return formatForDisplay(formatUnits(amountOutMinimum, tokenOutData.decimals))
-  }, [amountOutMinimum, tokenOutData.decimals])
+    return formatForDisplay(formatUnits(amountOutMinimum, tokenOutData.decimals), minReceivedDisplayDecimals)
+  }, [amountOutMinimum, tokenOutData.decimals, minReceivedDisplayDecimals])
 
   // Token for minimum output display
   const minimumOutputToken: SwapInputToken = useMemo(

@@ -27,7 +27,13 @@ export const getFiatAmount = (amount: bigint | string, price: BigSource): Big =>
 
 interface SymbolFormatOptions {
   decimals: number
+  /** Used by {@link formatSymbol} (wei-scale balances). */
   displayDecimals: number
+  /**
+   * When set, human decimal strings (e.g. swap quotes from the quoter) use this instead of `displayDecimals`.
+   * RIF uses `displayDecimals: 0` for wei UI but `2` for swap amounts.
+   */
+  humanAmountDisplayDecimals?: number
 }
 
 const strif = {
@@ -38,6 +44,7 @@ const strif = {
 const rif = {
   decimals: 18,
   displayDecimals: 0,
+  humanAmountDisplayDecimals: 2,
 }
 
 const rbtc = {
@@ -59,6 +66,12 @@ const usdt0 = {
   decimals: 6,
   displayDecimals: 2,
 }
+
+const wrbtc = {
+  decimals: 18,
+  displayDecimals: 8,
+}
+
 const symbols: { [key: string]: SymbolFormatOptions } = {
   rif,
   [RBTC.toLowerCase()]: rbtc, // Maps current env's RBTC symbol (rbtc or trbtc) to rbtc config
@@ -66,10 +79,25 @@ const symbols: { [key: string]: SymbolFormatOptions } = {
   usdrif,
   ctokenvault,
   usdt0,
+  wrbtc,
 }
 
 export const getSymbolDecimals = (symbol: string): number => {
   return symbols[symbol.toLocaleLowerCase()]?.decimals ?? 18
+}
+
+/** Fraction digits for UI amount strings. Aligns with `symbols[].displayDecimals`. */
+export const getSymbolDisplayDecimals = (symbol: string): number => {
+  return symbols[symbol.toLocaleLowerCase()]?.displayDecimals ?? 2
+}
+
+/**
+ * Fraction digits for swap `formatForDisplay` (human decimal strings from the quoter).
+ * Uses `symbols[].humanAmountDisplayDecimals` when set, else {@link getSymbolDisplayDecimals}.
+ */
+export const getSwapAmountDisplayDecimals = (symbol: string): number => {
+  const row = symbols[symbol.toLocaleLowerCase()]
+  return row?.humanAmountDisplayDecimals ?? getSymbolDisplayDecimals(symbol)
 }
 
 export const formatSymbol = (value: bigint | string, symbol: string): string => {

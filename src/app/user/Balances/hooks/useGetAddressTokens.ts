@@ -1,11 +1,12 @@
-import { useBalance, useReadContracts } from 'wagmi'
-import { Address } from 'viem'
-import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
-import { tokenContracts, MulticallAddress } from '@/lib/contracts'
-import { AddressToken } from '@/app/user/types'
 import { useQuery } from '@tanstack/react-query'
-import { AVERAGE_BLOCKTIME, RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
 import { useCallback } from 'react'
+import { Address } from 'viem'
+import { useBalance, useReadContracts } from 'wagmi'
+
+import { AddressToken } from '@/app/user/types'
+import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
+import { AVERAGE_BLOCKTIME, RBTC, RIF, STRIF, USDRIF, USDT0, WRBTC } from '@/lib/constants'
+import { MulticallAddress, tokenContracts } from '@/lib/contracts'
 
 const getTokenFunction = (
   tokenAddress: Address,
@@ -50,6 +51,7 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
       getTokenFunction(tokenContracts.stRIF, address, 'balanceOf'),
       getTokenFunction(tokenContracts.USDRIF, address, 'balanceOf'),
       getTokenFunction(tokenContracts.USDT0, address, 'balanceOf'),
+      getTokenFunction(tokenContracts[WRBTC], address, 'balanceOf'),
     ],
     multicallAddress: MulticallAddress,
     query: {
@@ -83,6 +85,11 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
     tokenData &&
     ([contracts[3], { result: tokenData[tokenContracts.USDT0]?.symbol }] as TokenData)
 
+  const wrbtcTokenData =
+    contracts &&
+    tokenData &&
+    ([contracts[4], { result: tokenData[tokenContracts[WRBTC]]?.symbol }] as TokenData)
+
   const refetch = useCallback(() => {
     refetchRbtc()
     refetchContracts()
@@ -111,6 +118,11 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
         USDT0,
         usdt0TokenData,
         Number(tokenData?.[tokenContracts.USDT0]?.decimals) || 18,
+      ),
+      buildTokenBalanceObject(
+        WRBTC,
+        wrbtcTokenData,
+        Number(tokenData?.[tokenContracts[WRBTC]]?.decimals) || 18,
       ),
     ] as AddressToken[],
     isLoading: rbtcLoading || contractsLoading || IsTokenDataLoading,

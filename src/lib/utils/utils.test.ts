@@ -2,6 +2,7 @@ import Big from '@/lib/big'
 import {
   durationToLabel,
   formatCurrency,
+  formatForDisplay,
   formatNumberWithCommas,
   millify,
   normalizeAddress,
@@ -239,5 +240,22 @@ describe('normalizeAddress', () => {
   it('returns same address for valid checksummed address', () => {
     const checksummed = getAddress('0xf39fd6e51aad88f6f4ce6ab8827279cfffb29266')
     expect(normalizeAddress(checksummed)).toBe(checksummed)
+  })
+})
+
+describe('formatForDisplay', () => {
+  it('uses 0.00 for empty, zero, or non-positive values', () => {
+    expect(formatForDisplay('', 8)).toBe('0.00')
+    expect(formatForDisplay('0', 8)).toBe('0.00')
+    expect(formatForDisplay('0.00000000', 8)).toBe('0.00')
+    expect(formatForDisplay('-1', 8)).toBe('0.00')
+  })
+
+  it('uses requested decimals for positive values', () => {
+    expect(formatForDisplay('123.456789')).toBe('123.46')
+    expect(formatForDisplay('1642.088864088341129143')).toBe('1642.09')
+    expect(formatForDisplay('0.00000001', 8)).toBe('0.00000001')
+    expect(formatForDisplay('3', 8)).toBe('3.00000000')
+    expect(formatForDisplay('100', 2)).toBe('100.00')
   })
 })

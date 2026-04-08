@@ -41,6 +41,8 @@ import {
   USDT0,
   USDT0_ADDRESS,
   VANGUARD_NFT_ADDRESS,
+  WRBTC,
+  WRBTC_ADDRESS,
 } from './constants'
 
 const tokenContracts = {
@@ -49,6 +51,7 @@ const tokenContracts = {
   [RBTC]: zeroAddress,
   [USDRIF]: USDRIF_ADDRESS,
   [USDT0]: USDT0_ADDRESS,
+  [WRBTC]: WRBTC_ADDRESS,
 }
 // Needed when creating proposal - uppercase [avoid case sensitive search]
 export const uppercasedTokenContracts = Object.fromEntries(

@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll } from 'vitest'
 import {
   decodeAbiParameters,
   encodeFunctionData,
+  getAddress,
   parseUnits,
   type AbiFunction,
   type Address,
@@ -17,7 +18,7 @@ import {
 } from './uniswap'
 import type { PermitSingle } from '../permit2'
 import { ROUTER_ADDRESSES, SWAP_TOKEN_ADDRESSES } from '../constants'
-import { resolveSwapRoute } from '../routes'
+import { isMultihopRoute, resolveSwapRoute } from '../routes'
 import { getTokenDecimals } from '../utils'
 import { UniswapQuoterV2Abi } from '@/lib/abis/UniswapQuoterV2Abi'
 import { tokenContracts } from '@/lib/contracts'
@@ -105,9 +106,11 @@ describe('uniswap provider - integration tests', () => {
   const realTokenIn = SWAP_TOKEN_ADDRESSES.USDT0
   const realTokenOut = SWAP_TOKEN_ADDRESSES.USDRIF
   const rifToken = tokenContracts[RIF]
+  const wrbtcToken = SWAP_TOKEN_ADDRESSES.WRBTC
   let tokenInDecimals: number
   let tokenOutDecimals: number
   let rifDecimals: number
+  let wrbtcDecimals = 18
 
   const hasRealAddresses =
     ROUTER_ADDRESSES.UNISWAP_QUOTER_V2 &&
@@ -162,12 +165,20 @@ describe('uniswap provider - integration tests', () => {
     return UNISWAP_FEE_TIERS.find(t => !available.includes(t))
   }
 
+  const hasWrbbtcPair =
+    Boolean(hasRifToken) &&
+    wrbtcToken &&
+    wrbtcToken !== '0x0000000000000000000000000000000000000000'
+
   beforeAll(async () => {
     if (hasRealAddresses) {
       try {
         tokenInDecimals = await getTokenDecimals(realTokenIn)
         tokenOutDecimals = await getTokenDecimals(realTokenOut)
         rifDecimals = await getTokenDecimals(rifToken)
+        if (hasWrbbtcPair) {
+          wrbtcDecimals = await getTokenDecimals(wrbtcToken)
+        }
       } catch (error) {
         console.warn('Failed to fetch token decimals, some tests may be skipped:', error)
       }
@@ -529,6 +540,107 @@ describe('uniswap provider - integration tests', () => {
             expect(result.feeTier).toBeDefined()
             expect(UNISWAP_FEE_TIERS).toContain(result.feeTier)
           }
+        },
+      )
+    })
+
+    describe('RIF↔WRBTC quotes (DAO-2085)', () => {
+      it.skipIf(!hasWrbbtcPair)('resolveSwapRoute uses one hop on mainnet/fork for RIF→WRBTC', () => {
+        const route = resolveSwapRoute(rifToken, wrbtcToken)
+        expect(route.tokens).toHaveLength(2)
+        expect(isMultihopRoute(route)).toBe(false)
+      })
+
+      it.skipIf(!hasWrbbtcPair)(
+        'getQuote auto mode succeeds for RIF→WRBTC',
+        async () => {
+          const amountIn = parseUnits('0.1', rifDecimals)
+          const result = await uniswapProvider.getQuote({
+            tokenIn: rifToken,
+            tokenOut: wrbtcToken,
+            amountIn,
+            tokenInDecimals: rifDecimals,
+            tokenOutDecimals: wrbtcDecimals,
+          })
+          expect(result.error).toBeUndefined()
+          expect(result.amountOutRaw).not.toBe('0')
+          expect(BigInt(result.amountOutRaw)).toBeGreaterThan(0n)
+        },
+        30_000,
+      )
+
+      it.skipIf(!hasWrbbtcPair)(
+        'getQuote auto mode succeeds for WRBTC→RIF',
+        async () => {
+          const amountIn = parseUnits('0.0001', wrbtcDecimals)
+          const result = await uniswapProvider.getQuote({
+            tokenIn: wrbtcToken,
+            tokenOut: rifToken,
+            amountIn,
+            tokenInDecimals: wrbtcDecimals,
+            tokenOutDecimals: rifDecimals,
+          })
+          expect(result.error).toBeUndefined()
+          expect(result.amountOutRaw).not.toBe('0')
+          expect(BigInt(result.amountOutRaw)).toBeGreaterThan(0n)
+        },
+        30_000,
+      )
+
+      it.skipIf(!hasWrbbtcPair)(
+        'getQuote with explicit fee matches quoteExactInputSingle for RIF→WRBTC',
+        async () => {
+          const available = await getAvailableFeeTiers(rifToken, wrbtcToken, rifDecimals)
+          expect(available.length).toBeGreaterThan(0)
+          const fee = available[0]
+          const amountIn = parseUnits('0.05', rifDecimals)
+
+          const onChain = (await publicClient.readContract({
+            address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
+            abi: UniswapQuoterV2Abi,
+            functionName: 'quoteExactInputSingle',
+            args: [
+              {
+                tokenIn: rifToken,
+                tokenOut: wrbtcToken,
+                amountIn,
+                fee,
+                sqrtPriceLimitX96: 0n,
+              },
+            ],
+          })) as [bigint, bigint, number, bigint]
+          const amountOutOnChain = onChain[0]
+
+          const result = await uniswapProvider.getQuote({
+            tokenIn: rifToken,
+            tokenOut: wrbtcToken,
+            amountIn,
+            tokenInDecimals: rifDecimals,
+            tokenOutDecimals: wrbtcDecimals,
+            feeTier: fee,
+          })
+
+          expect(result.error).toBeUndefined()
+          expect(result.amountOutRaw).toBe(amountOutOnChain.toString())
+        },
+        30_000,
+      )
+
+      it.skipIf(!hasRealAddresses)(
+        'regression: USDT0→USDRIF direct route unchanged (single-hop topology)',
+        () => {
+          const route = resolveSwapRoute(realTokenIn, realTokenOut)
+          expect(route.tokens).toEqual([getAddress(realTokenIn), getAddress(realTokenOut)])
+          expect(isMultihopRoute(route)).toBe(false)
+        },
+      )
+
+      it.skipIf(!hasRifToken)(
+        'regression: USDRIF→RIF remains three-token bridge via USDT0',
+        () => {
+          const route = resolveSwapRoute(SWAP_TOKEN_ADDRESSES.USDRIF, rifToken)
+          expect(route.tokens).toHaveLength(3)
+          expect(route.tokens[1]).toBe(getAddress(realTokenIn))
         },
       )
     })

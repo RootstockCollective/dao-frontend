@@ -6,6 +6,8 @@ import {
   USDRIF,
   USDT0,
   USDT0_USDRIF_POOL_ADDRESS,
+  WRBTC,
+  WRBTC_ADDRESS,
 } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
 
@@ -17,10 +19,11 @@ export const SWAP_TOKEN_ADDRESSES = {
   USDT0: tokenContracts[USDT0],
   USDRIF: tokenContracts[USDRIF],
   RIF: tokenContracts[RIF],
+  WRBTC: WRBTC_ADDRESS,
 } as const
 
-/** Symbols exposed in the in-app swap flow (fixed triple: stablecoin + derivatives + RIF). */
-export const SWAP_FLOW_TOKEN_SYMBOLS = [USDT0, USDRIF, RIF] as const
+/** Symbols exposed in the in-app swap flow (stables, RIF, wrapped BTC for DEX swaps). */
+export const SWAP_FLOW_TOKEN_SYMBOLS = [USDT0, USDRIF, RIF, WRBTC] as const
 
 /**
  * DEX Router Contract Addresses

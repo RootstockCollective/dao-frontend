@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
 
-import { RIF, USDT0, USDRIF } from '@/lib/constants'
+import { RIF, USDT0, USDRIF, WRBTC } from '@/lib/constants'
 
 import { useSwapSmartDefault } from './useSwapSmartDefault'
 
@@ -29,6 +29,7 @@ const mockBalancesContext = {
     [USDT0]: { balance: '0' },
     [USDRIF]: { balance: '100' },
     [RIF]: { balance: '0' },
+    [WRBTC]: { balance: '0' },
   },
   isBalancesLoading: false,
   prices: {},
@@ -46,6 +47,7 @@ describe('useSwapSmartDefault', () => {
       [USDT0]: { balance: '0' },
       [USDRIF]: { balance: '100' },
       [RIF]: { balance: '0' },
+      [WRBTC]: { balance: '0' },
     }
   })
 
@@ -54,7 +56,7 @@ describe('useSwapSmartDefault', () => {
 
     renderHook(() => useSwapSmartDefault())
 
-    expect(mockGetSmartDefault).toHaveBeenCalledWith('0', '100', '0')
+    expect(mockGetSmartDefault).toHaveBeenCalledWith('0', '100', '0', '0')
     expect(mockSetTokenIn).toHaveBeenCalledWith(USDRIF)
     expect(mockSetTokenOut).toHaveBeenCalledWith(USDT0)
   })
@@ -101,6 +103,15 @@ describe('useSwapSmartDefault', () => {
 
     renderHook(() => useSwapSmartDefault())
 
-    expect(mockGetSmartDefault).toHaveBeenCalledWith('0', '0', '0')
+    expect(mockGetSmartDefault).toHaveBeenCalledWith('0', '0', '0', '0')
+  })
+
+  it('should pass WrBTC balance into the helper', () => {
+    mockBalancesContext.balances[WRBTC] = { balance: '0.25' }
+    mockGetSmartDefault.mockReturnValue({ tokenIn: USDT0, tokenOut: USDRIF })
+
+    renderHook(() => useSwapSmartDefault())
+
+    expect(mockGetSmartDefault).toHaveBeenCalledWith('0', '100', '0', '0.25')
   })
 })
