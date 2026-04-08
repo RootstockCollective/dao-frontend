@@ -1,6 +1,8 @@
 import { unstable_cache } from 'next/cache'
+
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
-import { getCachedProposals } from './fetchAllProposals'
+
+import { getCachedProposals } from './fetch-all-proposals'
 
 /**
  * Fetches a single proposal by ID using the cached proposals

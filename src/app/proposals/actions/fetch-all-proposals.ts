@@ -1,10 +1,12 @@
-import { logger } from '@/lib/logger'
 import { unstable_cache } from 'next/cache'
+
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
-import { getProposalsFromDB } from './getProposalsFromDB'
-import { getProposalsFromEnvio } from './getProposalsFromEnvio'
-import { getProposalsFromTheGraph } from './getProposalsFromTheGraph'
-import { getProposalsFromBlockscout } from './getProposalsFromBlockscout'
+import { logger } from '@/lib/logger'
+
+import { getProposalsFromBlockscout } from './get-proposals-from-blockscout'
+import { getProposalsFromDB } from './get-proposals-from-db'
+import { getProposalsFromEnvio } from './get-proposals-from-envio'
+import { getProposalsFromTheGraph } from './get-proposals-from-the-graph'
 
 /**
  * Fetches all proposals from available sources with fallback.
@@ -21,9 +23,9 @@ export async function fetchAllProposals(): Promise<{
     getProposalsFromBlockscout,
   ]
 
-  for (let i = 0; i < proposalsSources.length; i++) {
+  for (const [i, proposalsSource] of proposalsSources.entries()) {
     try {
-      const proposals = await proposalsSources[i]()
+      const proposals = await proposalsSource()
       if (proposals.length > 0) {
         return { proposals, sourceIndex: i }
       }

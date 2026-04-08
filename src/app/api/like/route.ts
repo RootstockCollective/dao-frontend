@@ -2,7 +2,7 @@ import type { PrismaClient } from '@prisma/client'
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 
-import { confirmProposalExists } from '@/app/proposals/actions/getProposalById'
+import { confirmProposalExists } from '@/app/proposals/actions/get-proposal-by-id'
 import { JWTPayload } from '@/lib/auth/jwt'
 import { withAuth } from '@/lib/auth/withAuth'
 import { ENV } from '@/lib/constants'

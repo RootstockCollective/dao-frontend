@@ -1,7 +1,9 @@
-import { db } from '@/lib/db'
-import { ProposalApiResponse } from '@/app/proposals/shared/types'
-import { buildProposal } from '@/app/proposals/actions/utils'
 import { Address } from 'viem'
+
+import { buildProposal } from '@/app/proposals/actions/utils'
+import { validateDBSync } from '@/app/proposals/actions/validate-source-sync'
+import { ProposalApiResponse } from '@/app/proposals/shared/types'
+import { db } from '@/lib/db'
 
 interface ProposalDBRow {
   proposalId: string
@@ -22,6 +24,35 @@ interface ProposalDBRow {
   createdAt: string
 }
 
+/**
+ * Ensures a `Proposal` row from the database has the identifiers, voting window,
+ * proposer, and array fields needed before it is mapped to `ProposalApiResponse`.
+ *
+ * @param row - Raw row from the `Proposal` query
+ * @param index - Row index in the result set (used in error messages)
+ * @throws {Error} When a required field is missing or `targets` / `calldatas` are not arrays
+ */
+function validateProposalRow(row: ProposalDBRow, index: number): void {
+  if (!row.proposalId) {
+    throw new Error(`DB proposal at index ${index} is missing proposalId`)
+  }
+  if (!row.voteStart) {
+    throw new Error(`DB proposal at index ${index} (ID: ${row.proposalId}) is missing voteStart`)
+  }
+  if (!row.voteEnd) {
+    throw new Error(`DB proposal at index ${index} (ID: ${row.proposalId}) is missing voteEnd`)
+  }
+  if (!row.proposer) {
+    throw new Error(`DB proposal at index ${index} (ID: ${row.proposalId}) is missing proposer`)
+  }
+  if (!Array.isArray(row.targets)) {
+    throw new Error(`DB proposal at index ${index} (ID: ${row.proposalId}) has invalid targets`)
+  }
+  if (!Array.isArray(row.calldatas)) {
+    throw new Error(`DB proposal at index ${index} (ID: ${row.proposalId}) has invalid calldatas`)
+  }
+}
+
 function transformProposal(proposal: ProposalDBRow): ProposalApiResponse {
   const parseBytea = (el: string) => Buffer.from(el.slice(2), 'hex').toString()
 
@@ -34,6 +65,8 @@ function transformProposal(proposal: ProposalDBRow): ProposalApiResponse {
 
 export async function getProposalsFromDB(): Promise<ProposalApiResponse[]> {
   try {
+    await validateDBSync()
+
     const result = await db('Proposal')
       .select(
         'proposalId',
@@ -70,7 +103,8 @@ export async function getProposalsFromDB(): Promise<ProposalApiResponse[]> {
       throw new Error(`Insufficient proposals from database: expected at least 10, got ${result.length}`)
     }
 
-    // Transform proposals
+    result.forEach((row, index) => validateProposalRow(row, index))
+
     return result.map(transformProposal)
   } catch (error) {
     throw new Error(

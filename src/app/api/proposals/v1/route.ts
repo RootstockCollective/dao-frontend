@@ -1,4 +1,4 @@
-import { fetchAllProposals } from '@/app/proposals/actions/fetchAllProposals'
+import { fetchAllProposals } from '@/app/proposals/actions/fetch-all-proposals'
 
 export const revalidate = 30
 
