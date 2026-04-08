@@ -2,6 +2,7 @@ import { describe, it, expect, beforeAll } from 'vitest'
 import {
   decodeAbiParameters,
   encodeFunctionData,
+  getAddress,
   parseUnits,
   type AbiFunction,
   type Address,
@@ -629,7 +630,7 @@ describe('uniswap provider - integration tests', () => {
         'regression: USDT0→USDRIF direct route unchanged (single-hop topology)',
         () => {
           const route = resolveSwapRoute(realTokenIn, realTokenOut)
-          expect(route.tokens).toEqual([realTokenIn, realTokenOut])
+          expect(route.tokens).toEqual([getAddress(realTokenIn), getAddress(realTokenOut)])
           expect(isMultihopRoute(route)).toBe(false)
         },
       )
@@ -639,7 +640,7 @@ describe('uniswap provider - integration tests', () => {
         () => {
           const route = resolveSwapRoute(SWAP_TOKEN_ADDRESSES.USDRIF, rifToken)
           expect(route.tokens).toHaveLength(3)
-          expect(route.tokens[1]).toBe(realTokenIn)
+          expect(route.tokens[1]).toBe(getAddress(realTokenIn))
         },
       )
     })
