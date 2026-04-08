@@ -1,7 +1,8 @@
-import { Paragraph } from '@/components/Typography'
-import { cn } from '@/lib/utils'
 import * as Progress from '@radix-ui/react-progress'
 import { FC } from 'react'
+
+import { Paragraph } from '@/components/Typography'
+import { cn } from '@/lib/utils'
 
 export interface BackingShareCellProps {
   backingPercentage?: number

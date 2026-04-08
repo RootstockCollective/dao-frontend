@@ -1,13 +1,15 @@
 import { useMemo } from 'react'
-import Big from '@/lib/big'
 import { formatEther } from 'viem'
 import { useReadContract } from 'wagmi'
+
+import { useTreasuryContext } from '@/app/treasury/contexts/TreasuryContext'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
+import Big from '@/lib/big'
+import { RBTC, RIF, USDRIF } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import { useTreasuryContext } from '@/app/treasury/contexts/TreasuryContext'
+
 import { StRifHoldings } from '../types'
-import { RBTC, RIF, USDRIF } from '@/lib/constants'
 
 /**
  * Fetches and calculates the stRIF token balance, its USD value,

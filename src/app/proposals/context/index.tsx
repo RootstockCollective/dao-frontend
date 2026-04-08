@@ -1,8 +1,9 @@
 'use client'
 
 import { createContext, useContext } from 'react'
-import { Proposal } from '../shared/types'
+
 import { useGetProposalsWithGraph } from '../hooks/useGetProposalsWithGraph'
+import { Proposal } from '../shared/types'
 
 interface ProposalsContextType {
   proposals: Proposal[]

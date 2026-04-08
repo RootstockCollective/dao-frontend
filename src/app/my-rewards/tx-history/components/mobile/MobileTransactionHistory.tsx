@@ -1,9 +1,11 @@
 'use client'
 
-import { Label, Paragraph } from '@/components/Typography'
 import { Suspense } from 'react'
-import { MobileRow, TransactionRow } from './MobileRow'
+
+import { Label, Paragraph } from '@/components/Typography'
+
 import { useTotalAmount } from '../../hooks/useTotalAmount'
+import { MobileRow, TransactionRow } from './MobileRow'
 
 interface Props {
   rows: TransactionRow[]

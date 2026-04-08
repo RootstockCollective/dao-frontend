@@ -1,7 +1,8 @@
+import { useAccount, useReadContract } from 'wagmi'
+
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
-import { useAccount, useReadContract } from 'wagmi'
 export const useGetVotingPower = () => {
   const { address } = useAccount()
   const { data, isLoading, error } = useReadContract({

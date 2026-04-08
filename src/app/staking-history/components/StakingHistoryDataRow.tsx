@@ -1,9 +1,11 @@
 'use client'
 
-import { FC, useState, Fragment, memo, useCallback } from 'react'
+import { FC, Fragment, memo, useCallback, useState } from 'react'
+
 import { cn } from '@/lib/utils'
+
+import { ActionCell, ActionsCell, AmountCell, PeriodCell, TotalAmountCell } from './Cells'
 import { StakingHistoryTable } from './StakingHistoryTable.config'
-import { PeriodCell, ActionCell, AmountCell, TotalAmountCell, ActionsCell } from './Cells'
 
 interface TransactionHistoryDataRowProps {
   row: StakingHistoryTable['Row']

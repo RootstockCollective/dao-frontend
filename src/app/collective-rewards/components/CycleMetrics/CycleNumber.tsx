@@ -1,6 +1,8 @@
+import { DateTime, Duration } from 'luxon'
+
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { Metric } from '@/components/Metric'
-import { DateTime, Duration } from 'luxon'
+
 import { FIRST_CYCLE_START_DATE_ISO } from '../../constants/chartConstants'
 
 const CycleNumberContent = ({

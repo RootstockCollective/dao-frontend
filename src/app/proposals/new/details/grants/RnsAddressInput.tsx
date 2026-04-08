@@ -1,9 +1,11 @@
 'use client'
 
 import { Loader } from 'lucide-react'
+import { useFormContext } from 'react-hook-form'
+
 import { TextInput } from '@/components/FormFields'
 import { useFormAddressResolution } from '@/shared/hooks'
-import { useFormContext } from 'react-hook-form'
+
 import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
 
 /**

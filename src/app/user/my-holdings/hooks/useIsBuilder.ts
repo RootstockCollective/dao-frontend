@@ -1,6 +1,7 @@
-import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
-import { useAccount } from 'wagmi'
 import { zeroAddress } from 'viem'
+import { useAccount } from 'wagmi'
+
+import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 
 export const useIsBuilder = () => {
   const { address } = useAccount()

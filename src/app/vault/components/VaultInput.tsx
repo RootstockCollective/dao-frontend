@@ -1,10 +1,11 @@
+import Image from 'next/image'
+import { forwardRef } from 'react'
+
 import { Input } from '@/components/Input'
 import { TokenImage } from '@/components/TokenImage'
 import { Paragraph } from '@/components/Typography'
 import { variantClasses } from '@/components/Typography/Typography'
 import { cn } from '@/lib/utils'
-import Image from 'next/image'
-import { forwardRef } from 'react'
 
 interface Props {
   onChange: (value: string) => void

@@ -1,5 +1,6 @@
 import TrezorConnect from '@trezor/connect-web'
-import type { Logger, EIP6963Provider, EIP6963ProviderInfo, TransactionParameters } from './types'
+
+import type { EIP6963Provider, EIP6963ProviderInfo, Logger, TransactionParameters } from './types'
 
 type Address = `0x${string}`
 

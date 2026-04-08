@@ -1,4 +1,5 @@
-import { getFiatAmount, formatSymbol } from '@/app/shared/formatter'
+import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
+
 import { MetricToken, TokenSymbol } from './types'
 
 export const createMetricToken = ({

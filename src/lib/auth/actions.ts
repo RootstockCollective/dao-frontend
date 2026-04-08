@@ -1,10 +1,12 @@
-import { SiweMessage } from 'siwe'
 import { randomBytes } from 'crypto'
+import { SiweMessage } from 'siwe'
 import { isAddress, isHex } from 'viem'
-import { storeChallenge, getAndConsumeChallenge, CHALLENGE_TTL_MS } from './challengeStore'
+
+import { currentEnvChain } from '@/config/config'
+
+import { CHALLENGE_TTL_MS, getAndConsumeChallenge, storeChallenge } from './challengeStore'
 import { signJWT } from './jwt.server'
 import { isProduction } from './utils'
-import { currentEnvChain } from '@/config/config'
 
 export interface RequestChallengeResult {
   challengeId: string

@@ -1,9 +1,11 @@
-import { Paragraph, Span } from '@/components/Typography'
 import { ReactNode } from 'react'
 import { Bounce, Id, toast, ToastOptions } from 'react-toastify'
-import { TxStatus } from '../types'
-import { EXPLORER_URL } from '@/lib/constants'
+
 import { Link } from '@/components/Link'
+import { Paragraph, Span } from '@/components/Typography'
+import { EXPLORER_URL } from '@/lib/constants'
+
+import { TxStatus } from '../types'
 
 interface ToastAlertContent {
   title: string

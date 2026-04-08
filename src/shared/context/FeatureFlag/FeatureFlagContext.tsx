@@ -1,7 +1,9 @@
 'use client'
 
-import { Feature, getFeatures, USER_FLAGS_FEATURE } from '@/config/features.conf'
 import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react'
+
+import { Feature, getFeatures, USER_FLAGS_FEATURE } from '@/config/features.conf'
+
 import {
   type BaseFlags,
   type FeatureFlag,

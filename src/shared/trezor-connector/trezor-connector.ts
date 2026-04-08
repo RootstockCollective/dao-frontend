@@ -1,7 +1,8 @@
-import { createConnector } from 'wagmi'
-import type { TrezorConnectorOptions } from './types'
-import { TrezorHardwareWallet } from './trezor-hardware-wallet'
 import { type Address, getAddress } from 'viem'
+import { createConnector } from 'wagmi'
+
+import { TrezorHardwareWallet } from './trezor-hardware-wallet'
+import type { TrezorConnectorOptions } from './types'
 
 /**
  * Creates a Wagmi connector for Trezor hardware wallet

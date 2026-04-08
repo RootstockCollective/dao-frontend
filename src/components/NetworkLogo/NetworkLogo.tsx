@@ -1,8 +1,9 @@
+import { HTMLAttributes } from 'react'
+
 import { RootstockLogoIcon } from '@/components/Icons'
 import { Span } from '@/components/Typography'
 import { ENV } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import { HTMLAttributes } from 'react'
 
 interface NetworkLogoProps extends HTMLAttributes<HTMLDivElement> {
   /**

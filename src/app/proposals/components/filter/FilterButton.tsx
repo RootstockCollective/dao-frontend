@@ -1,6 +1,7 @@
-import { FilterIcon, CloseIconKoto } from '@/components/Icons'
-import { cn } from '@/lib/utils'
 import { HTMLAttributes, useEffect } from 'react'
+
+import { CloseIconKoto, FilterIcon } from '@/components/Icons'
+import { cn } from '@/lib/utils'
 
 interface Props extends HTMLAttributes<HTMLButtonElement> {
   isOpen: boolean

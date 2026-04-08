@@ -1,11 +1,3 @@
-import { GridTable } from '@/components/Table'
-import { Header } from '@/components/Typography'
-import { RIF, STRIF_ADDRESS } from '@/lib/constants'
-import { useFetchTokenHolders } from '@/app/treasury/hooks/useFetchTokenHolders'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
-import { formatAmount } from '@/lib/utils'
-import { Span } from '@/components/Typography'
 import {
   createColumnHelper,
   getCoreRowModel,
@@ -13,15 +5,25 @@ import {
   SortingState,
   useReactTable,
 } from '@tanstack/react-table'
-import { useState } from 'react'
 import { PaginationState } from '@tanstack/react-table'
-import { useSearchParams } from 'next/navigation'
 import { getPaginationRowModel } from '@tanstack/react-table'
-import { TokenImage } from '@/components/TokenImage'
-import Big from '@/lib/big'
-import { HolderCard, HolderColumn, ListSwitch, MobileHolderContainer } from './components'
+import { useSearchParams } from 'next/navigation'
+import { useState } from 'react'
+
+import { useFetchTokenHolders } from '@/app/treasury/hooks/useFetchTokenHolders'
 import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
+import { ErrorMessageAlert } from '@/components/ErrorMessageAlert/ErrorMessageAlert'
+import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { GridTable } from '@/components/Table'
+import { TokenImage } from '@/components/TokenImage'
+import { Header } from '@/components/Typography'
+import { Span } from '@/components/Typography'
+import Big from '@/lib/big'
+import { RIF, STRIF_ADDRESS } from '@/lib/constants'
+import { formatAmount } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+
+import { HolderCard, HolderColumn, ListSwitch, MobileHolderContainer } from './components'
 
 interface HolderData {
   holder: {

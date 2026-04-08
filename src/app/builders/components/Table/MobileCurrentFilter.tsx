@@ -1,5 +1,6 @@
-import { Span } from '@/components/Typography'
 import { TrashIcon } from '@/components/Icons'
+import { Span } from '@/components/Typography'
+
 import { BuilderFilterOption } from './BuilderFilterDropdown'
 
 interface MobileCurrentFilterProps {

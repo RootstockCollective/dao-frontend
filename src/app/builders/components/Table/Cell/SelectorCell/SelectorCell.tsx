@@ -1,6 +1,6 @@
-import { EllipseIcon } from '@/components/Icons/EllipseIcon'
-import { CheckIcon } from '@/components/Icons/CheckIcon'
 import { CommonComponentProps } from '@/components/commonProps'
+import { CheckIcon } from '@/components/Icons/CheckIcon'
+import { EllipseIcon } from '@/components/Icons/EllipseIcon'
 import { cn } from '@/lib/utils'
 
 interface SelectorCellProps extends CommonComponentProps {

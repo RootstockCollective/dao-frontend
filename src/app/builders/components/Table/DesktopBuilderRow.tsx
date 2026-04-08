@@ -1,19 +1,21 @@
 import { FC, HtmlHTMLAttributes, useState } from 'react'
-import { cn } from '@/lib/utils'
 import { useAccount } from 'wagmi'
-import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
-import { BuilderRowLogic, BuilderTable } from './BuilderTable.config'
-import { DESKTOP_ROW_STYLES } from './utils/builderRowUtils'
-import { BuilderRowConditionalTooltip } from './BuilderRowConditionalTooltip'
+
 import {
-  BuilderCell,
+  ActionsCell,
   BackerRewardsCell,
-  RewardsPastCycleCell,
-  RewardsUpcomingCell,
   BuilderBackingCell,
   BuilderBackingShareCell,
-  ActionsCell,
+  BuilderCell,
+  RewardsPastCycleCell,
+  RewardsUpcomingCell,
 } from '@/app/builders/components/Table/DesktopCells'
+import { cn } from '@/lib/utils'
+import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
+
+import { BuilderRowConditionalTooltip } from './BuilderRowConditionalTooltip'
+import { BuilderRowLogic, BuilderTable } from './BuilderTable.config'
+import { DESKTOP_ROW_STYLES } from './utils/builderRowUtils'
 
 interface DesktopBuilderRowProps extends HtmlHTMLAttributes<HTMLTableRowElement> {
   row: BuilderTable['Row']

@@ -1,16 +1,18 @@
+import { useRouter } from 'next/navigation'
+import { FC, useContext, useEffect } from 'react'
+import { Address } from 'viem'
+import { useAccount } from 'wagmi'
+
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { useAllocateVotes } from '@/app/collective-rewards/allocations/hooks/useAllocateVotes'
 import { TokenRewards } from '@/app/collective-rewards/rewards'
 import { Builder } from '@/app/collective-rewards/types'
 import { TransactionInProgressButton } from '@/app/user/Stake/components/TransactionInProgressButton'
 import { Button } from '@/components/Button'
-import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
+import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { usePricesContext } from '@/shared/context'
-import { useRouter } from 'next/navigation'
-import { FC, useContext, useEffect } from 'react'
-import { Address } from 'viem'
-import { useAccount } from 'wagmi'
+
 import { BuilderCard } from './BuilderCard'
 
 export interface BuilderCardControlProps {

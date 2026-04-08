@@ -1,7 +1,8 @@
-import { ConditionalTooltip, TooltipConditionPair } from '@/app/components/Tooltip/ConditionalTooltip'
-import { CommonComponentProps } from '@/components/commonProps'
 import { ReactElement, ReactNode } from 'react'
 import { useAccount } from 'wagmi'
+
+import { ConditionalTooltip, TooltipConditionPair } from '@/app/components/Tooltip/ConditionalTooltip'
+import { CommonComponentProps } from '@/components/commonProps'
 
 interface ConnectTooltipProps extends CommonComponentProps {
   tooltipContent: ReactNode

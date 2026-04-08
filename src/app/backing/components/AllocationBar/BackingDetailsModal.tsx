@@ -1,5 +1,7 @@
 'use client'
 
+import { isAddress } from 'viem'
+
 import { formatSymbol } from '@/app/shared/formatter'
 import { Circle } from '@/components/Circle'
 import { HourglassIcon } from '@/components/Icons/HourglassIcon'
@@ -7,11 +9,11 @@ import { Modal } from '@/components/Modal/Modal'
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Span } from '@/components/Typography'
 import { STRIF } from '@/lib/constants'
+import { shortAddress } from '@/lib/utils'
+
 import { AllocationBarSegmentVisual } from './AllocationBarSegmentVisual'
 import { AllocationItem } from './types'
 import { valueToPercentage } from './utils'
-import { isAddress } from 'viem'
-import { shortAddress } from '@/lib/utils'
 
 interface Props {
   isOpen: boolean

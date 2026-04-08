@@ -1,5 +1,6 @@
 import { applyActionTypeFilter } from '@/app/api/utils/helpers'
 import { db } from '@/lib/db'
+
 import type { StakingHistoryByPeriodAndAction, StakingHistoryDatabaseRow } from './types'
 
 /**

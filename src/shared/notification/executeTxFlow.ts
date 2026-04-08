@@ -1,12 +1,13 @@
-import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
-import { config } from '@/config'
-import { showToast, updateToast, ToastAlertOptions } from '@/shared/notification'
-import { TX_MESSAGES } from '@/shared/txMessages'
-import { TxStatus } from '@/shared/types'
 import { waitForTransactionReceipt } from '@wagmi/core'
 import { Id } from 'react-toastify'
 import { Hash } from 'viem'
+
+import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
+import { config } from '@/config'
 import { sentryClient } from '@/lib/sentry/sentry-client'
+import { showToast, ToastAlertOptions, updateToast } from '@/shared/notification'
+import { TX_MESSAGES } from '@/shared/txMessages'
+import { TxStatus } from '@/shared/types'
 
 interface Props {
   action: keyof typeof TX_MESSAGES

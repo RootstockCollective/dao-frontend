@@ -1,9 +1,11 @@
 'use client'
 
-import { useState, useEffect, HTMLAttributes, RefObject, useRef } from 'react'
+import { HTMLAttributes, RefObject, useEffect, useRef, useState } from 'react'
 import { useDebounce } from 'use-debounce'
-import { CloseIconKoto, SearchIconKoto, SpinnerIcon } from '../Icons'
+
 import { cn } from '@/lib/utils'
+
+import { CloseIconKoto, SearchIconKoto, SpinnerIcon } from '../Icons'
 
 interface ProposalSearchProps extends HTMLAttributes<HTMLDivElement> {
   /**

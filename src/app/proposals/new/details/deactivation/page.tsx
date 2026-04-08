@@ -1,20 +1,22 @@
 'use client'
 
-import { useCallback, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import type { Address } from 'viem'
-import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useRouter } from 'next/navigation'
+import { useCallback, useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import type { Address } from 'viem'
+
+import { useBuilderContext } from '@/app/collective-rewards/user'
+import { useReviewProposal } from '@/app/providers'
+import { TextInput } from '@/components/FormFields'
+import { Header } from '@/components/Typography'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { ProposalCategory } from '@/shared/types'
+
 import { ProposalSubfooter } from '../../components/ProposalSubfooter'
 import { BaseProposalFields } from '../components/BaseProposalFields'
-import { useReviewProposal } from '@/app/providers'
-import { ProposalCategory } from '@/shared/types'
-import { TextInput } from '@/components/FormFields'
-import { type DeactivationProposal, DeactivationProposalSchema } from '../schemas/DeactivationProposalSchema'
-import { useBuilderContext } from '@/app/collective-rewards/user'
-import { Header } from '@/components/Typography'
 import { BASE_PROPOSAL_LIMITS } from '../schemas/BaseProposalSchema'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { type DeactivationProposal, DeactivationProposalSchema } from '../schemas/DeactivationProposalSchema'
 
 export default function DeactivationProposalForm() {
   const isDesktop = useIsDesktop()

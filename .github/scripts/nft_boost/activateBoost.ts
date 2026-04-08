@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import { Address, getAddress, zeroAddress } from 'viem'
+
 import { getActions } from './actions.utils'
 import { boostPercentage, nftContractAddress } from './process.utils'
 

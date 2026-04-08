@@ -1,12 +1,14 @@
 import { Heart } from 'lucide-react'
 import { useAccount } from 'wagmi'
-import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
-import { useSignIn } from '@/shared/hooks/useSignIn'
+
 import { ConditionalTooltip } from '@/app/components/Tooltip/ConditionalTooltip'
 import { ConnectTooltipContent } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltipContent'
 import { Button } from '@/components/Button/Button'
-import { SiweTooltipContent } from './SiweTooltipContent'
+import { useSignIn } from '@/shared/hooks/useSignIn'
+import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
+
 import { useLike } from '../hooks/useLike'
+import { SiweTooltipContent } from './SiweTooltipContent'
 
 interface LikeButtonProps {
   proposalId: string

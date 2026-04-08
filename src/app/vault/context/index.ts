@@ -1,1 +1,1 @@
-export { VaultDepositValidationProvider, useVaultDepositValidation } from './VaultDepositValidationContext'
+export { useVaultDepositValidation, VaultDepositValidationProvider } from './VaultDepositValidationContext'

@@ -1,7 +1,9 @@
-import { cn } from '@/lib/utils'
-import type { ComponentPropsWithoutRef, ElementType } from 'react'
 import DOMPurify from 'dompurify'
 import parse from 'html-react-parser'
+import type { ComponentPropsWithoutRef, ElementType } from 'react'
+
+import { cn } from '@/lib/utils'
+
 import type { BodyVariants, EmphaseVariants, HeaderVariants, TagVariants } from './types'
 
 /**

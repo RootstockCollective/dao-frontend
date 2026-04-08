@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+
 import { MobileHolderCard } from '@/app/treasury/components/MobileHolderCard'
 
 interface HolderData {

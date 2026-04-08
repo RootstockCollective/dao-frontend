@@ -1,31 +1,33 @@
 'use client'
+import { useParams } from 'next/navigation'
+import { useMemo } from 'react'
+
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import {
-  type SerializedDecodedData,
   getDiscourseLinkFromProposalDescription,
+  type SerializedDecodedData,
 } from '@/app/proposals/shared/utils'
-import { Header, Paragraph } from '@/components/Typography'
-import { useParams } from 'next/navigation'
-import { usePricesContext } from '@/shared/context/PricesContext'
-import { type ParsedActionDetails, ProposalType } from './types'
 import type { GetPricesResult } from '@/app/user/types'
-import { RBTC, RIF, RIF_ADDRESS, USDRIF, USDRIF_ADDRESS, TRIF, ENV } from '@/lib/constants'
+import { Header, Paragraph } from '@/components/Typography'
+import { VideoPlayer } from '@/components/VideoPlayer'
+import { ENV, RBTC, RIF, RIF_ADDRESS, TRIF, USDRIF, USDRIF_ADDRESS } from '@/lib/constants'
+import { usePricesContext } from '@/shared/context/PricesContext'
+import { useDiscourseVideo } from '@/shared/hooks/useDiscourseVideo'
+import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
+
+import { Category } from '../components/category'
+import { useProposalById } from '../context'
+import type { Proposal } from '../shared/types'
 import {
-  TechnicalDetails,
-  ProposalProggressBar,
   Description,
-  VotingDetails,
   ProposalDetails,
+  ProposalProggressBar,
+  TechnicalDetails,
+  VotingDetails,
 } from './components'
 import { LikeButton } from './components/LikeButton'
-import { useVoteOnProposal } from '@/shared/hooks/useVoteOnProposal'
-import { useProposalById } from '../context'
-import { Category } from '../components/category'
-import type { Proposal } from '../shared/types'
 import { useProposalAddressResolution } from './hooks/useProposalAddressResolution'
-import { useMemo } from 'react'
-import { VideoPlayer } from '@/components/VideoPlayer'
-import { useDiscourseVideo } from '@/shared/hooks/useDiscourseVideo'
+import { type ParsedActionDetails, ProposalType } from './types'
 
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}

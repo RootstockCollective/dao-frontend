@@ -1,8 +1,10 @@
+import Big from 'big.js'
+import { Fragment, ReactElement, useMemo, useState } from 'react'
+
 import { Bar, BarDivider, BarProps, BarSegmentProps } from '@/components/Bar'
 import { Tooltip } from '@/components/Tooltip'
 import { cn } from '@/lib/utils'
-import Big from 'big.js'
-import { Fragment, ReactElement, useMemo, useState } from 'react'
+
 import { MetricBarSegment } from './MetricBarSegment'
 import { MetricTooltipContent } from './MetricTooltipContent'
 import { MetricToken } from './types'

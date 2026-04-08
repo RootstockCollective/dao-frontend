@@ -1,8 +1,9 @@
-import { getEnsDomainName, resolveRnsDomain } from '@/lib/rns'
-import { useState, useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useDebounce } from 'use-debounce'
 import { type Address, isAddress } from 'viem'
+
+import { getEnsDomainName, resolveRnsDomain } from '@/lib/rns'
 
 interface Props {
   rnsOrAddressFieldName?: string

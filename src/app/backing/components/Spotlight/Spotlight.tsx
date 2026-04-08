@@ -1,3 +1,8 @@
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useCallback, useContext, useEffect, useMemo } from 'react'
+import { Address } from 'viem'
+import { useAccount } from 'wagmi'
+
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 import { Builder } from '@/app/collective-rewards/types'
 import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
@@ -7,10 +12,6 @@ import { SpotlightBuildersGrid } from '@/app/shared/components/SpotlightBuilders
 import { useBackingContext } from '@/app/shared/context/BackingContext'
 import { Button } from '@/components/Button'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useCallback, useContext, useEffect, useMemo } from 'react'
-import { Address } from 'viem'
-import { useAccount } from 'wagmi'
 
 export const Spotlight = ({ isInteractive = true }: { isInteractive?: boolean }) => {
   const router = useRouter()

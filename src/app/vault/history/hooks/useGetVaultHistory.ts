@@ -1,7 +1,9 @@
-import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
+
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+
 import { fetchVaultHistory, VaultHistoryResponse } from '../utils/api'
 import { VaultHistoryItemAPI } from '../utils/types'
 

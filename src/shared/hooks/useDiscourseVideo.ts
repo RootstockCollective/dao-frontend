@@ -1,5 +1,6 @@
-import { useDiscourseTopic } from './useDiscourseTopic'
 import { extractVideoUrlFromDiscourseTopic } from '@/lib/video'
+
+import { useDiscourseTopic } from './useDiscourseTopic'
 
 /**
  * Hook to extract video URL from a Discourse topic

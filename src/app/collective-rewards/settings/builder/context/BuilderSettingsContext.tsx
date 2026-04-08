@@ -1,5 +1,10 @@
 'use client'
 
+import { DateTime } from 'luxon'
+import { createContext, FC, ReactNode, useContext, useMemo } from 'react'
+import { Address, zeroAddress } from 'viem'
+import { useAccount, UseReadContractReturnType } from 'wagmi'
+
 import {
   SetBackerRewardsForBuilder,
   useSetBackerRewardsForBuilder,
@@ -8,10 +13,6 @@ import { useBuilderContext } from '@/app/collective-rewards/user'
 import { isBuilderOperational } from '@/app/collective-rewards/utils'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { Modify } from '@/shared/utility'
-import { DateTime } from 'luxon'
-import { createContext, FC, ReactNode, useContext, useMemo } from 'react'
-import { Address, zeroAddress } from 'viem'
-import { useAccount, UseReadContractReturnType } from 'wagmi'
 
 interface BackerReward {
   previous: bigint

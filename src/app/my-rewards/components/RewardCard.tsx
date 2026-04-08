@@ -1,9 +1,10 @@
+import { ReactNode } from 'react'
+
 import { CommonComponentProps } from '@/components/commonProps'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
 import { Paragraph, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { ReactNode } from 'react'
 
 interface RewardCardProps extends CommonComponentProps {
   isLoading: boolean

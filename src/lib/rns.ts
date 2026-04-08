@@ -1,5 +1,6 @@
 import { AddrResolver } from '@rsksmart/rns-sdk'
-import { RNS_REGISTRY_ADDRESS, NODE_URL, BLOCKSCOUT_URL } from '@/lib/constants'
+
+import { BLOCKSCOUT_URL, NODE_URL, RNS_REGISTRY_ADDRESS } from '@/lib/constants'
 
 export const resolveRnsDomain = async (domain: string) => {
   const addrResolver = new AddrResolver(RNS_REGISTRY_ADDRESS, NODE_URL as string)

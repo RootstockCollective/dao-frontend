@@ -1,4 +1,5 @@
 import { withServerFeatureFlag } from '@/shared/context/FeatureFlag'
+
 import MyRewardsPage from './MyRewardsPage'
 
 const MyRewardsPageWithFeature = withServerFeatureFlag(MyRewardsPage, {

@@ -1,5 +1,7 @@
+import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
+
 import { GaugeAbi, getAbi } from '@/lib/abis/tok'
-import { UseReadContractParameters, UseReadContractReturnType, useReadContract } from 'wagmi'
+
 import { UseReadContractWithAddressConfig, ViewPureFunctionName } from '../types'
 
 type GaugeFunctionName = ViewPureFunctionName<GaugeAbi>

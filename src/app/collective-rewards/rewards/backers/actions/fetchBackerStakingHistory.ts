@@ -1,9 +1,10 @@
 'use server'
 
-import { BackerStakingHistory } from '@/app/collective-rewards/rewards'
-import { client } from '@/shared/components/ApolloClient'
 import { gql } from '@apollo/client'
 import { Address } from 'viem'
+
+import { BackerStakingHistory } from '@/app/collective-rewards/rewards'
+import { client } from '@/shared/components/ApolloClient'
 
 interface Response {
   backerStakingHistory?: BackerStakingHistory

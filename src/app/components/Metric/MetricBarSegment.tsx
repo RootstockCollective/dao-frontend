@@ -1,6 +1,8 @@
+import { ReactElement } from 'react'
+
 import { BarSegment, BarSegmentProps } from '@/components/Bar'
 import { cn } from '@/lib/utils'
-import { ReactElement } from 'react'
+
 import { MetricToken, TokenSymbol } from './types'
 
 export type MetricBarSegmentProps = BarSegmentProps &

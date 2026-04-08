@@ -1,6 +1,8 @@
-import { getEnsDomainName } from '@/lib/rns'
-import { useState, useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { isAddress } from 'viem'
+
+import { getEnsDomainName } from '@/lib/rns'
+
 import { ParsedActionDetails } from '../types'
 
 /**
@@ -17,7 +19,7 @@ import { ParsedActionDetails } from '../types'
  * @returns Enhanced parsedAction with rns field populated when ready
  */
 export function useProposalAddressResolution(parsedAction: ParsedActionDetails): ParsedActionDetails {
-  const [rns, setRns] = useState<string | undefined>(undefined)
+  const [rns, setRns] = useState<string | undefined>()
 
   useEffect(() => {
     // Only resolve if we have a valid address

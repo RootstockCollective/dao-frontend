@@ -1,5 +1,6 @@
 import * as RadioGroup from '@radix-ui/react-radio-group'
 import { FC, ReactNode } from 'react'
+
 import { ClaimRewardRadioOption } from './ClaimRewardRadioOption'
 import { ClaimRewardType } from './types'
 

@@ -1,9 +1,11 @@
-import { useVaultDepositLimiter } from './useVaultDepositLimiter'
 import { useMemo } from 'react'
 import { formatEther } from 'viem'
-import Big from '@/lib/big'
+
 import { formatSymbol } from '@/app/shared/formatter'
+import Big from '@/lib/big'
 import { USDRIF } from '@/lib/constants'
+
+import { useVaultDepositLimiter } from './useVaultDepositLimiter'
 
 /**
  * Hook for validating if a user can deposit to the vault

@@ -1,12 +1,14 @@
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { Address, zeroAddress } from 'viem'
+
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { isBuilderRewardable } from '@/app/collective-rewards/utils'
 import { floorToUnit, getBuilderColor } from '@/app/shared/components/utils'
 import { shortAddress } from '@/lib/utils'
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import { Address, zeroAddress } from 'viem'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+
 import AllocationBar from '../AllocationBar/AllocationBar'
 import { AllocationBarProps, AllocationChangeData, AllocationItem } from '../AllocationBar/types'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 const UNALLOCATED_LABEL = 'Available backing' as const
 

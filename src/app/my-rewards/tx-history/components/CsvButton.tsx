@@ -1,14 +1,16 @@
-import { CsvIcon } from '@/components/Icons'
-import { cn } from '@/lib/utils'
-import { showToast } from '@/shared/notification'
+import { Duration } from 'luxon'
 import { HTMLAttributes, useState } from 'react'
 import { Address, getAddress } from 'viem'
-import { TransactionHistoryItem } from '../utils/types'
-import { Duration } from 'luxon'
-import { GetPricesResult } from '@/app/user/types'
+
 import { Builder } from '@/app/collective-rewards/types'
-import { calculateCycleNumber, formatDateForCsv, processTransactionAmount } from '../utils/utils'
+import { GetPricesResult } from '@/app/user/types'
+import { CsvIcon } from '@/components/Icons'
 import { TOKENS } from '@/lib/tokens'
+import { cn } from '@/lib/utils'
+import { showToast } from '@/shared/notification'
+
+import { TransactionHistoryItem } from '../utils/types'
+import { calculateCycleNumber, formatDateForCsv, processTransactionAmount } from '../utils/utils'
 
 const MAX_EXPORT_ROWS = 50000
 
@@ -77,7 +79,7 @@ const convertItemToCsvRow = (
 
 const escapeCsvValue = (value: string): string => {
   if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-    return `"${value.replace(/"/g, '""')}"`
+    return `"${value.replaceAll('"', '""')}"`
   }
   return value
 }

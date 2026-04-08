@@ -1,6 +1,8 @@
 import { formatEther } from 'viem'
-import { RewardAmount } from '../rewards'
+
 import Big from '@/lib/big'
+
+import { RewardAmount } from '../rewards'
 
 export const getFiatAmount = (rewardAmount: RewardAmount): Big => {
   const amountInEther = formatEther(rewardAmount.value)

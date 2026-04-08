@@ -1,15 +1,17 @@
 import type { ReactNode } from 'react'
-import { Header, Paragraph, Span } from '@/components/Typography'
+import type { ClassNameValue } from 'tailwind-merge'
+import { type Address, formatEther } from 'viem'
+
+import { formatSymbol } from '@/app/shared/formatter'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
 import { TokenImage } from '@/components/TokenImage'
+import { Header, Paragraph, Span } from '@/components/Typography'
 import Big from '@/lib/big'
-import { formatCurrency, cn, shortAddress } from '@/lib/utils'
-import { formatSymbol } from '@/app/shared/formatter'
-import { type Address, formatEther } from 'viem'
-import { type ParsedActionDetails, ProposalType } from '../../[id]/types'
-import type { ClassNameValue } from 'tailwind-merge'
-import { convertAmountToBigint } from '../../shared/utils'
+import { cn, formatCurrency, shortAddress } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+
+import { type ParsedActionDetails, ProposalType } from '../../[id]/types'
+import { convertAmountToBigint } from '../../shared/utils'
 
 interface InfoGridItem {
   label: string

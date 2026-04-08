@@ -1,6 +1,6 @@
 export * from './Header'
+export * from './HeaderTitle'
 export * from './Label'
 export * from './Paragraph'
 export * from './Span'
-export * from './HeaderTitle'
 export * from './types'

@@ -1,7 +1,9 @@
+import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
+
 import { getAbi, SyntheticYieldAbi } from '@/lib/abis/btc-vault'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { syntheticYield } from '@/lib/contracts'
-import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
+
 import { UseReadContractConfig, ViewPureFunctionName } from '../types'
 
 type SyntheticYieldFunctionName = ViewPureFunctionName<SyntheticYieldAbi>

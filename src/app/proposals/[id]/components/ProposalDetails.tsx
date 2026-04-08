@@ -1,16 +1,18 @@
-import { Paragraph, Span } from '@/components/Typography'
-import { TokenImage } from '@/components/TokenImage'
-import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
-import { cn, normalizeAddress, shortAddress } from '@/lib/utils'
-import { formatSymbol } from '@/app/shared/formatter'
+import type { Moment } from 'moment'
 import type { Address } from 'viem'
+
 import {
   convertAmountToBigint,
   extractBuilderName,
   getDiscourseLinkFromProposalDescription,
 } from '@/app/proposals/shared/utils'
+import { formatSymbol } from '@/app/shared/formatter'
+import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
+import { TokenImage } from '@/components/TokenImage'
+import { Paragraph, Span } from '@/components/Typography'
+import { cn, normalizeAddress, shortAddress } from '@/lib/utils'
+
 import { type ParsedActionDetails, ProposalType } from '../types'
-import type { Moment } from 'moment'
 
 interface ProposalDetailsProps {
   name: string

@@ -1,6 +1,7 @@
-import { GaugeNotifyRewardEventLog, useGetGaugesEvents } from '@/app/collective-rewards/rewards'
 import { useMemo } from 'react'
 import { Address, isAddressEqual } from 'viem'
+
+import { GaugeNotifyRewardEventLog, useGetGaugesEvents } from '@/app/collective-rewards/rewards'
 
 export type NotifyRewardEvent = GaugeNotifyRewardEventLog[number] & { timeStamp: number }
 export type UseGetGaugesNotifyRewardReturnType = Record<Address, NotifyRewardEvent[]>

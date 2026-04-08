@@ -1,12 +1,14 @@
+import { Address } from 'viem'
+
 import { useGetTotalAllocation } from '@/app/collective-rewards/metrics/hooks/useGetTotalAllocation'
-import { formatSymbol } from '@/app/shared/formatter'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
+import { formatSymbol } from '@/app/shared/formatter'
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { Metric } from '@/components/Metric'
 import { TokenImage } from '@/components/TokenImage'
 import { Paragraph, Span } from '@/components/Typography'
 import { STRIF } from '@/lib/constants'
-import { Address } from 'viem'
+
 import { useBuilderContext } from '../../user/context/BuilderContext'
 
 export const TotalBackingLoader = () => {

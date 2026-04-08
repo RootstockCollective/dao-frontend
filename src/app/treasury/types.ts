@@ -1,5 +1,6 @@
 import { Address } from 'viem'
-import { RIF, USDRIF, RBTC } from '@/lib/constants'
+
+import { RBTC, RIF, USDRIF } from '@/lib/constants'
 
 interface BucketItem {
   amount: string

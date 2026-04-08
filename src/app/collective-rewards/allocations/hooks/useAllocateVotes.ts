@@ -1,8 +1,10 @@
+import { useContext, useEffect } from 'react'
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+
 import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
 import { BackersManagerAbi } from '@/lib/abis/tok/BackersManagerAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
-import { useContext, useEffect } from 'react'
+
 import { AllocationsContext } from '../context'
 import { getVoteAllocations } from '../context/utils'
 

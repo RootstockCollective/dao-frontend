@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, RefObject } from 'react'
+import { createContext, RefObject, useContext } from 'react'
 
 type PortalContainerContextType = RefObject<HTMLElement | null> | null
 

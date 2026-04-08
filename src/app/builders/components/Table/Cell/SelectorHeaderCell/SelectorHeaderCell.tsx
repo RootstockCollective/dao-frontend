@@ -1,9 +1,11 @@
+import { FC } from 'react'
+
 import { CommonComponentProps } from '@/components/commonProps'
 import { CheckboxChecked } from '@/components/Icons/CheckboxChecked'
 import { CheckboxUnchecked } from '@/components/Icons/CheckboxUnchecked'
 import { cn } from '@/lib/utils'
 import { useTableContext } from '@/shared/context'
-import { FC } from 'react'
+
 import { BuilderCellDataMap, ColumnId } from '../../BuilderTable.config'
 
 export const SelectorHeaderCell: FC<

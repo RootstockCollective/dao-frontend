@@ -1,6 +1,7 @@
+import { FC } from 'react'
+
 import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
-import { FC } from 'react'
 
 export const DottedUnderlineLabel: FC<CommonComponentProps> = ({ className = '', children }) => {
   return (

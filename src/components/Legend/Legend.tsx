@@ -1,6 +1,7 @@
+import { Address } from 'viem'
+
 import { Circle } from '@/components/Circle'
 import { cn, truncate } from '@/lib/utils'
-import { Address } from 'viem'
 
 export interface LegendItem {
   key: Address

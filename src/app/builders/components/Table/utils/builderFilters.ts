@@ -7,6 +7,7 @@ import {
   isBuilderPaused,
   isBuilderSelfPaused,
 } from '@/app/collective-rewards/utils'
+
 import { BuilderFilterOptionId } from '../BuilderFilterDropdown'
 
 // Shared filter functions for builders

@@ -1,10 +1,10 @@
+export { MobileBackerRewardsSection } from './MobileBackerRewardsSection'
+export { MobileBackingSection } from './MobileBackingSection'
 export {
+  MobileColumnItem,
   MobileDataSection,
   MobileRowWrapper,
-  MobileTwoColumnWrapper,
-  MobileColumnItem,
   MobileSectionWrapper,
+  MobileTwoColumnWrapper,
 } from './MobileDataSection'
-export { MobileBackerRewardsSection } from './MobileBackerRewardsSection'
 export { MobileRewardsSection } from './MobileRewardsSection'
-export { MobileBackingSection } from './MobileBackingSection'

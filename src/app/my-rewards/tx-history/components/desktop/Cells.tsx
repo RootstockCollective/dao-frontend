@@ -1,16 +1,18 @@
 import { HtmlHTMLAttributes, ReactElement, ReactNode } from 'react'
-import { cn } from '@/lib/utils'
-import { useTableContext } from '@/shared/context'
-import { ColumnId, COLUMN_TRANSFORMS, TransactionHistoryCellDataMap } from '../../config'
-import { Paragraph } from '@/components/Typography'
+import { Address } from 'viem'
+
+import { Builder } from '@/app/collective-rewards/types'
 import { ChevronDownIcon } from '@/components/Icons/ChevronDownIcon'
 import { ChevronUpIcon } from '@/components/Icons/ChevronUpIcon'
-import { Builder } from '@/app/collective-rewards/types'
+import { Paragraph } from '@/components/Typography'
 import { EXPLORER_URL } from '@/lib/constants'
-import { AmountDisplay, BuilderAvatar, MultipleBuildersAvatar, UsdValue } from '..'
-import { Address } from 'viem'
-import { TransactionHistoryType } from '../../utils/types'
+import { cn } from '@/lib/utils'
+import { useTableContext } from '@/shared/context'
+
+import { COLUMN_TRANSFORMS, ColumnId, TransactionHistoryCellDataMap } from '../../config'
 import { TransactionAmount } from '../../config/table.config'
+import { TransactionHistoryType } from '../../utils/types'
+import { AmountDisplay, BuilderAvatar, MultipleBuildersAvatar, UsdValue } from '..'
 
 const TableCellBase = ({
   children,

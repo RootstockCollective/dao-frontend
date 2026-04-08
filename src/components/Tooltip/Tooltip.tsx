@@ -1,8 +1,10 @@
-import React, { ReactNode, useEffect, useState } from 'react'
 import * as RadixTooltip from '@radix-ui/react-tooltip'
+import React, { ReactNode, useEffect, useState } from 'react'
+
 import { cn } from '@/lib/utils'
-import { Span } from '../Typography'
+
 import { usePortalContainer } from '../PortalContainerContext'
+import { Span } from '../Typography'
 
 export interface TooltipProps extends RadixTooltip.TooltipContentProps {
   text: ReactNode

@@ -1,10 +1,12 @@
-import { SeparatorBar } from '@/components/SeparatorBar/SeparatorBar'
-import { HourglassIcon } from '../../Icons/HourglassIcon'
-import { Span } from '@/components/Typography'
 import { HtmlHTMLAttributes } from 'react'
-import { cn } from '@/lib/utils'
-import { ExtendedBuilderState } from './types'
+
 import { WarningIcon } from '@/components/Icons'
+import { SeparatorBar } from '@/components/SeparatorBar/SeparatorBar'
+import { Span } from '@/components/Typography'
+import { cn } from '@/lib/utils'
+
+import { HourglassIcon } from '../../Icons/HourglassIcon'
+import { ExtendedBuilderState } from './types'
 
 interface BuilderStatusProps {
   builderState: ExtendedBuilderState

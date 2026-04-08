@@ -1,7 +1,8 @@
-import { Paragraph } from '@/components/Typography'
-import { Builder } from '@/app/collective-rewards/types'
-import { cn, truncate } from '@/lib/utils'
 import Link from 'next/link'
+
+import { Builder } from '@/app/collective-rewards/types'
+import { Paragraph } from '@/components/Typography'
+import { cn, truncate } from '@/lib/utils'
 
 export interface BuilderNameProps {
   builder: Builder

@@ -1,18 +1,20 @@
-import { Header, Paragraph } from '@/components/Typography'
-import { ProgressBar } from '@/components/ProgressBarNew'
-import { useMemo, useState } from 'react'
-import { StakeSteps } from '../Steps/StakeSteps'
-import { Modal } from '@/components/Modal'
-import { stepConfig } from '../Steps/stepConfig'
-import { useSteps } from '@/shared/hooks/useSteps'
-import { StepActionButtons } from '@/components/StepActionButtons'
-import { Divider } from '@/components/Divider'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { NewPopover } from '@/components/NewPopover'
-import { Span, Paragraph as ParagraphComponent } from '@/components/Typography'
 import Image from 'next/image'
+import { useMemo, useState } from 'react'
+
+import { Divider } from '@/components/Divider'
+import { Modal } from '@/components/Modal'
+import { NewPopover } from '@/components/NewPopover'
+import { ProgressBar } from '@/components/ProgressBarNew'
+import { StepActionButtons } from '@/components/StepActionButtons'
+import { Header, Paragraph } from '@/components/Typography'
+import { Paragraph as ParagraphComponent, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { useSteps } from '@/shared/hooks/useSteps'
+
 import { useStakingContext } from '../StakingContext'
+import { StakeSteps } from '../Steps/StakeSteps'
+import { stepConfig } from '../Steps/stepConfig'
 
 interface StepWrapperProps {
   onCloseModal: () => void

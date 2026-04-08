@@ -1,7 +1,8 @@
-import { Header } from '@/components/Typography'
 import { FilterIcon } from '@/components/Icons'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { Header } from '@/components/Typography'
 import { useTableContext } from '@/shared/context'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+
 import { BuilderFilterDropdown, BuilderFilterOption, BuilderFilterOptionId } from './BuilderFilterDropdown'
 import { BuilderCellDataMap, ColumnId } from './BuilderTable.config'
 

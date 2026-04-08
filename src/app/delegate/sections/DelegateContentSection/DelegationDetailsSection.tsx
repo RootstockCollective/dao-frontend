@@ -1,14 +1,16 @@
 'use client'
-import { DelegateCard } from '@/app/delegate/components/DelegateCard'
-import { Header, Paragraph, Span } from '@/components/Typography'
-import { Button } from '@/components/Button'
-import { useRef } from 'react'
 import Image from 'next/image'
-import { EditIconKoto } from '@/components/Icons'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { cn, shortAddress } from '@/lib/utils'
-import { useDelegateContext } from '../../contexts/DelegateContext'
+import { useRef } from 'react'
+
+import { DelegateCard } from '@/app/delegate/components/DelegateCard'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
+import { Button } from '@/components/Button'
+import { EditIconKoto } from '@/components/Icons'
+import { Header, Paragraph, Span } from '@/components/Typography'
+import { cn, shortAddress } from '@/lib/utils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+
+import { useDelegateContext } from '../../contexts/DelegateContext'
 
 interface Props {
   onShowReclaim: () => void

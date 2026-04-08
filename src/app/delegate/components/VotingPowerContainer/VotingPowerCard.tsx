@@ -1,9 +1,10 @@
 import { ReactNode } from 'react'
-import { Tooltip } from '@/components/Tooltip'
-import { Span, Header } from '@/components/Typography'
+
+import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
 import { KotoQuestionMarkIcon } from '@/components/Icons/KotoQuestionMarkIcon'
 import { Metric } from '@/components/Metric'
-import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
+import { Tooltip } from '@/components/Tooltip'
+import { Header, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 

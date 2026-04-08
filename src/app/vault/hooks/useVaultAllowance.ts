@@ -1,9 +1,10 @@
 import { useMemo } from 'react'
 import { parseEther } from 'viem'
 import { useAccount, useReadContract } from 'wagmi'
+
+import { useContractWrite } from '@/app/user/Stake/hooks/useContractWrite'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { tokenContracts, vault } from '@/lib/contracts'
-import { useContractWrite } from '@/app/user/Stake/hooks/useContractWrite'
 
 /**
  * Hook to check and manage USDRIF allowance for the vault contract

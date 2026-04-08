@@ -1,6 +1,6 @@
-import { logger } from '@/lib/logger'
-import { Contributor } from '@/app/proposals/shared/types'
 import { fetchContributors } from '@/app/delegate/actions/delegateAction'
+import { Contributor } from '@/app/proposals/shared/types'
+import { logger } from '@/lib/logger'
 
 export const revalidate = 60
 

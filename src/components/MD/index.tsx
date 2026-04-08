@@ -1,9 +1,11 @@
 import Markdown, { type Components, type Options } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { Header, Paragraph } from '../Typography'
-import { Link } from '../Link'
+
 import { cn } from '@/lib/utils'
+
 import { Divider } from '../Divider'
+import { Link } from '../Link'
+import { Header, Paragraph } from '../Typography'
 
 const disallowedElements = ['img'] satisfies string[]
 const mb = 'mb-6 last:mb-0'

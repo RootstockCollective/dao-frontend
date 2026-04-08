@@ -1,10 +1,12 @@
-import { z } from 'zod'
 import { getAddress, isAddress } from 'viem'
-import { BaseProposalSchema } from './BaseProposalSchema'
-import { TokenFieldsSchema, TOKEN_FIELD_LIMITS } from './TokenSchema'
-import { GRANT_TOKEN_LIMITS } from '@/lib/constants'
+import { z } from 'zod'
+
 import { Milestones } from '@/app/proposals/shared/types'
+import { GRANT_TOKEN_LIMITS } from '@/lib/constants'
 import { isRnsDomain } from '@/lib/rns'
+
+import { BaseProposalSchema } from './BaseProposalSchema'
+import { TOKEN_FIELD_LIMITS, TokenFieldsSchema } from './TokenSchema'
 
 // Grant proposal form schema
 export const GrantProposalSchema = BaseProposalSchema.merge(TokenFieldsSchema)

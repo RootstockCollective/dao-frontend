@@ -1,8 +1,9 @@
 'use client'
 
+import { PropsWithChildren } from 'react'
+
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { cn } from '@/lib/utils'
-import { PropsWithChildren } from 'react'
 
 interface BoostedBoxProps extends PropsWithChildren {
   nftAddress: string

@@ -1,14 +1,16 @@
 'use client'
 
 import type { HTMLAttributes } from 'react'
-import { cn } from '@/lib/utils'
-import { HeaderMobile } from './headers/HeaderMobile'
-import { FooterMobile } from './footers/FooterMobile'
-import { SidebarMobile } from './sidebars/SidebarMobile'
-import { useLayoutContext } from './LayoutProvider'
+
 import { BottomDrawer } from '@/components/MainContainer/drawers/BottomDrawer'
-import { TopPageHeader } from '@/shared/walletConnection/components/topPageHeader/TopPageHeader'
 import { MAIN_CONTAINER_ID } from '@/lib/constants'
+import { cn } from '@/lib/utils'
+import { TopPageHeader } from '@/shared/walletConnection/components/topPageHeader/TopPageHeader'
+
+import { FooterMobile } from './footers/FooterMobile'
+import { HeaderMobile } from './headers/HeaderMobile'
+import { useLayoutContext } from './LayoutProvider'
+import { SidebarMobile } from './sidebars/SidebarMobile'
 
 export default function ContainerMobile({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { isSidebarOpen } = useLayoutContext()

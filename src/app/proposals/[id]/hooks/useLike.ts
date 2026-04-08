@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useRef, useState } from 'react'
+
 import { useSiweStore } from '@/lib/auth/siweStore'
 
 interface LikeApiResponse {

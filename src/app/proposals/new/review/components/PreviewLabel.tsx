@@ -1,6 +1,8 @@
 import React from 'react'
-import InfoIcon from './InfoIcon'
+
 import { Paragraph } from '@/components/Typography'
+
+import InfoIcon from './InfoIcon'
 
 export function PreviewLabel() {
   return (

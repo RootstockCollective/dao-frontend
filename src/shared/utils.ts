@@ -1,7 +1,9 @@
-import type { NextRequest } from 'next/server'
 import './utils.css'
-import type { FetchResponse } from '@/lib/utils'
+
+import type { NextRequest } from 'next/server'
 import type { EIP1193Provider, WatchAssetParams } from 'viem'
+
+import type { FetchResponse } from '@/lib/utils'
 // Had to be done this way because tailwind css is not dynamically rendering the image on build
 export const BG_IMG_CLASSES = 'background-logo'
 

@@ -1,6 +1,12 @@
+import { useCallback, useMemo, useState } from 'react'
+import { formatEther, parseEther } from 'viem'
+import { useAccount } from 'wagmi'
+
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { StakingToken } from '@/app/user/Stake/types'
+import { Button } from '@/components/Button'
+import { Divider } from '@/components/Divider'
 import { Modal } from '@/components/Modal'
 import { Header } from '@/components/Typography'
 import Big from '@/lib/big'
@@ -8,16 +14,12 @@ import { tokenContracts } from '@/lib/contracts'
 import { handleAmountInput } from '@/lib/utils'
 import { useReadBackersManager } from '@/shared/hooks/contracts'
 import { executeTxFlow } from '@/shared/notification'
-import { useCallback, useMemo, useState } from 'react'
-import { formatEther, parseEther } from 'viem'
-import { useAccount } from 'wagmi'
+
+import { TransactionInProgressButton } from '../Stake/components/TransactionInProgressButton'
+import { TransactionStatus } from '../Stake/components/TransactionStatus'
 import { useUnstakeStRIF } from '../Stake/hooks/useUnstakeStRIF'
 import { AllocationWarning } from './components/AllocationWarning'
 import { UnstakeInput } from './components/UnstakeInput'
-import { TransactionStatus } from '../Stake/components/TransactionStatus'
-import { Divider } from '@/components/Divider'
-import { TransactionInProgressButton } from '../Stake/components/TransactionInProgressButton'
-import { Button } from '@/components/Button'
 
 interface Props {
   onCloseModal: () => void

@@ -1,12 +1,14 @@
 'use client'
+import { useMemo } from 'react'
+import { useAccount } from 'wagmi'
+
 import { Header } from '@/components/Typography'
+import { cn } from '@/lib/utils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+
 import { VOTING_POWER_CARDS_INFO } from '../../lib/constants'
 import { CardsState } from '../../lib/types'
 import { VotingPowerCard, VotingPowerCardProps } from './VotingPowerCard'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { useMemo } from 'react'
-import { useAccount } from 'wagmi'
-import { cn } from '@/lib/utils'
 
 interface VotingPowerContainerProps {
   cards: CardsState

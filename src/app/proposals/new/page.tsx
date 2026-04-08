@@ -1,15 +1,17 @@
 'use client'
 
-import { useCallback, useEffect, useMemo } from 'react'
 import { AnimatePresence, motion, Variants } from 'motion/react'
-import { useRouter, useSearchParams, usePathname } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useCallback, useEffect, useMemo } from 'react'
+
+import { Paragraph } from '@/components/Typography'
+import { ProposalCategory } from '@/shared/types'
+
+import { ProposalStep, useProposalStepper } from '../components/stepper/StepperProvider'
 import { Deactivation } from './components/Deactivation'
 import { NewProposalCard } from './components/NewProposalCard'
-import { newProposalCards } from './newProposalCards.data'
-import { Paragraph } from '@/components/Typography'
 import { NewProposalCardExtended } from './components/NewProposalCardExtended'
-import { ProposalCategory } from '@/shared/types'
-import { ProposalStep, useProposalStepper } from '../components/stepper/StepperProvider'
+import { newProposalCards } from './newProposalCards.data'
 
 const variants: Variants = {
   initial: {

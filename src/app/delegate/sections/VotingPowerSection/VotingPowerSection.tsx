@@ -1,8 +1,10 @@
 'use client'
 import { useAccount } from 'wagmi'
+
 import { VotingPowerContainer } from '@/app/delegate/components/VotingPowerContainer/VotingPowerContainer'
-import { NotConnectedVotingPowerContainer } from './NotConnectedVotingPowerContainer'
 import { useDelegateContext } from '@/app/delegate/contexts/DelegateContext'
+
+import { NotConnectedVotingPowerContainer } from './NotConnectedVotingPowerContainer'
 
 export const VotingPowerSection = () => {
   const { isConnected } = useAccount()

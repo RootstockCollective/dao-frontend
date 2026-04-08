@@ -1,5 +1,7 @@
-import { cn } from '@/lib/utils'
 import { ButtonHTMLAttributes, FC, RefAttributes } from 'react'
+
+import { cn } from '@/lib/utils'
+
 import { Span } from '../Typography'
 
 type ButtonVariant = 'primary' | 'secondary' | 'secondary-outline' | 'transparent'

@@ -1,15 +1,17 @@
 'use client'
 
+import { AnimatePresence, motion } from 'motion/react'
 import { ReactNode, useRef } from 'react'
-import { motion, AnimatePresence } from 'motion/react'
 import { createPortal } from 'react-dom'
-import modalBg from './images/modal-bg.svg'
+
 import { cn } from '@/lib/utils'
-import { Header, Span } from '../Typography'
-import { Button } from '../Button'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { useScrollLock } from '@/shared/hooks/useScrollLock'
+
+import { Button } from '../Button'
 import { PortalContainerContext } from '../PortalContainerContext'
+import { Header, Span } from '../Typography'
+import modalBg from './images/modal-bg.svg'
 
 // transition animation duration
 const duration = 0.3

@@ -1,7 +1,8 @@
-import { type ReactNode, useState } from 'react'
-import { motion } from 'motion/react'
 import * as Select from '@radix-ui/react-select'
-import { ChevronDown, CheckIcon } from 'lucide-react'
+import { CheckIcon, ChevronDown } from 'lucide-react'
+import { motion } from 'motion/react'
+import { type ReactNode, useState } from 'react'
+
 import { cn } from '@/lib/utils'
 
 interface SelectProps extends Select.SelectTriggerProps {
@@ -151,4 +152,4 @@ function SelectDropdown({
   )
 }
 
-export { type SelectProps, SelectDropdown as Select }
+export { SelectDropdown as Select, type SelectProps }

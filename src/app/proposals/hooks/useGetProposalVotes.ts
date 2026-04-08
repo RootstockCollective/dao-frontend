@@ -1,6 +1,7 @@
 import { useReadContract } from 'wagmi'
-import { GovernorAddress } from '@/lib/contracts'
+
 import { GovernorAbi } from '@/lib/abis/Governor'
+import { GovernorAddress } from '@/lib/contracts'
 
 const zero = BigInt(0)
 

@@ -1,8 +1,10 @@
+import { DateTime } from 'luxon'
+
 import { Cycle } from '@/app/collective-rewards/metrics'
+import { Header } from '@/components/Typography'
+
 import { BANNER_CONFIGS, CYCLE_ENDED, CYCLE_ENDING, KYC_ONLY, NOT_BACKING, START_BUILDING } from './constants'
 import { BannerConfig } from './types'
-import { Header } from '@/components/Typography'
-import { DateTime } from 'luxon'
 
 /**
  * Randomly shuffles banner configs and returns at most 2 banners.

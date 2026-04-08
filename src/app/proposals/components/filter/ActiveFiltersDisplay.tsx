@@ -1,8 +1,9 @@
-import { FilterChip } from './FilterChip'
-import { FilterItem, FilterType } from './types'
-import { cn } from '@/lib/utils'
 import { Button } from '@/components/Button'
 import { Header, Span } from '@/components/Typography'
+import { cn } from '@/lib/utils'
+
+import { FilterChip } from './FilterChip'
+import { FilterItem, FilterType } from './types'
 
 interface ActiveFiltersDisplayProps {
   activeFilters: FilterItem[]

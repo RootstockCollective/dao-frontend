@@ -1,6 +1,6 @@
-import { Header } from '@/components/Typography'
 import { Section } from '@/app/my-rewards/components/Section'
 import { VaultHistoryTableWithContext } from '@/app/vault/history/components/VaultHistoryTable'
+import { Header } from '@/components/Typography'
 
 const NAME = 'USD Vault History'
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+
 import { useProposalStepper } from '../../components/stepper/StepperProvider'
 
 export default function Layout({ children }: React.PropsWithChildren) {

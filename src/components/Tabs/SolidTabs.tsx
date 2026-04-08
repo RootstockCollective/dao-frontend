@@ -1,6 +1,8 @@
 import * as Tabs from '@radix-ui/react-tabs'
 import { AnimatePresence, motion } from 'motion/react'
+
 import { cn } from '@/lib/utils'
+
 import { Label } from '../Typography'
 
 type SolidTabsVariant = 'default' | 'muted'

@@ -1,15 +1,17 @@
 'use client'
+import { FC, PropsWithChildren } from 'react'
+import { ToastContainer } from 'react-toastify'
+import { useAccount } from 'wagmi'
+
+import { StepperProvider } from '@/app/proposals/components/stepper/StepperProvider'
 import { currentEnvChain } from '@/config'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { FC, PropsWithChildren } from 'react'
-import { useAccount } from 'wagmi'
+
 import { DelayedRender } from '../DelayedRender'
 import Scroll from '../Scroll'
 import { ContainerDesktop } from './ContainerDesktop'
 import ContainerMobile from './ContainerMobile'
 import { LayoutProvider } from './LayoutProvider'
-import { ToastContainer } from 'react-toastify'
-import { StepperProvider } from '@/app/proposals/components/stepper/StepperProvider'
 
 export const MainContainer: FC<PropsWithChildren> = ({ children }) => {
   const isDesktop = useIsDesktop()

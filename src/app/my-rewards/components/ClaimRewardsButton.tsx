@@ -1,5 +1,6 @@
-import { Button } from '@/components/Button'
 import React from 'react'
+
+import { Button } from '@/components/Button'
 
 interface ClaimRewardsButtonProps {
   onClick: () => void

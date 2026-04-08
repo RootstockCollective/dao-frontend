@@ -2,17 +2,18 @@
 
 import type { MouseEvent, Ref } from 'react'
 import { formatEther } from 'viem'
-import { Button } from '@/components/Button'
-import { Header, Paragraph } from '@/components/Typography'
-import { cn, formatNumberWithCommas } from '@/lib/utils'
-import type { Vote } from '@/shared/types'
-import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
-import Big from '@/lib/big'
-import { BalanceInfo } from '@/components/BalanceInfo'
+
 import type { Eta } from '@/app/proposals/shared/types'
+import { BalanceInfo } from '@/components/BalanceInfo'
+import { Button } from '@/components/Button'
 import { Countdown } from '@/components/Countdown'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { Divider } from '@/components/Divider'
+import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
+import { Header, Paragraph } from '@/components/Typography'
+import Big from '@/lib/big'
+import { cn, formatNumberWithCommas } from '@/lib/utils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import type { Vote } from '@/shared/types'
 
 interface VoteCounterProps {
   title: string
