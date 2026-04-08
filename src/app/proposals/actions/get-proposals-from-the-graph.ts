@@ -4,7 +4,7 @@ import { fetchProposals, ProposalGraphQLResponse } from '@/app/proposals/actions
 import { buildProposal } from '@/app/proposals/actions/utils'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { config } from '@/config'
-import { STATE_SYNC_BLOCK_STALENESS_THRESHOLD } from '@/lib/constants'
+import { PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD } from '@/lib/constants'
 
 function transformGraphQLProposal(proposal: ProposalGraphQLResponse): ProposalApiResponse {
   return buildProposal(proposal, {
@@ -34,7 +34,7 @@ function validateProposalStructure(proposal: ProposalGraphQLResponse, index: num
 
 /**
  * Rejects the proposals response if the subgraph block from `_meta` is too far behind
- * the latest on-chain block (`STATE_SYNC_BLOCK_STALENESS_THRESHOLD`).
+ * the latest on-chain block ({@link PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD}).
  *
  * @param subgraphBlockNumber - Block number reported by the subgraph for the proposals query
  * @throws {Error} When the chain head cannot be read, or the subgraph is beyond the allowed lag
@@ -48,9 +48,9 @@ async function validateSubgraphSyncFromMeta(subgraphBlockNumber: number): Promis
 
   const blockDifference = latestBlockNumber - BigInt(subgraphBlockNumber)
 
-  if (blockDifference > BigInt(STATE_SYNC_BLOCK_STALENESS_THRESHOLD)) {
+  if (blockDifference > BigInt(PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD)) {
     throw new Error(
-      `The Graph subgraph is lagging behind: subgraph block ${subgraphBlockNumber}, latest block ${latestBlockNumber}, difference ${blockDifference} blocks (threshold: ${STATE_SYNC_BLOCK_STALENESS_THRESHOLD})`,
+      `The Graph subgraph is lagging behind: subgraph block ${subgraphBlockNumber}, latest block ${latestBlockNumber}, difference ${blockDifference} blocks (threshold: ${PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD})`,
     )
   }
 }

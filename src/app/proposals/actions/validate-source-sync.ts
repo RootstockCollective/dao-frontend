@@ -2,7 +2,7 @@ import { gql as apolloGQL } from '@apollo/client'
 import { getBlockNumber } from 'wagmi/actions'
 
 import { config } from '@/config'
-import { STATE_SYNC_BLOCK_STALENESS_THRESHOLD } from '@/lib/constants'
+import { PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD } from '@/lib/constants'
 import { db } from '@/lib/db'
 import { daoClient } from '@/shared/components/ApolloClient'
 
@@ -31,7 +31,7 @@ interface SubgraphMetadataRow {
 
 /**
  * Verifies that the `SubgraphMetadata` row for governance is within
- * `STATE_SYNC_BLOCK_STALENESS_THRESHOLD` blocks of the current chain head.
+ * {@link PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD} blocks of the current chain head.
  * Used before trusting DB-backed proposal lists.
  *
  * @throws {Error} When metadata is missing, the chain head cannot be read, or the DB lags too much
@@ -55,9 +55,9 @@ export async function validateDBSync(): Promise<void> {
 
     const blockDifference = latestBlockNumber - dbBlockNumber
 
-    if (blockDifference > BigInt(STATE_SYNC_BLOCK_STALENESS_THRESHOLD)) {
+    if (blockDifference > BigInt(PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD)) {
       throw new Error(
-        `Database subgraph metadata is lagging behind: DB block ${dbBlockNumber}, latest block ${latestBlockNumber}, difference ${blockDifference} blocks (threshold: ${STATE_SYNC_BLOCK_STALENESS_THRESHOLD})`,
+        `Database subgraph metadata is lagging behind: DB block ${dbBlockNumber}, latest block ${latestBlockNumber}, difference ${blockDifference} blocks (threshold: ${PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD})`,
       )
     }
   } catch (error) {
@@ -67,7 +67,7 @@ export async function validateDBSync(): Promise<void> {
 
 /**
  * Fetches subgraph `_meta` via a lightweight query and ensures its block is within
- * `STATE_SYNC_BLOCK_STALENESS_THRESHOLD` of the latest on-chain block.
+ * {@link PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD} of the latest on-chain block.
  *
  * @throws {Error} When metadata cannot be fetched, the chain head cannot be read, or the subgraph lags too much
  */
@@ -91,9 +91,9 @@ export async function validateSubgraphSync(): Promise<void> {
 
     const blockDifference = latestBlockNumber - subgraphBlockNumber
 
-    if (blockDifference > BigInt(STATE_SYNC_BLOCK_STALENESS_THRESHOLD)) {
+    if (blockDifference > BigInt(PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD)) {
       throw new Error(
-        `Subgraph is lagging behind: subgraph block ${subgraphBlockNumber}, latest block ${latestBlockNumber}, difference ${blockDifference} blocks (threshold: ${STATE_SYNC_BLOCK_STALENESS_THRESHOLD})`,
+        `Subgraph is lagging behind: subgraph block ${subgraphBlockNumber}, latest block ${latestBlockNumber}, difference ${blockDifference} blocks (threshold: ${PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD})`,
       )
     }
   } catch (error) {
