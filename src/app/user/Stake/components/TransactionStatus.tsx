@@ -1,8 +1,9 @@
+import Image from 'next/image'
+
 import { ExternalLink } from '@/components/Link/ExternalLink'
 import { Paragraph, Span } from '@/components/Typography'
 import { EXPLORER_URL } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import Image from 'next/image'
 
 interface Props {
   txHash?: string
@@ -17,7 +18,8 @@ export const TransactionStatus = ({
   failureMessage = 'Transaction failed.',
   className,
 }: Props) => {
-  if (!txHash) return null
+  const showExplorer = Boolean(txHash)
+  if (!isTxFailed && !showExplorer) return null
 
   return (
     <div className={cn('flex flex-col mb-5', className)}>
@@ -29,13 +31,15 @@ export const TransactionStatus = ({
           </Paragraph>
         </div>
       )}
-      <div className={cn({ 'ml-12': isTxFailed })}>
-        <ExternalLink href={`${EXPLORER_URL}/tx/${txHash}`} target="_blank" variant="menu">
-          <Span variant="body-s" bold>
-            View transaction in Explorer
-          </Span>
-        </ExternalLink>
-      </div>
+      {showExplorer && (
+        <div className={cn({ 'ml-12': isTxFailed })}>
+          <ExternalLink href={`${EXPLORER_URL}/tx/${txHash}`} target="_blank" variant="menu">
+            <Span variant="body-s" bold>
+              View transaction in Explorer
+            </Span>
+          </ExternalLink>
+        </div>
+      )}
     </div>
   )
 }

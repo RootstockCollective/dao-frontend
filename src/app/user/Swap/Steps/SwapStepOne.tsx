@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { Hash, parseUnits } from 'viem'
 
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { createUserCanceledTxError } from '@/components/ErrorPage/commonErrors'
 import { ArrowsUpDown } from '@/components/Icons'
 import { PercentageButtonItem, PercentageButtons } from '@/components/PercentageButtons'
 import { SwapInputComponent, SwapInputToken } from '@/components/SwapInput'
@@ -150,7 +151,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
         onRequestTx: async () => {
           const txHash = await approve(requiredAmount)
           if (!txHash) {
-            throw new Error('Transaction hash is null')
+            throw createUserCanceledTxError()
           }
           return txHash as Hash
         },

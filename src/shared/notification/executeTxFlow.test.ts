@@ -243,6 +243,26 @@ describe('executeTxFlow', () => {
     })
   })
 
+  describe('Missing transaction hash (DAO-2215)', () => {
+    it('should not show toasts or wait for receipt when onRequestTx resolves without a hash', async () => {
+      mockOnRequestTx.mockResolvedValue(undefined as unknown as Hash)
+      const onComplete = vi.fn()
+      const action = 'swap' as const
+
+      const result = await executeTxFlow({
+        onRequestTx: mockOnRequestTx,
+        onComplete,
+        action,
+      })
+
+      expect(mockShowToast).not.toHaveBeenCalled()
+      expect(mockWaitForTransactionReceipt).not.toHaveBeenCalled()
+      expect(mockUpdateToast).not.toHaveBeenCalled()
+      expect(onComplete).toHaveBeenCalledWith(undefined)
+      expect(result).toBeUndefined()
+    })
+  })
+
   describe('Toast Configuration', () => {
     it('should create correct toast configuration for pending state', async () => {
       // Arrange

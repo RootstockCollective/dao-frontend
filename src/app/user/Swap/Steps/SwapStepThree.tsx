@@ -11,7 +11,7 @@ import { Label } from '@/components/Typography'
 import Big from '@/lib/big'
 import { formatForDisplay } from '@/lib/utils'
 import { useExecuteTxFlow } from '@/shared/notification'
-import { useSwapExecution, useSwapInput, useTokenSelection } from '@/shared/stores/swap'
+import { useSwapExecution, useSwapInput, useSwapStore, useTokenSelection } from '@/shared/stores/swap'
 
 import { LowLiquidityWarning, SwapStepWarning } from '../components/SwapStepWarning'
 import { SwapStepProps } from '../types'
@@ -121,7 +121,11 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
       onRequestTx: async () => {
         const txHash = await execute(amountOutMinimum)
         if (!txHash) {
-          throw new Error('Transaction hash is null')
+          const swapErr = useSwapStore.getState().swapError
+          if (swapErr) {
+            throw swapErr
+          }
+          throw new Error('Unable to submit swap. Please try again.')
         }
         return txHash as Hash
       },
@@ -222,7 +226,7 @@ export const SwapStepThree = ({ onGoToStep, onCloseModal, setButtonActions }: Sw
       <TransactionStatus
         txHash={swapTxHash || undefined}
         isTxFailed={!!swapError}
-        failureMessage="Swap TX failed."
+        failureMessage={swapError?.message ?? 'Swap TX failed.'}
       />
     </>
   )
