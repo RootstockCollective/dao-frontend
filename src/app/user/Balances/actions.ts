@@ -46,6 +46,7 @@ interface CmcResponse {
 // CoinMarketCap free tier: 10,000 calls/month ≈ 1 call every 5 minutes.
 // next.revalidate on the fetch() call caches the response across requests.
 const CMC_REVALIDATE_SECONDS = 5 * 60
+const FETCH_TIMEOUT_MS = 10_000
 
 export const fetchPrices = async (): Promise<GetPricesResult> => {
   const cmcKey = process.env.COIN_MARKET_CAP_KEY
@@ -69,6 +70,7 @@ export const fetchPrices = async (): Promise<GetPricesResult> => {
     const res = await fetch(url, {
       headers: { 'X-CMC_PRO_API_KEY': cmcKey },
       next: { revalidate: CMC_REVALIDATE_SECONDS },
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     })
     if (res.ok) {
       const { data } = (await res.json()) as CmcResponse
@@ -86,6 +88,7 @@ export const fetchPrices = async (): Promise<GetPricesResult> => {
     console.log('No COIN_MARKET_CAP_KEY defined — falling back to', process.env.PRICES_API_URL)
     const res = await fetch(process.env.PRICES_API_URL, {
       next: { revalidate: CMC_REVALIDATE_SECONDS },
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     })
     if (res.ok) {
       const remote = (await res.json()) as GetPricesResult
