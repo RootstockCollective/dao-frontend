@@ -70,7 +70,7 @@ export function RequestDetailGrid({ detail }: RequestDetailGridProps) {
               Amount to deposit
             </Label>
             <div className="flex flex-col">
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-2">
                 <Span variant="body-l" className="text-100">
                   {detail.amountFormatted}
                 </Span>
@@ -89,7 +89,7 @@ export function RequestDetailGrid({ detail }: RequestDetailGridProps) {
 
           <div className="flex flex-col gap-2">
             <Label variant="tag" className="text-bg-0">
-              Shares requested
+              Shares
             </Label>
             <Span variant="body-l" className="text-100">
               {detail.sharesFormatted}
