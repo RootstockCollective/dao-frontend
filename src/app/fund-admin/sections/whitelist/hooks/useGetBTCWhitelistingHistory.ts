@@ -7,6 +7,7 @@ import type {
   BtcVaultWhitelistedUserItem,
   BtcVaultWhitelistedUsersSortField,
 } from '@/app/api/btc-vault/v1/whitelist-role-history/action'
+import { useStateSyncHealthCheck } from '@/app/collective-rewards/shared/hooks/useStateSyncHealthCheck'
 import { getBtcVaultWhitelistRoleHistoryEndpoint } from '@/lib/endpoints'
 
 /** Max `limit` allowed by the whitelist history API. */
@@ -53,12 +54,19 @@ export interface UseGetBTCWhitelistingHistoryParams {
   sortDirection: 'asc' | 'desc'
 }
 
+/**
+ * Fetches whitelist rows from `GET /api/btc-vault/v1/whitelist-role-history` (server prefers state-sync DB, falls back to subgraph).
+ * Waits for {@link useStateSyncHealthCheck} to finish loading before running queries (same UX as my-rewards RBI).
+ */
 export function useGetBTCWhitelistingHistory({
   visibleItemCount,
   sortField,
   sortDirection,
 }: UseGetBTCWhitelistingHistoryParams) {
+  const { isLoading: healthCheckIsLoading, error: healthCheckError } = useStateSyncHealthCheck()
+
   const pageCount = Math.max(1, Math.ceil(visibleItemCount / WHITELIST_HISTORY_FETCH_LIMIT))
+  const queriesEnabled = !healthCheckIsLoading
 
   const results = useQueries({
     queries: Array.from({ length: pageCount }, (_, i) => {
@@ -79,6 +87,7 @@ export function useGetBTCWhitelistingHistory({
           return (await res.json()) as WhitelistRoleHistoryApiResponse
         },
         staleTime: 30_000,
+        enabled: queriesEnabled,
       }
     }),
   })
@@ -93,8 +102,8 @@ export function useGetBTCWhitelistingHistory({
   }, [visibleItemCount, resultsDataTick])
 
   const pagination = results[0]?.data?.pagination
-  const isLoading = results.some(r => r.isLoading)
-  const error = results.find(r => r.error)?.error ?? null
+  const isLoading = healthCheckIsLoading || results.some(r => r.isLoading)
+  const error = healthCheckError ?? results.find(r => r.error)?.error ?? null
 
   return {
     rows,
