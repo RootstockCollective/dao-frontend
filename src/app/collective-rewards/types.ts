@@ -17,8 +17,6 @@ export interface CycleRewardsItem {
   id: string
   currentCycleStart: string
   currentCycleDuration: string
-  previousCycleStart: string
-  previousCycleDuration: string
   distributionDuration: string
   onDistributionPeriod: boolean
   rewardPerToken: Record<string, string>
