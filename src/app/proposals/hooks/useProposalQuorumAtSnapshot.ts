@@ -1,4 +1,5 @@
 import { useReadContract } from 'wagmi'
+
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
 

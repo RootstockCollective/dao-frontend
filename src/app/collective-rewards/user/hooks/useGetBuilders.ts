@@ -1,3 +1,7 @@
+import { DateTime } from 'luxon'
+import { useMemo } from 'react'
+import { Address, getAddress, zeroAddress } from 'viem'
+
 import { BackerRewardPercentage, Builder, BuilderStateFlags } from '@/app/collective-rewards/types'
 import { useGetProposalsState } from '@/app/collective-rewards/user'
 import { useGetGaugesArray } from '@/app/collective-rewards/user/hooks/useGetGaugesArray'
@@ -5,9 +9,6 @@ import { getMostAdvancedProposal, removeBrackets } from '@/app/collective-reward
 import { useFetchCreateBuilderProposals } from '@/app/proposals/hooks/useFetchLatestProposals'
 import { splitCombinedName } from '@/app/proposals/shared/utils'
 import { useReadBuilderRegistryForMultipleArgs } from '@/shared/hooks/contracts/collective-rewards/useReadBuilderRegistryForMultipleArgs'
-import { DateTime } from 'luxon'
-import { useMemo } from 'react'
-import { Address, getAddress, zeroAddress } from 'viem'
 
 type UseGetBuilders = () => {
   data: Record<Address, Builder> // TODO review Builder type

@@ -1,7 +1,8 @@
+import { ReactElement } from 'react'
+
 import { CommonComponentProps } from '@/components/commonProps'
 import { Label } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { ReactElement } from 'react'
 
 export const BarTooltipContent = ({ children, className }: CommonComponentProps): ReactElement => {
   return (

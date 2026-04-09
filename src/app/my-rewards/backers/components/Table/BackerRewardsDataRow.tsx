@@ -1,25 +1,12 @@
 'use client'
 
-import { selectedRowStyle, unselectedRowStyle } from '@/app/builders/components/Table'
-import { getActionType } from '@/app/builders/components/Table/Cell/ActionCell'
-import { RewardsCell, RewardsCellProps } from '@/app/builders/components/Table/Cell/RewardsCell'
-import { BackerRewards } from '@/app/collective-rewards/rewards/backers/hooks'
-import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
-import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
-import { ConditionalTooltip } from '@/app/components/Tooltip/ConditionalTooltip'
-import { GetPricesResult } from '@/app/user/types'
-import { RBTC, RIF, STRIF, USD, USDRIF } from '@/lib/constants'
-import { cn, formatCurrency } from '@/lib/utils'
-import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { redirect, RedirectType } from 'next/navigation'
 import { FC, HtmlHTMLAttributes, ReactElement, ReactNode, useState } from 'react'
 import { useAccount } from 'wagmi'
-import {
-  BackerRewardsCellDataMap,
-  BackerRewardsTable,
-  COLUMN_TRANSFORMS,
-  ColumnId,
-} from './BackerRewardsTable.config'
+
+import { selectedRowStyle, unselectedRowStyle } from '@/app/builders/components/Table'
+import { getActionType } from '@/app/builders/components/Table/Cell/ActionCell'
+import { RewardsCell, RewardsCellProps } from '@/app/builders/components/Table/Cell/RewardsCell'
 import {
   ActionsCell,
   BackerRewardsCell,
@@ -27,6 +14,21 @@ import {
   BuilderCell,
 } from '@/app/builders/components/Table/DesktopCells'
 import { SelectBuildersTooltipContent } from '@/app/builders/components/Table/TooltipContents'
+import { BackerRewards } from '@/app/collective-rewards/rewards/backers/hooks'
+import { getCombinedFiatAmount } from '@/app/collective-rewards/utils'
+import { ConditionalTooltip } from '@/app/components/Tooltip/ConditionalTooltip'
+import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
+import { GetPricesResult } from '@/app/user/types'
+import { RBTC, RIF, STRIF, USD, USDRIF } from '@/lib/constants'
+import { cn, formatCurrency } from '@/lib/utils'
+import { useTableActionsContext, useTableContext } from '@/shared/context'
+
+import {
+  BackerRewardsCellDataMap,
+  BackerRewardsTable,
+  COLUMN_TRANSFORMS,
+  ColumnId,
+} from './BackerRewardsTable.config'
 
 // Local TableCellBase for backer rewards table
 const BackerTableCellBase = ({

@@ -1,6 +1,8 @@
 import type { Knex } from 'knex'
-import { SORT_DIRECTION_ASC, SORT_DIRECTION_DESC } from './constants'
+
 import { db } from '@/lib/db'
+
+import { SORT_DIRECTION_ASC, SORT_DIRECTION_DESC } from './constants'
 
 interface PaginateOptions {
   page: number

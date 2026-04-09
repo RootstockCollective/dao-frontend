@@ -1,5 +1,6 @@
-import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+
 import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 
 export const useVotingPowerRedirect = () => {

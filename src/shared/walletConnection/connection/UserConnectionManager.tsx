@@ -1,9 +1,11 @@
 'use client'
-import { DisconnectWorkflowContainer } from './DisconnectWorkflowContainer'
-import { ConnectWorkflow } from './ConnectWorkflow'
-import { useState, useEffect, type ReactNode } from 'react'
+import { type ReactNode, useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
+
 import { cn } from '@/lib/utils'
+
+import { ConnectWorkflow } from './ConnectWorkflow'
+import { DisconnectWorkflowContainer } from './DisconnectWorkflowContainer'
 
 interface UserConnectionManagerProps {
   className?: string

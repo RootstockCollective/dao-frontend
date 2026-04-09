@@ -1,6 +1,6 @@
-import { Header } from '@/components/Typography'
 import { Section } from '@/app/my-rewards/components/Section'
 import { StakingHistoryTableWithContext } from '@/app/staking-history/components/StakingHistoryTable'
+import { Header } from '@/components/Typography'
 
 const NAME = 'Staking History'
 

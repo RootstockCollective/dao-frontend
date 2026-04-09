@@ -1,10 +1,11 @@
-import { GovernorAbi } from '@/lib/abis/Governor'
-import { GovernorAddress } from '@/lib/contracts'
+import { useState } from 'react'
 import { Address } from 'viem'
 import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+
+import { GovernorAbi } from '@/lib/abis/Governor'
+import { GovernorAddress } from '@/lib/contracts'
 import { useProposalState } from '@/shared/hooks/useProposalState'
-import { useState } from 'react'
-import { VOTES_MAP_REVERSE, Vote } from '@/shared/types'
+import { Vote, VOTES_MAP_REVERSE } from '@/shared/types'
 
 const DEFAULT_DAO = {
   address: GovernorAddress as Address,
@@ -13,7 +14,7 @@ const DEFAULT_DAO = {
 
 export const useVoteOnProposal = (proposalId: string, shouldRefetch = true) => {
   const { address } = useAccount()
-  const [txHash, setTxHash] = useState<`0x${string}` | undefined>(undefined)
+  const [txHash, setTxHash] = useState<`0x${string}` | undefined>()
 
   // First read the proposal to see if it's active
   const { proposalState, proposalStateHuman } = useProposalState(proposalId)

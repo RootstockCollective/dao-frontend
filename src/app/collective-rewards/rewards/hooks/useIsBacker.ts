@@ -1,8 +1,9 @@
+import { useMemo } from 'react'
+import { Address, zeroAddress } from 'viem'
+
 import { useBuilderContext } from '@/app/collective-rewards/user'
 import { COINBASE_ADDRESS } from '@/lib/constants'
 import { useReadBackersManager, useReadGauges } from '@/shared/hooks/contracts'
-import { useMemo } from 'react'
-import { Address, zeroAddress } from 'viem'
 
 export const useIsBacker = (address: Address) => {
   const {

@@ -1,5 +1,10 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+import { zeroAddress } from 'viem'
+import { useAccount } from 'wagmi'
+
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { useIsBacker } from '@/app/collective-rewards/rewards'
 import { withBuilderSettingsProvider } from '@/app/collective-rewards/settings'
@@ -7,10 +12,7 @@ import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import { zeroAddress } from 'viem'
-import { useAccount } from 'wagmi'
+
 import { CRWhitepaperLink } from '../collective-rewards/shared/components/CRWhitepaperLinkNew'
 import { BackerRewards } from './backers/components/BackerRewards'
 import { BackerRewardsNotConnected } from './backers/components/BackerRewardsNotConnected'

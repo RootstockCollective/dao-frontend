@@ -1,5 +1,6 @@
-import type { TokenSymbol } from '@/components/TokenImage'
 import Big from 'big.js'
+
+import type { TokenSymbol } from '@/components/TokenImage'
 
 export type { TokenSymbol } from '@/components/TokenImage'
 

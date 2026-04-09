@@ -1,6 +1,7 @@
+import { useRouter } from 'next/navigation'
+
 import { Button } from '@/components/Button'
 import { Paragraph, Span } from '@/components/Typography'
-import { useRouter } from 'next/navigation'
 
 interface Props {
   hasFunds: boolean

@@ -1,24 +1,26 @@
 import { FC, HtmlHTMLAttributes, useState } from 'react'
-import { cn } from '@/lib/utils'
 import { useAccount } from 'wagmi'
-import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
-import { Jdenticon } from '@/components/Header/Jdenticon'
-import { useLongPressTouch } from '@/shared/hooks/useLongPressTouch'
-import { BuilderNameCell } from './Cell/BuilderNameCell'
-import { ActionCell } from './Cell/ActionCell'
-import { SelectorCell } from './Cell/SelectorCell'
-import { BuilderRowLogic, BuilderTable } from './BuilderTable.config'
-import { MOBILE_ROW_STYLES } from './utils/builderRowUtils'
-import { ExpandChevron } from './ExpandChevron'
+
 import { ConnectTooltip } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltip'
 import { ConnectTooltipContent } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltipContent'
+import { Jdenticon } from '@/components/Header/Jdenticon'
+import { cn } from '@/lib/utils'
+import { useLongPressTouch } from '@/shared/hooks/useLongPressTouch'
+import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
+
+import { BuilderRowLogic, BuilderTable } from './BuilderTable.config'
+import { ActionCell } from './Cell/ActionCell'
+import { BuilderNameCell } from './Cell/BuilderNameCell'
+import { SelectorCell } from './Cell/SelectorCell'
+import { ExpandChevron } from './ExpandChevron'
 import {
   MobileBackerRewardsSection,
-  MobileRewardsSection,
   MobileBackingSection,
-  MobileTwoColumnWrapper,
   MobileColumnItem,
+  MobileRewardsSection,
+  MobileTwoColumnWrapper,
 } from './MobileSections'
+import { MOBILE_ROW_STYLES } from './utils/builderRowUtils'
 
 interface MobileBuilderRowProps extends HtmlHTMLAttributes<HTMLTableRowElement> {
   row: BuilderTable['Row']

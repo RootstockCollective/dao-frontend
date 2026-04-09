@@ -1,14 +1,16 @@
 import { DndContext, DragEndEvent, PointerSensor, pointerWithin, useSensor, useSensors } from '@dnd-kit/core'
 import { restrictToHorizontalAxis } from '@dnd-kit/modifiers'
-import { SortableContext, arrayMove, horizontalListSortingStrategy } from '@dnd-kit/sortable'
-import { AllocationBarTooltip, AllocationBarTooltipProps } from './AllocationBarTooltip'
-import { Tooltip } from '@/components/Tooltip'
+import { arrayMove, horizontalListSortingStrategy, SortableContext } from '@dnd-kit/sortable'
 import React, { Fragment, useEffect, useRef, useState } from 'react'
-import { useModal } from '@/shared/hooks/useModal'
 
 import { Legend } from '@/components/Legend'
+import { Tooltip } from '@/components/Tooltip'
 import { cn } from '@/lib/utils'
+import { useModal } from '@/shared/hooks/useModal'
+
 import { AllocationBarSegment } from './AllocationBarSegment'
+import { AllocationBarTooltip, AllocationBarTooltipProps } from './AllocationBarTooltip'
+import { BackingDetailsModal } from './BackingDetailsModal'
 import { ResizeHandle } from './ResizeHandle'
 import { AllocationBarProps, AllocationItem } from './types'
 import {
@@ -18,7 +20,6 @@ import {
   clamp,
   valueToPercentage,
 } from './utils'
-import { BackingDetailsModal } from './BackingDetailsModal'
 
 const getSegmentsCollapsedState = (values: bigint[], totalValue: bigint): boolean[] => {
   const NEIGHBOR_SUM_THRESHOLD = 8 // 8%

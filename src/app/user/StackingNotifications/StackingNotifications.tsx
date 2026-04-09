@@ -1,12 +1,14 @@
+import { useRouter } from 'next/navigation'
+import { useEffect, useMemo, useState } from 'react'
+import { zeroAddress } from 'viem'
+import { useAccount } from 'wagmi'
+
 import { CycleContextProvider, useCycleContext } from '@/app/collective-rewards/metrics'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { useRequiredTokens } from '@/app/user/IntroModal/hooks/useRequiredTokens'
 import { BannerContent } from '@/components/StackableBanner/BannerContent'
 import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
-import { useRouter } from 'next/navigation'
-import { useMemo, useEffect, useState } from 'react'
-import { zeroAddress } from 'viem'
-import { useAccount } from 'wagmi'
+
 import {
   getBannerConfigForBacking,
   getBannerConfigForCycleEnded,

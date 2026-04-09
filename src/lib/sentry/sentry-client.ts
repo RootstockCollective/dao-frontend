@@ -1,6 +1,7 @@
-import * as Sentry from '@sentry/nextjs'
 import type { StartSpanOptions } from '@sentry/core'
-import { createSentryWrapper, createInitSentryIfEnabled, isSentryEnabled } from './sentry-common'
+import * as Sentry from '@sentry/nextjs'
+
+import { createInitSentryIfEnabled, createSentryWrapper, isSentryEnabled } from './sentry-common'
 
 const baseWrapper = createSentryWrapper()
 

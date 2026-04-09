@@ -1,4 +1,5 @@
 import { FC } from 'react'
+
 import { BodyVariants } from './types'
 import { BaseTypography, BaseTypographyProps } from './Typography'
 

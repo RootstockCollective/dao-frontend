@@ -1,13 +1,15 @@
-import { ActionsContainer } from '@/components/containers'
-import { Header } from '@/components/Typography'
-import { withTableContext, useTableContext } from '@/shared/context'
 import { ReactElement } from 'react'
+
+import { ActionsContainer } from '@/components/containers'
+import { FilterIcon } from '@/components/Icons'
+import { Header } from '@/components/Typography'
+import { useTableContext, withTableContext } from '@/shared/context'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { useModal } from '@/shared/hooks/useModal'
+
 import { BackerRewardsTable } from './BackerRewardsTable'
 import { BackerRewardsCellDataMap, ColumnId } from './BackerRewardsTable.config'
 import { MobileSortModal } from './MobileSortModal'
-import { useModal } from '@/shared/hooks/useModal'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { FilterIcon } from '@/components/Icons'
 
 const TableHeader = ({ onOpenModal }: { onOpenModal: () => void }) => {
   const isDesktop = useIsDesktop()

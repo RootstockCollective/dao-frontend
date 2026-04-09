@@ -1,5 +1,8 @@
 'use client'
 
+import { createContext, FC, ReactNode, useContext, useMemo, useState } from 'react'
+import { Address } from 'viem'
+
 import {
   BackerRewardsClaimedEventLog,
   Token,
@@ -8,8 +11,6 @@ import {
 import { CompleteBuilder, StateWithUpdate } from '@/app/collective-rewards/types'
 import { filterBuildersByState, useBuilderContext } from '@/app/collective-rewards/user'
 import { useReadGauges } from '@/shared/hooks/contracts'
-import { createContext, FC, ReactNode, useContext, useMemo, useState } from 'react'
-import { Address } from 'viem'
 
 export interface TokenBackerRewards {
   earned: Record<Address, bigint>

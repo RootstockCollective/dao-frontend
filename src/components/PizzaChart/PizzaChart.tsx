@@ -1,8 +1,10 @@
-import { HTMLAttributes, useState, useMemo, memo, useId } from 'react'
 import * as Popover from '@radix-ui/react-popover'
-import { motion, AnimatePresence } from 'motion/react'
-import { PizzaChartDetails } from './PizzaChartDetails'
+import { AnimatePresence, motion } from 'motion/react'
+import { HTMLAttributes, memo, useId, useMemo, useState } from 'react'
+
 import { cn } from '@/lib/utils'
+
+import { PizzaChartDetails } from './PizzaChartDetails'
 import type { Color, ColoredSegment, OptionalColorSegment } from './types'
 
 // Default colors for the first three segments of Pizza chart

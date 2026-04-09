@@ -1,21 +1,22 @@
-import { DelegateCard } from '@/app/delegate/components/DelegateCard'
-import { Address, formatEther, isAddress } from 'viem'
-import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
-import { Paragraph, Span } from '@/components/Typography'
-import { Button } from '@/components/Button'
-import { useState, ChangeEvent, useEffect, useCallback, useMemo } from 'react'
-import { cn } from '@/lib/utils'
-import { CloseIconKoto } from '@/components/Icons'
 import { produce } from 'immer'
-import { validateRnsDomain } from '@/app/delegate/lib/utils'
 import { debounce } from 'lodash'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
+import { Address, formatEther, isAddress } from 'viem'
 import { useReadContract } from 'wagmi'
-import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { tokenContracts } from '@/lib/contracts'
+
+import { DelegateCard } from '@/app/delegate/components/DelegateCard'
+import { validateRnsDomain } from '@/app/delegate/lib/utils'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
-import Big from '@/lib/big'
+import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
+import { Button } from '@/components/Button'
+import { CloseIconKoto } from '@/components/Icons'
 import { NewPopover } from '@/components/NewPopover'
+import { Paragraph, Span } from '@/components/Typography'
+import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
+import Big from '@/lib/big'
+import { tokenContracts } from '@/lib/contracts'
+import { cn } from '@/lib/utils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface Props {
   didIDelegateToMyself: boolean
@@ -118,7 +119,7 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
       setPopoverOpen(true)
       return
     }
-    onDelegate(addressToDelegate.address as Address, addressToDelegate.rns, undefined)
+    onDelegate(addressToDelegate.address as Address, addressToDelegate.rns)
   }
 
   useEffect(() => {

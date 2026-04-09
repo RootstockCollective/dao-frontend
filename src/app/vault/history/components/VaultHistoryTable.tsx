@@ -1,15 +1,10 @@
 'use client'
 
-import { Header } from '@/components/Typography'
-import { FilterButton } from '@/app/proposals/components/filter/FilterButton'
-import { cn } from '@/lib/utils'
 import { motion } from 'motion/react'
-import { TablePager } from '@/components/TableNew'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { useCallback, useEffect, useMemo, useState, useRef } from 'react'
-import { useTableActionsContext, useTableContext, withTableContext } from '@/shared/context'
-import { ActiveFilter } from '@/components/FilterSideBar'
-import { useClickOutside } from '@/shared/hooks/useClickOutside'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+
+import { FilterButton } from '@/app/proposals/components/filter/FilterButton'
+import { convertDataToRowData } from '@/app/vault/history/components/convertDataToRowData'
 import { DesktopVaultHistory } from '@/app/vault/history/components/DesktopVaultHistory'
 import { MobileVaultHistory } from '@/app/vault/history/components/MobileVaultHistory'
 import {
@@ -20,7 +15,13 @@ import {
 } from '@/app/vault/history/components/VaultHistoryTable.config'
 import { useGetVaultHistory } from '@/app/vault/history/hooks/useGetVaultHistory'
 import { VaultHistoryFilterSideBar } from '@/app/vault/history/VaultHistoryFilterSideBar'
-import { convertDataToRowData } from '@/app/vault/history/components/convertDataToRowData'
+import { ActiveFilter } from '@/components/FilterSideBar'
+import { TablePager } from '@/components/TableNew'
+import { Header } from '@/components/Typography'
+import { cn } from '@/lib/utils'
+import { useTableActionsContext, useTableContext, withTableContext } from '@/shared/context'
+import { useClickOutside } from '@/shared/hooks/useClickOutside'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
   period: 'period',

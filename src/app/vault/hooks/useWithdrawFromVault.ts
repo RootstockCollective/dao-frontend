@@ -1,9 +1,11 @@
-import { useAccount, useReadContract } from 'wagmi'
-import { parseEther } from 'viem'
-import { vault } from '@/lib/contracts'
-import { useContractWrite } from '@/app/user/Stake/hooks/useContractWrite'
-import { calculateMaxSharesIn, DEFAULT_SLIPPAGE_PERCENTAGE } from '../utils/slippage'
 import { useMemo } from 'react'
+import { parseEther } from 'viem'
+import { useAccount, useReadContract } from 'wagmi'
+
+import { useContractWrite } from '@/app/user/Stake/hooks/useContractWrite'
+import { vault } from '@/lib/contracts'
+
+import { calculateMaxSharesIn, DEFAULT_SLIPPAGE_PERCENTAGE } from '../utils/slippage'
 
 /**
  * Hook to withdraw USDRIF from the vault with slippage protection

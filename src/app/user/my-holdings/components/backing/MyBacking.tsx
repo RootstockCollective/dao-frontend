@@ -1,11 +1,12 @@
 'use client'
 
+import { ReactElement } from 'react'
+import { zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 
 import { BackerRewardsContextProvider } from '@/app/collective-rewards/rewards'
 import { TOKENS } from '@/lib/tokens'
-import { ReactElement } from 'react'
-import { zeroAddress } from 'viem'
+
 import { BackersAllocations, UnclaimedRewardsMetric } from '.'
 
 export const MyBacking = (): ReactElement => {

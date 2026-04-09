@@ -1,5 +1,6 @@
-import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { Address } from 'viem'
+
+import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { DEFAULT_NFT_CONTRACT_ABI } from '@/lib/contracts'
 import { publicClient, transformMulticallResults } from '@/lib/viemPublicClient'
 

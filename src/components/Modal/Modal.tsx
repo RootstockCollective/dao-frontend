@@ -1,11 +1,13 @@
 'use client'
 
-import { cn } from '@/lib/utils'
 import { FC, ReactNode, useRef } from 'react'
 import { createPortal } from 'react-dom'
+
+import { cn } from '@/lib/utils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+
 import { CloseIconKoto } from '../Icons'
 import { PortalContainerContext } from '../PortalContainerContext'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 export interface ModalProps {
   children: ReactNode

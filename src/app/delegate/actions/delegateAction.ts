@@ -1,8 +1,9 @@
 'use server'
 
-import { daoClient } from '@/shared/components/ApolloClient'
-import { ContributorGraphResponse } from '@/app/proposals/shared/types'
 import { gql as apolloGQL } from '@apollo/client'
+
+import { ContributorGraphResponse } from '@/app/proposals/shared/types'
+import { daoClient } from '@/shared/components/ApolloClient'
 
 const query = apolloGQL`
   query GetContributors {

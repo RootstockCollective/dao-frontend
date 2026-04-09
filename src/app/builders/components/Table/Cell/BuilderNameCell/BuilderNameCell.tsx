@@ -1,3 +1,5 @@
+import { FC } from 'react'
+
 import { BuilderState } from '@/app/builders/components/Table/BuilderTable.config'
 import { Builder } from '@/app/collective-rewards/types'
 import {
@@ -14,7 +16,7 @@ import { Tooltip } from '@/components/Tooltip/Tooltip'
 import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { FC } from 'react'
+
 import { BuilderName } from './BuilderName'
 
 type DecorationOptionId = Exclude<BuilderState, 'active'> | 'extraRewards'

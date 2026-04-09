@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
+
 import { useFetchPrices } from '@/app/user/Balances/hooks/useFetchPrices'
 import { GetPricesResult } from '@/app/user/types'
-import { RIF, RBTC, STRIF, USDRIF, USDT0, TRIF } from '@/lib/constants'
+import { RBTC, RIF, STRIF, TRIF, USDRIF, USDT0 } from '@/lib/constants'
 
 type TokenSymbol = typeof RIF | typeof RBTC
 

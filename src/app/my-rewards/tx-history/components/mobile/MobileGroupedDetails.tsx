@@ -1,14 +1,15 @@
 'use client'
 
-import { CloseIconKoto } from '@/components/Icons/CloseIconKoto'
-import { Paragraph } from '@/components/Typography'
-import { TransactionRow } from './MobileRow'
-import { MobileCellWrapper } from './MobileCells'
 import { Expandable, ExpandableContent } from '@/components/Expandable'
 import { useExpandableContext } from '@/components/Expandable/ExpandableContext'
-import { AmountDisplay, BuilderAvatar, UsdValue } from '..'
+import { CloseIconKoto } from '@/components/Icons/CloseIconKoto'
+import { Paragraph } from '@/components/Typography'
+
 import { GroupedTransactionDetail } from '../../config'
 import { TransactionHistoryType } from '../../utils/types'
+import { AmountDisplay, BuilderAvatar, UsdValue } from '..'
+import { MobileCellWrapper } from './MobileCells'
+import { TransactionRow } from './MobileRow'
 
 interface Props {
   row: TransactionRow

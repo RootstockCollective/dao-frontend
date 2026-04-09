@@ -1,9 +1,10 @@
+import { useRouter } from 'next/navigation'
+import { FC, useState } from 'react'
+
 import { Button } from '@/components/Button'
 import { BuildingBrick, CloseIconKoto } from '@/components/Icons'
 import { Header, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { useRouter } from 'next/navigation'
-import { FC, useState } from 'react'
 
 interface BackMoreBuildersCardProps {
   dataTestId?: string

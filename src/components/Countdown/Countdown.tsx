@@ -1,10 +1,12 @@
-import { Paragraph } from '@/components/Typography'
 import moment from 'moment'
+import { useBlockNumber } from 'wagmi'
+
+import { Paragraph } from '@/components/Typography'
+import Big from '@/lib/big'
 import { DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+
 import { CountdownProps, TimeSource } from './types'
-import Big from '@/lib/big'
-import { useBlockNumber } from 'wagmi'
 
 /**
  * Calculates the time remaining in seconds

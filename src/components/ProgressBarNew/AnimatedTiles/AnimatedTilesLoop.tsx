@@ -1,10 +1,12 @@
-import { useId, useRef } from 'react'
-import { cn } from '@/lib/utils'
-import { useMemo, HTMLAttributes, useState } from 'react'
 import { motion } from 'motion/react'
-import { GradientDef } from './GradientDef'
-import type { Color } from '../colors'
+import { useId, useRef } from 'react'
+import { HTMLAttributes, useMemo, useState } from 'react'
+
+import { cn } from '@/lib/utils'
 import { useResizeObserver } from '@/shared/hooks/useResizeObserver'
+
+import type { Color } from '../colors'
+import { GradientDef } from './GradientDef'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   /** Size of each square tile in pixels */

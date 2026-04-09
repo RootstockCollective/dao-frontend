@@ -1,8 +1,9 @@
+import { FC } from 'react'
+
 import { CheckboxChecked } from '@/components/Icons/CheckboxChecked'
 import { CheckboxUnchecked } from '@/components/Icons/CheckboxUnchecked'
 import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { FC } from 'react'
 
 interface MultipleSelectDropdownItemProps {
   label: string

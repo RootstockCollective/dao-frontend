@@ -1,7 +1,7 @@
-import { VaultHistoryItemAPI } from '@/app/vault/history/utils/types'
-import { VaultHistoryTable, TOKEN_SYMBOL } from '@/app/vault/history/components/VaultHistoryTable.config'
-import { formatSymbol } from '@/app/shared/formatter'
 import { formatExpandedDate } from '@/app/my-rewards/tx-history/utils/utils'
+import { formatSymbol } from '@/app/shared/formatter'
+import { TOKEN_SYMBOL, VaultHistoryTable } from '@/app/vault/history/components/VaultHistoryTable.config'
+import { VaultHistoryItemAPI } from '@/app/vault/history/utils/types'
 import Big from '@/lib/big'
 
 const TOKEN_DECIMALS = 18
@@ -24,8 +24,7 @@ export const convertDataToRowData = (data: VaultHistoryItemAPI[]): VaultHistoryT
 
   const rows: VaultHistoryTable['Row'][] = new Array(data.length)
 
-  for (let i = 0; i < data.length; i++) {
-    const item = data[i]
+  for (const [i, item] of data.entries()) {
     const assetsFormatted = formatSymbol(item.assets, TOKEN_SYMBOL)
     // USDRIF is pegged to USD, so 1 USDRIF ≈ 1 USD
     const usdValue = weiToUsd(item.assets)

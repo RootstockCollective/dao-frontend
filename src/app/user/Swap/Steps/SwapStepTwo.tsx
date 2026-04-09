@@ -1,11 +1,13 @@
-import { Header, Label } from '@/components/Typography'
-import { useEffect, useCallback, useMemo } from 'react'
-import { SwapStepProps } from '../types'
-import { StakeTokenAmountDisplay } from '@/app/user/Stake/components/StakeTokenAmountDisplay'
-import { useSwapInput, useTokenSelection, usePermitSigning } from '@/shared/stores/swap'
-import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import Big from '@/lib/big'
+import { useCallback, useEffect, useMemo } from 'react'
 import { parseUnits } from 'viem'
+
+import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { StakeTokenAmountDisplay } from '@/app/user/Stake/components/StakeTokenAmountDisplay'
+import { Header, Label } from '@/components/Typography'
+import Big from '@/lib/big'
+import { usePermitSigning, useSwapInput, useTokenSelection } from '@/shared/stores/swap'
+
+import { SwapStepProps } from '../types'
 
 export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepProps) => {
   const { amountIn } = useSwapInput()

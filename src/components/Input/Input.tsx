@@ -1,6 +1,8 @@
-import { cn } from '@/lib/utils'
-import { JSX, forwardRef } from 'react'
+import { forwardRef, JSX } from 'react'
 import { InputAttributes, NumericFormatProps } from 'react-number-format'
+
+import { cn } from '@/lib/utils'
+
 import { InputNumber } from './InputNumber'
 
 type InputType = 'text' | 'number' | 'search'

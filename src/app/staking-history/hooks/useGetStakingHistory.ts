@@ -1,7 +1,9 @@
-import { useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
+
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+
 import { fetchStakingHistory, StakingHistoryResponse } from '../utils/api'
 import { StakingHistoryItem } from '../utils/types'
 

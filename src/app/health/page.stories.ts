@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
+
 import HealthCheck from '@/app/health/page'
 
 const meta = {

@@ -1,6 +1,8 @@
+import { Address } from 'viem'
+
 import { Builder } from '@/app/collective-rewards/types'
 import { Column, TypedTable } from '@/shared/context'
-import { Address } from 'viem'
+
 import { TransactionHistoryType } from '../utils/types'
 
 const _COLUMN_IDS = ['cycle', 'date', 'from_to', 'type', 'amount', 'total_amount'] as const

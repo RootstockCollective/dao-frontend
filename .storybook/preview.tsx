@@ -1,11 +1,12 @@
+import 'react-toastify/dist/ReactToastify.css'
+import './../src/app/globals.css'
+
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 import type { Preview } from '@storybook/nextjs'
 import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 import { http } from 'viem'
-import { WagmiProvider, createConfig } from 'wagmi'
+import { createConfig, WagmiProvider } from 'wagmi'
 import { mainnet } from 'wagmi/chains'
-import './../src/app/globals.css'
 
 const config = createConfig({
   chains: [mainnet],

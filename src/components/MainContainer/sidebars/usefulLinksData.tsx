@@ -1,7 +1,8 @@
 import { ReactNode } from 'react'
+
 import { TokenImage } from '@/components/TokenImage'
-import { currentLinks } from '@/lib/links'
 import { RBTC, RIF } from '@/lib/constants'
+import { currentLinks } from '@/lib/links'
 
 interface UsefulLink {
   href: string

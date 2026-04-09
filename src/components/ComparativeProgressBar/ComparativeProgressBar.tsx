@@ -1,4 +1,4 @@
-import { JSX, FC } from 'react'
+import { FC, JSX } from 'react'
 const DEFAULT_CLASSES = 'rounded-[6px] bg-white h-[6px] rounded-[20px] relative flex overflow-hidden'
 
 interface Value {

@@ -1,6 +1,7 @@
+import { DateTime, Duration } from 'luxon'
+
 import { withSpinner } from '@/components/LoadingSpinner/withLoadingSpinner'
 import { Metric } from '@/components/Metric'
-import { DateTime, Duration } from 'luxon'
 
 const CycleDayContent = ({ cycleStart, duration }: { cycleStart: DateTime; duration: Duration }) => {
   const now = DateTime.now()

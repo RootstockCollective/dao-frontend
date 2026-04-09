@@ -1,7 +1,7 @@
-import { logger } from '@/lib/logger'
 import { NextRequest, NextResponse } from 'next/server'
 import { Address, getAddress, isAddress } from 'viem'
 
+import { logger } from '@/lib/logger'
 import { SWAP_TOKEN_ADDRESSES, UNISWAP_FEE_TIERS } from '@/lib/swap/constants'
 import { uniswapProvider } from '@/lib/swap/providers/uniswap'
 import { getTokenDecimalsBatch, isValidAmount, scaleAmount } from '@/lib/swap/utils'

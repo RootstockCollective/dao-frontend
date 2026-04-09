@@ -1,6 +1,8 @@
-import { Chevron } from './Chevron'
-import { cn } from '@/lib/utils'
 import type { Table } from '@tanstack/react-table'
+
+import { cn } from '@/lib/utils'
+
+import { Chevron } from './Chevron'
 
 interface PaginationPageSizeSelectorProps<T> {
   table: Table<T>

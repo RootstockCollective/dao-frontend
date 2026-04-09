@@ -1,16 +1,18 @@
 'use client'
 
-import { PropsWithChildren, createContext, useCallback, useContext, useMemo } from 'react'
+import { waitForTransactionReceipt } from '@wagmi/core'
 import { useRouter } from 'next/navigation'
-import { ProposalRecord } from '../proposals/shared/types'
+import { createContext, PropsWithChildren, useCallback, useContext, useMemo } from 'react'
 import useLocalStorageState from 'use-local-storage-state'
 import { Hash } from 'viem'
-import { ProposalCategory } from '@/shared/types'
-import { showToast, updateToast } from '@/shared/notification'
-import { waitForTransactionReceipt } from '@wagmi/core'
-import { config } from '@/config'
-import { TX_MESSAGES } from '@/shared/txMessages'
+
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
+import { config } from '@/config'
+import { showToast, updateToast } from '@/shared/notification'
+import { TX_MESSAGES } from '@/shared/txMessages'
+import { ProposalCategory } from '@/shared/types'
+
+import { ProposalRecord } from '../proposals/shared/types'
 
 interface ReviewProposalState {
   record: ProposalRecord | null

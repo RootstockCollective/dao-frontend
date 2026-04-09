@@ -1,10 +1,10 @@
 import {
   InfiniteData,
+  QueryFunctionContext,
   useInfiniteQuery,
   UseInfiniteQueryResult,
-  QueryFunctionContext,
 } from '@tanstack/react-query'
-import { useState, useCallback, useMemo, useEffect } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 interface PaginatedResponse<T> {
   items: T[]

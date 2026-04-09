@@ -1,11 +1,13 @@
 'use client'
 
 import { Fragment } from 'react'
+
 import { ProgressBar } from '@/components/ProgressBarNew'
-import { useProposalStepper, ProposalStep } from './StepperProvider'
 import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
+
 import { ChevronIcon } from './ChevronIcon'
+import { ProposalStep, useProposalStepper } from './StepperProvider'
 
 const progressMap = {
   [ProposalStep.None]: 0,

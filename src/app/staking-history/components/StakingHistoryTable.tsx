@@ -1,17 +1,14 @@
 'use client'
 
-import { Header } from '@/components/Typography'
-import { FilterButton } from '@/app/proposals/components/filter/FilterButton'
-import { cn } from '@/lib/utils'
 import { motion } from 'motion/react'
-import { TablePager } from '@/components/TableNew'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-import { useCallback, useEffect, useMemo, useState, useRef } from 'react'
-import { usePricesContext, useTableActionsContext, useTableContext, withTableContext } from '@/shared/context'
-import { ActiveFilter } from '@/components/FilterSideBar'
-import { useClickOutside } from '@/shared/hooks/useClickOutside'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useAccount } from 'wagmi'
+
+import { FilterButton } from '@/app/proposals/components/filter/FilterButton'
+import { convertDataToRowData } from '@/app/staking-history/components/convertDataToRowData'
 import { DesktopStakingHistory } from '@/app/staking-history/components/DesktopStakingHistory'
 import { MobileStakingHistory } from '@/app/staking-history/components/MobileStakingHistory'
+import { StakingHistoryCsvButton } from '@/app/staking-history/components/StakingHistoryCsvButton'
 import {
   ColumnId,
   DEFAULT_HEADERS,
@@ -20,9 +17,13 @@ import {
 } from '@/app/staking-history/components/StakingHistoryTable.config'
 import { useGetStakingHistory } from '@/app/staking-history/hooks/useGetStakingHistory'
 import { StakingHistoryFilterSideBar } from '@/app/staking-history/StakingHistoryFilterSideBar'
-import { convertDataToRowData } from '@/app/staking-history/components/convertDataToRowData'
-import { StakingHistoryCsvButton } from '@/app/staking-history/components/StakingHistoryCsvButton'
-import { useAccount } from 'wagmi'
+import { ActiveFilter } from '@/components/FilterSideBar'
+import { TablePager } from '@/components/TableNew'
+import { Header } from '@/components/Typography'
+import { cn } from '@/lib/utils'
+import { usePricesContext, useTableActionsContext, useTableContext, withTableContext } from '@/shared/context'
+import { useClickOutside } from '@/shared/hooks/useClickOutside'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 const COLUMN_TO_DB_FIELD: Partial<Record<ColumnId, string>> = {
   period: 'period',

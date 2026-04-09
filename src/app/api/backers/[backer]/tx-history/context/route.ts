@@ -1,10 +1,11 @@
-import { logger } from '@/lib/logger'
 import { NextResponse } from 'next/server'
-import { db } from '@/lib/db'
 import { Address, isAddress } from 'viem'
-import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
-import { paginateQuery } from '@/app/api/utils/paginateQuery'
+
 import { TX_HISTORY_COLUMNS } from '@/app/api/db/constants'
+import { paginateQuery } from '@/app/api/utils/paginateQuery'
+import { parsePaginationParams } from '@/app/api/utils/parsePaginationParams'
+import { db } from '@/lib/db'
+import { logger } from '@/lib/logger'
 
 interface PriceParam {
   token: string

@@ -1,8 +1,10 @@
 'use client'
+import React, { FC, isValidElement, ReactNode } from 'react'
+
 import { cn } from '@/lib/utils'
-import React, { FC, ReactNode, isValidElement } from 'react'
-import { useExpandableContext } from './ExpandableContext'
+
 import { Paragraph } from '../Typography'
+import { useExpandableContext } from './ExpandableContext'
 
 // Expandable content section
 interface Props {

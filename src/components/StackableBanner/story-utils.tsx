@@ -1,7 +1,8 @@
-import { Header, Span } from '@/components/Typography'
-import { TokenImage } from '@/components/TokenImage'
-import { RBTC, RIF } from '@/lib/constants'
 import { ArrowRight } from 'lucide-react'
+
+import { TokenImage } from '@/components/TokenImage'
+import { Header, Span } from '@/components/Typography'
+import { RBTC, RIF } from '@/lib/constants'
 
 const rbtcImage = <TokenImage symbol={RBTC} size={26} className="inline-block mt-[-0.2rem]" />
 const rifImage = <TokenImage symbol={RIF} size={24} className="inline-block mt-[-0.2rem]" />

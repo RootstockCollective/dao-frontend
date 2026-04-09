@@ -1,5 +1,6 @@
-import { fetchProposalCreated } from '@/app/user/Balances/actions'
 import { NextRequest } from 'next/server'
+
+import { fetchProposalCreated } from '@/app/user/Balances/actions'
 import { BackendEventByTopic0ResponseValue, CachedData, handleCachedGetRequest } from '@/shared/utils'
 
 let cachedProposals: CachedData = {

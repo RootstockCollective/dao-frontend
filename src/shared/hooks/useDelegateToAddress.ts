@@ -1,7 +1,8 @@
+import { Address } from 'viem'
 import { useWriteContract } from 'wagmi'
+
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { STRIF_ADDRESS } from '@/lib/constants'
-import { Address } from 'viem'
 
 export const useDelegateToAddress = () => {
   const { writeContractAsync: delegateToAddress, isPending, data: hash } = useWriteContract()

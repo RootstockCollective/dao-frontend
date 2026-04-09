@@ -1,8 +1,10 @@
-import { cn } from '@/lib/utils'
 import { FC, ReactNode } from 'react'
+
+import { Paragraph } from '@/components/Typography'
+import { cn } from '@/lib/utils'
+
 import { CommonComponentProps } from '../../components/commonProps'
 import { InfoIconButton, type InfoIconButtonProps } from '../IconButton/InfoIconButton'
-import { Paragraph } from '@/components/Typography'
 
 interface MetricTitleProps extends CommonComponentProps {
   title: ReactNode

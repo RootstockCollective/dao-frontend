@@ -1,4 +1,5 @@
 import { Address } from 'viem'
+
 import { ContractReadResult } from '@/app/communities/communityUtils'
 
 /**

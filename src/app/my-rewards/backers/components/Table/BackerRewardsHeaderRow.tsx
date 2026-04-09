@@ -1,7 +1,7 @@
 'use client'
 
-import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { ReactElement, Suspense } from 'react'
+import { Dispatch, FC, ReactNode } from 'react'
 
 import { CombinedActionsHeaderCell, TableColumnDropdown } from '@/app/builders/components/Table'
 import { Action } from '@/app/builders/components/Table/Cell/ActionCell'
@@ -15,8 +15,9 @@ import { TableHeaderCell, TableHeaderNode } from '@/components/TableNew'
 import { Tooltip, TooltipProps } from '@/components/Tooltip'
 import { Label, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
+import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { SORT_DIRECTION_ASC, SORT_DIRECTIONS } from '@/shared/context/TableContext/constants'
-import { Dispatch, FC, ReactNode } from 'react'
+
 import {
   BackerRewardsCellDataMap,
   BackerRewardsTable,

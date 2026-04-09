@@ -1,8 +1,10 @@
-import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { useContractWrite } from './useContractWrite'
+import { useMemo } from 'react'
 import { Address, parseEther } from 'viem'
 import { useAccount } from 'wagmi'
-import { useMemo } from 'react'
+
+import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
+
+import { useContractWrite } from './useContractWrite'
 
 export const useStakeRIF = (amount: string, tokenToReceiveContract: Address) => {
   const { address } = useAccount()

@@ -1,3 +1,6 @@
+import Big from 'big.js'
+import { isAddressEqual } from 'viem'
+
 import {
   NotifyRewardEvent,
   useGetGaugesNotifyReward,
@@ -10,16 +13,14 @@ import { MetricBar } from '@/app/components/Metric/MetricBar'
 import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
 import { MetricToken } from '@/app/components/Metric/types'
 import { createMetricToken } from '@/app/components/Metric/utils'
+import { CommonComponentProps } from '@/components/commonProps'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { MetricTitle } from '@/components/Metric'
 import { Metric } from '@/components/Metric/Metric'
 import { Header, Paragraph } from '@/components/Typography'
-import { CommonComponentProps } from '@/components/commonProps'
 import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { cn, formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
-import Big from 'big.js'
-import { isAddressEqual } from 'viem'
 
 interface TotalRewardsDistributedMetricProps extends CommonComponentProps {}
 

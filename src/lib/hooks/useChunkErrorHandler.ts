@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect } from 'react'
+
 import {
-  isChunkLoadError,
   attemptChunkReloadRecovery,
-  shouldAttemptChunkRecovery,
   clearChunkReloadAttempts,
+  isChunkLoadError,
+  shouldAttemptChunkRecovery,
 } from '@/components/ErrorPage/commonErrors'
 
 /**

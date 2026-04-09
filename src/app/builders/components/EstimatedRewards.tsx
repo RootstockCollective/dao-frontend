@@ -1,8 +1,11 @@
+import Big from 'big.js'
+import { useMemo } from 'react'
+
 import { getCombinedFiatAmount, useHandleErrors } from '@/app/collective-rewards/utils'
+import { MetricBar } from '@/app/components/Metric/MetricBar'
 import { MetricTooltipContent, MetricTooltipContentProps } from '@/app/components/Metric/MetricTooltipContent'
 import { MetricToken } from '@/app/components/Metric/types'
 import { createMetricToken } from '@/app/components/Metric/utils'
-import { MetricBar } from '@/app/components/Metric/MetricBar'
 import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/FiatTooltipLabel'
 import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
@@ -11,8 +14,6 @@ import { Header, Paragraph } from '@/components/Typography'
 import { REWARD_TOKEN_KEYS, RewardTokenKey, TOKENS } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
-import Big from 'big.js'
-import { useMemo } from 'react'
 
 interface USDWithTokensRewardsProps {
   usd: Big

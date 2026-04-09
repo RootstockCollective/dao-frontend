@@ -1,8 +1,10 @@
 import { useMemo } from 'react'
-import { StakingProvider } from '@/app/user/Stake/StakingContext'
+
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { StakingProvider } from '@/app/user/Stake/StakingContext'
 import { StakingToken } from '@/app/user/Stake/types'
 import { tokenContracts } from '@/lib/contracts'
+
 import { StepWrapper } from './components/StepWrapper'
 
 interface Props {

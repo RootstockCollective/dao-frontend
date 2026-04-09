@@ -1,9 +1,9 @@
 export { AmountDisplay, type AmountDisplayProps } from './AmountDisplay'
 export {
   BuilderAvatar,
-  MultipleBuildersAvatar,
   type BuilderAvatarProps,
+  MultipleBuildersAvatar,
   type MultipleBuildersAvatarProps,
 } from './BuilderAvatar'
-export { UsdValue, type UsdValueProps } from './UsdValue'
 export { CsvButton } from './CsvButton'
+export { UsdValue, type UsdValueProps } from './UsdValue'

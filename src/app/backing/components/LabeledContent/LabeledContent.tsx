@@ -1,6 +1,7 @@
+import { FC, ReactNode } from 'react'
+
 import { Label } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { FC, ReactNode } from 'react'
 
 interface LabeledContentProps {
   label: string

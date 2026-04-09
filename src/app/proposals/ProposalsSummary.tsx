@@ -1,10 +1,11 @@
 'use client'
-import { VotingPowerCard } from '@/app/delegate/components/VotingPowerContainer/VotingPowerCard'
-import { cn } from '@/lib/utils'
 import { useAccount } from 'wagmi'
+
+import { VotingPowerCard } from '@/app/delegate/components/VotingPowerContainer/VotingPowerCard'
+import { Header } from '@/components/Typography'
+import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
-import { Header } from '@/components/Typography'
 
 interface Props {
   totalProposals: string

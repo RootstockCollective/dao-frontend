@@ -1,4 +1,5 @@
 import knex, { Knex } from 'knex'
+
 import { sslConfig } from './dbUtils'
 
 const globalForDb = globalThis as typeof globalThis & { _db?: Knex }

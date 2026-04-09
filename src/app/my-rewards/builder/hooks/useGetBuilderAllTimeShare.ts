@@ -1,7 +1,8 @@
-import { useGetBuilderRewardsClaimedLogs, useGetGaugesNotifyReward } from '@/app/collective-rewards/rewards'
-import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 import { useMemo } from 'react'
 import { Address } from 'viem'
+
+import { useGetBuilderRewardsClaimedLogs, useGetGaugesNotifyReward } from '@/app/collective-rewards/rewards'
+import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 
 interface UseBuilderAllTimeShareProps {
   gauge: Address

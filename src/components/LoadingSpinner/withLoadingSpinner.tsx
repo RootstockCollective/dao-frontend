@@ -1,4 +1,5 @@
 import { ComponentType, FC } from 'react'
+
 import { LoadingSpinner, SpinnerSize } from '@/components/LoadingSpinner'
 
 interface WithLoadingProps {

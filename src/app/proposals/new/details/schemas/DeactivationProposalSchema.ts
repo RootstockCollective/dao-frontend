@@ -1,6 +1,7 @@
-import z from 'zod'
-import { BaseProposalSchema } from './BaseProposalSchema'
 import { getAddress, isAddress } from 'viem'
+import z from 'zod'
+
+import { BaseProposalSchema } from './BaseProposalSchema'
 
 export const DeactivationProposalSchema = BaseProposalSchema.extend({
   builderAddress: z

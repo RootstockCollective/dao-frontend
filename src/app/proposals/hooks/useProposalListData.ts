@@ -1,16 +1,18 @@
 import { useMemo } from 'react'
-import { useBlockNumber, useReadContracts } from 'wagmi'
 import { formatEther } from 'viem'
-import {
-  EventArgumentsParameter,
-  getProposalEventArguments,
-  getProposalCategoryFromParsedData,
-  serializeBigInts,
-} from '../shared/utils'
+import { useBlockNumber, useReadContracts } from 'wagmi'
+
 import Big from '@/lib/big'
-import { LatestProposalResponse } from './useFetchLatestProposals'
 import { governor } from '@/lib/contracts'
 import { ProposalState } from '@/shared/types'
+
+import {
+  EventArgumentsParameter,
+  getProposalCategoryFromParsedData,
+  getProposalEventArguments,
+  serializeBigInts,
+} from '../shared/utils'
+import { LatestProposalResponse } from './useFetchLatestProposals'
 
 interface Props {
   /**

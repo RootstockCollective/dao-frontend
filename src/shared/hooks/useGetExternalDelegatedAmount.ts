@@ -1,9 +1,10 @@
+import { useEffect, useState } from 'react'
 import { Address } from 'viem'
-import { useGetDelegates } from '@/app/user/Delegation/hooks/useGetDelegates'
 import { useAccount, useReadContract } from 'wagmi'
+
+import { useGetDelegates } from '@/app/user/Delegation/hooks/useGetDelegates'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { AVERAGE_BLOCKTIME, STRIF_ADDRESS } from '@/lib/constants'
-import { useEffect, useState } from 'react'
 import { getEnsDomainName } from '@/lib/rns'
 
 /**
@@ -34,7 +35,7 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
     refetch: refetchDelegate,
   } = useGetDelegates(address)
 
-  const [delegateeRns, setDelegateeRns] = useState<string | undefined>(undefined)
+  const [delegateeRns, setDelegateeRns] = useState<string | undefined>()
 
   useEffect(() => {
     if (delegateeAddress) {
@@ -102,10 +103,8 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
     amountDelegatedToMe = votingPower || 0n
   }
 
-  if (didIDelegateToMyself && votingPower && balance) {
-    if (votingPower > balance) {
-      amountDelegatedToMe = votingPower - balance
-    }
+  if (didIDelegateToMyself && votingPower && balance && votingPower > balance) {
+    amountDelegatedToMe = votingPower - balance
   }
 
   const refetch = () => {

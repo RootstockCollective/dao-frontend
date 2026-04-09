@@ -1,9 +1,11 @@
-import { Row } from '@/shared/context/TableContext/types'
-import { BackerRewardsCellDataMap, ColumnId } from './BackerRewardsTable.config'
-import { Action } from '@/app/builders/components/Table/Cell/ActionCell'
-import { BackerRewardsHeaderRow } from './BackerRewardsHeaderRow'
-import { BackerRewardsDataRow } from './BackerRewardsDataRow'
 import { Suspense } from 'react'
+
+import { Action } from '@/app/builders/components/Table/Cell/ActionCell'
+import { Row } from '@/shared/context/TableContext/types'
+
+import { BackerRewardsDataRow } from './BackerRewardsDataRow'
+import { BackerRewardsHeaderRow } from './BackerRewardsHeaderRow'
+import { BackerRewardsCellDataMap, ColumnId } from './BackerRewardsTable.config'
 
 export const DesktopRewardsDetails = ({
   rows,

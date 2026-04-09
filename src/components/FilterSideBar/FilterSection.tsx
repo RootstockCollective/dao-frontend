@@ -1,5 +1,6 @@
-import { Header } from '@/components/Typography'
 import { SelectableItem } from '@/components/SelectableItem'
+import { Header } from '@/components/Typography'
+
 import { FilterGroup, FilterOption } from './types'
 
 interface Props {

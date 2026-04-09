@@ -1,9 +1,10 @@
-import { cn, formatNumberWithCommas } from '@/lib/utils'
-import Big from '@/lib/big'
-import { PizzaChart } from '@/components/PizzaChart'
-import { Paragraph } from '@/components/Typography'
 import type { ClassNameValue } from 'tailwind-merge'
+
+import { PizzaChart } from '@/components/PizzaChart'
 import { SmallLineSeparator } from '@/components/Separators/SmallLineSeparator'
+import { Paragraph } from '@/components/Typography'
+import Big from '@/lib/big'
+import { cn, formatNumberWithCommas } from '@/lib/utils'
 
 interface QuorumColumnProps {
   quorumReached: Big

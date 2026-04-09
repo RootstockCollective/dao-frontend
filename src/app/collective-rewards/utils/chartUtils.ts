@@ -1,6 +1,7 @@
 import Big from '@/lib/big'
 import { USD, WeiPerEther } from '@/lib/constants'
 import { TOKENS } from '@/lib/tokens'
+
 import { FIRST_CYCLE_START_SECONDS, FIVE_MONTHS_IN_MS, ONE_DAY_IN_SECONDS } from '../constants/chartConstants'
 import { BackingPoint, CycleRewardsItem, CycleWindow, DailyAllocationItem, RewardsPoint } from '../types'
 import { getCombinedFiatAmount } from './getCombinedFiatAmount'

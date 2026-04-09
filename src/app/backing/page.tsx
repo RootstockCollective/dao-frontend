@@ -2,8 +2,9 @@
 
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { withFeatureFlag } from '@/shared/context/FeatureFlag'
-import { BackingPage } from './BackingPage'
+
 import { BackingContextProvider } from '../shared/context/BackingContext'
+import { BackingPage } from './BackingPage'
 
 const BackingPageWithContext = () => (
   <CycleContextProvider>

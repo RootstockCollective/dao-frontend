@@ -1,13 +1,15 @@
-import { type HTMLAttributes } from 'react'
-import { cn } from '@/lib/utils'
 import Image from 'next/image'
-import { NewProposalCardData } from '../newProposalCards.data'
-import { CardParagraph } from './CardParagraph'
-import { Header } from '@/components/Typography'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import Link from 'next/link'
+import { type HTMLAttributes } from 'react'
+
 import { Button } from '@/components/Button'
 import { Divider } from '@/components/Divider'
-import Link from 'next/link'
+import { Header } from '@/components/Typography'
+import { cn } from '@/lib/utils'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+
+import { NewProposalCardData } from '../newProposalCards.data'
+import { CardParagraph } from './CardParagraph'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   card: NewProposalCardData

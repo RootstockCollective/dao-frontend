@@ -1,7 +1,9 @@
 'use client'
 
-import { Span } from '@/components/Typography'
+import Big from 'big.js'
+import { ReactElement, useMemo } from 'react'
 
+import ClaimRewardsModal from '@/app/collective-rewards/components/ClaimRewardModal/ClaimRewardsModal'
 import { useBackerRewardsContext, useClaimBackerRewards } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { ConditionalTooltip } from '@/app/components'
@@ -11,13 +13,11 @@ import { createMetricToken } from '@/app/components/Metric/utils'
 import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/FiatTooltipLabel'
 import { getFiatAmount } from '@/app/shared/formatter'
 import { Button } from '@/components/Button'
+import { Span } from '@/components/Typography'
 import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 import { useModal } from '@/shared/hooks/useModal'
-import ClaimRewardsModal from '@/app/collective-rewards/components/ClaimRewardModal/ClaimRewardsModal'
-import Big from 'big.js'
-import { ReactElement, useMemo } from 'react'
 
 export const UnclaimedRewardsMetric = (): ReactElement => {
   const { isModalOpened, openModal, closeModal } = useModal()

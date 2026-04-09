@@ -7,10 +7,11 @@ import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { AnnualBackersIncentives } from '@/app/shared/components/AnnualBackersIncentives'
 import { ActionMetricsContainer, ActionsContainer } from '@/components/containers'
 import { Header } from '@/components/Typography'
+import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+
 import { CallToActionSection } from './components/CallToActionSection'
 import { CollectiveRewardsChartContainer } from './components/CollectiveRewardsChart'
 import { TotalRewardsDistributed } from './components/TotalRewardsDistributed'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 const NAME = 'Collective Rewards'
 export const CollectiveRewardsPage = () => {

@@ -1,10 +1,12 @@
 'use client'
 
-import { BalanceInfo } from '@/components/BalanceInfo'
-import { useVaultBalance } from '../hooks/useVaultBalance'
-import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useAccount } from 'wagmi'
+
+import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
+import { BalanceInfo } from '@/components/BalanceInfo'
 import { USDRIF, USDT0 } from '@/lib/constants'
+
+import { useVaultBalance } from '../hooks/useVaultBalance'
 import { VaultActions } from './VaultActions'
 
 /**

@@ -1,6 +1,8 @@
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useQuery } from '@tanstack/react-query'
 import Big from 'big.js'
+
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+
 import { AbiData, useGetABI } from './useGetABI'
 import { useStateSyncHealthCheck } from './useStateSyncHealthCheck'
 

@@ -1,8 +1,10 @@
-import { cn } from '@/lib/utils'
 import { type TextareaHTMLAttributes, useCallback, useEffect, useId, useRef, useState } from 'react'
-import { FloatingLabel } from './FloatingLabel'
+import { Control, Controller, FieldPath, FieldValues } from 'react-hook-form'
+
+import { cn } from '@/lib/utils'
+
 import { ErrorMessage } from './ErrorMessage'
-import { Controller, Control, FieldPath, FieldValues } from 'react-hook-form'
+import { FloatingLabel } from './FloatingLabel'
 
 interface TextAreaProps<T extends FieldValues> extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string

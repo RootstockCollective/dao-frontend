@@ -1,6 +1,7 @@
 'use client'
-import { Address } from 'viem'
 import { useEffect, useState } from 'react'
+import { Address } from 'viem'
+
 import { NFTWalletLocalStorage } from './types'
 
 /***************************************************

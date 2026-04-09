@@ -1,7 +1,9 @@
-import { Paragraph } from '../Typography'
-import { cn } from '@/lib/utils'
 import { FC, JSX } from 'react'
+
+import { cn } from '@/lib/utils'
 import { ProposalState } from '@/shared/types'
+
+import { Paragraph } from '../Typography'
 
 type Props = JSX.IntrinsicElements['div'] & {
   proposalState?: ProposalState

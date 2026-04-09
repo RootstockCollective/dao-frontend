@@ -1,7 +1,9 @@
 import { Address } from 'viem'
-import { DecodedData } from './utils'
+
+import { ENV, RBTC, RIF, RIF_ADDRESS, TRIF, USDRIF, USDRIF_ADDRESS } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
-import { RIF, RBTC, USDRIF, RIF_ADDRESS, USDRIF_ADDRESS, ENV, TRIF } from '@/lib/constants'
+
+import { DecodedData } from './utils'
 
 /**
  * Maps token addresses to their symbols

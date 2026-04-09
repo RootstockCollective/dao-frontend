@@ -1,4 +1,4 @@
-import { Paragraph, HeaderTitle } from '@/components/Typography'
+import { HeaderTitle, Paragraph } from '@/components/Typography'
 
 export const disclaimerModalText = {
   modalTitle: 'DISCLAIMER',

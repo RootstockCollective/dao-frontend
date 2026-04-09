@@ -1,11 +1,13 @@
+import { useRouter } from 'next/navigation'
+import { ReactElement, useContext } from 'react'
+import { useAccount } from 'wagmi'
+
 import { Button } from '@/components/Button'
 import { Collapsible } from '@/components/Collapsible'
 import { StylableComponentProps } from '@/components/commonProps'
 import { Header, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-import { useRouter } from 'next/navigation'
-import { ReactElement, useContext } from 'react'
-import { useAccount } from 'wagmi'
+
 import { AllocationsContext } from '../../allocations/context'
 import { ActiveBackers } from '../ActiveBackers'
 import { Banner } from '../Banner'

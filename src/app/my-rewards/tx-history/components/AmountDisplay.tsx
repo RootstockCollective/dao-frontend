@@ -1,8 +1,9 @@
 'use client'
 
 import { useMemo } from 'react'
-import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
+
 import { ArrowDownIcon } from '@/components/Icons/ArrowDownIcon'
+import { ArrowUpIcon } from '@/components/Icons/ArrowUpIcon'
 import { TokenImage } from '@/components/TokenImage'
 import { Paragraph, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
@@ -50,7 +51,7 @@ export const AmountDisplay = ({
     if (isDesktop && isHovered) {
       return 'text-black'
     }
-    return undefined
+    return
   }, [isDesktop, isHovered])
 
   const containerClass = isDesktop

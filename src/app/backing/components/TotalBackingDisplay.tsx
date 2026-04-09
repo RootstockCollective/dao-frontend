@@ -1,9 +1,11 @@
+import { useContext, useMemo } from 'react'
+
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { formatSymbol } from '@/app/shared/formatter'
 import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
 import { STRIF } from '@/lib/constants'
+
 import { BackerAnnualBackersIncentives } from './Metrics/BackerAnnualBackersIncentives'
-import { useContext, useMemo } from 'react'
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 
 interface Props {
   cumulativeAllocation: bigint
@@ -46,7 +48,7 @@ export const TotalBackingDisplay = ({
 
   const status = useMemo(() => {
     if (!hasUnsavedChanges) {
-      return undefined
+      return
     }
     if (isAllocationTxPending) {
       return 'pending'

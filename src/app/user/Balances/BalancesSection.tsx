@@ -1,16 +1,18 @@
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useRef } from 'react'
+
 import { BalanceInfoForUser } from '@/app/user/Balances/BalanceInfoForUser'
+import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { StakingFlow } from '@/app/user/Stake'
 import { UnstakeModal } from '@/app/user/Unstake'
-import { useModal } from '@/shared/hooks/useModal'
-import { useEffect, useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { Button } from '@/components/Button'
 import { HistoryIcon, MoneyIconKoto } from '@/components/Icons'
-import { useRef } from 'react'
 import { Span } from '@/components/Typography'
-import { RBTC, RIF, STRIF, USDRIF } from '@/lib/constants'
 import Big from '@/lib/big'
+import { RBTC, RIF, STRIF, USDRIF } from '@/lib/constants'
+import { useModal } from '@/shared/hooks/useModal'
+
 import { useGetAddressBalances } from './hooks/useGetAddressBalances'
 
 export const BalancesSection = () => {

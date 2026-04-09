@@ -1,4 +1,5 @@
 import { z } from 'zod'
+
 import { currentLinks } from '@/lib/links'
 
 const discourseLink = new URL(currentLinks.forum)

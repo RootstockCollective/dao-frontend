@@ -1,5 +1,7 @@
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useQuery } from '@tanstack/react-query'
+
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+
 import { CycleData } from './useGetABI'
 import { useStateSyncHealthCheck } from './useStateSyncHealthCheck'
 

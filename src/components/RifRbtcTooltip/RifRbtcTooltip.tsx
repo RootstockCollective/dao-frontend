@@ -1,3 +1,5 @@
+import { ReactNode } from 'react'
+
 import { formatSymbol } from '@/app/shared/formatter'
 import { CommonComponentProps } from '@/components/commonProps'
 import { TokenImage } from '@/components/TokenImage'
@@ -5,7 +7,6 @@ import { Tooltip } from '@/components/Tooltip/Tooltip'
 import { Span } from '@/components/Typography'
 import { RBTC, RIF } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import { ReactNode } from 'react'
 
 interface RifRbtcTooltipProps extends CommonComponentProps {
   rbtcValue: bigint

@@ -1,9 +1,10 @@
-import { useReadContracts, useReadContract, useAccount } from 'wagmi'
+import { useCallback, useMemo } from 'react'
 import { formatEther } from 'viem'
-import { vault } from '@/lib/contracts'
-import { useMemo, useCallback } from 'react'
-import { WeiPerEther, VAULT_SHARE_MULTIPLIER } from '@/lib/constants'
+import { useAccount, useReadContract, useReadContracts } from 'wagmi'
+
 import { formatSymbol } from '@/app/shared/formatter'
+import { VAULT_SHARE_MULTIPLIER, WeiPerEther } from '@/lib/constants'
+import { vault } from '@/lib/contracts'
 
 /**
  * Hook for reading vault data using multicall

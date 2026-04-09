@@ -1,12 +1,13 @@
+import { NextRequest } from 'next/server'
+import { z } from 'zod'
+
+import { handleApiError, queryParam } from '@/app/api/utils/helpers'
+import type { PaginationResponse } from '@/app/api/utils/types'
+import { AddressSchema, SortDirectionEnum } from '@/app/api/utils/validators'
 import {
   getVaultHistoryCountFromDB,
   getVaultHistoryFromDB,
 } from '@/app/api/vault/v1/addresses/[address]/history/action'
-import { handleApiError, queryParam } from '@/app/api/utils/helpers'
-import type { PaginationResponse } from '@/app/api/utils/types'
-import { AddressSchema, SortDirectionEnum } from '@/app/api/utils/validators'
-import { NextRequest } from 'next/server'
-import { z } from 'zod'
 
 const SortFieldEnum = z.enum(['period', 'assets', 'action'])
 const QuerySchema = z.object({

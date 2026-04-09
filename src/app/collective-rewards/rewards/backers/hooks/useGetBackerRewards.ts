@@ -1,4 +1,6 @@
-import { filterBuildersByState, useBuilderContext } from '@/app/collective-rewards/user'
+import { useMemo } from 'react'
+import { Address } from 'viem'
+
 import {
   Token,
   TokenBackerRewards,
@@ -6,10 +8,9 @@ import {
   useBackerRewardsContext,
 } from '@/app/collective-rewards/rewards'
 import { BackerRewardPercentage, CompleteBuilder } from '@/app/collective-rewards/types'
+import { filterBuildersByState, useBuilderContext } from '@/app/collective-rewards/user'
 import { usePricesContext } from '@/shared/context/PricesContext'
 import { useReadGauges } from '@/shared/hooks/contracts'
-import { useMemo } from 'react'
-import { Address } from 'viem'
 
 export type BackerRewards = CompleteBuilder & {
   totalAllocation: TokenRewards

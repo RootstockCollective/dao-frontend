@@ -1,5 +1,7 @@
-import { REWARD_TOKEN_KEYS, RewardTokenKey, TOKENS } from '@/lib/tokens'
 import Big from 'big.js'
+
+import { REWARD_TOKEN_KEYS, RewardTokenKey, TOKENS } from '@/lib/tokens'
+
 import { MetricToken } from '../components/Metric/types'
 import { createMetricToken } from '../components/Metric/utils'
 import { GetPricesResult } from '../user/types'

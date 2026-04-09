@@ -1,6 +1,8 @@
 import { useMemo } from 'react'
+
 import { formatCurrency } from '@/lib/utils'
 import { Row } from '@/shared/context/TableContext/types'
+
 import { ColumnId, TransactionHistoryCellDataMap } from '../config'
 
 export type TransactionRow = Row<ColumnId, Row['id'], TransactionHistoryCellDataMap>
@@ -13,7 +15,7 @@ const sanitizeUsdValue = (raw: string | null | undefined): number => {
   if (!raw) return 0
   if (raw.startsWith('>-')) return -0.0001
   if (raw.startsWith('<')) return 0.0001
-  const sanitized = raw.replace(/,/g, '')
+  const sanitized = raw.replaceAll(',', '')
   const parsed = Number(sanitized)
   return Number.isNaN(parsed) ? 0 : parsed
 }

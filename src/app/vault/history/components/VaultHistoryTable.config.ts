@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
-import { Column, TypedTable, useTableContext } from '@/shared/context'
+
 import { VaultHistoryTransaction } from '@/app/vault/history/utils/types'
 import Big from '@/lib/big'
+import { Column, TypedTable, useTableContext } from '@/shared/context'
 
 export const TOKEN_SYMBOL = 'USDRIF'
 

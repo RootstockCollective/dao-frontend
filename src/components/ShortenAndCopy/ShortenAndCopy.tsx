@@ -1,7 +1,8 @@
+import { HTMLAttributes } from 'react'
+import { Address } from 'viem'
+
 import { CopyButton } from '@/components/CopyButton'
 import { cn, shortAddress, shortProposalId } from '@/lib/utils'
-import { Address } from 'viem'
-import { HTMLAttributes } from 'react'
 
 interface Props extends HTMLAttributes<HTMLDivElement> {
   value: string | number

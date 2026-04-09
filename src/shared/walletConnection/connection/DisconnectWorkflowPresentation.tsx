@@ -1,16 +1,17 @@
-import { NewPopover } from '@/components/NewPopover'
-import { DisconnectButton } from '@/shared/walletConnection'
-import { AccountAddress } from '@/components/Header'
-import { DisconnectWalletModal } from '@/components/Modal/DisconnectWalletModal'
-import { CopyButton } from '@/components/CopyButton'
 import { useAppKit } from '@reown/appkit/react'
-import { Button } from '@/components/Button'
-import { Tooltip } from '@/components/Tooltip'
-import { KotoQuestionMarkIcon } from '@/components/Icons'
-import { onRampDisclaimerText } from '@/shared/walletConnection/constants'
-import { Span } from '@/components/Typography'
 import { useState } from 'react'
+
+import { Button } from '@/components/Button'
+import { CopyButton } from '@/components/CopyButton'
+import { AccountAddress } from '@/components/Header'
+import { KotoQuestionMarkIcon } from '@/components/Icons'
+import { DisconnectWalletModal } from '@/components/Modal/DisconnectWalletModal'
+import { NewPopover } from '@/components/NewPopover'
+import { Tooltip } from '@/components/Tooltip'
+import { Span } from '@/components/Typography'
 import { useIsSocialLogin } from '@/shared/hooks/useIsSocialLogin'
+import { DisconnectButton } from '@/shared/walletConnection'
+import { onRampDisclaimerText } from '@/shared/walletConnection/constants'
 
 interface DisconnectWorkflowPresentationProps {
   shortAddress: string

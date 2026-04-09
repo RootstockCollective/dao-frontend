@@ -1,12 +1,14 @@
 'use client'
-import { useModal } from '@/shared/hooks/useModal'
-import { useAccount, useDisconnect } from 'wagmi'
-import { shortAddress } from '@/lib/utils'
-import { DisconnectWorkflowPresentation } from './DisconnectWorkflowPresentation'
-import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
-import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { useContext } from 'react'
+import { useAccount, useDisconnect } from 'wagmi'
+
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { useLayoutContext } from '@/components/MainContainer/LayoutProvider'
 import { useSiweStore } from '@/lib/auth/siweStore'
+import { shortAddress } from '@/lib/utils'
+import { useModal } from '@/shared/hooks/useModal'
+
+import { DisconnectWorkflowPresentation } from './DisconnectWorkflowPresentation'
 
 /**
  * Container component in charge of disconnecting the user logic

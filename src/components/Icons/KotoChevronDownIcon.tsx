@@ -1,5 +1,5 @@
-import { type IconProps } from './types'
 import { DEFAULT_ICON_SIZE } from './constants'
+import { type IconProps } from './types'
 
 export function KotoChevronDownIcon({
   'aria-label': ariaLabel = 'Chevron Up Icon',

@@ -1,8 +1,10 @@
 import { useMemo } from 'react'
 import { Address, parseEther } from 'viem'
 import { useAccount, useReadContract } from 'wagmi'
+
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { tokenContracts } from '@/lib/contracts'
+
 import { useContractWrite } from './useContractWrite'
 
 export const useAllowance = (

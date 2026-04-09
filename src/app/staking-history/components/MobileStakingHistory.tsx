@@ -1,7 +1,9 @@
-import { Row } from '@/shared/context'
 import { memo } from 'react'
-import { ColumnId, StakingHistoryCellDataMap } from './StakingHistoryTable.config'
+
+import { Row } from '@/shared/context'
+
 import { MobileStakingHistoryCard } from './MobileStakingHistoryCard'
+import { ColumnId, StakingHistoryCellDataMap } from './StakingHistoryTable.config'
 
 interface MobileStakingHistoryComponentProps {
   rows: Row<ColumnId, Row['id'], StakingHistoryCellDataMap>[]

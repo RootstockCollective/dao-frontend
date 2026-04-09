@@ -1,5 +1,5 @@
-import { Header, Paragraph, Span } from '@/components/Typography'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
+import { Header, Paragraph, Span } from '@/components/Typography'
 
 interface TechnicalDetailsProps {
   snapshot: bigint | undefined
