@@ -9,7 +9,7 @@ import { fetchBtcVaultAuditLogPage } from './action'
 
 /**
  * GET /api/btc-vault/v1/audit-log
- * Paginated audit log (mock or subgraph). Same layering as GET /api/btc-vault/v1/whitelist-role-history.
+ * Paginated audit log from The Graph subgraph (`btcVaultLogs`).
  */
 export async function GET(req: NextRequest) {
   try {
