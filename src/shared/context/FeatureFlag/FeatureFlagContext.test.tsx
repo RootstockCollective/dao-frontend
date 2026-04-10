@@ -59,9 +59,13 @@ const mockGetEnvFlags = vi.mocked(flagUtils.getEnvFlags)
 const mockIsFeatureFlag = vi.mocked(flagUtils.isFeatureFlag)
 
 // Wrapper component for testing hooks
-const Wrapper: FC<{ children: ReactNode }> = ({ children }) => (
-  <FeatureFlagProvider>{children}</FeatureFlagProvider>
-)
+const Wrapper = (
+  {
+    children
+  }: {
+    children: ReactNode;
+  }
+) => (<FeatureFlagProvider>{children}</FeatureFlagProvider>)
 
 type FakeFeatureFlags = Record<
   FakeFeature,

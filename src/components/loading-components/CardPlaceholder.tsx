@@ -1,6 +1,5 @@
 import { motion, Variants } from 'framer-motion'
 import Image from 'next/image'
-import { FC } from 'react'
 
 /**
  * This "shimmer" animation simply moves the background gradient
@@ -19,7 +18,7 @@ const shimmerVariants: Variants = {
   },
 }
 
-export const CardPlaceholder: FC = () => (
+export const CardPlaceholder = () => (
   <div className="rounded-sm bg-input-bg w-[300px] pb-4" data-testid="CommunityCardPlaceholder">
     {/* Image placeholder */}
     <div className="relative w-full h-[300px] mb-5">
