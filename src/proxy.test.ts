@@ -5,7 +5,7 @@ vi.mock('@/lib/rateLimit', () => ({
   checkRateLimit: vi.fn(),
 }))
 
-import { middleware } from './middleware'
+import { proxy } from './proxy'
 import { checkRateLimit } from '@/lib/rateLimit'
 
 const mockedCheckRateLimit = vi.mocked(checkRateLimit)
@@ -25,7 +25,7 @@ function rejectedResult(limit = 5, resetMs = 30_000) {
   return { success: false, limit, remaining: 0, resetMs }
 }
 
-describe('middleware', () => {
+describe('proxy', () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -34,7 +34,7 @@ describe('middleware', () => {
     it('returns 429 when rate limit is exceeded', () => {
       mockedCheckRateLimit.mockReturnValue(rejectedResult())
 
-      const response = middleware(createRequest('/api/auth/login'))
+      const response = proxy(createRequest('/api/auth/login'))
 
       expect(response.status).toBe(429)
     })
@@ -42,7 +42,7 @@ describe('middleware', () => {
     it('includes Retry-After header (in seconds, rounded up) on 429', () => {
       mockedCheckRateLimit.mockReturnValue(rejectedResult(5, 45_500))
 
-      const response = middleware(createRequest('/api/auth/login'))
+      const response = proxy(createRequest('/api/auth/login'))
 
       expect(response.headers.get('Retry-After')).toBe('46')
     })
@@ -50,7 +50,7 @@ describe('middleware', () => {
     it('includes rate limit headers on 429', () => {
       mockedCheckRateLimit.mockReturnValue(rejectedResult(5))
 
-      const response = middleware(createRequest('/api/auth/login'))
+      const response = proxy(createRequest('/api/auth/login'))
 
       expect(response.headers.get('X-RateLimit-Limit')).toBe('5')
       expect(response.headers.get('X-RateLimit-Remaining')).toBe('0')
@@ -59,7 +59,7 @@ describe('middleware', () => {
     it('returns error message in JSON body on 429', async () => {
       mockedCheckRateLimit.mockReturnValue(rejectedResult())
 
-      const response = middleware(createRequest('/api/auth/login'))
+      const response = proxy(createRequest('/api/auth/login'))
       const body = await response.json()
 
       expect(body.error).toBe('Too many requests. Please try again later.')
@@ -70,7 +70,7 @@ describe('middleware', () => {
     it('passes through when rate limit is not exceeded', () => {
       mockedCheckRateLimit.mockReturnValue(allowedResult())
 
-      const response = middleware(createRequest('/api/auth/login'))
+      const response = proxy(createRequest('/api/auth/login'))
 
       expect(response.status).toBe(200)
     })
@@ -78,7 +78,7 @@ describe('middleware', () => {
     it('includes rate limit headers on successful responses', () => {
       mockedCheckRateLimit.mockReturnValue(allowedResult(5, 3))
 
-      const response = middleware(createRequest('/api/auth/login'))
+      const response = proxy(createRequest('/api/auth/login'))
 
       expect(response.headers.get('X-RateLimit-Limit')).toBe('5')
       expect(response.headers.get('X-RateLimit-Remaining')).toBe('3')
@@ -89,7 +89,7 @@ describe('middleware', () => {
     it('applies rate limiting to /api/auth/challenge', () => {
       mockedCheckRateLimit.mockReturnValue(allowedResult())
 
-      middleware(createRequest('/api/auth/challenge'))
+      proxy(createRequest('/api/auth/challenge'))
 
       expect(mockedCheckRateLimit).toHaveBeenCalledWith(expect.any(String), 'auth_challenge', {
         limit: 5,
@@ -100,7 +100,7 @@ describe('middleware', () => {
     it('applies rate limiting to /api/auth/login', () => {
       mockedCheckRateLimit.mockReturnValue(allowedResult())
 
-      middleware(createRequest('/api/auth/login'))
+      proxy(createRequest('/api/auth/login'))
 
       expect(mockedCheckRateLimit).toHaveBeenCalledWith(expect.any(String), 'auth_login', {
         limit: 5,
@@ -111,7 +111,7 @@ describe('middleware', () => {
     it('applies rate limiting to /api/auth/verify with higher limit', () => {
       mockedCheckRateLimit.mockReturnValue(allowedResult(20, 19))
 
-      middleware(createRequest('/api/auth/verify'))
+      proxy(createRequest('/api/auth/verify'))
 
       expect(mockedCheckRateLimit).toHaveBeenCalledWith(expect.any(String), 'auth_verify', {
         limit: 20,
@@ -120,14 +120,14 @@ describe('middleware', () => {
     })
 
     it('passes through for unknown auth sub-routes without rate limiting', () => {
-      const response = middleware(createRequest('/api/auth/unknown'))
+      const response = proxy(createRequest('/api/auth/unknown'))
 
       expect(response.status).toBe(200)
       expect(mockedCheckRateLimit).not.toHaveBeenCalled()
     })
 
     it('passes through for non-auth API routes without rate limiting', () => {
-      const response = middleware(createRequest('/api/like'))
+      const response = proxy(createRequest('/api/like'))
 
       expect(response.status).toBe(200)
       expect(mockedCheckRateLimit).not.toHaveBeenCalled()
@@ -138,7 +138,7 @@ describe('middleware', () => {
     it('extracts IP from x-forwarded-for header', () => {
       mockedCheckRateLimit.mockReturnValue(allowedResult())
 
-      middleware(createRequest('/api/auth/login', { 'x-forwarded-for': '203.0.113.50' }))
+      proxy(createRequest('/api/auth/login', { 'x-forwarded-for': '203.0.113.50' }))
 
       expect(mockedCheckRateLimit).toHaveBeenCalledWith(
         '203.0.113.50',
@@ -150,7 +150,7 @@ describe('middleware', () => {
     it('extracts the first IP from a multi-hop x-forwarded-for chain', () => {
       mockedCheckRateLimit.mockReturnValue(allowedResult())
 
-      middleware(
+      proxy(
         createRequest('/api/auth/login', { 'x-forwarded-for': '203.0.113.50, 70.41.3.18, 150.172.238.178' }),
       )
 
@@ -164,7 +164,7 @@ describe('middleware', () => {
     it('falls back to x-real-ip when x-forwarded-for is absent', () => {
       mockedCheckRateLimit.mockReturnValue(allowedResult())
 
-      middleware(createRequest('/api/auth/login', { 'x-real-ip': '198.51.100.14' }))
+      proxy(createRequest('/api/auth/login', { 'x-real-ip': '198.51.100.14' }))
 
       expect(mockedCheckRateLimit).toHaveBeenCalledWith(
         '198.51.100.14',
@@ -176,7 +176,7 @@ describe('middleware', () => {
     it('falls back to 127.0.0.1 when no IP headers are present', () => {
       mockedCheckRateLimit.mockReturnValue(allowedResult())
 
-      middleware(createRequest('/api/auth/login'))
+      proxy(createRequest('/api/auth/login'))
 
       expect(mockedCheckRateLimit).toHaveBeenCalledWith('127.0.0.1', expect.any(String), expect.any(Object))
     })
