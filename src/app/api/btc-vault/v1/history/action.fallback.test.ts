@@ -1,5 +1,3 @@
-import { print } from 'graphql'
-import type { DocumentNode } from 'graphql'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 /**
@@ -8,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
  * returned by the real `getFromBlockscoutSource` (it closed over the original function). We mock
  * `getFromBlockscoutSource` to wire `fetchPageAndTotal` to `mockBlockscout` instead.
  */
-const { mockQuery, mockBlockscout, mockEnrichRpc } = vi.hoisted(() => {
+const { mockQuery, mockStateSync, mockBlockscout, mockEnrichRpc } = vi.hoisted(() => {
   const mockEnrichRpcInner = vi.fn(
     async (
       history: {
@@ -37,6 +35,7 @@ const { mockQuery, mockBlockscout, mockEnrichRpc } = vi.hoisted(() => {
   )
   return {
     mockQuery: vi.fn(),
+    mockStateSync: vi.fn(),
     mockBlockscout: vi.fn(),
     mockEnrichRpc: mockEnrichRpcInner,
   }
@@ -60,6 +59,14 @@ vi.mock('./sources/blockscout', () => ({
   enrichHistoryWithRpcRequestStatus: mockEnrichRpc,
 }))
 
+vi.mock('./sources/get-from-state-sync-source', () => ({
+  getFromStateSyncSource: vi.fn(() => ({
+    name: 'state-sync' as const,
+    fetchPageAndTotal: (params: unknown) => mockStateSync(params),
+    enrichWithStatus: async (items: unknown[]) => items as never,
+  })),
+}))
+
 import {
   enrichHistoryWithRequestStatusSafe,
   fetchBtcVaultHistoryPageAndTotal,
@@ -68,53 +75,27 @@ import {
 describe('fetchBtcVaultHistoryPageAndTotal (DAO-2106)', () => {
   beforeEach(() => {
     mockQuery.mockReset()
+    mockStateSync.mockReset()
     mockBlockscout.mockReset()
     mockEnrichRpc.mockClear()
   })
 
-  it('returns subgraph list and count when both succeed', async () => {
-    mockQuery.mockImplementation(async ({ query }: { query: DocumentNode }) => {
-      const s = print(query)
-      if (s.includes('btcVaultHistories')) {
-        return {
-          error: undefined,
-          data: {
-            btcVaultHistories: [
-              {
-                id: '1',
-                user: '0xabc',
-                action: 'DEPOSIT_REQUEST',
-                assets: '1',
-                shares: '0',
-                epochId: '1',
-                timestamp: 1,
-                blockNumber: '1',
-                transactionHash: '0xtx',
-              },
-            ],
-          },
-        }
-      }
-      if (s.includes('btcVaultHistoryCounter')) {
-        return {
-          error: undefined,
-          data: {
-            btcVaultHistoryCounter: {
-              total: '10',
-              depositRequests: '0',
-              depositsClaimable: '0',
-              depositsClaimed: '0',
-              depositsCancelled: '0',
-              redeemRequests: '0',
-              redeemsClaimable: '0',
-              redeemsClaimed: '0',
-              redeemsCancelled: '0',
-              redeemsAccepted: '0',
-            },
-          },
-        }
-      }
-      return { error: undefined, data: {} }
+  it('returns state-sync list and count when state-sync succeeds', async () => {
+    mockStateSync.mockResolvedValue({
+      items: [
+        {
+          id: '1',
+          user: '0xabc',
+          action: 'DEPOSIT_REQUEST',
+          assets: '1',
+          shares: '0',
+          epochId: '1',
+          timestamp: 1,
+          blockNumber: '1',
+          transactionHash: '0xtx',
+        },
+      ],
+      total: 10,
     })
 
     const result = await fetchBtcVaultHistoryPageAndTotal({
@@ -127,12 +108,14 @@ describe('fetchBtcVaultHistoryPageAndTotal (DAO-2106)', () => {
 
     expect(result.items).toHaveLength(1)
     expect(result.total).toBe(10)
-    expect(result.source).toBe('the-graph')
+    expect(result.source).toBe('state-sync')
     expect(result.errors).toEqual([])
+    expect(mockQuery).not.toHaveBeenCalled()
     expect(mockBlockscout).not.toHaveBeenCalled()
   })
 
-  it('falls back to Blockscout when subgraph list fails', async () => {
+  it('falls back to Blockscout when state-sync and subgraph fail', async () => {
+    mockStateSync.mockRejectedValueOnce(new Error('state-sync down'))
     mockQuery.mockRejectedValueOnce(new Error('subgraph down'))
     mockBlockscout.mockResolvedValue({
       items: [
@@ -162,7 +145,10 @@ describe('fetchBtcVaultHistoryPageAndTotal (DAO-2106)', () => {
     expect(result.items).toHaveLength(1)
     expect(result.total).toBe(1)
     expect(result.source).toBe('blockscout')
-    expect(result.errors).toEqual([{ source: 'the-graph', message: 'subgraph down' }])
+    expect(result.errors).toEqual([
+      { source: 'state-sync', message: 'state-sync down' },
+      { source: 'the-graph', message: 'subgraph down' },
+    ])
   })
 })
 

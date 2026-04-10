@@ -1,5 +1,6 @@
 import { mapActionToDisplayStatus } from './mapActionToDisplayStatus'
 import { fetchBtcVaultHistoryFromBlockscout, getFromBlockscoutSource } from './sources/blockscout'
+import { getFromStateSyncSource } from './sources/get-from-state-sync-source'
 import {
   enrichHistoryWithRequestStatus,
   getFromTheGraphSource,
@@ -42,6 +43,8 @@ function enrichHistoryDisplayStatusFromActionOnly(item: BtcVaultHistoryItem): Bt
   return { ...item, displayStatus: mapActionToDisplayStatus(item.action) }
 }
 
+const stateSyncHistorySource: BtcVaultHistorySource = getFromStateSyncSource()
+
 const theGraphHistorySource: BtcVaultHistorySource = getFromTheGraphSource({
   mapActionOnly: enrichHistoryDisplayStatusFromActionOnly,
 })
@@ -50,10 +53,15 @@ const blockscoutHistorySource: BtcVaultHistorySource = getFromBlockscoutSource({
   mapActionOnly: enrichHistoryDisplayStatusFromActionOnly,
 })
 
-const historySourcesOrdered: BtcVaultHistorySource[] = [theGraphHistorySource, blockscoutHistorySource]
+const historySourcesOrdered: BtcVaultHistorySource[] = [
+  stateSyncHistorySource,
+  theGraphHistorySource,
+  blockscoutHistorySource,
+]
 
 /**
- * Fetches a page of BTC vault history with **source-scoped** enrichment: tries **The Graph** first, then **Blockscout** (DAO-2106).
+ * Fetches a page of BTC vault history with **source-scoped** enrichment:
+ * tries **state-sync** first, then **The Graph**, then **Blockscout** (DAO-2106).
  * Each source runs `fetchPageAndTotal` then `enrichWithStatus` on that source only (no Apollo enrichment when Blockscout served the list).
  */
 export async function fetchBtcVaultHistoryPageAndEnrich(
