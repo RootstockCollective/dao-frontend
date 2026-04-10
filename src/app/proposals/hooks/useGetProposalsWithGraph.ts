@@ -62,6 +62,12 @@ function convertVotesToBigNumbers(votes: ProposalApiResponse['votes']) {
   }
 }
 
+function hasNonZeroVotes(votes: ProposalApiResponse['votes']): boolean {
+  if (!votes) return false
+  const { forVotes, againstVotes, abstainVotes } = convertVotesToBigNumbers(votes)
+  return forVotes.gt(0) || againstVotes.gt(0) || abstainVotes.gt(0)
+}
+
 function parseBlockNumber(blockNumber: string | undefined): string {
   if (!blockNumber) return ''
   return blockNumber.startsWith('0x') ? parseInt(blockNumber, 16).toString() : blockNumber
@@ -118,8 +124,8 @@ function transformProposalsData(
   const transformedProposals = proposalsData.map((proposal: ProposalApiResponse) => {
     const blockchainInfo = blockchainData?.find(b => b.proposalId === proposal.proposalId)
 
-    // Convert blockchain votes (Big) to API format (string) if needed
-    const votes: ProposalApiResponse['votes'] | undefined = proposal.votes
+    // Prefer blockchain votes when API votes are missing or all zeros
+    const votes: ProposalApiResponse['votes'] | undefined = hasNonZeroVotes(proposal.votes)
       ? proposal.votes
       : blockchainInfo?.votes
         ? {
@@ -127,7 +133,7 @@ function transformProposalsData(
             forVotes: blockchainInfo.votes.forVotes.toString(),
             abstainVotes: blockchainInfo.votes.abstainVotes.toString(),
           }
-        : undefined
+        : proposal.votes // fallback to API votes if no blockchain data
 
     const quorum = proposal.quorumAtSnapshot || blockchainInfo?.quorum?.toString()
     const rawState = blockchainInfo?.rawState
