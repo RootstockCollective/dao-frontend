@@ -4,8 +4,9 @@ export interface AuditLogEntry {
   id: string
   date: string
   action: string
-  valueReason: string | null
+  detail: string | null
   tokenAmount: string | null
-  usdAmount: string | null
+  /** Raw subgraph `amount` in wei when present, including `"0"` (18-decimal RBTC / WRBTC). */
+  amountWei: string | null
   user: AuditLogUserRole
 }
