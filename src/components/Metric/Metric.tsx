@@ -1,4 +1,4 @@
-import { FC, isValidElement, ReactNode } from 'react'
+import { isValidElement, ReactNode } from 'react'
 
 import { MetricTitle } from '@/components/Metric/MetricTitle'
 import { cn } from '@/lib/utils'
@@ -13,14 +13,14 @@ type MetricProps = CommonComponentProps & {
   'data-testid'?: string
 }
 
-export const Metric: FC<MetricProps> = ({
+export const Metric = ({
   title,
   children,
   className = '',
   containerClassName = '',
   contentClassName = '',
   'data-testid': dataTestId = 'Metric',
-}) => {
+}: MetricProps) => {
   return (
     <div data-testid={dataTestId} className={cn('flex items-center gap-4 w-full', className)}>
       <div className={cn('w-full flex flex-col gap-0.5 md:gap-2', containerClassName)}>

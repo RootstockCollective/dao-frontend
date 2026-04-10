@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
@@ -12,7 +12,7 @@ interface MetricTitleProps extends CommonComponentProps {
   infoIconProps?: Omit<InfoIconButtonProps, 'info'>
 }
 
-export const MetricTitle: FC<MetricTitleProps> = ({ title, info, className = '', infoIconProps }) => {
+export const MetricTitle = ({ title, info, className = '', infoIconProps }: MetricTitleProps) => {
   return (
     <div data-testid="MetricTitle" className={cn('flex w-full items-start gap-2', className)}>
       <Paragraph className="text-v3-bg-accent-0 text-sm md:text-base">{title}</Paragraph>

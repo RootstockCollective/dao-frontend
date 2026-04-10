@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal/Modal'
 import { Header, Paragraph, Span } from '@/components/Typography'
@@ -10,7 +8,7 @@ interface Props {
   onCancel: () => void
 }
 
-export const DisconnectWalletModal: FC<Props> = ({ onClose, onConfirm, onCancel }) => (
+export const DisconnectWalletModal = ({ onClose, onConfirm, onCancel }: Props) => (
   <Modal onClose={onClose} data-testid="DisconnectWalletModal">
     <div className="px-[50px] pt-[42px] pb-[84px] flex justify-center flex-col items-center">
       <Header variant="h2">DISCONNECT WALLET</Header>
