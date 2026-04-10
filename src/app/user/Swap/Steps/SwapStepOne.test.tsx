@@ -153,6 +153,19 @@ describe('SwapStepOne', () => {
     expect(document.querySelectorAll('[data-testid="swap-fee-tier-buttons"]')).toHaveLength(1)
   })
 
+  it('omits Auto when the probe finds exactly one fee tier (DAO-2216)', () => {
+    vi.mocked(useSwapInput).mockReturnValue({
+      ...defaultSwapInput,
+      availableFeeTiers: [3000],
+      selectedFeeTier: 3000,
+    } as ReturnType<typeof useSwapInput>)
+
+    renderStepOne()
+
+    expect(screen.queryByTestId('fee-tier-auto')).not.toBeInTheDocument()
+    expect(screen.getByTestId('fee-tier-3000')).toBeInTheDocument()
+  })
+
   it('shows USDT0 bridge hint when the quote has multiple hops', () => {
     renderStepOne()
     expect(screen.getByTestId('swap-route-bridge-hint')).toHaveTextContent('Route includes USDT0')
