@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { ArrowDownIcon, ArrowUpIcon } from '@/components/Icons'
 import { SeparatorBar } from '@/components/SeparatorBar/SeparatorBar'
 import { cn } from '@/lib/utils'
@@ -20,7 +18,7 @@ const deltaMap = {
   },
 }
 
-export const DeltaIndicator: FC<DeltaIndicatorProps> = ({ currentPct, nextPct }) => {
+export const DeltaIndicator = ({ currentPct, nextPct }: DeltaIndicatorProps) => {
   if (currentPct === undefined || nextPct === undefined) return null
   if (currentPct === nextPct) return null
 

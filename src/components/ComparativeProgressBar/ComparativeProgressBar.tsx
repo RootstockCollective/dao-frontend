@@ -1,4 +1,4 @@
-import { FC, JSX } from 'react'
+import { JSX } from 'react'
 const DEFAULT_CLASSES = 'rounded-[6px] bg-white h-[6px] rounded-[20px] relative flex overflow-hidden'
 
 interface Value {
@@ -10,7 +10,7 @@ interface Props {
   values: Value[]
 }
 
-export const ComparativeProgressBar: FC<Props> = ({ values }) => {
+export const ComparativeProgressBar = ({ values }: Props) => {
   const total = values.reduce((acc, { value }) => acc + value, 0)
 
   return (
