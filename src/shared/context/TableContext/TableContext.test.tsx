@@ -18,7 +18,7 @@ const parseTestElementData = (testId: string) => {
 
 describe('TableContext Hook Usage', () => {
   describe('useTableContext', () => {
-    const ContextDisplayComponent: FC = () => {
+    const ContextDisplayComponent = () => {
       const context = useTableContext()
       return <div data-testid="context-data">{JSON.stringify(context)}</div>
     }
@@ -42,7 +42,7 @@ describe('TableContext Hook Usage', () => {
   })
 
   describe('useTableActionsContext', () => {
-    const DispatcherTestComponent: FC = () => {
+    const DispatcherTestComponent = () => {
       useTableActionsContext()
       return <div data-testid="dispatcher-available">Dispatcher is available</div>
     }
@@ -63,7 +63,7 @@ describe('TableContext Hook Usage', () => {
 })
 
 describe('TableProvider Integration', () => {
-  const DirectContextAccessComponent: FC = () => {
+  const DirectContextAccessComponent = () => {
     const context = useContext(TableContext)
     const dispatcher = useContext(TableActionsContext)
 
@@ -75,7 +75,7 @@ describe('TableProvider Integration', () => {
     )
   }
   it('provides both context and dispatcher together', async () => {
-    const CombinedTestComponent: FC = () => {
+    const CombinedTestComponent = () => {
       const context = useTableContext()
       const dispatch = useTableActionsContext()
 
@@ -124,7 +124,7 @@ describe('TableProvider Integration', () => {
 
 describe('withTableContext HOC', () => {
   it('wraps component with TableProvider functionality', async () => {
-    const SimpleComponent: FC = () => <div data-testid="simple">Simple Component</div>
+    const SimpleComponent = () => <div data-testid="simple">Simple Component</div>
     const WrappedComponent = withTableContext(SimpleComponent)
 
     render(<WrappedComponent />)
@@ -136,7 +136,13 @@ describe('withTableContext HOC', () => {
 })
 
 describe('Table Actions and State Management', () => {
-  const RowSelectionTestComponent: FC<{ rowId: string }> = ({ rowId }) => {
+  const RowSelectionTestComponent = (
+    {
+      rowId
+    }: {
+      rowId: string;
+    }
+  ) => {
     const dispatch = useTableActionsContext()
     const { selectedRows } = useTableContext()
 
@@ -195,7 +201,13 @@ describe('Table Actions and State Management', () => {
   })
 
   describe('Column Visibility', () => {
-    const ColumnVisibilityTestComponent: FC<{ columnId: string }> = ({ columnId }) => {
+    const ColumnVisibilityTestComponent = (
+      {
+        columnId
+      }: {
+        columnId: string;
+      }
+    ) => {
       const dispatch = useTableActionsContext()
       const { columns } = useTableContext()
 
@@ -229,7 +241,7 @@ describe('Table Actions and State Management', () => {
     })
 
     it('adds column to hiddenColumns when toggled for the first time', async () => {
-      const TestComponentWithColumns: FC = () => {
+      const TestComponentWithColumns = () => {
         const dispatch = useTableActionsContext()
         React.useEffect(() => {
           dispatch({
@@ -258,7 +270,7 @@ describe('Table Actions and State Management', () => {
     })
 
     it('removes column from hiddenColumns when toggled back to visible', async () => {
-      const TestComponentWithColumns: FC = () => {
+      const TestComponentWithColumns = () => {
         const dispatch = useTableActionsContext()
         React.useEffect(() => {
           dispatch({
@@ -291,7 +303,7 @@ describe('Table Actions and State Management', () => {
     })
 
     it('handles multiple columns being hidden independently', async () => {
-      const MultiColumnTestComponent: FC = () => {
+      const MultiColumnTestComponent = () => {
         const dispatch = useTableActionsContext()
         const { columns } = useTableContext()
 
@@ -355,10 +367,15 @@ describe('Table Actions and State Management', () => {
   })
 
   describe('Column Sorting', () => {
-    const SortTestComponent: FC<{ columnId: string; direction: 'asc' | 'desc' }> = ({
-      columnId,
-      direction,
-    }) => {
+    const SortTestComponent = (
+      {
+        columnId,
+        direction
+      }: {
+        columnId: string;
+        direction: 'asc' | 'desc';
+      }
+    ) => {
       const dispatch = useTableActionsContext()
       const { sort } = useTableContext()
 
@@ -412,7 +429,7 @@ describe('Table Actions and State Management', () => {
   })
 
   describe('Unknown Actions', () => {
-    const UnknownActionTestComponent: FC = () => {
+    const UnknownActionTestComponent = () => {
       const dispatch = useTableActionsContext()
       const context = useTableContext()
 
@@ -449,7 +466,7 @@ describe('Table Actions and State Management', () => {
 
   describe('Table Data Updates', () => {
     describe('SET_ROWS', () => {
-      const SetRowsTestComponent: FC = () => {
+      const SetRowsTestComponent = () => {
         const dispatch = useTableActionsContext()
         const { rows } = useTableContext()
 
@@ -518,7 +535,7 @@ describe('Table Actions and State Management', () => {
     })
 
     describe('SET_COLUMNS', () => {
-      const SetColumnsTestComponent: FC = () => {
+      const SetColumnsTestComponent = () => {
         const dispatch = useTableActionsContext()
         const { columns } = useTableContext()
 
@@ -563,7 +580,7 @@ describe('Table Actions and State Management', () => {
     })
 
     describe('SET_SELECTED_ROWS', () => {
-      const SetSelectedRowsTestComponent: FC = () => {
+      const SetSelectedRowsTestComponent = () => {
         const dispatch = useTableActionsContext()
         const { selectedRows } = useTableContext()
 
@@ -626,7 +643,7 @@ describe('Table Actions and State Management', () => {
     })
 
     describe('SET_HIDDEN_COLUMNS', () => {
-      const SetHiddenColumnsTestComponent: FC = () => {
+      const SetHiddenColumnsTestComponent = () => {
         const dispatch = useTableActionsContext()
         const { columns } = useTableContext()
 
@@ -704,7 +721,7 @@ describe('Table Actions and State Management', () => {
     })
 
     describe('SET_DEFAULT_SORT', () => {
-      const SetDefaultSortTestComponent: FC = () => {
+      const SetDefaultSortTestComponent = () => {
         const dispatch = useTableActionsContext()
         const { defaultSort } = useTableContext()
 
@@ -768,7 +785,7 @@ describe('Table Actions and State Management', () => {
     })
 
     describe('SET_LOADING', () => {
-      const SetLoadingTestComponent: FC = () => {
+      const SetLoadingTestComponent = () => {
         const dispatch = useTableActionsContext()
         const { loading } = useTableContext()
 
@@ -819,7 +836,7 @@ describe('Table Actions and State Management', () => {
     })
 
     describe('SET_ERROR', () => {
-      const SetErrorTestComponent: FC = () => {
+      const SetErrorTestComponent = () => {
         const dispatch = useTableActionsContext()
         const { error } = useTableContext()
 
