@@ -42,8 +42,11 @@ export function Pagination<T>({ pagination, setPagination, data, table, pageSize
   // Update URL with 1-indexed page number
   useEffect(() => {
     if (!searchParams) return
+    const currentPage = searchParams.get('page') ?? '1'
+    const targetPage = (pagination.pageIndex + 1).toString()
+    if (currentPage === targetPage) return
     const params = new URLSearchParams(searchParams.toString())
-    params.set('page', (pagination.pageIndex + 1).toString())
+    params.set('page', targetPage)
     router.replace(`?${params.toString()}`, { scroll: false })
   }, [pagination.pageIndex, searchParams, router])
 
