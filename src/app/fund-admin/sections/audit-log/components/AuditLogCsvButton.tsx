@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 import { showToast } from '@/shared/notification'
 
 import type { AuditLogEntry } from '../types'
-import { auditLogCsvDetailColumn, formatAuditAmountUsd } from '../utils'
+import { auditLogCsvDetailColumn, formatAuditAmountUsd, formatAuditLogCsvTokenSymbolColumn } from '../utils'
 
 const MAX_EXPORT_ROWS = 50000
 const AUDIT_LOG_FETCH_LIMIT = 200
@@ -39,7 +39,16 @@ function escapeCsvValue(value: string): string {
 }
 
 function generateCsv(rows: string[][]): string {
-  const headers = ['ID', 'Date', 'Action', 'Value/Reason', 'Token Amount', 'USD Amount', 'Role']
+  const headers = [
+    'ID',
+    'Date',
+    'Action',
+    'Detail',
+    'Token Amount',
+    'Token Symbol',
+    'USD Amount',
+    'Role',
+  ]
   const csvRows = [headers.map(escapeCsvValue), ...rows.map(r => r.map(escapeCsvValue))]
   return csvRows.map(r => r.join(',')).join('\n')
 }
@@ -118,6 +127,7 @@ function entryToCsvRow(entry: AuditLogEntry, rbtcUsdPrice: number): string[] {
     entry.action,
     auditLogCsvDetailColumn(entry),
     entry.tokenAmount ?? '',
+    formatAuditLogCsvTokenSymbolColumn(entry),
     formatAuditAmountUsd(entry.amountWei, rbtcUsdPrice) ?? '',
     entry.user,
   ]

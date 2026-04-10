@@ -31,6 +31,7 @@ const BTC_VAULT_AUDIT_LOGS_PAGE = gql`
       type
       detail
       amount
+      isNative
       role
       blockTimestamp
     }
@@ -77,6 +78,7 @@ interface RawBtcVaultLogRow {
   type: string
   detail: string | null
   amount: string | null
+  isNative: boolean | null
   role: string | null
   blockTimestamp: string
 }
@@ -113,6 +115,7 @@ function mapLogRowToEntry(row: RawBtcVaultLogRow): AuditLogEntry {
     action: logTypeToActionLabel(row.type),
     detail: row.detail,
     tokenAmount: formatAuditTokenAmountFromWei(amountWei),
+    isNative: row.isNative ?? null,
     amountWei,
     user: mapUserFromLog(row.type, row.role),
   }

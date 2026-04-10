@@ -1,6 +1,7 @@
 import { formatEther } from 'viem'
 
 import { getFiatAmount } from '@/app/shared/formatter'
+import { RBTC, WRBTC } from '@/lib/constants'
 import { formatCurrencyWithLabel } from '@/lib/utils'
 
 import { AUDIT_LOG_NAV_EPOCH_DETAIL_RE, AUDIT_LOG_NAV_UPDATED_ACTION_LABEL } from './constants'
@@ -58,8 +59,13 @@ export function auditLogValueReasonDetail(entry: AuditLogEntry): string | null {
   return text
 }
 
-/** CSV "Value/Reason" column: full `detail` when a token row exists; else same rules as the cell. */
+/** CSV "Detail" column: full `detail` when a token row exists; else same rules as the cell. */
 export function auditLogCsvDetailColumn(entry: AuditLogEntry): string {
   if (entry.tokenAmount != null) return entry.detail ?? ''
   return auditLogValueReasonDetail(entry) ?? ''
+}
+
+export function formatAuditLogCsvTokenSymbolColumn(entry: AuditLogEntry): string {
+  if (entry.tokenAmount == null || entry.tokenAmount === '') return ''
+  return entry.isNative === false ? WRBTC : RBTC
 }

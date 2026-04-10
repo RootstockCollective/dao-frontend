@@ -17,6 +17,7 @@ const sampleEntry = {
   action: 'Paused deposits',
   detail: null,
   tokenAmount: null,
+  isNative: null,
   amountWei: null,
   user: 'Admin' as const,
 }
