@@ -3,12 +3,15 @@
 import { ButtonHTMLAttributes, useState } from 'react'
 
 import type { BtcVaultAuditLogSortField } from '@/app/api/btc-vault/v1/schemas'
+import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { CsvIcon } from '@/components/Icons/CsvIcon'
+import { RBTC } from '@/lib/constants'
 import { getBtcVaultAuditLogEndpoint } from '@/lib/endpoints'
 import { cn } from '@/lib/utils'
 import { showToast } from '@/shared/notification'
 
 import type { AuditLogEntry } from '../types'
+import { auditLogCsvDetailColumn, formatAuditAmountUsd } from '../utils'
 
 const MAX_EXPORT_ROWS = 50000
 const AUDIT_LOG_FETCH_LIMIT = 200
@@ -96,7 +99,7 @@ async function fetchAllAuditLogEntries(
       const text = await res.text()
       throw new Error(`Failed to fetch audit log page ${page}: ${res.status} ${text}`)
     }
-    const json = (await firstRes.json()) as AuditLogApiResponse
+    const json = (await res.json()) as AuditLogApiResponse
     return json.data ?? []
   })
 
@@ -108,14 +111,14 @@ async function fetchAllAuditLogEntries(
   return allData
 }
 
-function entryToCsvRow(entry: AuditLogEntry): string[] {
+function entryToCsvRow(entry: AuditLogEntry, rbtcUsdPrice: number): string[] {
   return [
     entry.id,
     entry.date,
     entry.action,
-    entry.valueReason ?? '',
+    auditLogCsvDetailColumn(entry),
     entry.tokenAmount ?? '',
-    entry.usdAmount ?? '',
+    formatAuditAmountUsd(entry.amountWei, rbtcUsdPrice) ?? '',
     entry.user,
   ]
 }
@@ -134,6 +137,8 @@ export function AuditLogCsvButton({
   ...props
 }: Props) {
   const [isDownloading, setIsDownloading] = useState(false)
+  const prices = useGetSpecificPrices()
+  const rbtcUsdPrice = prices[RBTC]?.price ?? 0
 
   const handleDownload = async () => {
     if (disabled || isDownloading) return
@@ -162,7 +167,7 @@ export function AuditLogCsvButton({
         })
       }
 
-      const csvRows = dataToExport.map(entryToCsvRow)
+      const csvRows = dataToExport.map(entry => entryToCsvRow(entry, rbtcUsdPrice))
       const csvContent = generateCsv(csvRows)
 
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
