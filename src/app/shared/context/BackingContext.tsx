@@ -1,4 +1,4 @@
-import { createContext, FC, ReactNode, useContext, useMemo } from 'react'
+import { createContext, ReactNode, useContext, useMemo } from 'react'
 
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { BackerEstimatedRewards } from '@/app/collective-rewards/types'
@@ -22,10 +22,7 @@ interface BackingProviderProps {
   dynamicAllocations?: boolean
 }
 
-export const BackingContextProvider: FC<BackingProviderProps> = ({
-  children,
-  dynamicAllocations = false,
-}) => {
+export const BackingContextProvider = ({ children, dynamicAllocations = false }: BackingProviderProps) => {
   const {
     state: { allocations, isContextLoading },
     initialState: { allocations: initialAllocations },

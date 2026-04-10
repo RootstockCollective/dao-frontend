@@ -22,7 +22,7 @@ interface CollapsibleWithPreviewProps {
   className?: string
 }
 
-const CollapsibleWithPreview: React.FC<CollapsibleWithPreviewProps> = ({
+const CollapsibleWithPreview = ({
   expandedContent,
   collapsedContent,
   expandedState,
@@ -30,7 +30,7 @@ const CollapsibleWithPreview: React.FC<CollapsibleWithPreviewProps> = ({
   defaultOpen = true,
   onStateChange,
   className,
-}) => {
+}: CollapsibleWithPreviewProps) => {
   const [isOpen, setIsOpen] = useState(defaultOpen)
   const [expandedHeight, setExpandedHeight] = useState<number>(0)
   const [collapsedHeight, setCollapsedHeight] = useState<number>(0)
