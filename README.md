@@ -149,9 +149,9 @@ For the **request** side, `NextRequest` is fine when you need access to cookies,
 
 ## Sentry Error Tracking
 
-**Installation status**: Installed but disabled by default.
+**Installation status**: Installed; whether events are sent is controlled per environment via `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_ERROR_TRACKING` (see `.env.*` files).
 
-Sentry is integrated for error tracking, performance monitoring, and session replay. It is controlled via a feature flag and does not send data until explicitly enabled.
+Sentry is integrated for error tracking, performance monitoring, and optional session replay. Error reporting requires `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_ERROR_TRACKING=true`. Replay is off unless `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY=true` (requires error tracking enabled).
 
 ### Configuration Options
 
@@ -162,10 +162,10 @@ Sentry parameters used in the project:
 | `dsn` | `NEXT_PUBLIC_SENTRY_DSN` | Client, Server, Edge | Data Source Name for receiving events |
 | `tracesSampleRate` | `1` | Client, Server, Edge | 100% of transactions sampled |
 | `enableLogs` | `true` | Client, Server, Edge | Enable Sentry logs |
-| `environment` | `NEXT_PUBLIC_ENV` | Client, Server, Edge | Environment label (e.g. testnet, mainnet) |
-| `replaysSessionSampleRate` | `0.1` | Client | 10% of sessions recorded for replay (when replay enabled) |
-| `replaysOnErrorSampleRate` | `1.0` | Client | 100% of sessions with errors recorded (when replay enabled) |
-| `integrations` | `replayIntegration`, `browserTracingIntegration` | Client | Replay controlled by `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY`; browser tracing always on when error tracking enabled |
+| `environment` | `NEXT_PUBLIC_PROFILE` | Client, Server, Edge | Environment label (matches active profile) |
+| `replaysSessionSampleRate` | `0.1` or `0` | Client | `0.1` when `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY=true`, else `0` |
+| `replaysOnErrorSampleRate` | `1.0` or `0` | Client | `1.0` when replay flag is on, else `0` |
+| `integrations` | `browserTracingIntegration`, optional `replayIntegration` | Client | Replay when `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY=true` |
 | `tunnelRoute` | `'/monitoring'` | Build | Next.js rewrite to bypass ad-blockers |
 | `widenClientFileUpload` | `true` | Build | Upload more source maps for stack traces |
 | `org`, `project` | `SENTRY_ORG`, `SENTRY_PROJECT` | Build | Organization and project for source map uploads |
@@ -177,8 +177,8 @@ Sentry parameters used in the project:
 | `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_ERROR_TRACKING` | Yes | Feature flag. Set to `true` to enable error tracking |
 | `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY` | No | Feature flag. Set to `true` to enable session replay (default: `false`) |
 | `NEXT_PUBLIC_SENTRY_DSN` | Yes (when enabled) | Sentry Data Source Name for receiving events |
-| `SENTRY_ORG` | Yes (for builds) | Sentry organization slug (e.g. `rootstock-labs`) |
-| `SENTRY_PROJECT` | Yes (for builds) | Sentry project name (e.g. `rootstock-dao-frontend`) |
+| `SENTRY_ORG` | Yes (for builds) | Sentry organization slug (e.g. `rootstocklabs-limited`) |
+| `SENTRY_PROJECT` | Yes (for builds) | Sentry project name (e.g. `dao-frontend`) |
 | `SENTRY_AUTH_TOKEN` | No (optional) | Auth token for uploading source maps. Without it, stack traces stay minified/unreadable. **Keep secret.** |
 
 ### How to Enable When Ready
@@ -187,7 +187,7 @@ Sentry parameters used in the project:
 2. Set `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_ERROR_TRACKING=true` in your `.env.*` file
 3. Ensure `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_ORG`, and `SENTRY_PROJECT` are set
 4. For source map uploads during build, set `SENTRY_AUTH_TOKEN` (via CI secrets, not in committed files)
-5. Optionally set `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY=true` to enable session replay (records user sessions when errors occur)
+5. Optionally set `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY=true` to enable session replay (requires error tracking enabled)
 
 See [SENTRY_SETUP_GUIDE.md](./docs/SENTRY_SETUP_GUIDE.md) for detailed setup instructions.
 
