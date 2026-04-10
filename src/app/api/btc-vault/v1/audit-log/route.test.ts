@@ -15,9 +15,9 @@ const sampleEntry = {
   id: '0xabc-0',
   date: 'Jan 1, 2026',
   action: 'Paused deposits',
-  valueReason: null,
+  detail: null,
   tokenAmount: null,
-  usdAmount: null,
+  amountWei: null,
   user: 'Admin' as const,
 }
 

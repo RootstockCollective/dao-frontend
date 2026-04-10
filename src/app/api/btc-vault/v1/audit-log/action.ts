@@ -1,10 +1,13 @@
 import { gql } from '@apollo/client'
 import { DateTime } from 'luxon'
 import { unstable_cache } from 'next/cache'
-import { formatEther } from 'viem'
 import type { z } from 'zod'
 
 import type { AuditLogEntry, AuditLogUserRole } from '@/app/fund-admin/sections/audit-log/types'
+import {
+  formatAuditTokenAmountFromWei,
+  parseSubgraphAmountWei,
+} from '@/app/fund-admin/sections/audit-log/utils'
 import { btcVaultClient } from '@/shared/components/ApolloClient'
 
 import { BtcVaultAuditLogQuerySchema, type BtcVaultAuditLogSortField } from '../schemas'
@@ -28,7 +31,6 @@ const BTC_VAULT_AUDIT_LOGS_PAGE = gql`
       type
       detail
       amount
-      isNative
       role
       blockTimestamp
     }
@@ -75,7 +77,6 @@ interface RawBtcVaultLogRow {
   type: string
   detail: string | null
   amount: string | null
-  isNative: boolean | null
   role: string | null
   blockTimestamp: string
 }
@@ -98,34 +99,21 @@ function mapUserFromLog(logType: string, roleFromSubgraph: string | null): Audit
   return FUND_MANAGER_LOG_TYPES.has(logType) ? 'Fund Manager' : 'Admin'
 }
 
-function formatAuditTokenAmount(raw: string | null | undefined): string | null {
-  if (raw == null || raw === '0') return null
-  try {
-    const wei = BigInt(raw)
-    if (wei === 0n) return null
-    const asEther = formatEther(wei)
-    const n = Number(asEther)
-    if (!Number.isFinite(n)) return asEther
-    return n.toLocaleString('en-US', { maximumFractionDigits: 8 })
-  } catch {
-    return null
-  }
+function formatAuditLogDate(blockTimestamp: string): string {
+  const ts = Number(blockTimestamp)
+  if (!Number.isFinite(ts) || ts <= 0) return ''
+  return DateTime.fromSeconds(ts, { zone: 'utc' }).setLocale('en').toFormat('LLL d, yyyy')
 }
 
 function mapLogRowToEntry(row: RawBtcVaultLogRow): AuditLogEntry {
-  const ts = Number(row.blockTimestamp)
-  const date =
-    Number.isFinite(ts) && ts > 0
-      ? DateTime.fromSeconds(ts, { zone: 'utc' }).setLocale('en').toFormat('LLL d, yyyy')
-      : ''
-
+  const amountWei = parseSubgraphAmountWei(row.amount)
   return {
     id: row.id,
-    date,
+    date: formatAuditLogDate(row.blockTimestamp),
     action: logTypeToActionLabel(row.type),
-    valueReason: row.detail,
-    tokenAmount: formatAuditTokenAmount(row.amount),
-    usdAmount: null,
+    detail: row.detail,
+    tokenAmount: formatAuditTokenAmountFromWei(amountWei),
+    amountWei,
     user: mapUserFromLog(row.type, row.role),
   }
 }
