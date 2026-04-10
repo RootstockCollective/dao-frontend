@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactElement, Suspense, useMemo } from 'react'
-import { Dispatch, FC, ReactNode } from 'react'
+import { Dispatch, ReactNode } from 'react'
 import { Address } from 'viem'
 
 import { Button } from '@/components/Button'
@@ -34,12 +34,14 @@ export const useSelectedBuildersActions = (actions: Action[]) => {
   return getSelectedBuildersActionState(actions, selectedBuilderIds)
 }
 
-const OrderIndicatorContainer: FC<CommonComponentProps> = ({ className, children }) => (
+const OrderIndicatorContainer = ({ className, children }: CommonComponentProps) => (
   <div className={cn('flex pt-1 justify-center gap-2', className)}>{children}</div>
 )
 
-const OrderIndicator: FC<CommonComponentProps & { columnId: BuilderTable['Column']['id'] }> = ({
+const OrderIndicator = ({
   columnId,
+}: CommonComponentProps & {
+  columnId: BuilderTable['Column']['id']
 }) => {
   const { sort } = useTableContext<ColumnId, BuilderCellDataMap>()
 
@@ -177,7 +179,7 @@ export const HeaderCell = ({
   )
 }
 
-export const HeaderTitle: FC<CommonComponentProps> = ({ className, children }) => (
+export const HeaderTitle = ({ className, children }: CommonComponentProps) => (
   <Label
     variant="tag"
     className={cn(
@@ -189,7 +191,7 @@ export const HeaderTitle: FC<CommonComponentProps> = ({ className, children }) =
   </Label>
 )
 
-export const HeaderSubtitle: FC<CommonComponentProps> = ({ className, children }) => (
+export const HeaderSubtitle = ({ className, children }: CommonComponentProps) => (
   <Paragraph
     variant="body-xs"
     className={cn('text-v3-bg-accent-40 rootstock-sans text-xs leading-5 lowercase font-normal', className)}

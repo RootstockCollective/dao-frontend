@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import type { FC } from 'react'
 import { memo } from 'react'
 
 import { MoneyIconKoto } from '@/components/Icons'
@@ -18,7 +17,7 @@ interface Props {
   row: BtcVaultHistoryTable['Row']
 }
 
-export const MobileBtcVaultHistoryCard: FC<Props> = memo(({ row }) => {
+export const MobileBtcVaultHistoryCard = memo(({ row }: Props) => {
   const { data } = row
 
   return (
