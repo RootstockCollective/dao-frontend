@@ -129,7 +129,7 @@ const config = [
         },
       ],
       '@typescript-eslint/no-restricted-types': [
-        'warn',
+        'error',
         {
           types: {
             FC: {
