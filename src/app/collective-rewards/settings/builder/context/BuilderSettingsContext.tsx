@@ -1,7 +1,7 @@
 'use client'
 
 import { DateTime } from 'luxon'
-import { createContext, FC, ReactNode, useContext, useMemo } from 'react'
+import { ComponentType, createContext, ReactNode, useContext, useMemo } from 'react'
 import { Address, zeroAddress } from 'viem'
 import { useAccount, UseReadContractReturnType } from 'wagmi'
 
@@ -33,7 +33,7 @@ const BuilderSettingsContext = createContext<BackerRewardsPercentageContext>(
 
 export const useBuilderSettingsContext = () => useContext(BuilderSettingsContext)
 
-const BuilderSettingsProvider: FC<{ children: ReactNode }> = ({ children }) => {
+const BuilderSettingsProvider = ({ children }: { children: ReactNode }) => {
   const { getBuilderByAddress } = useBuilderContext()
   const { address } = useAccount()
   const { data: rawCurrentRewardData, ...restCurrentResponse } = useReadBuilderRegistry({
@@ -71,7 +71,7 @@ const BuilderSettingsProvider: FC<{ children: ReactNode }> = ({ children }) => {
   return <BuilderSettingsContext.Provider value={contextValue}>{children}</BuilderSettingsContext.Provider>
 }
 
-export const withBuilderSettingsProvider = <P extends object>(Component: FC<P>) => {
+export const withBuilderSettingsProvider = <P extends object>(Component: ComponentType<P>) => {
   const WrappedComponent = (props: P) => {
     return (
       <BuilderSettingsProvider>

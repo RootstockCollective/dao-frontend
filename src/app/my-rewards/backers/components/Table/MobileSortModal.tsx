@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/Button'
 import { TrashIcon } from '@/components/Icons'
@@ -16,7 +16,7 @@ interface MobileSortModalProps {
   onClose: () => void
 }
 
-export const MobileSortModal: FC<MobileSortModalProps> = ({ isOpen, onClose }) => {
+export const MobileSortModal = ({ isOpen, onClose }: MobileSortModalProps) => {
   const { sort, defaultSort, columns } = useTableContext<ColumnId, BackerRewardsCellDataMap>()
   const dispatch = useTableActionsContext<ColumnId, BackerRewardsCellDataMap>()
 
