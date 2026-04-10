@@ -32,18 +32,23 @@ export interface TablePagerProps extends CommonComponentProps {
   renderPagerCount?: (ctx: TablePagerCountContext) => ReactNode
 }
 
-const PagerCount: React.FC<{
+const PagerCount = ({
+  start,
+  end,
+  total,
+  itemName,
+}: {
   start: number
   end: number
   total: number
   itemName: string
-}> = ({ start, end, total, itemName }) => (
+}) => (
   <Paragraph
     variant="body-xs"
     className="text-v3-bg-accent-0 select-none first-letter:uppercase"
     data-testid="table-pager-count"
   >
-    {itemName} {start} – {end} out of {total}
+    {itemName} {start}– {end}out of {total}
   </Paragraph>
 )
 type NextPageHandler = (props: {
@@ -90,7 +95,7 @@ const getDefaultRange = (pageSize: number, totalItems: number) => ({
  * @param mode - The mode of the pager (cyclic or expandable)
  * @param className - The className to apply to the pager
  */
-export const TablePager: React.FC<TablePagerProps> = ({
+export const TablePager = ({
   pageSize,
   totalItems = 0,
   pagedItemName,
@@ -98,7 +103,7 @@ export const TablePager: React.FC<TablePagerProps> = ({
   mode,
   renderPagerCount,
   className,
-}) => {
+}: TablePagerProps) => {
   if (!isMode(mode)) {
     throw new Error(`Invalid mode: ${mode}`)
   }
