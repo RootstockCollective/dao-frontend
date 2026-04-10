@@ -1,5 +1,4 @@
 import * as Progress from '@radix-ui/react-progress'
-import { FC } from 'react'
 
 import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
@@ -10,11 +9,11 @@ export interface BackingShareCellProps {
   className?: string
 }
 
-export const BackingShareCell: FC<BackingShareCellProps> = ({
+export const BackingShareCell = ({
   backingPercentage: allocationPct,
   step = 1,
   className,
-}) => {
+}: BackingShareCellProps) => {
   if (allocationPct === undefined) {
     return <div className={cn('flex items-center justify-center w-full h-full gap-2', className)}></div>
   }

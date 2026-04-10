@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { CommonComponentProps } from '@/components/commonProps'
 import { CheckboxChecked } from '@/components/Icons/CheckboxChecked'
 import { CheckboxUnchecked } from '@/components/Icons/CheckboxUnchecked'
@@ -8,11 +6,12 @@ import { useTableContext } from '@/shared/context'
 
 import { BuilderCellDataMap, ColumnId } from '../../BuilderTable.config'
 
-export const SelectorHeaderCell: FC<
-  CommonComponentProps & {
-    onClick?: () => void
-  }
-> = ({ className, onClick }) => {
+export const SelectorHeaderCell = ({
+  className,
+  onClick,
+}: CommonComponentProps & {
+  onClick?: () => void
+}) => {
   const { selectedRows } = useTableContext<ColumnId, BuilderCellDataMap>()
 
   return (
