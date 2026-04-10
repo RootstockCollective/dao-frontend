@@ -49,7 +49,7 @@ function toRpcLog(log: BackendEventByTopic0ResponseValue): RpcLog {
  *
  * @see {@link fetchBlockscoutGetLogsPaginated} — Use directly when you need `topic2`, extra operators, or raw rows.
  *
- * @throws Same as {@link fetchBlockscoutGetLogsPaginated} (HTTP errors, Blockscout error status, missing `result`).
+ * @throws Same as {@link fetchBlockscoutGetLogsPaginated} (including empty-handling: no duplicate logic here).
  *
  * @example Request-style input (TypeScript call):
  * ```ts

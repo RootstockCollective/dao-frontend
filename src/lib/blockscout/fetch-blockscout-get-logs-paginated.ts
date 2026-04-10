@@ -105,11 +105,18 @@ function buildPageParams(query: BlockscoutGetLogsQuery, fromBlock: string): Reco
  * @param params.fetchInit — Optional `fetch` options merged after defaults.
  * @returns Raw log rows as returned by Blockscout (includes `timeStamp` for server-side use).
  *
- * @remarks If pagination reaches {@link BLOCKSCOUT_GET_LOGS_MAX_PAGES}, fetching stops and the result set may be truncated.
+ * @remarks
+ * - If pagination reaches {@link BLOCKSCOUT_GET_LOGS_MAX_PAGES}, fetching stops and the result set may be truncated.
+ * - **Empty `getLogs` responses:** Blockscout sometimes returns `status: '0'` with `result` `null` or `[]` when no
+ *   logs match (e.g. message `No records found`). That is treated as a normal empty page—pagination ends and the
+ *   function returns accumulated rows (often `[]`). **This is the single place that encodes that rule** for this
+ *   API client; {@link fetchLogsByTopic} calls here and does not re-check. Prefer importing this module over copying
+ *   raw Blockscout `getLogs` response handling elsewhere.
  *
  * @see {@link fetchLogsByTopic} — Maps rows to viem `RpcLog` (omits Blockscout-only fields like `timeStamp`).
  *
- * @throws On non-OK HTTP, Blockscout `status !== '1'`, or missing `result` when success is claimed.
+ * @throws On non-OK HTTP; when `status === '1'` but `result` is missing; or when `status !== '1'` and the response
+ *   is not the empty case above (`status === '0'` with null/empty `result`—other failure statuses/messages still throw).
  *
  * @example HTTP JSON body shape (one row in `result`; fields mirror Blockscout RPC):
  * ```json
@@ -165,6 +172,9 @@ export async function fetchBlockscoutGetLogsPaginated({
     const data = (await response.json()) as BlockscoutLogsResponse
 
     if (data.status !== '1') {
+      if (data.status === '0' && (!data.result || data.result.length === 0)) {
+        break
+      }
       throw new Error(`Blockscout error: ${data.message || 'unknown error'} (status: ${data.status})`)
     }
 

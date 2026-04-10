@@ -1,5 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { logger } from '@/lib/logger'
+
 import { resolveStakingHistoryCsvPlan, stakingHistoryCsvSourceHeaders } from './resolve-staking-history-csv-plan'
+
+vi.mock('@/lib/logger', () => ({
+  logger: { error: vi.fn(), info: vi.fn(), warn: vi.fn(), debug: vi.fn() },
+}))
 
 vi.mock('./database/fetch-from-database', () => ({
   getStakingHistoryFromDB: vi.fn(),
@@ -48,6 +54,7 @@ beforeEach(() => {
   mockGetStakingHistoryFromDB.mockReset()
   mockGetStakingHistoryCountFromDB.mockReset()
   mockFetchStakingHistoryFromBlockscout.mockReset()
+  vi.mocked(logger.error).mockClear()
 })
 
 describe('resolveStakingHistoryCsvPlan', () => {
@@ -95,6 +102,10 @@ describe('resolveStakingHistoryCsvPlan', () => {
     await expect(resolveStakingHistoryCsvPlan(address, sortParams, 200)).rejects.toMatchObject({
       name: 'ALL_STAKING_HISTORY_SOURCES_FAILED',
     })
+
+    expect(vi.mocked(logger.error)).toHaveBeenCalledTimes(2)
+    expect(vi.mocked(logger.error).mock.calls[0][0]).toMatchObject({ sourceName: 'database' })
+    expect(vi.mocked(logger.error).mock.calls[1][0]).toMatchObject({ sourceName: 'blockscout' })
   })
 })
 

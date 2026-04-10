@@ -189,7 +189,7 @@ describe('fetchLogsByTopic', () => {
     expect(result.data).toHaveLength(0)
   })
 
-  it('stops on error status from Blockscout', async () => {
+  it('returns empty data when Blockscout responds status 0 with no rows (e.g. No records found)', async () => {
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
       json: () =>
@@ -200,12 +200,31 @@ describe('fetchLogsByTopic', () => {
         }),
     })
 
+    const result = await fetchLogsByTopic({
+      address: '0xAddr',
+      topic0: '0xtopic',
+    })
+
+    expect(result.data).toEqual([])
+  })
+
+  it('throws when Blockscout returns a non-success status that is not the empty-page case', async () => {
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          status: '2',
+          message: 'Query timeout',
+          result: null,
+        }),
+    })
+
     await expect(
       fetchLogsByTopic({
         address: '0xAddr',
         topic0: '0xtopic',
       }),
-    ).rejects.toThrow('Blockscout error: No records found (status: 0)')
+    ).rejects.toThrow(/Blockscout error/)
   })
 
   it('throws on HTTP error', async () => {

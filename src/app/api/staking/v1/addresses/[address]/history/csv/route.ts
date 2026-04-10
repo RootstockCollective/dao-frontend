@@ -54,7 +54,7 @@ const formatCurrencyForCsv = (amount: bigint | string, price: number): string =>
 const formatPeriod = (period: string): string => {
   const [year, month] = period.split('-')
   const date = new Date(Number(year), Number(month) - 1, 1)
-  return date.toLocaleString('en-US', { month: 'long', year: 'numeric' })
+  return date.toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' })
 }
 
 const formatDateForCsv = (timestamp: string | number): string => {
@@ -66,6 +66,7 @@ const formatDateForCsv = (timestamp: string | number): string => {
     hour: '2-digit',
     minute: '2-digit',
     hour12: false,
+    timeZone: 'UTC',
   })
 }
 

@@ -1,3 +1,5 @@
+import { logger } from '@/lib/logger'
+
 import type { StakingHistoryByPeriodAndAction } from '../types'
 import { fetchStakingHistoryFromBlockscout } from './blockscout/fetch-from-blockscout'
 import { getStakingHistoryCountFromDB, getStakingHistoryFromDB } from './database/fetch-from-database'
@@ -72,14 +74,23 @@ export async function resolveStakingHistoryCsvPlan(
       address,
       sortParams,
     }
-  } catch {
+  } catch (error) {
+    logger.error(
+      { err: error, sourceName: 'database' },
+      'CSV plan: database source failed, trying Blockscout',
+    )
     try {
       const raw = await fetchStakingHistoryFromBlockscout(address)
       const groups = filterSortStakingHistoryGroups(raw, sortParams)
       return { kind: 'blockscout', groups }
-    } catch {
+    } catch (blockscoutError) {
+      logger.error(
+        { err: blockscoutError, sourceName: 'blockscout' },
+        'CSV plan: Blockscout source also failed',
+      )
       const err = new Error('Can not fetch staking history from any source')
       err.name = 'ALL_STAKING_HISTORY_SOURCES_FAILED'
+      err.cause = blockscoutError
       throw err
     }
   }

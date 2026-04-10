@@ -107,6 +107,72 @@ describe('fetchBlockscoutGetLogsPaginated', () => {
     })
   })
 
+  it('returns empty array when Blockscout responds with status 0 and No records found', async () => {
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          status: '0',
+          message: 'No records found',
+          result: null,
+        }),
+    })
+
+    const rows = await fetchBlockscoutGetLogsPaginated({
+      query: { address: '0xAddr', topic0: '0xtopic' },
+    })
+
+    expect(rows).toEqual([])
+  })
+
+  it('treats status 0 with null or empty result as empty regardless of message', async () => {
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          status: '0',
+          message: 'Invalid address format',
+          result: null,
+        }),
+    })
+
+    await expect(
+      fetchBlockscoutGetLogsPaginated({ query: { address: '0xAddr', topic0: '0xt' } }),
+    ).resolves.toEqual([])
+  })
+
+  it('throws when status is 0 but result is non-empty (inconsistent Blockscout response)', async () => {
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          status: '0',
+          message: 'Something went wrong',
+          result: [mockLog('0xa', '0x0', '0xhash1')],
+        }),
+    })
+
+    await expect(
+      fetchBlockscoutGetLogsPaginated({ query: { address: '0xAddr', topic0: '0xt' } }),
+    ).rejects.toThrow(/Blockscout error/)
+  })
+
+  it('throws when Blockscout status is neither success nor empty-page 0', async () => {
+    global.fetch = vi.fn().mockResolvedValueOnce({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          status: '2',
+          message: 'Query timeout',
+          result: null,
+        }),
+    })
+
+    await expect(
+      fetchBlockscoutGetLogsPaginated({ query: { address: '0xAddr', topic0: '0xt' } }),
+    ).rejects.toThrow(/Blockscout error/)
+  })
+
   it('uses blockscoutBaseUrl override', async () => {
     global.fetch = vi.fn().mockResolvedValueOnce({
       ok: true,
