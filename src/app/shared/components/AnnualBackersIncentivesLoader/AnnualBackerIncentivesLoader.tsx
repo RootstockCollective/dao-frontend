@@ -1,5 +1,5 @@
 import Big from 'big.js'
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import {
   useGetABIFromChain,
@@ -20,7 +20,7 @@ const useFallbackWithErrors = () => {
   return { data, isLoading, error }
 }
 
-export const AnnualBackerIncentivesLoader: FC<AnnualBackerIncentivesLoaderProps> = ({ render }) => {
+export const AnnualBackerIncentivesLoader = ({ render }: AnnualBackerIncentivesLoaderProps) => {
   const {
     flags: { use_state_sync },
   } = useFeatureFlags()

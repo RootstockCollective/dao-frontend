@@ -9,7 +9,7 @@ interface SeeRewardsHistoryButtonProps {
 }
 
 // TODO: not used yet, Im not sure if we need it
-export const SeeRewardsHistoryButton: React.FC<SeeRewardsHistoryButtonProps> = ({ onClick, icon }) => {
+export const SeeRewardsHistoryButton = ({ onClick, icon }: SeeRewardsHistoryButtonProps) => {
   return (
     <button
       className="flex h-12 py-1 px-0 items-center gap-2 rounded border-none bg-transparent cursor-pointer mt-2"
