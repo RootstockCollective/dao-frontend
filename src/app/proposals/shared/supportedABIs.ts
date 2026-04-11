@@ -22,6 +22,7 @@ const _supportedProposalActions = [
   // CR MVP: To keep compatibility with the MVP logs
   'removeWhitelistedBuilder',
   'whitelistBuilder',
+  'revokeBuilderKYC',
 ] as const
 
 export type SupportedActionAbi = (typeof abis)[number]

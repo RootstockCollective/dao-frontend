@@ -310,6 +310,7 @@ export function getProposalCategoryFromParsedData(
     ['communityBanBuilder', ProposalCategory.Deactivation],
     ['removeWhitelistedBuilder', ProposalCategory.Deactivation],
     ['dewhitelistBuilder', ProposalCategory.Deactivation],
+    ['revokeBuilderKYC', ProposalCategory.Deactivation],
   ])
 
   // Check for builder functions first
