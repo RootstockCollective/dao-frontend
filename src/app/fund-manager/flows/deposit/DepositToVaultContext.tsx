@@ -30,16 +30,23 @@ export const DepositToVaultProvider = ({ children }: Props) => {
 
   const { reportedOffchainAssets, isBatchLoading, vaultBatchError, refetchVault } = useRbtcVault()
 
-  const capKnown = !isBatchLoading && !vaultBatchError
-  const depositLimitStatus = capKnown ? 'ready' : vaultBatchError ? 'error' : 'loading'
-  const reportedOffchainCap = capKnown ? reportedOffchainAssets : null
+  const depositLimitStatus =
+    reportedOffchainAssets !== null
+      ? 'ready'
+      : vaultBatchError
+        ? 'error'
+        : isBatchLoading
+          ? 'loading'
+          : 'error'
 
   const tokenSelection = useTokenSelection(WRBTC_ADDRESS)
 
+  const reportedOffchainCap = reportedOffchainAssets
+
   const limitInfo = useMemo(() => {
-    if (!capKnown) return
+    if (reportedOffchainAssets === null) return
     return formatMetrics(reportedOffchainAssets, rbtcPrice, RBTC)
-  }, [capKnown, reportedOffchainAssets, rbtcPrice])
+  }, [reportedOffchainAssets, rbtcPrice])
 
   const effectiveMaxWei = useMemo(
     () => effectiveDepositMaxWei(tokenSelection.balance, reportedOffchainCap),
@@ -47,43 +54,46 @@ export const DepositToVaultProvider = ({ children }: Props) => {
   )
 
   const maxDepositableFormatted = useMemo(
-    () => (capKnown ? formatMetrics(effectiveMaxWei, rbtcPrice, RBTC).amount : undefined),
-    [capKnown, effectiveMaxWei, rbtcPrice],
+    () =>
+      reportedOffchainAssets !== null ? formatMetrics(effectiveMaxWei, rbtcPrice, RBTC).amount : undefined,
+    [reportedOffchainAssets, effectiveMaxWei, rbtcPrice],
   )
 
-  const amountInput = useAmountInput({
+  const {
+    amount,
+    isValidAmount: isAmountValid,
+    isAmountOverBalance,
+    errorMessage: amountErrorMessage,
+    usdEquivalent,
+    setAmount,
+    handleAmountChange,
+  } = useAmountInput({
     balance: tokenSelection.balance,
     isNative: tokenSelection.isNative,
     tokenPrice: rbtcPrice,
   })
 
-  const { amount } = amountInput
-
-  const moveCapitalInBlocking = useMemo(() => {
-    if (!amount) return null
+  const { moveCapitalInBlocking, isAmountOverLimit } = useMemo(() => {
+    if (!amount || reportedOffchainAssets === null) {
+      return { moveCapitalInBlocking: null, isAmountOverLimit: false }
+    }
     try {
       const amountWei = parseUnits(amount, 18)
       const capDisplay = `${formatSymbol(reportedOffchainAssets, RBTC)} ${RBTC}`
-      return moveCapitalInBlockingError(amountWei, reportedOffchainCap, capDisplay)
+      return {
+        moveCapitalInBlocking: moveCapitalInBlockingError(amountWei, reportedOffchainCap, capDisplay),
+        isAmountOverLimit: isAmountOverReportedOffchain(amountWei, reportedOffchainCap),
+      }
     } catch {
-      return null
+      return { moveCapitalInBlocking: null, isAmountOverLimit: false }
     }
   }, [amount, reportedOffchainAssets, reportedOffchainCap])
 
-  const isAmountOverLimit = useMemo(() => {
-    if (!amount) return false
-    try {
-      return isAmountOverReportedOffchain(parseUnits(amount, 18), reportedOffchainCap)
-    } catch {
-      return false
-    }
-  }, [amount, reportedOffchainCap])
-
   const errorMessage = useMemo(() => {
-    if (amountInput.isAmountOverBalance) {
-      return amountInput.errorMessage
+    if (isAmountOverBalance) {
+      return amountErrorMessage
     }
-    if (amountInput.isValidAmount && !capKnown) {
+    if (isAmountValid && reportedOffchainAssets === null) {
       if (isBatchLoading) {
         return 'Loading deposit limit…'
       }
@@ -92,37 +102,37 @@ export const DepositToVaultProvider = ({ children }: Props) => {
     if (moveCapitalInBlocking) {
       return moveCapitalInBlocking
     }
-    return amountInput.errorMessage
+    return amountErrorMessage
   }, [
-    amountInput.isAmountOverBalance,
-    amountInput.isValidAmount,
-    amountInput.errorMessage,
-    capKnown,
+    isAmountOverBalance,
+    isAmountValid,
+    amountErrorMessage,
+    reportedOffchainAssets,
     isBatchLoading,
     moveCapitalInBlocking,
   ])
 
   const isValidAmount = useMemo(
-    () => amountInput.isValidAmount && capKnown && !moveCapitalInBlocking,
-    [amountInput.isValidAmount, capKnown, moveCapitalInBlocking],
+    () => isAmountValid && reportedOffchainAssets !== null && !moveCapitalInBlocking,
+    [isAmountValid, reportedOffchainAssets, moveCapitalInBlocking],
   )
 
   const handlePercentageClick = useCallback(
     (percentage: number) => {
       const baseStr = formatUnits(effectiveMaxWei, 18)
       const calculatedAmount = Big(baseStr).mul(percentage).toFixedNoTrailing(18, 0)
-      amountInput.setAmount(calculatedAmount)
+      setAmount(calculatedAmount)
     },
-    [effectiveMaxWei, amountInput.setAmount],
+    [effectiveMaxWei, setAmount],
   )
 
   const value: AmountFlowContextValue = {
-    amount: amountInput.amount,
+    amount,
     isValidAmount,
-    isAmountOverBalance: amountInput.isAmountOverBalance,
+    isAmountOverBalance,
     isAmountOverLimit,
     errorMessage,
-    usdEquivalent: amountInput.usdEquivalent,
+    usdEquivalent,
     limitInfo,
     maxDepositableFormatted,
     depositLimitStatus,
@@ -132,8 +142,8 @@ export const DepositToVaultProvider = ({ children }: Props) => {
     balanceFormatted: tokenSelection.balanceFormatted,
     isNative: tokenSelection.isNative,
     requiresAllowance: tokenSelection.requiresAllowance,
-    setAmount: amountInput.setAmount,
-    handleAmountChange: amountInput.handleAmountChange,
+    setAmount,
+    handleAmountChange,
     handlePercentageClick,
     setSelectedToken: tokenSelection.setSelectedToken,
   }

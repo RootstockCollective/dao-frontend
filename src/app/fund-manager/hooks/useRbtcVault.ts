@@ -38,13 +38,19 @@ export const useRbtcVault = () => {
   const [
     assetAddress,
     currentEpoch,
-    reportedOffchainAssets = 0n,
+    reportedOffchainAssetsRaw,
     freeOnchainLiquidity = 0n,
     totalAssets = 0n,
     totalPendingDepositAssets = 0n,
     totalRedeemRequiredAssets = 0n,
     totalRedeemPaidAssets = 0n,
   ] = batchData
+
+  /** Successful read only; `null` while loading, on batch error, or if this call failed (per-call failures do not set `vaultBatchError`). */
+  const reportedOffchainAssets: bigint | null =
+    !isBatchLoading && !batchError && reportedOffchainAssetsRaw !== undefined
+      ? reportedOffchainAssetsRaw
+      : null
 
   const {
     data: vaultAssetBalance = 0n,
@@ -105,10 +111,10 @@ export const useRbtcVault = () => {
       totalPendingDepositAssets,
       totalRedeemRequiredAssets,
       totalRedeemPaidAssets,
-      /** True while batched vault reads (incl. `reportedOffchainAssets`) are still loading. */
+      /** True while the batched vault multicall is in flight. */
       isBatchLoading,
-      /** Set when the batched vault multicall fails; `reportedOffchainAssets` may be defaulted and unreliable. */
-      vaultBatchError: batchError,
+      /** Set when the whole batched `useReadContracts` query fails; individual call failures leave this null. */
+      vaultBatchError: batchError ?? null,
       isLoading,
       error,
       refetchVault,
