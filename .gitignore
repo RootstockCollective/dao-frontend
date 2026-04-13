@@ -70,3 +70,6 @@ CLAUDE.md
 .workflow/plans/
 .workflow/reviews/
 .workflow/qa-reports/
+
+# Local git worktrees
+.worktrees/
