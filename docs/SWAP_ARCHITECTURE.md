@@ -1,312 +1,321 @@
-# Swap feature — architecture and onboarding guide
+# How swapping works in this app
 
-This document explains how token swapping works in this repository: user journey, supported assets, state, quoting, on-chain execution, and where to read code. It is written for junior engineers, QA, and product owners who need a reliable mental model without reading the whole codebase first.
+You can swap **three tokens only**: USDT0, USDRIF, and RIF. The app asks the chain how much you would get (a **quote**), then helps you approve and sign, then runs the trade on **Uniswap V3** on Rootstock.
 
-**Branch / baseline:** Documentation was authored on branch `dao-2217` (created from `origin/dao-2226`). Swap logic lives primarily under `src/lib/swap/`, `src/shared/stores/swap/`, `src/app/user/Swap/`, and `src/app/api/swap/`.
+Most code for this lives in:
 
----
+- `src/lib/swap/` — math, paths, quotes, and transaction data
+- `src/shared/stores/swap/` — what the screen remembers and the React hooks that talk to the chain
+- `src/app/user/Swap/` — the swap popup and its three steps
+- `src/app/api/swap/` — an HTTP endpoint that can get a quote (same idea as inside the popup)
 
-## 1. What swapping does (one paragraph)
-
-The app lets users trade between **three fixed tokens** (USDT0, USDRIF, RIF) on Rootstock using **Uniswap V3** infrastructure: **QuoterV2** estimates output or required input, and the **Universal Router** executes a **V3 exact-in swap**. For **USDRIF ↔ RIF** there is **no direct pool in the routing table**, so the product uses a **two-hop path through USDT0**. Approvals use **Permit2**: the user first approves the ERC-20 to Permit2, then signs an EIP-712 **spending cap**, and finally sends **one transaction** that runs **PERMIT2_PERMIT + V3_SWAP_EXACT_IN** on the Universal Router.
-
----
-
-## 2. Supported tokens and pairs
-
-| Symbol  | Role in product | Notes |
-|---------|-----------------|--------|
-| **USDT0** | Primary stable routing asset | Bridge token for USDRIF ↔ RIF |
-| **USDRIF** | Dollar-pegged RIF derivative | Pairs directly with USDT0 |
-| **RIF**   | Native/governance-oriented asset | Reaches USDRIF via USDT0 multihop |
-
-Canonical lists in code:
-
-- `SWAP_FLOW_TOKEN_SYMBOLS` and `SWAP_TOKEN_ADDRESSES` in `src/lib/swap/constants.ts` — addresses come from `tokenContracts` / env (`NEXT_PUBLIC_*_ADDRESS`).
-- UI token metadata (decimals, names) in `src/shared/stores/swap/useSwapTokens.ts`.
-
-**Important:** Other DEX names appear in constants (`ICECREAMSWAP`, `OPENOCEAN`) for future or historical wiring, but **quotes and execution in this branch use Uniswap only** (`uniswapProvider`).
+*This file was added on branch `dao-2217` (from `origin/dao-2226`).*
 
 ---
 
-## 3. End-to-end user flow (UI)
+## 1. The big picture
 
-The swap UI is a **modal wizard** (`SwappingFlow`), opened from the vault area (`VaultActions` renders `SwappingFlow` when the user opens swap).
+**What the user does**
+
+1. Pick how much to send or how much they want to receive.
+2. The app shows an estimate from **QuoterV2** (a read-only contract that simulates the swap).
+3. If needed, they approve the token for **Permit2** (a helper contract Uniswap uses).
+4. They sign a **spending cap** in the wallet (no gas for this step — it is just a signature).
+5. They confirm **one** on-chain transaction. The **Universal Router** runs the permit step and then the **V3_SWAP_EXACT_IN** swap in the same transaction.
+
+**USDRIF and RIF**
+
+There is no single pool that swaps USDRIF and RIF directly in our route list. So the app always routes that pair through **USDT0**: for example USDRIF → USDT0 → RIF (two steps on the path, called **multihop**).
+
+---
+
+## 2. The three tokens
+
+| Token   | Plain meaning |
+|---------|----------------|
+| **USDT0** | Stable value token; also used as the “middle” hop between USDRIF and RIF. |
+| **USDRIF** | A dollar-linked RIF-related token; swaps straight against USDT0. |
+| **RIF**   | The main RIF token; to reach USDRIF the path goes through USDT0. |
+
+Where the addresses and symbols are set:
+
+- `src/lib/swap/constants.ts` — `SWAP_TOKEN_ADDRESSES`, `SWAP_FLOW_TOKEN_SYMBOLS`
+- `src/shared/stores/swap/useSwapTokens.ts` — names and decimals for the UI
+
+You may see other exchange names in constants (for example IceCream, OpenOcean). **Right now only Uniswap is wired up** for real quotes and swaps (`uniswapProvider`).
+
+---
+
+## 3. The three steps in the popup
+
+The swap screen is a **modal** (`SwappingFlow`). It opens from the vault actions area when the user chooses swap.
 
 ```mermaid
 flowchart LR
-  subgraph step1 [Step 1 - Select amount]
-    A[Pick tokens + amount] --> B[Quote via Uniswap]
-    B --> C{ERC20 allowance to Permit2?}
-    C -->|No| D[Approve unlimited to Permit2]
+  subgraph step1 [Step 1]
+    A[Amount and tokens] --> B[Get quote]
+    B --> C{Token approved for Permit2?}
+    C -->|No| D[Approve]
     C -->|Yes| E[Continue]
     D --> E
   end
-  subgraph step2 [Step 2 - Permit]
-    F[Sign Permit2 spending cap] --> G[EIP-712 off-chain]
+  subgraph step2 [Step 2]
+    F[Sign spending cap]
   end
-  subgraph step3 [Step 3 - Confirm]
-    H[Choose slippage] --> I[Compute min out]
-    I --> J[Universal Router execute]
+  subgraph step3 [Step 3]
+    G[Pick slippage] --> H[Confirm swap tx]
   end
   step1 --> step2 --> step3
 ```
 
-| Step | File | User-visible purpose |
-|------|------|---------------------|
-| 1 | `SwapStepOne.tsx` | Enter **exact-in** or **exact-out** amount, pick fee tier (Auto or fixed), optional % of balance, flip tokens, continue or **Approve & Continue** |
-| 2 | `SwapStepTwo.tsx` | **Sign spending cap** (Permit2 + Universal Router); auto-skips if prior signature still covers amount |
-| 3 | `SwapStepThree.tsx` | Review from/to, pick **slippage**, see **minimum received**, confirm **one on-chain tx** |
+| Step | Code file | What the user sees |
+|------|-----------|-------------------|
+| 1 | `SwapStepOne.tsx` | Type **amount in** or **amount out**, pick pool fee (**Auto** or a fixed tier), optional % of balance, flip direction, then **Continue** or **Approve & Continue**. |
+| 2 | `SwapStepTwo.tsx` | **Sign spending cap** so the router can spend the exact amount. If an old signature still covers the amount, this step can skip ahead. |
+| 3 | `SwapStepThree.tsx` | Check summary, pick **slippage**, see **minimum you receive**, press **Confirm swap**. |
 
-Supporting UI:
+Other pieces:
 
-- `SwappingFlow.tsx` — modal shell, progress bar, step routing, resets `useSwapStore` on close.
-- `SwapSteps.tsx` — step labels (SELECT AMOUNT → REQUEST ALLOWANCE → CONFIRM SWAP).
-- `SwapInputComponent.tsx` — amount input, token dropdown, USD hint, balance line.
-- `SwapStepWarning.tsx` / `LowLiquidityWarning` — standardized warning styling; low-liquidity copy from `low-liquidity-warning.ts`.
-- `useSwapSmartDefault.ts` — on modal open, if user has no USDT0, prefers USDRIF or RIF as “From” (`smart-default-direction.ts`).
-
----
-
-## 4. Architecture layers
-
-| Layer | Responsibility |
-|-------|----------------|
-| **UI (Swap steps)** | Collects intent, drives wagmi txs/signing, shows warnings |
-| **Zustand (`useSwapStore`)** | Tokens, typed amount, mode, fee tier selection, permit payload, swap tx lifecycle |
-| **Hooks (`shared/stores/swap/hooks.ts`)** | Quotes (React Query), allowance, permit signing, swap execution |
-| **`src/lib/swap`** | Route resolution, Uniswap path encoding, Quoter calls, Universal Router calldata, Permit2 helpers |
-| **API `GET /api/swap/quote`** | Server-side quote using same provider stack (integrators, tests, or future clients) |
-| **On-chain** | ERC20 `approve` → Permit2; `UniversalRouter.execute` with bundled permit + swap |
-
-**Dual quote paths (good to know for QA):**
-
-- **In-modal quotes** call `uniswapProvider` **directly from the browser** via `useSwapInput` (same logic as server, but no HTTP hop).
-- **`useSwapQuote`** + **`/api/swap/quote`** exist for **HTTP/React Query** consumers; the live wizard does **not** depend on `useSwapQuote`.
+- `SwappingFlow.tsx` — popup frame, progress bar, which step is shown; clears swap state when closed.
+- `SwapSteps.tsx` — the labels: SELECT AMOUNT → REQUEST ALLOWANCE → CONFIRM SWAP.
+- `SwapInputComponent.tsx` — amount box, token picker, balance, USD hint.
+- `SwapStepWarning.tsx` / `LowLiquidityWarning` — warning layout and the low-liquidity message.
+- `useSwapSmartDefault.ts` + `smart-default-direction.ts` — when the popup opens, if the user has no USDT0, the app may default “From” to USDRIF or RIF so they do not have to fix tokens first.
 
 ---
 
-## 5. Routing: when swaps are one-hop vs multihop
+## 4. How the code is split (layers)
 
-`resolveSwapRoute(tokenIn, tokenOut)` in `src/lib/swap/routes.ts` returns an ordered list of token addresses:
+Think of it as layers from the screen down to the chain:
 
-- **Default:** `[tokenIn, tokenOut]` (single hop).
-- **USDRIF ↔ RIF:** `[USDRIF, USDT0, RIF]` or `[RIF, USDT0, USDRIF]` depending on direction.
+| Layer | Job |
+|-------|-----|
+| Swap step components | Buttons, inputs, warnings; start wallet actions. |
+| **`useSwapStore` (Zustand)** | Which tokens, typed amount, fee choice, permit data, swap transaction state. **Live quote numbers are not stored here** — they come from React Query in the hooks. |
+| **`hooks.ts`** | Fetches quotes, checks allowance, signs permit, sends the swap transaction. |
+| **`src/lib/swap`** | Builds the route, talks to **QuoterV2**, builds **Universal Router** calldata, Permit2 helpers. |
+| **`GET /api/swap/quote`** | Same quote logic on the server (tests, other callers, or future features). |
+| Chain | `approve` on the token; `execute` on the Universal Router. |
 
-Helpers:
+**Two ways to get a quote (easy to mix up)**
 
-- **`isMultihopRoute`** — `tokens.length > 2`.
-- **`getSwapRouteCacheKey`** — stable string for React Query keys.
-
-**Why it exists:** Uniswap V3 quotes and swaps need a **path** of `(token, fee, token, fee, …)`. The resolver fixes topology so Quoter and execution always agree on intermediates.
-
----
-
-## 6. Fee tiers vs slippage (frequent confusion)
-
-- **Fee tier (pool fee):** Uniswap V3 splits liquidity into pools with fees **100, 500, 3000, 10000** (basis points of the trade, i.e. 0.01%–1%). **Auto** mode asks the Quoter for many combinations and picks the economically best result. **Manual** tier on a multihop route uses the **same** uint24 fee on **every** hop (uniform path).
-- **Slippage (Step 3):** User-selected protection on **minimum output** (`amountOutMinimum`) for the **V3_SWAP_EXACT_IN** command. It is **not** the pool fee.
+- **Inside the popup:** `useSwapInput` calls `uniswapProvider` **in the browser** (no HTTP round trip).
+- **HTTP:** `useSwapQuote` calls **`/api/swap/quote`**. The popup does **not** use `useSwapQuote`.
 
 ---
 
-## 7. Permit2 and Universal Router
+## 5. Route: one hop or two hops
 
-1. **ERC-20 `approve(token, Permit2, MAX)`** — one-time per token (Step 1). Implemented in `useTokenAllowance` via standard `approve` (ABI reused from `RIFTokenAbi` for ERC20).
-2. **`signTypedData` PermitSingle** — authorizes Universal Router to pull **exactly** the signed amount from Permit2 (Step 2). Built with `createSecurePermit` in `src/lib/swap/permit2.ts`; nonce read from Permit2 `allowance(owner, token, spender)`.
-3. **`execute(commands, inputs)`** on Universal Router — `getPermitSwapEncodedData` encodes **`0x0a` (PERMIT2_PERMIT) + `0x00` (V3_SWAP_EXACT_IN)** with the V3 path bytes (`src/lib/swap/providers/uniswap.ts`).
+`resolveSwapRoute` in `src/lib/swap/routes.ts` returns the ordered list of token addresses.
 
-If execution fails with **AllowanceExpired** (`0xd81b2f2e`), the user must return to Step 2 and sign again (handled in `useSwapExecution`).
+- **Most pairs:** two tokens only — one hop.
+- **USDRIF ↔ RIF:** three tokens — always through USDT0.
 
----
+Small helpers:
 
-## 8. Reference: main functions and types
+- `isMultihopRoute` — true when there are more than two tokens in the list.
+- `getSwapRouteCacheKey` — a string key so React Query does not reuse the wrong cached quote when the pair changes.
 
-Below: **what it does**, **why it exists**, **role in swapping**.
-
-### 8.1 `src/lib/swap/constants.ts`
-
-| Export | Role |
-|--------|------|
-| `SWAP_TOKEN_ADDRESSES` | Central map of swap-eligible token addresses |
-| `SWAP_FLOW_TOKEN_SYMBOLS` | The three symbols exposed in the UI |
-| `ROUTER_ADDRESSES` / `POOL_ADDRESSES` | Env-backed contract addresses for quoting and hints |
-| `SWAP_PROVIDERS` | Provider name union (`uniswap`, etc.) |
-| `UNISWAP_FEE_TIERS` | `[100, 500, 3000, 10000]` |
-| `feeTierToPercent` | Display helper (tier / 10_000) |
-
-### 8.2 `src/lib/swap/routes.ts`
-
-| Function | Why |
-|----------|-----|
-| `resolveSwapRoute` | Deterministic path for Quoter + execution (incl. USDRIF–RIF via USDT0) |
-| `isMultihopRoute` | Branches quoting/encoding logic |
-| `getSwapRouteCacheKey` | Invalidates React Query when pair topology changes |
-
-### 8.3 `src/lib/swap/utils.ts`
-
-| Function | Why |
-|----------|-----|
-| `scaleAmount` | Human string → `bigint` via `viem` `parseUnits` (API route) |
-| `isValidAmount` | Positive decimal guard for API |
-| `getTokenDecimals` | On-chain `decimals()` read (single token) |
-| `getTokenDecimalsBatch` | Multicall decimals for API (one round-trip, deduped addresses) |
-| `calculatePriceImpact` | **Utility** comparing effective vs spot price; used in tests / future UI, not wired into the current swap modal quote display |
-
-### 8.4 `src/lib/swap/multicallWithGasEnvelopeRetry.ts`
-
-| Function | Why |
-|----------|-----|
-| `multicallWithGasEnvelopeRetry` | Some RPCs reject large `aggregate3` calls; retries with smaller batches |
-| `isLikelyOuterMulticallRpcFailure` | Classifies outer RPC failures vs per-call reverts |
-
-### 8.5 `src/lib/swap/providers/uniswap.ts` (core provider)
-
-**Path encoding**
-
-| Function | Role |
-|----------|------|
-| `encodeFeeUint24Hex` | Packs uint24 fee into path bytes |
-| `encodeUniformFeeSwapPath` | Same fee every hop |
-| `encodePerHopFeeSwapPath` | Distinct fee per hop (Auto multihop search) |
-
-**Quoting**
-
-| Function | Role |
-|----------|------|
-| `getUniswapQuote` / `getUniswapExactOutputQuote` | Main entry: resolve route, single-hop vs multihop, Auto vs explicit tier |
-| `getBestQuoteFromAllTiers` / `getBestExactOutputFromAllTiers` | Multicall all single-hop tiers, pick best |
-| `getBestMultihopQuoteExactIn` / `…ExactOut` | Cartesian product of tier combinations (up to 3 hops policy) |
-| `cartesianFeeCombinations` | Builds fee lists for multihop probes |
-
-**Execution helpers**
-
-| Function | Role |
-|----------|------|
-| `getSwapEncodedData` | `V3_SWAP_EXACT_IN` only (no permit) — lower-level building block |
-| `getPermitSwapEncodedData` | **Production path**: permit + swap commands for Universal Router |
-| `getAvailableFeeTiers` | Probes which tiers return positive output (powers Step 1 fee buttons) |
-
-**Export**
-
-| Export | Role |
-|--------|------|
-| `uniswapProvider` | `SwapProvider` implementation (`getQuote`, `getQuoteExactOutput`) |
-
-**Error handling:** Infrastructure errors propagate; Quoter reverts often become user-facing “no liquidity” messages (`swapQuoteNoLiquidityExplicitTier`).
-
-### 8.6 `src/lib/swap/permit2.ts`
-
-| Area | Role |
-|------|------|
-| Types (`PermitSingle`, `PermitDetails`, …) | Match Uniswap Permit2 EIP-712 layout |
-| `validateSpender`, `validateAmount`, `validateExpiration`, `validateNonce`, `validateChainId`, `validateToken` | Defense-in-depth before signing |
-| `validatePermitParams` | Aggregates validation for tooling/tests |
-| `createPermitSingle` | Builds struct + deadlines |
-| `createPermit2Domain` / `createTypedDataForPermit` | Wallet `signTypedData` input |
-| `createSecurePermit` | **Used in app** — validates then returns permit + typed data |
-| `validateSignatureFormat` | Basic hex length / `v` checks |
-
-### 8.7 `src/lib/swap/providers/index.ts`
-
-Defines **`SwapProvider`**, **`SwapQuote`**, **`QuoteParams`**, **`QuoteExactOutputParams`** — shared interface if additional DEX adapters are added later.
-
-### 8.8 `src/shared/stores/swap/useSwapStore.ts`
-
-Zustand actions: token pair, `mode` + `typedAmount`, fee tier, permit blobs, swap/approval tx hashes, `reset` on modal close. **Quotes and allowances are not stored here** (React Query / wagmi).
-
-### 8.9 `src/shared/stores/swap/hooks.ts`
-
-| Hook | Role |
-|------|------|
-| `useSwapInput` | Debounced quoting, exact-in/out switching, `availableFeeTiers`, quote staleness (~30s), syncs `poolFee` from quote |
-| `useTokenSelection` | Thin wrapper over store + `useSwapTokens` |
-| `useTokenAllowance` | Reads allowance to Permit2; `approve` unlimited to Permit2 |
-| `usePermitSigning` | Fetches Permit2 nonce, `createSecurePermit`, `signTypedData` |
-| `useSwapExecution` | `getPermitSwapEncodedData` + `execute` on Universal Router |
-
-Helper **`normalizeQuoteResult`** maps provider response into **`QuoteResult`** (bigint fields for UI math).
-
-### 8.10 `src/app/api/swap/quote/route.ts`
-
-| Piece | Role |
-|-------|------|
-| `GET` | Validates addresses/amount, batch-reads decimals, calls `uniswapProvider.getQuote`, returns `{ quotes }` |
-| `revalidate = 30` | Next.js cache hint aligned with quote TTL |
-
-### 8.11 `src/shared/hooks/useSwapQuote.ts`
-
-React Query wrapper around **`/api/swap/quote`**. Useful for **non-modal** consumers; swap modal uses **`useSwapInput`** instead.
-
-### 8.12 User swap utilities
-
-| Module | Role |
-|--------|------|
-| `smart-default-direction.ts` | `getSmartDefaultSwapDirection` — balance-based default pair |
-| `low-liquidity-warning.ts` | `shouldShowLowLiquidityWarning` — USD-based or stable-to-stable heuristic, >5% loss warning |
+**Why:** Uniswap V3 needs a **path**: token, fee, token, fee, … The resolver makes sure the quote step and the send-transaction step use the **same** path.
 
 ---
 
-## 9. Environment variables (operations)
+## 6. Pool fee vs slippage (not the same thing)
 
-Swap-related **public** env vars (see `src/lib/constants.ts`):
+**Pool fee (fee tier)**
+
+Uniswap splits liquidity into pools with different trading fees. Our app uses the standard tiers **100, 500, 3000, 10000** (think of them as **0.01%**, **0.05%**, **0.3%**, **1%** of the trade).
+
+- **Auto:** the app asks for many combinations and picks the best outcome.
+- **Manual tier on a multihop path:** the **same** fee tier is used on **every** hop (uniform path).
+
+**Slippage (step 3)**
+
+The user picks how much worse than the quote they still accept (for example 0.5%). The app turns that into a **minimum output** amount for the swap command. That is **slippage**, not the pool fee.
+
+---
+
+## 7. Permit2 and Universal Router (short version)
+
+1. **Approve** — Step 1 may send an ERC-20 `approve` so **Permit2** is allowed to move the token (`useTokenAllowance`). The app often approves the maximum once so the user is not asked again and again.
+2. **Sign** — Step 2 builds a **PermitSingle** message and the user signs it (`createSecurePermit` in `permit2.ts`). This says how much the **Universal Router** may pull via Permit2.
+3. **Swap** — Step 3 sends one transaction to **Universal Router** `execute`. The payload bundles **PERMIT2_PERMIT** then **V3_SWAP_EXACT_IN** (`getPermitSwapEncodedData` in `uniswap.ts`).
+
+If the wallet error mentions **AllowanceExpired** (or code `0xd81b2f2e`), the signed cap expired or is wrong — go back to Step 2 and sign again (`useSwapExecution` handles that message).
+
+---
+
+## 8. What each main piece of code does
+
+Short notes: **what** / **why it matters for swapping**.
+
+### `src/lib/swap/constants.ts`
+
+| Name | What it does |
+|------|----------------|
+| `SWAP_TOKEN_ADDRESSES` | Addresses for the three swap tokens. |
+| `SWAP_FLOW_TOKEN_SYMBOLS` | The three symbols shown in the UI. |
+| `ROUTER_ADDRESSES`, `POOL_ADDRESSES` | Contract addresses from env. |
+| `UNISWAP_FEE_TIERS` | The four fee numbers the app tries. |
+| `feeTierToPercent` | Turns a tier into a percent string for display. |
+
+### `src/lib/swap/routes.ts`
+
+| Function | What it does |
+|----------|----------------|
+| `resolveSwapRoute` | Picks the token list for the path (adds USDT0 between USDRIF and RIF when needed). |
+| `isMultihopRoute` | True if the path has more than one hop. |
+| `getSwapRouteCacheKey` | Cache key for quotes when the route changes. |
+
+### `src/lib/swap/utils.ts`
+
+| Function | What it does |
+|----------|----------------|
+| `scaleAmount` | Turns a typed string amount into chain units (`bigint`) for the API. |
+| `isValidAmount` | Rejects empty or non-positive amounts for the API. |
+| `getTokenDecimals` | Reads `decimals()` from one token contract. |
+| `getTokenDecimalsBatch` | Reads decimals for several tokens in one multicall (used by the quote API). |
+| `calculatePriceImpact` | Helper for comparing price vs a reference; **not** shown in the swap modal today (tests / future use). |
+
+### `src/lib/swap/multicallWithGasEnvelopeRetry.ts`
+
+| Function | What it does |
+|----------|----------------|
+| `multicallWithGasEnvelopeRetry` | Batches many read calls; if the RPC rejects the big batch (gas limit), retries with smaller batches. |
+| `isLikelyOuterMulticallRpcFailure` | Helps tell “whole batch failed” from “one pool call reverted”. |
+
+### `src/lib/swap/providers/uniswap.ts`
+
+**Building paths**
+
+| Function | What it does |
+|----------|----------------|
+| `encodeUniformFeeSwapPath` | Path bytes with one fee for every hop. |
+| `encodePerHopFeeSwapPath` | Path bytes when each hop can have its own fee. |
+
+**Quotes**
+
+| Function | What it does |
+|----------|----------------|
+| `getUniswapQuote` / `getUniswapExactOutputQuote` | Main quote entry: picks route, single vs multihop, Auto vs fixed fee. |
+| `getBestQuoteFromAllTiers` / `getBestExactOutputFromAllTiers` | Single hop: try all four fees, pick best. |
+| `getBestMultihopQuoteExactIn` / `…ExactOut` | Multihop: try fee combinations, pick best. |
+| `cartesianFeeCombinations` | Builds the list of fee combinations to try. |
+
+**Transactions**
+
+| Function | What it does |
+|----------|----------------|
+| `getSwapEncodedData` | Swap command only (no permit) — building block. |
+| `getPermitSwapEncodedData` | What production uses: permit + swap for the Universal Router. |
+| `getAvailableFeeTiers` | Finds which fee tiers return a real quote (powers the fee buttons on step 1). |
+
+**Export:** `uniswapProvider` — object with `getQuote` and `getQuoteExactOutput`.
+
+### `src/lib/swap/permit2.ts`
+
+Types and helpers for the EIP-712 permit (must match Permit2 on chain). Important pieces:
+
+- `createSecurePermit` — builds safe permit data for the wallet to sign (used in the app).
+- `validateSpender`, `validateAmount`, `validateExpiration`, `validateNonce`, etc. — safety checks before signing.
+
+### `src/lib/swap/providers/index.ts`
+
+Shared TypeScript types for a “provider” (`SwapQuote`, `QuoteParams`, …) so another DEX could be added later with the same shape.
+
+### `src/shared/stores/swap/useSwapStore.ts`
+
+Zustand store: tokens in/out, input mode, amounts typed, fee tier choice, permit + signature, swap tx hash and errors, reset on close.
+
+### `src/shared/stores/swap/hooks.ts`
+
+| Hook | What it does |
+|------|----------------|
+| `useSwapInput` | Debounced quotes, exact-in vs exact-out, fee tier list, marks quote “old” after ~30s, copies fee from quote into store for execution. |
+| `useTokenSelection` | Token in/out and metadata. |
+| `useTokenAllowance` | Read allowance to Permit2; send `approve` if needed. |
+| `usePermitSigning` | Read nonce, build permit, call `signTypedData`. |
+| `useSwapExecution` | Build router calldata and send `execute`. |
+
+`normalizeQuoteResult` turns the provider response into a `QuoteResult` the UI can use (bigints).
+
+### `src/app/api/swap/quote/route.ts`
+
+`GET` handler: checks inputs, reads decimals, calls `uniswapProvider.getQuote`, returns JSON. Cached for about 30 seconds (`revalidate`).
+
+### `src/shared/hooks/useSwapQuote.ts`
+
+Fetches `/api/swap/quote` with React Query. **The swap popup does not use this**; the popup uses `useSwapInput` instead.
+
+### `src/app/user/Swap/utils/`
+
+| File | What it does |
+|------|----------------|
+| `smart-default-direction.ts` | Picks default “From” / “To” from balances when the modal opens. |
+| `low-liquidity-warning.ts` | Decides whether to show the “not enough liquidity” style warning (uses USD prices when possible). |
+
+---
+
+## 9. Environment variables
+
+Public env keys used for swap-related addresses (full list in `src/lib/constants.ts`):
 
 - Token addresses: `NEXT_PUBLIC_USDT0_ADDRESS`, `NEXT_PUBLIC_USDRIF_ADDRESS`, `NEXT_PUBLIC_RIF_ADDRESS`, …
-- DEX: `NEXT_PUBLIC_UNISWAP_UNIVERSAL_ROUTER_ADDRESS`, `NEXT_PUBLIC_UNISWAP_QUOTER_V2_ADDRESS`
-- Permit2: `NEXT_PUBLIC_PERMIT2_ADDRESS` (Rootstock may differ from mainnet canonical)
+- Uniswap: `NEXT_PUBLIC_UNISWAP_UNIVERSAL_ROUTER_ADDRESS`, `NEXT_PUBLIC_UNISWAP_QUOTER_V2_ADDRESS`
+- Permit2: `NEXT_PUBLIC_PERMIT2_ADDRESS`
 - Pool hint: `NEXT_PUBLIC_USDT0_USDRIF_POOL_ADDRESS`
-- Chain: `NEXT_PUBLIC_CHAIN_ID`, `NEXT_PUBLIC_ENV`, etc.
+- Chain / app mode: `NEXT_PUBLIC_CHAIN_ID`, `NEXT_PUBLIC_ENV`, …
 
-Local / fork setup may be documented in `docs/FORK_SETUP.md` (general chain tooling).
+For running a local chain or fork, see `docs/FORK_SETUP.md`.
 
 ---
 
-## 10. Tests as executable spec
+## 10. Tests (where behavior is spelled out)
 
-| Area | Test file |
-|------|-----------|
-| Uniswap provider / path / quotes | `src/lib/swap/providers/uniswap.test.ts` |
+| Topic | File |
+|-------|------|
+| Uniswap quotes and paths | `src/lib/swap/providers/uniswap.test.ts` |
 | Routes | `src/lib/swap/routes.test.ts` |
 | Utils | `src/lib/swap/utils.test.ts` |
-| Multicall retry | grep / future — logic in `multicallWithGasEnvelopeRetry.ts` |
 | Quote API | `src/app/api/swap/quote/route.test.ts` |
-| Store | `src/shared/stores/swap/useSwapStore.test.ts` |
-| `useSwapInput` / quote hook | `src/shared/hooks/useSwapQuote.test.tsx`, `useSwapQuote` |
+| Swap store | `src/shared/stores/swap/useSwapStore.test.ts` |
+| `useSwapQuote` hook | `src/shared/hooks/useSwapQuote.test.tsx` |
 | Step 1 UI | `src/app/user/Swap/Steps/SwapStepOne.test.tsx` |
 | Smart default | `src/app/user/Swap/hooks/useSwapSmartDefault.test.ts` |
-| Low liquidity | `src/app/user/Swap/utils/low-liquidity-warning.test.ts` |
+| Low liquidity warning | `src/app/user/Swap/utils/low-liquidity-warning.test.ts` |
 
-Running tests (from repo root): use the project’s usual command (e.g. `npm test` / `npx vitest`) as defined in `package.json`.
-
----
-
-## 11. Further reading (external)
-
-- [Uniswap V3 Core concepts](https://docs.uniswap.org/concepts/protocol/concentrated-liquidity) — pools, price ranges, fees  
-- [Uniswap V3 Swap Router / Universal Router](https://docs.uniswap.org/contracts/universal-router/overview) — command encoding  
-- [Permit2 overview](https://docs.uniswap.org/contracts/permit2/overview) — signature-based allowances  
-- [QuoterV2](https://docs.uniswap.org/contracts/v3/reference/periphery/lens/QuoterV2) — `quoteExactInput` / `quoteExactOutput` and multihop paths  
+Run tests with whatever script is in `package.json` (often `npm test` or Vitest).
 
 ---
 
-## 12. Quick file map
+## 11. Deeper reading (official docs)
+
+- [Uniswap V3 — concentrated liquidity](https://docs.uniswap.org/concepts/protocol/concentrated-liquidity) — how pools work  
+- [Universal Router](https://docs.uniswap.org/contracts/universal-router/overview) — command encoding  
+- [Permit2](https://docs.uniswap.org/contracts/permit2/overview) — signature allowances  
+- [QuoterV2](https://docs.uniswap.org/contracts/v3/reference/periphery/lens/QuoterV2) — quote functions and paths  
+
+---
+
+## 12. Folder cheat sheet
 
 ```
 src/lib/swap/
-  constants.ts          # Token + router constants, fee tiers
-  types.ts              # SwapQuoteMode
-  utils.ts              # Amount/decimals helpers
-  routes.ts             # USDRIF↔RIF via USDT0
-  permit2.ts            # EIP-712 permit helpers
+  constants.ts          # Tokens, fees, router addresses
+  types.ts              # exactIn / exactOut mode type
+  utils.ts              # Amounts and decimals helpers
+  routes.ts             # When to use USDT0 between USDRIF and RIF
+  permit2.ts            # Permit signing helpers
   multicallWithGasEnvelopeRetry.ts
-  providers/uniswap.ts  # Quoter + Universal Router encoding
+  providers/uniswap.ts  # Quotes and router payload
 src/shared/stores/swap/
-  useSwapStore.ts       # Zustand UI state
-  useSwapTokens.ts      # Static token metadata
-  hooks.ts              # Quote, allowance, permit, execution
-src/app/user/Swap/      # Modal, steps, warnings, smart default
-src/app/api/swap/quote/ # HTTP quote API
+  useSwapStore.ts       # UI state
+  useSwapTokens.ts      # Token info for the UI
+  hooks.ts              # Quotes, allowance, permit, swap tx
+src/app/user/Swap/      # Modal and steps
+src/app/api/swap/quote/ # HTTP quote
 ```
 
 ---
 
-*For questions about chain forking or env profiles, start with `docs/FORK_SETUP.md`. For feature flags or app config, see `src/config/`.*
+*Fork and env setup: `docs/FORK_SETUP.md`. App config: `src/config/`.*
