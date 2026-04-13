@@ -2,7 +2,6 @@ import { useCallback, useMemo } from 'react'
 import { type Address, erc20Abi } from 'viem'
 import { useReadContract } from 'wagmi'
 
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { rbtcVault } from '@/lib/contracts'
 import { useReadRbtcVaultBatch, useReadRbtcVaultForMultipleArgs } from '@/shared/hooks/contracts/btc-vault'
 
@@ -58,7 +57,6 @@ export const useRbtcVault = () => {
     args: [rbtcVault.address],
     query: {
       enabled: !!assetAddress,
-      refetchInterval: AVERAGE_BLOCKTIME,
     },
   })
 

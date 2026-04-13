@@ -9,6 +9,7 @@ export const useGetProposalSnapshot = (proposalId: string) => {
     address: GovernorAddress,
     functionName: 'proposalSnapshot',
     args: [BigInt(proposalId)],
+    query: { refetchInterval: false },
   })
 
   return data

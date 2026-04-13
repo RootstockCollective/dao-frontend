@@ -8,13 +8,11 @@ import { ADDRESS_PADDING_LENGTH, RELAY_PARAMETER_PADDING_LENGTH } from '@/app/pr
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { SimplifiedRewardDistributorAbi } from '@/lib/abis/SimplifiedRewardDistributorAbi'
 import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 const useFetchLatestProposals = () => {
   return useQuery({
     queryFn: fetchProposalsCreatedCached,
     queryKey: ['proposalsCreated'],
-    refetchInterval: AVERAGE_BLOCKTIME,
   })
 }
 
