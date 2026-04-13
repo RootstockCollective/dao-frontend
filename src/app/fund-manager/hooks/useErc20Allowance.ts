@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import { Address, erc20Abi, parseEther } from 'viem'
 import { useAccount, useReadContract } from 'wagmi'
 
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useContractWrite } from '@/shared/hooks/useContractWrite'
 
 const parseAmountWei = (amount: string): bigint => {
@@ -29,9 +28,6 @@ export const useErc20Allowance = (tokenAddress: Address, spenderAddress: Address
     address: tokenAddress,
     functionName: 'allowance',
     args: [address!, spenderAddress],
-    query: {
-      refetchInterval: AVERAGE_BLOCKTIME,
-    },
   })
 
   const amountWei = useMemo(() => parseAmountWei(amount), [amount])
