@@ -1,7 +1,6 @@
 import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
 
 import { type BackersManagerAbi, getAbi } from '@/lib/abis/tok'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BackersManagerAddress } from '@/lib/contracts'
 
 import { UseReadContractConfig, ViewPureFunctionName } from '../types'
@@ -24,7 +23,6 @@ export const useReadBackersManager = <TFunctionName extends BackersManagerFuncti
     ...(config as any),
     query: {
       retry: true,
-      refetchInterval: AVERAGE_BLOCKTIME,
       ...query,
     },
   })

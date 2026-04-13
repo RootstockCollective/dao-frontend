@@ -1,12 +1,10 @@
 import { getAbi } from '@/lib/abis/tok'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BuilderRegistryAddress } from '@/lib/contracts'
 import { renderHook } from '@testing-library/react'
 import { afterEach, describe, expect, it, Mock, vi } from 'vitest'
 import { useReadContracts } from 'wagmi'
 import { useReadBuilderRegistryForMultipleArgs } from './useReadBuilderRegistryForMultipleArgs'
 
-// Mock wagmi's useReadContracts
 vi.mock('wagmi', () => ({
   useReadContracts: vi.fn(),
 }))
@@ -59,7 +57,6 @@ describe('useReadBuilderRegistries hook', () => {
         ],
         query: {
           retry: true,
-          refetchInterval: AVERAGE_BLOCKTIME,
         },
       }),
     )

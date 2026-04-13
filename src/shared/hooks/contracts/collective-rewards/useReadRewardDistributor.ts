@@ -1,7 +1,6 @@
 import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
 
 import { getAbi, type RewardDistributorAbi } from '@/lib/abis/tok'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { RewardDistributorAddress } from '@/lib/contracts'
 
 import { UseReadContractConfig, ViewPureFunctionName } from '../types'
@@ -24,7 +23,6 @@ export const useReadRewardDistributor = <TFunctionName extends RewardDistributor
     ...(config as any),
     query: {
       retry: true,
-      refetchInterval: AVERAGE_BLOCKTIME,
       ...query,
     },
   })
