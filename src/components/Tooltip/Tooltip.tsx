@@ -91,6 +91,14 @@ export interface TooltipProps extends RadixTooltip.TooltipContentProps {
   supportMobileTap?: boolean
 }
 
+/** Radix `TooltipContent` styles are typed with a narrow `CSSProperties` that omits `transform`. */
+function readInlineTransform(style: RadixTooltip.TooltipContentProps['style']): string | number | undefined {
+  if (style == null || typeof style !== 'object') return undefined
+  const value: unknown = Reflect.get(style, 'transform')
+  if (typeof value === 'string' || typeof value === 'number') return value
+  return undefined
+}
+
 function useHasHover() {
   try {
     return matchMedia('(hover: hover)').matches
@@ -219,7 +227,9 @@ export function Tooltip({
             style={{
               ...styleProp,
               ...(nudgeX !== 0 && {
-                transform: [styleProp?.transform, `translateX(${nudgeX}px)`].filter(Boolean).join(' '),
+                transform: [readInlineTransform(styleProp), `translateX(${nudgeX}px)`]
+                  .filter(Boolean)
+                  .join(' '),
               }),
             }}
             {...props}
