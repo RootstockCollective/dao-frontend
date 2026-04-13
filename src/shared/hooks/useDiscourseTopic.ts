@@ -1,12 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
-
 import { extractTopicIdFromDiscourseUrl } from '@/lib/discourse'
 import type { DiscourseTopicResponse } from '@/shared/types/discourse'
 
 interface UseDiscourseTopicOptions {
   enabled?: boolean
   staleTime?: number
-  refetchInterval?: number
+  refetchInterval?: number | false
 }
 
 /**
@@ -27,7 +26,7 @@ export function useDiscourseTopic(
   discourseUrl: string | null | undefined,
   options: UseDiscourseTopicOptions = {},
 ) {
-  const { enabled = true, staleTime = 5 * 60 * 1000, refetchInterval } = options
+  const { enabled = true, staleTime = 5 * 60 * 1000, refetchInterval = false } = options
 
   return useQuery<DiscourseTopicResponse, Error>({
     queryKey: ['discourse-topic', discourseUrl],

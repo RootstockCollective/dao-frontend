@@ -1,9 +1,6 @@
-import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
-
 import { type CycleTimeKeeperAbi, getAbi } from '@/lib/abis/tok'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BackersManagerAddress } from '@/lib/contracts'
-
+import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
 import { UseReadContractConfig, ViewPureFunctionName } from '../types'
 
 type CycleTimeKeeperFunctionName = ViewPureFunctionName<CycleTimeKeeperAbi>
@@ -24,7 +21,6 @@ export const useReadCycleTimeKeeper = <TFunctionName extends CycleTimeKeeperFunc
     ...(config as any),
     query: {
       retry: true,
-      refetchInterval: AVERAGE_BLOCKTIME,
       ...query,
     },
   })

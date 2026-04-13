@@ -1,8 +1,7 @@
-import { Address } from 'viem'
 import { useReadContract } from 'wagmi'
-
-import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
+import { Address } from 'viem'
+import { GovernorAbi } from '@/lib/abis/Governor'
 
 enum ProposalState {
   Pending,
@@ -23,7 +22,7 @@ export const useProposalState = (proposalId: string, shouldRefetch = true) => {
     functionName: 'state',
     args: [BigInt(proposalId)],
     query: {
-      ...(shouldRefetch && { refetchInterval: 5000 }),
+      refetchInterval: shouldRefetch ? 5000 : false,
     },
   })
 

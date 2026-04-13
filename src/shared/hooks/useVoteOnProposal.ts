@@ -1,11 +1,10 @@
-import { useState } from 'react'
-import { Address } from 'viem'
-import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
-
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
+import { Address } from 'viem'
+import { useAccount, useReadContract, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import { useProposalState } from '@/shared/hooks/useProposalState'
-import { Vote, VOTES_MAP_REVERSE } from '@/shared/types'
+import { useState } from 'react'
+import { VOTES_MAP_REVERSE, Vote } from '@/shared/types'
 
 const DEFAULT_DAO = {
   address: GovernorAddress as Address,
@@ -14,7 +13,7 @@ const DEFAULT_DAO = {
 
 export const useVoteOnProposal = (proposalId: string, shouldRefetch = true) => {
   const { address } = useAccount()
-  const [txHash, setTxHash] = useState<`0x${string}` | undefined>()
+  const [txHash, setTxHash] = useState<`0x${string}` | undefined>(undefined)
 
   // First read the proposal to see if it's active
   const { proposalState, proposalStateHuman } = useProposalState(proposalId)
@@ -27,7 +26,7 @@ export const useVoteOnProposal = (proposalId: string, shouldRefetch = true) => {
     functionName: 'hasVoted',
     args: [BigInt(proposalId), address as Address],
     query: {
-      ...(shouldRefetch && { refetchInterval: 5000 }),
+      refetchInterval: shouldRefetch ? 5000 : false,
     },
   })
 
