@@ -1,6 +1,5 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useRef, useState } from 'react'
-
 import { useSiweStore } from '@/lib/auth/siweStore'
 
 interface LikeApiResponse {
@@ -72,6 +71,7 @@ export const useLike = (proposalId: string, isConnected: boolean, signIn: () => 
       return response.json()
     },
     enabled: !!proposalId,
+    refetchInterval: false,
   })
 
   // User's own reaction query (only when authenticated)
@@ -79,6 +79,7 @@ export const useLike = (proposalId: string, isConnected: boolean, signIn: () => 
     queryKey: userReactionQueryKey(proposalId, jwtToken ?? ''),
     queryFn: () => fetchUserReaction(proposalId, jwtToken!),
     enabled: !!proposalId && !!jwtToken,
+    refetchInterval: false,
   })
 
   // Sync server-side user reaction into local state (only when uninitialized)

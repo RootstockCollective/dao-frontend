@@ -1,5 +1,4 @@
 import { useReadContract } from 'wagmi'
-
 import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
 
@@ -9,6 +8,7 @@ export const useGetProposalSnapshot = (proposalId: string) => {
     address: GovernorAddress,
     functionName: 'proposalSnapshot',
     args: [BigInt(proposalId)],
+    query: { refetchInterval: false },
   })
 
   return data

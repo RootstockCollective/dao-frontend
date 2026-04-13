@@ -1,10 +1,9 @@
 'use client'
 import { useQuery } from '@tanstack/react-query'
+import axios from 'axios'
 import { createContext, ReactNode, useCallback, useContext, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
-
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 import { fetchBoostData, fetchLatestFile } from './boost.utils'
 
@@ -108,6 +107,8 @@ export const BoosterProvider = ({ children }: BoosterContextProviderProps) => {
 
 export const useNFTBoosterContext = () => useContext(BoosterContext)
 
+export const axiosInstance = axios.create()
+
 export const useFetchBoostData = () => {
   const now = Date.now()
   const {
@@ -117,7 +118,6 @@ export const useFetchBoostData = () => {
   } = useQuery<string>({
     queryFn: async () => fetchLatestFile(now),
     queryKey: ['nftBoosterLatestFile'],
-    refetchInterval: AVERAGE_BLOCKTIME,
   })
 
   const hasActiveCampaign = !!latestFile && latestFile.trim() !== 'None'
@@ -129,7 +129,6 @@ export const useFetchBoostData = () => {
   } = useQuery<BoostData>({
     queryFn: async () => fetchBoostData(latestFile?.trim(), now),
     queryKey: ['nftBoosterData'],
-    refetchInterval: AVERAGE_BLOCKTIME,
     enabled: hasActiveCampaign,
   })
 

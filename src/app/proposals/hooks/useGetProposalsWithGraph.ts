@@ -1,26 +1,23 @@
-import { useQuery } from '@tanstack/react-query'
-import moment from 'moment'
 import { useMemo } from 'react'
-import { Address, formatEther } from 'viem'
-import { useBlockNumber } from 'wagmi'
-import { useReadContracts } from 'wagmi'
+import { useBlockNumber, useReadContracts } from 'wagmi'
+import { formatEther, Address } from 'viem'
+import moment from 'moment'
+import { useQuery } from '@tanstack/react-query'
 
+import { useBlockTime } from '@/shared/context/BlockTimeContext'
+import Big from '@/lib/big'
+import { ProposalState } from '@/shared/types'
+import { Proposal } from '../shared/types'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { GovernorAbi } from '@/lib/abis/Governor'
-import Big from '@/lib/big'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { GOVERNOR_ADDRESS } from '@/lib/constants'
-import { ProposalState } from '@/shared/types'
-
-import { Proposal } from '../shared/types'
 
 function toProposalState(value: number | string | undefined): ProposalState {
-  if (
-    typeof value === 'number' && // Validate that the number is a valid ProposalState enum value
-    value >= 0 &&
-    value <= 7
-  ) {
-    return value as ProposalState
+  if (typeof value === 'number') {
+    // Validate that the number is a valid ProposalState enum value
+    if (value >= 0 && value <= 7) {
+      return value as ProposalState
+    }
   }
   if (typeof value === 'string') {
     const stateMap: Record<string, ProposalState> = {
@@ -60,12 +57,6 @@ function convertVotesToBigNumbers(votes: ProposalApiResponse['votes']) {
     forVotes,
     abstainVotes,
   }
-}
-
-function hasNonZeroVotes(votes: ProposalApiResponse['votes']): boolean {
-  if (!votes) return false
-  const { forVotes, againstVotes, abstainVotes } = convertVotesToBigNumbers(votes)
-  return forVotes.gt(0) || againstVotes.gt(0) || abstainVotes.gt(0)
 }
 
 function parseBlockNumber(blockNumber: string | undefined): string {
@@ -124,8 +115,8 @@ function transformProposalsData(
   const transformedProposals = proposalsData.map((proposal: ProposalApiResponse) => {
     const blockchainInfo = blockchainData?.find(b => b.proposalId === proposal.proposalId)
 
-    // Prefer blockchain votes when API votes are missing or all zeros
-    const votes: ProposalApiResponse['votes'] | undefined = hasNonZeroVotes(proposal.votes)
+    // Convert blockchain votes (Big) to API format (string) if needed
+    const votes: ProposalApiResponse['votes'] | undefined = proposal.votes
       ? proposal.votes
       : blockchainInfo?.votes
         ? {
@@ -133,7 +124,7 @@ function transformProposalsData(
             forVotes: blockchainInfo.votes.forVotes.toString(),
             abstainVotes: blockchainInfo.votes.abstainVotes.toString(),
           }
-        : proposal.votes // fallback to API votes if no blockchain data
+        : undefined
 
     const quorum = proposal.quorumAtSnapshot || blockchainInfo?.quorum?.toString()
     const rawState = blockchainInfo?.rawState
@@ -181,10 +172,10 @@ function transformProposalsData(
 }
 
 export function useGetProposalsWithGraph() {
+  const { averageBlockTimeMs } = useBlockTime()
   const { data: latestBlockNumber } = useBlockNumber({
     query: {
-      refetchInterval: AVERAGE_BLOCKTIME,
-      staleTime: AVERAGE_BLOCKTIME,
+      staleTime: averageBlockTimeMs,
     },
   })
 
@@ -195,7 +186,6 @@ export function useGetProposalsWithGraph() {
   } = useQuery({
     queryFn: fetchProposalsFromAPI,
     queryKey: ['proposals'],
-    refetchInterval: AVERAGE_BLOCKTIME,
   })
 
   const proposalsFromNode = useMemo(
@@ -243,7 +233,7 @@ export function useGetProposalsWithGraph() {
     contracts: votesContracts,
     query: {
       enabled: proposalsFromNode.length > 0,
-      staleTime: AVERAGE_BLOCKTIME,
+      staleTime: averageBlockTimeMs,
     },
   })
 
@@ -259,7 +249,7 @@ export function useGetProposalsWithGraph() {
     contracts: stateContracts,
     query: {
       enabled: proposalsFromNode.length > 0,
-      staleTime: AVERAGE_BLOCKTIME,
+      staleTime: averageBlockTimeMs,
     },
   })
 

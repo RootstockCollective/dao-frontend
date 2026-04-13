@@ -1,7 +1,6 @@
 import { useReadContract } from 'wagmi'
-
-import { GovernorAbi } from '@/lib/abis/Governor'
 import { GovernorAddress } from '@/lib/contracts'
+import { GovernorAbi } from '@/lib/abis/Governor'
 
 const zero = BigInt(0)
 
@@ -13,7 +12,7 @@ export const useGetProposalVotes = (proposalId: string, shouldRefetch = false) =
     functionName: 'proposalVotes',
     args: [BigInt(proposalId)],
     query: {
-      ...(shouldRefetch && { refetchInterval: 5000 }),
+      refetchInterval: shouldRefetch ? 5000 : false,
     },
   })
 
