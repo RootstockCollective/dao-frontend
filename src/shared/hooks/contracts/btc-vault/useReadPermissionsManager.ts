@@ -1,7 +1,6 @@
 import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
 
 import { getAbi, type PermissionsManagerAbi } from '@/lib/abis/btc-vault'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { permissionsManager } from '@/lib/contracts'
 
 import { UseReadContractConfig, ViewPureFunctionName } from '../types'
@@ -24,7 +23,6 @@ export const useReadPermissionsManager = <TFunctionName extends PermissionsManag
     ...(config as any),
     query: {
       retry: true,
-      refetchInterval: AVERAGE_BLOCKTIME,
       ...query,
     },
   })

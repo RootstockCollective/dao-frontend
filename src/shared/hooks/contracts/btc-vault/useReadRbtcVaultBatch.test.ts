@@ -3,7 +3,6 @@ import { afterEach, describe, expect, it, Mock, vi } from 'vitest'
 import { useReadContracts } from 'wagmi'
 
 import { getAbi } from '@/lib/abis/btc-vault'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { rbtcVault } from '@/lib/contracts'
 
 import { useReadRbtcVaultBatch } from './useReadRbtcVaultBatch'
@@ -65,7 +64,6 @@ describe('useReadRbtcVaultBatch', () => {
         ],
         query: expect.objectContaining({
           retry: true,
-          refetchInterval: AVERAGE_BLOCKTIME,
         }),
       }),
     )
@@ -95,7 +93,6 @@ describe('useReadRbtcVaultBatch', () => {
         ],
         query: expect.objectContaining({
           retry: true,
-          refetchInterval: AVERAGE_BLOCKTIME,
         }),
       }),
     )
@@ -140,7 +137,6 @@ describe('useReadRbtcVaultBatch', () => {
         query: expect.objectContaining({
           enabled: false,
           retry: true,
-          refetchInterval: AVERAGE_BLOCKTIME,
         }),
       }),
     )

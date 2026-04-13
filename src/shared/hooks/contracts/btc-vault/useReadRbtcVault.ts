@@ -1,7 +1,6 @@
 import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
 
 import { getAbi, type RBTCAsyncVaultAbi } from '@/lib/abis/btc-vault'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { rbtcVault } from '@/lib/contracts'
 
 import { UseReadContractConfig, ViewPureFunctionName } from '../types'
@@ -24,7 +23,6 @@ export const useReadRbtcVault = <TFunctionName extends RbtcAsyncVaultFunctionNam
     ...(config as any),
     query: {
       retry: true,
-      refetchInterval: AVERAGE_BLOCKTIME,
       ...query,
     },
   })

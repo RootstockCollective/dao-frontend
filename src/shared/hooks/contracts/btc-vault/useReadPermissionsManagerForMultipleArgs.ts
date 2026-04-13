@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import { UseReadContractReturnType, useReadContracts } from 'wagmi'
 
 import { getAbi, type PermissionsManagerAbi } from '@/lib/abis/btc-vault'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { permissionsManager } from '@/lib/contracts'
 
 import { UseReadContractForMultipleArgsConfig, ViewPureFunctionName } from '../types'
@@ -34,7 +33,6 @@ export const useReadPermissionsManagerForMultipleArgs = <
     })),
     query: {
       retry: true,
-      refetchInterval: AVERAGE_BLOCKTIME,
       ...query,
     },
   })
