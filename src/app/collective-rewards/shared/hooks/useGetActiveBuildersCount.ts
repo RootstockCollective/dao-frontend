@@ -1,7 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-
 export const useGetActiveBuildersCount = () => {
   const { data, isLoading, error } = useQuery<{ count: number }, Error>({
     queryFn: async () => {
@@ -12,7 +10,6 @@ export const useGetActiveBuildersCount = () => {
       return response.json()
     },
     queryKey: ['activeBuilders'],
-    refetchInterval: AVERAGE_BLOCKTIME,
   })
 
   return { data, isLoading, error }
