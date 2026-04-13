@@ -18,6 +18,7 @@ import {
 } from './uniswap'
 import type { PermitSingle } from '../permit2'
 import { ROUTER_ADDRESSES, SWAP_TOKEN_ADDRESSES } from '../constants'
+import { multicallWithGasEnvelopeRetry } from '../multicallWithGasEnvelopeRetry'
 import { resolveSwapRoute } from '../routes'
 import { getTokenDecimalsBatch } from '../utils'
 import { UniswapQuoterV2Abi } from '@/lib/abis/UniswapQuoterV2Abi'
@@ -61,7 +62,7 @@ function getTwoHopFeeCombinations(): number[][] {
 
 async function getBestMultihopExactInputFromMulticall(routeTokens: readonly Address[], amountIn: bigint) {
   const hopCombos = getTwoHopFeeCombinations()
-  const multicall = await publicClient.multicall({
+  const multicall = await multicallWithGasEnvelopeRetry(publicClient, {
     contracts: hopCombos.map(hopFees => ({
       address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
       abi: UniswapQuoterV2Abi,
