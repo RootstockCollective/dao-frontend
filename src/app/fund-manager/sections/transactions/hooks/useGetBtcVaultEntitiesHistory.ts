@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query'
 
 import type { BtcVaultHistoryItemWithStatus } from '@/app/api/btc-vault/v1/history/types'
 import type { PaginationResponse } from '@/app/api/utils/types'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { getBtcVaultHistoryEndpoint } from '@/lib/endpoints'
 
 /** GET /api/btc-vault/v1/history row shape (`displayStatus` matches `BtcVaultHistoryDisplayStatus`). */
@@ -80,8 +79,8 @@ export function useGetBtcVaultEntitiesHistory(params: UseGetBtcVaultEntitiesHist
         },
         signal,
       ),
-    refetchInterval: AVERAGE_BLOCKTIME,
     retry: false,
+    refetchInterval: false,
     refetchOnWindowFocus: false,
   })
 

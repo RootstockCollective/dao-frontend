@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { Address, erc20Abi, formatEther } from 'viem'
 import { useAccount, useBalance, useReadContract } from 'wagmi'
 
-import { AVERAGE_BLOCKTIME, RBTC, WRBTC } from '@/lib/constants'
+import { RBTC, WRBTC } from '@/lib/constants'
 
 /** Native symbol from `RBTC` (env); wrapped from `WRBTC` (fixed). */
 export type SelectedToken = typeof RBTC | typeof WRBTC
@@ -19,7 +19,6 @@ export const useTokenSelection = (wrbtcAddress: Address) => {
 
   const { data: rbtcBalanceData } = useBalance({
     address,
-    query: { refetchInterval: AVERAGE_BLOCKTIME },
   })
 
   const { data: wrbtcBalanceRaw } = useReadContract({
@@ -27,9 +26,6 @@ export const useTokenSelection = (wrbtcAddress: Address) => {
     address: wrbtcAddress,
     functionName: 'balanceOf',
     args: [address!],
-    query: {
-      refetchInterval: AVERAGE_BLOCKTIME,
-    },
   })
 
   const isNative = selectedToken !== WRBTC
