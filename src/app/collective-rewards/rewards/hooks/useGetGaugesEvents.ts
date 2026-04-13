@@ -1,13 +1,12 @@
-import { useQuery } from '@tanstack/react-query'
 import { AbiEvent, Address, parseEventLogs } from 'viem'
-
 import {
   fetchBackerRewardsClaimed,
   fetchBuilderRewardsClaimed,
   fetchGaugeNotifyRewardLogs,
 } from '@/app/collective-rewards/actions'
+import { useQuery } from '@tanstack/react-query'
+
 import { GaugeAbi } from '@/lib/abis/tok/GaugeAbi'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 type EventEntry = Extract<(typeof GaugeAbi)[number], AbiEvent>
 type EventName = Extract<
@@ -38,7 +37,6 @@ export const useGetGaugesEvents = <T extends EventName>(gauges: Address[], event
       }, {})
     },
     queryKey: ['useGetGaugesEvents', eventName, gauges],
-    refetchInterval: AVERAGE_BLOCKTIME,
   })
 
   return {
