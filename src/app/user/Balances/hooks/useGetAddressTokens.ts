@@ -1,14 +1,12 @@
+import { useQuery } from '@tanstack/react-query'
 import { useCallback } from 'react'
 import { Address } from 'viem'
-import { useQuery } from '@tanstack/react-query'
 import { useBalance, useReadContracts } from 'wagmi'
 
 import { AddressToken } from '@/app/user/types'
-import { TokenInfoReturnType } from '@/app/user/api/tokens/route'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
-import { tokenContracts, MulticallAddress } from '@/lib/contracts'
 import { RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
-import { axiosInstance } from '@/lib/utils'
+import { MulticallAddress, tokenContracts } from '@/lib/contracts'
 
 const getTokenFunction = (
   tokenAddress: Address,
@@ -63,8 +61,7 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
     error: tokenDataError,
   } = useQuery({
     queryKey: ['tokenData'],
-    queryFn: () =>
-      axiosInstance.get<TokenInfoReturnType>('/user/api/tokens', { baseURL: '/' }).then(({ data }) => data),
+    queryFn: () => fetch('/user/api/tokens').then(res => res.json()),
     refetchInterval: false,
   })
 
