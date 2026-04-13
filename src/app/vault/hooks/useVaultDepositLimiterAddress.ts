@@ -1,7 +1,6 @@
-import { Address } from 'viem'
 import { useReadContract } from 'wagmi'
-
 import { vault } from '@/lib/contracts'
+import { Address } from 'viem'
 
 /**
  * Hook to read the deposit limiter address from the vault contract
@@ -17,7 +16,7 @@ export function useVaultDepositLimiterAddress() {
     abi: vault.abi,
     functionName: 'depositLimiter',
     query: {
-      // No refetch interval since this value doesn't change
+      refetchInterval: false,
       staleTime: Infinity,
       gcTime: Infinity,
     },
