@@ -17,7 +17,7 @@ export function useVaultDepositLimiterAddress() {
     abi: vault.abi,
     functionName: 'depositLimiter',
     query: {
-      // No refetch interval since this value doesn't change
+      refetchInterval: false,
       staleTime: Infinity,
       gcTime: Infinity,
     },

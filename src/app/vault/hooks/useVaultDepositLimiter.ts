@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import { useAccount, useReadContracts } from 'wagmi'
 
 import { VaultDepositLimiterAbi } from '@/lib/abis/VaultDepositLimiterAbi'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 import { useVaultDepositLimiterAddress } from './useVaultDepositLimiterAddress'
 
@@ -62,7 +61,6 @@ export function useVaultDepositLimiter() {
   } = useReadContracts({
     contracts,
     query: {
-      refetchInterval: AVERAGE_BLOCKTIME, // Refetch every minute
       enabled: !!depositLimiterAddress, // Only run when we have the address
     },
   })

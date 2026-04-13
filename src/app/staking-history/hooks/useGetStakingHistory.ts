@@ -2,8 +2,6 @@ import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
 
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-
 import { fetchStakingHistory, StakingHistoryResponse } from '../utils/api'
 import { StakingHistoryItem } from '../utils/types'
 
@@ -47,7 +45,6 @@ export const useGetStakingHistory = (params?: UseGetStakingHistoryParams) => {
       sortDirection,
       type.length > 0 ? [...type].sort().join(',') : '',
     ],
-    refetchInterval: AVERAGE_BLOCKTIME,
     enabled: !!address,
   })
 

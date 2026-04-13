@@ -2,7 +2,6 @@ import { renderHook } from '@testing-library/react'
 import { afterEach, describe, expect, it, Mock, vi } from 'vitest'
 import { useReadContracts } from 'wagmi'
 
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { permissionsManager } from '@/lib/contracts'
 
 import { useReadPermissionsManagerForMultipleArgs } from './useReadPermissionsManagerForMultipleArgs'
@@ -79,10 +78,9 @@ describe('useReadPermissionsManagerForMultipleArgs', () => {
             functionName: 'hasRole',
           },
         ],
-        query: {
+        query: expect.objectContaining({
           retry: true,
-          refetchInterval: AVERAGE_BLOCKTIME,
-        },
+        }),
       }),
     )
   })

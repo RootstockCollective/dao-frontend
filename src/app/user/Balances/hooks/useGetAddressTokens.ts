@@ -5,7 +5,7 @@ import { useBalance, useReadContracts } from 'wagmi'
 
 import { AddressToken } from '@/app/user/types'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
-import { AVERAGE_BLOCKTIME, RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
+import { RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
 import { MulticallAddress, tokenContracts } from '@/lib/contracts'
 
 const getTokenFunction = (
@@ -53,9 +53,6 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
       getTokenFunction(tokenContracts.USDT0, address, 'balanceOf'),
     ],
     multicallAddress: MulticallAddress,
-    query: {
-      refetchInterval: AVERAGE_BLOCKTIME,
-    },
   })
 
   const {
@@ -65,6 +62,7 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
   } = useQuery({
     queryKey: ['tokenData'],
     queryFn: () => fetch('/user/api/tokens').then(res => res.json()),
+    refetchInterval: false,
   })
 
   const rifTokenData =

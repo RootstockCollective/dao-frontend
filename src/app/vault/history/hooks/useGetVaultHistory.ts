@@ -2,8 +2,6 @@ import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useAccount } from 'wagmi'
 
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-
 import { fetchVaultHistory, VaultHistoryResponse } from '../utils/api'
 import { VaultHistoryItemAPI } from '../utils/types'
 
@@ -58,7 +56,6 @@ export const useGetVaultHistory = (params?: UseGetVaultHistoryParams) => {
       sortDirection,
       type.length > 0 ? [...type].sort().join(',') : '',
     ],
-    refetchInterval: AVERAGE_BLOCKTIME,
     enabled: !!address,
   })
 
