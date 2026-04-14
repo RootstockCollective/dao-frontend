@@ -14,7 +14,7 @@ import { usePricesContext } from '@/shared/context'
 
 import { useEpochState } from '../hooks/useEpochState'
 import { useVaultMetrics } from '../hooks/useVaultMetrics'
-import { formatDateClosingOn, formatDateMonthFirst } from '../services/ui/formatters'
+import { formatDateFullMonth, formatDateMonthFirst } from '@/lib/utils'
 import { lockedSharePriceToNavPerHumanShareWei } from '../services/vaultShareNav'
 
 const PLACEHOLDER = '—'
@@ -54,7 +54,7 @@ export const BtcVaultMetrics = () => {
   const depositWindowValue = useMemo(() => {
     if (isMetricsLoading || !epoch) return PLACEHOLDER
     if (epoch.status === 'open' && epoch.endTime != null) {
-      return `closing on ${formatDateClosingOn(epoch.endTime)}`
+      return `closing on ${formatDateFullMonth(epoch.endTime, { utc: true })}`
     }
     return PLACEHOLDER
   }, [epoch, isMetricsLoading])
