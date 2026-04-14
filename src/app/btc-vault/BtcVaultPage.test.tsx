@@ -73,7 +73,7 @@ vi.mock('@/components/Countdown/Countdown', () => ({
   Countdown: () => <span data-testid="countdown">5d 23h 59m</span>,
 }))
 
-vi.mock('./ActiveRequestSection', () => ({
+vi.mock('./components/request-processing/ActiveRequestSection', () => ({
   ActiveRequestSection: () => null,
 }))
 
@@ -85,7 +85,7 @@ vi.mock('./components/capital-allocation/CapitalAllocationSection', () => ({
   CapitalAllocationSection: () => null,
 }))
 
-vi.mock('./components/BtcVaultDashboard', () => ({
+vi.mock('./components/dashboard/BtcVaultDashboard', () => ({
   BtcVaultDashboard: () => (
     <>
       <section data-testid="btc-vault-dashboard" />
@@ -94,7 +94,7 @@ vi.mock('./components/BtcVaultDashboard', () => ({
   ),
 }))
 
-vi.mock('./components/BtcVaultMetrics', () => ({
+vi.mock('./components/dashboard/BtcVaultMetrics', () => ({
   BtcVaultMetrics: () => null,
 }))
 
@@ -125,7 +125,7 @@ vi.mock('./hooks/useEpochState', () => ({
   }),
 }))
 
-vi.mock('./components/BtcVaultEligibilityAndDepositCard', () => ({
+vi.mock('./components/banners/BtcVaultEligibilityAndDepositCard', () => ({
   BtcVaultEligibilityAndDepositCard: () => (
     <div data-testid="btc-vault-eligibility-and-deposit-card" />
   ),
