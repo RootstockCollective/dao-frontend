@@ -1,54 +1,107 @@
 'use client'
 
+import { useRef } from 'react'
 import { useAccount } from 'wagmi'
 
+import { ConditionalTooltip } from '@/app/components/Tooltip/ConditionalTooltip'
 import { Button } from '@/components/Button'
-import { Tooltip } from '@/components/Tooltip'
+import { executeTxFlow } from '@/shared/notification'
 
-import { REQUEST_SUBMITTING_REASON } from '../services/constants'
+import { BTC_VAULT_BACKEND_INDEX_DELAY_MS, BTC_VAULT_CLAIM_IN_PROGRESS_MESSAGE } from '../constants'
+import { useBtcVaultInvalidation } from '../hooks/useBtcVaultInvalidation'
+import { useClaimRequest } from '../hooks/useClaimRequest'
+import type { VaultRequest } from '../services/types'
 
 const buttonClassName = 'h-auto min-h-11 w-full shrink-0 py-0.5 px-4 md:min-h-0'
 
 export interface BtcVaultRedeemSharesButtonProps {
-  hasVaultShares: boolean
-  canWithdraw: boolean
-  withdrawBlockReason: string
-  isActionEligibilityLoading: boolean
-  isAnyVaultActionSubmitting: boolean
-  onOpenWithdrawModal: () => void
+  vaultRequest: VaultRequest | null
+  onAfterRedeemRefetch?: () => void
 }
 
 /**
- * Primary CTA under Wallet metrics; opens the shared withdraw modal when the user holds vault shares.
+ * Finalizes a claimable withdrawal (`claimRedeemNative`), same flow as transaction history “Claim rBTC” /
+ * detail page claim. Shown only when the vault reports a claimable redeem for the user.
  */
 export function BtcVaultRedeemSharesButton({
-  hasVaultShares,
-  canWithdraw,
-  withdrawBlockReason,
-  isActionEligibilityLoading,
-  isAnyVaultActionSubmitting,
-  onOpenWithdrawModal,
+  vaultRequest,
+  onAfterRedeemRefetch,
 }: BtcVaultRedeemSharesButtonProps) {
   const { address } = useAccount()
+  const claimFlowLock = useRef(false)
+  const { invalidateAfterAction } = useBtcVaultInvalidation()
+  const { claim, canClaim, isRequesting, isTxPending, isReadingAmount, isReadingError } =
+    useClaimRequest(vaultRequest)
 
   if (!address) return null
-  if (isActionEligibilityLoading || !hasVaultShares) return null
+  if (!vaultRequest || vaultRequest.type !== 'withdrawal' || vaultRequest.status !== 'claimable') {
+    return null
+  }
 
-  const redeemDisabled = !canWithdraw || isAnyVaultActionSubmitting
-  const tooltipText = isAnyVaultActionSubmitting ? REQUEST_SUBMITTING_REASON : withdrawBlockReason
+  if (isReadingAmount || isReadingError) {
+    return null
+  }
+
+  const isClaimPending = isRequesting || isTxPending
+
+  if (!canClaim && !isClaimPending) {
+    return null
+  }
+
+  const handleFinalize = async () => {
+    if (claimFlowLock.current) return
+    claimFlowLock.current = true
+    try {
+      await executeTxFlow({
+        action: 'btcVaultClaim',
+        onRequestTx: () => claim(),
+        onSuccess: async () => {
+          await new Promise(resolve => setTimeout(resolve, BTC_VAULT_BACKEND_INDEX_DELAY_MS))
+          invalidateAfterAction(vaultRequest.id)
+          onAfterRedeemRefetch?.()
+        },
+      })
+    } finally {
+      claimFlowLock.current = false
+    }
+  }
+
+  if (isClaimPending) {
+    return (
+      <ConditionalTooltip
+        supportMobileTap
+        className="w-full p-0"
+        conditionPairs={[
+          {
+            condition: () => true,
+            lazyContent: () => BTC_VAULT_CLAIM_IN_PROGRESS_MESSAGE,
+          },
+        ]}
+      >
+        <Button
+          variant="primary"
+          className={buttonClassName}
+          textClassName="text-sm"
+          data-testid="btc-vault-redeem-shares-button"
+          disabled={false}
+          onClick={() => {}}
+        >
+          Redeeming...
+        </Button>
+      </ConditionalTooltip>
+    )
+  }
 
   return (
-    <Tooltip text={tooltipText} disabled={!redeemDisabled || !tooltipText}>
-      <Button
-        variant="primary"
-        className={buttonClassName}
-        textClassName="text-sm"
-        data-testid="btc-vault-redeem-shares-button"
-        disabled={redeemDisabled}
-        onClick={onOpenWithdrawModal}
-      >
-        Redeem Shares
-      </Button>
-    </Tooltip>
+    <Button
+      variant="primary"
+      className={buttonClassName}
+      textClassName="text-sm"
+      data-testid="btc-vault-redeem-shares-button"
+      disabled={false}
+      onClick={handleFinalize}
+    >
+      Redeem Shares
+    </Button>
   )
 }

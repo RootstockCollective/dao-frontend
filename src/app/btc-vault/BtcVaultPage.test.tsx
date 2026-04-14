@@ -86,6 +86,7 @@ vi.mock('./hooks/useActiveRequests', () => ({
   useActiveRequests: () => ({
     data: undefined,
     claimableDepositRequest: null,
+    claimableWithdrawRequest: null,
     refetch: pageIntegrationMocks.refetchActiveRequests,
   }),
 }))
@@ -98,6 +99,8 @@ vi.mock('./components/BtcVaultDashboard', () => ({
   BtcVaultDashboard: (props: {
     onRequestSubmitted?: () => void
     onAfterClaimRefetch?: () => void
+    onAfterRedeemRefetch?: () => void
+    claimableWithdrawRequest?: unknown
   }) => {
     pageIntegrationMocks.captureDashboardProps(props)
     return (
@@ -221,6 +224,7 @@ describe('BtcVaultPage', () => {
     const dashboardProps = pageIntegrationMocks.captureDashboardProps.mock.calls[0][0]
     expect(dashboardProps.onRequestSubmitted).toBe(pageIntegrationMocks.refetchActiveRequests)
     expect(dashboardProps.onAfterClaimRefetch).toBe(pageIntegrationMocks.refetchActiveRequests)
+    expect(dashboardProps.onAfterRedeemRefetch).toBe(pageIntegrationMocks.refetchActiveRequests)
   })
 
   it('renders Vault Metrics section with section title', () => {

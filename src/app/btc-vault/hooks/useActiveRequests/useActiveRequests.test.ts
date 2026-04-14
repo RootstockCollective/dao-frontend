@@ -65,6 +65,7 @@ describe('useActiveRequests', () => {
 
       expect(result.current.data).toBeUndefined()
       expect(result.current.claimableDepositRequest).toBeNull()
+      expect(result.current.claimableWithdrawRequest).toBeNull()
     })
   })
 
@@ -78,6 +79,7 @@ describe('useActiveRequests', () => {
 
       expect(result.current.data).toEqual([])
       expect(result.current.claimableDepositRequest).toBeNull()
+      expect(result.current.claimableWithdrawRequest).toBeNull()
     })
   })
 
@@ -103,6 +105,7 @@ describe('useActiveRequests', () => {
       expect(result.current.data?.[0].amountFormatted).toBe('1')
       expect(result.current.data?.[0].id).toBe('dep-1')
       expect(result.current.claimableDepositRequest).toBeNull()
+      expect(result.current.claimableWithdrawRequest).toBeNull()
     })
 
     it('returns one display with status claimable and claimable info when deposit is claimable', () => {
@@ -131,6 +134,7 @@ describe('useActiveRequests', () => {
       expect(result.current.claimableDepositRequest?.type).toBe('deposit')
       expect(result.current.claimableDepositRequest?.status).toBe('claimable')
       expect(result.current.claimableDepositRequest?.id).toBe('dep-1')
+      expect(result.current.claimableWithdrawRequest).toBeNull()
     })
   })
 
@@ -156,6 +160,7 @@ describe('useActiveRequests', () => {
       // Pending withdrawal: rBTC value unknown pre-settlement
       expect(result.current.data?.[0].amountFormatted).toBe('—')
       expect(result.current.data?.[0].id).toBe('red-2')
+      expect(result.current.claimableWithdrawRequest).toBeNull()
     })
 
     it('returns one display with status claimable when redeem is claimable', () => {
@@ -180,6 +185,10 @@ describe('useActiveRequests', () => {
       expect(result.current.data?.[0].status).toBe('claimable')
       expect(result.current.data?.[0].claimable).toBe(true)
       expect(result.current.claimableDepositRequest).toBeNull()
+      expect(result.current.claimableWithdrawRequest).not.toBeNull()
+      expect(result.current.claimableWithdrawRequest?.type).toBe('withdrawal')
+      expect(result.current.claimableWithdrawRequest?.status).toBe('claimable')
+      expect(result.current.claimableWithdrawRequest?.id).toBe('red-2')
     })
 
     it('returns approved displayStatus and computed rBTC amount when history API says approved', () => {
@@ -222,6 +231,7 @@ describe('useActiveRequests', () => {
       expect(result.current.data?.[0].displayStatus).toBe('approved')
       expect(result.current.data?.[0].claimable).toBe(false)
       expect(result.current.data?.[0].amountFormatted).not.toBe('—')
+      expect(result.current.claimableWithdrawRequest).toBeNull()
     })
   })
 
@@ -250,6 +260,8 @@ describe('useActiveRequests', () => {
       expect(result.current.data?.[1].type).toBe('withdrawal')
       expect(result.current.data?.[1].status).toBe('claimable')
       expect(result.current.claimableDepositRequest).toBeNull()
+      expect(result.current.claimableWithdrawRequest).not.toBeNull()
+      expect(result.current.claimableWithdrawRequest?.id).toBe('red-2')
     })
 
     it('sets claimableDepositRequest when deposit is claimable alongside a pending redeem', () => {
@@ -280,6 +292,7 @@ describe('useActiveRequests', () => {
       expect(result.current.claimableDepositRequest).not.toBeNull()
       expect(result.current.claimableDepositRequest?.type).toBe('deposit')
       expect(result.current.claimableDepositRequest?.status).toBe('claimable')
+      expect(result.current.claimableWithdrawRequest).toBeNull()
     })
   })
 
@@ -291,6 +304,7 @@ describe('useActiveRequests', () => {
 
       expect(result.current.data).toBeUndefined()
       expect(result.current.claimableDepositRequest).toBeNull()
+      expect(result.current.claimableWithdrawRequest).toBeNull()
     })
 
     it('returns data undefined when Phase 1 has error', () => {
@@ -304,6 +318,7 @@ describe('useActiveRequests', () => {
 
       expect(result.current.data).toBeUndefined()
       expect(result.current.claimableDepositRequest).toBeNull()
+      expect(result.current.claimableWithdrawRequest).toBeNull()
     })
   })
 })

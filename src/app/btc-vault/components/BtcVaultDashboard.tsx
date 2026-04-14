@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { type ReactNode, useState } from 'react'
+import { type ReactNode } from 'react'
 import { useAccount } from 'wagmi'
 
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
@@ -37,19 +37,22 @@ function metricAmount(isLoading: boolean, isError: boolean, value: string | unde
 interface BtcVaultDashboardProps {
   onRequestSubmitted?: () => void
   claimableDepositRequest?: VaultRequest | null
+  claimableWithdrawRequest?: VaultRequest | null
   onAfterClaimRefetch?: () => void
+  onAfterRedeemRefetch?: () => void
 }
 
 export const BtcVaultDashboard = ({
   onRequestSubmitted,
   claimableDepositRequest = null,
+  claimableWithdrawRequest = null,
   onAfterClaimRefetch,
+  onAfterRedeemRefetch,
 }: BtcVaultDashboardProps) => {
   const { address, isConnected } = useAccount()
   const { data, isLoading, isError } = useUserPosition(address)
-  const { data: actionEligibility, isLoading: isActionEligibilityLoading } = useActionEligibility(address)
+  const { data: actionEligibility } = useActionEligibility(address)
   const withdrawFlow = useBtcVaultWithdrawFlow({ onRequestSubmitted })
-  const [isAnyVaultActionSubmitting, setIsAnyVaultActionSubmitting] = useState(false)
 
   if (!address || !isConnected) return null
 
@@ -69,12 +72,8 @@ export const BtcVaultDashboard = ({
               data-testid="metric-wallet"
             />
             <BtcVaultRedeemSharesButton
-              hasVaultShares={actionEligibility?.hasVaultShares ?? false}
-              canWithdraw={actionEligibility?.canWithdraw ?? false}
-              withdrawBlockReason={actionEligibility?.withdrawBlockReason ?? ''}
-              isActionEligibilityLoading={isActionEligibilityLoading}
-              isAnyVaultActionSubmitting={isAnyVaultActionSubmitting}
-              onOpenWithdrawModal={withdrawFlow.openWithdrawModal}
+              vaultRequest={claimableWithdrawRequest}
+              onAfterRedeemRefetch={onAfterRedeemRefetch}
             />
           </div>
           <div className={`flex flex-col gap-4 ${METRIC_COLUMN}`}>
@@ -151,7 +150,6 @@ export const BtcVaultDashboard = ({
         <BtcVaultActions
           onRequestSubmitted={onRequestSubmitted}
           actionEligibility={actionEligibility}
-          onAnyVaultActionSubmittingChange={setIsAnyVaultActionSubmitting}
           isWithdrawModalOpen={withdrawFlow.isWithdrawModalOpen}
           onOpenWithdrawModal={withdrawFlow.openWithdrawModal}
           onCloseWithdrawModal={withdrawFlow.closeWithdrawModal}

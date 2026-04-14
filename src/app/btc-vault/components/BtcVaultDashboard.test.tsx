@@ -58,6 +58,23 @@ vi.mock('./BtcVaultClaimSharesButton', () => ({
   ),
 }))
 
+vi.mock('./BtcVaultRedeemSharesButton', () => ({
+  BtcVaultRedeemSharesButton: ({
+    vaultRequest,
+    onAfterRedeemRefetch,
+  }: {
+    vaultRequest: VaultRequest | null
+    onAfterRedeemRefetch?: () => void
+  }) => (
+    <button
+      type="button"
+      data-testid="btc-vault-redeem-shares-probe"
+      data-request-id={vaultRequest?.id ?? ''}
+      data-has-refetch={onAfterRedeemRefetch ? 'yes' : 'no'}
+    />
+  ),
+}))
+
 const MOCK_DISPLAY: UserPositionDisplay = {
   rbtcBalanceFormatted: '2',
   vaultTokensFormatted: '5.00',
@@ -302,24 +319,31 @@ describe('BtcVaultDashboard', () => {
     expect(probe).toHaveAttribute('data-has-refetch', 'no')
   })
 
-  it('does not show Redeem Shares while eligibility is loading', () => {
-    mockUseActionEligibility.mockReturnValue({ data: undefined, isLoading: true })
-    render(<BtcVaultDashboard />, { wrapper: Wrapper })
-    expect(screen.queryByTestId('btc-vault-redeem-shares-button')).not.toBeInTheDocument()
+  it('forwards claimableWithdrawRequest and onAfterRedeemRefetch to Redeem Shares', () => {
+    const onRefetch = vi.fn()
+    const claimableWithdraw: VaultRequest = {
+      id: 'red-dash-probe',
+      type: 'withdrawal',
+      status: 'claimable',
+      amount: 1n,
+      epochId: null,
+      batchRedeemId: '9',
+      timestamps: { created: 0 },
+      txHashes: {},
+    }
+    render(
+      <BtcVaultDashboard claimableWithdrawRequest={claimableWithdraw} onAfterRedeemRefetch={onRefetch} />,
+      { wrapper: Wrapper },
+    )
+    const probe = screen.getByTestId('btc-vault-redeem-shares-probe')
+    expect(probe).toHaveAttribute('data-request-id', 'red-dash-probe')
+    expect(probe).toHaveAttribute('data-has-refetch', 'yes')
   })
 
-  it('shows Redeem Shares when eligibility has vault shares', () => {
-    mockUseActionEligibility.mockReturnValue({
-      data: {
-        canDeposit: true,
-        canWithdraw: true,
-        hasVaultShares: true,
-        depositBlockReason: '',
-        withdrawBlockReason: '',
-      },
-      isLoading: false,
-    })
+  it('passes null claimableWithdrawRequest to Redeem Shares when omitted', () => {
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
-    expect(screen.getByTestId('btc-vault-redeem-shares-button')).toBeInTheDocument()
+    const probe = screen.getByTestId('btc-vault-redeem-shares-probe')
+    expect(probe).toHaveAttribute('data-request-id', '')
+    expect(probe).toHaveAttribute('data-has-refetch', 'no')
   })
 })
