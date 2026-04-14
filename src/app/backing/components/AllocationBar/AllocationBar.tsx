@@ -40,20 +40,22 @@ const getSegmentsCollapsedState = (values: bigint[], totalValue: bigint): boolea
   return segmentsToShowDots
 }
 
-const AllocationBar: React.FC<AllocationBarProps> = ({
+const AllocationBar = ({
   itemsData,
   height = '96px',
   isDraggable = true,
   isResizable = true,
+
   valueDisplay = {
     showPercent: true,
     format: { percentDecimals: 0 },
   },
+
   showLegend = true,
   className = '',
   onChange,
   withModal = false,
-}) => {
+}: AllocationBarProps) => {
   const isControlled = typeof onChange === 'function'
   const [localItemsData, setLocalItemsData] = useState(itemsData)
   const [localValues, setLocalValues] = useState(itemsData.map(item => item.value))

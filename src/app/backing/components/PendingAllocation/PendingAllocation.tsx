@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { useState } from 'react'
 
 import { HourglassAnimatedIcon } from '@/components/Icons/HourglassAnimatedIcon'
 import { NewPopover } from '@/components/NewPopover'
@@ -10,7 +10,7 @@ interface PendingAllocationProps {
   currentBacking: string
 }
 
-export const PendingAllocation: FC<PendingAllocationProps> = ({ pendingBacking, currentBacking }) => {
+export const PendingAllocation = ({ pendingBacking, currentBacking }: PendingAllocationProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const popoverContent = (
