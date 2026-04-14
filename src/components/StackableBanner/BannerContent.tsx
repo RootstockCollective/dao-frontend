@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { Button } from '@/components/Button'
 import { Header, Paragraph } from '@/components/Typography'
@@ -13,14 +13,14 @@ export interface BannerContentProps {
   className?: string
 }
 
-export const BannerContent: FC<BannerContentProps> = ({
+export const BannerContent = ({
   title,
   description,
   buttonText,
   buttonOnClick,
   rightContent,
   className = '',
-}) => {
+}: BannerContentProps) => {
   return (
     <div
       className={cn(

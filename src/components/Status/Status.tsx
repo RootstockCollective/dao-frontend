@@ -1,4 +1,4 @@
-import { FC, JSX } from 'react'
+import { JSX } from 'react'
 
 import { cn } from '@/lib/utils'
 import { ProposalState } from '@/shared/types'
@@ -59,7 +59,7 @@ const getVariants = (proposalState?: ProposalState): (typeof VARIANTS)[keyof typ
   return VARIANTS[ProposalState.None]
 }
 
-export const Status: FC<Props> = ({ proposalState, className, ...rest }) => {
+export const Status = ({ proposalState, className, ...rest }: Props) => {
   const { label, classes } = getVariants(proposalState)
 
   return (
