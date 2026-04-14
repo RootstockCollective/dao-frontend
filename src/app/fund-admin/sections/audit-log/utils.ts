@@ -30,7 +30,7 @@ export function convertAuditEntriesToRows(
       action: logTypeToActionLabel(entry.type),
       value: buildAuditValueCell(entry.amountInWei, rbtcUsdPrice),
       reason: entry.detail?.trim() ?? null,
-      role: entry.role as AuditLogUserRole,
+      role: entry.role as AuditLogUserRole | null,
     },
   }))
 }

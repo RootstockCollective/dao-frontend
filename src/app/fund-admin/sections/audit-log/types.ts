@@ -74,7 +74,7 @@ export interface AuditLogCellDataMap {
     usdAmount: string | null
   } | null
   reason: string | null
-  role: AuditLogUserRole
+  role: AuditLogUserRole | null
 }
 
 export type AuditLogTableModel = TypedTable<ColumnId, AuditLogCellDataMap>

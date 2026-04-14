@@ -38,16 +38,22 @@ export const DesktopAuditLogHistory = () => {
   const { rows } = useTableContext<ColumnId, AuditLogCellDataMap>()
 
   return (
-    <table className="w-full min-w-[700px]">
+    <table className="w-full min-w-[700px] table-fixed">
+      <colgroup>
+        <col className="w-1/4" />
+        <col className="w-1/4" />
+        <col className="w-1/4" />
+        <col className="w-1/4" />
+      </colgroup>
       <thead>
         <tr className="border-b border-b-v3-text-60">
-          <SortableHeader label="Date" columnId="date" className="w-[110px] pb-4" />
-          <th className="text-left pb-4">
+          <SortableHeader label="Date" columnId="date" className="pb-4 pr-4" />
+          <th className="text-left pb-4 pr-4">
             <Span variant="tag-s" bold>
               Action
             </Span>
           </th>
-          <th className="text-left pb-4">
+          <th className="text-left pb-4 pr-4">
             <Span variant="tag-s" bold>
               Value/Reason
             </Span>
@@ -63,7 +69,7 @@ export const DesktopAuditLogHistory = () => {
         {rows.map(({ id, data }) => (
           <tr key={id} className="border-b border-b-v3-bg-accent-60 h-16">
             <td className="py-3 pr-4">
-              <Span variant="body-s" className="whitespace-nowrap">
+              <Span variant="body-s" className="whitespace-nowrap block truncate">
                 {data.date}
               </Span>
             </td>
@@ -83,14 +89,21 @@ export const DesktopAuditLogHistory = () => {
               )}
             </td>
             <td className="py-3">
-              <div className="flex items-center justify-center">
-                <Span
-                  variant="body-xs"
-                  className={cn('px-2 py-1 rounded-full whitespace-nowrap', ROLE_STYLES[data.role])}
-                >
-                  {ROLE_LABELS[data.role]}
-                </Span>
-              </div>
+              {data.role ? (
+                <div className="flex items-center max-w-full">
+                  <Span
+                    variant="body-xs"
+                    className={cn(
+                      'px-2 py-1 rounded-full whitespace-nowrap truncate',
+                      ROLE_STYLES[data.role],
+                    )}
+                  >
+                    {ROLE_LABELS[data.role]}
+                  </Span>
+                </div>
+              ) : (
+                <Span variant="body-l">—</Span>
+              )}
             </td>
           </tr>
         ))}
