@@ -5,8 +5,8 @@ import type { ReactNode } from 'react'
 import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
 import { Label } from '@/components/Typography'
 
-import { useEpochState } from '../hooks/useEpochState'
-import { useKybStatus } from '../hooks/useKybStatus'
+import { useEpochState } from '../../hooks/useEpochState'
+import { useKybStatus } from '../../hooks/useKybStatus'
 import {
   ELIGIBILITY_DEPOSIT_CARD_DEBRIS_CREAM,
   ELIGIBILITY_DEPOSIT_CARD_DEBRIS_DARK,

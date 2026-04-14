@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { BOTH_PAUSED_REASON, DEPOSIT_PAUSED_REASON, WITHDRAWAL_PAUSED_REASON } from '../services/constants'
+import { BOTH_PAUSED_REASON, DEPOSIT_PAUSED_REASON, WITHDRAWAL_PAUSED_REASON } from '../../services/constants'
 import { PauseBannerContent } from './PauseBannerContent'
 
 describe('PauseBannerContent', () => {

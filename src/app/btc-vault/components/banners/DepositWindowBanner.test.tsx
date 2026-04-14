@@ -6,7 +6,7 @@ import { DepositWindowBanner } from './DepositWindowBanner'
 
 const mockUseEpochState = vi.fn()
 
-vi.mock('../hooks/useEpochState', () => ({
+vi.mock('../../hooks/useEpochState', () => ({
   useEpochState: () => mockUseEpochState(),
 }))
 

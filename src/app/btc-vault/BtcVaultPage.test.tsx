@@ -125,7 +125,7 @@ vi.mock('./hooks/useEpochState', () => ({
   }),
 }))
 
-vi.mock('./components/BtcVaultEligibilityAndDepositCard', () => ({
+vi.mock('./components/banners/BtcVaultEligibilityAndDepositCard', () => ({
   BtcVaultEligibilityAndDepositCard: () => (
     <div data-testid="btc-vault-eligibility-and-deposit-card" />
   ),

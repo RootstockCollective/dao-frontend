@@ -2,7 +2,7 @@
 
 import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
 
-import { useEpochState } from '../hooks/useEpochState'
+import { useEpochState } from '../../hooks/useEpochState'
 import { DepositWindowSection } from './DepositWindowSection'
 
 /**

@@ -7,7 +7,7 @@ import {
   BOTH_PAUSED_REASON,
   DEPOSIT_PAUSED_REASON,
   WITHDRAWAL_PAUSED_REASON,
-} from './services/constants'
+} from '../../services/constants'
 
 const mockUseAccount = vi.fn()
 const mockUseEpochState = vi.fn()
@@ -22,15 +22,15 @@ vi.mock('wagmi', async importOriginal => {
   }
 })
 
-vi.mock('./hooks/useEpochState', () => ({
+vi.mock('../../hooks/useEpochState', () => ({
   useEpochState: () => mockUseEpochState(),
 }))
 
-vi.mock('./hooks/useKybStatus', () => ({
+vi.mock('../../hooks/useKybStatus', () => ({
   useKybStatus: () => mockUseKybStatus(),
 }))
 
-vi.mock('./hooks/useActionEligibility', () => ({
+vi.mock('../../hooks/useActionEligibility', () => ({
   useActionEligibility: () => mockUseActionEligibility(),
 }))
 

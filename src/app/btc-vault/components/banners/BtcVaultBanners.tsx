@@ -10,14 +10,14 @@ import {
   ELIGIBILITY_DEPOSIT_CARD_DEBRIS_CREAM,
   ELIGIBILITY_DEPOSIT_CARD_DEBRIS_DARK,
   ELIGIBILITY_DEPOSIT_CARD_GRADIENT,
-} from './components/btcVaultBannerGradients'
-import { BtcVaultEligibilityAndDepositCard } from './components/BtcVaultEligibilityAndDepositCard'
-import { BtcVaultPrototypeBannerContent } from './components/BtcVaultPrototypeBannerContent'
-import { DepositWindowSection } from './components/DepositWindowSection'
-import { DisclosureContent } from './components/disclosure/DisclosureContent'
-import { PauseBannerContent } from './components/PauseBannerContent'
-import { useActionEligibility } from './hooks/useActionEligibility'
-import { useEpochState } from './hooks/useEpochState'
+} from './btcVaultBannerGradients'
+import { BtcVaultEligibilityAndDepositCard } from './BtcVaultEligibilityAndDepositCard'
+import { BtcVaultPrototypeBannerContent } from './BtcVaultPrototypeBannerContent'
+import { DepositWindowSection } from './DepositWindowSection'
+import { DisclosureContent } from '../disclosure/DisclosureContent'
+import { PauseBannerContent } from './PauseBannerContent'
+import { useActionEligibility } from '../../hooks/useActionEligibility'
+import { useEpochState } from '../../hooks/useEpochState'
 
 const PAUSE_BANNER_GRADIENT = 'linear-gradient(270deg, #64280C 0%, #DD9E52 33.69%, #FFF5E1 52.83%)'
 
