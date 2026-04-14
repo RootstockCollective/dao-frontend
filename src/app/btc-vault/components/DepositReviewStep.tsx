@@ -58,7 +58,7 @@ export const DepositReviewStep = ({
         Make sure that everything is correct before continuing:
       </Paragraph>
 
-      <div className="grid grid-cols-2 gap-y-6 gap-x-10">
+      <div className="grid grid-cols-1 gap-y-4 md:grid-cols-2 md:gap-y-6 md:gap-x-10">
         <div className="flex flex-col gap-1" data-testid="review-amount">
           <Label variant="body-s" className="text-text-60">
             Amount to deposit

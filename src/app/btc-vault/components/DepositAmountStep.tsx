@@ -172,7 +172,7 @@ export const DepositAmountStep = ({
       </div>
 
       {/* --- Shares Estimate + Fee --- */}
-      <div className="flex gap-10 mt-4 px-3">
+      <div className="flex flex-col gap-4 mt-4 px-3 md:flex-row md:gap-10">
         <div className="flex flex-col gap-1" data-testid="review-shares">
           <Label variant="body-s" className="text-text-60">
             No. of shares to receive (est.)
