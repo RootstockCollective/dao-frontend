@@ -6,11 +6,11 @@ import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
 
-import { DepositWindowSection } from './components/DepositWindowSection'
-import { DisclosureContent } from './components/disclosure/DisclosureContent'
-import { EligibilityBannerContent } from './components/EligibilityBannerContent'
-import { PauseBannerContent } from './components/PauseBannerContent'
-import type { EpochDisplay } from './services/ui/types'
+import { DepositWindowSection } from './DepositWindowSection'
+import { DisclosureContent } from '../disclosure/DisclosureContent'
+import { EligibilityBannerContent } from './EligibilityBannerContent'
+import { PauseBannerContent } from './PauseBannerContent'
+import type { EpochDisplay } from '../../services/ui/types'
 
 const PAUSE_BANNER_GRADIENT = 'linear-gradient(270deg, #64280C 0%, #DD9E52 33.69%, #FFF5E1 52.83%)'
 const BTC_VAULT_GRADIENT = 'linear-gradient(270deg, #442351 0%, #C0F7FF 49.49%, #E3FFEB 139.64%)'

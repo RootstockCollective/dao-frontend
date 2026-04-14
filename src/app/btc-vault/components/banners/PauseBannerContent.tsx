@@ -1,7 +1,7 @@
 import { Header, Label } from '@/components/Typography'
 
-import { BOTH_PAUSED_REASON, DEPOSIT_PAUSED_REASON, WITHDRAWAL_PAUSED_REASON } from '../services/constants'
-import type { PauseState } from '../services/types'
+import { BOTH_PAUSED_REASON, DEPOSIT_PAUSED_REASON, WITHDRAWAL_PAUSED_REASON } from '../../services/constants'
+import type { PauseState } from '../../services/types'
 
 export interface PauseBannerContentProps {
   pauseState: PauseState

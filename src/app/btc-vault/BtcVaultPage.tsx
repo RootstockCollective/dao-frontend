@@ -5,7 +5,7 @@ import { useAccount } from 'wagmi'
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
 
 import { ActiveRequestSection } from './components/request-processing/ActiveRequestSection'
-import { BtcVaultBanners } from './BtcVaultBanners'
+import { BtcVaultBanners } from './components/banners/BtcVaultBanners'
 import { CapitalAllocationSection } from './components/capital-allocation/CapitalAllocationSection'
 import { BtcVaultDashboard } from './components/dashboard/BtcVaultDashboard'
 import { BtcVaultMetrics } from './components/dashboard/BtcVaultMetrics'

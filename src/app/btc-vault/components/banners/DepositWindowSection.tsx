@@ -6,8 +6,8 @@ import { Countdown } from '@/components/Countdown/Countdown'
 import { Header, Label } from '@/components/Typography'
 import Big from '@/lib/big'
 
-import { formatDateFullMonthPaddedDayUtc } from '../services/ui/formatters'
-import type { EpochDisplay } from '../services/ui/types'
+import { formatDateFullMonthPaddedDayUtc } from '../../services/ui/formatters'
+import type { EpochDisplay } from '../../services/ui/types'
 
 const DEPOSIT_WINDOW_SUBTITLE = 'For the current cycle, deposits can be made until'
 
