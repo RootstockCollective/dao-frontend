@@ -69,7 +69,10 @@ export interface UseGetAuditLogResult {
 export interface AuditLogCellDataMap {
   date: string
   action: string
-  value: string | null
+  value: {
+    formattedAmount: string
+    usdAmount: string | null
+  } | null
   reason: string | null
   role: AuditLogUserRole
 }

@@ -4,9 +4,11 @@ import { motion } from 'motion/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { FilterButton } from '@/app/proposals/components/filter/FilterButton'
+import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { ActiveFilter } from '@/components/FilterSideBar/types'
 import { TablePager } from '@/components/TableNew'
 import { Header, Paragraph } from '@/components/Typography'
+import { RBTC } from '@/lib/constants'
 import { useTableActionsContext, useTableContext } from '@/shared/context'
 import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
@@ -41,6 +43,8 @@ export const AuditLogTable = () => {
   useClickOutside(filterSidebarRef, () => isDesktop && setIsFilterSidebarOpen(false))
 
   const hasActiveFilters = useMemo(() => activeFilters.length > 0, [activeFilters])
+  const prices = useGetSpecificPrices()
+  const rbtcUsdPrice = prices[RBTC]?.price ?? 0
 
   const handleApplyFilters = (filters: ActiveFilter[]) => {
     setActiveFilters(filters)
@@ -55,7 +59,7 @@ export const AuditLogTable = () => {
     isEnabled: hasResolvedInitialSort,
   })
 
-  const visibleRows = useMemo(() => convertAuditEntriesToRows(entries), [entries])
+  const visibleRows = useMemo(() => convertAuditEntriesToRows(entries, rbtcUsdPrice), [entries, rbtcUsdPrice])
   const totalCount = pagination?.total ?? 0
 
   useEffect(() => {

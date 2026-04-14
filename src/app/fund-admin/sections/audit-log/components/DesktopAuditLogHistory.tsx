@@ -1,6 +1,5 @@
 'use client'
 
-import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { TokenImage } from '@/components/TokenImage/TokenImage'
 import { Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
@@ -9,23 +8,25 @@ import { useTableContext } from '@/shared/context'
 
 import { ROLE_LABELS, ROLE_STYLES } from '../constants'
 import type { AuditLogCellDataMap, ColumnId } from '../types'
-import { formatAuditAmountUsd } from '../utils'
 import { SortableHeader } from './SortableHeader'
 
-const TokenAmountRow = ({ tokenAmount }: { tokenAmount: string }) => {
-  const prices = useGetSpecificPrices()
-  const rbtcUsdPrice = prices[RBTC]?.price ?? 0
-  const usdLabel = formatAuditAmountUsd(tokenAmount, rbtcUsdPrice)
+const TokenAmountRow = ({
+  formattedAmount,
+  usdAmount,
+}: {
+  formattedAmount: string
+  usdAmount: string | null
+}) => {
   return (
     <div className="flex items-end gap-2">
       <div className="flex flex-col items-end pb-0.5">
         <div className="flex items-center gap-1">
-          <Span variant="body">{tokenAmount}</Span>
+          <Span variant="body">{formattedAmount}</Span>
           <TokenImage symbol={RBTC} size={16} />
         </div>
-        {usdLabel ? (
+        {usdAmount ? (
           <Span variant="body-xs" className="text-v3-bg-accent-0">
-            {usdLabel}
+            {usdAmount}
           </Span>
         ) : null}
       </div>
@@ -71,7 +72,10 @@ export const DesktopAuditLogHistory = () => {
             </td>
             <td className="py-3 pr-4">
               {data.value !== null ? (
-                <TokenAmountRow tokenAmount={data.value} />
+                <TokenAmountRow
+                  formattedAmount={data.value.formattedAmount}
+                  usdAmount={data.value.usdAmount}
+                />
               ) : data.reason ? (
                 <Span className="truncate block max-w-full">{data.reason}</Span>
               ) : (

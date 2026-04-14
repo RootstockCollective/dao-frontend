@@ -1,21 +1,34 @@
 import { DateTime } from 'luxon'
 import { formatEther } from 'viem'
 
-import { getFiatAmount } from '@/app/shared/formatter'
+import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import Big from '@/lib/big'
+import { RBTC } from '@/lib/constants'
 import { getBtcVaultAuditLogEndpoint } from '@/lib/endpoints'
 import { formatCurrencyWithLabel, formatNumberWithCommas } from '@/lib/utils'
 
 import { LOG_TYPE_LABELS } from './constants'
 import type { AuditLogEntry, AuditLogHistoryPageParams, AuditLogTableModel, AuditLogUserRole } from './types'
 
-export function convertAuditEntriesToRows(entries: AuditLogEntry[]): AuditLogTableModel['Row'][] {
+function buildAuditValueCell(amountInWei: AuditLogEntry['amountInWei'], rbtcUsdPrice: number) {
+  if (amountInWei == null) return null
+  const amountAsString = amountInWei.toString()
+  return {
+    formattedAmount: formatSymbol(amountAsString, RBTC),
+    usdAmount: formatAuditAmountUsd(amountAsString, rbtcUsdPrice),
+  }
+}
+
+export function convertAuditEntriesToRows(
+  entries: AuditLogEntry[],
+  rbtcUsdPrice: number,
+): AuditLogTableModel['Row'][] {
   return entries.map(entry => ({
     id: entry.id,
     data: {
       date: formatAuditLogDate(entry.blockTimestamp),
       action: logTypeToActionLabel(entry.type),
-      value: formatAmountFromWei(entry.amountInWei ?? null),
+      value: buildAuditValueCell(entry.amountInWei, rbtcUsdPrice),
       reason: entry.detail?.trim() ?? null,
       role: entry.role as AuditLogUserRole,
     },
@@ -33,7 +46,6 @@ export function formatAmountFromWei(wei: string | bigint | null, decimalPlaces =
   }
 }
 
-/** Fiat label for audit wei × RBTC/USD spot (zero wei → ~$0). */
 export function formatAuditAmountUsd(amountWei: string | null, rbtcUsdPrice: number): string | null {
   if (amountWei == null || rbtcUsdPrice <= 0) return null
   try {
