@@ -3,8 +3,8 @@
 import { useCallback, useState } from 'react'
 import { useAccount } from 'wagmi'
 
-import { Button } from '@/components/Button'
-import { Tooltip } from '@/components/Tooltip'
+import { AlwaysEnabledButton } from '@/app/components/Button/AlwaysEnabledButton'
+import { TooltipConditionPair } from '@/app/components/Tooltip/ConditionalTooltip'
 import { executeTxFlow } from '@/shared/notification'
 
 import { useActionEligibility } from '../hooks/useActionEligibility'
@@ -69,6 +69,13 @@ export const BtcVaultActions = ({ onRequestSubmitted }: BtcVaultActionsProps) =>
   const depositTooltipText = isAnySubmitting ? REQUEST_SUBMITTING_REASON : depositBlockReason
   const withdrawTooltipText = isAnySubmitting ? REQUEST_SUBMITTING_REASON : withdrawBlockReason
 
+  const depositConditions: TooltipConditionPair[] = [
+    { condition: () => depositDisabled && !!depositTooltipText, lazyContent: () => depositTooltipText },
+  ]
+  const withdrawConditions: TooltipConditionPair[] = [
+    { condition: () => withdrawDisabled && !!withdrawTooltipText, lazyContent: () => withdrawTooltipText },
+  ]
+
   const handleDepositSubmit = useCallback(
     async (params: DepositRequestParams) => {
       executeTxFlow({
@@ -115,26 +122,22 @@ export const BtcVaultActions = ({ onRequestSubmitted }: BtcVaultActionsProps) =>
   return (
     <div data-testid="BtcVaultActionsContent" className="flex flex-col gap-4">
       <div className="flex gap-4">
-        <Tooltip text={depositTooltipText} disabled={!depositDisabled || !depositTooltipText}>
-          <Button
-            variant="primary"
-            onClick={() => setIsDepositModalOpen(true)}
-            disabled={depositDisabled}
-            data-testid="DepositButton"
-          >
-            Deposit
-          </Button>
-        </Tooltip>
-        <Tooltip text={withdrawTooltipText} disabled={!withdrawDisabled || !withdrawTooltipText}>
-          <Button
-            variant="primary"
-            onClick={() => setIsWithdrawModalOpen(true)}
-            disabled={withdrawDisabled}
-            data-testid="WithdrawButton"
-          >
-            Withdraw
-          </Button>
-        </Tooltip>
+        <AlwaysEnabledButton
+          variant="primary"
+          onClick={() => !depositDisabled && setIsDepositModalOpen(true)}
+          conditionPairs={depositConditions}
+          data-testid="DepositButton"
+        >
+          Deposit
+        </AlwaysEnabledButton>
+        <AlwaysEnabledButton
+          variant="primary"
+          onClick={() => !withdrawDisabled && setIsWithdrawModalOpen(true)}
+          conditionPairs={withdrawConditions}
+          data-testid="WithdrawButton"
+        >
+          Withdraw
+        </AlwaysEnabledButton>
       </div>
 
       {isDepositModalOpen && (
