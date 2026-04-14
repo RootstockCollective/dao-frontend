@@ -6,11 +6,11 @@ import { Builder } from '@/app/collective-rewards/types'
 import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { GetPricesResult } from '@/app/user/types'
 import { TOKENS_BY_ADDRESS } from '@/lib/tokens'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, formatDateRange } from '@/lib/utils'
 
 import { TransactionHistoryTable } from '../../config'
 import { TransactionHistoryItem } from '../../utils/types'
-import { calculateCycleNumber, formatDateRange } from '../../utils/utils'
+import { calculateCycleNumber } from '../../utils/utils'
 
 /**
  * Converts builder transaction history data to row data format.
@@ -40,7 +40,7 @@ export const convertBuilderDataToRowData = (
     const firstItem = items[0]
     const builderAddress = getAddress(firstItem.builder)
     const cycleNumber = calculateCycleNumber(firstItem.cycleStart, cycleDuration)
-    const dateRange = formatDateRange(firstItem.cycleStart, cycleDuration)
+    const dateRange = formatDateRange(firstItem.cycleStart, cycleDuration.as('seconds'))
 
     // Single transaction - no grouping needed
     if (items.length === 1) {

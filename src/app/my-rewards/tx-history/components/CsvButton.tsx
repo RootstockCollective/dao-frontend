@@ -6,11 +6,11 @@ import { Builder } from '@/app/collective-rewards/types'
 import { GetPricesResult } from '@/app/user/types'
 import { CsvIcon } from '@/components/Icons'
 import { TOKENS } from '@/lib/tokens'
-import { cn } from '@/lib/utils'
+import { cn, formatDateForCsv } from '@/lib/utils'
 import { showToast } from '@/shared/notification'
 
 import { TransactionHistoryItem } from '../utils/types'
-import { calculateCycleNumber, formatDateForCsv, processTransactionAmount } from '../utils/utils'
+import { calculateCycleNumber, processTransactionAmount } from '../utils/utils'
 
 const MAX_EXPORT_ROWS = 50000
 

@@ -2,8 +2,7 @@
 
 import { Fragment, useState } from 'react'
 
-import { formatExpandedDate } from '@/app/my-rewards/tx-history/utils/utils'
-import { cn } from '@/lib/utils'
+import { cn, formatDateExpanded } from '@/lib/utils'
 
 import { TransactionHistoryTable } from '../../config'
 import { AmountCell, CycleCell, DateCell, FromToCell, TotalAmountCell, TypeCell } from './Cells'
@@ -68,7 +67,7 @@ export const DesktopDataRow = ({ row, ...props }: DesktopDataRowProps) => {
             <CycleCell cycle={null} isDetailRow isHovered={isHovered} />
             <DateCell
               timestamp={detail.blockTimestamp}
-              formatted={formatExpandedDate(detail.blockTimestamp)}
+              formatted={formatDateExpanded(detail.blockTimestamp)}
               transactionHash={detail.transactionHash}
               isDetailRow
               isHovered={isHovered}
