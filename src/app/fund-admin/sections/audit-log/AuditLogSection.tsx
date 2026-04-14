@@ -1,7 +1,7 @@
 import { TableProvider } from '@/shared/context'
 
 import { AuditLogTable } from './components/AuditLogTable'
-import type { AuditLogCellDataMap, ColumnId as AuditLogColumnId } from './config'
+import type { AuditLogCellDataMap, ColumnId as AuditLogColumnId } from './types'
 
 export const AuditLogSection = () => {
   return (

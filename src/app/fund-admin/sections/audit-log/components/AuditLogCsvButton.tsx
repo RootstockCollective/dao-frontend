@@ -3,18 +3,22 @@
 import { ButtonHTMLAttributes, useState } from 'react'
 
 import type { BtcVaultAuditLogSortField } from '@/app/api/btc-vault/v1/schemas'
-import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { CsvIcon } from '@/components/Icons/CsvIcon'
-import { RBTC } from '@/lib/constants'
+import { RBTC, WRBTC } from '@/lib/constants'
 import { getBtcVaultAuditLogEndpoint } from '@/lib/endpoints'
 import { cn } from '@/lib/utils'
 import { showToast } from '@/shared/notification'
 
+import { AUDIT_LOG_FETCH_LIMIT } from '../constants'
 import type { AuditLogEntry } from '../types'
-import { auditLogCsvDetailColumn, formatAuditAmountUsd, formatAuditLogCsvTokenSymbolColumn } from '../utils'
+import {
+  auditLogCsvDetailColumn,
+  formatAmountFromWei,
+  formatAuditLogDate,
+  logTypeToActionLabel,
+} from '../utils'
 
 const MAX_EXPORT_ROWS = 50000
-const AUDIT_LOG_FETCH_LIMIT = 200
 
 interface AuditLogPagination {
   page: number
@@ -39,16 +43,7 @@ function escapeCsvValue(value: string): string {
 }
 
 function generateCsv(rows: string[][]): string {
-  const headers = [
-    'ID',
-    'Date',
-    'Action',
-    'Detail',
-    'Token Amount',
-    'Token Symbol',
-    'USD Amount',
-    'Role',
-  ]
+  const headers = ['ID', 'Date', 'Action', 'Detail', 'Token Amount', 'Token Symbol', 'USD Amount', 'Role']
   const csvRows = [headers.map(escapeCsvValue), ...rows.map(r => r.map(escapeCsvValue))]
   return csvRows.map(r => r.join(',')).join('\n')
 }
@@ -120,16 +115,15 @@ async function fetchAllAuditLogEntries(
   return allData
 }
 
-function entryToCsvRow(entry: AuditLogEntry, rbtcUsdPrice: number): string[] {
+function entryToCsvRow(entry: AuditLogEntry): string[] {
   return [
     entry.id,
-    entry.date,
-    entry.action,
-    auditLogCsvDetailColumn(entry),
-    entry.tokenAmount ?? '',
-    formatAuditLogCsvTokenSymbolColumn(entry),
-    formatAuditAmountUsd(entry.amountWei, rbtcUsdPrice) ?? '',
-    entry.user,
+    formatAuditLogDate(entry.blockTimestamp),
+    logTypeToActionLabel(entry.type),
+    auditLogCsvDetailColumn(entry.detail),
+    formatAmountFromWei(entry.amountInWei) ?? '',
+    entry.isNative === false ? WRBTC : RBTC,
+    entry.role ?? '',
   ]
 }
 
@@ -147,8 +141,6 @@ export function AuditLogCsvButton({
   ...props
 }: Props) {
   const [isDownloading, setIsDownloading] = useState(false)
-  const prices = useGetSpecificPrices()
-  const rbtcUsdPrice = prices[RBTC]?.price ?? 0
 
   const handleDownload = async () => {
     if (disabled || isDownloading) return
@@ -177,7 +169,7 @@ export function AuditLogCsvButton({
         })
       }
 
-      const csvRows = dataToExport.map(entry => entryToCsvRow(entry, rbtcUsdPrice))
+      const csvRows = dataToExport.map(entry => entryToCsvRow(entry))
       const csvContent = generateCsv(csvRows)
 
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })

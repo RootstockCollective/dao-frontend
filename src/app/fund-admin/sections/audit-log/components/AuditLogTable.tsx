@@ -12,15 +12,10 @@ import { useClickOutside } from '@/shared/hooks/useClickOutside'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 import { useScrollLock } from '@/shared/hooks/useScrollLock'
 
-import {
-  auditEntriesToRows,
-  type AuditLogCellDataMap,
-  type ColumnId,
-  DEFAULT_HEADERS,
-  type SortableColumnId,
-} from '../config'
-import { AUDIT_LOG_PAGE_SIZE } from '../constants'
-import { useGetAuditLog } from '../useAuditLog'
+import { AUDIT_LOG_PAGE_SIZE, DEFAULT_COLUMNS } from '../constants'
+import { useGetAuditLog } from '../hooks/'
+import { AuditLogCellDataMap, ColumnId, SortableColumnId } from '../types'
+import { convertAuditEntriesToRows } from '../utils'
 import { AuditLogCsvButton } from './AuditLogCsvButton'
 import { AuditLogFilterSideBar } from './AuditLogFilterSideBar'
 import { DesktopAuditLogHistory } from './DesktopAuditLogHistory'
@@ -52,16 +47,17 @@ export const AuditLogTable = () => {
 
   const sortField = isSortableColumnId(sort.columnId) ? sort.columnId : null
 
-  const { entries, totalCount, isLoading, error } = useGetAuditLog({
+  const { entries, isLoading, error, pagination } = useGetAuditLog({
     visibleItemCount: pageEnd,
     sortField,
     sortDirection: sort.direction,
   })
 
-  const visibleRows = useMemo(() => auditEntriesToRows(entries), [entries])
+  const visibleRows = useMemo(() => convertAuditEntriesToRows(entries), [entries])
+  const totalCount = pagination?.total ?? 0
 
   useEffect(() => {
-    dispatch({ type: 'SET_COLUMNS', payload: DEFAULT_HEADERS })
+    dispatch({ type: 'SET_COLUMNS', payload: DEFAULT_COLUMNS })
     dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: 'date', direction: 'desc' } })
   }, [dispatch])
 

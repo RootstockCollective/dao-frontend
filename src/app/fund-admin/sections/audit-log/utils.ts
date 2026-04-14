@@ -1,33 +1,32 @@
+import { DateTime } from 'luxon'
 import { formatEther } from 'viem'
 
 import { getFiatAmount } from '@/app/shared/formatter'
-import { RBTC, WRBTC } from '@/lib/constants'
-import { formatCurrencyWithLabel } from '@/lib/utils'
+import Big from '@/lib/big'
+import { formatCurrencyWithLabel, formatNumberWithCommas } from '@/lib/utils'
 
-import { AUDIT_LOG_NAV_EPOCH_DETAIL_RE, AUDIT_LOG_NAV_UPDATED_ACTION_LABEL } from './constants'
-import type { AuditLogEntry } from './types'
+import { AUDIT_LOG_NAV_EPOCH_DETAIL_RE, LOG_TYPE_LABELS } from './constants'
+import type { AuditLogEntry, AuditLogTableModel, AuditLogUserRole } from './types'
 
-/** Subgraph `amount`: valid uint string in wei, including `"0"`; null if missing or invalid. */
-export function parseSubgraphAmountWei(raw: string | null | undefined): string | null {
-  if (raw == null) return null
-  const trimmed = raw.trim()
-  if (trimmed === '') return null
-  try {
-    BigInt(trimmed)
-    return trimmed
-  } catch {
-    return null
-  }
+export function convertAuditEntriesToRows(entries: AuditLogEntry[]): AuditLogTableModel['Row'][] {
+  return entries.map(entry => ({
+    id: entry.id,
+    data: {
+      date: formatAuditLogDate(entry.blockTimestamp),
+      action: logTypeToActionLabel(entry.type),
+      value: formatAmountFromWei(entry.amountInWei ?? null),
+      reason: entry.detail?.trim() ?? null,
+      role: entry.role as AuditLogUserRole,
+    },
+  }))
 }
 
 /** Human-readable RBTC amount from wei (18 decimals). */
-export function formatAuditTokenAmountFromWei(wei: string | null): string | null {
+export function formatAmountFromWei(wei: string | bigint | null): string | null {
   if (wei == null) return null
   try {
-    const asEther = formatEther(BigInt(wei))
-    const n = Number(asEther)
-    if (!Number.isFinite(n)) return asEther
-    return n.toLocaleString('en-US', { maximumFractionDigits: 8 })
+    const asEther = formatEther(BigInt(wei.toString()))
+    return formatNumberWithCommas(Big(asEther).toFixedNoTrailing(8))
   } catch {
     return null
   }
@@ -45,27 +44,29 @@ export function formatAuditAmountUsd(amountWei: string | null, rbtcUsdPrice: num
 }
 
 function isNavEpochOnlyDetail(entry: AuditLogEntry): boolean {
-  return (
-    entry.action === AUDIT_LOG_NAV_UPDATED_ACTION_LABEL &&
-    AUDIT_LOG_NAV_EPOCH_DETAIL_RE.test(entry.detail?.trim() ?? '')
-  )
+  return entry.type === 'NAV_UPDATED' && AUDIT_LOG_NAV_EPOCH_DETAIL_RE.test(entry.detail?.trim() ?? '')
 }
 
-/** `detail` for the Value/Reason cell when there is no token row (suppress NAV-only epoch line). */
-export function auditLogValueReasonDetail(entry: AuditLogEntry): string | null {
-  if (entry.tokenAmount != null) return null
-  const text = entry.detail?.trim()
-  if (!text || isNavEpochOnlyDetail(entry)) return null
-  return text
+// --- CSV functions section ---
+
+export function formatAuditLogDate(blockTimestamp: string | bigint): string {
+  return DateTime.fromSeconds(Number(blockTimestamp), { zone: 'utc' }).setLocale('en').toFormat('LLL d, yyyy')
 }
 
-/** CSV "Detail" column: full `detail` when a token row exists; else same rules as the cell. */
-export function auditLogCsvDetailColumn(entry: AuditLogEntry): string {
-  if (entry.tokenAmount != null) return entry.detail ?? ''
-  return auditLogValueReasonDetail(entry) ?? ''
+export function logTypeToActionLabel(type: string): string {
+  if (LOG_TYPE_LABELS[type]) return LOG_TYPE_LABELS[type]
+  return type
+    .split('_')
+    .map(w => w.charAt(0) + w.slice(1).toLowerCase())
+    .join(' ')
 }
 
-export function formatAuditLogCsvTokenSymbolColumn(entry: AuditLogEntry): string {
-  if (entry.tokenAmount == null || entry.tokenAmount === '') return ''
-  return entry.isNative === false ? WRBTC : RBTC
+export function auditLogCsvDetailColumn(detail: string | null): string {
+  if (detail != null) return detail
+  if (!detail || isNavEpochOnlyDetail(detail)) return ''
+  return detail
+}
+
+export function auditLogFormattedTokenAmount(amountInWei: string | null): string | null {
+  return formatAmountFromWei(amountInWei)
 }
