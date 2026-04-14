@@ -76,7 +76,7 @@ describe('GET /api/btc-vault/v1/audit-log', () => {
     expect(res.status).toBe(400)
   })
 
-  it('always reports date sort field in pagination', async () => {
+  it('always reports date sort field in pagination even other sort field is provided', async () => {
     mockFetch.mockResolvedValue({ data: [sampleEntry], total: 1 })
 
     const req = new NextRequest(

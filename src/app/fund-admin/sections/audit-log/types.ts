@@ -2,7 +2,7 @@ import type { Address, Hex } from 'viem'
 
 import { TypedTable } from '@/shared/context'
 
-export type AuditLogUserRole = 'ADMIN' | 'MANAGER' | 'PAUSER' | 'INVESTOR' | 'BUFFER_INJECTOR'
+export type AuditLogUserRole = 'ADMIN' | 'MANAGER' | 'PAUSER' | 'INVESTOR' | 'BUFFER_INJECTOR' | 'WHITELISTER'
 export type ColumnId = 'date' | 'action' | 'value' | 'reason' | 'role'
 export type SortableColumnId = 'date'
 

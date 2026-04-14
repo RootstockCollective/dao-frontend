@@ -20,6 +20,8 @@ export const LOG_TYPE_LABELS: Record<string, string> = {
   RESUMED_DEPOSITS: 'Resumed deposits',
   PAUSED_REDEEMS: 'Paused redeems',
   RESUMED_REDEEMS: 'Resumed redeems',
+  WHITELISTED_USER: 'Whitelisted',
+  DEWHITELISTED_USER: 'Dewhitelisted',
   NAV_UPDATED: 'NAV updated',
   TRANSFER_TO_MANAGER_WALLET: 'Transfer to manager wallet',
   VAULT_DEPOSIT: 'Vault deposit',
@@ -45,6 +47,7 @@ export const ROLE_STYLES: Record<AuditLogUserRole, string> = {
   PAUSER: 'bg-v3-rif-blue text-v3-text-100',
   INVESTOR: 'bg-[var(--Brand-Lime,#DEFF1A)] text-v3-text-0',
   BUFFER_INJECTOR: 'bg-success text-v3-text-0',
+  WHITELISTER: 'bg-[#FFB020] text-v3-text-0',
 }
 
 export const ROLE_LABELS: Record<AuditLogUserRole, string> = {
@@ -53,4 +56,5 @@ export const ROLE_LABELS: Record<AuditLogUserRole, string> = {
   PAUSER: 'Pauser',
   INVESTOR: 'Investor',
   BUFFER_INJECTOR: 'Injector',
+  WHITELISTER: 'Whitelister',
 }

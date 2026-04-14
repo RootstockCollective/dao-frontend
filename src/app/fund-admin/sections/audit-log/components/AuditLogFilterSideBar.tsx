@@ -31,6 +31,8 @@ export function AuditLogFilterSideBar({
         options: [
           { label: 'Deposit', value: 'deposit' },
           { label: 'Withdraw', value: 'withdraw' },
+          { label: 'Whitelisted', value: 'whitelisted' },
+          { label: 'Dewhitelisted', value: 'dewhitelisted' },
           { label: 'Top up synthetic yield APY', value: 'top-up-synthetic-yield-apy' },
           { label: 'Transfer to manager wallet', value: 'transfer-to-manager-wallet' },
           { label: 'Top up manual buffer', value: 'top-up-manual-buffer' },
@@ -60,6 +62,7 @@ export function AuditLogFilterSideBar({
           { label: 'Admin', value: 'admin' },
           { label: 'Fund manager', value: 'fund-manager' },
           { label: 'Investor', value: 'investor' },
+          { label: 'Whitelister', value: 'whitelister' },
         ],
       },
     ],
