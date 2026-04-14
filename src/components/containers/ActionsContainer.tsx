@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -9,12 +9,12 @@ interface ActionsContainerProps extends CommonComponentProps {
   containerClassName?: string
 }
 
-export const ActionsContainer: FC<ActionsContainerProps> = ({
+export const ActionsContainer = ({
   title,
   children,
   className = '',
   containerClassName = '',
-}) => {
+}: ActionsContainerProps) => {
   return (
     <div
       data-testid="ActionsContainer"
