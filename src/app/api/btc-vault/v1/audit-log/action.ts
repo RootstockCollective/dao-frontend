@@ -1,13 +1,9 @@
 import { gql } from '@apollo/client'
-import { DateTime } from 'luxon'
 import { unstable_cache } from 'next/cache'
+import type { Address, Hex } from 'viem'
 import type { z } from 'zod'
 
-import type { AuditLogEntry, AuditLogUserRole } from '@/app/fund-admin/sections/audit-log/types'
-import {
-  formatAuditTokenAmountFromWei,
-  parseSubgraphAmountWei,
-} from '@/app/fund-admin/sections/audit-log/utils'
+import type { AuditLogEntry } from '@/app/fund-admin/sections/audit-log/types'
 import { btcVaultClient } from '@/shared/components/ApolloClient'
 
 import { BtcVaultAuditLogQuerySchema, type BtcVaultAuditLogSortField } from '../schemas'
@@ -28,12 +24,19 @@ const BTC_VAULT_AUDIT_LOGS_PAGE = gql`
   ) {
     btcVaultLogs(first: $first, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
       id
+      vault
       type
+      amountInWei
       detail
-      amount
       isNative
       role
+      actor
+      from
+      destination
+      blockNumber
       blockTimestamp
+      transactionHash
+      logIndex
     }
   }
 `
@@ -46,78 +49,42 @@ const BTC_VAULT_AUDIT_LOGS_COUNT_CHUNK = gql`
   }
 `
 
-const LOG_TYPE_LABELS: Record<string, string> = {
-  PAUSED_DEPOSITS: 'Paused deposits',
-  RESUMED_DEPOSITS: 'Resumed deposits',
-  PAUSED_REDEEMS: 'Paused redeems',
-  RESUMED_REDEEMS: 'Resumed redeems',
-  NAV_UPDATED: 'NAV updated',
-  TRANSFER_TO_MANAGER_WALLET: 'Transfer to manager wallet',
-  VAULT_DEPOSIT: 'Vault deposit',
-  TOP_UP_BUFFER: 'Top up buffer',
-  TOP_UP_SYNTHETIC_YIELD: 'Top up synthetic yield',
-  SYNTHETIC_YIELD_UPDATED: 'Synthetic yield updated',
-  BUFFER_UPDATED: 'Buffer updated',
-}
-
-const FUND_MANAGER_LOG_TYPES = new Set([
-  'NAV_UPDATED',
-  'TRANSFER_TO_MANAGER_WALLET',
-  'VAULT_DEPOSIT',
-  'TOP_UP_BUFFER',
-  'TOP_UP_SYNTHETIC_YIELD',
-  'SYNTHETIC_YIELD_UPDATED',
-  'BUFFER_UPDATED',
-])
-
 const COUNT_PAGE_SIZE = 1000
 const COUNT_MAX_SKIP = 100_000
 
-interface RawBtcVaultLogRow {
+interface BtcVaultLogRaw {
   id: string
+  vault: string
   type: string
+  amountInWei: string | null
   detail: string | null
-  amount: string | null
   isNative: boolean | null
   role: string | null
+  actor: string
+  from: string | null
+  destination: string | null
+  blockNumber: string
   blockTimestamp: string
+  transactionHash: string
+  logIndex: string
 }
 
-function logTypeToActionLabel(type: string): string {
-  if (LOG_TYPE_LABELS[type]) return LOG_TYPE_LABELS[type]
-  return type
-    .split('_')
-    .map(w => w.charAt(0) + w.slice(1).toLowerCase())
-    .join(' ')
-}
-
-// TODO: Review this once the subgraph provides the role field
-function mapUserFromLog(logType: string, roleFromSubgraph: string | null): AuditLogUserRole {
-  if (roleFromSubgraph) {
-    const r = roleFromSubgraph.trim().toLowerCase()
-    if (r.includes('fund') && r.includes('manager')) return 'Fund Manager'
-    if (r.includes('admin')) return 'Admin'
-  }
-  return FUND_MANAGER_LOG_TYPES.has(logType) ? 'Fund Manager' : 'Admin'
-}
-
-function formatAuditLogDate(blockTimestamp: string): string {
-  const ts = Number(blockTimestamp)
-  if (!Number.isFinite(ts) || ts <= 0) return ''
-  return DateTime.fromSeconds(ts, { zone: 'utc' }).setLocale('en').toFormat('LLL d, yyyy')
-}
-
-function mapLogRowToEntry(row: RawBtcVaultLogRow): AuditLogEntry {
-  const amountWei = parseSubgraphAmountWei(row.amount)
+function mapLogRowToEntry(row: BtcVaultLogRaw): AuditLogEntry {
   return {
     id: row.id,
-    date: formatAuditLogDate(row.blockTimestamp),
-    action: logTypeToActionLabel(row.type),
-    detail: row.detail,
-    tokenAmount: formatAuditTokenAmountFromWei(amountWei),
+    vault: row.vault as Address,
+    type: row.type,
+    amountInWei: row.amountInWei ?? null,
+    detail: row.detail ?? null,
     isNative: row.isNative ?? null,
-    amountWei,
-    user: mapUserFromLog(row.type, row.role),
+    role: row.role ?? null,
+    actor: row.actor as Address,
+    from: (row.from ?? null) as Address | null,
+    destination: (row.destination ?? null) as Address | null,
+    blockNumber: row.blockNumber,
+    blockTimestamp: row.blockTimestamp,
+    transactionHash: row.transactionHash as Hex,
+    logIndex: row.logIndex,
   }
 }
 
@@ -165,7 +132,7 @@ async function fetchBtcVaultAuditLogFromSubgraph(params: ParsedQuery): Promise<B
   const skip = (params.page - 1) * params.limit
 
   const [pageResult, total] = await Promise.all([
-    btcVaultClient.query<{ btcVaultLogs: RawBtcVaultLogRow[] }>({
+    btcVaultClient.query<{ btcVaultLogs: BtcVaultLogRaw[] }>({
       query: BTC_VAULT_AUDIT_LOGS_PAGE,
       variables: {
         first: params.limit,

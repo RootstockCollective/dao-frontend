@@ -1,5 +1,8 @@
 import { NextRequest } from 'next/server'
+import { zeroAddress } from 'viem'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import type { AuditLogEntry } from '@/app/fund-admin/sections/audit-log/types'
 
 import { GET } from './route'
 
@@ -11,15 +14,21 @@ import { fetchBtcVaultAuditLogPage } from './action'
 
 const mockFetch = vi.mocked(fetchBtcVaultAuditLogPage)
 
-const sampleEntry = {
-  id: '0xabc-0',
-  date: 'Jan 1, 2026',
-  action: 'Paused deposits',
+const sampleEntry: AuditLogEntry = {
+  id: '0xabcde-0',
+  vault: zeroAddress,
+  type: 'PAUSED_DEPOSITS',
+  amountInWei: null,
   detail: null,
-  tokenAmount: null,
   isNative: null,
-  amountWei: null,
-  user: 'Admin' as const,
+  role: null,
+  actor: zeroAddress,
+  from: null,
+  destination: null,
+  blockNumber: 1n,
+  blockTimestamp: 1735689600n,
+  transactionHash: '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+  logIndex: '0',
 }
 
 beforeEach(() => {
@@ -43,9 +52,7 @@ describe('GET /api/btc-vault/v1/audit-log', () => {
     expect(body.pagination.limit).toBe(20)
     expect(body.pagination.totalPages).toBe(1)
     expect(res.headers.get('Cache-Control')).toContain('no-store')
-    expect(mockFetch).toHaveBeenCalledWith(
-      expect.objectContaining({ page: 1, limit: 20 }),
-    )
+    expect(mockFetch).toHaveBeenCalledWith(expect.objectContaining({ page: 1, limit: 20 }))
   })
 
   it('passes limit and page to the action', async () => {
@@ -60,9 +67,7 @@ describe('GET /api/btc-vault/v1/audit-log', () => {
     const body = (await res.json()) as { data: unknown[]; pagination: { total: number } }
     expect(body.data).toHaveLength(3)
     expect(body.pagination.total).toBe(10)
-    expect(mockFetch).toHaveBeenCalledWith(
-      expect.objectContaining({ page: 2, limit: 3 }),
-    )
+    expect(mockFetch).toHaveBeenCalledWith(expect.objectContaining({ page: 2, limit: 3 }))
   })
 
   it('returns 400 when limit is out of range', async () => {
