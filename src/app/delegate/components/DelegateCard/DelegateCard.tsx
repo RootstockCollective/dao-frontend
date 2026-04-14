@@ -25,7 +25,7 @@ interface DelegateCardProps {
   isReclaimPending?: boolean
 }
 
-export const DelegateCard: React.FC<DelegateCardProps> = ({
+export const DelegateCard = ({
   address,
   name,
   imageIpfs,
@@ -41,7 +41,7 @@ export const DelegateCard: React.FC<DelegateCardProps> = ({
   buttonDisabled = false,
   isDelegationPending = false,
   isReclaimPending = false,
-}) => {
+}: DelegateCardProps) => {
   return (
     <div
       className={cn(

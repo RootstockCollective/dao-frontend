@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, FC, ReactNode, useContext, useMemo, useState } from 'react'
+import { createContext, ReactNode, useContext, useMemo, useState } from 'react'
 import { Address } from 'viem'
 
 import {
@@ -92,11 +92,11 @@ const useGetTokenRewards = (backer: Address, token: Token, gauges: Address[]) =>
 const getEarnedAddresses = (rewards: Record<Address, bigint>) =>
   Object.keys(rewards).filter(key => rewards[key as Address] > 0n) as Address[]
 
-export const BackerRewardsContextProvider: FC<BackerRewardsProviderProps> = ({
+export const BackerRewardsContextProvider = ({
   children,
   backer,
   tokens: { rif, rbtc, usdrif },
-}) => {
+}: BackerRewardsProviderProps) => {
   const { builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
   const gauges = useMemo(() => {
     const filteredBuilders = filterBuildersByState<CompleteBuilder>(builders)

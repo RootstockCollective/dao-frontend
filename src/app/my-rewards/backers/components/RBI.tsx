@@ -1,4 +1,3 @@
-import { FC } from 'react'
 import { Address } from 'viem'
 
 import {
@@ -19,7 +18,7 @@ interface RBIContentProps {
   isLoading: boolean
 }
 
-const RBIContent: FC<RBIContentProps> = ({ rbiPct, isLoading }) => {
+const RBIContent = ({ rbiPct, isLoading }: RBIContentProps) => {
   return (
     <RewardCard
       isLoading={isLoading}
@@ -57,7 +56,7 @@ const RBIContent: FC<RBIContentProps> = ({ rbiPct, isLoading }) => {
   )
 }
 
-const RBIWStateSync: FC<RBIProps> = ({ backer, tokens }) => {
+const RBIWStateSync = ({ backer, tokens }: RBIProps) => {
   const {
     data: backerStakingHistory,
     isLoading: backerStakingHistoryLoading,
@@ -77,7 +76,7 @@ const RBIWStateSync: FC<RBIProps> = ({ backer, tokens }) => {
   return <RBIContent rbiPct={rbiPct} isLoading={isLoading} />
 }
 
-const RBIWTheGraph: FC<RBIProps> = ({ backer, tokens }) => {
+const RBIWTheGraph = ({ backer, tokens }: RBIProps) => {
   const {
     data: backerStakingHistory,
     isLoading: backerStakingHistoryLoading,
@@ -100,7 +99,7 @@ interface RBIProps {
   backer: Address
   tokens: Record<string, Token>
 }
-export const RBI: FC<RBIProps> = props => {
+export const RBI = (props: RBIProps) => {
   const {
     flags: { use_state_sync },
   } = useFeatureFlags()
