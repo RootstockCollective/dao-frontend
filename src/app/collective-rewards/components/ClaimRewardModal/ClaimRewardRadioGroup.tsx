@@ -1,5 +1,5 @@
 import * as RadioGroup from '@radix-ui/react-radio-group'
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { ClaimRewardRadioOption } from './ClaimRewardRadioOption'
 import { ClaimRewardType } from './types'
@@ -18,13 +18,13 @@ interface ClaimRewardRadioGroupProps {
   className?: string
 }
 
-export const ClaimRewardRadioGroup: FC<ClaimRewardRadioGroupProps> = ({
+export const ClaimRewardRadioGroup = ({
   value,
   onValueChange,
   options,
   isLoading = false,
   className,
-}) => {
+}: ClaimRewardRadioGroupProps) => {
   return (
     <RadioGroup.Root
       className={`flex flex-col md:flex-row gap-2 w-full ${className || ''}`}
