@@ -54,7 +54,7 @@ export const BtcVaultWhitelistRoleHistoryQuerySchema = z.object({
 })
 
 /** Sort fields for GET /api/btc-vault/v1/audit-log (UI columns; subgraph mapping TBD). */
-export const BtcVaultAuditLogSortFieldEnum = z.enum(['date', 'action', 'role'])
+export const BtcVaultAuditLogSortFieldEnum = z.enum(['date'])
 
 export type BtcVaultAuditLogSortField = z.infer<typeof BtcVaultAuditLogSortFieldEnum>
 

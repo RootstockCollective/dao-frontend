@@ -75,4 +75,20 @@ describe('GET /api/btc-vault/v1/audit-log', () => {
     const res = await GET(req)
     expect(res.status).toBe(400)
   })
+
+  it('always reports date sort field in pagination', async () => {
+    mockFetch.mockResolvedValue({ data: [sampleEntry], total: 1 })
+
+    const req = new NextRequest(
+      'http://localhost/api/btc-vault/v1/audit-log?sort_field=action&sort_direction=asc',
+    )
+    const res = await GET(req)
+    expect(res.status).toBe(200)
+
+    const body = (await res.json()) as {
+      pagination: { sort_field: string; sort_direction: 'asc' | 'desc' }
+    }
+    expect(body.pagination.sort_field).toBe('date')
+    expect(body.pagination.sort_direction).toBe('asc')
+  })
 })

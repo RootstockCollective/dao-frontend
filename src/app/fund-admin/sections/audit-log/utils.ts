@@ -1,7 +1,6 @@
 import { DateTime } from 'luxon'
 import { formatEther } from 'viem'
 
-import type { BtcVaultAuditLogSortField } from '@/app/api/btc-vault/v1/schemas'
 import { getFiatAmount } from '@/app/shared/formatter'
 import Big from '@/lib/big'
 import { getBtcVaultAuditLogEndpoint } from '@/lib/endpoints'
@@ -59,7 +58,7 @@ export function buildAuditLogUrl(params: AuditLogHistoryPageParams): string {
   searchParams.set('page', String(params.page))
   searchParams.set('limit', String(params.limit))
   if (params.sortField && params.sortDirection) {
-    searchParams.set('sort_field', params.sortField as BtcVaultAuditLogSortField)
+    searchParams.set('sort_field', params.sortField)
     searchParams.set('sort_direction', params.sortDirection)
   }
   return `${getBtcVaultAuditLogEndpoint}?${searchParams.toString()}`

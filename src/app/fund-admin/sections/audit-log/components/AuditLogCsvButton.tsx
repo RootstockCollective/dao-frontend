@@ -3,14 +3,13 @@
 import { DateTime } from 'luxon'
 import { ButtonHTMLAttributes, useState } from 'react'
 
-import type { BtcVaultAuditLogSortField } from '@/app/api/btc-vault/v1/schemas'
 import { CsvIcon } from '@/components/Icons/CsvIcon'
 import { RBTC, WRBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { showToast } from '@/shared/notification'
 
 import { AUDIT_LOG_FETCH_LIMIT } from '../constants'
-import type { AuditLogApiResponse, AuditLogEntry } from '../types'
+import type { AuditLogApiResponse, AuditLogEntry, SortableColumnId } from '../types'
 import { buildAuditLogUrl, formatAmountFromWei, formatAuditLogDateForCsv } from '../utils'
 const MAX_EXPORT_ROWS = 50000
 
@@ -28,7 +27,7 @@ function generateCsv(rows: string[][]): string {
 }
 
 async function fetchAllAuditLogEntries(
-  sortField: BtcVaultAuditLogSortField | null,
+  sortField: SortableColumnId | null,
   sortDirection: 'asc' | 'desc' | null,
 ): Promise<AuditLogEntry[]> {
   const limit = AUDIT_LOG_FETCH_LIMIT
@@ -81,7 +80,7 @@ function entryToCsvRow(entry: AuditLogEntry): string[] {
 }
 
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
-  sortField: BtcVaultAuditLogSortField | null
+  sortField: SortableColumnId | null
   sortDirection: 'asc' | 'desc' | null
   disabled?: boolean
 }

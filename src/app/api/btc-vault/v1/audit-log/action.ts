@@ -6,7 +6,7 @@ import type { z } from 'zod'
 import type { AuditLogEntry } from '@/app/fund-admin/sections/audit-log/types'
 import { btcVaultClient } from '@/shared/components/ApolloClient'
 
-import { BtcVaultAuditLogQuerySchema, type BtcVaultAuditLogSortField } from '../schemas'
+import { BtcVaultAuditLogQuerySchema } from '../schemas'
 
 type ParsedQuery = z.infer<typeof BtcVaultAuditLogQuerySchema>
 
@@ -88,9 +88,7 @@ function mapLogRowToEntry(row: BtcVaultLogRaw): AuditLogEntry {
   }
 }
 
-function auditLogOrderBy(field: BtcVaultAuditLogSortField | undefined): string {
-  if (field === 'action') return 'type'
-  if (field === 'role') return 'role'
+function auditLogOrderBy(): string {
   return 'blockTimestamp'
 }
 
@@ -127,7 +125,7 @@ const getCachedBtcVaultLogsTotal = unstable_cache(countBtcVaultLogsUncached, ['b
 })
 
 async function fetchBtcVaultAuditLogFromSubgraph(params: ParsedQuery): Promise<BtcVaultAuditLogPageResult> {
-  const orderBy = auditLogOrderBy(params.sort_field)
+  const orderBy = auditLogOrderBy()
   const orderDirection = auditLogOrderDirection(params.sort_direction)
   const skip = (params.page - 1) * params.limit
 
