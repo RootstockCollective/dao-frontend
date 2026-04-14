@@ -1,19 +1,13 @@
-import { formatExpandedDate } from '@/app/my-rewards/tx-history/utils/utils'
 import { formatSymbol } from '@/app/shared/formatter'
 import { TOKEN_SYMBOL, VaultHistoryTable } from '@/app/vault/history/components/VaultHistoryTable.config'
 import { VaultHistoryItemAPI } from '@/app/vault/history/utils/types'
 import Big from '@/lib/big'
+import { formatDateExpanded, formatPeriodToMonthYear } from '@/lib/utils'
 
 const TOKEN_DECIMALS = 18
 
 /** Safely converts wei string to USD string using Big.js arithmetic */
 const weiToUsd = (wei: string): string => Big(wei).div(Big(10).pow(TOKEN_DECIMALS)).toFixed(2)
-
-const formatPeriod = (period: string): string => {
-  const [year, month] = period.split('-')
-  const date = new Date(Number(year), Number(month) - 1, 1)
-  return date.toLocaleString('en-US', { month: 'long', year: 'numeric' })
-}
 
 /**
  * Converts raw API data to table row data
@@ -34,13 +28,13 @@ export const convertDataToRowData = (data: VaultHistoryItemAPI[]): VaultHistoryT
     rows[i] = {
       id: `${item.period}-${item.action}-${i}`,
       data: {
-        period: formatPeriod(item.period),
+        period: formatPeriodToMonthYear(item.period),
         action: item.action,
         assets: assetsFormatted,
         total_usd: signedUsdAmount,
         transactions: item.transactions.map(tx => ({
           ...tx,
-          date: formatExpandedDate(String(tx.timestamp)),
+          date: formatDateExpanded(String(tx.timestamp)),
           assets: formatSymbol(tx.assets, TOKEN_SYMBOL),
           total_usd: weiToUsd(tx.assets),
         })),

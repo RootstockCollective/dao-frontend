@@ -11,6 +11,7 @@ import {
 import { GovernorAbi } from '@/lib/abis/Governor'
 import Big from '@/lib/big'
 import { MAX_NAME_LENGTH_FOR_PROPOSAL, TALLY_DESCRIPTION_SEPARATOR } from '@/lib/constants'
+import { formatMonthYear } from '@/lib/utils'
 import { ProposalCategory } from '@/shared/types'
 
 import { Milestones } from './types'
@@ -414,8 +415,7 @@ export function serializeBigInts(calldatasParsed: DecodedData[]): SerializedDeco
 
 export function formatTimestampToMonthYear(timestamp: string | undefined): string {
   if (!timestamp) return ' - '
-  const date = new Date(Number(timestamp) * 1000) // seconds → ms
-  return date.toLocaleString('en-US', { month: 'long', year: 'numeric' })
+  return formatMonthYear(timestamp)
 }
 
 // Utility function to safely convert amount to bigint

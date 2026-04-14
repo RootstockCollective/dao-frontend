@@ -12,6 +12,7 @@ import { getFiatAmount } from '@/app/shared/formatter'
 import Big from '@/lib/big'
 import { RIF, STRIF } from '@/lib/constants'
 import { logger } from '@/lib/logger'
+import { formatDateForCsv as sharedFormatDateForCsv, formatPeriodToMonthYear } from '@/lib/utils'
 
 import type { StakingHistoryByPeriodAndAction } from '../types'
 
@@ -51,24 +52,10 @@ const formatCurrencyForCsv = (amount: bigint | string, price: number): string =>
   }).format(Number(usdAmount.toString()))
 }
 
-const formatPeriod = (period: string): string => {
-  const [year, month] = period.split('-')
-  const date = new Date(Number(year), Number(month) - 1, 1)
-  return date.toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' })
-}
+const formatPeriod = (period: string): string => formatPeriodToMonthYear(period)
 
-const formatDateForCsv = (timestamp: string | number): string => {
-  const date = new Date(Number(timestamp) * 1000)
-  return date.toLocaleString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-    timeZone: 'UTC',
-  })
-}
+const formatDateForCsv = (timestamp: string | number): string =>
+  sharedFormatDateForCsv(timestamp, { utc: true, hour12: false })
 
 const escapeCsvValue = (value: string): string => {
   if (value.includes(',') || value.includes('"') || value.includes('\n')) {
