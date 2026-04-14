@@ -7,8 +7,9 @@ const globalForPrisma = globalThis as typeof globalThis & {
 }
 
 if (url && !globalForPrisma._prisma) {
+  const separator = url.includes('?') ? '&' : '?'
   globalForPrisma._prisma = new PrismaClient({
-    datasources: { db: { url } },
+    datasources: { db: { url: `${url}${separator}connection_limit=5` } },
   })
 }
 
