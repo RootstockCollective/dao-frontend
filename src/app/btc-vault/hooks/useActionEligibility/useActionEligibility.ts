@@ -26,8 +26,8 @@ type VaultMulticallData = [
  * Reads vault pause state, active deposit/redeem requests, and vault share balance via multicall,
  * and deposit whitelist status via {@link useWhitelistCheck}, then maps to action eligibility.
  *
- * Withdrawal eligibility does not depend on the deposit whitelist; deposit is gated first by
- * whitelist resolution (loading / not whitelisted), then pause, eligibility, and active requests.
+ * Both deposit and withdrawal eligibility are gated by the whitelist (loading / not whitelisted),
+ * then by pause state, eligibility, and active requests.
  *
  * @param address - User wallet address, or undefined to disable queries
  * @returns { data, isLoading, error, refetch } where data is action eligibility or undefined until vault multicall resolves

@@ -29,7 +29,9 @@ import {
   DEPOSIT_PAUSED_REASON,
   DEPOSIT_WHITELIST_BLOCK_REASON,
   NO_VAULT_SHARES_REASON,
+  WITHDRAWAL_ELIGIBILITY_LOADING_REASON,
   WITHDRAWAL_PAUSED_REASON,
+  WITHDRAWAL_WHITELIST_BLOCK_REASON,
 } from '../constants'
 
 const activePause: PauseState = { deposits: 'active', withdrawals: 'active' }
@@ -301,11 +303,12 @@ describe('toActionEligibility', () => {
   })
 
   describe('whitelist priority (isWhitelisted)', () => {
-    it('when isWhitelisted === false, blocks deposit with whitelist reason over pause and active request', () => {
+    it('when isWhitelisted === false, blocks deposit and withdraw with whitelist reason', () => {
       const result = toActionEligibility(activePause, eligible, noActiveRequests, true, false)
       expect(result.canDeposit).toBe(false)
       expect(result.depositBlockReason).toBe(DEPOSIT_WHITELIST_BLOCK_REASON)
-      expect(result.canWithdraw).toBe(true)
+      expect(result.canWithdraw).toBe(false)
+      expect(result.withdrawBlockReason).toBe(WITHDRAWAL_WHITELIST_BLOCK_REASON)
     })
 
     it('when isWhitelisted === false with paused deposits, still shows whitelist reason first', () => {
@@ -351,12 +354,23 @@ describe('toActionEligibility', () => {
     })
   })
 
-  describe('withdrawal unaffected by whitelist', () => {
-    it('canWithdraw and withdrawBlockReason are the same for isWhitelisted false and true', () => {
-      const resultFalse = toActionEligibility(activePause, eligible, noActiveRequests, true, false)
-      const resultTrue = toActionEligibility(activePause, eligible, noActiveRequests, true, true)
-      expect(resultFalse.canWithdraw).toBe(resultTrue.canWithdraw)
-      expect(resultFalse.withdrawBlockReason).toBe(resultTrue.withdrawBlockReason)
+  describe('withdrawal gated by whitelist (DAO-2164)', () => {
+    it('when isWhitelisted === false, blocks withdraw with whitelist reason', () => {
+      const result = toActionEligibility(activePause, eligible, noActiveRequests, true, false)
+      expect(result.canWithdraw).toBe(false)
+      expect(result.withdrawBlockReason).toBe(WITHDRAWAL_WHITELIST_BLOCK_REASON)
+    })
+
+    it('when isWhitelisted === true, allows withdraw', () => {
+      const result = toActionEligibility(activePause, eligible, noActiveRequests, true, true)
+      expect(result.canWithdraw).toBe(true)
+      expect(result.withdrawBlockReason).toBe('')
+    })
+
+    it('when isWhitelisted === null (loading), blocks withdraw with loading reason', () => {
+      const result = toActionEligibility(activePause, eligible, noActiveRequests, true, null)
+      expect(result.canWithdraw).toBe(false)
+      expect(result.withdrawBlockReason).toBe(WITHDRAWAL_ELIGIBILITY_LOADING_REASON)
     })
 
     it('withdrawal blocked by pause regardless of isWhitelisted', () => {
