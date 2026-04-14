@@ -24,7 +24,7 @@ jobs:
           BASE_SHA="${{ github.event.pull_request.base.sha }}"
 
           DIFF=$(git diff "$BASE_SHA"...HEAD --diff-filter=ACMR --unified=0 \
-            -- '*.ts' '*.tsx' '*.json' '*.yaml' '*.yml' \
+            -- '*.ts' '*.tsx' '*.json' '*.yaml' '*.yml' '.env*' \
             || true)
 
           if [ -z "$DIFF" ]; then

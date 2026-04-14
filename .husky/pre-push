@@ -3,7 +3,7 @@ set -e
 
 echo "pre-push: checking for mixed-case Ethereum addresses"
 MIXED=$(git diff origin/main...HEAD --diff-filter=ACMR --unified=0 \
-  -- '*.ts' '*.tsx' '*.json' '*.yaml' '*.yml' \
+  -- '*.ts' '*.tsx' '*.json' '*.yaml' '*.yml' '.env*' \
   | grep '^+[^+]' \
   | grep -oE '0x[0-9a-fA-F]+' \
   | awk 'length == 42' \
