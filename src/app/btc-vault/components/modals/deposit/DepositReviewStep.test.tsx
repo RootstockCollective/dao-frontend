@@ -2,7 +2,7 @@ import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 import { DepositReviewStep } from './DepositReviewStep'
-import { DEPOSIT_EXPECTED_COMPLETION } from '../services/constants'
+import { DEPOSIT_EXPECTED_COMPLETION } from '../../../services/constants'
 
 vi.mock('@/shared/context', () => ({
   usePricesContext: () => ({ prices: {} }),

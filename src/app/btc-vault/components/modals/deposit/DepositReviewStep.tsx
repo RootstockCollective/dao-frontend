@@ -12,7 +12,7 @@ import { RBTC } from '@/lib/constants'
 import { formatCurrency, formatNumberWithCommas } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 
-import { BTC_VAULT_DEPOSIT_DISCLAIMER, DEPOSIT_EXPECTED_COMPLETION } from '../services/constants'
+import { BTC_VAULT_DEPOSIT_DISCLAIMER, DEPOSIT_EXPECTED_COMPLETION } from '../../../services/constants'
 
 interface DepositReviewStepProps {
   amount: string
