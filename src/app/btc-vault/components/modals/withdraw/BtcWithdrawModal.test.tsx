@@ -17,11 +17,11 @@ vi.mock('wagmi', () => ({
   useAccount: () => mockUseAccount(),
 }))
 
-vi.mock('../hooks/useUserPosition', () => ({
+vi.mock('../../../hooks/useUserPosition', () => ({
   useUserPosition: (address: string | undefined) => mockUseUserPosition(address),
 }))
 
-vi.mock('../hooks/useVaultMetrics', () => ({
+vi.mock('../../../hooks/useVaultMetrics', () => ({
   useVaultMetrics: () => mockUseVaultMetrics(),
 }))
 

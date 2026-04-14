@@ -16,7 +16,7 @@ import {
   BTC_VAULT_WITHDRAW_REQUEST_TX_HINT,
   BTC_VAULT_WITHDRAWAL_DISCLAIMER,
   WITHDRAWAL_EXPECTED_COMPLETION,
-} from '../services/constants'
+} from '../../../services/constants'
 
 interface WithdrawReviewStepProps {
   amount: string

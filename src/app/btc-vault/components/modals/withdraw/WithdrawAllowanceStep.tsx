@@ -9,7 +9,7 @@ import { Divider } from '@/components/Divider'
 import { TransactionInProgressButton } from '@/components/StepActionButtons'
 import { Label, Paragraph } from '@/components/Typography'
 
-import { BTC_VAULT_WITHDRAW_TWO_TX_MESSAGE } from '../services/constants'
+import { BTC_VAULT_WITHDRAW_TWO_TX_MESSAGE } from '../../../services/constants'
 
 interface WithdrawAllowanceStepProps {
   sharesWei: bigint
