@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/Button'
 import { TrashIcon } from '@/components/Icons'
@@ -22,7 +22,7 @@ interface MobileFilterModalProps {
   onReset: () => void
 }
 
-export const MobileFilterModal: FC<MobileFilterModalProps> = ({
+export const MobileFilterModal = ({
   isOpen,
   filterOptions,
   currentFilter,
@@ -31,7 +31,7 @@ export const MobileFilterModal: FC<MobileFilterModalProps> = ({
   onClose,
   onApply,
   onReset,
-}) => {
+}: MobileFilterModalProps) => {
   // Internal state for temporary selections
   const [tempFilter, setTempFilter] = useState<BuilderFilterOptionId>(currentFilter)
   const [tempSort, setTempSort] = useState<ColumnId | null>(currentSort)
