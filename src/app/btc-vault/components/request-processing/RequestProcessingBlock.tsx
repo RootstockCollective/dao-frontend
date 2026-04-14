@@ -10,8 +10,8 @@ import { RBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { btcVaultRequestHistory } from '@/shared/constants/routes'
 
-import { RequestStatusStepper } from '../request-history/[id]/components/RequestStatusStepper'
-import type { ActiveRequestDisplay } from '../services/ui/types'
+import { RequestStatusStepper } from '../../request-history/[id]/components/RequestStatusStepper'
+import type { ActiveRequestDisplay } from '../../services/ui/types'
 
 function getRequestTypeLabel(type: ActiveRequestDisplay['type']): string {
   return type === 'deposit' ? 'Deposit' : 'Withdrawal'

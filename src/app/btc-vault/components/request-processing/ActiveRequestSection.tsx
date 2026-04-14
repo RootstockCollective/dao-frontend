@@ -2,8 +2,8 @@
 
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
 
-import { RequestProcessingBlock } from './components/RequestProcessingBlock'
-import type { ActiveRequestDisplay } from './services/ui/types'
+import { RequestProcessingBlock } from './RequestProcessingBlock'
+import type { ActiveRequestDisplay } from '../../services/ui/types'
 
 interface ActiveRequestSectionProps {
   data: ActiveRequestDisplay[] | undefined

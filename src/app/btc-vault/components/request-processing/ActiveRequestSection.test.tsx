@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi, beforeAll, beforeEach } from 'vitest'
 
-import type { ActiveRequestDisplay } from './services/ui/types'
+import type { ActiveRequestDisplay } from '../../services/ui/types'
 
 vi.mock('@/components/ProgressBarNew', async (importOriginal) => {
   const React = require('react')

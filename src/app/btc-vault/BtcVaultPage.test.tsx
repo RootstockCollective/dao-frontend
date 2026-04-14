@@ -73,7 +73,7 @@ vi.mock('@/components/Countdown/Countdown', () => ({
   Countdown: () => <span data-testid="countdown">5d 23h 59m</span>,
 }))
 
-vi.mock('./ActiveRequestSection', () => ({
+vi.mock('./components/request-processing/ActiveRequestSection', () => ({
   ActiveRequestSection: () => null,
 }))
 

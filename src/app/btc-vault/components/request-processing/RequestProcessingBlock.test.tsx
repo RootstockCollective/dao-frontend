@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 import { describe, it, expect, vi, beforeAll } from 'vitest'
-import { RequestProcessingBlock } from './components/RequestProcessingBlock'
-import type { ActiveRequestDisplay } from './services/ui/types'
+import { RequestProcessingBlock } from './RequestProcessingBlock'
+import type { ActiveRequestDisplay } from '../../services/ui/types'
 
 vi.mock('next/image', () => ({
   default: (props: Record<string, unknown>) => require('react').createElement('img', props),
