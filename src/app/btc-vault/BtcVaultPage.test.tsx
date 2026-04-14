@@ -9,6 +9,11 @@ import { BtcVaultPage } from './BtcVaultPage'
 const mockUseAccount = vi.fn()
 const mockUseActionEligibility = vi.fn()
 
+const pageIntegrationMocks = vi.hoisted(() => ({
+  refetchActiveRequests: vi.fn(),
+  captureDashboardProps: vi.fn(),
+}))
+
 vi.mock('wagmi', async importOriginal => {
   const actual = await importOriginal<typeof import('wagmi')>()
   return {
@@ -78,7 +83,11 @@ vi.mock('./ActiveRequestSection', () => ({
 }))
 
 vi.mock('./hooks/useActiveRequests', () => ({
-  useActiveRequests: () => ({ data: undefined, claimableDepositRequest: null, refetch: vi.fn() }),
+  useActiveRequests: () => ({
+    data: undefined,
+    claimableDepositRequest: null,
+    refetch: pageIntegrationMocks.refetchActiveRequests,
+  }),
 }))
 
 vi.mock('./components/capital-allocation/CapitalAllocationSection', () => ({
@@ -86,12 +95,18 @@ vi.mock('./components/capital-allocation/CapitalAllocationSection', () => ({
 }))
 
 vi.mock('./components/BtcVaultDashboard', () => ({
-  BtcVaultDashboard: () => (
-    <>
-      <section data-testid="btc-vault-dashboard" />
-      <div data-testid="btc-vault-actions" />
-    </>
-  ),
+  BtcVaultDashboard: (props: {
+    onRequestSubmitted?: () => void
+    onAfterClaimRefetch?: () => void
+  }) => {
+    pageIntegrationMocks.captureDashboardProps(props)
+    return (
+      <>
+        <section data-testid="btc-vault-dashboard" />
+        <div data-testid="btc-vault-actions" />
+      </>
+    )
+  },
 }))
 
 vi.mock('./components/BtcVaultMetrics', () => ({
@@ -139,6 +154,8 @@ describe('BtcVaultPage', () => {
   beforeEach(() => {
     mockUseAccount.mockReturnValue({ address: undefined, isConnected: false })
     mockUseActionEligibility.mockReturnValue({ data: undefined })
+    pageIntegrationMocks.refetchActiveRequests.mockClear()
+    pageIntegrationMocks.captureDashboardProps.mockClear()
   })
 
   afterEach(() => {
@@ -174,6 +191,7 @@ describe('BtcVaultPage', () => {
       data: {
         canDeposit: true,
         canWithdraw: true,
+        hasVaultShares: true,
         depositBlockReason: '',
         withdrawBlockReason: '',
       },
@@ -181,6 +199,28 @@ describe('BtcVaultPage', () => {
     render(<BtcVaultPage />, { wrapper: Wrapper })
 
     expect(screen.queryByTestId('BtcVaultWalletDisconnectedSection')).not.toBeInTheDocument()
+  })
+
+  it('passes refetchActiveRequests to dashboard for redeem and claim refetch hooks', () => {
+    mockUseAccount.mockReturnValue({
+      address: '0x123',
+      isConnected: true,
+    })
+    mockUseActionEligibility.mockReturnValue({
+      data: {
+        canDeposit: true,
+        canWithdraw: true,
+        hasVaultShares: true,
+        depositBlockReason: '',
+        withdrawBlockReason: '',
+      },
+    })
+    render(<BtcVaultPage />, { wrapper: Wrapper })
+
+    expect(pageIntegrationMocks.captureDashboardProps).toHaveBeenCalled()
+    const dashboardProps = pageIntegrationMocks.captureDashboardProps.mock.calls[0][0]
+    expect(dashboardProps.onRequestSubmitted).toBe(pageIntegrationMocks.refetchActiveRequests)
+    expect(dashboardProps.onAfterClaimRefetch).toBe(pageIntegrationMocks.refetchActiveRequests)
   })
 
   it('renders Vault Metrics section with section title', () => {
@@ -192,6 +232,7 @@ describe('BtcVaultPage', () => {
       data: {
         canDeposit: true,
         canWithdraw: true,
+        hasVaultShares: true,
         depositBlockReason: '',
         withdrawBlockReason: '',
       },
@@ -210,6 +251,7 @@ describe('BtcVaultPage', () => {
       data: {
         canDeposit: true,
         canWithdraw: true,
+        hasVaultShares: true,
         depositBlockReason: '',
         withdrawBlockReason: '',
       },
@@ -235,6 +277,7 @@ describe('BtcVaultPage', () => {
       data: {
         canDeposit: true,
         canWithdraw: true,
+        hasVaultShares: true,
         depositBlockReason: '',
         withdrawBlockReason: '',
       },
@@ -257,6 +300,7 @@ describe('BtcVaultPage', () => {
       data: {
         canDeposit: false,
         canWithdraw: true,
+        hasVaultShares: true,
         depositBlockReason: 'Deposits are currently paused',
         withdrawBlockReason: '',
       },
@@ -276,6 +320,7 @@ describe('BtcVaultPage', () => {
       data: {
         canDeposit: false,
         canWithdraw: false,
+        hasVaultShares: true,
         depositBlockReason: 'You already have an active request',
         withdrawBlockReason: 'You already have an active request',
       },
