@@ -75,7 +75,7 @@ function entryToCsvRow(entry: AuditLogEntry): string[] {
     entry.detail?.trim() ?? '',
     formatAmountFromWei(entry.amountInWei, 18) ?? '',
     entry.isNative === false ? WRBTC : RBTC,
-    entry.role,
+    entry.role ?? '',
   ]
 }
 

@@ -4,6 +4,7 @@ import { TypedTable } from '@/shared/context'
 
 export type AuditLogUserRole = 'ADMIN' | 'MANAGER' | 'PAUSER' | 'INVESTOR' | 'BUFFER_INJECTOR'
 export type ColumnId = 'date' | 'action' | 'value' | 'reason' | 'role'
+export type SortableColumnId = 'date'
 
 /**
  * Mirrors subgraph `BtcVaultLog` (`type BtcVaultLog @entity(immutable: true)`).
@@ -17,7 +18,7 @@ export interface AuditLogEntry {
   detail: string | null
   /** `true` = native RBTC, `false` = WRBTC (wrapped). */
   isNative: boolean | null
-  role: string
+  role: string | null
   actor: Address
   from: Address | null
   destination: Address | null
@@ -45,12 +46,14 @@ export interface AuditLogApiResponse {
 export interface AuditLogHistoryPageParams {
   page: number
   limit: number
+  sortField: SortableColumnId | null
   sortDirection: 'asc' | 'desc' | null
 }
 
 export interface UseGetAuditLogParams {
   /** Cumulative rows to show (expandable pager `end`). Fetches fixed-size API pages (max 200) and merges. */
   visibleItemCount: number
+  sortField: SortableColumnId | null
   sortDirection: 'asc' | 'desc' | null
 }
 
