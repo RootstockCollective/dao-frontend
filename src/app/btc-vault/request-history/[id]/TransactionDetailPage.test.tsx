@@ -1,7 +1,13 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { TooltipProvider } from '@radix-ui/react-tooltip'
+import { type ReactNode } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { TransactionDetailPage } from './TransactionDetailPage'
+
+function renderWithTooltip(ui: ReactNode) {
+  return render(<TooltipProvider>{ui}</TooltipProvider>)
+}
 
 const mockUseAccount = vi.fn()
 const mockUseRequestById = vi.fn()
@@ -147,6 +153,7 @@ describe('TransactionDetailPage', () => {
       canClaim: false,
       claimableAmount: 0n,
       isReadingAmount: false,
+      isReadingError: false,
       isRequesting: false,
       isTxPending: false,
     })
@@ -158,18 +165,18 @@ describe('TransactionDetailPage', () => {
   })
 
   it('renders "WITHDRAWAL REQUEST" title for a withdrawal', () => {
-    render(<TransactionDetailPage id="req-withdrawal-pending" />)
+    renderWithTooltip(<TransactionDetailPage id="req-withdrawal-pending" />)
     expect(screen.getByText('WITHDRAWAL REQUEST')).toBeInTheDocument()
   })
 
   it('renders "DEPOSIT REQUEST" title for a deposit', () => {
     mockUseRequestById.mockReturnValue({ data: { request: MOCK_DEPOSIT_DONE, claimableInfo: null }, isLoading: false })
-    render(<TransactionDetailPage id="req-deposit-done" />)
+    renderWithTooltip(<TransactionDetailPage id="req-deposit-done" />)
     expect(screen.getByText('DEPOSIT REQUEST')).toBeInTheDocument()
   })
 
   it('renders stepper, detail grid, and cancel button for pending request', () => {
-    render(<TransactionDetailPage id="req-withdrawal-pending" />)
+    renderWithTooltip(<TransactionDetailPage id="req-withdrawal-pending" />)
     expect(screen.getByTestId('request-status-stepper')).toBeInTheDocument()
     expect(screen.getByTestId('request-detail-grid')).toBeInTheDocument()
     expect(screen.getByTestId('cancel-request-button')).toBeInTheDocument()
@@ -177,14 +184,14 @@ describe('TransactionDetailPage', () => {
 
   it('does not render cancel button for non-pending request', () => {
     mockUseRequestById.mockReturnValue({ data: { request: MOCK_DEPOSIT_DONE, claimableInfo: null }, isLoading: false })
-    render(<TransactionDetailPage id="req-deposit-done" />)
+    renderWithTooltip(<TransactionDetailPage id="req-deposit-done" />)
     expect(screen.getByTestId('request-detail-grid')).toBeInTheDocument()
     expect(screen.queryByTestId('cancel-request-button')).not.toBeInTheDocument()
   })
 
   it('renders not-connected oops when wallet is disconnected', () => {
     mockUseAccount.mockReturnValue({ address: undefined, isConnected: false })
-    render(<TransactionDetailPage id="req-withdrawal-pending" />)
+    renderWithTooltip(<TransactionDetailPage id="req-withdrawal-pending" />)
     expect(screen.getByTestId('transaction-detail-oops-not-connected')).toBeInTheDocument()
     expect(screen.getByText('Connect your wallet to view request details')).toBeInTheDocument()
     expect(screen.getByTestId('connect-wallet-button')).toBeInTheDocument()
@@ -192,7 +199,7 @@ describe('TransactionDetailPage', () => {
 
   it('renders not-found oops when request ID does not match', () => {
     mockUseRequestById.mockReturnValue({ data: null, isLoading: false })
-    render(<TransactionDetailPage id="unknown-id" />)
+    renderWithTooltip(<TransactionDetailPage id="unknown-id" />)
     expect(screen.getByTestId('transaction-detail-oops-not-found')).toBeInTheDocument()
     expect(screen.getByText('Request not found')).toBeInTheDocument()
     expect(screen.getByTestId('back-to-history-link')).toBeInTheDocument()
@@ -200,13 +207,13 @@ describe('TransactionDetailPage', () => {
 
   it('renders loading state while data is being fetched', () => {
     mockUseRequestById.mockReturnValue({ data: undefined, isLoading: true })
-    render(<TransactionDetailPage id="req-withdrawal-pending" />)
+    renderWithTooltip(<TransactionDetailPage id="req-withdrawal-pending" />)
     expect(screen.getByTestId('loading-spinner')).toBeInTheDocument()
     expect(screen.queryByTestId('transaction-detail-page')).not.toBeInTheDocument()
   })
 
   it('opens cancel confirmation modal when cancel button is clicked', () => {
-    render(<TransactionDetailPage id="req-withdrawal-pending" />)
+    renderWithTooltip(<TransactionDetailPage id="req-withdrawal-pending" />)
     expect(screen.queryByTestId('CancelRequestModal')).not.toBeInTheDocument()
     fireEvent.click(screen.getByTestId('cancel-request-button'))
     expect(screen.getByTestId('CancelRequestModal')).toBeInTheDocument()
@@ -215,7 +222,7 @@ describe('TransactionDetailPage', () => {
 
   it('does not render cancel button for approved withdrawal', () => {
     mockUseRequestById.mockReturnValue({ data: { request: MOCK_WITHDRAWAL_APPROVED, claimableInfo: null }, isLoading: false })
-    render(<TransactionDetailPage id="req-withdrawal-approved" />)
+    renderWithTooltip(<TransactionDetailPage id="req-withdrawal-approved" />)
     expect(screen.getByTestId('request-detail-grid')).toBeInTheDocument()
     expect(screen.queryByTestId('cancel-request-button')).not.toBeInTheDocument()
   })
@@ -227,10 +234,11 @@ describe('TransactionDetailPage', () => {
       canClaim: true,
       claimableAmount: ONE_BTC / 2n,
       isReadingAmount: false,
+      isReadingError: false,
       isRequesting: false,
       isTxPending: false,
     })
-    render(<TransactionDetailPage id="req-withdrawal-claimable" />)
+    renderWithTooltip(<TransactionDetailPage id="req-withdrawal-claimable" />)
     expect(screen.getByTestId('claim-button')).toBeInTheDocument()
     expect(screen.getByTestId('claim-button')).toHaveTextContent('Claim rBTC')
     expect(screen.queryByTestId('cancel-request-button')).not.toBeInTheDocument()
@@ -243,10 +251,11 @@ describe('TransactionDetailPage', () => {
       canClaim: true,
       claimableAmount: ONE_BTC,
       isReadingAmount: false,
+      isReadingError: false,
       isRequesting: false,
       isTxPending: false,
     })
-    render(<TransactionDetailPage id="req-deposit-claimable" />)
+    renderWithTooltip(<TransactionDetailPage id="req-deposit-claimable" />)
     expect(screen.getByTestId('claim-button')).toBeInTheDocument()
     expect(screen.getByTestId('claim-button')).toHaveTextContent('Claim Shares')
     expect(screen.queryByTestId('cancel-request-button')).not.toBeInTheDocument()
@@ -261,10 +270,11 @@ describe('TransactionDetailPage', () => {
       canClaim: true,
       claimableAmount: ONE_BTC / 2n,
       isReadingAmount: false,
+      isReadingError: false,
       isRequesting: false,
       isTxPending: false,
     })
-    render(<TransactionDetailPage id="req-withdrawal-claimable" />)
+    renderWithTooltip(<TransactionDetailPage id="req-withdrawal-claimable" />)
     fireEvent.click(screen.getByTestId('claim-button'))
     await waitFor(() => {
       expect(mockExecuteTxFlow).toHaveBeenCalledWith(
@@ -277,13 +287,56 @@ describe('TransactionDetailPage', () => {
     })
   })
 
+  it('shows non-disabled Claiming… on claim button while only isTxPending', () => {
+    mockUseRequestById.mockReturnValue({ data: { request: MOCK_WITHDRAWAL_CLAIMABLE, claimableInfo: null }, isLoading: false })
+    mockUseClaimRequest.mockReturnValue({
+      claim: mockClaim,
+      canClaim: true,
+      claimableAmount: ONE_BTC / 2n,
+      isReadingAmount: false,
+      isReadingError: false,
+      isRequesting: false,
+      isTxPending: true,
+    })
+    renderWithTooltip(<TransactionDetailPage id="req-withdrawal-claimable" />)
+    const btn = screen.getByTestId('claim-button')
+    expect(btn).toHaveTextContent('Claiming...')
+    expect(btn).not.toBeDisabled()
+    fireEvent.click(btn)
+    expect(mockExecuteTxFlow).not.toHaveBeenCalled()
+  })
+
+  it('does not invoke executeTxFlow twice on rapid double-click', async () => {
+    mockUseRequestById.mockReturnValue({ data: { request: MOCK_WITHDRAWAL_CLAIMABLE, claimableInfo: null }, isLoading: false })
+    mockUseClaimRequest.mockReturnValue({
+      claim: mockClaim,
+      canClaim: true,
+      claimableAmount: ONE_BTC / 2n,
+      isReadingAmount: false,
+      isReadingError: false,
+      isRequesting: false,
+      isTxPending: false,
+    })
+    let release!: () => void
+    const gate = new Promise<void>(resolve => {
+      release = resolve
+    })
+    mockExecuteTxFlow.mockImplementation(() => gate)
+    renderWithTooltip(<TransactionDetailPage id="req-withdrawal-claimable" />)
+    fireEvent.click(screen.getByTestId('claim-button'))
+    fireEvent.click(screen.getByTestId('claim-button'))
+    expect(mockExecuteTxFlow).toHaveBeenCalledTimes(1)
+    release()
+    await waitFor(() => expect(mockExecuteTxFlow).toHaveBeenCalledTimes(1))
+  })
+
   it('closes modal when wallet approves the cancel transaction', async () => {
     mockOnCancelRequest.mockResolvedValue('0xmockhash')
     mockExecuteTxFlow.mockImplementation(async ({ onPending }) => {
       onPending?.('0xmockhash')
       return '0xmockhash'
     })
-    render(<TransactionDetailPage id="req-withdrawal-pending" />)
+    renderWithTooltip(<TransactionDetailPage id="req-withdrawal-pending" />)
     fireEvent.click(screen.getByTestId('cancel-request-button'))
     expect(screen.getByTestId('CancelRequestModal')).toBeInTheDocument()
     fireEvent.click(screen.getByTestId('CancelRequestConfirm'))

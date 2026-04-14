@@ -5,6 +5,7 @@ import type { ReactNode } from 'react'
 
 import { VAULT_SHARE_MULTIPLIER, WeiPerEther } from '@/lib/constants'
 
+import type { VaultRequest } from '../services/types'
 import type { UserPositionDisplay } from '../services/ui/types'
 import { BtcVaultDashboard } from './BtcVaultDashboard'
 
@@ -27,6 +28,23 @@ vi.mock('../hooks/useUserPosition/useUserPosition', () => ({
 
 vi.mock('./BtcVaultActions', () => ({
   BtcVaultActions: () => <div data-testid="btc-vault-actions" />,
+}))
+
+vi.mock('./BtcVaultClaimSharesButton', () => ({
+  BtcVaultClaimSharesButton: ({
+    vaultRequest,
+    onAfterClaimRefetch,
+  }: {
+    vaultRequest: VaultRequest | null
+    onAfterClaimRefetch?: () => void
+  }) => (
+    <button
+      type="button"
+      data-testid="btc-vault-claim-shares-probe"
+      data-request-id={vaultRequest?.id ?? ''}
+      data-has-refetch={onAfterClaimRefetch ? 'yes' : 'no'}
+    />
+  ),
 }))
 
 const MOCK_DISPLAY: UserPositionDisplay = {
@@ -219,5 +237,33 @@ describe('BtcVaultDashboard', () => {
 
     const dashes = screen.getAllByText('—')
     expect(dashes.length).toBe(7)
+  })
+
+  it('forwards claimableDepositRequest and onAfterClaimRefetch to Claim Shares', () => {
+    const onRefetch = vi.fn()
+    const claimableReq: VaultRequest = {
+      id: 'dep-dash-probe',
+      type: 'deposit',
+      status: 'claimable',
+      amount: 1n,
+      epochId: '1',
+      batchRedeemId: null,
+      timestamps: { created: 0 },
+      txHashes: {},
+    }
+    render(
+      <BtcVaultDashboard claimableDepositRequest={claimableReq} onAfterClaimRefetch={onRefetch} />,
+      { wrapper: Wrapper },
+    )
+    const probe = screen.getByTestId('btc-vault-claim-shares-probe')
+    expect(probe).toHaveAttribute('data-request-id', 'dep-dash-probe')
+    expect(probe).toHaveAttribute('data-has-refetch', 'yes')
+  })
+
+  it('passes null claimableDepositRequest to Claim Shares when omitted', () => {
+    render(<BtcVaultDashboard />, { wrapper: Wrapper })
+    const probe = screen.getByTestId('btc-vault-claim-shares-probe')
+    expect(probe).toHaveAttribute('data-request-id', '')
+    expect(probe).toHaveAttribute('data-has-refetch', 'no')
   })
 })

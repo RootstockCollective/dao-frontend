@@ -17,7 +17,12 @@ const NAME = 'BTC Vault'
 
 export const BtcVaultPage = () => {
   const { address } = useAccount()
-  const { data: activeRequests, refetch: refetchActiveRequests } = useActiveRequests(address)
+  const {
+    data: activeRequests,
+    refetch: refetchActiveRequests,
+    claimableDepositRequest,
+  } = useActiveRequests(address)
+
   return (
     <div
       data-testid={NAME} // TODO: DAO-2029 Standardize data-test-ids to using kebab-case only
@@ -33,8 +38,11 @@ export const BtcVaultPage = () => {
         </SectionContainer>
       </section>
 
-      {/* Dashboard Zone - F4 */}
-      <BtcVaultDashboard onRequestSubmitted={refetchActiveRequests} />
+      <BtcVaultDashboard
+        onRequestSubmitted={refetchActiveRequests}
+        claimableDepositRequest={claimableDepositRequest}
+        onAfterClaimRefetch={refetchActiveRequests}
+      />
 
       {/* Capital Allocation Transparency - DAO-2017 */}
       <CapitalAllocationSection />
