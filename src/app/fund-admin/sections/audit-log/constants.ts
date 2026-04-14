@@ -46,8 +46,8 @@ export const ROLE_STYLES: Record<AuditLogUserRole, string> = {
   MANAGER: 'bg-v3-rsk-purple text-v3-text-0',
   PAUSER: 'bg-v3-rif-blue text-v3-text-100',
   INVESTOR: 'bg-[var(--Brand-Lime,#DEFF1A)] text-v3-text-0',
-  BUFFER_INJECTOR: 'bg-success text-v3-text-0',
-  WHITELISTER: 'bg-[#FFB020] text-v3-text-0',
+  BUFFER_INJECTOR: 'bg-[#FFB020] text-v3-text-0',
+  WHITELISTER: 'bg-success text-v3-text-0',
 }
 
 export const ROLE_LABELS: Record<AuditLogUserRole, string> = {
