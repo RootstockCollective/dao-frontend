@@ -10,18 +10,6 @@ import { TOKENS_BY_ADDRESS } from '@/lib/tokens'
 
 import { TransactionHistoryItem } from './types'
 
-export const formatExpandedDate = (timestamp: string): string => {
-  const date = new Date(Number(timestamp) * 1000)
-  const options: Intl.DateTimeFormatOptions = {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  }
-  return date.toLocaleString('en-US', options)
-}
-
 /**
  * Calculate cycle number from cycle start timestamp
  */
@@ -29,58 +17,6 @@ export const calculateCycleNumber = (cycleStartTimestamp: string, cycleDuration:
   const cycleStartSeconds = Number(cycleStartTimestamp)
   const cycleDurationSeconds = cycleDuration.as('seconds')
   return Math.floor((cycleStartSeconds - FIRST_CYCLE_START_SECONDS) / cycleDurationSeconds) + 1
-}
-
-/**
- * Format date range for cycle display (e.g., "Jan 1 - 15, 2024")
- */
-export const formatDateRange = (cycleStart: string, cycleDuration: Duration): string => {
-  const startDate = new Date(Number(cycleStart) * 1000)
-  const endDate = new Date((Number(cycleStart) + cycleDuration.as('seconds')) * 1000 - 1)
-
-  const formatOptions: Intl.DateTimeFormatOptions = {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  }
-
-  const startFormatted = startDate.toLocaleDateString('en-US', formatOptions)
-  const endFormatted = endDate.toLocaleDateString('en-US', formatOptions)
-
-  // Extract parts for custom formatting
-  const startParts = startFormatted.split(', ')
-  const endParts = endFormatted.split(', ')
-  const [startMonth, startDay] = startParts[0].split(' ')
-  const [endMonth, endDay] = endParts[0].split(' ')
-  const startYear = startParts[1]
-  const endYear = endParts[1]
-
-  if (startMonth === endMonth && startYear === endYear) {
-    if (startDay === endDay) {
-      return `${startMonth} ${startDay}, ${startYear}`
-    }
-    return `${startMonth} ${startDay} - ${endDay}, ${startYear}`
-  }
-
-  if (startYear === endYear) {
-    return `${startMonth} ${startDay} - ${endMonth} ${endDay}, ${endYear}`
-  }
-
-  return `${startMonth} ${startDay}, ${startYear} - ${endMonth} ${endDay}, ${endYear}`
-}
-
-/**
- * Format date for CSV export (e.g., "Jan 1, 2024, 12:00 PM")
- */
-export const formatDateForCsv = (timestamp: string): string => {
-  const date = new Date(Number(timestamp) * 1000)
-  return date.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
 }
 
 /**

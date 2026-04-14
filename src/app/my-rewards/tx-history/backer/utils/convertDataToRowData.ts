@@ -7,11 +7,11 @@ import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { GetPricesResult } from '@/app/user/types'
 import { tokenContracts } from '@/lib/contracts'
 import { TOKENS_BY_ADDRESS } from '@/lib/tokens'
-import { formatCurrency } from '@/lib/utils'
+import { formatCurrency, formatDateRange } from '@/lib/utils'
 
 import { GroupedTransactionDetail, TransactionHistoryTable } from '../../config'
 import { TransactionHistoryItem } from '../../utils/types'
-import { calculateCycleNumber, formatDateRange } from '../../utils/utils'
+import { calculateCycleNumber } from '../../utils/utils'
 
 export const convertDataToRowData = (
   data: TransactionHistoryItem[],
@@ -49,7 +49,7 @@ export const convertDataToRowData = (
       const builderAddress = getAddress(item.builder)
       const builder = getBuilderByAddress(builderAddress)
       const cycleNumber = calculateCycleNumber(item.cycleStart, cycleDuration)
-      const dateRange = formatDateRange(item.cycleStart, cycleDuration)
+      const dateRange = formatDateRange(item.cycleStart, cycleDuration.as('seconds'))
       const transactionType = item.type
       const amounts: { address: Address; value: string; symbol: string }[] = []
       let totalUsdValue = Big(0)
@@ -107,7 +107,7 @@ export const convertDataToRowData = (
       const firstItem = builderItems[0]
       const builder = getBuilderByAddress(builderAddress)
       const cycleNumber = calculateCycleNumber(firstItem.cycleStart, cycleDuration)
-      const dateRange = formatDateRange(firstItem.cycleStart, cycleDuration)
+      const dateRange = formatDateRange(firstItem.cycleStart, cycleDuration.as('seconds'))
       const transactionType = firstItem.type
 
       const amountsByToken: Record<Address, { symbol: string; amount: bigint; price: number }> = {}
@@ -189,7 +189,7 @@ export const convertDataToRowData = (
       // Multiple transactions to different builders - create expandable grouped row
       const firstItem = items[0]
       const cycleNumber = calculateCycleNumber(firstItem.cycleStart, cycleDuration)
-      const dateRange = formatDateRange(firstItem.cycleStart, cycleDuration)
+      const dateRange = formatDateRange(firstItem.cycleStart, cycleDuration.as('seconds'))
       const transactionType = firstItem.type
       const amountsByToken: Record<Address, { symbol: string; amount: bigint }> = {}
 
