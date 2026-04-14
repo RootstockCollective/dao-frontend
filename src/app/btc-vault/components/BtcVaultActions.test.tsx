@@ -1,6 +1,6 @@
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { cleanup, render } from '@testing-library/react'
+import { cleanup, fireEvent, render } from '@testing-library/react'
 import { type ReactNode } from 'react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -89,48 +89,55 @@ describe('BtcVaultActions', () => {
     cleanup()
   })
 
-  it('disables both buttons while a deposit request transaction is submitting', () => {
+  it('blocks CTA while a deposit request transaction is submitting', () => {
     mockUseSubmitDeposit.mockReturnValue({
       onRequestDeposit: vi.fn(),
       isRequesting: true,
       isTxPending: false,
     })
 
-    const { getByTestId } = renderWithQueryClient(<BtcVaultActions />)
+    const { getByTestId, queryByTestId } = renderWithQueryClient(<BtcVaultActions />)
 
-    expect(getByTestId('DepositButton')).toBeDisabled()
-    expect(getByTestId('WithdrawButton')).toBeDisabled()
+    // Buttons stay enabled (AlwaysEnabledButton) but CTA is guarded
+    expect(getByTestId('DepositButton')).toBeEnabled()
+    expect(getByTestId('WithdrawButton')).toBeEnabled()
+    fireEvent.click(getByTestId('DepositButton'))
+    expect(queryByTestId('BtcDepositModal')).toBeNull()
   })
 
-  it('disables both buttons while a withdraw transaction is pending', () => {
+  it('blocks CTA while a withdraw transaction is pending', () => {
     mockUseSubmitWithdrawal.mockReturnValue({
       onRequestRedeem: vi.fn(),
       isRequesting: false,
       isTxPending: true,
     })
 
-    const { getByTestId } = renderWithQueryClient(<BtcVaultActions />)
+    const { getByTestId, queryByTestId } = renderWithQueryClient(<BtcVaultActions />)
 
-    expect(getByTestId('DepositButton')).toBeDisabled()
-    expect(getByTestId('WithdrawButton')).toBeDisabled()
+    expect(getByTestId('DepositButton')).toBeEnabled()
+    expect(getByTestId('WithdrawButton')).toBeEnabled()
+    fireEvent.click(getByTestId('WithdrawButton'))
+    expect(queryByTestId('BtcWithdrawModal')).toBeNull()
   })
 
   it('enables deposit and withdraw when eligibility allows and nothing is submitting', () => {
     const { getByTestId } = renderWithQueryClient(<BtcVaultActions />)
 
-    expect(getByTestId('DepositButton')).not.toBeDisabled()
-    expect(getByTestId('WithdrawButton')).not.toBeDisabled()
+    expect(getByTestId('DepositButton')).toBeEnabled()
+    expect(getByTestId('WithdrawButton')).toBeEnabled()
   })
 
-  it('disables both buttons while vault share allowance is approving', () => {
+  it('blocks CTA while vault share allowance is approving', () => {
     mockUseBtcVaultSharesAllowance.mockReturnValue({
       ...defaultAllowanceHook,
       isRequesting: true,
     })
 
-    const { getByTestId } = renderWithQueryClient(<BtcVaultActions />)
+    const { getByTestId, queryByTestId } = renderWithQueryClient(<BtcVaultActions />)
 
-    expect(getByTestId('DepositButton')).toBeDisabled()
-    expect(getByTestId('WithdrawButton')).toBeDisabled()
+    expect(getByTestId('DepositButton')).toBeEnabled()
+    expect(getByTestId('WithdrawButton')).toBeEnabled()
+    fireEvent.click(getByTestId('DepositButton'))
+    expect(queryByTestId('BtcDepositModal')).toBeNull()
   })
 })
