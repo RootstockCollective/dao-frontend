@@ -1,4 +1,4 @@
-import type { FC, JSX } from 'react'
+import type { JSX } from 'react'
 
 import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
@@ -20,7 +20,7 @@ interface Props extends Omit<JSX.IntrinsicElements['div'], 'children'> {
   label: HistoryRowStatusLabel
 }
 
-export const RequestStatusBadge: FC<Props> = ({ displayStatus, label, className, ...props }) => {
+export const RequestStatusBadge = ({ displayStatus, label, className, ...props }: Props) => {
   return (
     <div
       className={cn(
