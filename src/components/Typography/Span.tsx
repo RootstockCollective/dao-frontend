@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { BodyVariants, EmphaseVariants, HeaderVariants, TagVariants } from './types'
 import { BaseTypography, BaseTypographyProps } from './Typography'
 
@@ -46,7 +44,7 @@ interface Props extends Omit<BaseTypographyProps<'span'>, 'as'> {
  *
  * All variants support the `bold`, `caps`, and `html` props.
  */
-export const Span: FC<Props> = ({ variant = 'body', children, ...rest }) => (
+export const Span = ({ variant = 'body', children, ...rest }: Props) => (
   <BaseTypography as="span" variant={variant} {...rest}>
     {children}
   </BaseTypography>

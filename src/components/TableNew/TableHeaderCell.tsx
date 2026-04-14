@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { cn } from '@/lib/utils'
 
 import { CommonComponentProps } from '../commonProps'
@@ -8,12 +6,7 @@ interface TableHeaderCellProps extends CommonComponentProps<HTMLTableCellElement
   contentClassName?: string
 }
 
-export const TableHeaderCell: FC<TableHeaderCellProps> = ({
-  children,
-  className,
-  onClick,
-  contentClassName,
-}) => {
+export const TableHeaderCell = ({ children, className, onClick, contentClassName }: TableHeaderCellProps) => {
   return (
     <th
       className={cn(
