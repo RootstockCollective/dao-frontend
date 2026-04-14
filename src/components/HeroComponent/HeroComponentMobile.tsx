@@ -1,5 +1,5 @@
 'use client'
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { Expandable, ExpandableContent, ExpandableFooter, ExpandableHeader } from '@/components/Expandable'
 import { cn } from '@/lib/utils'
@@ -23,7 +23,7 @@ export interface HeroComponentMobileProps {
  * Displays a hero image with a title and subtitle.
  * This component uses the Expandable component to display the content.
  */
-export const HeroComponentMobile: FC<HeroComponentMobileProps> = ({
+export const HeroComponentMobile = ({
   title,
   subtitle,
   topText,
@@ -32,7 +32,7 @@ export const HeroComponentMobile: FC<HeroComponentMobileProps> = ({
   button,
   className,
   dataTestId,
-}) => {
+}: HeroComponentMobileProps) => {
   const hasExpandableContent = content || items.length > 0
   return (
     <Expandable className={cn('bg-text-80 rounded-sm p-4', className)} dataTestId={dataTestId}>
