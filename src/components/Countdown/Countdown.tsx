@@ -1,10 +1,9 @@
-import moment from 'moment'
 import { useBlockNumber } from 'wagmi'
 
 import { Paragraph } from '@/components/Typography'
 import Big from '@/lib/big'
 import { DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK } from '@/lib/constants'
-import { cn } from '@/lib/utils'
+import { cn, formatDuration } from '@/lib/utils'
 
 import { CountdownProps, TimeSource } from './types'
 
@@ -42,14 +41,7 @@ const calculateRatio = (end: Big, currentTime: Big, referenceStart?: Big): numbe
 /**
  * Converts seconds to human-readable format (e.g., "2d 5h 30m")
  */
-const formatTimeRemaining = (seconds: number): string => {
-  const duration = moment.duration(seconds, 'seconds')
-  const days = duration.days()
-  const hours = duration.hours()
-  const minutes = duration.minutes()
-
-  return `${days}d ${hours}h ${minutes}m`
-}
+const formatTimeRemaining = (seconds: number): string => formatDuration(seconds)
 
 /**
  * Determines the text color class based on the ratio and color direction

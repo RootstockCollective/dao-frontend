@@ -1,15 +1,9 @@
-import { formatExpandedDate } from '@/app/my-rewards/tx-history/utils/utils'
 import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { StakingHistoryTable } from '@/app/staking-history/components/StakingHistoryTable.config'
 import { StakingHistoryItem } from '@/app/staking-history/utils/types'
 import { GetPricesResult } from '@/app/user/types'
 import { RIF, STRIF } from '@/lib/constants'
-
-const formatPeriod = (period: string): string => {
-  const [year, month] = period.split('-')
-  const date = new Date(Number(year), Number(month) - 1, 1)
-  return date.toLocaleString('en-US', { month: 'long', year: 'numeric' })
-}
+import { formatDateExpanded, formatPeriodToMonthYear } from '@/lib/utils'
 
 export const convertDataToRowData = (
   data: StakingHistoryItem[],
@@ -29,13 +23,13 @@ export const convertDataToRowData = (
     rows[i] = {
       id: `${staking.period}-${i}`,
       data: {
-        period: formatPeriod(staking.period),
+        period: formatPeriodToMonthYear(staking.period),
         action: staking.action,
         amount: formatSymbol(staking.amount, STRIF),
         total_amount: usdAmount.toFixed(2).toString(),
         transactions: staking.transactions.map(tx => ({
           ...tx,
-          date: formatExpandedDate(String(tx.timestamp)),
+          date: formatDateExpanded(String(tx.timestamp)),
           amount: formatSymbol(tx.amount, STRIF),
           total_amount: getFiatAmount(BigInt(tx.amount), price).toFixed(2).toString(),
         })),
