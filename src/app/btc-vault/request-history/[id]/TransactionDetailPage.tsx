@@ -1,5 +1,6 @@
 'use client'
 
+import { useCallback, useRef } from 'react'
 import { useAccount } from 'wagmi'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
@@ -8,6 +9,7 @@ import { usePricesContext } from '@/shared/context/PricesContext'
 import { useModal } from '@/shared/hooks/useModal'
 import { executeTxFlow } from '@/shared/notification'
 
+import { BTC_VAULT_BACKEND_INDEX_DELAY_MS } from '../../constants'
 import { useBtcVaultInvalidation } from '../../hooks/useBtcVaultInvalidation'
 import { useCancelBtcVaultRequest } from '../../hooks/useCancelRequest'
 import { useClaimableInfo } from '../../hooks/useClaimableInfo'
@@ -37,6 +39,25 @@ export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
     isTxPending: isClaimTxPending,
   } = useClaimRequest(request ?? null)
 
+  const claimFlowLock = useRef(false)
+
+  const handleClaim = useCallback(async () => {
+    if (claimFlowLock.current) return
+    claimFlowLock.current = true
+    try {
+      await executeTxFlow({
+        action: 'btcVaultClaim',
+        onRequestTx: () => claim(),
+        onSuccess: async () => {
+          await new Promise(resolve => setTimeout(resolve, BTC_VAULT_BACKEND_INDEX_DELAY_MS))
+          invalidateAfterAction(id)
+        },
+      })
+    } finally {
+      claimFlowLock.current = false
+    }
+  }, [claim, id, invalidateAfterAction])
+
   if (!address || !isConnected) {
     return <TransactionDetailOops variant="not-connected" />
   }
@@ -52,26 +73,13 @@ export function TransactionDetailPage({ id }: TransactionDetailPageProps) {
   const detail = toRequestDetailDisplay(request, claimableInfo, rbtcPrice, address)
   const isClaimPending = isClaiming || isClaimTxPending
 
-  const BACKEND_INDEX_DELAY_MS = 3000
-
-  const handleClaim = async () => {
-    await executeTxFlow({
-      action: 'btcVaultClaim',
-      onRequestTx: () => claim(),
-      onSuccess: async () => {
-        await new Promise(resolve => setTimeout(resolve, BACKEND_INDEX_DELAY_MS))
-        invalidateAfterAction(id)
-      },
-    })
-  }
-
   const handleConfirmCancel = async () => {
     await executeTxFlow({
       action: 'btcVaultCancel',
       onRequestTx: () => onCancelRequest(),
       onPending: () => closeModal(),
       onSuccess: async () => {
-        await new Promise(resolve => setTimeout(resolve, BACKEND_INDEX_DELAY_MS))
+        await new Promise(resolve => setTimeout(resolve, BTC_VAULT_BACKEND_INDEX_DELAY_MS))
         invalidateAfterAction(id)
       },
     })
