@@ -11,7 +11,7 @@ import { Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { btcVaultRequestHistory } from '@/shared/constants/routes'
 
-import { useUserPosition } from '../hooks/useUserPosition/useUserPosition'
+import { useUserPosition } from '../../hooks/useUserPosition/useUserPosition'
 import { BtcVaultActions } from './BtcVaultActions'
 
 const LoadingValue = () => <Span className="animate-pulse text-text-60">0</Span>

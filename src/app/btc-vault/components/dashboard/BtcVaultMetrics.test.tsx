@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { RBTC } from '@/lib/constants'
 
-import { formatDateMonthFirst } from '../services/ui/formatters'
+import { formatDateMonthFirst } from '../../services/ui/formatters'
 import { BtcVaultMetrics } from './BtcVaultMetrics'
 
 const renderWithProviders = () =>
@@ -18,11 +18,11 @@ const mockUseVaultMetrics = vi.fn()
 const mockUseEpochState = vi.fn()
 const mockPrices: Record<string, { price: number }> = {}
 
-vi.mock('../hooks/useVaultMetrics', () => ({
+vi.mock('../../hooks/useVaultMetrics', () => ({
   useVaultMetrics: () => mockUseVaultMetrics(),
 }))
 
-vi.mock('../hooks/useEpochState', () => ({
+vi.mock('../../hooks/useEpochState', () => ({
   useEpochState: () => mockUseEpochState(),
 }))
 

@@ -5,7 +5,7 @@ import type { ReactNode } from 'react'
 
 import { VAULT_SHARE_MULTIPLIER, WeiPerEther } from '@/lib/constants'
 
-import type { UserPositionDisplay } from '../services/ui/types'
+import type { UserPositionDisplay } from '../../services/ui/types'
 import { BtcVaultDashboard } from './BtcVaultDashboard'
 
 const FIVE_SHARES_RAW = 5n * WeiPerEther * VAULT_SHARE_MULTIPLIER
@@ -21,7 +21,7 @@ vi.mock('wagmi', () => ({
   useAccount: () => mockUseAccount(),
 }))
 
-vi.mock('../hooks/useUserPosition/useUserPosition', () => ({
+vi.mock('../../hooks/useUserPosition/useUserPosition', () => ({
   useUserPosition: (address: string | undefined) => mockUseUserPosition(address),
 }))
 
