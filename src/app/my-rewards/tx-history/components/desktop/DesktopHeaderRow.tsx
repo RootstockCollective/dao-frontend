@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactElement, Suspense } from 'react'
-import { Dispatch, FC } from 'react'
+import { Dispatch } from 'react'
 
 import { ArrowDownWFill } from '@/components/Icons/v3design/ArrowDownWFill'
 import { ArrowsUpDown } from '@/components/Icons/v3design/ArrowsUpDown'
@@ -25,11 +25,11 @@ interface ChildrenWithClassNameProps {
   className?: string
 }
 
-const OrderIndicatorContainer: FC<ChildrenWithClassNameProps> = ({ children, className }) => (
+const OrderIndicatorContainer = ({ children, className }: ChildrenWithClassNameProps) => (
   <div className={cn('flex justify-center gap-2', className)}>{children}</div>
 )
 
-const OrderIndicator: FC<{ columnId: ColumnId }> = ({ columnId }) => {
+const OrderIndicator = ({ columnId }: { columnId: ColumnId }) => {
   const { sort } = useTableContext<ColumnId, TransactionHistoryCellDataMap>()
 
   if (!sort || columnId === undefined) return null
@@ -74,13 +74,13 @@ const dispatchSortRoundRobin = (
   dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: nextSort ? columnId : null, direction: nextSort } })
 }
 
-const HeaderTitle: FC<ChildrenWithClassNameProps> = ({ children, className }) => (
+const HeaderTitle = ({ children, className }: ChildrenWithClassNameProps) => (
   <Label variant="tag-s" className={cn('cursor-[inherit]', className)}>
     {children}
   </Label>
 )
 
-const HeaderSubtotal: FC<{ value: string }> = ({ value }) => (
+const HeaderSubtotal = ({ value }: { value: string }) => (
   <Paragraph variant="body" bold className="mt-1 text-v3-text-100">
     {value}
   </Paragraph>

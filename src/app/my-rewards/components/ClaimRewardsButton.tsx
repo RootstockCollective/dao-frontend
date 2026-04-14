@@ -7,7 +7,7 @@ interface ClaimRewardsButtonProps {
   disabled?: boolean
 }
 
-export const ClaimRewardsButton: React.FC<ClaimRewardsButtonProps> = ({ onClick, disabled = false }) => {
+export const ClaimRewardsButton = ({ onClick, disabled = false }: ClaimRewardsButtonProps) => {
   return (
     <Button
       variant="secondary-outline"
