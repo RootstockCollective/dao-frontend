@@ -15,7 +15,7 @@ import { RBTC } from '@/lib/constants'
 import { cn, formatCurrency, handleAmountInput } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 
-import { BTC_VAULT_DEPOSIT_DISCLAIMER } from '../services/constants'
+import { BTC_VAULT_DEPOSIT_DISCLAIMER } from '../../../services/constants'
 
 interface DepositAmountStepProps {
   amount: string

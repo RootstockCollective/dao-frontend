@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
-import { DEPOSIT_EXPECTED_COMPLETION } from '../services/constants'
+import { DEPOSIT_EXPECTED_COMPLETION } from '../../../services/constants'
 import { BtcDepositModal } from './BtcDepositModal'
 
 const mockUseAccount = vi.fn()
@@ -12,11 +12,11 @@ vi.mock('wagmi', () => ({
   useAccount: () => mockUseAccount(),
 }))
 
-vi.mock('../hooks/useUserPosition', () => ({
+vi.mock('../../../hooks/useUserPosition', () => ({
   useUserPosition: (address: string | undefined) => mockUseUserPosition(address),
 }))
 
-vi.mock('../hooks/useVaultMetrics', () => ({
+vi.mock('../../../hooks/useVaultMetrics', () => ({
   useVaultMetrics: () => mockUseVaultMetrics(),
 }))
 
