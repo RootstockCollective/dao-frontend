@@ -59,6 +59,9 @@ node_modules/.prisma
 # Sentry Config File
 .env.sentry-build-plugin
 
+# Git worktrees (local parallel branches)
+.worktrees/
+
 # AI workflow — only canonical .workflow/ is committed; adapters generated locally
 .claude/
 CLAUDE.md
