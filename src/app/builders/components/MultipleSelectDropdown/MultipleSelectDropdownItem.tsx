@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { CheckboxChecked } from '@/components/Icons/CheckboxChecked'
 import { CheckboxUnchecked } from '@/components/Icons/CheckboxUnchecked'
 import { Paragraph } from '@/components/Typography'
@@ -12,12 +10,12 @@ interface MultipleSelectDropdownItemProps {
   className?: string
 }
 
-export const MultipleSelectDropdownItem: FC<MultipleSelectDropdownItemProps> = ({
+export const MultipleSelectDropdownItem = ({
   label,
   sublabel,
   checked,
   className,
-}) => {
+}: MultipleSelectDropdownItemProps) => {
   return (
     <label
       className={cn(

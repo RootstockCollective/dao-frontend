@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { cn } from '@/lib/utils'
 
 import { ArrowRight, ArrowUpRightLightIcon } from '../Icons'
@@ -9,15 +7,17 @@ import { ExternalLinkProps } from './types'
  * Styled anchor tag. The wrapped 'a' tag can be replaced by a custom
  * component by providing a `component` prop
  */
-export const ExternalLink: FC<ExternalLinkProps> = ({
+export const ExternalLink = ({
   children,
   variant = 'default',
   component: Component = 'a',
   underline = true,
+
   // can be customized by providing additional classnames
   className,
+
   ...props
-}) => {
+}: ExternalLinkProps) => {
   return (
     <Component
       {...props}

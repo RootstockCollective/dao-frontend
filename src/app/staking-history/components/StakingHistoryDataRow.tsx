@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, Fragment, memo, useCallback, useState } from 'react'
+import { Fragment, memo, useCallback, useState } from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -11,7 +11,7 @@ interface TransactionHistoryDataRowProps {
   row: StakingHistoryTable['Row']
 }
 
-export const StakingHistoryDataRow: FC<TransactionHistoryDataRowProps> = memo(({ row, ...props }) => {
+export const StakingHistoryDataRow = memo(({ row, ...props }: TransactionHistoryDataRowProps) => {
   const {
     data: { period, action, amount, transactions, total_amount },
   }: StakingHistoryTable['Row'] = row

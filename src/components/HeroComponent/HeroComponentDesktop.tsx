@@ -1,6 +1,6 @@
 'use client'
 import Image from 'next/image'
-import { FC, ReactNode, useMemo } from 'react'
+import { ReactNode, useMemo } from 'react'
 
 import { cn } from '@/lib/utils'
 import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
@@ -13,7 +13,7 @@ import { HeroComponentProps } from './types'
  * Hero component for desktop screens.
  * Displays a hero image with a title and subtitle.
  */
-export const HeroComponentDesktop: FC<HeroComponentProps> = ({
+export const HeroComponentDesktop = ({
   imageSrc,
   title,
   subtitle,
@@ -23,7 +23,7 @@ export const HeroComponentDesktop: FC<HeroComponentProps> = ({
   button,
   className,
   dataTestId,
-}) => {
+}: HeroComponentProps) => {
   // Memoize image sources is needed to prevent unnecessary re-renders
   const imageSources = useMemo(() => [imageSrc], [imageSrc])
   const { isLoaded } = useImagePreloader(imageSources)

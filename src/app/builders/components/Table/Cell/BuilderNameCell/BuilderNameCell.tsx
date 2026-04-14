@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { BuilderState } from '@/app/builders/components/Table/BuilderTable.config'
 import { Builder } from '@/app/collective-rewards/types'
 import {
@@ -92,11 +90,13 @@ interface BuilderDecorationProps {
   className?: string
 }
 
-const BuilderDecoration: FC<BuilderDecorationProps & { showTooltip?: boolean }> = ({
+const BuilderDecoration = ({
   decorationId,
   isHighlighted,
   className,
   showTooltip = true,
+}: BuilderDecorationProps & {
+  showTooltip?: boolean
 }) => {
   const icon = createIcon(decorationId, Boolean(isHighlighted))
 
@@ -133,12 +133,7 @@ const getStateDecorationId = (builder: Builder): Exclude<DecorationOptionId, 'ex
   return null
 }
 
-export const BuilderNameCell: FC<BuilderNameCellProps> = ({
-  builder,
-  isHighlighted,
-  hasAirdrop,
-  className,
-}) => {
+export const BuilderNameCell = ({ builder, isHighlighted, hasAirdrop, className }: BuilderNameCellProps) => {
   const stateDecorationId = getStateDecorationId(builder)
   const builderPageLink = `/proposals/${builder.proposal.id}`
   const isDesktop = useIsDesktop()

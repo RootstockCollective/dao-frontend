@@ -1,4 +1,4 @@
-import { ComponentType, FC } from 'react'
+import { ComponentType } from 'react'
 
 import { LoadingSpinner, SpinnerSize } from '@/components/LoadingSpinner'
 
@@ -11,16 +11,13 @@ interface SpinnerOptions {
   size?: SpinnerSize
 }
 
-export const withSpinner = <P extends {}>(
-  Component: ComponentType<P>,
-  options?: SpinnerOptions,
-): FC<P & WithLoadingProps> => {
-  const WrappedComponent = ({ isLoading, ...props }: WithLoadingProps) => (
+export const withSpinner = <P extends {}>(Component: ComponentType<P>, options?: SpinnerOptions) => {
+  const WrappedComponent = ({ isLoading, ...props }: P & WithLoadingProps) => (
     <>
       {isLoading ? (
         <LoadingSpinner className={options?.className} size={options?.size} />
       ) : (
-        <Component {...(props as P)} />
+        <Component {...(props as unknown as P)} />
       )}
     </>
   )

@@ -1,7 +1,7 @@
 'use client'
 
 import { ReactElement, Suspense } from 'react'
-import { Dispatch, FC, ReactNode } from 'react'
+import { Dispatch, ReactNode } from 'react'
 
 import { CombinedActionsHeaderCell, TableColumnDropdown } from '@/app/builders/components/Table'
 import { Action } from '@/app/builders/components/Table/Cell/ActionCell'
@@ -27,12 +27,14 @@ import {
 } from './BackerRewardsTable.config'
 
 // TODO: extract common components with the builder table
-const OrderIndicatorContainer: FC<CommonComponentProps> = ({ className, children }) => (
+const OrderIndicatorContainer = ({ className, children }: CommonComponentProps) => (
   <div className={cn('flex pt-1 justify-center gap-2', className)}>{children}</div>
 )
 
-const OrderIndicator: FC<CommonComponentProps & { columnId: BackerRewardsTable['Column']['id'] }> = ({
+const OrderIndicator = ({
   columnId,
+}: CommonComponentProps & {
+  columnId: BackerRewardsTable['Column']['id']
 }) => {
   const { sort } = useTableContext<ColumnId, BackerRewardsCellDataMap>()
 
@@ -169,7 +171,7 @@ export const HeaderCell = ({
   )
 }
 
-export const HeaderTitle: FC<CommonComponentProps> = ({ className, children }) => (
+export const HeaderTitle = ({ className, children }: CommonComponentProps) => (
   <Label
     variant="tag"
     className={cn(
@@ -181,7 +183,7 @@ export const HeaderTitle: FC<CommonComponentProps> = ({ className, children }) =
   </Label>
 )
 
-export const HeaderSubtitle: FC<CommonComponentProps> = ({ className, children }) => (
+export const HeaderSubtitle = ({ className, children }: CommonComponentProps) => (
   <Paragraph
     variant="body-xs"
     className={cn('text-v3-bg-accent-40 rootstock-sans text-xs leading-5 lowercase font-normal', className)}

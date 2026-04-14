@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation'
-import type { ComponentType, FC } from 'react'
+import type { ComponentType } from 'react'
 
 import { type FeatureFlag, getEnvFlag } from './flags.utils'
 
@@ -9,7 +9,7 @@ export interface FeatureHandleConfig {
   redirectTo?: string
 }
 
-const DefaultFallback: FC = () => <></>
+const DefaultFallback = () => <></>
 
 export const DEFAULT_CONFIG: Partial<FeatureHandleConfig> = {
   fallback: <DefaultFallback />,
@@ -24,7 +24,7 @@ export const withServerFeatureFlag = <P extends object>(
     ...config,
   }
 
-  const WithServerFeatureFlag: FC<P> = props => {
+  const WithServerFeatureFlag = (props: P) => {
     if (!(getEnvFlag(feature) ?? false)) {
       if (redirectTo) {
         redirect(redirectTo)

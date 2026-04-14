@@ -1,9 +1,7 @@
-import { FC } from 'react'
-
 import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
 
-export const DottedUnderlineLabel: FC<CommonComponentProps> = ({ className = '', children }) => {
+export const DottedUnderlineLabel = ({ className = '', children }: CommonComponentProps) => {
   return (
     <span
       className={cn('relative inline-block', className)}

@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { EmphaseVariants, HeaderVariants, HtmlTypographyTag } from './types'
 import { BaseTypography, BaseTypographyProps } from './Typography'
 
@@ -41,7 +39,7 @@ export interface HeaderProps extends Omit<BaseTypographyProps<HtmlTypographyTag>
  * - h4: font-size: 16px; font-family: font-rootstock-sans - **Figma: Header/H4**
  * - h5: font-size: 12px; font-family: font-rootstock-sans - **Figma: Header/H5**
  */
-export const Header: FC<HeaderProps> = ({ variant = 'h1', children, 'data-testid': dataTestId, ...rest }) => (
+export const Header = ({ variant = 'h1', children, 'data-testid': dataTestId, ...rest }: HeaderProps) => (
   <BaseTypography as={elementByVariant[variant]} variant={variant} data-testid={dataTestId} {...rest}>
     {children}
   </BaseTypography>

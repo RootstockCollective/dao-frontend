@@ -1,7 +1,7 @@
 'use client'
 
 import { Big } from 'big.js'
-import { FC, Suspense, useContext, useEffect, useMemo, useState } from 'react'
+import { Suspense, useContext, useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 
@@ -148,7 +148,7 @@ interface BuilderDataRowProps extends CommonComponentProps<HTMLTableRowElement> 
   actionCount: number
 }
 
-const BuilderDataRow: FC<BuilderDataRowProps> = ({ ...props }) => {
+const BuilderDataRow = ({ ...props }: BuilderDataRowProps) => {
   const isDesktop = useIsDesktop()
   return isDesktop ? <DesktopBuilderRow {...props} /> : <MobileBuilderRow {...props} />
 }

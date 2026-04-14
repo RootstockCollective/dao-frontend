@@ -1,4 +1,4 @@
-import { createContext, FC, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { createContext, ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
 import { Address, zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 
@@ -91,7 +91,7 @@ const DEFAULT_CONTEXT: AllocationsContext = {
   },
 }
 export const AllocationsContext = createContext<AllocationsContext>(DEFAULT_CONTEXT)
-export const AllocationsContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const AllocationsContextProvider = ({ children }: { children: ReactNode }) => {
   const { address: backerAddress } = useAccount()
   /**
    * Context states

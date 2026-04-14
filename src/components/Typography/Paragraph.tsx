@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { BodyVariants } from './types'
 import { BaseTypography, BaseTypographyProps } from './Typography'
 
@@ -26,12 +24,7 @@ interface Props extends Omit<BaseTypographyProps<'p'>, 'as'> {
  *
  * All variants support the `bold` prop for bold text.
  */
-export const Paragraph: FC<Props> = ({
-  variant = 'body',
-  children,
-  'data-testid': dataTestId = '',
-  ...rest
-}) => (
+export const Paragraph = ({ variant = 'body', children, 'data-testid': dataTestId = '', ...rest }: Props) => (
   <BaseTypography as="p" variant={variant} data-testid={`Paragraph${dataTestId}`} {...rest}>
     {children}
   </BaseTypography>

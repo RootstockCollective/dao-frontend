@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { CommonComponentProps } from '@/components/commonProps'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric } from '@/components/Metric'
@@ -9,7 +7,7 @@ interface CountMetricProps extends CommonComponentProps {
   title: string
   isLoading: boolean
 }
-export const CountMetric: FC<CountMetricProps> = ({ title, children, isLoading }) => {
+export const CountMetric = ({ title, children, isLoading }: CountMetricProps) => {
   return (
     <Metric
       className="text-v3-text-0 items-start"

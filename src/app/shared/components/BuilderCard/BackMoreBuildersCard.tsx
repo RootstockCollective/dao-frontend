@@ -1,5 +1,5 @@
 import { useRouter } from 'next/navigation'
-import { FC, useState } from 'react'
+import { useState } from 'react'
 
 import { Button } from '@/components/Button'
 import { BuildingBrick, CloseIconKoto } from '@/components/Icons'
@@ -12,11 +12,7 @@ interface BackMoreBuildersCardProps {
   className?: string
 }
 
-export const BackMoreBuildersCard: FC<BackMoreBuildersCardProps> = ({
-  dataTestId,
-  topBarColor,
-  className,
-}) => {
+export const BackMoreBuildersCard = ({ dataTestId, topBarColor, className }: BackMoreBuildersCardProps) => {
   const [isVisible, setIsVisible] = useState(true)
 
   const router = useRouter()

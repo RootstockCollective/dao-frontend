@@ -1,5 +1,5 @@
 'use client'
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -13,6 +13,6 @@ interface Props {
  * Expandable footer section.
  * This component MUST be used inside the Expandable component.
  */
-export const ExpandableFooter: FC<Props> = ({ children, className }) => {
+export const ExpandableFooter = ({ children, className }: Props) => {
   return <div className={cn('flex flex-col', className)}>{children}</div>
 }

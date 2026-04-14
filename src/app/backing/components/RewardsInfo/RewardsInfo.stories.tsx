@@ -4,26 +4,27 @@ import { FC } from 'react'
 import { WeiPerEther } from '@/lib/constants'
 
 // Simple wrapper to convert numbers to BigInt
-const RewardsInfoWrapper: FC<
-  Omit<RewardsInfoProps, 'backerRewardPercentage'> & {
+const RewardsInfoWrapper = (
+  {
+    backerRewardPercentage,
+    ...props
+  }: Omit<RewardsInfoProps, 'backerRewardPercentage'> & {
     backerRewardPercentage: {
       current: number
       next: number
       cooldownEndTime: number
       previous: number
-    }
+    };
   }
-> = ({ backerRewardPercentage, ...props }) => (
-  <RewardsInfo
-    backerRewardPercentage={{
-      current: (BigInt(backerRewardPercentage.current) * WeiPerEther) / 100n,
-      next: (BigInt(backerRewardPercentage.next) * WeiPerEther) / 100n,
-      cooldownEndTime: BigInt(backerRewardPercentage.cooldownEndTime),
-      previous: (BigInt(backerRewardPercentage.previous) * WeiPerEther) / 100n,
-    }}
-    {...props}
-  />
-)
+) => (<RewardsInfo
+  backerRewardPercentage={{
+    current: (BigInt(backerRewardPercentage.current) * WeiPerEther) / 100n,
+    next: (BigInt(backerRewardPercentage.next) * WeiPerEther) / 100n,
+    cooldownEndTime: BigInt(backerRewardPercentage.cooldownEndTime),
+    previous: (BigInt(backerRewardPercentage.previous) * WeiPerEther) / 100n,
+  }}
+  {...props}
+/>)
 
 const meta: Meta<typeof RewardsInfoWrapper> = {
   title: 'Backing/RewardsInfo',

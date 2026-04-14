@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { Label } from '@/components/Typography'
 import { cn } from '@/lib/utils'
@@ -9,7 +9,7 @@ interface LabeledContentProps {
   className?: string
 }
 
-export const LabeledContent: FC<LabeledContentProps> = ({ label, children, className }) => {
+export const LabeledContent = ({ label, children, className }: LabeledContentProps) => {
   return (
     <div className={cn('flex flex-col', className)} data-testid="labeledContainer">
       <Label className="text-xs text-v3-bg-accent-0" data-testid="labeledTitle">

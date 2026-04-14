@@ -1,5 +1,5 @@
 'use client'
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -18,7 +18,7 @@ interface Props {
  * Expandable header section.
  * This component MUST be used inside the Expandable component.
  */
-export const ExpandableHeader: FC<Props> = ({ children, className, triggerColor, toggleOnClick = false }) => {
+export const ExpandableHeader = ({ children, className, triggerColor, toggleOnClick = false }: Props) => {
   const { toggleExpanded } = useExpandableContext()
   return (
     <div

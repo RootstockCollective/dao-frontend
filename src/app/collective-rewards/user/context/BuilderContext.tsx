@@ -1,4 +1,4 @@
-import { createContext, FC, ReactNode, useCallback, useContext, useMemo } from 'react'
+import { createContext, ReactNode, useCallback, useContext, useMemo } from 'react'
 import { Address } from 'viem'
 
 import { useShuffledArray } from '@/app/backing/hooks/useShuffledArray'
@@ -30,7 +30,7 @@ interface BuilderProviderProps {
   children: ReactNode
 }
 
-const BuilderContextProvider: FC<BuilderProviderProps> = ({ children }) => {
+const BuilderContextProvider = ({ children }: BuilderProviderProps) => {
   const { data: buildersMap, isLoading, error } = useGetBuilders()
 
   const builders = useMemo(() => Object.values(buildersMap), [buildersMap])

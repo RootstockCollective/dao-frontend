@@ -1,5 +1,4 @@
 import { AnimatePresence, motion, Transition, type Variants } from 'motion/react'
-import { FC } from 'react'
 import { createPortal } from 'react-dom'
 
 import { CommonComponentProps } from '@/components/commonProps'
@@ -25,7 +24,7 @@ interface BottomActionBarBaseProps extends CommonComponentProps {
   portalContainer?: HTMLElement | null
 }
 
-export const BottomDrawer: FC<BottomActionBarBaseProps> = ({ className = '', portalContainer }) => {
+export const BottomDrawer = ({ className = '', portalContainer }: BottomActionBarBaseProps) => {
   const { isSidebarOpen, isDrawerOpen, drawerContent, setDrawerRef } = useLayoutContext()
   const isDesktop = useIsDesktop()
 

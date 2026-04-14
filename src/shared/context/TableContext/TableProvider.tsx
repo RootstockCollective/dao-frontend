@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, ReactElement, useReducer } from 'react'
+import { ComponentType, ReactElement, useReducer } from 'react'
 
 import { CommonComponentProps } from '@/components/commonProps'
 
@@ -28,7 +28,7 @@ export const withTableContext = <
   ColumnId extends BaseColumnId = BaseColumnId,
   CellDataMap extends Record<ColumnId, unknown> = Record<ColumnId, unknown>,
 >(
-  Component: FC<CommonComponentProps>,
+  Component: ComponentType<CommonComponentProps>,
 ) => {
   const WrappedComponent = (props: CommonComponentProps): ReactElement => {
     return (

@@ -1,5 +1,5 @@
 import { useRouter } from 'next/navigation'
-import { FC, useContext, useEffect } from 'react'
+import { useContext, useEffect } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 
@@ -63,12 +63,12 @@ const AllocationDrawerContent = () => {
   )
 }
 
-export const BuilderCardControl: FC<BuilderCardControlProps> = ({
+export const BuilderCardControl = ({
   builder,
   index,
   showAnimation = false,
   ...props
-}) => {
+}: BuilderCardControlProps) => {
   const { isConnected } = useAccount()
   const { prices } = usePricesContext()
   const { openDrawer, closeDrawer } = useLayoutContext()

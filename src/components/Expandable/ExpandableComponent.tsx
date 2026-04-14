@@ -1,5 +1,5 @@
 'use client'
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { Expandable } from './Expandable'
 import { ExpandableContent } from './ExpandableContent'
@@ -15,13 +15,13 @@ interface Props {
   footer?: ReactNode
 }
 
-export const ExpandableComponent: FC<Props> = ({
+export const ExpandableComponent = ({
   alwaysVisible,
   expandable,
   className,
   contentClassName,
   footer,
-}) => {
+}: Props) => {
   return (
     <Expandable className={className}>
       <ExpandableHeader>{alwaysVisible}</ExpandableHeader>

@@ -1,4 +1,3 @@
-import { FC } from 'react'
 import { Address } from 'viem'
 
 import { ABIFormula } from '@/app/backing/components/ABIFormula'
@@ -9,7 +8,7 @@ import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 interface BackerABIProps {
   backer: Address
 }
-export const BackerABI: FC<BackerABIProps> = ({ backer }) => {
+export const BackerABI = ({ backer }: BackerABIProps) => {
   const { data: abiPct, isLoading, error } = useGetBackerABI(backer)
   useHandleErrors({ error, title: 'Error loading backer abi' })
 

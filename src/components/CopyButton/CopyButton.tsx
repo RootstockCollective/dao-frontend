@@ -1,4 +1,4 @@
-import { FC, HTMLAttributes, ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
+import { HTMLAttributes, ReactElement, ReactNode, useEffect, useRef, useState } from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -41,7 +41,7 @@ enum CopyStatus {
  * A button that copies its `text` prop to the clipboard.
  * Provides visual feedback based on the success or failure of the copy action.
  */
-export const CopyButton: FC<CopyButtonProps> = ({
+export const CopyButton = ({
   copyText,
   successLabel = 'Copied!',
   errorLabel = 'Error',
@@ -51,7 +51,7 @@ export const CopyButton: FC<CopyButtonProps> = ({
   className,
   children,
   ...props
-}) => {
+}: CopyButtonProps) => {
   const ref = useRef<HTMLDivElement>(null)
   const [minWidth, setMinWidth] = useState<number>()
   const [status, setStatus] = useState<CopyStatus>(CopyStatus.Idle)

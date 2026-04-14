@@ -1,9 +1,9 @@
-import { FC, SVGProps } from 'react'
+import { SVGProps } from 'react'
 
 type BoltSvgProps = SVGProps<SVGSVGElement> & {
   showGlow?: boolean
 }
-export const BoltSvg: FC<BoltSvgProps> = ({ showGlow, ...rest }) => (
+export const BoltSvg = ({ showGlow, ...rest }: BoltSvgProps) => (
   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" {...rest}>
     <g filter={showGlow ? 'url(#filter0_d_671_52312)' : ''}>
       <path

@@ -20,13 +20,11 @@ const address = '0xB62BD53308fb2834b3114a5f725D0382CBe9f008'
 /**
  * Demonstrates the CopyButton surrounded by components from left and right
  */
-const Surrounding: FC<CopyButtonProps> = args => (
-  <div className="flex gap-4">
-    <span className="border">Leading</span>
-    <CopyButton {...args} />
-    <span className="border">Trailing</span>
-  </div>
-)
+const Surrounding = (args: CopyButtonProps) => (<div className="flex gap-4">
+  <span className="border">Leading</span>
+  <CopyButton {...args} />
+  <span className="border">Trailing</span>
+</div>)
 
 export const Default: Story = {
   args: {

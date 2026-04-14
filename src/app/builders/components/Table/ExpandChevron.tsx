@@ -1,14 +1,17 @@
-import { FC } from 'react'
-
 import { KotoChevronDownIcon } from '@/components/Icons'
 import { cn } from '@/lib/utils'
 
-export const ExpandChevron: FC<{
+export const ExpandChevron = ({
+  isExpanded,
+  onToggle,
+  className,
+  isRowSelected = false,
+}: {
   isExpanded: boolean
   onToggle?: () => void
   className?: string
   isRowSelected?: boolean
-}> = ({ isExpanded, onToggle, className, isRowSelected = false }) => (
+}) => (
   <KotoChevronDownIcon
     size={16}
     className={cn(

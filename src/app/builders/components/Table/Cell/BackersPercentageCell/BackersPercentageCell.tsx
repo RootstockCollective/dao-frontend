@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { weiToPercentage } from '@/app/collective-rewards/settings'
 import { BackerRewardPercentage } from '@/app/collective-rewards/types'
 import { StylableComponentProps } from '@/components/commonProps'
@@ -26,7 +24,7 @@ export const BackersPercentage = ({ percentage, className }: BackersPercentagePr
   )
 }
 
-export const BackersPercentageCell: FC<BackersPercentageProps> = ({ className, percentage }) => {
+export const BackersPercentageCell = ({ className, percentage }: BackersPercentageProps) => {
   return (
     <div className={cn('border-b-0', className)}>
       <BackersPercentage percentage={percentage} />

@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { DecorativeSquares } from '@/app/backing/components/DecorativeSquares'
 import { formatSymbol } from '@/app/shared/formatter'
 import { useVaultDepositLimiter } from '@/app/vault/hooks/useVaultDepositLimiter'
@@ -8,7 +6,7 @@ import { Header, Paragraph } from '@/components/Typography'
 import { USDRIF } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
-export const VaultDisclaimer: FC<CommonComponentProps> = ({ className = '' }) => {
+export const VaultDisclaimer = ({ className = '' }: CommonComponentProps) => {
   const { maxDefaultDepositLimit } = useVaultDepositLimiter()
   const formattedDefaultLimit = formatSymbol(maxDefaultDepositLimit, USDRIF)
   return (

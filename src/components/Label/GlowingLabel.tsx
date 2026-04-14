@@ -1,4 +1,4 @@
-import { CSSProperties, FC, HTMLAttributes } from 'react'
+import { CSSProperties, HTMLAttributes } from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -7,7 +7,7 @@ type GlowingLabelProps = HTMLAttributes<HTMLDivElement> & {
   faded?: boolean
 }
 
-export const GlowingLabel: FC<GlowingLabelProps> = ({ children, showGlow, faded, className, ...props }) => {
+export const GlowingLabel = ({ children, showGlow, faded, className, ...props }: GlowingLabelProps) => {
   const backgroundStyle: CSSProperties['background'] = faded
     ? 'linear-gradient(270deg, #4B171A -8.88%, #C0F7FF 31.43%, #E3FFEB 78.65%)'
     : 'linear-gradient(270deg, #4B171A -456.96%, #C0F7FF -195.47%, #E3FFEB 110.84%)'

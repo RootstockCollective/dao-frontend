@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
@@ -7,7 +7,7 @@ interface BackingInfoContainerProps extends CommonComponentProps {
   title: ReactNode
 }
 
-export const BackingInfoContainer: FC<BackingInfoContainerProps> = ({ className = '', title, children }) => {
+export const BackingInfoContainer = ({ className = '', title, children }: BackingInfoContainerProps) => {
   return (
     <div className={cn('relative w-full bg-v3-bg-accent-80 rounded p-4 md:p-6', className)}>
       <div className="flex flex-col gap-[56px]">

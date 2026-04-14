@@ -8,10 +8,7 @@ interface AdjustBackersRewardsButtonProps {
   className?: string
 }
 
-export const AdjustBackersRewardsButton: React.FC<AdjustBackersRewardsButtonProps> = ({
-  onClick,
-  className = '',
-}) => {
+export const AdjustBackersRewardsButton = ({ onClick, className = '' }: AdjustBackersRewardsButtonProps) => {
   return (
     <button
       onClick={onClick}

@@ -1,5 +1,5 @@
 import { DateTime, Duration } from 'luxon'
-import { createContext, FC, ReactNode, useContext, useMemo, useState } from 'react'
+import { createContext, ReactNode, useContext, useMemo, useState } from 'react'
 
 import { useReadCycleTimeKeeper } from '@/shared/hooks/contracts'
 
@@ -37,7 +37,7 @@ const DEFAULT_CYCLE_DATA: Cycle = {
   endDistributionWindow: DateTime.fromSeconds(0),
 }
 
-export const CycleContextProvider: FC<CycleProviderProps> = ({ children }) => {
+export const CycleContextProvider = ({ children }: CycleProviderProps) => {
   const timestamp = useIntervalTimestamp()
   const [cycleData, setCycleData] = useState<Cycle>(DEFAULT_CYCLE_DATA)
 

@@ -1,4 +1,4 @@
-import { FC, HtmlHTMLAttributes, useState } from 'react'
+import { HtmlHTMLAttributes, useState } from 'react'
 import { useAccount } from 'wagmi'
 
 import { ConnectTooltip } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltip'
@@ -29,7 +29,7 @@ interface MobileBuilderRowProps extends HtmlHTMLAttributes<HTMLTableRowElement> 
   actionCount: number
 }
 
-export const MobileBuilderRow: FC<MobileBuilderRowProps> = ({ logic, actionCount, ...props }) => {
+export const MobileBuilderRow = ({ logic, actionCount, ...props }: MobileBuilderRowProps) => {
   const { isConnected } = useAccount()
   const { onConnectWalletButtonClick } = useAppKitFlow()
 

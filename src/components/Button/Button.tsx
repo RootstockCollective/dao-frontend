@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes, FC, RefAttributes } from 'react'
+import { ButtonHTMLAttributes, RefAttributes } from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -15,7 +15,7 @@ interface Props extends RefAttributes<HTMLButtonElement>, ButtonHTMLAttributes<H
   textClassName?: string
 }
 
-export const Button: FC<Props> = ({
+export const Button = ({
   children,
   variant = 'primary',
   disabled = false,
@@ -24,7 +24,7 @@ export const Button: FC<Props> = ({
   'data-testid': dataTestId,
   textClassName = '',
   ...props
-}) => {
+}: Props) => {
   const styles = {
     primary:
       'bg-primary text-bg-100 border border-primary disabled:bg-disabled-primary disabled:border-transparent',

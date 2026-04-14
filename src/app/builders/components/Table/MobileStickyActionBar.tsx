@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { Button } from '@/components/Button'
 import { ActionsContainer } from '@/components/containers/ActionsContainer'
 import { DeselectIcon } from '@/components/Icons/DeselectIcon'
@@ -16,13 +14,13 @@ interface MobileStickyActionBarContentProps {
   onClose?: () => void
 }
 
-export const MobileStickyActionBarContent: FC<MobileStickyActionBarContentProps> = ({
+export const MobileStickyActionBarContent = ({
   actions,
   selectedCount,
   selectedBuilderIds,
   onDeselectAll,
   onClose,
-}) => {
+}: MobileStickyActionBarContentProps) => {
   const { showAction, handleActionClick } = getSelectedBuildersActionState(actions, selectedBuilderIds)
 
   const handleDeselectClick = () => {
