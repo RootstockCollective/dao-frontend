@@ -101,6 +101,12 @@ export const executeTxFlow = async ({
   try {
     txHash = await onRequestTx()
 
+    // Avoid passing a missing hash into viem/wagmi wait (some wallets surface that as "hash is null" errors).
+    if (!txHash) {
+      onComplete?.(txHash)
+      return undefined
+    }
+
     onPending?.(txHash)
     showToast(createToastConfig(pending, txHash))
 

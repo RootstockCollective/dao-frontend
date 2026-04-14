@@ -7,6 +7,7 @@ import { type Address, formatUnits, Hex, parseUnits } from 'viem'
 import { useAccount, useReadContract, useSignTypedData, useWriteContract } from 'wagmi'
 import { useShallow } from 'zustand/shallow'
 
+import { isUserRejectedTxError, USER_CANCELED_TX_MESSAGE } from '@/components/ErrorPage/commonErrors'
 import { Permit2Abi } from '@/lib/abis/Permit2Abi'
 import { RIFTokenAbi } from '@/lib/abis/RIFTokenAbi'
 import { UniswapUniversalRouterAbi } from '@/lib/abis/UniswapUniversalRouterAbi'
@@ -665,6 +666,11 @@ export const useSwapExecution = () => {
           args: [commands, inputs],
         })
 
+        if (!hash) {
+          failSwap(new Error(USER_CANCELED_TX_MESSAGE))
+          return null
+        }
+
         completeSwap(hash)
         return hash
       } catch (error) {
@@ -699,9 +705,8 @@ export const useSwapExecution = () => {
           return null
         }
 
-        // User rejected transaction
-        if (errorMessage.includes('rejected') || errorMessage.includes('denied')) {
-          failSwap(new Error('Transaction cancelled by user'))
+        if (isUserRejectedTxError(error)) {
+          failSwap(new Error(USER_CANCELED_TX_MESSAGE))
         } else {
           const swapError = error instanceof Error ? error : new Error(`Swap failed: ${errorMessage}`)
           sentryClient.captureException(swapError, {
