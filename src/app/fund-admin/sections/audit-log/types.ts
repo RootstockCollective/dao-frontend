@@ -19,7 +19,7 @@ export interface AuditLogEntry {
   detail: string | null
   /** `true` = native RBTC, `false` = WRBTC (wrapped). */
   isNative: boolean | null
-  role: string | null
+  role: string
   actor: Address
   from: Address | null
   destination: Address | null

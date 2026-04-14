@@ -35,7 +35,6 @@ const TokenAmountRow = ({ tokenAmount }: { tokenAmount: string }) => {
 
 export const DesktopAuditLogHistory = () => {
   const { rows } = useTableContext<ColumnId, AuditLogCellDataMap>()
-  console.log('🚀 ~ DesktopAuditLogHistory ~ rows:', rows)
 
   return (
     <table className="w-full min-w-[700px]">

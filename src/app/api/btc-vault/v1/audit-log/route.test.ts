@@ -21,7 +21,7 @@ const sampleEntry: AuditLogEntry = {
   amountInWei: null,
   detail: null,
   isNative: null,
-  role: null,
+  role: 'ADMIN',
   actor: zeroAddress,
   from: null,
   destination: null,

@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { z } from 'zod'
 
 import { handleApiError, queryParam } from '@/app/api/utils/helpers'
@@ -37,17 +37,21 @@ export async function GET(req: NextRequest) {
       sort_direction: parsed.sort_direction ?? 'desc',
     }
 
-    return NextResponse.json(
-      { data, pagination },
+    return new Response(
+      JSON.stringify({ data, pagination }, (_key, value) =>
+        typeof value === 'bigint' ? value.toString() : value,
+      ),
       {
+        status: 200,
         headers: {
+          'Content-Type': 'application/json',
           'Cache-Control': 'private, no-store, must-revalidate',
         },
       },
     )
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return NextResponse.json(
+      return Response.json(
         { success: false, error: 'Validation failed', details: error.flatten() },
         { status: 400 },
       )

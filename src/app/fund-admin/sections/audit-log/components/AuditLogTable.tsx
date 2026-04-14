@@ -21,7 +21,7 @@ import { AuditLogFilterSideBar } from './AuditLogFilterSideBar'
 import { DesktopAuditLogHistory } from './DesktopAuditLogHistory'
 
 function isSortableColumnId(id: ColumnId | null): id is SortableColumnId {
-  return id === 'date' || id === 'action' || id === 'role'
+  return id === 'date'
 }
 
 export const AuditLogTable = () => {

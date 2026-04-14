@@ -4,26 +4,10 @@ import { useQueries } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-import { getBtcVaultAuditLogEndpoint } from '@/lib/endpoints'
 
 import { AUDIT_LOG_FETCH_LIMIT } from '../constants'
-import type {
-  AuditLogApiResponse,
-  AuditLogHistoryPageParams,
-  UseGetAuditLogParams,
-  UseGetAuditLogResult,
-} from '../types'
-
-function buildAuditLogUrl(params: AuditLogHistoryPageParams): string {
-  const searchParams = new URLSearchParams()
-  searchParams.set('page', String(params.page))
-  searchParams.set('limit', String(params.limit))
-  if (params.sortField && params.sortDirection) {
-    searchParams.set('sort_field', params.sortField)
-    searchParams.set('sort_direction', params.sortDirection)
-  }
-  return `${getBtcVaultAuditLogEndpoint}?${searchParams.toString()}`
-}
+import type { AuditLogApiResponse, UseGetAuditLogParams, UseGetAuditLogResult } from '../types'
+import { buildAuditLogUrl } from '../utils'
 
 /**
  * Audit log via GET /api/btc-vault/v1/audit-log (same pattern as `useGetBTCWhitelistingHistory`).

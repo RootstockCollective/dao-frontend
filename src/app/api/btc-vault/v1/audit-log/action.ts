@@ -59,7 +59,7 @@ interface BtcVaultLogRaw {
   amountInWei: string | null
   detail: string | null
   isNative: boolean | null
-  role: string | null
+  role: string
   actor: string
   from: string | null
   destination: string | null
@@ -74,15 +74,15 @@ function mapLogRowToEntry(row: BtcVaultLogRaw): AuditLogEntry {
     id: row.id,
     vault: row.vault as Address,
     type: row.type,
-    amountInWei: row.amountInWei ?? null,
+    amountInWei: row.amountInWei ? BigInt(row.amountInWei) : null,
     detail: row.detail ?? null,
     isNative: row.isNative ?? null,
-    role: row.role ?? null,
+    role: row.role,
     actor: row.actor as Address,
     from: (row.from ?? null) as Address | null,
     destination: (row.destination ?? null) as Address | null,
-    blockNumber: row.blockNumber,
-    blockTimestamp: row.blockTimestamp,
+    blockNumber: BigInt(row.blockNumber),
+    blockTimestamp: BigInt(row.blockTimestamp),
     transactionHash: row.transactionHash as Hex,
     logIndex: row.logIndex,
   }

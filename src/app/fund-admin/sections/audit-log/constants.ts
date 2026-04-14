@@ -42,7 +42,7 @@ export const FUND_MANAGER_LOG_TYPES = new Set([
 export const ROLE_STYLES: Record<AuditLogUserRole, string> = {
   ADMIN: 'bg-[#08ffd0] text-v3-text-0',
   MANAGER: 'bg-v3-rsk-purple text-v3-text-0',
-  PAUSER: 'bg -blue-700 text-v3-text-100',
+  PAUSER: 'bg-blue-700 text-v3-text-100',
   INVESTOR: 'rounded-[16px] bg-[var(--Brand-Lime,#DEFF1A)]',
   BUFFER_INJECTOR: 'rounded-[16px] bg-success text-v3-text-0',
 }

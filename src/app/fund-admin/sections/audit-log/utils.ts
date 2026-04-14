@@ -1,13 +1,14 @@
 import { DateTime } from 'luxon'
-import moment from 'moment'
 import { formatEther } from 'viem'
 
+import type { BtcVaultAuditLogSortField } from '@/app/api/btc-vault/v1/schemas'
 import { getFiatAmount } from '@/app/shared/formatter'
 import Big from '@/lib/big'
+import { getBtcVaultAuditLogEndpoint } from '@/lib/endpoints'
 import { formatCurrencyWithLabel, formatNumberWithCommas } from '@/lib/utils'
 
 import { LOG_TYPE_LABELS } from './constants'
-import type { AuditLogEntry, AuditLogTableModel, AuditLogUserRole } from './types'
+import type { AuditLogEntry, AuditLogHistoryPageParams, AuditLogTableModel, AuditLogUserRole } from './types'
 
 export function convertAuditEntriesToRows(entries: AuditLogEntry[]): AuditLogTableModel['Row'][] {
   return entries.map(entry => ({
@@ -50,7 +51,18 @@ export function formatAuditLogDate(blockTimestamp: string | bigint): string {
 }
 
 export function formatAuditLogDateForCsv(blockTimestamp: string | bigint): string {
-  return moment.unix(Number(blockTimestamp)).format('YYYY-MM-DD')
+  return DateTime.fromSeconds(Number(blockTimestamp), { zone: 'utc' }).toFormat('yyyy-MM-dd')
+}
+
+export function buildAuditLogUrl(params: AuditLogHistoryPageParams): string {
+  const searchParams = new URLSearchParams()
+  searchParams.set('page', String(params.page))
+  searchParams.set('limit', String(params.limit))
+  if (params.sortField && params.sortDirection) {
+    searchParams.set('sort_field', params.sortField as BtcVaultAuditLogSortField)
+    searchParams.set('sort_direction', params.sortDirection)
+  }
+  return `${getBtcVaultAuditLogEndpoint}?${searchParams.toString()}`
 }
 
 export function logTypeToActionLabel(type: string): string {
