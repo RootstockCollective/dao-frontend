@@ -26,10 +26,14 @@ const HISTORY_API_PATH = '/api/btc-vault/v1/history'
  * Phase 2 (when at least one request): pending/claimable and epochSnapshot per request.
  *
  * @param address - User wallet address (controller); undefined disables reads
- * @returns { data } - ActiveRequestDisplay[] for dashboard, or undefined while loading/error
+ * @returns `data` — ActiveRequestDisplay[] for dashboard, or undefined while loading/error.
+ *   `claimableDepositRequest` — the deposit `VaultRequest` when the user can claim shares (`status === 'claimable'`);
+ *   always null for claimable withdrawals only and while data is loading or unavailable.
+ *   `refetch()` — call after on-chain success: wagmi multicall results are not keyed like TanStack invalidation alone.
  */
 export function useActiveRequests(address: string | undefined): {
   data: ActiveRequestDisplay[] | undefined
+  claimableDepositRequest: VaultRequest | null
   refetch: () => void
 } {
   const { prices } = usePricesContext()
@@ -147,10 +151,17 @@ export function useActiveRequests(address: string | undefined): {
   // SAFETY: narrow type to avoid wagmi's "excessively deep" instantiation in useMemo deps
   const phase2Data = phase2Raw as readonly { status: string; result?: unknown }[] | undefined
 
-  const data = useMemo((): ActiveRequestDisplay[] | undefined => {
-    if (!address) return undefined
-    if (isLoading1 || error1) return undefined
-    if (!phase1Data || phase1Data.length < 2) return undefined
+  const { data, claimableDepositRequest } = useMemo((): {
+    data: ActiveRequestDisplay[] | undefined
+    claimableDepositRequest: VaultRequest | null
+  } => {
+    const empty = {
+      data: undefined as ActiveRequestDisplay[] | undefined,
+      claimableDepositRequest: null as VaultRequest | null,
+    }
+    if (!address || isLoading1 || error1 || !phase1Data || phase1Data.length < 2) {
+      return empty
+    }
 
     const depositResult =
       phase1Data[0]?.status === 'success' ? (phase1Data[0].result as readonly [bigint, bigint]) : undefined
@@ -161,12 +172,15 @@ export function useActiveRequests(address: string | undefined): {
     const redEpochId = redeemResult?.[0] ?? 0n
     const redShares = redeemResult?.[1] ?? 0n
 
-    if (depAssets === 0n && redShares === 0n) return []
+    if (depAssets === 0n && redShares === 0n) {
+      return { data: [], claimableDepositRequest: null }
+    }
 
-    if (!needsPhase2) return []
-    if (isLoading2 || error2 || !phase2Data) return undefined
+    if (!needsPhase2) return { data: [], claimableDepositRequest: null }
+    if (isLoading2 || error2 || !phase2Data) return empty
 
     const requests: Array<{ req: VaultRequest; claimableInfo: ClaimableInfo | null }> = []
+    let claimableDepositRequest: VaultRequest | null = null
     const hasDeposit = depAssets > 0n
     const hasRedeem = redShares > 0n
 
@@ -199,18 +213,22 @@ export function useActiveRequests(address: string | undefined): {
           supplyAtCloseWei: supplyAtClose,
         }
       }
+      const depositReq: VaultRequest = {
+        id: `dep-${depEpochId}`,
+        type: 'deposit',
+        amount: depAssets,
+        status,
+        epochId: String(depEpochId),
+        batchRedeemId: null,
+        timestamps: { created: depHistory?.timestamp ?? 0 },
+        txHashes: depHistory?.transactionHash ? { submit: depHistory.transactionHash } : {},
+        ...(depDisplayStatus && { displayStatus: depDisplayStatus }),
+      }
+      if (status === 'claimable') {
+        claimableDepositRequest = depositReq
+      }
       requests.push({
-        req: {
-          id: `dep-${depEpochId}`,
-          type: 'deposit',
-          amount: depAssets,
-          status,
-          epochId: String(depEpochId),
-          batchRedeemId: null,
-          timestamps: { created: depHistory?.timestamp ?? 0 },
-          txHashes: depHistory?.transactionHash ? { submit: depHistory.transactionHash } : {},
-          ...(depDisplayStatus && { displayStatus: depDisplayStatus }),
-        },
+        req: depositReq,
         claimableInfo,
       })
     }
@@ -263,7 +281,10 @@ export function useActiveRequests(address: string | undefined): {
       })
     }
 
-    return requests.map(({ req, claimableInfo }) => toActiveRequestDisplay(req, claimableInfo, rbtcPrice))
+    return {
+      data: requests.map(({ req, claimableInfo }) => toActiveRequestDisplay(req, claimableInfo, rbtcPrice)),
+      claimableDepositRequest,
+    }
   }, [
     address,
     phase1Data,
@@ -288,5 +309,5 @@ export function useActiveRequests(address: string | undefined): {
     doRefetchHistory()
   }, [doRefetchPhase1, doRefetchPhase2, doRefetchHistory])
 
-  return { data, refetch }
+  return { data, claimableDepositRequest, refetch }
 }

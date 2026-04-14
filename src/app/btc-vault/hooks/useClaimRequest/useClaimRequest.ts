@@ -15,6 +15,8 @@ import { useFinalizeWithdrawal } from '../useFinalizeWithdrawal'
  * that dispatches to `useFinalizeDeposit` or `useFinalizeWithdrawal` based on request type.
  *
  * Only performs the contract read when `request.status === 'claimable'`.
+ * When `isReadingError` is true, `canClaim` is false — callers may hide the control, show an error
+ * state, or use another affordance (e.g. dashboard Claim Shares hides until the read succeeds).
  */
 export function useClaimRequest(request: VaultRequest | null) {
   const { address } = useAccount()
@@ -23,7 +25,11 @@ export function useClaimRequest(request: VaultRequest | null) {
 
   const functionName = requestType === 'deposit' ? 'claimableDepositRequest' : 'claimableRedeemRequest'
 
-  const { data: claimableAmount, isLoading: isReadingAmount } = useReadContract({
+  const {
+    data: claimableAmount,
+    isLoading: isReadingAmount,
+    isError: isReadingError,
+  } = useReadContract({
     ...rbtcVault,
     functionName,
     args: address ? [address as Address] : undefined,
@@ -58,11 +64,15 @@ export function useClaimRequest(request: VaultRequest | null) {
       claim,
       claimableAmount: (claimableAmount as bigint | undefined) ?? 0n,
       isReadingAmount,
+      isReadingError,
       isRequesting,
       isTxPending,
       canClaim:
-        isClaimable && (claimableAmount as bigint | undefined) != null && (claimableAmount as bigint) > 0n,
+        isClaimable &&
+        !isReadingError &&
+        (claimableAmount as bigint | undefined) != null &&
+        (claimableAmount as bigint) > 0n,
     }),
-    [claim, claimableAmount, isReadingAmount, isRequesting, isTxPending, isClaimable],
+    [claim, claimableAmount, isReadingAmount, isReadingError, isRequesting, isTxPending, isClaimable],
   )
 }
