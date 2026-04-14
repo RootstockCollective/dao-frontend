@@ -84,9 +84,14 @@ export const fetchPrices = async (): Promise<GetPricesResult> => {
         }
       }
     }
-  } else if (idsToFetch.length > 0 && !cmcKey && process.env.PRICES_API_URL) {
-    console.log('No COIN_MARKET_CAP_KEY defined — falling back to', process.env.PRICES_API_URL)
-    const res = await fetch(process.env.PRICES_API_URL, {
+  } else if (
+    idsToFetch.length > 0 &&
+    !cmcKey &&
+    process.env.NODE_ENV === 'development' &&
+    process.env.PRICES_DEV_API_URL
+  ) {
+    console.log('No COIN_MARKET_CAP_KEY defined — falling back to', process.env.PRICES_DEV_API_URL)
+    const res = await fetch(process.env.PRICES_DEV_API_URL, {
       headers: { 'X-Prices-Source': 'fallback' },
       next: { revalidate: CMC_REVALIDATE_SECONDS },
       signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
@@ -107,7 +112,7 @@ export const fetchPrices = async (): Promise<GetPricesResult> => {
     }
   } else if (idsToFetch.length > 0 && !cmcKey) {
     console.warn(
-      'No COIN_MARKET_CAP_KEY and no PRICES_API_URL configured — market prices will be unavailable',
+      'No COIN_MARKET_CAP_KEY and no PRICES_DEV_API_URL configured — market prices will be unavailable',
     )
   }
 

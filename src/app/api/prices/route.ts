@@ -15,16 +15,16 @@ export const revalidate = 300
  * without requiring their own CoinMarketCap API key.
  *
  * Rejects requests with `X-Prices-Source: fallback` to prevent circular
- * loops when a local instance has PRICES_API_URL pointing back to itself.
+ * loops when a local instance has PRICES_DEV_API_URL pointing back to itself.
  */
 export async function GET(request: NextRequest) {
   if (request.headers.get('X-Prices-Source') === 'fallback') {
     logger.warn(
       { route: '/api/prices' },
-      'Circular fallback detected — PRICES_API_URL points back to this instance',
+      'Circular fallback detected — PRICES_DEV_API_URL points back to this instance',
     )
     return NextResponse.json(
-      { error: 'Circular fallback detected. Check PRICES_API_URL configuration.' },
+      { error: 'Circular fallback detected. Check PRICES_DEV_API_URL configuration.' },
       { status: 508 },
     )
   }
