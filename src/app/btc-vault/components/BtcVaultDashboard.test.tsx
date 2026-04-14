@@ -17,6 +17,8 @@ function Wrapper({ children }: { children: ReactNode }) {
 
 const mockUseAccount = vi.fn()
 const mockUseUserPosition = vi.fn()
+const mockUseActionEligibility = vi.fn()
+const mockUseBtcVaultWithdrawFlow = vi.fn()
 
 vi.mock('wagmi', () => ({
   useAccount: () => mockUseAccount(),
@@ -24,6 +26,15 @@ vi.mock('wagmi', () => ({
 
 vi.mock('../hooks/useUserPosition/useUserPosition', () => ({
   useUserPosition: (address: string | undefined) => mockUseUserPosition(address),
+}))
+
+vi.mock('../hooks/useActionEligibility', () => ({
+  useActionEligibility: (address: string | undefined) => mockUseActionEligibility(address),
+}))
+
+vi.mock('../hooks/useBtcVaultWithdrawFlow', () => ({
+  useBtcVaultWithdrawFlow: (opts: { onRequestSubmitted?: () => void }) =>
+    mockUseBtcVaultWithdrawFlow(opts),
 }))
 
 vi.mock('./BtcVaultActions', () => ({
@@ -71,6 +82,30 @@ describe('BtcVaultDashboard', () => {
   beforeEach(() => {
     mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
     mockUseUserPosition.mockReturnValue({ data: MOCK_DISPLAY, isLoading: false })
+    mockUseActionEligibility.mockReturnValue({
+      data: {
+        canDeposit: true,
+        canWithdraw: true,
+        hasVaultShares: false,
+        depositBlockReason: '',
+        withdrawBlockReason: '',
+      },
+      isLoading: false,
+    })
+    mockUseBtcVaultWithdrawFlow.mockReturnValue({
+      isWithdrawModalOpen: false,
+      openWithdrawModal: vi.fn(),
+      closeWithdrawModal: vi.fn(),
+      handleApproveWithdrawShares: vi.fn(),
+      handleRequestWithdrawRedeem: vi.fn(),
+      allowance: undefined,
+      isAllowanceReadLoading: false,
+      hasAllowanceFor: vi.fn().mockResolvedValue(false),
+      isApprovingShares: false,
+      isWithdrawSubmitting: false,
+      isAllowanceTxFailed: false,
+      allowanceTxHash: undefined,
+    })
   })
 
   afterEach(() => {
@@ -265,5 +300,26 @@ describe('BtcVaultDashboard', () => {
     const probe = screen.getByTestId('btc-vault-claim-shares-probe')
     expect(probe).toHaveAttribute('data-request-id', '')
     expect(probe).toHaveAttribute('data-has-refetch', 'no')
+  })
+
+  it('does not show Redeem Shares while eligibility is loading', () => {
+    mockUseActionEligibility.mockReturnValue({ data: undefined, isLoading: true })
+    render(<BtcVaultDashboard />, { wrapper: Wrapper })
+    expect(screen.queryByTestId('btc-vault-redeem-shares-button')).not.toBeInTheDocument()
+  })
+
+  it('shows Redeem Shares when eligibility has vault shares', () => {
+    mockUseActionEligibility.mockReturnValue({
+      data: {
+        canDeposit: true,
+        canWithdraw: true,
+        hasVaultShares: true,
+        depositBlockReason: '',
+        withdrawBlockReason: '',
+      },
+      isLoading: false,
+    })
+    render(<BtcVaultDashboard />, { wrapper: Wrapper })
+    expect(screen.getByTestId('btc-vault-redeem-shares-button')).toBeInTheDocument()
   })
 })
