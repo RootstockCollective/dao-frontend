@@ -1,11 +1,12 @@
 import { DateTime } from 'luxon'
+import moment from 'moment'
 import { formatEther } from 'viem'
 
 import { getFiatAmount } from '@/app/shared/formatter'
 import Big from '@/lib/big'
 import { formatCurrencyWithLabel, formatNumberWithCommas } from '@/lib/utils'
 
-import { AUDIT_LOG_NAV_EPOCH_DETAIL_RE, LOG_TYPE_LABELS } from './constants'
+import { LOG_TYPE_LABELS } from './constants'
 import type { AuditLogEntry, AuditLogTableModel, AuditLogUserRole } from './types'
 
 export function convertAuditEntriesToRows(entries: AuditLogEntry[]): AuditLogTableModel['Row'][] {
@@ -21,12 +22,12 @@ export function convertAuditEntriesToRows(entries: AuditLogEntry[]): AuditLogTab
   }))
 }
 
-/** Human-readable RBTC amount from wei (18 decimals). */
-export function formatAmountFromWei(wei: string | bigint | null): string | null {
+/** RBTC / WRBTC amount from wei */
+export function formatAmountFromWei(wei: string | bigint | null, decimalPlaces = 8): string | null {
   if (wei == null) return null
   try {
     const asEther = formatEther(BigInt(wei.toString()))
-    return formatNumberWithCommas(Big(asEther).toFixedNoTrailing(8))
+    return formatNumberWithCommas(Big(asEther).toFixedNoTrailing(decimalPlaces))
   } catch {
     return null
   }
@@ -43,14 +44,13 @@ export function formatAuditAmountUsd(amountWei: string | null, rbtcUsdPrice: num
   return formatCurrencyWithLabel(getFiatAmount(amountWei, rbtcUsdPrice))
 }
 
-function isNavEpochOnlyDetail(entry: AuditLogEntry): boolean {
-  return entry.type === 'NAV_UPDATED' && AUDIT_LOG_NAV_EPOCH_DETAIL_RE.test(entry.detail?.trim() ?? '')
-}
-
-// --- CSV functions section ---
-
+/** Date format: YYYY-MM-DD */
 export function formatAuditLogDate(blockTimestamp: string | bigint): string {
   return DateTime.fromSeconds(Number(blockTimestamp), { zone: 'utc' }).setLocale('en').toFormat('LLL d, yyyy')
+}
+
+export function formatAuditLogDateForCsv(blockTimestamp: string | bigint): string {
+  return moment.unix(Number(blockTimestamp)).format('YYYY-MM-DD')
 }
 
 export function logTypeToActionLabel(type: string): string {
@@ -59,14 +59,4 @@ export function logTypeToActionLabel(type: string): string {
     .split('_')
     .map(w => w.charAt(0) + w.slice(1).toLowerCase())
     .join(' ')
-}
-
-export function auditLogCsvDetailColumn(detail: string | null): string {
-  if (detail != null) return detail
-  if (!detail || isNavEpochOnlyDetail(detail)) return ''
-  return detail
-}
-
-export function auditLogFormattedTokenAmount(amountInWei: string | null): string | null {
-  return formatAmountFromWei(amountInWei)
 }

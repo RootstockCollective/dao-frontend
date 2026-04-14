@@ -1,5 +1,6 @@
 'use client'
 
+import moment from 'moment'
 import { ButtonHTMLAttributes, useState } from 'react'
 
 import type { BtcVaultAuditLogSortField } from '@/app/api/btc-vault/v1/schemas'
@@ -11,13 +12,7 @@ import { showToast } from '@/shared/notification'
 
 import { AUDIT_LOG_FETCH_LIMIT } from '../constants'
 import type { AuditLogEntry } from '../types'
-import {
-  auditLogCsvDetailColumn,
-  formatAmountFromWei,
-  formatAuditLogDate,
-  logTypeToActionLabel,
-} from '../utils'
-
+import { formatAmountFromWei, formatAuditLogDateForCsv } from '../utils'
 const MAX_EXPORT_ROWS = 50000
 
 interface AuditLogPagination {
@@ -43,7 +38,7 @@ function escapeCsvValue(value: string): string {
 }
 
 function generateCsv(rows: string[][]): string {
-  const headers = ['ID', 'Date', 'Action', 'Detail', 'Token Amount', 'Token Symbol', 'USD Amount', 'Role']
+  const headers = ['ID', 'Date', 'Action', 'Detail', 'Token Amount', 'Token Symbol', 'Role']
   const csvRows = [headers.map(escapeCsvValue), ...rows.map(r => r.map(escapeCsvValue))]
   return csvRows.map(r => r.join(',')).join('\n')
 }
@@ -117,11 +112,11 @@ async function fetchAllAuditLogEntries(
 
 function entryToCsvRow(entry: AuditLogEntry): string[] {
   return [
-    entry.id,
-    formatAuditLogDate(entry.blockTimestamp),
-    logTypeToActionLabel(entry.type),
-    auditLogCsvDetailColumn(entry.detail),
-    formatAmountFromWei(entry.amountInWei) ?? '',
+    String(entry.id),
+    formatAuditLogDateForCsv(entry.blockTimestamp),
+    entry.type,
+    entry.detail?.trim() ?? '',
+    formatAmountFromWei(entry.amountInWei, 18) ?? '',
     entry.isNative === false ? WRBTC : RBTC,
     entry.role ?? '',
   ]
@@ -171,12 +166,13 @@ export function AuditLogCsvButton({
 
       const csvRows = dataToExport.map(entry => entryToCsvRow(entry))
       const csvContent = generateCsv(csvRows)
+      const date = moment().format('YYYY-MM-DD')
 
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
       const link = document.createElement('a')
       const url = URL.createObjectURL(blob)
       link.setAttribute('href', url)
-      link.setAttribute('download', `audit-log-${new Date().toISOString().split('T')[0]}.csv`)
+      link.setAttribute('download', `audit-log-${date}.csv`)
       link.style.visibility = 'hidden'
       document.body.appendChild(link)
       link.click()

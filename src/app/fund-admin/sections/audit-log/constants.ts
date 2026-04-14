@@ -5,9 +5,6 @@ import type { AuditLogUserRole, ColumnId } from './types'
 /** Page size for audit log list + `TablePager` expandable step. */
 export const AUDIT_LOG_PAGE_SIZE = 20
 
-/** Subgraph `detail` boilerplate when `amount` is set — hide from Value/Reason when redundant. */
-export const AUDIT_LOG_NAV_EPOCH_DETAIL_RE = /^New epoch \d+$/i
-
 export const AUDIT_LOG_FETCH_LIMIT = 200
 
 export const DEFAULT_COLUMNS: Column<ColumnId>[] = [
