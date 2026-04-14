@@ -1,16 +1,19 @@
-import Big from 'big.js'
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 
+import { getStakingHistoryFromDB } from '@/app/api/staking/v1/addresses/[address]/history/action'
 import {
-  getStakingHistoryCountFromDB,
-  getStakingHistoryFromDB,
-} from '@/app/api/staking/v1/addresses/[address]/history/action'
+  resolveStakingHistoryCsvPlan,
+  stakingHistoryCsvSourceHeaders,
+} from '@/app/api/staking/v1/addresses/[address]/history/sources/resolve-staking-history-csv-plan'
 import { queryParam } from '@/app/api/utils/helpers'
 import { AddressSchema, SortDirectionEnum } from '@/app/api/utils/validators'
 import { getFiatAmount } from '@/app/shared/formatter'
+import Big from '@/lib/big'
 import { RIF, STRIF } from '@/lib/constants'
 import { logger } from '@/lib/logger'
+
+import type { StakingHistoryByPeriodAndAction } from '../types'
 
 const SortFieldEnum = z.enum(['period', 'amount', 'action'])
 const QuerySchema = z.object({
@@ -19,7 +22,6 @@ const QuerySchema = z.object({
   type: z.array(z.enum(['stake', 'unstake'])).optional(),
 })
 
-// Helper functions for CSV formatting
 const formatSymbolForCsv = (value: bigint | string, symbol: string): string => {
   if (!value || value === '0') {
     return '0'
@@ -52,7 +54,7 @@ const formatCurrencyForCsv = (amount: bigint | string, price: number): string =>
 const formatPeriod = (period: string): string => {
   const [year, month] = period.split('-')
   const date = new Date(Number(year), Number(month) - 1, 1)
-  return date.toLocaleString('en-US', { month: 'long', year: 'numeric' })
+  return date.toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' })
 }
 
 const formatDateForCsv = (timestamp: string | number): string => {
@@ -63,7 +65,8 @@ const formatDateForCsv = (timestamp: string | number): string => {
     day: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
-    hour12: false, // Match frontend format (24-hour format)
+    hour12: false,
+    timeZone: 'UTC',
   })
 }
 
@@ -74,21 +77,75 @@ const escapeCsvValue = (value: string): string => {
   return value
 }
 
-// Fetch RIF price using the same method as the UI
+/**
+ * Writes one CSV line per transaction under `groups` into the stream (period, raw period, date, action, amount, symbol, USD, tx hash).
+ *
+ * @param controller — Stream controller for the CSV `Response` body.
+ * @param encoder — UTF-8 encoder for row chunks.
+ * @param groups — Already filtered/sorted staking history groups.
+ * @param rifPrice — Spot price for fiat column via {@link getFiatAmount}.
+ *
+ * @example One encoded line (after `escapeCsvValue`; columns match `row` array order in code):
+ * ```text
+ * March 2025,2025-03,"15 Mar 2025, 14:30",STAKE,1.000000,stRIF,0.42,0xabc…
+ * ```
+ */
+function enqueueHistoryGroupsAsCsvRows(
+  controller: ReadableStreamDefaultController<Uint8Array>,
+  encoder: TextEncoder,
+  groups: StakingHistoryByPeriodAndAction[],
+  rifPrice: number,
+): void {
+  for (const item of groups) {
+    for (const transaction of item.transactions) {
+      const periodFormatted = formatPeriod(item.period)
+      const date = formatDateForCsv(String(transaction.timestamp))
+      const amount = formatSymbolForCsv(transaction.amount, STRIF)
+      const usdValue = formatCurrencyForCsv(transaction.amount, rifPrice)
+      const action = transaction.action
+
+      const row = [
+        periodFormatted,
+        item.period,
+        date,
+        action,
+        amount,
+        STRIF,
+        usdValue,
+        transaction.transactionHash,
+      ]
+
+      controller.enqueue(encoder.encode(row.map(escapeCsvValue).join(',') + '\n'))
+    }
+  }
+}
+
 async function getRifPrice(): Promise<number> {
   const { fetchPrices } = await import('@/app/user/Balances/actions')
   const prices = await fetchPrices()
   return prices[RIF]?.price ?? 0
 }
 
+/**
+ * GET CSV export for staking history. Uses DB batched reads when healthy; falls back to Blockscout (DAO-2058 Phase 2).
+ * Headers `X-Source` and `x-source-name` match the JSON history route.
+ *
+ * @example Query string (same sort/filter vocabulary as JSON history; no pagination in query — stream is full export):
+ * ```
+ * ?sort_field=period&sort_direction=desc&type=stake&type=unstake
+ * ```
+ *
+ * @example First streamed row (columns: human period, `YYYY-MM`, tx datetime, action, amount, symbol, USD, tx hash):
+ * ```csv
+ * March 2025,2025-03,"15 Mar 2025, 14:30",STAKE,1.000000,stRIF,0.42,0xabc…
+ * ```
+ */
 export async function GET(req: NextRequest, context: { params: Promise<{ address: string }> }) {
   try {
     const { address: addressParam } = await context.params
     const address = AddressSchema.parse(addressParam).toLowerCase()
     const searchParams = new URL(req.url).searchParams
     const qp = queryParam(searchParams)
-
-    // Handle multiple 'type' query params
     const typeParams = searchParams.getAll('type').filter(v => v !== '')
 
     const parsed = QuerySchema.parse({
@@ -97,16 +154,22 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
       type: typeParams.length > 0 ? typeParams : undefined,
     })
 
-    // Get RIF price for USD conversion
-    const rifPrice = await getRifPrice()
+    const sortParams = {
+      sort_field: parsed.sort_field,
+      sort_direction: parsed.sort_direction,
+      type: parsed.type,
+    }
 
-    // Create a readable stream for CSV
-    const stream = new ReadableStream({
+    const pageSize = 200
+    const rifPrice = await getRifPrice()
+    const plan = await resolveStakingHistoryCsvPlan(address, sortParams, pageSize)
+    const sourceHeaders = stakingHistoryCsvSourceHeaders(plan)
+
+    const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
         try {
           const encoder = new TextEncoder()
 
-          // Write CSV headers
           const headers = [
             'Period',
             'Period (YYYY-MM)',
@@ -119,19 +182,25 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
           ]
           controller.enqueue(encoder.encode(headers.map(escapeCsvValue).join(',') + '\n'))
 
-          // Fetch all data in batches from database
-          const pageSize = 200
-          let offset = 0
-          let hasMoreData = true
+          if (plan.kind === 'blockscout') {
+            enqueueHistoryGroupsAsCsvRows(controller, encoder, plan.groups, rifPrice)
+            controller.close()
+            return
+          }
+
+          enqueueHistoryGroupsAsCsvRows(controller, encoder, plan.firstBatch, rifPrice)
+
+          let offset = plan.firstBatch.length
+          let hasMoreData = offset < plan.totalCount
 
           while (hasMoreData) {
             const batch = await getStakingHistoryFromDB({
-              address,
-              limit: pageSize,
+              address: plan.address,
+              limit: plan.pageSize,
               offset,
-              sort_field: parsed.sort_field,
-              sort_direction: parsed.sort_direction,
-              type: parsed.type,
+              sort_field: plan.sortParams.sort_field,
+              sort_direction: plan.sortParams.sort_direction,
+              type: plan.sortParams.type,
             })
 
             if (batch.length === 0) {
@@ -139,38 +208,13 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
               break
             }
 
-            // Process each item and expand transactions
-            for (const item of batch) {
-              for (const transaction of item.transactions) {
-                const periodFormatted = formatPeriod(item.period)
-                const date = formatDateForCsv(String(transaction.timestamp))
-                const amount = formatSymbolForCsv(transaction.amount, STRIF)
-                const usdValue = formatCurrencyForCsv(transaction.amount, rifPrice)
-                const action = transaction.action
+            enqueueHistoryGroupsAsCsvRows(controller, encoder, batch, rifPrice)
 
-                const row = [
-                  periodFormatted,
-                  item.period,
-                  date,
-                  action,
-                  amount,
-                  STRIF,
-                  usdValue,
-                  transaction.transactionHash,
-                ]
-
-                controller.enqueue(encoder.encode(row.map(escapeCsvValue).join(',') + '\n'))
-              }
-            }
-
-            // Check if we've fetched all data
-            if (batch.length < pageSize) {
+            if (batch.length < plan.pageSize) {
               hasMoreData = false
             } else {
-              offset += pageSize
-              // Double-check by getting count
-              const totalCount = await getStakingHistoryCountFromDB(address, parsed.type)
-              if (offset >= totalCount) {
+              offset += plan.pageSize
+              if (offset >= plan.totalCount) {
                 hasMoreData = false
               }
             }
@@ -184,7 +228,6 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
           )
           const errorMessage = streamError instanceof Error ? streamError.message : String(streamError)
           const encoder = new TextEncoder()
-          // Try to send error as CSV row (though this might not work if stream already started)
           try {
             controller.enqueue(encoder.encode(`\nERROR: ${errorMessage}`))
           } catch {
@@ -195,12 +238,12 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
       },
     })
 
-    // Return streaming response
     return new Response(stream, {
       headers: {
         'Content-Type': 'text/csv; charset=utf-8',
         'Content-Disposition': `attachment; filename="staking-history-${address.slice(0, 8)}-${new Date().toISOString().split('T')[0]}.csv"`,
         'Cache-Control': 'no-cache',
+        ...sourceHeaders,
       },
     })
   } catch (err) {
@@ -212,7 +255,6 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
       'Error in staking history CSV route',
     )
 
-    // Return detailed error information for debugging
     const errorMessage = err instanceof Error ? err.message : String(err)
     const errorStack = err instanceof Error ? err.stack : undefined
     const errorName = err instanceof Error ? err.name : 'UnknownError'
