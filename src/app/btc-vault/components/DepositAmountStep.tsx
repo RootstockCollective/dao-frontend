@@ -194,8 +194,12 @@ export const DepositAmountStep = ({
       {/* --- Footer: Disclaimer + Continue --- */}
       <div className="mt-auto pt-4">
         <Divider />
-        <div className="flex justify-between items-center gap-4 pt-4">
-          <Paragraph variant="body-s" className="text-text-60 text-xs max-w-[440px]" data-testid="Disclaimer">
+        <div className="flex flex-col gap-4 pt-4 md:flex-row md:justify-between md:items-center">
+          <Paragraph
+            variant="body-s"
+            className="text-text-60 text-xs md:max-w-[440px]"
+            data-testid="Disclaimer"
+          >
             {BTC_VAULT_DEPOSIT_DISCLAIMER}
           </Paragraph>
           <Button variant="primary" onClick={onNext} disabled={!isValid} data-testid="ContinueButton">
