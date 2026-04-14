@@ -16,6 +16,7 @@ export function useGetAuditLog({
   visibleItemCount,
   sortField,
   sortDirection,
+  isEnabled = true,
 }: UseGetAuditLogParams): UseGetAuditLogResult {
   const pageCount = Math.max(1, Math.ceil(visibleItemCount / AUDIT_LOG_FETCH_LIMIT))
   const sortKey = sortField && sortDirection ? `${sortField}:${sortDirection}` : 'natural'
@@ -26,6 +27,7 @@ export function useGetAuditLog({
       const limit = AUDIT_LOG_FETCH_LIMIT
       return {
         queryKey: ['audit-log', { page, limit, sortKey }] as const,
+        enabled: isEnabled,
         queryFn: async ({ signal }): Promise<AuditLogApiResponse> => {
           const url = buildAuditLogUrl({ page, limit, sortField, sortDirection })
           const res = await fetch(url, { cache: 'no-store', signal })

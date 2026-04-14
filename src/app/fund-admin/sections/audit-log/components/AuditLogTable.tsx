@@ -31,6 +31,7 @@ export const AuditLogTable = () => {
   const [pageEnd, setPageEnd] = useState(AUDIT_LOG_PAGE_SIZE)
   const [pagerKey, setPagerKey] = useState(0)
   const skipNextSortPagerReset = useRef(true)
+  const [hasResolvedInitialSort, setHasResolvedInitialSort] = useState(false)
 
   const [isFilterSidebarOpen, setIsFilterSidebarOpen] = useState(false)
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([])
@@ -51,6 +52,7 @@ export const AuditLogTable = () => {
     visibleItemCount: pageEnd,
     sortField,
     sortDirection: sort.direction,
+    isEnabled: hasResolvedInitialSort,
   })
 
   const visibleRows = useMemo(() => convertAuditEntriesToRows(entries), [entries])
@@ -58,8 +60,14 @@ export const AuditLogTable = () => {
 
   useEffect(() => {
     dispatch({ type: 'SET_COLUMNS', payload: DEFAULT_COLUMNS })
-    dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: 'date', direction: 'desc' } })
+    dispatch({ type: 'SET_DEFAULT_SORT', payload: { columnId: 'date', direction: 'desc' } })
   }, [dispatch])
+
+  useEffect(() => {
+    if (!hasResolvedInitialSort && isSortableColumnId(sort.columnId) && sort.direction !== null) {
+      setHasResolvedInitialSort(true)
+    }
+  }, [hasResolvedInitialSort, sort.columnId, sort.direction])
 
   useEffect(() => {
     dispatch({ type: 'SET_ROWS', payload: visibleRows })

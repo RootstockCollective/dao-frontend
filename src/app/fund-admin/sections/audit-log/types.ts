@@ -55,6 +55,8 @@ export interface UseGetAuditLogParams {
   visibleItemCount: number
   sortField: SortableColumnId | null
   sortDirection: 'asc' | 'desc' | null
+  /** Fetch guard for initial table setup to avoid transient requests. */
+  isEnabled?: boolean
 }
 
 export interface UseGetAuditLogResult {
