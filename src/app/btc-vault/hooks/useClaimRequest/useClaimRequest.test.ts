@@ -76,7 +76,7 @@ describe('useClaimRequest', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockUseAccount.mockReturnValue({ address: ADDRESS })
-    mockUseReadContract.mockReturnValue({ data: undefined, isLoading: false })
+    mockUseReadContract.mockReturnValue({ data: undefined, isLoading: false, isError: false })
   })
 
   it('does not enable contract read for non-claimable requests', () => {
@@ -143,9 +143,16 @@ describe('useClaimRequest', () => {
   })
 
   it('claim() rejects when no claimable amount', async () => {
-    mockUseReadContract.mockReturnValue({ data: undefined, isLoading: false })
+    mockUseReadContract.mockReturnValue({ data: undefined, isLoading: false, isError: false })
 
     const { result } = renderHook(() => useClaimRequest(CLAIMABLE_DEPOSIT))
     await expect(result.current.claim()).rejects.toThrow('No claimable amount available')
+  })
+
+  it('canClaim is false and isReadingError when contract read fails', () => {
+    mockUseReadContract.mockReturnValue({ data: undefined, isLoading: false, isError: true })
+    const { result } = renderHook(() => useClaimRequest(CLAIMABLE_DEPOSIT))
+    expect(result.current.isReadingError).toBe(true)
+    expect(result.current.canClaim).toBe(false)
   })
 })

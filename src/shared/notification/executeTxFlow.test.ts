@@ -111,6 +111,26 @@ describe('executeTxFlow', () => {
       })
       expect(result).toBe(mockTxHash)
     })
+
+    it('should await async onSuccess before the flow promise resolves', async () => {
+      mockOnRequestTx.mockResolvedValue(mockTxHash)
+      mockWaitForTransactionReceipt.mockResolvedValue({} as any)
+      const action = 'staking' as const
+      const order: string[] = []
+
+      await executeTxFlow({
+        onRequestTx: mockOnRequestTx,
+        action,
+        onSuccess: async () => {
+          order.push('onSuccess-start')
+          await Promise.resolve()
+          order.push('onSuccess-end')
+        },
+      })
+      order.push('flow-resolved')
+
+      expect(order).toEqual(['onSuccess-start', 'onSuccess-end', 'flow-resolved'])
+    })
   })
 
   describe('Error Paths', () => {
