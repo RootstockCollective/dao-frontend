@@ -85,7 +85,7 @@ vi.mock('./components/capital-allocation/CapitalAllocationSection', () => ({
   CapitalAllocationSection: () => null,
 }))
 
-vi.mock('./components/BtcVaultDashboard', () => ({
+vi.mock('./components/dashboard/BtcVaultDashboard', () => ({
   BtcVaultDashboard: () => (
     <>
       <section data-testid="btc-vault-dashboard" />
@@ -94,7 +94,7 @@ vi.mock('./components/BtcVaultDashboard', () => ({
   ),
 }))
 
-vi.mock('./components/BtcVaultMetrics', () => ({
+vi.mock('./components/dashboard/BtcVaultMetrics', () => ({
   BtcVaultMetrics: () => null,
 }))
 

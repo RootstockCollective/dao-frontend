@@ -11,7 +11,7 @@ const mockUseSubmitDeposit = vi.fn()
 const mockUseSubmitWithdrawal = vi.fn()
 const mockUseBtcVaultSharesAllowance = vi.fn()
 
-vi.mock('../hooks/useBtcVaultSharesAllowance', () => ({
+vi.mock('../../hooks/useBtcVaultSharesAllowance', () => ({
   useBtcVaultSharesAllowance: () => mockUseBtcVaultSharesAllowance(),
 }))
 
@@ -23,15 +23,15 @@ vi.mock('@/shared/notification', () => ({
   executeTxFlow: vi.fn(),
 }))
 
-vi.mock('../hooks/useActionEligibility', () => ({
+vi.mock('../../hooks/useActionEligibility', () => ({
   useActionEligibility: (...args: unknown[]) => mockUseActionEligibility(...args),
 }))
 
-vi.mock('../hooks/useSubmitDeposit', () => ({
+vi.mock('../../hooks/useSubmitDeposit', () => ({
   useSubmitDeposit: () => mockUseSubmitDeposit(),
 }))
 
-vi.mock('../hooks/useSubmitWithdrawal', () => ({
+vi.mock('../../hooks/useSubmitWithdrawal', () => ({
   useSubmitWithdrawal: () => mockUseSubmitWithdrawal(),
 }))
 
