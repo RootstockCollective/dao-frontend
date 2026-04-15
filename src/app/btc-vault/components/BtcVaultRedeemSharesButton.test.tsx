@@ -133,6 +133,21 @@ describe('BtcVaultRedeemSharesButton', () => {
     expect(container.firstChild).toBeNull()
   })
 
+  it('shows Redeeming… while executeTxFlow is pending even if wagmi flags are false', async () => {
+    mockExecuteTxFlow.mockImplementation(() => new Promise(() => {}))
+    render(<BtcVaultRedeemSharesButton vaultRequest={MOCK_CLAIMABLE_WITHDRAWAL} />, {
+      wrapper: TestWrapper,
+    })
+    const btn = screen.getByTestId('btc-vault-redeem-shares-button')
+    fireEvent.click(btn)
+    await waitFor(() => {
+      expect(screen.getByTestId('btc-vault-redeem-shares-button')).toHaveTextContent('Redeeming...')
+    })
+    const redeemingBtn = screen.getByTestId('btc-vault-redeem-shares-button') as HTMLButtonElement
+    expect(redeemingBtn.disabled).toBe(false)
+    expect(redeemingBtn).toHaveAttribute('aria-disabled', 'true')
+  })
+
   it('shows Redeeming… with tooltip path when finalize tx in progress', () => {
     mockUseClaimRequest.mockReturnValue({
       claim: mockClaim,
@@ -145,9 +160,10 @@ describe('BtcVaultRedeemSharesButton', () => {
     render(<BtcVaultRedeemSharesButton vaultRequest={MOCK_CLAIMABLE_WITHDRAWAL} />, {
       wrapper: TestWrapper,
     })
-    const btn = screen.getByTestId('btc-vault-redeem-shares-button')
+    const btn = screen.getByTestId('btc-vault-redeem-shares-button') as HTMLButtonElement
     expect(btn).toHaveTextContent('Redeeming...')
-    expect(btn).not.toBeDisabled()
+    expect(btn.disabled).toBe(false)
+    expect(btn).toHaveAttribute('aria-disabled', 'true')
     fireEvent.click(btn)
     expect(mockExecuteTxFlow).not.toHaveBeenCalled()
   })
@@ -163,6 +179,7 @@ describe('BtcVaultRedeemSharesButton', () => {
         vaultRequest={MOCK_CLAIMABLE_WITHDRAWAL}
         onAfterRedeemRefetch={mockOnAfterRedeemRefetch}
       />,
+      { wrapper: TestWrapper },
     )
     const btn = screen.getByTestId('btc-vault-redeem-shares-button')
     fireEvent.click(btn)
@@ -178,6 +195,7 @@ describe('BtcVaultRedeemSharesButton', () => {
         vaultRequest={MOCK_CLAIMABLE_WITHDRAWAL}
         onAfterRedeemRefetch={mockOnAfterRedeemRefetch}
       />,
+      { wrapper: TestWrapper },
     )
 
     expect(screen.getByTestId('btc-vault-redeem-shares-button')).toHaveTextContent('Redeem Shares')
@@ -210,6 +228,7 @@ describe('BtcVaultRedeemSharesButton', () => {
         vaultRequest={MOCK_CLAIMABLE_WITHDRAWAL}
         onAfterRedeemRefetch={mockOnAfterRedeemRefetch}
       />,
+      { wrapper: TestWrapper },
     )
 
     await act(async () => {
