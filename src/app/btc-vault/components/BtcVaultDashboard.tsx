@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { type ReactNode } from 'react'
+import { type ReactNode, useCallback } from 'react'
 import { useAccount } from 'wagmi'
 
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
@@ -51,8 +51,18 @@ export const BtcVaultDashboard = ({
 }: BtcVaultDashboardProps) => {
   const { address, isConnected } = useAccount()
   const { data, isLoading, isError } = useUserPosition(address)
-  const { data: actionEligibility } = useActionEligibility(address)
+  const { data: actionEligibility, refetch: refetchActionEligibility } = useActionEligibility(address)
   const withdrawFlow = useBtcVaultWithdrawFlow({ onRequestSubmitted })
+
+  const handleAfterClaimRefetch = useCallback(() => {
+    onAfterClaimRefetch?.()
+    void refetchActionEligibility()
+  }, [onAfterClaimRefetch, refetchActionEligibility])
+
+  const handleAfterRedeemRefetch = useCallback(() => {
+    onAfterRedeemRefetch?.()
+    void refetchActionEligibility()
+  }, [onAfterRedeemRefetch, refetchActionEligibility])
 
   if (!address || !isConnected) return null
 
@@ -73,7 +83,7 @@ export const BtcVaultDashboard = ({
             />
             <BtcVaultRedeemSharesButton
               vaultRequest={claimableWithdrawRequest}
-              onAfterRedeemRefetch={onAfterRedeemRefetch}
+              onAfterRedeemRefetch={handleAfterRedeemRefetch}
             />
           </div>
           <div className={`flex flex-col gap-4 ${METRIC_COLUMN}`}>
@@ -87,7 +97,7 @@ export const BtcVaultDashboard = ({
             />
             <BtcVaultClaimSharesButton
               vaultRequest={claimableDepositRequest}
-              onAfterClaimRefetch={onAfterClaimRefetch}
+              onAfterClaimRefetch={handleAfterClaimRefetch}
             />
           </div>
           <BalanceInfo
