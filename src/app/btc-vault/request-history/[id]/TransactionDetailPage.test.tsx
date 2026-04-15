@@ -287,7 +287,7 @@ describe('TransactionDetailPage', () => {
     })
   })
 
-  it('shows non-disabled Claiming… on claim button while only isTxPending', () => {
+  it('shows inert Claiming… (primary look) on claim button while only isTxPending', () => {
     mockUseRequestById.mockReturnValue({ data: { request: MOCK_WITHDRAWAL_CLAIMABLE, claimableInfo: null }, isLoading: false })
     mockUseClaimRequest.mockReturnValue({
       claim: mockClaim,
@@ -299,9 +299,10 @@ describe('TransactionDetailPage', () => {
       isTxPending: true,
     })
     renderWithTooltip(<TransactionDetailPage id="req-withdrawal-claimable" />)
-    const btn = screen.getByTestId('claim-button')
+    const btn = screen.getByTestId('claim-button') as HTMLButtonElement
     expect(btn).toHaveTextContent('Claiming...')
-    expect(btn).not.toBeDisabled()
+    expect(btn.disabled).toBe(false)
+    expect(btn).toHaveAttribute('aria-disabled', 'true')
     fireEvent.click(btn)
     expect(mockExecuteTxFlow).not.toHaveBeenCalled()
   })
