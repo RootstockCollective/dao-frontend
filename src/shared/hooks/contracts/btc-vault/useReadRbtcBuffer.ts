@@ -4,7 +4,6 @@ import { UseReadContractParameters } from 'wagmi'
 
 import { BufferAbi } from '@/lib/abis/btc-vault'
 import { getAbi } from '@/lib/abis/btc-vault'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { buffer } from '@/lib/contracts'
 
 import { UseReadContractConfig, ViewPureFunctionName } from '../types'
@@ -24,7 +23,6 @@ export const useReadRbtcBuffer = <TFunctionName extends BufferFunctionName>(
     ...(config as any),
     query: {
       retry: true,
-      refetchInterval: AVERAGE_BLOCKTIME,
       ...query,
     },
   })

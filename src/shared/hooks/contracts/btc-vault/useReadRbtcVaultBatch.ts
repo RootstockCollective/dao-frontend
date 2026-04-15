@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import { UseReadContractReturnType, useReadContracts } from 'wagmi'
 
 import { getAbi, type RBTCAsyncVaultAbi } from '@/lib/abis/btc-vault'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { rbtcVault } from '@/lib/contracts'
 
 import { UseReadContractConfig, ViewPureFunctionName } from '../types'
@@ -67,7 +66,6 @@ export function useReadRbtcVaultBatch<T extends readonly AnyRbtcVaultConfig[]>(
     contracts,
     query: {
       retry: true,
-      refetchInterval: AVERAGE_BLOCKTIME,
       ...query,
     },
   })

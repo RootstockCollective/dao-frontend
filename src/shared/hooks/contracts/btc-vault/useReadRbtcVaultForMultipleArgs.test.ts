@@ -2,7 +2,6 @@ import { renderHook } from '@testing-library/react'
 import { afterEach, describe, expect, it, Mock, vi } from 'vitest'
 import { useReadContracts } from 'wagmi'
 
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { rbtcVault } from '@/lib/contracts'
 
 import { useReadRbtcVaultForMultipleArgs } from './useReadRbtcVaultForMultipleArgs'
@@ -70,10 +69,9 @@ describe('useReadRbtcVaultForMultipleArgs', () => {
             functionName: 'epochSnapshot',
           },
         ],
-        query: {
+        query: expect.objectContaining({
           retry: true,
-          refetchInterval: AVERAGE_BLOCKTIME,
-        },
+        }),
       }),
     )
   })
