@@ -54,9 +54,9 @@ export function useActionEligibility(address: string | undefined) {
   // Wagmi returns ContractFunctionResult[]; we assert the known 5-slot vault shape for fail-closed handling.
   const vaultData = rawVaultData as VaultMulticallData | undefined
 
-  const refetch = useCallback(() => {
-    void refetchVault()
-    void refetchWhitelist()
+  const refetch = useCallback(async () => {
+    await refetchVault()
+    await refetchWhitelist()
   }, [refetchVault, refetchWhitelist])
 
   const whitelistForMapper = whitelistLoading ? null : isWhitelisted

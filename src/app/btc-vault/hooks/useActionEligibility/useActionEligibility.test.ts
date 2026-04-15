@@ -134,9 +134,9 @@ describe('useActionEligibility', () => {
       expect(contracts).toHaveLength(5)
     })
 
-    it('refetch calls both multicall and whitelist refetches', () => {
+    it('refetch calls both multicall and whitelist refetches', async () => {
       const { result } = renderHook(() => useActionEligibility(USER_ADDRESS))
-      result.current.refetch()
+      await result.current.refetch()
 
       expect(vaultRefetch).toHaveBeenCalledOnce()
       expect(whitelistRefetch).toHaveBeenCalledOnce()
