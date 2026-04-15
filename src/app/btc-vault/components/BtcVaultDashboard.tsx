@@ -35,11 +35,11 @@ function metricAmount(isLoading: boolean, isError: boolean, value: string | unde
  * Returns null when wallet is disconnected so the page section renders empty.
  */
 interface BtcVaultDashboardProps {
-  onRequestSubmitted?: () => void
+  onRequestSubmitted?: () => void | Promise<void>
   claimableDepositRequest?: VaultRequest | null
   claimableWithdrawRequest?: VaultRequest | null
-  onAfterClaimRefetch?: () => void
-  onAfterRedeemRefetch?: () => void
+  onAfterClaimRefetch?: () => void | Promise<void>
+  onAfterRedeemRefetch?: () => void | Promise<void>
 }
 
 export const BtcVaultDashboard = ({
@@ -54,14 +54,14 @@ export const BtcVaultDashboard = ({
   const { data: actionEligibility, refetch: refetchActionEligibility } = useActionEligibility(address)
   const withdrawFlow = useBtcVaultWithdrawFlow({ onRequestSubmitted })
 
-  const handleAfterClaimRefetch = useCallback(() => {
-    onAfterClaimRefetch?.()
-    void refetchActionEligibility()
+  const handleAfterClaimRefetch = useCallback(async () => {
+    await onAfterClaimRefetch?.()
+    await refetchActionEligibility()
   }, [onAfterClaimRefetch, refetchActionEligibility])
 
-  const handleAfterRedeemRefetch = useCallback(() => {
-    onAfterRedeemRefetch?.()
-    void refetchActionEligibility()
+  const handleAfterRedeemRefetch = useCallback(async () => {
+    await onAfterRedeemRefetch?.()
+    await refetchActionEligibility()
   }, [onAfterRedeemRefetch, refetchActionEligibility])
 
   if (!address || !isConnected) return null
