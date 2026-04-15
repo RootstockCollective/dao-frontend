@@ -3,6 +3,7 @@ import { Countdown } from './Countdown'
 import { TimeSource } from './types'
 import Big from '@/lib/big'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { BlockTimeProvider } from '@/shared/context/BlockTimeContext'
 
 const queryClient = new QueryClient()
 
@@ -16,7 +17,9 @@ const meta: Meta<typeof Countdown> = {
   decorators: [
     Story => (
       <QueryClientProvider client={queryClient}>
-        <Story />
+        <BlockTimeProvider>
+          <Story />
+        </BlockTimeProvider>
       </QueryClientProvider>
     ),
   ],

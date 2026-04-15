@@ -4,7 +4,7 @@ import { useAccount, useReadContract } from 'wagmi'
 
 import { useGetDelegates } from '@/app/user/Delegation/hooks/useGetDelegates'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import { AVERAGE_BLOCKTIME, STRIF_ADDRESS } from '@/lib/constants'
+import { STRIF_ADDRESS } from '@/lib/constants'
 import { getEnsDomainName } from '@/lib/rns'
 
 /**
@@ -52,9 +52,6 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
       address: STRIF_ADDRESS,
       functionName: 'getVotes',
       args: [ownAddress],
-      query: {
-        refetchInterval: AVERAGE_BLOCKTIME,
-      },
     },
   )
 
@@ -64,9 +61,6 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
       address: STRIF_ADDRESS,
       functionName: 'getVotes',
       args: [delegateeAddress],
-      query: {
-        refetchInterval: AVERAGE_BLOCKTIME,
-      },
     },
   )
 
@@ -80,9 +74,6 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
       address: STRIF_ADDRESS,
       functionName: 'balanceOf',
       args: [ownAddress],
-      query: {
-        refetchInterval: AVERAGE_BLOCKTIME,
-      },
     },
   )
 

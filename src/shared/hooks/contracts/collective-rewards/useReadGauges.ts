@@ -3,7 +3,6 @@ import { Abi } from 'viem'
 import { UseReadContractParameters, UseReadContractReturnType, useReadContracts } from 'wagmi'
 
 import { type GaugeAbi, getAbi } from '@/lib/abis/tok'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 import { UseReadContractsConfig, ViewPureFunctionName } from '../types'
 
@@ -34,7 +33,6 @@ export const useReadGauges = <TFunctionName extends GaugeFunctionName>(
     })),
     query: {
       retry: true,
-      refetchInterval: AVERAGE_BLOCKTIME,
       ...query,
     },
   })

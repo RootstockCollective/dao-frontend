@@ -89,7 +89,6 @@ export const DEPOSITOR_ROLE = '0x013e1f410e70025de956b8838ba99c3a9a9f7eb3e6d6780
 // keccak256('WHITELISTED_USER_ROLE') — mirrors Roles.sol (internal constant, no on-chain getter)
 export const WHITELISTED_USER_ROLE = '0x013e1f410e70025de956b8838ba99c3a9a9f7eb3e6d678062363333c8abd7ea0'
 
-export const AVERAGE_BLOCKTIME = 60_000
 export const CACHE_REVALIDATE_SECONDS = 20
 
 export const RIF = 'RIF'
@@ -111,7 +110,6 @@ export const GRANT_TOKEN_LIMITS = {
 export const RNS_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_RNS_REGISTRY_ADDRESS as Address
 
 export const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL
-export const DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK = 25
 
 export const GOOGLE_TAG_ID = 'GTM-PTL6VZMT'
 

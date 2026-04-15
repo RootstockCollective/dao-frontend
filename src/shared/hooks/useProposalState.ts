@@ -23,7 +23,7 @@ export const useProposalState = (proposalId: string, shouldRefetch = true) => {
     functionName: 'state',
     args: [BigInt(proposalId)],
     query: {
-      ...(shouldRefetch && { refetchInterval: 5000 }),
+      refetchInterval: shouldRefetch ? 5000 : false,
     },
   })
 
