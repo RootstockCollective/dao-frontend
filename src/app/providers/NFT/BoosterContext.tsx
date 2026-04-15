@@ -1,6 +1,5 @@
 'use client'
 import { useQuery } from '@tanstack/react-query'
-import axios from 'axios'
 import { createContext, ReactNode, useCallback, useContext, useMemo } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
@@ -106,8 +105,6 @@ export const BoosterProvider = ({ children }: BoosterContextProviderProps) => {
 }
 
 export const useNFTBoosterContext = () => useContext(BoosterContext)
-
-export const axiosInstance = axios.create()
 
 export const useFetchBoostData = () => {
   const now = Date.now()
