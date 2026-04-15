@@ -76,6 +76,10 @@ COPY --from=builder /app/.env.local ./.env.local
 # Copy production-only node_modules from prod-deps stage (built in parallel)
 COPY --from=prod-deps /app/node_modules ./node_modules
 
+# Copy the generated Prisma Client (created by postinstall in the builder stage).
+# prod-deps ran with --ignore-scripts, so .prisma/client is missing from its node_modules.
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+
 # Copy Prisma schema and migrations
 COPY --from=builder /app/prisma ./prisma
 
