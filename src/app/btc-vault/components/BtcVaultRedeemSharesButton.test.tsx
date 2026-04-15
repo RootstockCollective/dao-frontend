@@ -189,7 +189,7 @@ describe('BtcVaultRedeemSharesButton', () => {
     await waitFor(() => expect(mockExecuteTxFlow).toHaveBeenCalledTimes(1))
   })
 
-  it('shows Redeem Shares and calls executeTxFlow with btcVaultClaim on click', async () => {
+  it('shows Claim rBTC and calls executeTxFlow with btcVaultClaim on click', async () => {
     render(
       <BtcVaultRedeemSharesButton
         vaultRequest={MOCK_CLAIMABLE_WITHDRAWAL}
@@ -198,7 +198,7 @@ describe('BtcVaultRedeemSharesButton', () => {
       { wrapper: TestWrapper },
     )
 
-    expect(screen.getByTestId('btc-vault-redeem-shares-button')).toHaveTextContent('Redeem Shares')
+    expect(screen.getByTestId('btc-vault-redeem-shares-button')).toHaveTextContent('Claim rBTC')
     fireEvent.click(screen.getByTestId('btc-vault-redeem-shares-button'))
 
     await waitFor(() => {

@@ -47,7 +47,7 @@ export function BtcVaultRedeemSharesButton({
       disabled={false}
       onClick={handleFinalize}
     >
-      Redeem Shares
+      Claim rBTC
     </Button>
   )
 }
