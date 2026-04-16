@@ -100,6 +100,7 @@ The value must correspond to one of the `.env.` file endings.
 > [!NOTE]
 > ‼️ **<span style="color:red;">Warning: DO NOT USE IN PRODUCTION!</span>**
 >
+>
 > **Fork Environment**: Use `PROFILE=fork` to test swap functionality on a local fork of Rootstock Mainnet without spending real funds. See [Fork Setup Guide](./docs/FORK_SETUP.md) for setup instructions.
 >
 > **Envio Indexer**: Envio is the primary data source for proposals. See [Envio Integration](./docs/ENVIO_INTEGRATION.md) for architecture details and troubleshooting.
@@ -153,29 +154,29 @@ Sentry is integrated for error tracking, performance monitoring, and optional se
 
 Sentry parameters used in the project:
 
-| Parameter                  | Value                                                     | Scope                | Description                                                          |
-| -------------------------- | --------------------------------------------------------- | -------------------- | -------------------------------------------------------------------- |
-| `dsn`                      | `NEXT_PUBLIC_SENTRY_DSN`                                  | Client, Server, Edge | Data Source Name for receiving events                                |
-| `tracesSampleRate`         | `1`                                                       | Client, Server, Edge | 100% of transactions sampled                                         |
-| `enableLogs`               | `true`                                                    | Client, Server, Edge | Enable Sentry logs                                                   |
-| `environment`              | `NEXT_PUBLIC_PROFILE`                                     | Client, Server, Edge | Environment label (matches active profile)                           |
-| `replaysSessionSampleRate` | `0.1` or `0`                                              | Client               | `0.1` when `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY=true`, else `0` |
-| `replaysOnErrorSampleRate` | `1.0` or `0`                                              | Client               | `1.0` when replay flag is on, else `0`                               |
-| `integrations`             | `browserTracingIntegration`, optional `replayIntegration` | Client               | Replay when `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY=true`          |
-| `tunnelRoute`              | `'/monitoring'`                                           | Build                | Next.js rewrite to bypass ad-blockers                                |
-| `widenClientFileUpload`    | `true`                                                    | Build                | Upload more source maps for stack traces                             |
-| `org`, `project`           | `SENTRY_ORG`, `SENTRY_PROJECT`                            | Build                | Organization and project for source map uploads                      |
+| Parameter | Value | Scope | Description |
+| --------- | ----- | ----- | ----------- |
+| `dsn` | `NEXT_PUBLIC_SENTRY_DSN` | Client, Server, Edge | Data Source Name for receiving events |
+| `tracesSampleRate` | `1` | Client, Server, Edge | 100% of transactions sampled |
+| `enableLogs` | `true` | Client, Server, Edge | Enable Sentry logs |
+| `environment` | `NEXT_PUBLIC_PROFILE` | Client, Server, Edge | Environment label (matches active profile) |
+| `replaysSessionSampleRate` | `0.1` or `0` | Client | `0.1` when `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY=true`, else `0` |
+| `replaysOnErrorSampleRate` | `1.0` or `0` | Client | `1.0` when replay flag is on, else `0` |
+| `integrations` | `browserTracingIntegration`, optional `replayIntegration` | Client | Replay when `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY=true` |
+| `tunnelRoute` | `'/monitoring'` | Build | Next.js rewrite to bypass ad-blockers |
+| `widenClientFileUpload` | `true` | Build | Upload more source maps for stack traces |
+| `org`, `project` | `SENTRY_ORG`, `SENTRY_PROJECT` | Build | Organization and project for source map uploads |
 
 ### Environment Variables
 
-| Variable                                           | Required           | Description                                                                                               |
-| -------------------------------------------------- | ------------------ | --------------------------------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_ERROR_TRACKING` | Yes                | Feature flag. Set to `true` to enable error tracking                                                      |
-| `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY`         | No                 | Feature flag. Set to `true` to enable session replay (default: `false`)                                   |
-| `NEXT_PUBLIC_SENTRY_DSN`                           | Yes (when enabled) | Sentry Data Source Name for receiving events                                                              |
-| `SENTRY_ORG`                                       | Yes (for builds)   | Sentry organization slug (e.g. `rootstocklabs-limited`)                                                   |
-| `SENTRY_PROJECT`                                   | Yes (for builds)   | Sentry project name (e.g. `dao-frontend`)                                                                 |
-| `SENTRY_AUTH_TOKEN`                                | No (optional)      | Auth token for uploading source maps. Without it, stack traces stay minified/unreadable. **Keep secret.** |
+| Variable | Required | Description |
+| -------- | -------- | ----------- |
+| `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_ERROR_TRACKING` | Yes | Feature flag. Set to `true` to enable error tracking |
+| `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY` | No | Feature flag. Set to `true` to enable session replay (default: `false`) |
+| `NEXT_PUBLIC_SENTRY_DSN` | Yes (when enabled) | Sentry Data Source Name for receiving events |
+| `SENTRY_ORG` | Yes (for builds) | Sentry organization slug (e.g. `rootstocklabs-limited`) |
+| `SENTRY_PROJECT` | Yes (for builds) | Sentry project name (e.g. `dao-frontend`) |
+| `SENTRY_AUTH_TOKEN` | No (optional) | Auth token for uploading source maps. Without it, stack traces stay minified/unreadable. **Keep secret.** |
 
 ### How to Enable When Ready
 
