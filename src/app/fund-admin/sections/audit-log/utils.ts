@@ -7,6 +7,7 @@ import Big from '@/lib/big'
 import { RBTC } from '@/lib/constants'
 import { getBtcVaultAuditLogEndpoint } from '@/lib/endpoints'
 import { formatCurrencyWithLabel, formatNumberWithCommas } from '@/lib/utils'
+import type { Row } from '@/shared/context'
 
 import {
   AUDIT_LOG_ROLE_FILTERS,
@@ -15,31 +16,31 @@ import {
   LOG_TYPE_LABELS,
 } from './constants'
 import type {
+  AuditLogApiEntry,
   AuditLogApiFilters,
-  AuditLogEntry,
+  AuditLogCellDataMap,
   AuditLogHistoryPageParams,
   AuditLogShowFilter,
-  AuditLogTableModel,
   AuditLogUserRole,
+  ColumnId,
 } from './types'
 
 const VALID_TYPE_FILTERS = new Set<string>(AUDIT_LOG_TYPE_FILTERS.map(({ value }) => value))
 const VALID_ROLE_FILTERS = new Set<AuditLogUserRole>(AUDIT_LOG_ROLE_FILTERS.map(({ value }) => value))
 const VALID_SHOW_FILTERS = new Set<AuditLogShowFilter>(AUDIT_LOG_SHOW_FILTERS.map(({ value }) => value))
 
-function buildAuditValueCell(amountInWei: AuditLogEntry['amountInWei'], rbtcUsdPrice: number) {
+function buildAuditValueCell(amountInWei: string | null, rbtcUsdPrice: number): AuditLogCellDataMap['value'] {
   if (amountInWei == null) return null
-  const amountAsString = amountInWei.toString()
   return {
-    formattedAmount: formatSymbol(amountAsString, RBTC),
-    usdAmount: formatAuditAmountUsd(amountAsString, rbtcUsdPrice),
+    formattedAmount: formatSymbol(amountInWei, RBTC),
+    usdAmount: formatAuditAmountUsd(amountInWei, rbtcUsdPrice),
   }
 }
 
 export function convertAuditEntriesToRows(
-  entries: AuditLogEntry[],
+  entries: AuditLogApiEntry[],
   rbtcUsdPrice: number,
-): AuditLogTableModel['Row'][] {
+): Row<ColumnId, string, AuditLogCellDataMap>[] {
   return entries.map(entry => ({
     id: entry.id,
     data: {
@@ -73,11 +74,12 @@ export function formatAuditAmountUsd(amountWei: string | null, rbtcUsdPrice: num
   return formatCurrencyWithLabel(getFiatAmount(amountWei, rbtcUsdPrice))
 }
 
-/** Date format: YYYY-MM-DD */
+/** Date format: LLL d, yyyy (e.g. "Jan 1, 2025") */
 export function formatAuditLogDate(blockTimestamp: string | bigint): string {
   return DateTime.fromSeconds(Number(blockTimestamp), { zone: 'utc' }).setLocale('en').toFormat('LLL d, yyyy')
 }
 
+/** Date format: YYYY-MM-DD */
 export function formatAuditLogDateForCsv(blockTimestamp: string | bigint): string {
   return DateTime.fromSeconds(Number(blockTimestamp), { zone: 'utc' }).toFormat('yyyy-MM-dd')
 }

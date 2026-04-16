@@ -1,11 +1,12 @@
+import { RBTC, WRBTC } from '@/lib/constants'
 import type { Column } from '@/shared/context'
 
 import type { AuditLogShowFilter, AuditLogUserRole, ColumnId } from './types'
-import { RBTC, WRBTC } from '@/lib/constants'
 
 /** Page size for audit log list + `TablePager` expandable step. */
 export const AUDIT_LOG_PAGE_SIZE = 20
 
+/** Maximum number of rows to fetch per page. */
 export const AUDIT_LOG_FETCH_LIMIT = 200
 
 export const DEFAULT_COLUMNS: Column<ColumnId>[] = [

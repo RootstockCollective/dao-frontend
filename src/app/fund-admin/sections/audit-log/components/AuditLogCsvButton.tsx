@@ -9,66 +9,92 @@ import { cn } from '@/lib/utils'
 import { showToast } from '@/shared/notification'
 
 import { AUDIT_LOG_FETCH_LIMIT } from '../constants'
-import type { AuditLogApiFilters, AuditLogApiResponse, AuditLogEntry, SortableColumnId } from '../types'
+import type { AuditLogApiEntry, AuditLogApiFilters, AuditLogApiResponse, SortableColumnId } from '../types'
 import { buildAuditLogUrl, formatAmountFromWei, formatAuditLogDateForCsv } from '../utils'
+
+/** Maximum number of pages to fetch concurrently. */
+const FETCH_CONCURRENCY_LIMIT = 5
+
+/** Maximum number of rows to export. */
 const MAX_EXPORT_ROWS = 50000
 
-function escapeCsvValue(value: string): string {
-  if (value.includes(',') || value.includes('"') || value.includes('\n')) {
-    return `"${value.replaceAll('"', '""')}"`
+interface AuditLogExportData {
+  entries: AuditLogApiEntry[]
+  totalRows: number
+}
+
+// Prevent CSV formula injection: Excel/Sheets evaluate values starting with =, +, -, @
+function sanitizeCsvFormulaValue(value: string): string {
+  return /^[=+\-@]/.test(value) ? `'${value}` : value
+}
+
+// Sanitize CSV value to prevent formula injection and line breaks
+function sanitizeCsvValue(value: string): string {
+  const sanitized = sanitizeCsvFormulaValue(value)
+  if (sanitized.includes(',') || sanitized.includes('"') || sanitized.includes('\n')) {
+    return `"${sanitized.replaceAll('"', '""')}"`
   }
-  return value
+  return sanitized
 }
 
 function generateCsv(rows: string[][]): string {
   const headers = ['ID', 'Date', 'Action', 'Detail', 'Token Amount', 'Token Symbol', 'Role']
-  const csvRows = [headers.map(escapeCsvValue), ...rows.map(r => r.map(escapeCsvValue))]
+  const csvRows = [headers.map(sanitizeCsvValue), ...rows.map(r => r.map(sanitizeCsvValue))]
   return csvRows.map(r => r.join(',')).join('\n')
+}
+
+async function fetchAuditLogPage(
+  page: number,
+  limit: number,
+  sortField: SortableColumnId | null,
+  sortDirection: 'asc' | 'desc' | null,
+  filters?: AuditLogApiFilters,
+): Promise<AuditLogApiResponse> {
+  const res = await fetch(buildAuditLogUrl({ page, limit, sortField, sortDirection, filters }), {
+    cache: 'no-store',
+  })
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`Failed to fetch audit log page ${page}: ${res.status} ${text}`)
+  }
+  return (await res.json()) as AuditLogApiResponse
 }
 
 async function fetchAllAuditLogEntries(
   sortField: SortableColumnId | null,
   sortDirection: 'asc' | 'desc' | null,
   filters?: AuditLogApiFilters,
-): Promise<AuditLogEntry[]> {
+): Promise<AuditLogExportData> {
   const limit = AUDIT_LOG_FETCH_LIMIT
+  const firstPage = await fetchAuditLogPage(1, limit, sortField, sortDirection, filters)
+  const allData: AuditLogApiEntry[] = [...(firstPage.data ?? [])]
+  const totalRows = firstPage.pagination?.total ?? allData.length
 
-  const firstUrl = buildAuditLogUrl({ page: 1, limit, sortField, sortDirection, filters })
-  const firstRes = await fetch(firstUrl, { cache: 'no-store' })
-  if (!firstRes.ok) {
-    const text = await firstRes.text()
-    throw new Error(`Failed to fetch audit log: ${firstRes.status} ${text}`)
+  if (allData.length >= totalRows || allData.length >= MAX_EXPORT_ROWS) {
+    return { entries: allData.slice(0, MAX_EXPORT_ROWS), totalRows }
   }
 
-  const firstJson = (await firstRes.json()) as AuditLogApiResponse
-  const allData: AuditLogEntry[] = [...(firstJson.data ?? [])]
-  const total = firstJson.pagination?.total ?? allData.length
+  const rowsToFetch = Math.min(totalRows, MAX_EXPORT_ROWS)
+  const totalPagesToFetch = Math.ceil(rowsToFetch / limit)
+  const remainingPages = Array.from({ length: Math.max(totalPagesToFetch - 1, 0) }, (_, i) => i + 2)
 
-  if (allData.length >= total) return allData
-
-  const totalPages = Math.ceil(total / limit)
-  const remainingPages = Array.from({ length: totalPages - 1 }, (_, i) => i + 2)
-
-  const fetchPromises = remainingPages.map(async page => {
-    const url = buildAuditLogUrl({ page, limit, sortField, sortDirection, filters })
-    const res = await fetch(url, { cache: 'no-store' })
-    if (!res.ok) {
-      const text = await res.text()
-      throw new Error(`Failed to fetch audit log page ${page}: ${res.status} ${text}`)
+  // Fetch remaining pages in batches to avoid overwhelming the server or the browser
+  for (let i = 0; i < remainingPages.length; i += FETCH_CONCURRENCY_LIMIT) {
+    const batch = remainingPages.slice(i, i + FETCH_CONCURRENCY_LIMIT)
+    const batchData = await Promise.all(
+      batch.map(page => fetchAuditLogPage(page, limit, sortField, sortDirection, filters)),
+    )
+    for (const pageData of batchData) {
+      if (allData.length >= MAX_EXPORT_ROWS) break
+      const rowsLeft = MAX_EXPORT_ROWS - allData.length
+      allData.push(...(pageData.data ?? []).slice(0, rowsLeft))
     }
-    const json = (await res.json()) as AuditLogApiResponse
-    return json.data ?? []
-  })
+  }
 
-  const remainingData = await Promise.all(fetchPromises)
-  remainingData.forEach(pageRows => {
-    allData.push(...pageRows)
-  })
-
-  return allData
+  return { entries: allData, totalRows }
 }
 
-function entryToCsvRow(entry: AuditLogEntry): string[] {
+function entryToCsvRow(entry: AuditLogApiEntry): string[] {
   return [
     String(entry.id),
     formatAuditLogDateForCsv(entry.blockTimestamp),
@@ -102,7 +128,7 @@ export function AuditLogCsvButton({
 
     setIsDownloading(true)
     try {
-      const allData = await fetchAllAuditLogEntries(sortField, sortDirection, filters)
+      const { entries: allData, totalRows } = await fetchAllAuditLogEntries(sortField, sortDirection, filters)
 
       if (allData.length === 0) {
         showToast({
@@ -114,13 +140,13 @@ export function AuditLogCsvButton({
       }
 
       const dataToExport = allData.slice(0, MAX_EXPORT_ROWS)
-      const wasTruncated = allData.length > MAX_EXPORT_ROWS
+      const wasTruncated = totalRows > MAX_EXPORT_ROWS
 
       if (wasTruncated) {
         showToast({
           severity: 'warning',
           title: 'Export limited',
-          content: `Export limited to ${MAX_EXPORT_ROWS.toLocaleString()} rows to prevent browser freezing. Total available: ${allData.length.toLocaleString()} rows.`,
+          content: `Export limited to ${MAX_EXPORT_ROWS.toLocaleString()} rows to prevent browser freezing. Total available: ${totalRows.toLocaleString()} rows.`,
         })
       }
 
@@ -137,6 +163,7 @@ export function AuditLogCsvButton({
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
+      URL.revokeObjectURL(url)
 
       if (!wasTruncated) {
         showToast({

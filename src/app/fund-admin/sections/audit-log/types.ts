@@ -8,8 +8,9 @@ export type SortableColumnId = 'date'
 export type AuditLogShowFilter = 'reason' | 'rbtc' | 'wrbtc'
 
 /**
- * Mirrors subgraph `BtcVaultLog` (`type BtcVaultLog @entity(immutable: true)`).
- * BigInt fields are decimal strings; `Bytes` fields are `0x`-prefixed hex.
+ * Server-side representation of a subgraph `BtcVaultLog` entry (bigint fields are real BigInts).
+ * Used only in server actions/API routes. Do NOT use on the client — JSON serialization converts
+ * bigints to strings; use `AuditLogApiEntry` for client-side code.
  */
 export interface AuditLogEntry {
   id: string
@@ -29,6 +30,19 @@ export interface AuditLogEntry {
   logIndex: string
 }
 
+/**
+ * Client-side shape of a `BtcVaultLog` as returned by the API route.
+ * BigInt fields (`amountInWei`, `blockNumber`, `blockTimestamp`) are serialized as decimal strings
+ */
+export interface AuditLogApiEntry extends Omit<
+  AuditLogEntry,
+  'amountInWei' | 'blockNumber' | 'blockTimestamp'
+> {
+  amountInWei: string | null
+  blockNumber: string
+  blockTimestamp: string
+}
+
 interface AuditLogPagination {
   page: number
   limit: number
@@ -40,7 +54,7 @@ interface AuditLogPagination {
 }
 
 export interface AuditLogApiResponse {
-  data: AuditLogEntry[]
+  data: AuditLogApiEntry[]
   pagination: AuditLogPagination
 }
 
@@ -69,7 +83,7 @@ export interface UseGetAuditLogParams {
 }
 
 export interface UseGetAuditLogResult {
-  entries: AuditLogEntry[]
+  entries: AuditLogApiEntry[]
   pagination: AuditLogPagination | undefined
   isLoading: boolean
   error: Error | null
