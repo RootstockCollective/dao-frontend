@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import type { Address } from 'viem'
 import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
@@ -31,13 +31,13 @@ const HISTORY_API_PATH = '/api/btc-vault/v1/history'
  *   always null for claimable withdrawals only and while data is loading or unavailable.
  *   `claimableWithdrawRequest` — the withdrawal `VaultRequest` when the user can finalize (`claimRedeemNative`);
  *   mirrors history “Claim rBTC” / detail claim; null while loading or when no claimable redeem.
- *   `refetch()` — call after on-chain success: wagmi multicall results are not keyed like TanStack invalidation alone.
+ *   `refetch()` — call after on-chain success: awaits **parallel** phase1/phase2/history refetches (TanStack/wagmi reconcile order); do not serialize phase1→phase2 without an intervening render.
  */
 export function useActiveRequests(address: string | undefined): {
   data: ActiveRequestDisplay[] | undefined
   claimableDepositRequest: VaultRequest | null
   claimableWithdrawRequest: VaultRequest | null
-  refetch: () => void
+  refetch: () => Promise<void>
 } {
   const { prices } = usePricesContext()
   const rbtcPrice = prices[RBTC]?.price ?? 0
@@ -309,16 +309,23 @@ export function useActiveRequests(address: string | undefined): {
     historyData,
   ])
 
-  // Narrow refetch types to avoid wagmi's "excessively deep" type instantiation in useCallback deps
-  const doRefetchPhase1: () => void = refetchPhase1
-  const doRefetchPhase2: () => void = refetchPhase2
-  const doRefetchHistory: () => void = refetchHistory
+  const refetchPhase1Ref = useRef(refetchPhase1)
+  const refetchPhase2Ref = useRef(refetchPhase2)
+  const refetchHistoryRef = useRef(refetchHistory)
+  refetchPhase1Ref.current = refetchPhase1
+  refetchPhase2Ref.current = refetchPhase2
+  refetchHistoryRef.current = refetchHistory
 
-  const refetch = useCallback(() => {
-    doRefetchPhase1()
-    doRefetchPhase2()
-    doRefetchHistory()
-  }, [doRefetchPhase1, doRefetchPhase2, doRefetchHistory])
+  // Refs avoid wagmi "excessively deep" instantiation on useCallback deps while always calling latest refetch fns.
+  // Fire phase1/phase2/history refetches in parallel (same as pre-await behavior). Sequential await was wrong:
+  // after phase1 resolves, React has not necessarily recomputed phase2Contracts from new phase1Data yet, so
+  // awaiting phase2 next could no-op or refetch the wrong query shape — claimableWithdrawRequest could stay empty.
+  const refetch = useCallback(async (): Promise<void> => {
+    const r1 = (refetchPhase1Ref.current as () => unknown)()
+    const r2 = (refetchPhase2Ref.current as () => unknown)()
+    const r3 = (refetchHistoryRef.current as () => unknown)()
+    await Promise.all([Promise.resolve(r1), Promise.resolve(r2), Promise.resolve(r3)])
+  }, [])
 
   return { data, claimableDepositRequest, claimableWithdrawRequest, refetch }
 }

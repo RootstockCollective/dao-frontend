@@ -3,6 +3,7 @@
 import { ConditionalTooltip } from '@/app/components/Tooltip/ConditionalTooltip'
 import { Button } from '@/components/Button'
 import { Header } from '@/components/Typography'
+import { cn } from '@/lib/utils'
 
 import { BTC_VAULT_CLAIM_IN_PROGRESS_MESSAGE } from '../../../constants'
 import type { RequestStatus, RequestType } from '../../../services/types'
@@ -49,9 +50,18 @@ export function TransactionDetailView({
                 },
               ]}
             >
-              <Button variant="primary" data-testid="claim-button" disabled={false} onClick={() => {}}>
-                Claiming...
-              </Button>
+              <span className="inline-block w-full cursor-default md:w-fit">
+                <Button
+                  variant="primary"
+                  className={cn('pointer-events-none')}
+                  data-testid="claim-button"
+                  aria-disabled
+                  aria-busy
+                  tabIndex={-1}
+                >
+                  Claiming...
+                </Button>
+              </span>
             </ConditionalTooltip>
           ) : (
             <Button variant="primary" data-testid="claim-button" onClick={onClaim} disabled={!onClaim}>

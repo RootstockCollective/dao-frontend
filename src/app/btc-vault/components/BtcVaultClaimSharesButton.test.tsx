@@ -119,7 +119,22 @@ describe('BtcVaultClaimSharesButton', () => {
     expect(container.firstChild).toBeNull()
   })
 
-  it('shows non-disabled Claiming… with tooltip path when claim tx in progress (isRequesting)', () => {
+  it('shows Claiming… while executeTxFlow is pending even if wagmi flags are false', async () => {
+    mockExecuteTxFlow.mockImplementation(() => new Promise(() => {}))
+    render(<BtcVaultClaimSharesButton vaultRequest={MOCK_CLAIMABLE_DEPOSIT} />, {
+      wrapper: TestWrapper,
+    })
+    const btn = screen.getByTestId('btc-vault-claim-shares-button')
+    fireEvent.click(btn)
+    await waitFor(() => {
+      expect(screen.getByTestId('btc-vault-claim-shares-button')).toHaveTextContent('Claiming...')
+    })
+    const claimingBtn = screen.getByTestId('btc-vault-claim-shares-button') as HTMLButtonElement
+    expect(claimingBtn.disabled).toBe(false)
+    expect(claimingBtn).toHaveAttribute('aria-disabled', 'true')
+  })
+
+  it('shows inert Claiming… (primary look) with tooltip when claim tx in progress (isRequesting)', () => {
     mockUseClaimRequest.mockReturnValue({
       claim: mockClaim,
       canClaim: true,
@@ -131,14 +146,15 @@ describe('BtcVaultClaimSharesButton', () => {
     render(<BtcVaultClaimSharesButton vaultRequest={MOCK_CLAIMABLE_DEPOSIT} />, {
       wrapper: TestWrapper,
     })
-    const btn = screen.getByTestId('btc-vault-claim-shares-button')
+    const btn = screen.getByTestId('btc-vault-claim-shares-button') as HTMLButtonElement
     expect(btn).toHaveTextContent('Claiming...')
-    expect(btn).not.toBeDisabled()
+    expect(btn.disabled).toBe(false)
+    expect(btn).toHaveAttribute('aria-disabled', 'true')
     fireEvent.click(btn)
     expect(mockExecuteTxFlow).not.toHaveBeenCalled()
   })
 
-  it('shows non-disabled Claiming… when only isTxPending', () => {
+  it('shows inert Claiming… (primary look) when only isTxPending', () => {
     mockUseClaimRequest.mockReturnValue({
       claim: mockClaim,
       canClaim: true,
@@ -150,9 +166,10 @@ describe('BtcVaultClaimSharesButton', () => {
     render(<BtcVaultClaimSharesButton vaultRequest={MOCK_CLAIMABLE_DEPOSIT} />, {
       wrapper: TestWrapper,
     })
-    const btn = screen.getByTestId('btc-vault-claim-shares-button')
+    const btn = screen.getByTestId('btc-vault-claim-shares-button') as HTMLButtonElement
     expect(btn).toHaveTextContent('Claiming...')
-    expect(btn).not.toBeDisabled()
+    expect(btn.disabled).toBe(false)
+    expect(btn).toHaveAttribute('aria-disabled', 'true')
   })
 
   it('does not invoke executeTxFlow twice on rapid double-click', async () => {
@@ -166,6 +183,7 @@ describe('BtcVaultClaimSharesButton', () => {
         vaultRequest={MOCK_CLAIMABLE_DEPOSIT}
         onAfterClaimRefetch={mockOnAfterClaimRefetch}
       />,
+      { wrapper: TestWrapper },
     )
     const btn = screen.getByTestId('btc-vault-claim-shares-button')
     fireEvent.click(btn)
@@ -181,6 +199,7 @@ describe('BtcVaultClaimSharesButton', () => {
         vaultRequest={MOCK_CLAIMABLE_DEPOSIT}
         onAfterClaimRefetch={mockOnAfterClaimRefetch}
       />,
+      { wrapper: TestWrapper },
     )
 
     expect(screen.getByTestId('btc-vault-claim-shares-button')).toHaveTextContent('Claim Shares')
@@ -213,6 +232,7 @@ describe('BtcVaultClaimSharesButton', () => {
         vaultRequest={MOCK_CLAIMABLE_DEPOSIT}
         onAfterClaimRefetch={mockOnAfterClaimRefetch}
       />,
+      { wrapper: TestWrapper },
     )
 
     await act(async () => {
