@@ -147,10 +147,6 @@ export const AuditLogTable = () => {
               <Paragraph variant="body-s" className="text-v3-text-100 py-8">
                 Could not load the audit log. Try again later.
               </Paragraph>
-            ) : isLoading ? (
-              <Paragraph variant="body-s" className="text-v3-bg-accent-0 py-8">
-                Loading…
-              </Paragraph>
             ) : (
               <DesktopAuditLogHistory />
             )}

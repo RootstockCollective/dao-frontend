@@ -1,7 +1,7 @@
 'use client'
 
 import { TokenImage } from '@/components/TokenImage/TokenImage'
-import { Span } from '@/components/Typography'
+import { Paragraph, Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { useTableContext } from '@/shared/context'
@@ -35,7 +35,7 @@ const TokenAmountRow = ({
 }
 
 export const DesktopAuditLogHistory = () => {
-  const { rows } = useTableContext<ColumnId, AuditLogCellDataMap>()
+  const { rows, loading } = useTableContext<ColumnId, AuditLogCellDataMap>()
 
   return (
     <table className="w-full min-w-[700px] table-fixed">
@@ -66,50 +66,60 @@ export const DesktopAuditLogHistory = () => {
         </tr>
       </thead>
       <tbody>
-        {rows.map(({ id, data }) => (
-          <tr key={id} className="border-b border-b-v3-bg-accent-60 h-16">
-            <td className="py-3 pr-4">
-              <Span variant="body-s" className="whitespace-nowrap block truncate">
-                {data.date}
-              </Span>
-            </td>
-            <td className="py-3 pr-4">
-              <Span className="truncate block max-w-full">{data.action}</Span>
-            </td>
-            <td className="py-3 pr-4">
-              {data.value || data.reason ? (
-                <div className="flex items-center gap-3 min-w-0">
-                  {data.value && (
-                    <TokenAmountRow
-                      formattedAmount={data.value.formattedAmount}
-                      usdAmount={data.value.usdAmount}
-                    />
-                  )}
-                  {data.reason && <Span className="truncate">{data.reason}</Span>}
-                </div>
-              ) : (
-                <Span variant="body-l">—</Span>
-              )}
-            </td>
-            <td className="py-3">
-              {data.role ? (
-                <div className="flex items-center max-w-full">
-                  <Span
-                    variant="body-xs"
-                    className={cn(
-                      'px-2 py-1 rounded-full whitespace-nowrap truncate',
-                      ROLE_STYLES[data.role],
-                    )}
-                  >
-                    {ROLE_LABELS[data.role]}
-                  </Span>
-                </div>
-              ) : (
-                <Span variant="body-l">—</Span>
-              )}
+        {loading ? (
+          <tr>
+            <td colSpan={4} className="py-8">
+              <Paragraph variant="body-s" className="text-v3-bg-accent-0 m-0">
+                Loading…
+              </Paragraph>
             </td>
           </tr>
-        ))}
+        ) : (
+          rows.map(({ id, data }) => (
+            <tr key={id} className="border-b border-b-v3-bg-accent-60 h-16">
+              <td className="py-3 pr-4">
+                <Span variant="body-s" className="whitespace-nowrap block truncate">
+                  {data.date}
+                </Span>
+              </td>
+              <td className="py-3 pr-4">
+                <Span className="truncate block max-w-full">{data.action}</Span>
+              </td>
+              <td className="py-3 pr-4">
+                {data.value || data.reason ? (
+                  <div className="flex items-center gap-3 min-w-0">
+                    {data.value && (
+                      <TokenAmountRow
+                        formattedAmount={data.value.formattedAmount}
+                        usdAmount={data.value.usdAmount}
+                      />
+                    )}
+                    {data.reason && <Span className="truncate">{data.reason}</Span>}
+                  </div>
+                ) : (
+                  <Span variant="body-l">—</Span>
+                )}
+              </td>
+              <td className="py-3">
+                {data.role ? (
+                  <div className="flex items-center max-w-full">
+                    <Span
+                      variant="body-xs"
+                      className={cn(
+                        'px-2 py-1 rounded-full whitespace-nowrap truncate',
+                        ROLE_STYLES[data.role],
+                      )}
+                    >
+                      {ROLE_LABELS[data.role]}
+                    </Span>
+                  </div>
+                ) : (
+                  <Span variant="body-l">—</Span>
+                )}
+              </td>
+            </tr>
+          ))
+        )}
       </tbody>
     </table>
   )
