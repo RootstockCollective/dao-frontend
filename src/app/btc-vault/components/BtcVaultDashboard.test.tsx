@@ -323,7 +323,7 @@ describe('BtcVaultDashboard', () => {
     expect(probe).toHaveAttribute('data-has-refetch', 'yes')
   })
 
-  it('forwards claimableWithdrawRequest and onAfterRedeemRefetch to Redeem Shares', () => {
+  it('forwards claimableWithdrawRequest and onAfterRedeemRefetch to Claim rBTC', () => {
     const onRefetch = vi.fn()
     const claimableWithdraw: VaultRequest = {
       id: 'red-dash-probe',
@@ -344,7 +344,7 @@ describe('BtcVaultDashboard', () => {
     expect(probe).toHaveAttribute('data-has-refetch', 'yes')
   })
 
-  it('passes null claimableWithdrawRequest to Redeem Shares when omitted', () => {
+  it('passes null claimableWithdrawRequest to Claim rBTC when omitted', () => {
     render(<BtcVaultDashboard />, { wrapper: Wrapper })
     const probe = screen.getByTestId('btc-vault-redeem-shares-probe')
     expect(probe).toHaveAttribute('data-request-id', '')
