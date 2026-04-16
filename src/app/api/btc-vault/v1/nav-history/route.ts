@@ -12,7 +12,6 @@ import { fetchBtcVaultNavHistoryPage } from './action'
  * Paginated BTC vault NAV history: state-sync DB first, subgraph fallback.
  *
  * Query: limit (1–200, default 20), page (default 1),
- * sort_field (processedAt | epochId | reportedOffchainAssets), sort_direction (asc | desc).
  */
 export async function GET(req: NextRequest) {
   try {

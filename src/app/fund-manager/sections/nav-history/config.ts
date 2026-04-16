@@ -12,7 +12,7 @@ export const PAGE_SIZE = 20
 
 export const SORT_LABELS: Record<VisibleColumnId, string> = {
   reportedOffchainAssets: 'NAV',
-  requestsProcessed: 'Request processed',
+  requestsProcessed: 'Requests processed',
   processedAt: 'Processed on',
 }
 

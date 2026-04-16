@@ -21,7 +21,7 @@ export function convertNavDataToRowData(
       id: item.id,
       data: {
         reportedOffchainAssets: formatCurrency(assets, { showCurrencySymbol: false }),
-        requestsProcessed: `${item.requestsProcessed} Request`,
+        requestsProcessed: `${item.requestsProcessed} ${item.requestsProcessed === 1 ? 'Request' : 'Requests'}`,
         processedAt: formatDateMonthFirst(item.processedAt),
         fiatAmountFormatted,
         transactionHashFull: item.transactionHash,
