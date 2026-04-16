@@ -61,7 +61,7 @@ export const AUDIT_LOG_SHOW_FILTERS: ReadonlyArray<{ label: string; value: Audit
 
 export const AUDIT_LOG_ROLE_FILTERS: ReadonlyArray<{ label: string; value: AuditLogUserRole }> = [
   { label: 'Admin', value: 'ADMIN' },
-  { label: 'Fund Manager', value: 'MANAGER' },
+  { label: 'Fund manager', value: 'MANAGER' },
   { label: 'Investor', value: 'INVESTOR' },
   { label: 'Whitelister', value: 'WHITELISTER' },
 ]
@@ -77,7 +77,7 @@ export const ROLE_STYLES: Record<AuditLogUserRole, string> = {
 
 export const ROLE_LABELS: Record<AuditLogUserRole, string> = {
   ADMIN: 'Admin',
-  MANAGER: 'Fund Manager',
+  MANAGER: 'Fund manager',
   PAUSER: 'Pauser',
   INVESTOR: 'Investor',
   BUFFER_INJECTOR: 'Injector',
