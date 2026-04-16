@@ -66,7 +66,7 @@ export function RequestProcessingBlock({ request, className, ...props }: Request
           </Label>
           <div className="flex min-w-0 flex-col">
             <div className="flex min-w-0 items-center gap-1">
-              <Span variant="body-l" className="min-w-0 flex-1 overflow-hidden text-ellipsis text-100">
+              <Span variant="body-l" className="min-w-0 overflow-hidden text-ellipsis text-100 pr-1">
                 {request.amountFormatted}
               </Span>
               <TokenImage symbol={RBTC} size={16} />

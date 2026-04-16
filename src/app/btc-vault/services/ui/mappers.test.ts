@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import { formatEther } from 'viem'
 
 import { VAULT_SHARE_MULTIPLIER, WeiPerEther } from '@/lib/constants'
 
@@ -604,9 +603,8 @@ describe('toActiveRequestDisplay', () => {
       assetsAtCloseWei,
       supplyAtCloseWei,
     }
-    const expectedWei = (ONE_SHARE_RAW * (assetsAtCloseWei + 1n)) / (supplyAtCloseWei + 1n)
     const result = toActiveRequestDisplay(req, claimableInfo, 50_000)
-    expect(result.amountFormatted).toBe(formatEther(expectedWei))
+    expect(result.amountFormatted).toBe('0.00012')
     expect(result.usdEquivalentFormatted).toBe('$6.20 USD')
   })
 
@@ -650,9 +648,8 @@ describe('toActiveRequestDisplay', () => {
       assetsAtCloseWei,
       supplyAtCloseWei,
     }
-    const expectedWei = (ONE_SHARE_RAW * (assetsAtCloseWei + 1n)) / (supplyAtCloseWei + 1n)
     const result = toActiveRequestDisplay(req, claimableInfo, 50_000)
-    expect(result.amountFormatted).toBe(formatEther(expectedWei))
+    expect(result.amountFormatted).toBe('0.00012')
     expect(result.usdEquivalentFormatted).toBe('$6.20 USD')
     expect(result.sharesFormatted).toBe('1.00')
   })
