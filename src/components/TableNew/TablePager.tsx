@@ -48,7 +48,7 @@ const PagerCount = ({
     className="text-v3-bg-accent-0 select-none first-letter:uppercase"
     data-testid="table-pager-count"
   >
-    {itemName} {start}– {end}out of {total}
+    {itemName} {start} – {end} out of {total}
   </Paragraph>
 )
 type NextPageHandler = (props: {
