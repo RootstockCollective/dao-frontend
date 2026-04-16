@@ -100,9 +100,6 @@ The value must correspond to one of the `.env.` file endings.
 > [!NOTE]
 > ‼️ **<span style="color:red;">Warning: DO NOT USE IN PRODUCTION!</span>**
 >
-> To avoid **CORS errors** when running against testnet from localhost, you can proxy the calls to the RIF Wallet Services via a local loop that strips the CORS headers on the way out and adds the expected response ones on the way in.
-> This can be achieved by setting the `testnet.local` `PROFILE`:
-> `PROFILE=testnet.local npm run dev`
 >
 > **Fork Environment**: Use `PROFILE=fork` to test swap functionality on a local fork of Rootstock Mainnet without spending real funds. See [Fork Setup Guide](./docs/FORK_SETUP.md) for setup instructions.
 >
