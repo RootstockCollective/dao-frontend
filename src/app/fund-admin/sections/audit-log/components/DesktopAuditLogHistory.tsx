@@ -25,7 +25,7 @@ const TokenAmountRow = ({
           <TokenImage symbol={RBTC} size={16} />
         </div>
         {usdAmount && (
-          <Span variant="body-xs" className="text-v3-bg-accent-0 text-right">
+          <Span variant="body-xs" className="text-v3-bg-accent-0">
             {usdAmount}
           </Span>
         )}

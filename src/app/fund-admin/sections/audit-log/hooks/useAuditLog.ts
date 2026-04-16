@@ -53,7 +53,9 @@ export function useGetAuditLog({
   }, [visibleItemCount, resultsDataTick])
 
   const pagination = results[0]?.data?.pagination
-  const isLoading = results.some(r => r.isLoading || r.isFetching)
+  // Block UI when no data is visible (intial load or filter/sort change).
+  // and keep showing old data during background loads (prevent flickering).
+  const isLoading = entries.length === 0 && results.some(r => r.isFetching)
   const error = results.find(r => r.error)?.error ?? null
 
   return {
