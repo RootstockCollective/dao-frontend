@@ -24,11 +24,11 @@ const TokenAmountRow = ({
           <Span variant="body">{formattedAmount}</Span>
           <TokenImage symbol={RBTC} size={16} />
         </div>
-        {usdAmount ? (
-          <Span variant="body-xs" className="text-v3-bg-accent-0">
+        {usdAmount && (
+          <Span variant="body-xs" className="text-v3-bg-accent-0 text-right">
             {usdAmount}
           </Span>
-        ) : null}
+        )}
       </div>
     </div>
   )
@@ -77,13 +77,16 @@ export const DesktopAuditLogHistory = () => {
               <Span className="truncate block max-w-full">{data.action}</Span>
             </td>
             <td className="py-3 pr-4">
-              {data.value ? (
-                <TokenAmountRow
-                  formattedAmount={data.value.formattedAmount}
-                  usdAmount={data.value.usdAmount}
-                />
-              ) : data.reason ? (
-                <Span className="truncate block max-w-full">{data.reason}</Span>
+              {data.value || data.reason ? (
+                <div className="flex items-center gap-3 min-w-0">
+                  {data.value && (
+                    <TokenAmountRow
+                      formattedAmount={data.value.formattedAmount}
+                      usdAmount={data.value.usdAmount}
+                    />
+                  )}
+                  {data.reason && <Span className="truncate">{data.reason}</Span>}
+                </div>
               ) : (
                 <Span variant="body-l">—</Span>
               )}
