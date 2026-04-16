@@ -21,6 +21,7 @@ export const BtcVaultPage = () => {
     data: activeRequests,
     refetch: refetchActiveRequests,
     claimableDepositRequest,
+    claimableWithdrawRequest,
   } = useActiveRequests(address)
 
   return (
@@ -41,7 +42,9 @@ export const BtcVaultPage = () => {
       <BtcVaultDashboard
         onRequestSubmitted={refetchActiveRequests}
         claimableDepositRequest={claimableDepositRequest}
+        claimableWithdrawRequest={claimableWithdrawRequest}
         onAfterClaimRefetch={refetchActiveRequests}
+        onAfterRedeemRefetch={refetchActiveRequests}
       />
 
       {/* Capital Allocation Transparency - DAO-2017 */}

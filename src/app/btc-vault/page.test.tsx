@@ -32,7 +32,12 @@ vi.mock('./hooks/useActionEligibility', () => ({
 }))
 
 vi.mock('./hooks/useActiveRequests', () => ({
-  useActiveRequests: () => ({ data: undefined, claimableDepositRequest: null, refetch: vi.fn() }),
+  useActiveRequests: () => ({
+    data: undefined,
+    claimableDepositRequest: null,
+    claimableWithdrawRequest: null,
+    refetch: vi.fn(),
+  }),
 }))
 
 vi.mock('./hooks/useEpochState', () => ({

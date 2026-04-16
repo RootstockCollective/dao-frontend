@@ -29,11 +29,14 @@ const HISTORY_API_PATH = '/api/btc-vault/v1/history'
  * @returns `data` — ActiveRequestDisplay[] for dashboard, or undefined while loading/error.
  *   `claimableDepositRequest` — the deposit `VaultRequest` when the user can claim shares (`status === 'claimable'`);
  *   always null for claimable withdrawals only and while data is loading or unavailable.
+ *   `claimableWithdrawRequest` — the withdrawal `VaultRequest` when the user can finalize (`claimRedeemNative`);
+ *   mirrors history “Claim rBTC” / detail claim; null while loading or when no claimable redeem.
  *   `refetch()` — call after on-chain success: wagmi multicall results are not keyed like TanStack invalidation alone.
  */
 export function useActiveRequests(address: string | undefined): {
   data: ActiveRequestDisplay[] | undefined
   claimableDepositRequest: VaultRequest | null
+  claimableWithdrawRequest: VaultRequest | null
   refetch: () => void
 } {
   const { prices } = usePricesContext()
@@ -151,13 +154,15 @@ export function useActiveRequests(address: string | undefined): {
   // SAFETY: narrow type to avoid wagmi's "excessively deep" instantiation in useMemo deps
   const phase2Data = phase2Raw as readonly { status: string; result?: unknown }[] | undefined
 
-  const { data, claimableDepositRequest } = useMemo((): {
+  const { data, claimableDepositRequest, claimableWithdrawRequest } = useMemo((): {
     data: ActiveRequestDisplay[] | undefined
     claimableDepositRequest: VaultRequest | null
+    claimableWithdrawRequest: VaultRequest | null
   } => {
     const empty = {
       data: undefined as ActiveRequestDisplay[] | undefined,
       claimableDepositRequest: null as VaultRequest | null,
+      claimableWithdrawRequest: null as VaultRequest | null,
     }
     if (!address || isLoading1 || error1 || !phase1Data || phase1Data.length < 2) {
       return empty
@@ -173,14 +178,15 @@ export function useActiveRequests(address: string | undefined): {
     const redShares = redeemResult?.[1] ?? 0n
 
     if (depAssets === 0n && redShares === 0n) {
-      return { data: [], claimableDepositRequest: null }
+      return { data: [], claimableDepositRequest: null, claimableWithdrawRequest: null }
     }
 
-    if (!needsPhase2) return { data: [], claimableDepositRequest: null }
+    if (!needsPhase2) return { data: [], claimableDepositRequest: null, claimableWithdrawRequest: null }
     if (isLoading2 || error2 || !phase2Data) return empty
 
     const requests: Array<{ req: VaultRequest; claimableInfo: ClaimableInfo | null }> = []
     let claimableDepositRequest: VaultRequest | null = null
+    let claimableWithdrawRequest: VaultRequest | null = null
     const hasDeposit = depAssets > 0n
     const hasRedeem = redShares > 0n
 
@@ -265,18 +271,22 @@ export function useActiveRequests(address: string | undefined): {
           supplyAtCloseWei: supplyAtClose,
         }
       }
+      const withdrawReq: VaultRequest = {
+        id: `red-${redEpochId}`,
+        type: 'withdrawal',
+        amount: redShares,
+        status,
+        epochId: null,
+        batchRedeemId: String(redEpochId),
+        timestamps: { created: redHistory?.timestamp ?? 0 },
+        txHashes: redHistory?.transactionHash ? { submit: redHistory.transactionHash } : {},
+        ...(redDisplayStatus && { displayStatus: redDisplayStatus }),
+      }
+      if (status === 'claimable') {
+        claimableWithdrawRequest = withdrawReq
+      }
       requests.push({
-        req: {
-          id: `red-${redEpochId}`,
-          type: 'withdrawal',
-          amount: redShares,
-          status,
-          epochId: null,
-          batchRedeemId: String(redEpochId),
-          timestamps: { created: redHistory?.timestamp ?? 0 },
-          txHashes: redHistory?.transactionHash ? { submit: redHistory.transactionHash } : {},
-          ...(redDisplayStatus && { displayStatus: redDisplayStatus }),
-        },
+        req: withdrawReq,
         claimableInfo,
       })
     }
@@ -284,6 +294,7 @@ export function useActiveRequests(address: string | undefined): {
     return {
       data: requests.map(({ req, claimableInfo }) => toActiveRequestDisplay(req, claimableInfo, rbtcPrice)),
       claimableDepositRequest,
+      claimableWithdrawRequest,
     }
   }, [
     address,
@@ -309,5 +320,5 @@ export function useActiveRequests(address: string | undefined): {
     doRefetchHistory()
   }, [doRefetchPhase1, doRefetchPhase2, doRefetchHistory])
 
-  return { data, claimableDepositRequest, refetch }
+  return { data, claimableDepositRequest, claimableWithdrawRequest, refetch }
 }

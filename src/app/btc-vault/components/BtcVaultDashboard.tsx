@@ -11,10 +11,13 @@ import { Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { btcVaultRequestHistory } from '@/shared/constants/routes'
 
+import { useActionEligibility } from '../hooks/useActionEligibility'
+import { useBtcVaultWithdrawFlow } from '../hooks/useBtcVaultWithdrawFlow'
 import { useUserPosition } from '../hooks/useUserPosition/useUserPosition'
 import type { VaultRequest } from '../services/types'
 import { BtcVaultActions } from './BtcVaultActions'
 import { BtcVaultClaimSharesButton } from './BtcVaultClaimSharesButton'
+import { BtcVaultRedeemSharesButton } from './BtcVaultRedeemSharesButton'
 
 const METRIC_COLUMN = 'w-full md:w-[214px] md:min-w-[180px]'
 
@@ -34,16 +37,22 @@ function metricAmount(isLoading: boolean, isError: boolean, value: string | unde
 interface BtcVaultDashboardProps {
   onRequestSubmitted?: () => void
   claimableDepositRequest?: VaultRequest | null
+  claimableWithdrawRequest?: VaultRequest | null
   onAfterClaimRefetch?: () => void
+  onAfterRedeemRefetch?: () => void
 }
 
 export const BtcVaultDashboard = ({
   onRequestSubmitted,
   claimableDepositRequest = null,
+  claimableWithdrawRequest = null,
   onAfterClaimRefetch,
+  onAfterRedeemRefetch,
 }: BtcVaultDashboardProps) => {
   const { address, isConnected } = useAccount()
   const { data, isLoading, isError } = useUserPosition(address)
+  const { data: actionEligibility } = useActionEligibility(address)
+  const withdrawFlow = useBtcVaultWithdrawFlow({ onRequestSubmitted })
 
   if (!address || !isConnected) return null
 
@@ -52,15 +61,21 @@ export const BtcVaultDashboard = ({
       <div className="flex flex-col gap-10" data-testid="btc-vault-dashboard">
         {/* Row 1: Wallet, Vault shares, Share of vault */}
         <div className="flex flex-col gap-4 md:flex-row md:flex-wrap md:gap-x-6 md:gap-y-6 w-full">
-          <BalanceInfo
-            className={METRIC_COLUMN}
-            title="Wallet"
-            amount={metricAmount(isLoading, isError, data?.rbtcBalanceFormatted)}
-            symbol={RBTC}
-            fiatAmount={isLoading || isError ? undefined : data?.fiatWalletBalance}
-            tooltipContent="Your rBTC balance available in your connected wallet"
-            data-testid="metric-wallet"
-          />
+          <div className={`flex flex-col gap-4 ${METRIC_COLUMN}`}>
+            <BalanceInfo
+              className="w-full"
+              title="Wallet"
+              amount={metricAmount(isLoading, isError, data?.rbtcBalanceFormatted)}
+              symbol={RBTC}
+              fiatAmount={isLoading || isError ? undefined : data?.fiatWalletBalance}
+              tooltipContent="Your rBTC balance available in your connected wallet"
+              data-testid="metric-wallet"
+            />
+            <BtcVaultRedeemSharesButton
+              vaultRequest={claimableWithdrawRequest}
+              onAfterRedeemRefetch={onAfterRedeemRefetch}
+            />
+          </div>
           <div className={`flex flex-col gap-4 ${METRIC_COLUMN}`}>
             <BalanceInfo
               className="w-full"
@@ -132,7 +147,22 @@ export const BtcVaultDashboard = ({
       </div>
 
       <div className="mt-10" data-testid="btc-vault-actions">
-        <BtcVaultActions onRequestSubmitted={onRequestSubmitted} />
+        <BtcVaultActions
+          onRequestSubmitted={onRequestSubmitted}
+          actionEligibility={actionEligibility}
+          isWithdrawModalOpen={withdrawFlow.isWithdrawModalOpen}
+          onOpenWithdrawModal={withdrawFlow.openWithdrawModal}
+          onCloseWithdrawModal={withdrawFlow.closeWithdrawModal}
+          handleApproveWithdrawShares={withdrawFlow.handleApproveWithdrawShares}
+          handleRequestWithdrawRedeem={withdrawFlow.handleRequestWithdrawRedeem}
+          allowance={withdrawFlow.allowance}
+          isAllowanceReadLoading={withdrawFlow.isAllowanceReadLoading}
+          hasAllowanceFor={withdrawFlow.hasAllowanceFor}
+          isApprovingShares={withdrawFlow.isApprovingShares}
+          isWithdrawSubmitting={withdrawFlow.isWithdrawSubmitting}
+          isAllowanceTxFailed={withdrawFlow.isAllowanceTxFailed}
+          allowanceTxHash={withdrawFlow.allowanceTxHash}
+        />
       </div>
     </SectionContainer>
   )

@@ -196,7 +196,7 @@ export function toUserPositionDisplay(raw: UserPosition, rbtcPrice: number): Use
  * @param activeRequests - User's currently active vault requests
  * @param hasVaultShares - Whether the user holds a non-zero vault share balance (`balanceOf` > 0)
  * @param isWhitelisted - When provided: `false` blocks deposit/withdraw with whitelist copy; `null` blocks while loading; `true` applies pause/eligibility/active rules
- * @returns Object with canDeposit/canWithdraw booleans and block reason strings
+ * @returns Object with canDeposit/canWithdraw, hasVaultShares, and block reason strings
  */
 export function toActionEligibility(
   pause: PauseState,
@@ -232,6 +232,7 @@ export function toActionEligibility(
     return {
       canDeposit,
       canWithdraw,
+      hasVaultShares,
       depositBlockReason,
       withdrawBlockReason,
       pauseState: pause,
@@ -242,6 +243,7 @@ export function toActionEligibility(
     return {
       canDeposit: false,
       canWithdraw: false,
+      hasVaultShares,
       depositBlockReason: DEPOSIT_ELIGIBILITY_LOADING_REASON,
       withdrawBlockReason: WITHDRAWAL_ELIGIBILITY_LOADING_REASON,
       pauseState: pause,
@@ -252,6 +254,7 @@ export function toActionEligibility(
     return {
       canDeposit: false,
       canWithdraw: false,
+      hasVaultShares,
       depositBlockReason: DEPOSIT_WHITELIST_BLOCK_REASON,
       withdrawBlockReason: WITHDRAWAL_WHITELIST_BLOCK_REASON,
       pauseState: pause,
@@ -270,6 +273,7 @@ export function toActionEligibility(
   return {
     canDeposit,
     canWithdraw,
+    hasVaultShares,
     depositBlockReason,
     withdrawBlockReason,
     pauseState: pause,

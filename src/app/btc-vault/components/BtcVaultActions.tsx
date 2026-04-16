@@ -1,67 +1,77 @@
 'use client'
 
-import { useCallback, useState } from 'react'
-import { useAccount } from 'wagmi'
+import { useCallback, useEffect, useState } from 'react'
+import type { Hash } from 'viem'
 
 import { Button } from '@/components/Button'
 import { Tooltip } from '@/components/Tooltip'
 import { executeTxFlow } from '@/shared/notification'
 
-import { useActionEligibility } from '../hooks/useActionEligibility'
 import { useBtcVaultInvalidation } from '../hooks/useBtcVaultInvalidation'
-import { useBtcVaultSharesAllowance } from '../hooks/useBtcVaultSharesAllowance'
 import { useSubmitDeposit } from '../hooks/useSubmitDeposit'
-import { useSubmitWithdrawal } from '../hooks/useSubmitWithdrawal'
 import { REQUEST_SUBMITTING_REASON } from '../services/constants'
 import type { DepositRequestParams } from '../services/types'
+import type { ActionEligibility } from '../services/ui/types'
 import { BtcDepositModal } from './BtcDepositModal'
 import { BtcWithdrawModal } from './BtcWithdrawModal'
 
-interface BtcVaultActionsProps {
+export interface BtcVaultActionsProps {
+  actionEligibility: ActionEligibility | undefined
+  allowance: bigint | undefined
+  allowanceTxHash: Hash | undefined
+  handleApproveWithdrawShares: (shares: bigint) => Promise<void>
+  handleRequestWithdrawRedeem: (shares: bigint) => Promise<void>
+  hasAllowanceFor: (amount: bigint) => Promise<boolean>
+  isAllowanceReadLoading: boolean
+  isAllowanceTxFailed: boolean
+  isApprovingShares: boolean
+  isWithdrawModalOpen: boolean
+  isWithdrawSubmitting: boolean
+  onCloseWithdrawModal: () => void
+  onOpenWithdrawModal: () => void
+  onAnyVaultActionSubmittingChange?: (busy: boolean) => void
   onRequestSubmitted?: () => void
 }
 
-export const BtcVaultActions = ({ onRequestSubmitted }: BtcVaultActionsProps) => {
-  const { address } = useAccount()
-  const { data: actionEligibility } = useActionEligibility(address)
+export const BtcVaultActions = ({
+  actionEligibility,
+  allowance,
+  allowanceTxHash,
+  handleApproveWithdrawShares,
+  handleRequestWithdrawRedeem,
+  hasAllowanceFor,
+  isAllowanceReadLoading,
+  isAllowanceTxFailed,
+  isApprovingShares,
+  isWithdrawModalOpen,
+  isWithdrawSubmitting,
+  onCloseWithdrawModal,
+  onOpenWithdrawModal,
+  onAnyVaultActionSubmittingChange,
+  onRequestSubmitted,
+}: BtcVaultActionsProps) => {
   const { invalidateAfterSubmit } = useBtcVaultInvalidation()
 
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false)
-  const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false)
-
-  const canDeposit = actionEligibility?.canDeposit ?? false
-  const depositBlockReason = actionEligibility?.depositBlockReason ?? ''
-  const canWithdraw = actionEligibility?.canWithdraw ?? false
-  const withdrawBlockReason = actionEligibility?.withdrawBlockReason ?? ''
 
   const {
     onRequestDeposit,
     isRequesting: isDepositRequesting,
     isTxPending: isDepositTxPending,
   } = useSubmitDeposit()
-  const {
-    onRequestRedeem,
-    isRequesting: isWithdrawRequesting,
-    isTxPending: isWithdrawTxPending,
-  } = useSubmitWithdrawal()
 
-  const {
-    allowance,
-    refetchAllowance,
-    isAllowanceReadLoading,
-    requestApproveShares,
-    hasAllowanceFor,
-    isRequesting: isApproveSharesRequesting,
-    isTxPending: isApproveSharesTxPending,
-    isTxFailed: isAllowanceTxFailed,
-    allowanceTxHash,
-  } = useBtcVaultSharesAllowance()
-
-  const isApprovingShares = isApproveSharesRequesting || isApproveSharesTxPending
-  const isWithdrawSubmitting = isWithdrawRequesting || isWithdrawTxPending
+  const canDeposit = actionEligibility?.canDeposit ?? false
+  const depositBlockReason = actionEligibility?.depositBlockReason ?? ''
+  const canWithdraw = actionEligibility?.canWithdraw ?? false
+  const withdrawBlockReason = actionEligibility?.withdrawBlockReason ?? ''
 
   const isDepositSubmitting = isDepositRequesting || isDepositTxPending
+
   const isAnySubmitting = isDepositSubmitting || isApprovingShares || isWithdrawSubmitting
+
+  useEffect(() => {
+    onAnyVaultActionSubmittingChange?.(isAnySubmitting)
+  }, [isAnySubmitting, onAnyVaultActionSubmittingChange])
 
   const depositDisabled = !canDeposit || isAnySubmitting
   const withdrawDisabled = !canWithdraw || isAnySubmitting
@@ -84,34 +94,6 @@ export const BtcVaultActions = ({ onRequestSubmitted }: BtcVaultActionsProps) =>
     [onRequestDeposit, invalidateAfterSubmit, onRequestSubmitted],
   )
 
-  const handleApproveWithdrawShares = useCallback(
-    async (shares: bigint) => {
-      await executeTxFlow({
-        action: 'allowance',
-        onRequestTx: () => requestApproveShares(shares),
-        onSuccess: async () => {
-          await refetchAllowance()
-        },
-      })
-    },
-    [requestApproveShares, refetchAllowance],
-  )
-
-  const handleRequestWithdrawRedeem = useCallback(
-    async (shares: bigint) => {
-      await executeTxFlow({
-        action: 'btcVaultWithdrawRequest',
-        onRequestTx: () => onRequestRedeem(shares),
-        onSuccess: () => {
-          setIsWithdrawModalOpen(false)
-          invalidateAfterSubmit()
-          setTimeout(() => onRequestSubmitted?.(), 1000)
-        },
-      })
-    },
-    [onRequestRedeem, invalidateAfterSubmit, onRequestSubmitted],
-  )
-
   return (
     <div data-testid="BtcVaultActionsContent" className="flex flex-col gap-4">
       <div className="flex gap-4">
@@ -128,7 +110,7 @@ export const BtcVaultActions = ({ onRequestSubmitted }: BtcVaultActionsProps) =>
         <Tooltip text={withdrawTooltipText} disabled={!withdrawDisabled || !withdrawTooltipText}>
           <Button
             variant="primary"
-            onClick={() => setIsWithdrawModalOpen(true)}
+            onClick={onOpenWithdrawModal}
             disabled={withdrawDisabled}
             data-testid="WithdrawButton"
           >
@@ -147,7 +129,7 @@ export const BtcVaultActions = ({ onRequestSubmitted }: BtcVaultActionsProps) =>
 
       {isWithdrawModalOpen && (
         <BtcWithdrawModal
-          onClose={() => setIsWithdrawModalOpen(false)}
+          onClose={onCloseWithdrawModal}
           hasAllowanceFor={hasAllowanceFor}
           onApproveShares={handleApproveWithdrawShares}
           onRequestWithdraw={handleRequestWithdrawRedeem}
