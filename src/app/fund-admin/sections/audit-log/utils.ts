@@ -2,13 +2,30 @@ import { DateTime } from 'luxon'
 import { formatEther } from 'viem'
 
 import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
+import type { ActiveFilter } from '@/components/FilterSideBar/types'
 import Big from '@/lib/big'
 import { RBTC } from '@/lib/constants'
 import { getBtcVaultAuditLogEndpoint } from '@/lib/endpoints'
 import { formatCurrencyWithLabel, formatNumberWithCommas } from '@/lib/utils'
 
-import { LOG_TYPE_LABELS } from './constants'
-import type { AuditLogEntry, AuditLogHistoryPageParams, AuditLogTableModel, AuditLogUserRole } from './types'
+import {
+  AUDIT_LOG_ROLE_FILTERS,
+  AUDIT_LOG_SHOW_FILTERS,
+  AUDIT_LOG_TYPE_FILTERS,
+  LOG_TYPE_LABELS,
+} from './constants'
+import type {
+  AuditLogApiFilters,
+  AuditLogEntry,
+  AuditLogHistoryPageParams,
+  AuditLogShowFilter,
+  AuditLogTableModel,
+  AuditLogUserRole,
+} from './types'
+
+const VALID_TYPE_FILTERS = new Set<string>(AUDIT_LOG_TYPE_FILTERS.map(({ value }) => value))
+const VALID_ROLE_FILTERS = new Set<AuditLogUserRole>(AUDIT_LOG_ROLE_FILTERS.map(({ value }) => value))
+const VALID_SHOW_FILTERS = new Set<AuditLogShowFilter>(AUDIT_LOG_SHOW_FILTERS.map(({ value }) => value))
 
 function buildAuditValueCell(amountInWei: AuditLogEntry['amountInWei'], rbtcUsdPrice: number) {
   if (amountInWei == null) return null
@@ -73,7 +90,35 @@ export function buildAuditLogUrl(params: AuditLogHistoryPageParams): string {
     searchParams.set('sort_field', params.sortField)
     searchParams.set('sort_direction', params.sortDirection)
   }
+  params.filters?.type?.forEach(type => searchParams.append('type', type))
+  params.filters?.role?.forEach(role => searchParams.append('role', role))
+  params.filters?.show?.forEach(show => searchParams.append('show', show))
   return `${getBtcVaultAuditLogEndpoint}?${searchParams.toString()}`
+}
+
+export function toAuditLogApiFilters(activeFilters: ActiveFilter[]): AuditLogApiFilters | undefined {
+  if (!activeFilters.length) return undefined
+
+  const valuesOf = (groupId: string) =>
+    activeFilters.filter(filter => filter.groupId === groupId).map(filter => filter.option.value)
+
+  const type = [...new Set(valuesOf('type'))].filter((value): value is string =>
+    VALID_TYPE_FILTERS.has(value),
+  )
+  const role = [...new Set(valuesOf('role'))].filter((value): value is AuditLogUserRole =>
+    VALID_ROLE_FILTERS.has(value as AuditLogUserRole),
+  )
+  const show = [...new Set(valuesOf('show'))].filter((value): value is AuditLogShowFilter =>
+    VALID_SHOW_FILTERS.has(value as AuditLogShowFilter),
+  )
+
+  if (!type.length && !role.length && !show.length) return undefined
+
+  return {
+    ...(type.length ? { type } : {}),
+    ...(role.length ? { role } : {}),
+    ...(show.length ? { show } : {}),
+  }
 }
 
 export function logTypeToActionLabel(type: string): string {

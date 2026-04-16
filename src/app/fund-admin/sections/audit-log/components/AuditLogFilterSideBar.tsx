@@ -5,7 +5,9 @@ import { useMemo } from 'react'
 import { FilterSideBar } from '@/components/FilterSideBar'
 import { ActiveFilter, FilterGroup } from '@/components/FilterSideBar/types'
 import { TokenImage } from '@/components/TokenImage'
-import { RBTC, WRBTC } from '@/lib/constants'
+import { RBTC } from '@/lib/constants'
+
+import { AUDIT_LOG_ROLE_FILTERS, AUDIT_LOG_SHOW_FILTERS, AUDIT_LOG_TYPE_FILTERS } from '../constants'
 
 interface AuditLogFilterSideBarProps {
   isOpen: boolean
@@ -28,17 +30,7 @@ export function AuditLogFilterSideBar({
         allLabel: 'All types',
         allTestId: 'AllTypes',
         isMultiSelect: true,
-        options: [
-          { label: 'Deposit', value: 'deposit' },
-          { label: 'Withdraw', value: 'withdraw' },
-          { label: 'Whitelisted', value: 'whitelisted' },
-          { label: 'Dewhitelisted', value: 'dewhitelisted' },
-          { label: 'Top up synthetic yield APY', value: 'top-up-synthetic-yield-apy' },
-          { label: 'Transfer to manager wallet', value: 'transfer-to-manager-wallet' },
-          { label: 'Top up manual buffer', value: 'top-up-manual-buffer' },
-          { label: 'NAV update', value: 'nav-update' },
-          { label: 'Vault deposit', value: 'vault-deposit' },
-        ],
+        options: AUDIT_LOG_TYPE_FILTERS.map(option => ({ label: option.label, value: option.value })),
       },
       {
         id: 'show',
@@ -46,11 +38,11 @@ export function AuditLogFilterSideBar({
         allLabel: 'All values',
         allTestId: 'AllValues',
         isMultiSelect: true,
-        options: [
-          { label: 'Reason', value: 'reason' },
-          { label: RBTC, value: 'rbtc', icon: <TokenImage symbol={RBTC} size={16} /> },
-          { label: WRBTC, value: 'wrbtc', icon: <TokenImage symbol={RBTC} size={16} /> },
-        ],
+        options: AUDIT_LOG_SHOW_FILTERS.map(option => ({
+          label: option.label,
+          value: option.value,
+          ...(option.value === 'reason' ? {} : { icon: <TokenImage symbol={RBTC} size={16} /> }),
+        })),
       },
       {
         id: 'role',
@@ -58,12 +50,7 @@ export function AuditLogFilterSideBar({
         allLabel: 'All roles',
         allTestId: 'AllRoles',
         isMultiSelect: true,
-        options: [
-          { label: 'Admin', value: 'admin' },
-          { label: 'Fund manager', value: 'fund-manager' },
-          { label: 'Investor', value: 'investor' },
-          { label: 'Whitelister', value: 'whitelister' },
-        ],
+        options: AUDIT_LOG_ROLE_FILTERS.map(option => ({ label: option.label, value: option.value })),
       },
     ],
     [],

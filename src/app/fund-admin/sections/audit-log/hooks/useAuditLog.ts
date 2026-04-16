@@ -16,20 +16,22 @@ export function useGetAuditLog({
   visibleItemCount,
   sortField,
   sortDirection,
+  filters,
   isEnabled = true,
 }: UseGetAuditLogParams): UseGetAuditLogResult {
   const pageCount = Math.max(1, Math.ceil(visibleItemCount / AUDIT_LOG_FETCH_LIMIT))
   const sortKey = sortField && sortDirection ? `${sortField}:${sortDirection}` : 'natural'
+  const filterKey = JSON.stringify(filters ?? {})
 
   const results = useQueries({
     queries: Array.from({ length: pageCount }, (_, i) => {
       const page = i + 1
       const limit = AUDIT_LOG_FETCH_LIMIT
       return {
-        queryKey: ['audit-log', { page, limit, sortKey }] as const,
+        queryKey: ['audit-log', { page, limit, sortKey, filterKey }] as const,
         enabled: isEnabled,
         queryFn: async ({ signal }): Promise<AuditLogApiResponse> => {
-          const url = buildAuditLogUrl({ page, limit, sortField, sortDirection })
+          const url = buildAuditLogUrl({ page, limit, sortField, sortDirection, filters })
           const res = await fetch(url, { cache: 'no-store', signal })
           if (!res.ok) {
             const text = await res.text()
@@ -51,7 +53,7 @@ export function useGetAuditLog({
   }, [visibleItemCount, resultsDataTick])
 
   const pagination = results[0]?.data?.pagination
-  const isLoading = results.some(r => r.isLoading)
+  const isLoading = results.some(r => r.isLoading || r.isFetching)
   const error = results.find(r => r.error)?.error ?? null
 
   return {

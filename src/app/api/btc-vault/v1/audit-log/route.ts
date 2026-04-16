@@ -21,6 +21,9 @@ export async function GET(req: NextRequest) {
       page: qp('page'),
       sort_field: qp('sort_field') || undefined,
       sort_direction: qp('sort_direction') || undefined,
+      type: searchParams.getAll('type'),
+      role: searchParams.getAll('role'),
+      show: searchParams.getAll('show'),
     })
 
     const { data, total } = await fetchBtcVaultAuditLogPage(parsed)

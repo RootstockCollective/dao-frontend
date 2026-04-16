@@ -1,6 +1,7 @@
 import type { Column } from '@/shared/context'
 
-import type { AuditLogUserRole, ColumnId } from './types'
+import type { AuditLogShowFilter, AuditLogUserRole, ColumnId } from './types'
+import { RBTC, WRBTC } from '@/lib/constants'
 
 /** Page size for audit log list + `TablePager` expandable step. */
 export const AUDIT_LOG_PAGE_SIZE = 20
@@ -40,6 +41,29 @@ export const FUND_MANAGER_LOG_TYPES = new Set([
   'SYNTHETIC_YIELD_UPDATED',
   'BUFFER_UPDATED',
 ])
+
+export const AUDIT_LOG_TYPE_FILTERS = [
+  { label: 'Vault deposit', value: 'VAULT_DEPOSIT' },
+  { label: 'Transfer to manager wallet', value: 'TRANSFER_TO_MANAGER_WALLET' },
+  { label: 'NAV update', value: 'NAV_UPDATED' },
+  { label: 'Top up synthetic yield APY', value: 'TOP_UP_SYNTHETIC_YIELD' },
+  { label: 'Top up manual buffer', value: 'TOP_UP_BUFFER' },
+  { label: 'Whitelisted', value: 'WHITELISTED_USER' },
+  { label: 'Dewhitelisted', value: 'DEWHITELISTED_USER' },
+]
+
+export const AUDIT_LOG_SHOW_FILTERS: ReadonlyArray<{ label: string; value: AuditLogShowFilter }> = [
+  { label: 'Reason', value: 'reason' },
+  { label: RBTC, value: 'rbtc' },
+  { label: WRBTC, value: 'wrbtc' },
+]
+
+export const AUDIT_LOG_ROLE_FILTERS: ReadonlyArray<{ label: string; value: AuditLogUserRole }> = [
+  { label: 'Admin', value: 'ADMIN' },
+  { label: 'Fund Manager', value: 'MANAGER' },
+  { label: 'Investor', value: 'INVESTOR' },
+  { label: 'Whitelister', value: 'WHITELISTER' },
+]
 
 export const ROLE_STYLES: Record<AuditLogUserRole, string> = {
   ADMIN: 'bg-[#08ffd0] text-v3-text-0',

@@ -21,8 +21,15 @@ const BTC_VAULT_AUDIT_LOGS_PAGE = gql`
     $skip: Int!
     $orderBy: BtcVaultLog_orderBy!
     $orderDirection: OrderDirection!
+    $where: BtcVaultLog_filter
   ) {
-    btcVaultLogs(first: $first, skip: $skip, orderBy: $orderBy, orderDirection: $orderDirection) {
+    btcVaultLogs(
+      first: $first
+      skip: $skip
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+      where: $where
+    ) {
       id
       vault
       type
@@ -42,8 +49,8 @@ const BTC_VAULT_AUDIT_LOGS_PAGE = gql`
 `
 
 const BTC_VAULT_AUDIT_LOGS_COUNT_CHUNK = gql`
-  query BtcVaultAuditLogsCountChunk($first: Int!, $skip: Int!) {
-    btcVaultLogs(first: $first, skip: $skip) {
+  query BtcVaultAuditLogsCountChunk($first: Int!, $skip: Int!, $where: BtcVaultLog_filter) {
+    btcVaultLogs(first: $first, skip: $skip, where: $where) {
       id
     }
   }
@@ -59,7 +66,7 @@ interface BtcVaultLogRaw {
   amountInWei: string | null
   detail: string | null
   isNative: boolean | null
-  role: string
+  role: string | null
   actor: string
   from: string | null
   destination: string | null
@@ -96,13 +103,57 @@ function auditLogOrderDirection(sortDirection: 'asc' | 'desc' | undefined): 'asc
   return sortDirection === 'asc' ? 'asc' : 'desc'
 }
 
-async function countBtcVaultLogsUncached(): Promise<number> {
+function buildShowClause(showFilters: ParsedQuery['show']): Record<string, unknown> | undefined {
+  if (!showFilters?.length) return undefined
+
+  const selected = new Set(showFilters)
+  const includeReason = selected.has('reason')
+  const includeRbtc = selected.has('rbtc')
+  const includeWrbtc = selected.has('wrbtc')
+  const clauses: Record<string, unknown>[] = []
+
+  if (includeReason) {
+    clauses.push({ detail_not: null })
+  }
+
+  if (includeRbtc && includeWrbtc) {
+    clauses.push({ amountInWei_not: null })
+  } else if (includeRbtc) {
+    clauses.push({ amountInWei_not: null, isNative_not: false })
+  } else if (includeWrbtc) {
+    clauses.push({ amountInWei_not: null, isNative: false })
+  }
+
+  if (!clauses.length) return undefined
+  return clauses.length === 1 ? clauses[0] : { or: clauses }
+}
+
+function buildAuditLogWhereFilter(params: ParsedQuery): Record<string, unknown> | undefined {
+  const clauses: Record<string, unknown>[] = []
+
+  if (params.type?.length) {
+    clauses.push({ type_in: params.type })
+  }
+  if (params.role?.length) {
+    clauses.push({ role_in: params.role })
+  }
+
+  const showClause = buildShowClause(params.show)
+  if (showClause) {
+    clauses.push(showClause)
+  }
+
+  if (!clauses.length) return undefined
+  return clauses.length === 1 ? clauses[0] : { and: clauses }
+}
+
+async function countBtcVaultLogsUncached(whereFilter?: Record<string, unknown>): Promise<number> {
   let skip = 0
   let total = 0
   for (;;) {
     const result = await btcVaultClient.query<{ btcVaultLogs: { id: string }[] }>({
       query: BTC_VAULT_AUDIT_LOGS_COUNT_CHUNK,
-      variables: { first: COUNT_PAGE_SIZE, skip },
+      variables: { first: COUNT_PAGE_SIZE, skip, where: whereFilter },
       fetchPolicy: 'no-cache',
     })
 
@@ -128,6 +179,7 @@ async function fetchBtcVaultAuditLogFromSubgraph(params: ParsedQuery): Promise<B
   const orderBy = auditLogOrderBy()
   const orderDirection = auditLogOrderDirection(params.sort_direction)
   const skip = (params.page - 1) * params.limit
+  const whereFilter = buildAuditLogWhereFilter(params)
 
   const [pageResult, total] = await Promise.all([
     btcVaultClient.query<{ btcVaultLogs: BtcVaultLogRaw[] }>({
@@ -137,10 +189,11 @@ async function fetchBtcVaultAuditLogFromSubgraph(params: ParsedQuery): Promise<B
         skip,
         orderBy,
         orderDirection,
+        where: whereFilter,
       },
       fetchPolicy: 'no-cache',
     }),
-    getCachedBtcVaultLogsTotal(),
+    whereFilter ? countBtcVaultLogsUncached(whereFilter) : getCachedBtcVaultLogsTotal(),
   ])
 
   if (pageResult.error) {

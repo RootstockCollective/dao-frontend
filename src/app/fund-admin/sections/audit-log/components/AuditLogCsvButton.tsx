@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 import { showToast } from '@/shared/notification'
 
 import { AUDIT_LOG_FETCH_LIMIT } from '../constants'
-import type { AuditLogApiResponse, AuditLogEntry, SortableColumnId } from '../types'
+import type { AuditLogApiFilters, AuditLogApiResponse, AuditLogEntry, SortableColumnId } from '../types'
 import { buildAuditLogUrl, formatAmountFromWei, formatAuditLogDateForCsv } from '../utils'
 const MAX_EXPORT_ROWS = 50000
 
@@ -29,10 +29,11 @@ function generateCsv(rows: string[][]): string {
 async function fetchAllAuditLogEntries(
   sortField: SortableColumnId | null,
   sortDirection: 'asc' | 'desc' | null,
+  filters?: AuditLogApiFilters,
 ): Promise<AuditLogEntry[]> {
   const limit = AUDIT_LOG_FETCH_LIMIT
 
-  const firstUrl = buildAuditLogUrl({ page: 1, limit, sortField, sortDirection })
+  const firstUrl = buildAuditLogUrl({ page: 1, limit, sortField, sortDirection, filters })
   const firstRes = await fetch(firstUrl, { cache: 'no-store' })
   if (!firstRes.ok) {
     const text = await firstRes.text()
@@ -49,7 +50,7 @@ async function fetchAllAuditLogEntries(
   const remainingPages = Array.from({ length: totalPages - 1 }, (_, i) => i + 2)
 
   const fetchPromises = remainingPages.map(async page => {
-    const url = buildAuditLogUrl({ page, limit, sortField, sortDirection })
+    const url = buildAuditLogUrl({ page, limit, sortField, sortDirection, filters })
     const res = await fetch(url, { cache: 'no-store' })
     if (!res.ok) {
       const text = await res.text()
@@ -82,6 +83,7 @@ function entryToCsvRow(entry: AuditLogEntry): string[] {
 interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   sortField: SortableColumnId | null
   sortDirection: 'asc' | 'desc' | null
+  filters?: AuditLogApiFilters
   disabled?: boolean
 }
 
@@ -90,6 +92,7 @@ export function AuditLogCsvButton({
   disabled = false,
   sortField,
   sortDirection,
+  filters,
   ...props
 }: Props) {
   const [isDownloading, setIsDownloading] = useState(false)
@@ -99,7 +102,7 @@ export function AuditLogCsvButton({
 
     setIsDownloading(true)
     try {
-      const allData = await fetchAllAuditLogEntries(sortField, sortDirection)
+      const allData = await fetchAllAuditLogEntries(sortField, sortDirection, filters)
 
       if (allData.length === 0) {
         showToast({

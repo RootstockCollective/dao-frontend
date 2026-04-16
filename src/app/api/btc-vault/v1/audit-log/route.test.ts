@@ -76,11 +76,11 @@ describe('GET /api/btc-vault/v1/audit-log', () => {
     expect(res.status).toBe(400)
   })
 
-  it('always reports date sort field in pagination even other sort field is provided', async () => {
+  it('reports selected sort direction with date sort field pagination metadata', async () => {
     mockFetch.mockResolvedValue({ data: [sampleEntry], total: 1 })
 
     const req = new NextRequest(
-      'http://localhost/api/btc-vault/v1/audit-log?sort_field=action&sort_direction=asc',
+      'http://localhost/api/btc-vault/v1/audit-log?sort_field=date&sort_direction=asc',
     )
     const res = await GET(req)
     expect(res.status).toBe(200)
@@ -90,5 +90,22 @@ describe('GET /api/btc-vault/v1/audit-log', () => {
     }
     expect(body.pagination.sort_field).toBe('date')
     expect(body.pagination.sort_direction).toBe('asc')
+  })
+
+  it('parses and forwards type/role/show filters', async () => {
+    mockFetch.mockResolvedValue({ data: [sampleEntry], total: 1 })
+
+    const req = new NextRequest(
+      'http://localhost/api/btc-vault/v1/audit-log?type=VAULT_DEPOSIT&type=NAV_UPDATED&role=MANAGER&show=reason&show=rbtc',
+    )
+    const res = await GET(req)
+    expect(res.status).toBe(200)
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: ['VAULT_DEPOSIT', 'NAV_UPDATED'],
+        role: ['MANAGER'],
+        show: ['reason', 'rbtc'],
+      }),
+    )
   })
 })

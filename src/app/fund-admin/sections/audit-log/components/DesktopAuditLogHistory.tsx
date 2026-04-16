@@ -77,7 +77,7 @@ export const DesktopAuditLogHistory = () => {
               <Span className="truncate block max-w-full">{data.action}</Span>
             </td>
             <td className="py-3 pr-4">
-              {data.value !== null ? (
+              {data.value ? (
                 <TokenAmountRow
                   formattedAmount={data.value.formattedAmount}
                   usdAmount={data.value.usdAmount}

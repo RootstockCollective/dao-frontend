@@ -55,6 +55,30 @@ export const BtcVaultWhitelistRoleHistoryQuerySchema = z.object({
 
 /** Sort fields for GET /api/btc-vault/v1/audit-log (UI columns; subgraph mapping TBD). */
 export const BtcVaultAuditLogSortFieldEnum = z.enum(['date'])
+export const BtcVaultAuditLogTypeEnum = z.enum([
+  'PAUSED_DEPOSITS',
+  'RESUMED_DEPOSITS',
+  'PAUSED_REDEEMS',
+  'RESUMED_REDEEMS',
+  'WHITELISTED_USER',
+  'DEWHITELISTED_USER',
+  'NAV_UPDATED',
+  'TRANSFER_TO_MANAGER_WALLET',
+  'VAULT_DEPOSIT',
+  'TOP_UP_BUFFER',
+  'TOP_UP_SYNTHETIC_YIELD',
+  'SYNTHETIC_YIELD_UPDATED',
+  'BUFFER_UPDATED',
+])
+export const BtcVaultAuditLogRoleEnum = z.enum([
+  'ADMIN',
+  'MANAGER',
+  'PAUSER',
+  'INVESTOR',
+  'BUFFER_INJECTOR',
+  'WHITELISTER',
+])
+export const BtcVaultAuditLogShowEnum = z.enum(['reason', 'rbtc', 'wrbtc'])
 
 export type BtcVaultAuditLogSortField = z.infer<typeof BtcVaultAuditLogSortFieldEnum>
 
@@ -64,4 +88,7 @@ export const BtcVaultAuditLogQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   sort_field: BtcVaultAuditLogSortFieldEnum.optional(),
   sort_direction: SortDirectionEnum.optional(),
+  type: z.array(BtcVaultAuditLogTypeEnum).optional(),
+  role: z.array(BtcVaultAuditLogRoleEnum).optional(),
+  show: z.array(BtcVaultAuditLogShowEnum).optional(),
 })

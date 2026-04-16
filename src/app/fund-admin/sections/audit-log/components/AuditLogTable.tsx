@@ -17,7 +17,7 @@ import { useScrollLock } from '@/shared/hooks/useScrollLock'
 import { AUDIT_LOG_PAGE_SIZE, DEFAULT_COLUMNS } from '../constants'
 import { useGetAuditLog } from '../hooks/'
 import { AuditLogCellDataMap, ColumnId, SortableColumnId } from '../types'
-import { convertAuditEntriesToRows } from '../utils'
+import { convertAuditEntriesToRows, toAuditLogApiFilters } from '../utils'
 import { AuditLogCsvButton } from './AuditLogCsvButton'
 import { AuditLogFilterSideBar } from './AuditLogFilterSideBar'
 import { DesktopAuditLogHistory } from './DesktopAuditLogHistory'
@@ -28,6 +28,7 @@ function isSortableColumnId(id: ColumnId | null): id is SortableColumnId {
 
 export const AuditLogTable = () => {
   const isDesktop = useIsDesktop()
+  const tableTopRef = useRef<HTMLDivElement>(null)
   const { sort } = useTableContext<ColumnId, AuditLogCellDataMap>()
   const dispatch = useTableActionsContext<ColumnId, AuditLogCellDataMap>()
   const [pageEnd, setPageEnd] = useState(AUDIT_LOG_PAGE_SIZE)
@@ -47,15 +48,24 @@ export const AuditLogTable = () => {
   const rbtcUsdPrice = prices[RBTC]?.price ?? 0
 
   const handleApplyFilters = (filters: ActiveFilter[]) => {
+    setPageEnd(AUDIT_LOG_PAGE_SIZE)
+    setPagerKey(k => k + 1)
     setActiveFilters(filters)
+    if (isDesktop) {
+      setTimeout(() => {
+        tableTopRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 0)
+    }
   }
 
   const sortField = isSortableColumnId(sort.columnId) ? sort.columnId : null
+  const apiFilters = useMemo(() => toAuditLogApiFilters(activeFilters), [activeFilters])
 
   const { entries, isLoading, error, pagination } = useGetAuditLog({
     visibleItemCount: pageEnd,
     sortField,
     sortDirection: sort.direction,
+    filters: apiFilters,
     isEnabled: hasResolvedInitialSort,
   })
 
@@ -97,20 +107,14 @@ export const AuditLogTable = () => {
     }
   }, [sort.columnId, sort.direction])
 
-  // Reset pager when filters change
-  useEffect(() => {
-    setPageEnd(AUDIT_LOG_PAGE_SIZE)
-    setPagerKey(k => k + 1)
-  }, [activeFilters])
-
   return (
-    <div className="w-full flex flex-col gap-8 md:gap-10">
+    <div ref={tableTopRef} className="w-full flex flex-col gap-8 md:gap-10">
       <div className="flex items-center justify-between h-14">
         <Header variant="h3" className="m-0" caps data-testid="audit-log-table-header">
           RECORD OF OPERATIONAL ACTIONS
         </Header>
         <div className="flex items-center gap-4">
-          <AuditLogCsvButton sortField={sortField} sortDirection={sort.direction} />
+          <AuditLogCsvButton sortField={sortField} sortDirection={sort.direction} filters={apiFilters} />
           <div className="flex items-center">
             <FilterButton
               isOpen={isFilterSidebarOpen}
