@@ -65,7 +65,7 @@ export function formatAmountFromWei(wei: string | bigint | null, decimalPlaces =
 }
 
 export function formatAuditAmountUsd(amountWei: string | null, rbtcUsdPrice: number): string | null {
-  if (amountWei == null || rbtcUsdPrice <= 0) return null
+  if (amountWei == null || amountWei === '0' || rbtcUsdPrice <= 0) return null
   try {
     BigInt(amountWei)
   } catch {

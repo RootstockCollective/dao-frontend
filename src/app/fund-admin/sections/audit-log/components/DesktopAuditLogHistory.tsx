@@ -1,8 +1,10 @@
 'use client'
 
+import { isAddress } from 'viem'
+
 import { TokenImage } from '@/components/TokenImage/TokenImage'
 import { Paragraph, Span } from '@/components/Typography'
-import { RBTC } from '@/lib/constants'
+import { EXPLORER_URL, RBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { useTableContext } from '@/shared/context'
 
@@ -19,7 +21,7 @@ const TokenAmountRow = ({
 }) => {
   return (
     <div className="flex items-end gap-2">
-      <div className="flex flex-col items-end pb-0.5">
+      <div className="flex flex-col items-end">
         <div className="flex items-center gap-1">
           <Span variant="body">{formattedAmount}</Span>
           <TokenImage symbol={RBTC} size={16} />
@@ -94,7 +96,19 @@ export const DesktopAuditLogHistory = () => {
                         usdAmount={data.value.usdAmount}
                       />
                     )}
-                    {data.reason && <Span className="truncate">{data.reason}</Span>}
+                    {data.reason &&
+                      (isAddress(data.reason, { strict: false }) ? (
+                        <a
+                          href={`${EXPLORER_URL}/address/${data.reason}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="min-w-0 max-w-full truncate text-v3-primary underline underline-offset-2 block"
+                        >
+                          <Span className="truncate">{data.reason}</Span>
+                        </a>
+                      ) : (
+                        <Span className="truncate">{data.reason}</Span>
+                      ))}
                   </div>
                 ) : (
                   <Span variant="body-l">—</Span>
