@@ -13,10 +13,7 @@ export const useAuditLogTableSort = () => {
       dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId, direction: 'desc' } })
       return
     }
-    const nextDir = currentSort.direction === 'desc' ? 'asc' : currentSort.direction === 'asc' ? null : 'desc'
-    dispatch({
-      type: 'SORT_BY_COLUMN',
-      payload: { columnId: nextDir ? columnId : null, direction: nextDir },
-    })
+    const nextDir = currentSort.direction === 'asc' ? 'desc' : 'asc'
+    dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId, direction: nextDir } })
   }
 }
