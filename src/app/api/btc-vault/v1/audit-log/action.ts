@@ -119,7 +119,12 @@ function buildShowClause(showFilters: ParsedQuery['show']): Record<string, unkno
   if (includeRbtc && includeWrbtc) {
     clauses.push({ amountInWei_not: null })
   } else if (includeRbtc) {
-    clauses.push({ amountInWei_not: null, isNative_not: false })
+    clauses.push({
+      or: [
+        { amountInWei_not: null, isNative: true },
+        { amountInWei_not: null, isNative: null },
+      ],
+    })
   } else if (includeWrbtc) {
     clauses.push({ amountInWei_not: null, isNative: false })
   }
