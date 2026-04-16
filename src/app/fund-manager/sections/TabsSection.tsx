@@ -5,6 +5,8 @@ import { useCallback, useState } from 'react'
 import { SolidTabs } from '@/components/Tabs'
 import { TableProvider } from '@/shared/context'
 
+import { NavHistoryTable } from './nav-history/components/NavHistoryTable'
+import type { NavColumnId, NavHistoryCellDataMap } from './nav-history/config'
 import { DepositWindowRequestsTable } from './transactions/components/DepositWindowRequestsTable'
 import type { ColumnId, DepositWindowCellDataMap } from './transactions/config'
 
@@ -36,7 +38,11 @@ export function TabsSection() {
             <DepositWindowRequestsTable />
           </TableProvider>
         )}
-        {activeTab === 'NAV History' && 'NAV History table'}
+        {activeTab === 'NAV History' && (
+          <TableProvider<NavColumnId, NavHistoryCellDataMap>>
+            <NavHistoryTable />
+          </TableProvider>
+        )}
         {activeTab === 'Ongoing' && 'Ongoing table'}
       </div>
     </SolidTabs>
