@@ -40,10 +40,10 @@ export const DesktopAuditLogHistory = () => {
   return (
     <table className="w-full min-w-[700px] table-fixed">
       <colgroup>
-        <col className="w-1/4" />
-        <col className="w-1/4" />
-        <col className="w-1/4" />
-        <col className="w-1/4" />
+        <col className="w-36" />
+        <col className="w-72" />
+        <col />
+        <col className="w-36" />
       </colgroup>
       <thead>
         <tr className="border-b border-b-v3-text-60">
