@@ -58,6 +58,8 @@ function normalizeRowFromSubgraph(raw: RawBtcVaultNavHistoryRow): BtcVaultNavHis
     requestsProcessed: Number(raw.requestsProcessed),
     blockNumber: Number(raw.blockNumber),
     transactionHash: raw.transactionHash.toLowerCase(),
+    deposits: [],
+    redeems: [],
   }
 }
 

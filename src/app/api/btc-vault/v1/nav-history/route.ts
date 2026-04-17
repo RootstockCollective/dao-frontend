@@ -1,47 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { z } from 'zod'
+import { NextResponse } from 'next/server'
 
-import { handleApiError, queryParam } from '@/app/api/utils/helpers'
+import { handleApiError } from '@/app/api/utils/helpers'
 import type { PaginationResponse } from '@/app/api/utils/types'
 
-import { BtcVaultNavHistoryQuerySchema } from '../schemas'
 import { fetchBtcVaultNavHistoryPage } from './action'
 
+export const revalidate = 20
 /**
  * GET /api/btc-vault/v1/nav-history
- * Paginated BTC vault NAV history: state-sync DB first, subgraph fallback.
- *
- * Query: limit (1–200, default 20), page (default 1),
+ * Returns every BTC vault NAV history row in one response (no query params).
+ * `pagination` is kept in the payload for backwards-compatibility and always
+ * reports a single page containing everything.
  */
-export async function GET(req: NextRequest) {
+export async function GET() {
   try {
-    const searchParams = new URL(req.url).searchParams
-    const qp = queryParam(searchParams)
+    const { data, total } = await fetchBtcVaultNavHistoryPage()
 
-    const parsed = BtcVaultNavHistoryQuerySchema.parse({
-      limit: qp('limit'),
-      page: qp('page'),
-      sort_field: qp('sort_field'),
-      sort_direction: qp('sort_direction'),
-    })
-
-    const { data, total } = await fetchBtcVaultNavHistoryPage({
-      limit: parsed.limit,
-      page: parsed.page,
-      sort_field: parsed.sort_field,
-      sort_direction: parsed.sort_direction,
-    })
-
-    const totalPages = Math.ceil(total / parsed.limit) || 1
-    const offset = (parsed.page - 1) * parsed.limit
     const pagination: PaginationResponse = {
-      page: parsed.page,
-      limit: parsed.limit,
-      offset,
+      page: 1,
+      limit: total,
+      offset: 0,
       total,
-      totalPages,
-      sort_field: parsed.sort_field,
-      sort_direction: parsed.sort_direction,
+      totalPages: 1,
+      sort_field: 'processedAt',
+      sort_direction: 'desc',
     }
 
     return NextResponse.json(
@@ -53,12 +35,6 @@ export async function GET(req: NextRequest) {
       },
     )
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { success: false, error: 'Validation failed', details: error.flatten() },
-        { status: 400 },
-      )
-    }
     return handleApiError(error, 'btc vault nav history route')
   }
 }

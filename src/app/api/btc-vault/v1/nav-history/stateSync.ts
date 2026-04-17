@@ -35,6 +35,8 @@ function normalizeRowFromStateSync(raw: Record<string, unknown>): BtcVaultNavHis
     requestsProcessed: Number(raw.requestsProcessed),
     blockNumber: Number(raw.blockNumber),
     transactionHash: bytesToHexLower(raw.transactionHash),
+    deposits: [],
+    redeems: [],
   }
 }
 
