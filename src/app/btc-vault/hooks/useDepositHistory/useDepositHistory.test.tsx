@@ -14,6 +14,7 @@ const MOCK_DTOS: EpochSettledEventDto[] = [
     assets: '3000',
     supply: '2800',
     closedAt: '1700000',
+    apy: 0.12,
   },
   {
     epochId: '2',
@@ -21,6 +22,7 @@ const MOCK_DTOS: EpochSettledEventDto[] = [
     assets: '2000',
     supply: '1900',
     closedAt: '1600000',
+    apy: 0.08,
   },
   {
     epochId: '1',
@@ -28,6 +30,7 @@ const MOCK_DTOS: EpochSettledEventDto[] = [
     assets: '1000',
     supply: '1000',
     closedAt: '1500000',
+    apy: null,
   },
 ]
 
