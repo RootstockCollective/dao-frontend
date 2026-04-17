@@ -38,7 +38,7 @@ function sanitizeCsvValue(value: string): string {
 }
 
 function generateCsv(rows: string[][]): string {
-  const headers = ['ID', 'Date', 'Action', 'Detail', 'Token Amount', 'Token Symbol', 'Role']
+  const headers = ['Date', 'Action', 'Detail', 'Token Amount', 'Token Symbol', 'Role', 'Transaction Hash']
   const csvRows = [headers.map(sanitizeCsvValue), ...rows.map(r => r.map(sanitizeCsvValue))]
   return csvRows.map(r => r.join(',')).join('\n')
 }
@@ -96,13 +96,13 @@ async function fetchAllAuditLogEntries(
 
 function entryToCsvRow(entry: AuditLogApiEntry): string[] {
   return [
-    String(entry.id),
     formatAuditLogDateForCsv(entry.blockTimestamp),
     entry.type,
     entry.detail?.trim() ?? '',
     formatAmountFromWei(entry.amountInWei, 18) ?? '',
     entry.isNative === false ? WRBTC : RBTC,
     entry.role ?? '',
+    entry.transactionHash,
   ]
 }
 
