@@ -71,7 +71,7 @@
     "luxon": "^3.7.1",
     "moment": "^2.30.1",
     "motion": "^12.23.12",
-    "next": "16.1.7",
+    "next": "16.2.4",
     "next-logger": "5.0.2",
     "next-navigation-guard": "^0.2.0",
     "pg": "^8.16.3",
