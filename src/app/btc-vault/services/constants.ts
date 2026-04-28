@@ -12,6 +12,10 @@ export const NOT_WHITELISTED_REASON = 'Address not whitelisted.'
 export const DEPOSIT_WHITELIST_BLOCK_REASON = 'Your address is not whitelisted for deposits'
 /** Shown while the deposit whitelist check is still in flight (DAO-2075). */
 export const DEPOSIT_ELIGIBILITY_LOADING_REASON = 'Checking deposit eligibility...'
+/** Shown when withdraw is blocked because the address is not on the BTC vault whitelist (DAO-2164). */
+export const WITHDRAWAL_WHITELIST_BLOCK_REASON = 'Your address is not whitelisted for withdrawals'
+/** Shown while the withdrawal whitelist check is still in flight (DAO-2164). */
+export const WITHDRAWAL_ELIGIBILITY_LOADING_REASON = 'Checking withdrawal eligibility...'
 /** Shown when withdraw is blocked because the user has no vault share balance (DAO-2109). */
 export const NO_VAULT_SHARES_REASON = 'No vault shares to withdraw'
 /** Shown when actions are disabled while a deposit/withdraw transaction is still pending (DAO-2109). */

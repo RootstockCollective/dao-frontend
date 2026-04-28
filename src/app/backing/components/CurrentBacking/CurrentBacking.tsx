@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { formatSymbol } from '@/app/shared/formatter'
 import { Label } from '@/components/Typography'
 
@@ -9,7 +7,7 @@ interface CurrentBackingProps {
   existentAllocation: bigint
 }
 
-export const CurrentBacking: FC<CurrentBackingProps> = ({ existentAllocation }) => {
+export const CurrentBacking = ({ existentAllocation }: CurrentBackingProps) => {
   return (
     <div className="border-t border-v3-bg-accent-40 p-3" data-testid="currentBackingContainer">
       <Label className="text-xs text-v3-text-60" data-testid="currentBackingLabel">

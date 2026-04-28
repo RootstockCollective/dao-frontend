@@ -1,13 +1,15 @@
-import { FC } from 'react'
-
 import { BackersPercentageCell, BackersPercentageProps } from '../Cell/BackersPercentageCell'
 import { MobileDataSection } from './MobileDataSection'
 
-export const MobileBackerRewardsSection: FC<{
+export const MobileBackerRewardsSection = ({
+  backer_rewards,
+  showChangeIndicator = false,
+  isRowSelected = false,
+}: {
   backer_rewards: BackersPercentageProps
   showChangeIndicator?: boolean
   isRowSelected?: boolean
-}> = ({ backer_rewards, showChangeIndicator = false, isRowSelected = false }) => {
+}) => {
   const hasValue = backer_rewards.percentage?.current != null
 
   return (

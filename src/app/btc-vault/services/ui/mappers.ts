@@ -1,8 +1,5 @@
-import { formatEther } from 'viem'
-
 import { DEPOSIT_ACTIONS } from '@/app/api/btc-vault/v1/schemas'
 import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
-import Big from '@/lib/big'
 import { RBTC } from '@/lib/constants'
 import { formatCurrencyWithLabel, shortAddress } from '@/lib/utils'
 
@@ -12,7 +9,9 @@ import {
   DEPOSIT_PAUSED_REASON,
   DEPOSIT_WHITELIST_BLOCK_REASON,
   NO_VAULT_SHARES_REASON,
+  WITHDRAWAL_ELIGIBILITY_LOADING_REASON,
   WITHDRAWAL_PAUSED_REASON,
+  WITHDRAWAL_WHITELIST_BLOCK_REASON,
 } from '../constants'
 import type {
   CapitalAllocation,
@@ -185,17 +184,16 @@ export function toUserPositionDisplay(raw: UserPosition, rbtcPrice: number): Use
 
 /**
  * Consolidates pause state, eligibility, active requests, vault share balance, and optional
- * deposit whitelist resolution into action eligibility.
+ * whitelist resolution into action eligibility.
  * Determines whether the user can deposit/withdraw and provides human-readable block reasons.
- * When `isWhitelisted` is provided, it gates deposit first (loading / not whitelisted); withdrawal
- * ignores whitelist and still uses pause, eligibility, active requests, and share balance.
- * When `isWhitelisted` is omitted, eligibility alone gates deposit (legacy callers).
+ * When `isWhitelisted` is provided, it gates both deposit and withdrawal (loading / not whitelisted).
+ * When `isWhitelisted` is omitted, eligibility alone gates both actions (legacy callers).
  * @param pause - Current pause state for deposits and withdrawals
- * @param eligibility - User's eligibility status (e.g. KYC); also used for withdraw when whitelist is supplied separately
+ * @param eligibility - User's eligibility status (e.g. KYC)
  * @param activeRequests - User's currently active vault requests
  * @param hasVaultShares - Whether the user holds a non-zero vault share balance (`balanceOf` > 0)
- * @param isWhitelisted - When provided: `false` blocks deposit with whitelist copy; `null` blocks deposit while loading; `true` applies pause/eligibility/active rules for deposit
- * @returns Object with canDeposit/canWithdraw booleans and block reason strings
+ * @param isWhitelisted - When provided: `false` blocks deposit/withdraw with whitelist copy; `null` blocks while loading; `true` applies pause/eligibility/active rules
+ * @returns Object with canDeposit/canWithdraw, hasVaultShares, and block reason strings
  */
 export function toActionEligibility(
   pause: PauseState,
@@ -231,6 +229,7 @@ export function toActionEligibility(
     return {
       canDeposit,
       canWithdraw,
+      hasVaultShares,
       depositBlockReason,
       withdrawBlockReason,
       pauseState: pause,
@@ -240,9 +239,10 @@ export function toActionEligibility(
   if (isWhitelisted === null) {
     return {
       canDeposit: false,
-      canWithdraw,
+      canWithdraw: false,
+      hasVaultShares,
       depositBlockReason: DEPOSIT_ELIGIBILITY_LOADING_REASON,
-      withdrawBlockReason,
+      withdrawBlockReason: WITHDRAWAL_ELIGIBILITY_LOADING_REASON,
       pauseState: pause,
     }
   }
@@ -250,9 +250,10 @@ export function toActionEligibility(
   if (isWhitelisted === false) {
     return {
       canDeposit: false,
-      canWithdraw,
+      canWithdraw: false,
+      hasVaultShares,
       depositBlockReason: DEPOSIT_WHITELIST_BLOCK_REASON,
-      withdrawBlockReason,
+      withdrawBlockReason: WITHDRAWAL_WHITELIST_BLOCK_REASON,
       pauseState: pause,
     }
   }
@@ -269,6 +270,7 @@ export function toActionEligibility(
   return {
     canDeposit,
     canWithdraw,
+    hasVaultShares,
     depositBlockReason,
     withdrawBlockReason,
     pauseState: pause,
@@ -300,25 +302,26 @@ export function toActiveRequestDisplay(
   // Withdrawals: rBTC from epoch snapshot proportion — same as shares × NAV with on-chain rounding:
   // `(shares * (assetsAtClose+1)) / (supplyAtClose+1)`. `supplyAtClose` must use the same raw share units as `req.amount`.
   // Fallback to `lockedSharePrice` when snapshot totals are absent (tests / legacy).
-  // Withdrawals without epoch data must show '—': `req.amount` is 24-decimal shares, not 18-decimal rBTC (never formatEther on it).
-  const amountFormatted =
+  // Withdrawals without epoch data must show '—': `req.amount` is 24-decimal shares, not 18-decimal rBTC.
+  const amountWei: bigint | null =
     req.type === 'withdrawal' && hasSharePrice
       ? (() => {
           const a = claimableInfo!.assetsAtCloseWei
           const s = claimableInfo!.supplyAtCloseWei
           if (a != null && s != null && s + 1n > 0n) {
-            return formatEther((req.amount * lockedSharePriceFromEpochSnapshot(a, s)) / WEI_PER_ETHER)
+            return (req.amount * lockedSharePriceFromEpochSnapshot(a, s)) / WEI_PER_ETHER
           }
-          const nav = claimableInfo!.lockedSharePrice
-          return formatEther((req.amount * nav) / WEI_PER_ETHER)
+          return (req.amount * claimableInfo!.lockedSharePrice) / WEI_PER_ETHER
         })()
       : req.type === 'withdrawal'
-        ? '—'
-        : formatEther(req.amount)
+        ? null
+        : req.amount
+
+  const amountFormatted = amountWei != null ? formatSymbol(amountWei, RBTC) : '—'
 
   const usdEquivalentFormatted =
-    amountFormatted !== '—' && rbtcPrice > 0 && Big(amountFormatted).gt(0)
-      ? formatCurrencyWithLabel(Big(amountFormatted).mul(rbtcPrice))
+    amountWei != null && amountWei > 0n && rbtcPrice > 0
+      ? formatCurrencyWithLabel(getFiatAmount(amountWei, rbtcPrice))
       : null
   return {
     id: req.id,
@@ -329,7 +332,7 @@ export function toActiveRequestDisplay(
     claimable: claimableInfo?.claimable ?? false,
     lockedSharePriceFormatted:
       claimableInfo?.lockedSharePrice != null
-        ? `${formatEther(lockedSharePriceToNavPerHumanShareWei(claimableInfo.lockedSharePrice))}/share`
+        ? `${formatSymbol(lockedSharePriceToNavPerHumanShareWei(claimableInfo.lockedSharePrice), RBTC)}/share`
         : null,
     finalizeId: req.type === 'deposit' ? req.epochId : req.batchRedeemId,
     epochId: req.epochId,
@@ -410,7 +413,7 @@ export function toPaginatedHistoryDisplay(
       let amountFormatted: string
       let fiatAmountFormatted: string | null = null
       if (isDeposit) {
-        amountFormatted = formatEther(req.amount)
+        amountFormatted = formatSymbol(req.amount, RBTC)
         if (rbtcPrice > 0) {
           fiatAmountFormatted = formatCurrencyWithLabel(getFiatAmount(req.amount, rbtcPrice))
         }
@@ -531,7 +534,7 @@ export function apiHistoryToPaginatedDisplay(
     return {
       id: item.id,
       type,
-      amountFormatted: isDeposit ? formatEther(amountWei) : formatSymbol(amountWei, 'ctokenvault'),
+      amountFormatted: isDeposit ? formatSymbol(amountWei, RBTC) : formatSymbol(amountWei, 'ctokenvault'),
       status,
       createdAtFormatted: formatDateMonthFirst(item.timestamp),
       finalizedAtFormatted: null,
@@ -542,9 +545,7 @@ export function apiHistoryToPaginatedDisplay(
       displayStatus,
       displayStatusLabel,
       fiatAmountFormatted:
-        isDeposit && rbtcPrice > 0
-          ? formatCurrencyWithLabel(Big(formatEther(amountWei)).mul(rbtcPrice))
-          : null,
+        isDeposit && rbtcPrice > 0 ? formatCurrencyWithLabel(getFiatAmount(amountWei, rbtcPrice)) : null,
       claimTokenType: isDeposit ? ('rbtc' as const) : ('shares' as const),
       updatedAtFormatted: formatDateShort(item.timestamp),
     }
@@ -566,15 +567,14 @@ export function apiHistoryToPaginatedDisplay(
  * @returns Display object with formatted balance, fiat, and percentage
  */
 export function toWalletBalanceDisplay(wallet: WalletBalance, rbtcPrice: number): WalletBalanceDisplay {
-  const amountEther = formatEther(wallet.amount)
   const fiatAmountFormatted =
-    rbtcPrice > 0 ? formatCurrencyWithLabel(Big(amountEther).mul(rbtcPrice)) : '$0.00 USD'
+    rbtcPrice > 0 ? formatCurrencyWithLabel(getFiatAmount(wallet.amount, rbtcPrice)) : '$0.00 USD'
   return {
     label: wallet.label,
     ...(wallet.labelUrl != null && wallet.labelUrl !== '' ? { labelUrl: wallet.labelUrl } : {}),
     trackingPlatform: wallet.trackingPlatform,
     trackingUrl: wallet.trackingUrl,
-    amountFormatted: amountEther,
+    amountFormatted: formatSymbol(wallet.amount, RBTC),
     fiatAmountFormatted,
     percentFormatted: `${wallet.percentOfTotal}%`,
   }

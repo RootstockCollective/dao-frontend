@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { CommonComponentProps } from '@/components/commonProps'
 import {
@@ -16,11 +16,11 @@ interface BuilderFilterDropdownProps extends CommonComponentProps {
   options?: BuilderFilterOption[]
 }
 
-export const BuilderFilterDropdown: FC<BuilderFilterDropdownProps> = ({
+export const BuilderFilterDropdown = ({
   className,
   onSelected,
   options = builderFilterOptions,
-}) => {
+}: BuilderFilterDropdownProps) => {
   const [selectedOptionId, setSelectedOptionId] = useState<BuilderFilterOptionId>(options[0].id)
 
   useEffect(() => {

@@ -7,6 +7,12 @@ import unicorn from 'eslint-plugin-unicorn'
 import tseslint from 'typescript-eslint'
 
 const config = [
+  // Keep `eslint .` scoped to the working copy: git worktrees, build output, and IDE
+  // folders are not ignored by default and make lint appear "stuck" (duplicate src + .next).
+  {
+    ignores: ['**/.worktrees/**', '**/.next/**', '.cursor/**', '.eslintcache'],
+  },
+
   ...nextCoreWebVitals,
 
   prettierConfig,
@@ -129,7 +135,7 @@ const config = [
         },
       ],
       '@typescript-eslint/no-restricted-types': [
-        'warn',
+        'error',
         {
           types: {
             FC: {

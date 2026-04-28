@@ -1,6 +1,5 @@
 'use client'
 
-import type { FC } from 'react'
 import { memo } from 'react'
 
 import { TokenImage } from '@/components/TokenImage'
@@ -13,7 +12,7 @@ interface Props {
   row: DepositHistoryTableType['Row']
 }
 
-export const MobileDepositHistoryCard: FC<Props> = memo(({ row }) => {
+export const MobileDepositHistoryCard = memo(({ row }: Props) => {
   const { data } = row
 
   return (

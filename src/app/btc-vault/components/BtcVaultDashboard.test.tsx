@@ -1,10 +1,12 @@
 import { cleanup, render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { ReactNode } from 'react'
 
 import { VAULT_SHARE_MULTIPLIER, WeiPerEther } from '@/lib/constants'
 
+import type { VaultRequest } from '../services/types'
 import type { UserPositionDisplay } from '../services/ui/types'
 import { BtcVaultDashboard } from './BtcVaultDashboard'
 
@@ -16,6 +18,8 @@ function Wrapper({ children }: { children: ReactNode }) {
 
 const mockUseAccount = vi.fn()
 const mockUseUserPosition = vi.fn()
+const mockUseActionEligibility = vi.fn()
+const mockUseBtcVaultWithdrawFlow = vi.fn()
 
 vi.mock('wagmi', () => ({
   useAccount: () => mockUseAccount(),
@@ -25,8 +29,53 @@ vi.mock('../hooks/useUserPosition/useUserPosition', () => ({
   useUserPosition: (address: string | undefined) => mockUseUserPosition(address),
 }))
 
+vi.mock('../hooks/useActionEligibility', () => ({
+  useActionEligibility: (address: string | undefined) => mockUseActionEligibility(address),
+}))
+
+vi.mock('../hooks/useBtcVaultWithdrawFlow', () => ({
+  useBtcVaultWithdrawFlow: (opts: { onRequestSubmitted?: () => void }) =>
+    mockUseBtcVaultWithdrawFlow(opts),
+}))
+
 vi.mock('./BtcVaultActions', () => ({
   BtcVaultActions: () => <div data-testid="btc-vault-actions" />,
+}))
+
+vi.mock('./BtcVaultClaimSharesButton', () => ({
+  BtcVaultClaimSharesButton: ({
+    vaultRequest,
+    onAfterClaimRefetch,
+  }: {
+    vaultRequest: VaultRequest | null
+    onAfterClaimRefetch?: () => void
+  }) => (
+    <button
+      type="button"
+      data-testid="btc-vault-claim-shares-probe"
+      data-request-id={vaultRequest?.id ?? ''}
+      data-has-refetch={onAfterClaimRefetch ? 'yes' : 'no'}
+      onClick={() => onAfterClaimRefetch?.()}
+    />
+  ),
+}))
+
+vi.mock('./BtcVaultRedeemSharesButton', () => ({
+  BtcVaultRedeemSharesButton: ({
+    vaultRequest,
+    onAfterRedeemRefetch,
+  }: {
+    vaultRequest: VaultRequest | null
+    onAfterRedeemRefetch?: () => void
+  }) => (
+    <button
+      type="button"
+      data-testid="btc-vault-redeem-shares-probe"
+      data-request-id={vaultRequest?.id ?? ''}
+      data-has-refetch={onAfterRedeemRefetch ? 'yes' : 'no'}
+      onClick={() => onAfterRedeemRefetch?.()}
+    />
+  ),
 }))
 
 const MOCK_DISPLAY: UserPositionDisplay = {
@@ -53,6 +102,31 @@ describe('BtcVaultDashboard', () => {
   beforeEach(() => {
     mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
     mockUseUserPosition.mockReturnValue({ data: MOCK_DISPLAY, isLoading: false })
+    mockUseActionEligibility.mockReturnValue({
+      data: {
+        canDeposit: true,
+        canWithdraw: true,
+        hasVaultShares: false,
+        depositBlockReason: '',
+        withdrawBlockReason: '',
+      },
+      isLoading: false,
+      refetch: vi.fn(),
+    })
+    mockUseBtcVaultWithdrawFlow.mockReturnValue({
+      isWithdrawModalOpen: false,
+      openWithdrawModal: vi.fn(),
+      closeWithdrawModal: vi.fn(),
+      handleApproveWithdrawShares: vi.fn(),
+      handleRequestWithdrawRedeem: vi.fn(),
+      allowance: undefined,
+      isAllowanceReadLoading: false,
+      hasAllowanceFor: vi.fn().mockResolvedValue(false),
+      isApprovingShares: false,
+      isWithdrawSubmitting: false,
+      isAllowanceTxFailed: false,
+      allowanceTxHash: undefined,
+    })
   })
 
   afterEach(() => {
@@ -219,5 +293,124 @@ describe('BtcVaultDashboard', () => {
 
     const dashes = screen.getAllByText('—')
     expect(dashes.length).toBe(7)
+  })
+
+  it('forwards claimableDepositRequest and onAfterClaimRefetch to Claim Shares', () => {
+    const onRefetch = vi.fn()
+    const claimableReq: VaultRequest = {
+      id: 'dep-dash-probe',
+      type: 'deposit',
+      status: 'claimable',
+      amount: 1n,
+      epochId: '1',
+      batchRedeemId: null,
+      timestamps: { created: 0 },
+      txHashes: {},
+    }
+    render(
+      <BtcVaultDashboard claimableDepositRequest={claimableReq} onAfterClaimRefetch={onRefetch} />,
+      { wrapper: Wrapper },
+    )
+    const probe = screen.getByTestId('btc-vault-claim-shares-probe')
+    expect(probe).toHaveAttribute('data-request-id', 'dep-dash-probe')
+    expect(probe).toHaveAttribute('data-has-refetch', 'yes')
+  })
+
+  it('passes null claimableDepositRequest to Claim Shares when omitted', () => {
+    render(<BtcVaultDashboard />, { wrapper: Wrapper })
+    const probe = screen.getByTestId('btc-vault-claim-shares-probe')
+    expect(probe).toHaveAttribute('data-request-id', '')
+    expect(probe).toHaveAttribute('data-has-refetch', 'yes')
+  })
+
+  it('forwards claimableWithdrawRequest and onAfterRedeemRefetch to Claim rBTC', () => {
+    const onRefetch = vi.fn()
+    const claimableWithdraw: VaultRequest = {
+      id: 'red-dash-probe',
+      type: 'withdrawal',
+      status: 'claimable',
+      amount: 1n,
+      epochId: null,
+      batchRedeemId: '9',
+      timestamps: { created: 0 },
+      txHashes: {},
+    }
+    render(
+      <BtcVaultDashboard claimableWithdrawRequest={claimableWithdraw} onAfterRedeemRefetch={onRefetch} />,
+      { wrapper: Wrapper },
+    )
+    const probe = screen.getByTestId('btc-vault-redeem-shares-probe')
+    expect(probe).toHaveAttribute('data-request-id', 'red-dash-probe')
+    expect(probe).toHaveAttribute('data-has-refetch', 'yes')
+  })
+
+  it('passes null claimableWithdrawRequest to Claim rBTC when omitted', () => {
+    render(<BtcVaultDashboard />, { wrapper: Wrapper })
+    const probe = screen.getByTestId('btc-vault-redeem-shares-probe')
+    expect(probe).toHaveAttribute('data-request-id', '')
+    expect(probe).toHaveAttribute('data-has-refetch', 'yes')
+  })
+
+  it('refetches action eligibility after parent onAfterClaimRefetch when claim probe fires', async () => {
+    const user = userEvent.setup()
+    const refetchEligibility = vi.fn()
+    mockUseActionEligibility.mockReturnValue({
+      data: {
+        canDeposit: true,
+        canWithdraw: true,
+        hasVaultShares: false,
+        depositBlockReason: '',
+        withdrawBlockReason: '',
+      },
+      isLoading: false,
+      refetch: refetchEligibility,
+    })
+    const onRefetch = vi.fn()
+    render(<BtcVaultDashboard onAfterClaimRefetch={onRefetch} />, { wrapper: Wrapper })
+    await user.click(screen.getByTestId('btc-vault-claim-shares-probe'))
+    expect(onRefetch).toHaveBeenCalledTimes(1)
+    expect(refetchEligibility).toHaveBeenCalledTimes(1)
+    expect(onRefetch.mock.invocationCallOrder[0]).toBeLessThan(refetchEligibility.mock.invocationCallOrder[0])
+  })
+
+  it('refetches action eligibility when claim probe fires without parent callback', async () => {
+    const user = userEvent.setup()
+    const refetchEligibility = vi.fn()
+    mockUseActionEligibility.mockReturnValue({
+      data: {
+        canDeposit: true,
+        canWithdraw: true,
+        hasVaultShares: false,
+        depositBlockReason: '',
+        withdrawBlockReason: '',
+      },
+      isLoading: false,
+      refetch: refetchEligibility,
+    })
+    render(<BtcVaultDashboard />, { wrapper: Wrapper })
+    await user.click(screen.getByTestId('btc-vault-claim-shares-probe'))
+    expect(refetchEligibility).toHaveBeenCalledTimes(1)
+  })
+
+  it('refetches action eligibility after parent onAfterRedeemRefetch when redeem probe fires', async () => {
+    const user = userEvent.setup()
+    const refetchEligibility = vi.fn()
+    mockUseActionEligibility.mockReturnValue({
+      data: {
+        canDeposit: true,
+        canWithdraw: true,
+        hasVaultShares: false,
+        depositBlockReason: '',
+        withdrawBlockReason: '',
+      },
+      isLoading: false,
+      refetch: refetchEligibility,
+    })
+    const onRefetch = vi.fn()
+    render(<BtcVaultDashboard onAfterRedeemRefetch={onRefetch} />, { wrapper: Wrapper })
+    await user.click(screen.getByTestId('btc-vault-redeem-shares-probe'))
+    expect(onRefetch).toHaveBeenCalledTimes(1)
+    expect(refetchEligibility).toHaveBeenCalledTimes(1)
+    expect(onRefetch.mock.invocationCallOrder[0]).toBeLessThan(refetchEligibility.mock.invocationCallOrder[0])
   })
 })

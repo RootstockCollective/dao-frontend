@@ -111,6 +111,26 @@ describe('executeTxFlow', () => {
       })
       expect(result).toBe(mockTxHash)
     })
+
+    it('should await async onSuccess before the flow promise resolves', async () => {
+      mockOnRequestTx.mockResolvedValue(mockTxHash)
+      mockWaitForTransactionReceipt.mockResolvedValue({} as any)
+      const action = 'staking' as const
+      const order: string[] = []
+
+      await executeTxFlow({
+        onRequestTx: mockOnRequestTx,
+        action,
+        onSuccess: async () => {
+          order.push('onSuccess-start')
+          await Promise.resolve()
+          order.push('onSuccess-end')
+        },
+      })
+      order.push('flow-resolved')
+
+      expect(order).toEqual(['onSuccess-start', 'onSuccess-end', 'flow-resolved'])
+    })
   })
 
   describe('Error Paths', () => {
@@ -240,6 +260,26 @@ describe('executeTxFlow', () => {
       expect(mockOnSuccess).not.toHaveBeenCalled()
       expect(console.error).not.toHaveBeenCalled()
       expect(result).toBe(mockTxHash)
+    })
+  })
+
+  describe('Missing transaction hash (DAO-2215)', () => {
+    it('should not show toasts or wait for receipt when onRequestTx resolves without a hash', async () => {
+      mockOnRequestTx.mockResolvedValue(undefined as unknown as Hash)
+      const onComplete = vi.fn()
+      const action = 'swap' as const
+
+      const result = await executeTxFlow({
+        onRequestTx: mockOnRequestTx,
+        onComplete,
+        action,
+      })
+
+      expect(mockShowToast).not.toHaveBeenCalled()
+      expect(mockWaitForTransactionReceipt).not.toHaveBeenCalled()
+      expect(mockUpdateToast).not.toHaveBeenCalled()
+      expect(onComplete).toHaveBeenCalledWith(undefined)
+      expect(result).toBeUndefined()
     })
   })
 

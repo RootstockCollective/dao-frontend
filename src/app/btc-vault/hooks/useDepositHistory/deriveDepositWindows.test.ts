@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { EpochSettledEventDto } from '@/app/api/btc-vault/v1/epoch-history/action'
 
-import { buildDepositWindowRows, deriveApy, derivePricePerShare } from './deriveDepositWindows'
+import { buildDepositWindowRows, derivePricePerShare } from './deriveDepositWindows'
 
 describe('derivePricePerShare', () => {
   it('computes price per share with known values', () => {
@@ -24,31 +24,6 @@ describe('derivePricePerShare', () => {
   })
 })
 
-describe('deriveApy', () => {
-  it('computes annualised yield for known values', () => {
-    const currentNav = 1100n * 10n ** 18n
-    const previousNav = 1000n * 10n ** 18n
-    // 30 days apart
-    const previousClosedAt = 1_000_000
-    const currentClosedAt = 1_000_000 + 30 * 24 * 60 * 60
-
-    const result = deriveApy(currentNav, previousNav, currentClosedAt, previousClosedAt)
-    expect(result).not.toBeNull()
-    // 10% return over 30 days annualised: (0.1 / 2592000) * 31557600 * 100 ≈ 121.7%
-    expect(result).toBeCloseTo(121.74, 0)
-  })
-
-  it('returns null when previousNav is 0n', () => {
-    const result = deriveApy(1000n, 0n, 2000, 1000)
-    expect(result).toBeNull()
-  })
-
-  it('returns null when duration is 0', () => {
-    const result = deriveApy(1100n, 1000n, 1000, 1000)
-    expect(result).toBeNull()
-  })
-})
-
 describe('buildDepositWindowRows', () => {
   const THREE_DTOS: EpochSettledEventDto[] = [
     {
@@ -57,6 +32,7 @@ describe('buildDepositWindowRows', () => {
       assets: '3000',
       supply: '2800',
       closedAt: '1700000',
+      apy: 0.12,
     },
     {
       epochId: '2',
@@ -64,6 +40,7 @@ describe('buildDepositWindowRows', () => {
       assets: '2000',
       supply: '1900',
       closedAt: '1600000',
+      apy: 0.08,
     },
     {
       epochId: '1',
@@ -71,6 +48,7 @@ describe('buildDepositWindowRows', () => {
       assets: '1000',
       supply: '1000',
       closedAt: '1500000',
+      apy: null,
     },
   ]
 
@@ -78,20 +56,20 @@ describe('buildDepositWindowRows', () => {
     const rows = buildDepositWindowRows(THREE_DTOS)
     expect(rows).toHaveLength(3)
 
-    // First row (epoch 3) — has startDate from epoch 2 and APY
+    // First row (epoch 3) — has startDate from epoch 2 and APY passed through (×100)
     expect(rows[0].epochId).toBe('3')
     expect(rows[0].endDate).toBe(1700000)
     expect(rows[0].startDate).toBe(1600000)
     expect(rows[0].tvl).toBe(3000n)
     expect(rows[0].pricePerShare).toBe(derivePricePerShare(3000n, 2800n))
-    expect(rows[0].apy).not.toBeNull()
+    expect(rows[0].apy).toBeCloseTo(12, 5)
     expect(rows[0].status).toBe('settled')
 
-    // Second row (epoch 2) — has startDate from epoch 1 and APY
+    // Second row (epoch 2) — has startDate from epoch 1 and APY passed through (×100)
     expect(rows[1].epochId).toBe('2')
     expect(rows[1].endDate).toBe(1600000)
     expect(rows[1].startDate).toBe(1500000)
-    expect(rows[1].apy).not.toBeNull()
+    expect(rows[1].apy).toBeCloseTo(8, 5)
 
     // Third row (epoch 1) — oldest, startDate=null, apy=null
     expect(rows[2].epochId).toBe('1')
@@ -114,6 +92,7 @@ describe('buildDepositWindowRows', () => {
         assets: '1000',
         supply: '1000',
         closedAt: '1500000',
+        apy: null,
       },
     ]
     const rows = buildDepositWindowRows(single)
@@ -127,5 +106,29 @@ describe('buildDepositWindowRows', () => {
   it('returns empty array for empty input', () => {
     const rows = buildDepositWindowRows([])
     expect(rows).toEqual([])
+  })
+
+  it('passes through null apy from DTO', () => {
+    const dtos: EpochSettledEventDto[] = [
+      {
+        epochId: '2',
+        reportedOffchainAssets: '0',
+        assets: '2000',
+        supply: '1900',
+        closedAt: '1600000',
+        apy: null,
+      },
+      {
+        epochId: '1',
+        reportedOffchainAssets: '0',
+        assets: '1000',
+        supply: '1000',
+        closedAt: '1500000',
+        apy: null,
+      },
+    ]
+    const rows = buildDepositWindowRows(dtos)
+    expect(rows[0].apy).toBeNull()
+    expect(rows[1].apy).toBeNull()
   })
 })

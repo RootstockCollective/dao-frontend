@@ -319,11 +319,15 @@ describe('useFetchBoostData', () => {
         },
       },
     })
-    const wrapper: FC<{ children: React.ReactNode }> = ({ children }) => (
-      <realReactQuery.QueryClientProvider client={queryClient}>
-        <BoosterProvider>{children}</BoosterProvider>
-      </realReactQuery.QueryClientProvider>
-    )
+    const wrapper = (
+      {
+        children
+      }: {
+        children: React.ReactNode;
+      }
+    ) => (<realReactQuery.QueryClientProvider client={queryClient}>
+      <BoosterProvider>{children}</BoosterProvider>
+    </realReactQuery.QueryClientProvider>)
 
     vi.mocked(boostUtils.fetchLatestFile).mockResolvedValueOnce(testLatestFile)
     const mockedFetchBoostData = vi.fn().mockResolvedValueOnce(testBoostData)

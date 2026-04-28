@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { ComponentType, FC } from 'react'
+import { ComponentType } from 'react'
 
 import { useFeatureFlags } from './FeatureFlagContext'
 import { DEFAULT_CONFIG, FeatureHandleConfig } from './withServerFeatureFlag'
@@ -15,7 +15,7 @@ export const withFeatureFlag = <P extends object>(
     ...config,
   }
 
-  const WithFeatureFlag: FC<P> = props => {
+  const WithFeatureFlag = (props: P) => {
     const { flags } = useFeatureFlags()
     const router = useRouter()
 

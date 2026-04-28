@@ -22,7 +22,7 @@ interface NewPopoverProps {
   align?: 'start' | 'center' | 'end'
 }
 
-export const NewPopover: React.FC<NewPopoverProps> = ({
+export const NewPopover = ({
   open,
   onOpenChange,
   anchor = <span />,
@@ -37,7 +37,7 @@ export const NewPopover: React.FC<NewPopoverProps> = ({
   alignOffset = -24,
   side = 'top',
   align = 'end',
-}) => {
+}: NewPopoverProps) => {
   // If anchorRef is provided, create a hidden span and move it to the anchorRef's position
   const hiddenAnchorRef = useRef<HTMLSpanElement>(null)
   const portalContainer = usePortalContainer()

@@ -1,4 +1,4 @@
-import { createContext, FC, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
+import { createContext, ReactNode, useCallback, useContext, useMemo, useState } from 'react'
 
 import { StakingToken } from '@/app/user/Stake/types'
 import Big from '@/lib/big'
@@ -71,7 +71,7 @@ interface Props {
   tokenToReceive: StakingToken
 }
 
-export const StakingProvider: FC<Props> = ({ tokenToSend, tokenToReceive, children }) => {
+export const StakingProvider = ({ tokenToSend, tokenToReceive, children }: Props) => {
   const [stakeData, setStakeData] = useState({ amount: '' })
   const [buttonActions, setButtonActions] = useState<ButtonActions>(DEFAULT_BUTTON_ACTIONS)
 

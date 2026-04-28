@@ -1,5 +1,4 @@
 'use client'
-import { FC } from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -16,7 +15,7 @@ interface Props {
  * Expandable trigger button.
  * This component MUST be used inside the Expandable component.
  */
-export const ExpandableTrigger: FC<Props> = ({ className, color = 'var(--color-text-0)' }) => {
+export const ExpandableTrigger = ({ className, color = 'var(--color-text-0)' }: Props) => {
   const { isExpanded, toggleExpanded } = useExpandableContext()
 
   return (

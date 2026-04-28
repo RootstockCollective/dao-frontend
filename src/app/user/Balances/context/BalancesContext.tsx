@@ -1,4 +1,4 @@
-import { createContext, FC, ReactNode, useContext } from 'react'
+import { createContext, ReactNode, useContext } from 'react'
 
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
@@ -29,7 +29,7 @@ interface BalancesProviderProps {
   children: ReactNode
 }
 
-export const BalancesProvider: FC<BalancesProviderProps> = ({ children }) => {
+export const BalancesProvider = ({ children }: BalancesProviderProps) => {
   const { balances, isBalancesLoading } = useGetAddressBalances()
   const prices = useGetSpecificPrices()
 

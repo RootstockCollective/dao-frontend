@@ -30,19 +30,65 @@ export const toError = (value: unknown): Error => {
   return new Error(String(value))
 }
 
+/** UX copy when the user dismisses or rejects a wallet transaction prompt. */
+export const USER_CANCELED_TX_MESSAGE = 'Transaction canceled by user'
+
+/**
+ * Error shaped like a wallet/user rejection so `executeTxFlow` can treat it as non-actionable.
+ */
+export const createUserCanceledTxError = (): Error => {
+  const err = new Error(USER_CANCELED_TX_MESSAGE)
+  return Object.assign(err, { cause: { code: 4001 as const } })
+}
+
+const USER_REJECTION_MESSAGE_MARKERS = [
+  'user rejected the request',
+  'user rejected',
+  'rejected the transaction',
+  'transaction rejected',
+  'denied transaction',
+  'request rejected',
+  USER_CANCELED_TX_MESSAGE.toLowerCase(),
+  'transaction cancelled by user',
+  'user rejected transaction',
+  // Some connectors return no hash on dismiss and surface internal wording instead of 4001
+  'hash is null',
+  'hash is undefined',
+  'transaction hash is null',
+  'transaction hash is undefined',
+] as const
+
 /**
  * Detects if an error represents a user-rejected wallet transaction
- * (e.g. MetaMask "User rejected the request" or EIP-1193 code 4001).
+ * (e.g. MetaMask "User rejected the request", viem `UserRejectedRequestError`, EIP-1193 code 4001).
  * Accepts `unknown` for compatibility with catch blocks and react-error-boundary FallbackProps.
  */
-export const isUserRejectedTxError = (error: unknown): boolean => {
+export const isUserRejectedTxError = (error: unknown, depth = 0): boolean => {
+  if (error === null || error === undefined || depth > 6) return false
+
   if (typeof error === 'object' && error !== null) {
-    const msg = (error as Record<string, unknown>).message
-    if (typeof msg === 'string' && msg.includes('User rejected the request')) return true
-    const cause = (error as Record<string, unknown>).cause
-    if (typeof cause === 'object' && cause !== null && (cause as Record<string, unknown>).code === 4001)
-      return true
+    const rec = error as Record<string, unknown>
+
+    if (rec.code === 4001) return true
+    if (rec.name === 'UserRejectedRequestError') return true
+
+    const msg = rec.message
+    if (typeof msg === 'string') {
+      const lower = msg.toLowerCase()
+      for (const marker of USER_REJECTION_MESSAGE_MARKERS) {
+        if (lower.includes(marker)) return true
+      }
+    }
+
+    const shortMessage = rec.shortMessage
+    if (typeof shortMessage === 'string' && shortMessage.toLowerCase().includes('reject')) return true
+
+    const cause = rec.cause
+    if (cause !== null && cause !== undefined) {
+      return isUserRejectedTxError(cause, depth + 1)
+    }
   }
+
   return false
 }
 

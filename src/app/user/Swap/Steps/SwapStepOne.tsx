@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { Hash, parseUnits } from 'viem'
 
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { createUserCanceledTxError } from '@/components/ErrorPage/commonErrors'
 import { ArrowsUpDown } from '@/components/Icons'
 import { PercentageButtonItem, PercentageButtons } from '@/components/PercentageButtons'
 import { SwapInputComponent, SwapInputToken } from '@/components/SwapInput'
@@ -23,17 +24,6 @@ import { SwapStepProps } from '../types'
 import { LOW_LIQUIDITY_WARNING_MESSAGE, shouldShowLowLiquidityWarning } from '../utils/low-liquidity-warning'
 
 const AUTO_FEE_TIER = 'auto' as const
-
-function buildFeeTierOptions(): PercentageButtonItem<string>[] {
-  return [
-    { value: AUTO_FEE_TIER, label: 'Auto', testId: 'fee-tier-auto' },
-    ...UNISWAP_FEE_TIERS.map(tier => ({
-      value: String(tier),
-      label: `${feeTierToPercent(tier)}%`,
-      testId: `fee-tier-${tier}`,
-    })),
-  ]
-}
 
 export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   const {
@@ -150,7 +140,7 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
         onRequestTx: async () => {
           const txHash = await approve(requiredAmount)
           if (!txHash) {
-            throw new Error('Transaction hash is null')
+            throw createUserCanceledTxError()
           }
           return txHash as Hash
         },
@@ -249,12 +239,17 @@ export const SwapStepOne = ({ onGoNext, setButtonActions }: SwapStepProps) => {
   )
 
   const feeTierOptions = useMemo(() => {
-    const allOptions = buildFeeTierOptions()
-    return allOptions.filter(option => {
-      if (option.value === AUTO_FEE_TIER) return true
-      const tier = Number(option.value)
-      return availableFeeTiers.some(f => f === tier)
-    })
+    const tierOptions: PercentageButtonItem<string>[] = UNISWAP_FEE_TIERS.filter(tier =>
+      availableFeeTiers.some(f => f === tier),
+    ).map(tier => ({
+      value: String(tier),
+      label: `${feeTierToPercent(tier)}%`,
+      testId: `fee-tier-${tier}`,
+    }))
+    if (availableFeeTiers.length === 1) {
+      return tierOptions
+    }
+    return [{ value: AUTO_FEE_TIER, label: 'Auto', testId: 'fee-tier-auto' }, ...tierOptions]
   }, [availableFeeTiers])
 
   const selectedToken: SwapInputToken = useMemo(

@@ -13,7 +13,7 @@ This guide explains how to configure Sentry error tracking for the Rootstock DAO
 2. Select your organization (or create one)
 3. Go to **Projects** → **Create Project**
 4. Choose **Next.js** as the platform
-5. Name the project (e.g. `rootstock-dao-frontend`)
+5. Name the project (e.g. `dao-frontend`)
 6. Click **Create Project**
 
 ## 2. Obtain the DSN
@@ -24,8 +24,9 @@ The DSN (Data Source Name) is the URL Sentry uses to receive error events.
 2. In the left sidebar, click **Client Keys (DSN)**
 3. Copy the **DSN** value. It looks like:
    ```
-   https://<key>@<org-id>.ingest.us.sentry.io/<project-id>
+   https://<key>@<org-id>.ingest.de.sentry.io/<project-id>
    ```
+   (Host may be `.ingest.us.sentry.io` or `.ingest.de.sentry.io` depending on project region.)
 
 Alternatively:
 
@@ -38,20 +39,20 @@ Alternatively:
 Add these to your `.env.*` file (e.g. `.env.testnet.local`):
 
 ```env
-# Features (set to true to enable)
+# Features
 NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_ERROR_TRACKING=true
 NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY=false
 
 # Sentry
-NEXT_PUBLIC_SENTRY_DSN=https://<your-key>@<org-id>.ingest.us.sentry.io/<project-id>
-SENTRY_ORG=rootstock-labs
-SENTRY_PROJECT=rootstock-dao-frontend
+NEXT_PUBLIC_SENTRY_DSN=https://<your-key>@<org-id>.ingest.de.sentry.io/<project-id>
+SENTRY_ORG=rootstocklabs-limited
+SENTRY_PROJECT=dao-frontend
 ```
 
 | Variable | Where to get it |
 | -------- | ---------------- |
 | `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_ERROR_TRACKING` | Feature flag for error tracking. Set to `true` to enable |
-| `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY` | Feature flag for session replay. Set to `true` to record user sessions when errors occur (default: `false`) |
+| `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY` | Feature flag for session replay. Set to `true` only if you want replay (default: `false`) |
 | `NEXT_PUBLIC_SENTRY_DSN` | Client Keys (DSN) in project settings |
 | `SENTRY_ORG` | Organization slug from URL: `sentry.io/organizations/<org-slug>/` |
 | `SENTRY_PROJECT` | Project name from project settings |
@@ -84,8 +85,8 @@ For local development builds with source map upload:
 1. Create `.env.sentry-build-plugin` in the project root (if not using CI):
    ```env
    SENTRY_AUTH_TOKEN=your_token_here
-   SENTRY_ORG=rootstock-labs
-   SENTRY_PROJECT=rootstock-dao-frontend
+   SENTRY_ORG=rootstocklabs-limited
+   SENTRY_PROJECT=dao-frontend
    ```
 2. Ensure this file is in `.gitignore`
 3. Run `npm run build` — source maps will be uploaded to Sentry
@@ -103,25 +104,22 @@ Example (GitHub Actions):
 ```yaml
 env:
   SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-  SENTRY_ORG: rootstock-labs
-  SENTRY_PROJECT: rootstock-dao-frontend
+  SENTRY_ORG: rootstocklabs-limited
+  SENTRY_PROJECT: dao-frontend
 ```
 
-## 7. Session Replay (Optional)
-
-Session replay records user sessions when errors occur, helping debug issues with video-like playback.
+## 7. Session replay (optional)
 
 - Set `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY=true` to enable
-- Requires `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_ERROR_TRACKING=true` to be enabled first
-- When enabled: 10% of sessions are recorded; 100% of sessions with errors are recorded
-- Disabled by default to reduce data and cost
+- Requires `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_ERROR_TRACKING=true`
+- When enabled: 10% of sessions sampled; 100% of sessions with errors recorded
 
 ## 8. Verify Setup
 
 1. Set `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_ERROR_TRACKING=true`
 2. Run the app and trigger a test error (e.g. visit `/test-sentry` if available)
 3. Check the Sentry dashboard for the new event
-4. Optionally enable `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY=true` to verify replay
+4. Optionally set `NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY=true` to verify replay
 
 ## Troubleshooting
 

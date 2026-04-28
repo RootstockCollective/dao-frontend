@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { communitiesMapByContract } from '@/app/communities/communityUtils'
 import { useNFTBoosterContext } from '@/app/providers/NFT/BoosterContext'
 import { NFTBoosterCard } from '@/app/shared/components'
@@ -7,7 +5,7 @@ import { NFTBoosterCard } from '@/app/shared/components'
 interface SelfContainedNFTBoosterCardPros {
   forceRender?: boolean
 }
-export const SelfContainedNFTBoosterCard: FC<SelfContainedNFTBoosterCardPros> = ({ forceRender = false }) => {
+export const SelfContainedNFTBoosterCard = ({ forceRender = false }: SelfContainedNFTBoosterCardPros) => {
   const { userHasRewards, boostData } = useNFTBoosterContext()
 
   const { title, leftImageSrc } = communitiesMapByContract[boostData?.nftContractAddress ?? ''] ?? {}

@@ -1,4 +1,4 @@
-import { FC, HtmlHTMLAttributes, useState } from 'react'
+import { HtmlHTMLAttributes, useState } from 'react'
 import { useAccount } from 'wagmi'
 
 import {
@@ -24,7 +24,7 @@ interface DesktopBuilderRowProps extends HtmlHTMLAttributes<HTMLTableRowElement>
   actionCount: number
 }
 
-export const DesktopBuilderRow: FC<DesktopBuilderRowProps> = ({ logic, actionCount, ...props }) => {
+export const DesktopBuilderRow = ({ logic, actionCount, ...props }: DesktopBuilderRowProps) => {
   const { isConnected } = useAccount()
   const { onConnectWalletButtonClick } = useAppKitFlow()
 

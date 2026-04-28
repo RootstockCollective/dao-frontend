@@ -3,7 +3,6 @@ import type { EpochSettledEventDto } from '@/app/api/btc-vault/v1/epoch-history/
 import type { DepositWindowRow } from '../../services/types'
 
 const SCALE = 10n ** 18n
-const SECONDS_PER_YEAR = 365.25 * 24 * 60 * 60
 
 /**
  * Derives the price-per-share (NAV per share) from total assets and total supply.
@@ -16,31 +15,6 @@ export function derivePricePerShare(assets: bigint, supply: bigint): bigint {
 }
 
 /**
- * Derives annualised percentage yield from two consecutive epoch NAVs and their timestamps.
- * Returns a float percentage (e.g. 12.5 means 12.5%).
- *
- * Returns `null` when the calculation would be meaningless:
- * - previousNav is 0n (no prior reference point)
- * - duration between epochs is 0 (division by zero)
- */
-export function deriveApy(
-  currentNav: bigint,
-  previousNav: bigint,
-  currentClosedAt: number,
-  previousClosedAt: number,
-): number | null {
-  if (previousNav === 0n) return null
-
-  const durationSeconds = currentClosedAt - previousClosedAt
-  if (durationSeconds === 0) return null
-
-  const periodReturn = Number(currentNav - previousNav) / Number(previousNav)
-  const annualised = (periodReturn / durationSeconds) * SECONDS_PER_YEAR * 100
-
-  return annualised
-}
-
-/**
  * Transforms an array of EpochSettledEventDto into DepositWindowRow[].
  *
  * Expects input sorted **descending** by epochId (newest first).
@@ -49,7 +23,7 @@ export function deriveApy(
  * For each epoch:
  * - `startDate` is the previous epoch's `closedAt` (null for the oldest epoch)
  * - `endDate` is this epoch's `closedAt`
- * - `apy` is derived from this epoch and the previous epoch's NAV (null for the oldest)
+ * - `apy` is read from the DTO (server-computed decimal) and rescaled to a percentage
  */
 export function buildDepositWindowRows(dtos: EpochSettledEventDto[]): DepositWindowRow[] {
   return dtos.map((dto, i) => {
@@ -60,14 +34,7 @@ export function buildDepositWindowRows(dtos: EpochSettledEventDto[]): DepositWin
 
     const hasPrevious = i + 1 < dtos.length
     const previousDto = hasPrevious ? dtos[i + 1] : null
-
-    let apy: number | null = null
-    if (previousDto) {
-      const previousAssets = BigInt(previousDto.assets)
-      const previousSupply = BigInt(previousDto.supply)
-      const previousNav = derivePricePerShare(previousAssets, previousSupply)
-      apy = deriveApy(pricePerShare, previousNav, closedAt, Number(previousDto.closedAt))
-    }
+    const apy = dto.apy === null ? null : dto.apy * 100
 
     return {
       epochId: dto.epochId,

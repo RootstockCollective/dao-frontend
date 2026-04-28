@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { BackingCell, BackingCellProps } from '../Cell/BackingCell'
 import { BackingShareCell } from '../Cell/BackingShareCell'
 import {
@@ -9,20 +7,20 @@ import {
   MobileTwoColumnWrapper,
 } from './MobileDataSection'
 
-export const MobileBackingSection: FC<{
-  backing: BackingCellProps
-  backingPercentage?: number
-  showShare?: boolean
-  showUsd?: boolean
-  className?: string
-  isRowSelected?: boolean
-}> = ({
+export const MobileBackingSection = ({
   backing,
   backingPercentage,
   showShare = false,
   showUsd = true,
   className,
   isRowSelected = false,
+}: {
+  backing: BackingCellProps
+  backingPercentage?: number
+  showShare?: boolean
+  showUsd?: boolean
+  className?: string
+  isRowSelected?: boolean
 }) => {
   const hasBackingValue = backing.amount != null
   const hasShareValue = backingPercentage != null

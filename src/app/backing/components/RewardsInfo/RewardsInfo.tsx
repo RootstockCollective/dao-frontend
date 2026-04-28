@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react'
+import { useMemo } from 'react'
 
 import { TokenRewards } from '@/app/collective-rewards/rewards/types'
 import { weiToPercentage } from '@/app/collective-rewards/settings/utils'
@@ -19,11 +19,11 @@ export interface RewardsInfoProps {
   isInteractive?: boolean
 }
 
-export const RewardsInfo: FC<RewardsInfoProps> = ({
+export const RewardsInfo = ({
   backerRewardPercentage,
   estimatedRewards,
   isInteractive = false,
-}) => {
+}: RewardsInfoProps) => {
   const { current, next } = backerRewardPercentage ?? { current: 0n, next: 0n }
   const { prices } = usePricesContext()
 

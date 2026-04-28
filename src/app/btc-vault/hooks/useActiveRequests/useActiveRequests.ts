@@ -1,7 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
-import { useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import type { Address } from 'viem'
 import { zeroAddress } from 'viem'
 import { useReadContracts } from 'wagmi'
@@ -26,11 +26,18 @@ const HISTORY_API_PATH = '/api/btc-vault/v1/history'
  * Phase 2 (when at least one request): pending/claimable and epochSnapshot per request.
  *
  * @param address - User wallet address (controller); undefined disables reads
- * @returns { data } - ActiveRequestDisplay[] for dashboard, or undefined while loading/error
+ * @returns `data` — ActiveRequestDisplay[] for dashboard, or undefined while loading/error.
+ *   `claimableDepositRequest` — the deposit `VaultRequest` when the user can claim shares (`status === 'claimable'`);
+ *   always null for claimable withdrawals only and while data is loading or unavailable.
+ *   `claimableWithdrawRequest` — the withdrawal `VaultRequest` when the user can finalize (`claimRedeemNative`);
+ *   mirrors history “Claim rBTC” / detail claim; null while loading or when no claimable redeem.
+ *   `refetch()` — call after on-chain success: awaits **parallel** phase1/phase2/history refetches (TanStack/wagmi reconcile order); do not serialize phase1→phase2 without an intervening render.
  */
 export function useActiveRequests(address: string | undefined): {
   data: ActiveRequestDisplay[] | undefined
-  refetch: () => void
+  claimableDepositRequest: VaultRequest | null
+  claimableWithdrawRequest: VaultRequest | null
+  refetch: () => Promise<void>
 } {
   const { prices } = usePricesContext()
   const rbtcPrice = prices[RBTC]?.price ?? 0
@@ -147,10 +154,19 @@ export function useActiveRequests(address: string | undefined): {
   // SAFETY: narrow type to avoid wagmi's "excessively deep" instantiation in useMemo deps
   const phase2Data = phase2Raw as readonly { status: string; result?: unknown }[] | undefined
 
-  const data = useMemo((): ActiveRequestDisplay[] | undefined => {
-    if (!address) return undefined
-    if (isLoading1 || error1) return undefined
-    if (!phase1Data || phase1Data.length < 2) return undefined
+  const { data, claimableDepositRequest, claimableWithdrawRequest } = useMemo((): {
+    data: ActiveRequestDisplay[] | undefined
+    claimableDepositRequest: VaultRequest | null
+    claimableWithdrawRequest: VaultRequest | null
+  } => {
+    const empty = {
+      data: undefined as ActiveRequestDisplay[] | undefined,
+      claimableDepositRequest: null as VaultRequest | null,
+      claimableWithdrawRequest: null as VaultRequest | null,
+    }
+    if (!address || isLoading1 || error1 || !phase1Data || phase1Data.length < 2) {
+      return empty
+    }
 
     const depositResult =
       phase1Data[0]?.status === 'success' ? (phase1Data[0].result as readonly [bigint, bigint]) : undefined
@@ -161,12 +177,16 @@ export function useActiveRequests(address: string | undefined): {
     const redEpochId = redeemResult?.[0] ?? 0n
     const redShares = redeemResult?.[1] ?? 0n
 
-    if (depAssets === 0n && redShares === 0n) return []
+    if (depAssets === 0n && redShares === 0n) {
+      return { data: [], claimableDepositRequest: null, claimableWithdrawRequest: null }
+    }
 
-    if (!needsPhase2) return []
-    if (isLoading2 || error2 || !phase2Data) return undefined
+    if (!needsPhase2) return { data: [], claimableDepositRequest: null, claimableWithdrawRequest: null }
+    if (isLoading2 || error2 || !phase2Data) return empty
 
     const requests: Array<{ req: VaultRequest; claimableInfo: ClaimableInfo | null }> = []
+    let claimableDepositRequest: VaultRequest | null = null
+    let claimableWithdrawRequest: VaultRequest | null = null
     const hasDeposit = depAssets > 0n
     const hasRedeem = redShares > 0n
 
@@ -199,18 +219,22 @@ export function useActiveRequests(address: string | undefined): {
           supplyAtCloseWei: supplyAtClose,
         }
       }
+      const depositReq: VaultRequest = {
+        id: `dep-${depEpochId}`,
+        type: 'deposit',
+        amount: depAssets,
+        status,
+        epochId: String(depEpochId),
+        batchRedeemId: null,
+        timestamps: { created: depHistory?.timestamp ?? 0 },
+        txHashes: depHistory?.transactionHash ? { submit: depHistory.transactionHash } : {},
+        ...(depDisplayStatus && { displayStatus: depDisplayStatus }),
+      }
+      if (status === 'claimable') {
+        claimableDepositRequest = depositReq
+      }
       requests.push({
-        req: {
-          id: `dep-${depEpochId}`,
-          type: 'deposit',
-          amount: depAssets,
-          status,
-          epochId: String(depEpochId),
-          batchRedeemId: null,
-          timestamps: { created: depHistory?.timestamp ?? 0 },
-          txHashes: depHistory?.transactionHash ? { submit: depHistory.transactionHash } : {},
-          ...(depDisplayStatus && { displayStatus: depDisplayStatus }),
-        },
+        req: depositReq,
         claimableInfo,
       })
     }
@@ -247,23 +271,31 @@ export function useActiveRequests(address: string | undefined): {
           supplyAtCloseWei: supplyAtClose,
         }
       }
+      const withdrawReq: VaultRequest = {
+        id: `red-${redEpochId}`,
+        type: 'withdrawal',
+        amount: redShares,
+        status,
+        epochId: null,
+        batchRedeemId: String(redEpochId),
+        timestamps: { created: redHistory?.timestamp ?? 0 },
+        txHashes: redHistory?.transactionHash ? { submit: redHistory.transactionHash } : {},
+        ...(redDisplayStatus && { displayStatus: redDisplayStatus }),
+      }
+      if (status === 'claimable') {
+        claimableWithdrawRequest = withdrawReq
+      }
       requests.push({
-        req: {
-          id: `red-${redEpochId}`,
-          type: 'withdrawal',
-          amount: redShares,
-          status,
-          epochId: null,
-          batchRedeemId: String(redEpochId),
-          timestamps: { created: redHistory?.timestamp ?? 0 },
-          txHashes: redHistory?.transactionHash ? { submit: redHistory.transactionHash } : {},
-          ...(redDisplayStatus && { displayStatus: redDisplayStatus }),
-        },
+        req: withdrawReq,
         claimableInfo,
       })
     }
 
-    return requests.map(({ req, claimableInfo }) => toActiveRequestDisplay(req, claimableInfo, rbtcPrice))
+    return {
+      data: requests.map(({ req, claimableInfo }) => toActiveRequestDisplay(req, claimableInfo, rbtcPrice)),
+      claimableDepositRequest,
+      claimableWithdrawRequest,
+    }
   }, [
     address,
     phase1Data,
@@ -277,16 +309,23 @@ export function useActiveRequests(address: string | undefined): {
     historyData,
   ])
 
-  // Narrow refetch types to avoid wagmi's "excessively deep" type instantiation in useCallback deps
-  const doRefetchPhase1: () => void = refetchPhase1
-  const doRefetchPhase2: () => void = refetchPhase2
-  const doRefetchHistory: () => void = refetchHistory
+  const refetchPhase1Ref = useRef(refetchPhase1)
+  const refetchPhase2Ref = useRef(refetchPhase2)
+  const refetchHistoryRef = useRef(refetchHistory)
+  refetchPhase1Ref.current = refetchPhase1
+  refetchPhase2Ref.current = refetchPhase2
+  refetchHistoryRef.current = refetchHistory
 
-  const refetch = useCallback(() => {
-    doRefetchPhase1()
-    doRefetchPhase2()
-    doRefetchHistory()
-  }, [doRefetchPhase1, doRefetchPhase2, doRefetchHistory])
+  // Refs avoid wagmi "excessively deep" instantiation on useCallback deps while always calling latest refetch fns.
+  // Fire phase1/phase2/history refetches in parallel (same as pre-await behavior). Sequential await was wrong:
+  // after phase1 resolves, React has not necessarily recomputed phase2Contracts from new phase1Data yet, so
+  // awaiting phase2 next could no-op or refetch the wrong query shape — claimableWithdrawRequest could stay empty.
+  const refetch = useCallback(async (): Promise<void> => {
+    const r1 = (refetchPhase1Ref.current as () => unknown)()
+    const r2 = (refetchPhase2Ref.current as () => unknown)()
+    const r3 = (refetchHistoryRef.current as () => unknown)()
+    await Promise.all([Promise.resolve(r1), Promise.resolve(r2), Promise.resolve(r3)])
+  }, [])
 
-  return { data, refetch }
+  return { data, claimableDepositRequest, claimableWithdrawRequest, refetch }
 }

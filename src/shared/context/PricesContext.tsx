@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, FC, ReactNode, useContext, useMemo } from 'react'
+import { ComponentType, createContext, ReactNode, useContext, useMemo } from 'react'
 
 import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
 import { GetPricesResult } from '@/app/user/types'
@@ -27,7 +27,7 @@ const PricesContextProvider = ({ children }: Props) => {
 
 export const usePricesContext = () => useContext(PricesContext)
 
-export const withPricesContextProvider = <P extends object>(Component: FC<P>) => {
+export const withPricesContextProvider = <P extends object>(Component: ComponentType<P>) => {
   return function WrapperComponent(props: P) {
     return (
       <PricesContextProvider>

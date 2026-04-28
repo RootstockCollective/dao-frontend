@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ComponentProps, FC } from 'react'
+import { ComponentProps } from 'react'
 import { Address } from 'viem'
 
 import { IpfsAvatar } from '@/components/IpfsAvatar'
@@ -17,7 +17,7 @@ interface BuilderHeaderProps {
   headerProps?: ComponentProps<typeof Header>
 }
 
-export const BuilderHeader: FC<BuilderHeaderProps> = ({
+export const BuilderHeader = ({
   address,
   name,
   imageIpfs,
@@ -26,7 +26,7 @@ export const BuilderHeader: FC<BuilderHeaderProps> = ({
   showFullName = true,
   shouldNotRedirect = false,
   headerProps,
-}) => {
+}: BuilderHeaderProps) => {
   const shortedAddress = shortAddress(address)
   const truncatedName = name ? (showFullName ? name : truncate(name, 15)) : undefined
 

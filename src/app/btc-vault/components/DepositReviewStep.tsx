@@ -58,7 +58,7 @@ export const DepositReviewStep = ({
         Make sure that everything is correct before continuing:
       </Paragraph>
 
-      <div className="grid grid-cols-2 gap-y-6 gap-x-10">
+      <div className="grid grid-cols-1 gap-y-4 md:grid-cols-2 md:gap-y-6 md:gap-x-10">
         <div className="flex flex-col gap-1" data-testid="review-amount">
           <Label variant="body-s" className="text-text-60">
             Amount to deposit
@@ -105,10 +105,14 @@ export const DepositReviewStep = ({
       </div>
 
       {/* Footer: 56px gap then divider, disclaimer + Back + Send request */}
-      <div className="mt-auto pt-14">
+      <div className="mt-auto pt-6 md:pt-14">
         <Divider />
-        <div className="flex justify-between items-center gap-4">
-          <Paragraph variant="body-s" className="text-text-60 text-xs max-w-[440px]" data-testid="Disclaimer">
+        <div className="flex flex-col gap-4 md:flex-row md:justify-between md:items-center">
+          <Paragraph
+            variant="body-s"
+            className="text-text-60 text-xs md:max-w-[440px]"
+            data-testid="Disclaimer"
+          >
             {BTC_VAULT_DEPOSIT_DISCLAIMER}
           </Paragraph>
           <div className="flex items-center gap-3">

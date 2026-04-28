@@ -1,5 +1,4 @@
 import NextLink from 'next/link'
-import { FC } from 'react'
 
 import { ExternalLink } from './ExternalLink'
 import { LinkProps } from './types'
@@ -7,6 +6,6 @@ import { LinkProps } from './types'
 /**
  * Base link component uses Next.js router link
  */
-export const Link: FC<LinkProps> = props => {
+export const Link = (props: LinkProps) => {
   return <ExternalLink {...props} component={NextLink} />
 }

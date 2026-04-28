@@ -64,6 +64,8 @@ describe('useActiveRequests', () => {
       const { result } = renderHook(() => useActiveRequests(undefined))
 
       expect(result.current.data).toBeUndefined()
+      expect(result.current.claimableDepositRequest).toBeNull()
+      expect(result.current.claimableWithdrawRequest).toBeNull()
     })
   })
 
@@ -76,6 +78,8 @@ describe('useActiveRequests', () => {
       const { result } = renderHook(() => useActiveRequests(ADDRESS))
 
       expect(result.current.data).toEqual([])
+      expect(result.current.claimableDepositRequest).toBeNull()
+      expect(result.current.claimableWithdrawRequest).toBeNull()
     })
   })
 
@@ -100,6 +104,8 @@ describe('useActiveRequests', () => {
       expect(result.current.data?.[0].status).toBe('pending')
       expect(result.current.data?.[0].amountFormatted).toBe('1')
       expect(result.current.data?.[0].id).toBe('dep-1')
+      expect(result.current.claimableDepositRequest).toBeNull()
+      expect(result.current.claimableWithdrawRequest).toBeNull()
     })
 
     it('returns one display with status claimable and claimable info when deposit is claimable', () => {
@@ -124,6 +130,11 @@ describe('useActiveRequests', () => {
       expect(result.current.data?.[0].status).toBe('claimable')
       expect(result.current.data?.[0].claimable).toBe(true)
       expect(result.current.data?.[0].lockedSharePriceFormatted).toContain('/share')
+      expect(result.current.claimableDepositRequest).not.toBeNull()
+      expect(result.current.claimableDepositRequest?.type).toBe('deposit')
+      expect(result.current.claimableDepositRequest?.status).toBe('claimable')
+      expect(result.current.claimableDepositRequest?.id).toBe('dep-1')
+      expect(result.current.claimableWithdrawRequest).toBeNull()
     })
   })
 
@@ -149,6 +160,7 @@ describe('useActiveRequests', () => {
       // Pending withdrawal: rBTC value unknown pre-settlement
       expect(result.current.data?.[0].amountFormatted).toBe('—')
       expect(result.current.data?.[0].id).toBe('red-2')
+      expect(result.current.claimableWithdrawRequest).toBeNull()
     })
 
     it('returns one display with status claimable when redeem is claimable', () => {
@@ -172,6 +184,11 @@ describe('useActiveRequests', () => {
       expect(result.current.data?.[0].type).toBe('withdrawal')
       expect(result.current.data?.[0].status).toBe('claimable')
       expect(result.current.data?.[0].claimable).toBe(true)
+      expect(result.current.claimableDepositRequest).toBeNull()
+      expect(result.current.claimableWithdrawRequest).not.toBeNull()
+      expect(result.current.claimableWithdrawRequest?.type).toBe('withdrawal')
+      expect(result.current.claimableWithdrawRequest?.status).toBe('claimable')
+      expect(result.current.claimableWithdrawRequest?.id).toBe('red-2')
     })
 
     it('returns approved displayStatus and computed rBTC amount when history API says approved', () => {
@@ -214,6 +231,7 @@ describe('useActiveRequests', () => {
       expect(result.current.data?.[0].displayStatus).toBe('approved')
       expect(result.current.data?.[0].claimable).toBe(false)
       expect(result.current.data?.[0].amountFormatted).not.toBe('—')
+      expect(result.current.claimableWithdrawRequest).toBeNull()
     })
   })
 
@@ -241,6 +259,40 @@ describe('useActiveRequests', () => {
       expect(result.current.data?.[0].status).toBe('pending')
       expect(result.current.data?.[1].type).toBe('withdrawal')
       expect(result.current.data?.[1].status).toBe('claimable')
+      expect(result.current.claimableDepositRequest).toBeNull()
+      expect(result.current.claimableWithdrawRequest).not.toBeNull()
+      expect(result.current.claimableWithdrawRequest?.id).toBe('red-2')
+    })
+
+    it('sets claimableDepositRequest when deposit is claimable alongside a pending redeem', () => {
+      const depEpochId = 1n
+      const redEpochId = 2n
+      const assetsAtClose = 100n * ONE_ETHER
+      const supplyAtClose = 50n * ONE_SHARE_RAW
+      mockUseReadContracts
+        .mockReturnValueOnce(phase1Result([depEpochId, ONE_ETHER], [redEpochId, 3n * ONE_SHARE_RAW]))
+        .mockReturnValueOnce(
+          phase2Result([
+            { status: 'success', result: 0n },
+            { status: 'success', result: ONE_ETHER },
+            snapshotResult(assetsAtClose, supplyAtClose),
+            { status: 'success', result: 3n * ONE_SHARE_RAW },
+            { status: 'success', result: 0n },
+            snapshotResult(200n * ONE_ETHER, 100n * ONE_SHARE_RAW),
+          ]),
+        )
+
+      const { result } = renderHook(() => useActiveRequests(ADDRESS))
+
+      expect(result.current.data).toHaveLength(2)
+      expect(result.current.data?.[0].type).toBe('deposit')
+      expect(result.current.data?.[0].status).toBe('claimable')
+      expect(result.current.data?.[1].type).toBe('withdrawal')
+      expect(result.current.data?.[1].status).toBe('pending')
+      expect(result.current.claimableDepositRequest).not.toBeNull()
+      expect(result.current.claimableDepositRequest?.type).toBe('deposit')
+      expect(result.current.claimableDepositRequest?.status).toBe('claimable')
+      expect(result.current.claimableWithdrawRequest).toBeNull()
     })
   })
 
@@ -251,6 +303,8 @@ describe('useActiveRequests', () => {
       const { result } = renderHook(() => useActiveRequests(ADDRESS))
 
       expect(result.current.data).toBeUndefined()
+      expect(result.current.claimableDepositRequest).toBeNull()
+      expect(result.current.claimableWithdrawRequest).toBeNull()
     })
 
     it('returns data undefined when Phase 1 has error', () => {
@@ -263,6 +317,8 @@ describe('useActiveRequests', () => {
       const { result } = renderHook(() => useActiveRequests(ADDRESS))
 
       expect(result.current.data).toBeUndefined()
+      expect(result.current.claimableDepositRequest).toBeNull()
+      expect(result.current.claimableWithdrawRequest).toBeNull()
     })
   })
 })

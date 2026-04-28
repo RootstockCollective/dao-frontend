@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { ConditionalTooltip } from '@/app/components'
 import { formatSymbol } from '@/app/shared/formatter'
@@ -28,7 +28,7 @@ interface ClaimRewardsModalViewProps {
   isLoading?: boolean
 }
 
-export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
+export const ClaimRewardsModalView = ({
   onClose,
   selectedRewardType,
   onRewardTypeChange,
@@ -39,7 +39,7 @@ export const ClaimRewardsModalView: FC<ClaimRewardsModalViewProps> = ({
   isClaimable,
   isTxPending = false,
   isLoading = false,
-}) => {
+}: ClaimRewardsModalViewProps) => {
   const radioOptions: Array<{
     value: ClaimRewardType
     label: ReactNode

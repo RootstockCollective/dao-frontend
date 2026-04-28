@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, FC, ReactNode, useContext, useEffect, useState } from 'react'
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react'
 
 import { Feature, getFeatures, USER_FLAGS_FEATURE } from '@/config/features.conf'
 
@@ -76,7 +76,7 @@ const combineUserFlags = (userFlags: Partial<FeatureFlags>): FeatureFlags => {
   }
 }
 
-export const FeatureFlagProvider: FC<{ children: ReactNode }> = ({ children }) => {
+export const FeatureFlagProvider = ({ children }: { children: ReactNode }) => {
   const [flags, setFlags] = useState<FeatureFlags>(() => getEnvFlags())
 
   useEffect(() => {

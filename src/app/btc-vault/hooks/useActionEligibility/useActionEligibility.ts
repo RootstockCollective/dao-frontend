@@ -4,14 +4,14 @@ import { useCallback, useMemo } from 'react'
 import type { Address } from 'viem'
 import { useReadContracts } from 'wagmi'
 
+import { getBtcVaultActionEligibilityContracts } from '@/app/btc-vault/hooks/get-btc-vault-action-eligibility-contracts'
 import { useWhitelistCheck } from '@/app/btc-vault/hooks/useWhitelistCheck'
-import { rbtcVault } from '@/lib/contracts'
 
 import type { EligibilityStatus, PauseState, VaultRequest } from '../../services/types'
 import { toActionEligibility } from '../../services/ui/mappers'
 
 /**
- * Vault multicall result order (must match `vaultContracts`):
+ * Vault multicall result order (must match {@link getBtcVaultActionEligibilityContracts}):
  * 0–1 pause flags, 2–3 deposit/redeem requests, 4 balanceOf(user).
  */
 type VaultMulticallData = [
@@ -26,8 +26,8 @@ type VaultMulticallData = [
  * Reads vault pause state, active deposit/redeem requests, and vault share balance via multicall,
  * and deposit whitelist status via {@link useWhitelistCheck}, then maps to action eligibility.
  *
- * Withdrawal eligibility does not depend on the deposit whitelist; deposit is gated first by
- * whitelist resolution (loading / not whitelisted), then pause, eligibility, and active requests.
+ * Both deposit and withdrawal eligibility are gated by the whitelist (loading / not whitelisted),
+ * then by pause state, eligibility, and active requests.
  *
  * @param address - User wallet address, or undefined to disable queries
  * @returns { data, isLoading, error, refetch } where data is action eligibility or undefined until vault multicall resolves
@@ -38,13 +38,7 @@ export function useActionEligibility(address: string | undefined) {
 
   const vaultContracts = useMemo(() => {
     if (!address) return
-    return [
-      { ...rbtcVault, functionName: 'depositRequestsPaused' as const },
-      { ...rbtcVault, functionName: 'redeemRequestsPaused' as const },
-      { ...rbtcVault, functionName: 'asyncDepositRequests' as const, args: [address as Address] },
-      { ...rbtcVault, functionName: 'asyncRedeemRequests' as const, args: [address as Address] },
-      { ...rbtcVault, functionName: 'balanceOf' as const, args: [address as Address] },
-    ] as const
+    return getBtcVaultActionEligibilityContracts(address as Address)
   }, [address])
 
   const {
@@ -60,9 +54,9 @@ export function useActionEligibility(address: string | undefined) {
   // Wagmi returns ContractFunctionResult[]; we assert the known 5-slot vault shape for fail-closed handling.
   const vaultData = rawVaultData as VaultMulticallData | undefined
 
-  const refetch = useCallback(() => {
-    void refetchVault()
-    void refetchWhitelist()
+  const refetch = useCallback(async () => {
+    await refetchVault()
+    await refetchWhitelist()
   }, [refetchVault, refetchWhitelist])
 
   const whitelistForMapper = whitelistLoading ? null : isWhitelisted

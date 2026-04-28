@@ -1,11 +1,11 @@
-import React, { FC } from 'react'
+import React from 'react'
 
 interface CaretRightProps {
   color?: string
   className?: string
 }
 
-export const CaretRight: FC<CaretRightProps> = ({ color = 'var(--background-0)', className }) => {
+export const CaretRight = ({ color = 'var(--background-0)', className }: CaretRightProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

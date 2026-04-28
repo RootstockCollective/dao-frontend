@@ -13,7 +13,7 @@ interface Props {
   action: keyof typeof TX_MESSAGES
   onRequestTx: () => Promise<Hash>
   onPending?: (txHash: Hash) => void
-  onSuccess?: (txHash: Hash) => void
+  onSuccess?: (txHash: Hash) => void | Promise<void>
   onError?: (txHash: Hash | undefined, err: Error) => void
   onComplete?: (txHash: Hash | undefined) => void
 }
@@ -101,6 +101,12 @@ export const executeTxFlow = async ({
   try {
     txHash = await onRequestTx()
 
+    // Avoid passing a missing hash into viem/wagmi wait (some wallets surface that as "hash is null" errors).
+    if (!txHash) {
+      onComplete?.(txHash)
+      return undefined
+    }
+
     onPending?.(txHash)
     showToast(createToastConfig(pending, txHash))
 
@@ -109,7 +115,7 @@ export const executeTxFlow = async ({
     })
 
     updateToast(txHash, createToastConfig(success, txHash))
-    onSuccess?.(txHash)
+    await Promise.resolve(onSuccess?.(txHash))
   } catch (err) {
     if (!isUserRejectedTxError(err)) {
       onError?.(txHash, err as Error)

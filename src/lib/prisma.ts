@@ -7,8 +7,11 @@ const globalForPrisma = globalThis as typeof globalThis & {
 }
 
 if (url && !globalForPrisma._prisma) {
+  const profile = process.env.NEXT_PUBLIC_PROFILE ?? 'local'
+  const appName = encodeURIComponent(`dao-frontend-prisma-${profile}`)
+  const separator = url.includes('?') ? '&' : '?'
   globalForPrisma._prisma = new PrismaClient({
-    datasources: { db: { url } },
+    datasources: { db: { url: `${url}${separator}connection_limit=5&application_name=${appName}` } },
   })
 }
 

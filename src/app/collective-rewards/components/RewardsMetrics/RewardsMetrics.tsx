@@ -1,5 +1,4 @@
 import Big from 'big.js'
-import { FC } from 'react'
 
 import { FiatTooltipLabel } from '@/app/components'
 import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
@@ -20,7 +19,7 @@ export interface RewardsMetricsProps {
   rewardTokens: TokenWithValue[]
 }
 
-export const RewardsMetrics: FC<RewardsMetricsProps> = ({ title, rewardTokens }) => {
+export const RewardsMetrics = ({ title, rewardTokens }: RewardsMetricsProps) => {
   const { prices } = usePricesContext()
 
   const {

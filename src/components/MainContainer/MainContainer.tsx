@@ -1,5 +1,5 @@
 'use client'
-import { FC, PropsWithChildren } from 'react'
+import { PropsWithChildren } from 'react'
 import { ToastContainer } from 'react-toastify'
 import { useAccount } from 'wagmi'
 
@@ -13,7 +13,7 @@ import { ContainerDesktop } from './ContainerDesktop'
 import ContainerMobile from './ContainerMobile'
 import { LayoutProvider } from './LayoutProvider'
 
-export const MainContainer: FC<PropsWithChildren> = ({ children }) => {
+export const MainContainer = ({ children }: PropsWithChildren) => {
   const isDesktop = useIsDesktop()
   const { isConnected, chainId } = useAccount()
   const wrongNetwork = chainId !== currentEnvChain.id

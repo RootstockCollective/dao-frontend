@@ -1,7 +1,7 @@
 'use client'
 
 import { redirect, RedirectType } from 'next/navigation'
-import { FC, HtmlHTMLAttributes, ReactElement, ReactNode, useState } from 'react'
+import { HtmlHTMLAttributes, ReactElement, ReactNode, useState } from 'react'
 import { useAccount } from 'wagmi'
 
 import { selectedRowStyle, unselectedRowStyle } from '@/app/builders/components/Table'
@@ -187,7 +187,7 @@ interface BackerRewardsDataRowProps {
   row: BackerRewardsTable['Row']
 }
 
-export const BackerRewardsDataRow: FC<BackerRewardsDataRowProps> = ({ row, ...props }) => {
+export const BackerRewardsDataRow = ({ row, ...props }: BackerRewardsDataRowProps) => {
   const {
     id: rowId,
     data: { builder, backing, backer_rewards, unclaimed, estimated, total, actions },

@@ -23,7 +23,7 @@ const TVL_TOOLTIP = 'Total Value Locked — aggregate rBTC held by the vault'
 const DEPOSIT_WINDOW_TOOLTIP = 'Current deposit window closes at this date'
 const PRICE_PER_SHARE_TOOLTIP = 'Price of one vault share in rBTC terms (NAV per share)'
 
-export const BtcVaultMetrics = () => {
+export function BtcVaultMetrics() {
   const { data: metrics, isLoading: metricsLoading, error: metricsError } = useVaultMetrics()
   const { data: epoch } = useEpochState()
   const { prices } = usePricesContext()

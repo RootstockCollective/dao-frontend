@@ -1,12 +1,10 @@
-import { FC } from 'react'
-
 import { cn } from '@/lib/utils'
 
 import { CommonComponentProps } from '../commonProps'
 
 type MetricsContainerProps = CommonComponentProps
 
-export const MetricsContainer: FC<MetricsContainerProps> = ({ className = '', children }) => {
+export const MetricsContainer = ({ className = '', children }: MetricsContainerProps) => {
   return (
     <div
       data-testid={'MetricsContainer'}

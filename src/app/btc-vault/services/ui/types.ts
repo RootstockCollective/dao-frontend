@@ -113,6 +113,8 @@ export interface UserPositionDisplay {
 export interface ActionEligibility {
   canDeposit: boolean
   canWithdraw: boolean
+  /** True when vault `balanceOf(user) > 0` (same snapshot as multicall eligibility). */
+  hasVaultShares: boolean
   depositBlockReason: string
   withdrawBlockReason: string
   pauseState?: PauseState

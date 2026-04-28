@@ -1,5 +1,4 @@
 import { describe, expect, it } from 'vitest'
-import { formatEther } from 'viem'
 
 import { VAULT_SHARE_MULTIPLIER, WeiPerEther } from '@/lib/constants'
 
@@ -29,7 +28,9 @@ import {
   DEPOSIT_PAUSED_REASON,
   DEPOSIT_WHITELIST_BLOCK_REASON,
   NO_VAULT_SHARES_REASON,
+  WITHDRAWAL_ELIGIBILITY_LOADING_REASON,
   WITHDRAWAL_PAUSED_REASON,
+  WITHDRAWAL_WHITELIST_BLOCK_REASON,
 } from '../constants'
 
 const activePause: PauseState = { deposits: 'active', withdrawals: 'active' }
@@ -231,6 +232,7 @@ describe('toActionEligibility', () => {
     const result = toActionEligibility(activePause, eligible, noActiveRequests, true)
     expect(result.canDeposit).toBe(true)
     expect(result.canWithdraw).toBe(true)
+    expect(result.hasVaultShares).toBe(true)
     expect(result.depositBlockReason).toBe('')
     expect(result.withdrawBlockReason).toBe('')
   })
@@ -239,6 +241,7 @@ describe('toActionEligibility', () => {
     const result = toActionEligibility(activePause, eligible, noActiveRequests, false)
     expect(result.canDeposit).toBe(true)
     expect(result.canWithdraw).toBe(false)
+    expect(result.hasVaultShares).toBe(false)
     expect(result.depositBlockReason).toBe('')
     expect(result.withdrawBlockReason).toBe(NO_VAULT_SHARES_REASON)
   })
@@ -301,11 +304,12 @@ describe('toActionEligibility', () => {
   })
 
   describe('whitelist priority (isWhitelisted)', () => {
-    it('when isWhitelisted === false, blocks deposit with whitelist reason over pause and active request', () => {
+    it('when isWhitelisted === false, blocks deposit and withdraw with whitelist reason', () => {
       const result = toActionEligibility(activePause, eligible, noActiveRequests, true, false)
       expect(result.canDeposit).toBe(false)
       expect(result.depositBlockReason).toBe(DEPOSIT_WHITELIST_BLOCK_REASON)
-      expect(result.canWithdraw).toBe(true)
+      expect(result.canWithdraw).toBe(false)
+      expect(result.withdrawBlockReason).toBe(WITHDRAWAL_WHITELIST_BLOCK_REASON)
     })
 
     it('when isWhitelisted === false with paused deposits, still shows whitelist reason first', () => {
@@ -351,12 +355,23 @@ describe('toActionEligibility', () => {
     })
   })
 
-  describe('withdrawal unaffected by whitelist', () => {
-    it('canWithdraw and withdrawBlockReason are the same for isWhitelisted false and true', () => {
-      const resultFalse = toActionEligibility(activePause, eligible, noActiveRequests, true, false)
-      const resultTrue = toActionEligibility(activePause, eligible, noActiveRequests, true, true)
-      expect(resultFalse.canWithdraw).toBe(resultTrue.canWithdraw)
-      expect(resultFalse.withdrawBlockReason).toBe(resultTrue.withdrawBlockReason)
+  describe('withdrawal gated by whitelist (DAO-2164)', () => {
+    it('when isWhitelisted === false, blocks withdraw with whitelist reason', () => {
+      const result = toActionEligibility(activePause, eligible, noActiveRequests, true, false)
+      expect(result.canWithdraw).toBe(false)
+      expect(result.withdrawBlockReason).toBe(WITHDRAWAL_WHITELIST_BLOCK_REASON)
+    })
+
+    it('when isWhitelisted === true, allows withdraw', () => {
+      const result = toActionEligibility(activePause, eligible, noActiveRequests, true, true)
+      expect(result.canWithdraw).toBe(true)
+      expect(result.withdrawBlockReason).toBe('')
+    })
+
+    it('when isWhitelisted === null (loading), blocks withdraw with loading reason', () => {
+      const result = toActionEligibility(activePause, eligible, noActiveRequests, true, null)
+      expect(result.canWithdraw).toBe(false)
+      expect(result.withdrawBlockReason).toBe(WITHDRAWAL_ELIGIBILITY_LOADING_REASON)
     })
 
     it('withdrawal blocked by pause regardless of isWhitelisted', () => {
@@ -588,9 +603,8 @@ describe('toActiveRequestDisplay', () => {
       assetsAtCloseWei,
       supplyAtCloseWei,
     }
-    const expectedWei = (ONE_SHARE_RAW * (assetsAtCloseWei + 1n)) / (supplyAtCloseWei + 1n)
     const result = toActiveRequestDisplay(req, claimableInfo, 50_000)
-    expect(result.amountFormatted).toBe(formatEther(expectedWei))
+    expect(result.amountFormatted).toBe('0.00012')
     expect(result.usdEquivalentFormatted).toBe('$6.20 USD')
   })
 
@@ -634,9 +648,8 @@ describe('toActiveRequestDisplay', () => {
       assetsAtCloseWei,
       supplyAtCloseWei,
     }
-    const expectedWei = (ONE_SHARE_RAW * (assetsAtCloseWei + 1n)) / (supplyAtCloseWei + 1n)
     const result = toActiveRequestDisplay(req, claimableInfo, 50_000)
-    expect(result.amountFormatted).toBe(formatEther(expectedWei))
+    expect(result.amountFormatted).toBe('0.00012')
     expect(result.usdEquivalentFormatted).toBe('$6.20 USD')
     expect(result.sharesFormatted).toBe('1.00')
   })

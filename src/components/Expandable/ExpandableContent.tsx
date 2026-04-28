@@ -1,5 +1,5 @@
 'use client'
-import React, { FC, isValidElement, ReactNode } from 'react'
+import React, { isValidElement, ReactNode } from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -50,14 +50,14 @@ const splitContent = (children: ReactNode): [ReactNode, ReactNode] => {
  * Expandable content section with optional preview functionality
  * This component MUST be used inside the Expandable component.
  */
-export const ExpandableContent: FC<Props> = ({
+export const ExpandableContent = ({
   children,
   className,
   contentClassName,
   showPreview = false,
   previewCharLimit = 200,
   previewClassName,
-}) => {
+}: Props) => {
   const { isExpanded } = useExpandableContext()
 
   if (!showPreview) {

@@ -1,5 +1,5 @@
 'use client'
-import { FC, ReactNode, useState } from 'react'
+import { ReactNode, useState } from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -42,13 +42,13 @@ interface Props {
  * </Expandable>
  * ```
  */
-export const Expandable: FC<Props> = ({
+export const Expandable = ({
   children,
   className,
   dataTestId,
   expanded = false,
   onToggleExpanded,
-}) => {
+}: Props) => {
   const [isExpanded, setIsExpanded] = useState(expanded)
   const toggleExpanded = () => {
     setIsExpanded(!isExpanded)

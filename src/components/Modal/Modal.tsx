@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, ReactNode, useRef } from 'react'
+import { ReactNode, useRef } from 'react'
 import { createPortal } from 'react-dom'
 
 import { cn } from '@/lib/utils'
@@ -23,7 +23,7 @@ export interface ModalProps {
  * Modal component that wraps the content of the modal and provides a close button.
  * On mobile, the modal is always fullscreen.
  */
-export const Modal: FC<ModalProps> = ({
+export const Modal = ({
   children,
   onClose,
   className,
@@ -31,7 +31,7 @@ export const Modal: FC<ModalProps> = ({
   height = 'auto',
   closeButtonColor = 'white',
   'data-testid': dataTestId,
-}) => {
+}: ModalProps) => {
   const portalContainerRef = useRef<HTMLDivElement>(null)
   const containerStyle: React.CSSProperties = {}
 

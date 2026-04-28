@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { cn } from '@/lib/utils'
 
 import { DeltaIndicator } from '../../../../components/DeltaIndicator/DeltaIndicator'
@@ -10,11 +8,7 @@ interface BackerRewardsPercentageProps {
   nextPct?: number
 }
 
-export const BackerRewardsPercentage: FC<BackerRewardsPercentageProps> = ({
-  className,
-  currentPct,
-  nextPct,
-}) => {
+export const BackerRewardsPercentage = ({ className, currentPct, nextPct }: BackerRewardsPercentageProps) => {
   return (
     <div
       className={cn('flex flex-row gap-x-1 font-rootstock-sans justify-start font-normal', className)}

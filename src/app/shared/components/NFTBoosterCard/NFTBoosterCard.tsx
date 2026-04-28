@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import { FC } from 'react'
 
 import { applyPinataImageOptions } from '@/lib/ipfs'
 
@@ -10,7 +9,7 @@ interface NFTBoosterCardProps {
   content: string
 }
 
-export const NFTBoosterCard: FC<NFTBoosterCardProps> = ({ nftThumbPath, boostValue, title, content }) => {
+export const NFTBoosterCard = ({ nftThumbPath, boostValue, title, content }: NFTBoosterCardProps) => {
   const isExternalImage = nftThumbPath.startsWith('http')
   const image = isExternalImage
     ? applyPinataImageOptions(nftThumbPath, { width: 50, height: 50, quality: 90 })

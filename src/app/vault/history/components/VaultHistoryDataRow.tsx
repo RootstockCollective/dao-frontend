@@ -1,6 +1,6 @@
 'use client'
 
-import { FC, Fragment, memo, useCallback, useState } from 'react'
+import { Fragment, memo, useCallback, useState } from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -11,7 +11,7 @@ interface VaultHistoryDataRowProps {
   row: VaultHistoryTable['Row']
 }
 
-export const VaultHistoryDataRow: FC<VaultHistoryDataRowProps> = memo(({ row, ...props }) => {
+export const VaultHistoryDataRow = memo(({ row, ...props }: VaultHistoryDataRowProps) => {
   const {
     data: { period, action, assets, transactions, total_usd },
   }: VaultHistoryTable['Row'] = row

@@ -6,6 +6,8 @@ import { Address, formatEther, getAddress, isAddress } from 'viem'
 
 import Big from '@/lib/big'
 
+import { formatDuration } from './formatDuration'
+
 /**
  * Merges Tailwind and clsx classes in order to avoid classes conflicts.
  * This is useful when you want to override default classes and/or add conditional classes.
@@ -260,8 +262,7 @@ export const durationToLabel = (duration: Duration | undefined): string | undefi
     return undefined
   }
 
-  const converted = duration.shiftTo('days', 'hours', 'minutes')
-  return `${converted.days}d ${converted.hours}h ${converted.minutes}m`
+  return formatDuration(Math.floor(duration.as('seconds')))
 }
 
 // prettier-ignore

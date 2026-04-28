@@ -16,7 +16,7 @@ interface StickySliderProps {
   onMouseLeave?: () => void
 }
 
-export const StickySlider: React.FC<StickySliderProps> = ({
+export const StickySlider = ({
   value,
   onValueChange,
   max = 100,
@@ -27,7 +27,7 @@ export const StickySlider: React.FC<StickySliderProps> = ({
   ticksEdgesSize = 8,
   stickyThreshold = 2,
   onMouseLeave,
-}) => {
+}: StickySliderProps) => {
   // Snap during drag
   const handleValueChange = (val: number[]) => {
     const nearest = ticks.reduce((prev, curr) =>

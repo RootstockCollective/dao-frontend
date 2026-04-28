@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import { EmptyPlaceholder } from '@/components/Table/components'
 
 import { RewardsCell, RewardsCellProps } from '../Cell/RewardsCell'
@@ -13,12 +11,17 @@ import {
 const hasValidValue = (rewards: RewardsCellProps) =>
   rewards.usdValue != null || rewards.rbtcValue != null || rewards.rifValue != null
 
-export const MobileRewardsSection: FC<{
+export const MobileRewardsSection = ({
+  rewards_past_cycle,
+  rewards_upcoming,
+  showBothColumns = true,
+  isRowSelected = false,
+}: {
   rewards_past_cycle: RewardsCellProps
   rewards_upcoming: RewardsCellProps
   showBothColumns?: boolean
   isRowSelected?: boolean
-}> = ({ rewards_past_cycle, rewards_upcoming, showBothColumns = true, isRowSelected = false }) => {
+}) => {
   const hasUpcomingValue = hasValidValue(rewards_upcoming)
   const hasPastValue = hasValidValue(rewards_past_cycle)
 

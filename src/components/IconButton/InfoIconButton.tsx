@@ -1,4 +1,4 @@
-import { FC, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
 import { KotoQuestionMarkIcon } from '@/components/Icons/KotoQuestionMarkIcon'
 import { Tooltip, type TooltipProps } from '@/components/Tooltip'
@@ -11,12 +11,12 @@ export interface InfoIconButtonProps extends CommonComponentProps, Omit<TooltipP
   tooltipClassName?: string
 }
 
-export const InfoIconButton: FC<InfoIconButtonProps> = ({
+export const InfoIconButton = ({
   info,
   className = '',
   tooltipClassName = '',
   ...tooltipProps
-}) => (
+}: InfoIconButtonProps) => (
   <div data-testid="InfoIconButton" className={cn('items-center flex gap-2 self-center', className)}>
     <Tooltip
       text={info}

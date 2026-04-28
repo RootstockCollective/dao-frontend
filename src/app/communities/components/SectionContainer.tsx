@@ -38,7 +38,7 @@ export const SectionContainer = ({
       <Header variant={headerVariant} className="flex-1">
         {title}
       </Header>
-      {rightContent && <p className="flex-1">{rightContent}</p>}
+      {rightContent && <div className="flex-1">{rightContent}</div>}
     </div>
     <div className={cn('mt-8', contentClassName)} data-testid="SectionContainerContent">
       {children}

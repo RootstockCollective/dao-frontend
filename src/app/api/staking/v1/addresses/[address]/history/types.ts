@@ -22,6 +22,26 @@ export interface StakingHistoryTransaction {
 
 /**
  * Represents staking history grouped by period (month) and action type
+ *
+ * @example
+ * ```json
+ * {
+ *   "period": "2025-01",
+ *   "action": "STAKE",
+ *   "amount": "5000000000000000000",
+ *   "transactions": [
+ *     {
+ *       "user": "0xabc…",
+ *       "action": "STAKE",
+ *       "amount": "2000000000000000000",
+ *       "blockNumber": "100",
+ *       "blockHash": null,
+ *       "timestamp": 1704067200,
+ *       "transactionHash": "0x111…"
+ *     }
+ *   ]
+ * }
+ * ```
  */
 export interface StakingHistoryByPeriodAndAction {
   /** Period in format "YYYY-MM" (e.g., "2024-01") */
