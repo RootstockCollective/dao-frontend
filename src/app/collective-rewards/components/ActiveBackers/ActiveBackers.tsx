@@ -1,7 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-
 import { useHandleErrors } from '../../utils'
 import { CountMetric } from '../CountMetric'
 
@@ -15,7 +13,6 @@ export const ActiveBackers = () => {
       return response.json()
     },
     queryKey: ['activeBackers'],
-    refetchInterval: AVERAGE_BLOCKTIME,
   })
 
   useHandleErrors({ error, title: 'Error loading active backers' })

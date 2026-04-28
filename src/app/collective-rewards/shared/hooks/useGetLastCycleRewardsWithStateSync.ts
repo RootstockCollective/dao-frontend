@@ -1,7 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-
 import { CycleData } from './useGetABI'
 import { useStateSyncHealthCheck } from './useStateSyncHealthCheck'
 
@@ -28,7 +26,6 @@ export const useGetLastCycleRewardsWithStateSync = () => {
       return result.data as CycleData[]
     },
     queryKey: ['lastCycleRewardsWithStateSync'],
-    refetchInterval: AVERAGE_BLOCKTIME,
     enabled: !healthCheckIsLoading && isStateSyncHealthy,
   })
 

@@ -3,7 +3,6 @@ import { parseEventLogs } from 'viem'
 
 import { fetchRewardDistributionFinished } from '@/app/collective-rewards/actions'
 import { type BackersManagerAbi, getAbi } from '@/lib/abis/tok'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { BackersManagerAddress } from '@/lib/contracts'
 
 export type RewardDistributionFinishedEventLog = ReturnType<
@@ -22,7 +21,6 @@ export const useGetRewardDistributionFinishedLogs = () => {
       })
     },
     queryKey: ['RewardDistributionFinished', BackersManagerAddress],
-    refetchInterval: AVERAGE_BLOCKTIME,
     initialData: [],
   })
 

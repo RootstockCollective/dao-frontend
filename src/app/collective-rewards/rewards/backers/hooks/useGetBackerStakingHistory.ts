@@ -1,8 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { Address } from 'viem'
 
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
-
 import { fetchBackerStakingHistory } from '../actions/fetchBackerStakingHistory'
 
 export interface BackerStakingHistory {
@@ -32,7 +30,6 @@ export const useGetBackerStakingHistoryWithStateSync = (backer: Address) => {
       return response.json()
     },
     queryKey: ['backerStakingHistory', backer],
-    refetchInterval: AVERAGE_BLOCKTIME,
   })
 
   return {
@@ -46,7 +43,6 @@ export const useGetBackerStakingHistoryWithGraph = (backer: Address) => {
   const { data, isLoading, error } = useQuery({
     queryFn: () => fetchBackerStakingHistory(backer),
     queryKey: ['backerStakingHistory', backer],
-    refetchInterval: AVERAGE_BLOCKTIME,
   })
 
   return {
