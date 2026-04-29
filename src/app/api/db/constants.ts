@@ -60,3 +60,5 @@ export const BACKER_TO_BUILDER_COLUMNS = [
   BACKER_TO_BUILDER_BUILDER,
   BACKER_TO_BUILDER_TOTAL_ALLOCATION,
 ]
+
+export const BTC_VAULT_WHITELISTED_USER_COLUMNS = [COLUMN_ID, 'account', 'status', 'lastUpdated'] as const
