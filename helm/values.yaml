@@ -15,6 +15,7 @@ service:
 ingress:
   enabled: false
   className: alb
+  wafAclArn: arn:aws:wafv2:us-east-1:886436934082:regional/webacl/rscoll-dev-blocking/e6c95241-f808-4052-8d84-fac7e401048f
   annotations:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
