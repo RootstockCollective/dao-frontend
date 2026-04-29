@@ -42,6 +42,21 @@ export const BtcVaultGlobalHistoryQuerySchema = baseHistoryQuerySchema.extend({
   address: AddressSchema.optional(),
 })
 
+/** Sort fields for GET /api/btc-vault/v1/nav-history (subgraph `BtcVaultNavHistory_orderBy`). */
+export const BtcVaultNavHistorySortFieldEnum = z.enum([
+  'processedAt',
+  'reportedOffchainAssets',
+  'requestsProcessed',
+])
+
+/** Query schema for GET /api/btc-vault/v1/nav-history */
+export const BtcVaultNavHistoryQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(200).default(20),
+  page: z.coerce.number().int().min(1).default(1),
+  sort_field: BtcVaultNavHistorySortFieldEnum.default('processedAt'),
+  sort_direction: SortDirectionEnum.default('desc'),
+})
+
 /** Sort fields for GET /api/btc-vault/v1/whitelist-role-history (subgraph `BtcVaultWhitelistedUser_orderBy`). */
 export const BtcVaultWhitelistedUsersSortFieldEnum = z.enum(['lastUpdated', 'account', 'status'])
 

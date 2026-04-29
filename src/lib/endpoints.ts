@@ -7,5 +7,6 @@ export const getVaultHistoryEndpoint = `/api/vault/v1/addresses/{{address}}/hist
 
 export const getBtcVaultEpochHistoryEndpoint = `/api/btc-vault/v1/epoch-history`
 export const getBtcVaultHistoryEndpoint = `/api/btc-vault/v1/history`
+export const getBtcVaultNavHistoryEndpoint = `/api/btc-vault/v1/nav-history`
 export const getBtcVaultWhitelistRoleHistoryEndpoint = `/api/btc-vault/v1/whitelist-role-history`
 export const getBtcVaultAuditLogEndpoint = `/api/btc-vault/v1/audit-log`
