@@ -15,6 +15,8 @@ import { PROPOSAL_CREATED_EVENT } from '@/lib/endpoints'
 import { logger } from '@/lib/logger'
 import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
+const REQUEST_TIMEOUT_MS = 25_000
+
 type ElementType<T> = T extends (infer U)[] ? U : never
 
 type ProposalCreatedEventLog = ElementType<
@@ -119,7 +121,9 @@ async function fetchProposalLogsFromBlockscout(): Promise<BackendEventByTopic0Re
         url.searchParams.append(key, value)
       })
 
-      const response = await fetch(url.toString())
+      const response = await fetch(url.toString(), {
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      })
       if (!response.ok) {
         throw new Error(`Blockscout API error: ${response.status} ${response.statusText}`)
       }
@@ -205,7 +209,7 @@ function transformEventLogProposal(proposal: ProposalCreatedEventLogWithTimestam
   }
 }
 
-async function getProposalsFromBlockscoutUncached(): Promise<ProposalApiResponse[]> {
+export async function getProposalsFromBlockscoutUncached(): Promise<ProposalApiResponse[]> {
   const logs = await fetchProposalLogsFromBlockscout()
 
   const viemLogs = convertBackendLogsToViemLogs(logs)

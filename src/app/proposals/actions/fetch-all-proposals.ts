@@ -3,10 +3,7 @@ import { unstable_cache } from 'next/cache'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { logger } from '@/lib/logger'
 
-import { getProposalsFromBlockscout } from './get-proposals-from-blockscout'
-import { getProposalsFromDB } from './get-proposals-from-db'
-import { getProposalsFromEnvio } from './get-proposals-from-envio'
-import { getProposalsFromTheGraph } from './get-proposals-from-the-graph'
+import { getProposalsFromBlockscoutUncached } from './get-proposals-from-blockscout'
 
 /**
  * Fetches all proposals from available sources with fallback.
@@ -16,12 +13,7 @@ export async function fetchAllProposals(): Promise<{
   proposals: ProposalApiResponse[]
   sourceIndex: number
 }> {
-  const proposalsSources = [
-    getProposalsFromEnvio,
-    getProposalsFromDB,
-    getProposalsFromTheGraph,
-    getProposalsFromBlockscout,
-  ]
+  const proposalsSources = [getProposalsFromBlockscoutUncached]
 
   for (const [i, proposalsSource] of proposalsSources.entries()) {
     try {
@@ -29,11 +21,13 @@ export async function fetchAllProposals(): Promise<{
       if (proposals.length > 0) {
         return { proposals, sourceIndex: i }
       }
+      logger.error({ sourceIndex: i }, 'Proposals source returned empty array, trying next source')
     } catch (error) {
       logger.error({ err: error, sourceIndex: i }, 'Failed to fetch proposals from source')
     }
   }
 
+  logger.error('All proposal sources failed or returned empty; returning empty proposals list')
   return { proposals: [], sourceIndex: -1 }
 }
 
