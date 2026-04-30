@@ -104,8 +104,11 @@ interface BlockscoutLogResponse {
 async function fetchProposalLogsFromBlockscout(): Promise<BackendEventByTopic0ResponseValue[]> {
   const allLogs: BackendEventByTopic0ResponseValue[] = []
   let fromBlock = '0'
+  let pages = 0
+  const start = Date.now()
 
   while (true) {
+    pages++
     try {
       const params: Record<string, string> = {
         module: 'logs',
@@ -155,11 +158,18 @@ async function fetchProposalLogsFromBlockscout(): Promise<BackendEventByTopic0Re
       // Set fromBlock to the last block number (as decimal string) for the next iteration
       fromBlock = lastBlockNumber
     } catch (error) {
-      logger.error({ err: error }, 'Failed to fetch logs from Blockscout')
+      logger.error(
+        { err: error, pages, elapsedMs: Date.now() - start },
+        'Failed to fetch logs from Blockscout',
+      )
       break
     }
   }
 
+  logger.info(
+    { pages, totalLogs: allLogs.length, elapsedMs: Date.now() - start },
+    'Blockscout proposal fetch complete',
+  )
   return allLogs
 }
 
