@@ -46,11 +46,12 @@ export async function fetchAllProposals(): Promise<{
       }
     }
 
+    const totalElapsedMs = Date.now() - start
     logger.error(
-      { totalElapsedMs: Date.now() - start },
-      'All proposal sources failed or returned empty; returning empty proposals list',
+      { totalElapsedMs },
+      'All proposal sources failed or returned empty; throwing to preserve stale cache',
     )
-    return { proposals: [], sourceIndex: -1 }
+    throw new Error('All proposal sources failed or returned empty')
   } finally {
     activeRevalidations--
     logger.info({ activeRevalidations, totalElapsedMs: Date.now() - start }, 'fetchAllProposals completed')
