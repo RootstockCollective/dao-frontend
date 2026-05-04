@@ -4,10 +4,8 @@ import { useMemo } from 'react'
 
 import { FilterSideBar } from '@/components/FilterSideBar'
 import { ActiveFilter, FilterGroup } from '@/components/FilterSideBar/types'
-import { TokenImage } from '@/components/TokenImage'
-import { RBTC } from '@/lib/constants'
 
-import { AUDIT_LOG_ROLE_FILTERS, AUDIT_LOG_SHOW_FILTERS, AUDIT_LOG_TYPE_FILTERS } from '../constants'
+import { AUDIT_LOG_ROLE_FILTERS, AUDIT_LOG_TYPE_FILTERS } from '../constants'
 
 interface AuditLogFilterSideBarProps {
   isOpen: boolean
@@ -31,18 +29,6 @@ export function AuditLogFilterSideBar({
         allTestId: 'AllTypes',
         isMultiSelect: true,
         options: AUDIT_LOG_TYPE_FILTERS.map(option => ({ label: option.label, value: option.value })),
-      },
-      {
-        id: 'show',
-        title: 'SHOW',
-        allLabel: 'All values',
-        allTestId: 'AllValues',
-        isMultiSelect: true,
-        options: AUDIT_LOG_SHOW_FILTERS.map(option => ({
-          label: option.label,
-          value: option.value,
-          ...(option.value === 'reason' ? {} : { icon: <TokenImage symbol={RBTC} size={16} /> }),
-        })),
       },
       {
         id: 'role',
