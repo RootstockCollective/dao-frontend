@@ -12,7 +12,7 @@ import { Label, Paragraph, Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { useTableActionsContext, useTableContext } from '@/shared/context'
-import { SORT_DIRECTION_ASC, SORT_DIRECTIONS } from '@/shared/context/TableContext/constants'
+import { SORT_DIRECTION_ASC, SORT_DIRECTION_DESC } from '@/shared/context/TableContext/constants'
 
 import type { NavColumnId, NavHistoryCellDataMap, NavHistoryTable } from '../config'
 import { COLUMN_TRANSFORMS, SORT_LABELS } from '../config'
@@ -66,10 +66,10 @@ const dispatchSort = (
     dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId, direction: SORT_DIRECTION_ASC } })
     return
   }
-  const currentSortIndex = SORT_DIRECTIONS.indexOf(currentSort.direction)
-  const nextSortIndex = (currentSortIndex + 1) % SORT_DIRECTIONS.length
-  const nextSort = SORT_DIRECTIONS[nextSortIndex]
-  dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: nextSort ? columnId : null, direction: nextSort } })
+  // Same-column: toggle asc ⇄ desc (shared SORT_DIRECTIONS also cycles null, which cleared sort).
+  const nextDirection =
+    currentSort.direction === SORT_DIRECTION_DESC ? SORT_DIRECTION_ASC : SORT_DIRECTION_DESC
+  dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId, direction: nextDirection } })
 }
 
 const HeaderTitle = ({ children, className }: ChildrenWithClassNameProps) => (
@@ -116,8 +116,8 @@ const NavHistoryHeaderRow = () => (
       <HeaderCell columnId="reportedOffchainAssets">
         <HeaderTitle>{SORT_LABELS.reportedOffchainAssets}</HeaderTitle>
       </HeaderCell>
-      <HeaderCell columnId="requestsProcessed">
-        <HeaderTitle>{SORT_LABELS.requestsProcessed}</HeaderTitle>
+      <HeaderCell columnId="requestsProcessedInEpoch">
+        <HeaderTitle>{SORT_LABELS.requestsProcessedInEpoch}</HeaderTitle>
       </HeaderCell>
       <HeaderCell columnId="processedAt">
         <HeaderTitle>{SORT_LABELS.processedAt}</HeaderTitle>
@@ -152,7 +152,7 @@ const TableCell = ({ children, columnId, className }: TableCellProps) => {
 const NavHistoryDataRow = ({
   reportedOffchainAssets,
   fiatAmountFormatted,
-  requestsProcessed,
+  requestsProcessedInEpoch,
   processedAt,
 }: NavHistoryCellDataMap) => (
   <tr
@@ -173,9 +173,9 @@ const NavHistoryDataRow = ({
       </div>
     </TableCell>
 
-    <TableCell columnId="requestsProcessed">
+    <TableCell columnId="requestsProcessedInEpoch">
       <Paragraph variant="body-s" className={'text-v3-text-100'}>
-        {requestsProcessed}
+        {requestsProcessedInEpoch}
       </Paragraph>
     </TableCell>
 

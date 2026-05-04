@@ -1,29 +1,50 @@
-import { NextResponse } from 'next/server'
+import { type NextRequest, NextResponse } from 'next/server'
 
+import { BtcVaultNavHistoryQuerySchema } from '@/app/api/btc-vault/v1/schemas'
 import { handleApiError } from '@/app/api/utils/helpers'
 import type { PaginationResponse } from '@/app/api/utils/types'
 
 import { fetchBtcVaultNavHistoryPage } from './action'
 
+/** Query affects body; disable static/full-route caching so sort/pagination stays correct per URL. */
+export const dynamic = 'force-dynamic'
 export const revalidate = 20
 /**
  * GET /api/btc-vault/v1/nav-history
- * Returns every BTC vault NAV history row in one response (no query params).
- * `pagination` is kept in the payload for backwards-compatibility and always
- * reports a single page containing everything.
+ * Supports pagination and sort mirroring {@link BtcVaultNavHistoryQuerySchema}.
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const { data, total } = await fetchBtcVaultNavHistoryPage()
+    const queryObject = Object.fromEntries(request.nextUrl.searchParams.entries())
+    const parsed = BtcVaultNavHistoryQuerySchema.safeParse(queryObject)
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          error: 'Invalid query parameters',
+          issues: parsed.error.flatten(),
+        },
+        { status: 400 },
+      )
+    }
+
+    const { page, limit, sort_field, sort_direction } = parsed.data
+    const { data, total } = await fetchBtcVaultNavHistoryPage({
+      page,
+      limit,
+      sort_field,
+      sort_direction,
+    })
+    const offset = (page - 1) * limit
+    const totalPages = Math.max(1, Math.ceil(total / limit))
 
     const pagination: PaginationResponse = {
-      page: 1,
-      limit: total,
-      offset: 0,
+      page,
+      limit,
+      offset,
       total,
-      totalPages: 1,
-      sort_field: 'processedAt',
-      sort_direction: 'desc',
+      totalPages,
+      sort_field,
+      sort_direction,
     }
 
     return NextResponse.json(

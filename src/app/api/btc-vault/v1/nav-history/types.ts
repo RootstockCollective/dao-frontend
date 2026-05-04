@@ -1,4 +1,15 @@
-export type BtcVaultNavHistorySortField = 'processedAt' | 'reportedOffchainAssets' | 'requestsProcessed'
+export type BtcVaultNavHistorySortField =
+  | 'processedAt'
+  | 'reportedOffchainAssets'
+  | 'requestsProcessedInEpoch'
+
+/** Mirrors validated GET `/api/btc-vault/v1/nav-history` query (state-sync / subgraph / Blockscout paging). */
+export interface NavHistoryPagedParams {
+  page: number
+  limit: number
+  sort_field: BtcVaultNavHistorySortField
+  sort_direction: 'asc' | 'desc'
+}
 
 export interface BtcVaultNavDepositRequest {
   owner: string
@@ -15,7 +26,7 @@ export interface BtcVaultNavHistoryItem {
   epochId: number
   reportedOffchainAssets: string
   processedAt: number
-  requestsProcessed: number
+  requestsProcessedInEpoch: number
   blockNumber: number
   transactionHash: string
   deposits: BtcVaultNavDepositRequest[]
