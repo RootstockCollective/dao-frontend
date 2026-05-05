@@ -12,7 +12,7 @@ import { Label, Paragraph, Span } from '@/components/Typography'
 import { RBTC } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import { useTableActionsContext, useTableContext } from '@/shared/context'
-import { SORT_DIRECTION_ASC, SORT_DIRECTION_DESC } from '@/shared/context/TableContext/constants'
+import { SORT_DIRECTION_ASC, SORT_DIRECTIONS } from '@/shared/context/TableContext/constants'
 
 import type { NavColumnId, NavHistoryCellDataMap, NavHistoryTable } from '../config'
 import { COLUMN_TRANSFORMS, SORT_LABELS } from '../config'
@@ -56,7 +56,7 @@ const OrderIndicator = ({ columnId }: { columnId: NavColumnId }) => {
   )
 }
 
-const dispatchSort = (
+const dispatchSortRoundRobin = (
   dispatch: Dispatch<NavHistoryTable['Action']>,
   columnId: NavColumnId,
   currentSort: NavHistoryTable['State']['sort'],
@@ -66,10 +66,10 @@ const dispatchSort = (
     dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId, direction: SORT_DIRECTION_ASC } })
     return
   }
-  // Same-column: toggle asc ⇄ desc (shared SORT_DIRECTIONS also cycles null, which cleared sort).
-  const nextDirection =
-    currentSort.direction === SORT_DIRECTION_DESC ? SORT_DIRECTION_ASC : SORT_DIRECTION_DESC
-  dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId, direction: nextDirection } })
+  const currentSortIndex = SORT_DIRECTIONS.indexOf(currentSort.direction)
+  const nextSortIndex = (currentSortIndex + 1) % SORT_DIRECTIONS.length
+  const nextSort = SORT_DIRECTIONS[nextSortIndex]
+  dispatch({ type: 'SORT_BY_COLUMN', payload: { columnId: nextSort ? columnId : null, direction: nextSort } })
 }
 
 const HeaderTitle = ({ children, className }: ChildrenWithClassNameProps) => (
@@ -96,7 +96,7 @@ const HeaderCell = ({ children, columnId, className }: HeaderCellProps) => {
     <TableHeaderCell
       className={cn('h-full', columnClassNames, className)}
       contentClassName={cn('items-center', isJustifyCenter ? 'justify-center' : '')}
-      onClick={() => isSortable && dispatchSort(dispatch, columnId, sort)}
+      onClick={() => isSortable && dispatchSortRoundRobin(dispatch, columnId, sort)}
       data-testid={`nav-history-header-cell-${columnId}`}
     >
       {isSortable && <OrderIndicator columnId={columnId} />}
