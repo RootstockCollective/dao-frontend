@@ -67,7 +67,7 @@ jobs:
           echo "Fork block: $FORK_BLOCK"
           # Start Anvil fork in background for swap execution tests
           # Fork is required for testing swap execution (write operations) without spending real funds
-          anvil --fork-url $ROOTSTOCK_RPC_URL --chain-id 31337 --fork-block-number $FORK_BLOCK --timeout 120000 > /tmp/anvil.log 2>&1 &
+          anvil --fork-url $ROOTSTOCK_RPC_URL --chain-id 31337 --fork-block-number $FORK_BLOCK --timeout 120000 --gas-limit 500000000 > /tmp/anvil.log 2>&1 &
           echo $! > /tmp/anvil.pid
           # Wait for fork to be ready (with timeout)
           timeout=30
