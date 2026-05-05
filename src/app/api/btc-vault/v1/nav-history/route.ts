@@ -6,9 +6,6 @@ import type { PaginationResponse } from '@/app/api/utils/types'
 
 import { fetchBtcVaultNavHistoryPage } from './action'
 
-/** Query affects body; disable static/full-route caching so sort/pagination stays correct per URL. */
-export const dynamic = 'force-dynamic'
-export const revalidate = 20
 /**
  * GET /api/btc-vault/v1/nav-history
  * Supports pagination and sort mirroring {@link BtcVaultNavHistoryQuerySchema}.
