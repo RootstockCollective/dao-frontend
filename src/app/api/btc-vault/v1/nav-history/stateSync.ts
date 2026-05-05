@@ -32,7 +32,9 @@ function normalizeRowFromStateSync(raw: Record<string, unknown>): BtcVaultNavHis
     epochId: Number(raw.epochId),
     reportedOffchainAssets: String(raw.reportedOffchainAssets),
     processedAt: Number(raw.processedAt),
-    requestsProcessed: Number(raw.requestsProcessed),
+    requestsProcessedInEpoch: Number(
+      raw.requestsProcessedInEpoch ?? (raw.requestsProcessed as number | undefined) ?? 0,
+    ),
     blockNumber: Number(raw.blockNumber),
     transactionHash: bytesToHexLower(raw.transactionHash),
     deposits: [],

@@ -56,7 +56,7 @@ export const BTC_VAULT_NAV_HISTORY_COLUMNS = [
   'epochId',
   'reportedOffchainAssets',
   'processedAt',
-  'requestsProcessed',
+  'requestsProcessedInEpoch',
   'blockNumber',
   'transactionHash',
 ]

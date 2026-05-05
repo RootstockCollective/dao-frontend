@@ -9,6 +9,14 @@ import type {
   BtcVaultNavHistorySortField,
 } from './types'
 
+/**
+ * Per-request paged query — graph-node owns ORDER BY / LIMIT / OFFSET. Mirrors the
+ * `btcVaultWhitelistedUsers` paging pattern; total count is sourced from the counter entity below.
+ *
+ * Tie-break note: graph-node only accepts a single `orderBy`, so rows that share the same primary
+ * value are ordered by graph-node's default (entity id). This differs from `stateSync` which
+ * tie-breaks on `id ASC` explicitly.
+ */
 const BTC_VAULT_NAV_HISTORY_PAGE = gql`
   query BtcVaultNavHistoryPage(
     $first: Int!
@@ -21,7 +29,7 @@ const BTC_VAULT_NAV_HISTORY_PAGE = gql`
       epochId
       reportedOffchainAssets
       processedAt
-      requestsProcessed
+      requestsProcessedInEpoch
       blockNumber
       transactionHash
     }
@@ -36,26 +44,27 @@ const BTC_VAULT_NAV_HISTORY_COUNTER = gql`
   }
 `
 
-/** Subgraph `btcVaultNavHistoryCounter` global id (GraphQL `ID`). */
-const NAV_HISTORY_COUNTER_GLOBAL_ID_SUBGRAPH = 'global'
+/** Subgraph `BtcVaultNavHistoryCounter` global row id (matches the `'global'` convention used elsewhere). */
+const NAV_HISTORY_COUNTER_GLOBAL_ID = 'global'
 
-interface RawBtcVaultNavHistoryRow {
+export interface RawBtcVaultNavHistoryRow {
   id: string
   epochId: string | number
   reportedOffchainAssets: string | number
   processedAt: string | number
-  requestsProcessed: string | number
   blockNumber: string | number
   transactionHash: string
+  requestsProcessedInEpoch?: string | number
+  requestsProcessed?: string | number
 }
 
 function normalizeRowFromSubgraph(raw: RawBtcVaultNavHistoryRow): BtcVaultNavHistoryItem {
   return {
-    id: raw.id,
+    id: raw.id.toLowerCase(),
     epochId: Number(raw.epochId),
     reportedOffchainAssets: String(raw.reportedOffchainAssets),
     processedAt: Number(raw.processedAt),
-    requestsProcessed: Number(raw.requestsProcessed),
+    requestsProcessedInEpoch: Number(raw.requestsProcessedInEpoch ?? raw.requestsProcessed ?? 0),
     blockNumber: Number(raw.blockNumber),
     transactionHash: raw.transactionHash.toLowerCase(),
     deposits: [],
@@ -65,10 +74,10 @@ function normalizeRowFromSubgraph(raw: RawBtcVaultNavHistoryRow): BtcVaultNavHis
 
 async function countBtcVaultNavHistoryFromSubgraphUncached(): Promise<number> {
   const result = await btcVaultClient.query<{
-    btcVaultNavHistoryCounter: { total: string } | null
+    btcVaultNavHistoryCounter: { total: string | number } | null
   }>({
     query: BTC_VAULT_NAV_HISTORY_COUNTER,
-    variables: { id: NAV_HISTORY_COUNTER_GLOBAL_ID_SUBGRAPH },
+    variables: { id: NAV_HISTORY_COUNTER_GLOBAL_ID },
     fetchPolicy: 'no-cache',
   })
 
@@ -82,6 +91,10 @@ async function countBtcVaultNavHistoryFromSubgraphUncached(): Promise<number> {
   return Number(counter.total)
 }
 
+/**
+ * Counter is the only thing we cache here — page queries stay live so navigation reflects the
+ * latest indexed rows. 120 s revalidate matches the state-sync counter cache.
+ */
 const getCachedBtcVaultNavHistoryTotalFromSubgraph = unstable_cache(
   countBtcVaultNavHistoryFromSubgraphUncached,
   ['btc-vault-nav-history-total', 'subgraph'],
@@ -116,13 +129,13 @@ export async function fetchBtcVaultNavHistoryPageFromSubgraph(params: {
     throw pageResult.error
   }
 
-  const graphqlRows = pageResult.data?.btcVaultNavHistories
-  if (graphqlRows === undefined) {
+  const rows = pageResult.data?.btcVaultNavHistories
+  if (rows === undefined) {
     throw new Error('Subgraph returned no btcVaultNavHistories data')
   }
 
   return {
-    data: graphqlRows.map(normalizeRowFromSubgraph),
+    data: rows.map(normalizeRowFromSubgraph),
     total,
   }
 }

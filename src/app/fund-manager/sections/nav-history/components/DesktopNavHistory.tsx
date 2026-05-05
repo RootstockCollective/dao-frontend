@@ -56,7 +56,7 @@ const OrderIndicator = ({ columnId }: { columnId: NavColumnId }) => {
   )
 }
 
-const dispatchSort = (
+const dispatchSortRoundRobin = (
   dispatch: Dispatch<NavHistoryTable['Action']>,
   columnId: NavColumnId,
   currentSort: NavHistoryTable['State']['sort'],
@@ -96,7 +96,7 @@ const HeaderCell = ({ children, columnId, className }: HeaderCellProps) => {
     <TableHeaderCell
       className={cn('h-full', columnClassNames, className)}
       contentClassName={cn('items-center', isJustifyCenter ? 'justify-center' : '')}
-      onClick={() => isSortable && dispatchSort(dispatch, columnId, sort)}
+      onClick={() => isSortable && dispatchSortRoundRobin(dispatch, columnId, sort)}
       data-testid={`nav-history-header-cell-${columnId}`}
     >
       {isSortable && <OrderIndicator columnId={columnId} />}
@@ -116,8 +116,8 @@ const NavHistoryHeaderRow = () => (
       <HeaderCell columnId="reportedOffchainAssets">
         <HeaderTitle>{SORT_LABELS.reportedOffchainAssets}</HeaderTitle>
       </HeaderCell>
-      <HeaderCell columnId="requestsProcessed">
-        <HeaderTitle>{SORT_LABELS.requestsProcessed}</HeaderTitle>
+      <HeaderCell columnId="requestsProcessedInEpoch">
+        <HeaderTitle>{SORT_LABELS.requestsProcessedInEpoch}</HeaderTitle>
       </HeaderCell>
       <HeaderCell columnId="processedAt">
         <HeaderTitle>{SORT_LABELS.processedAt}</HeaderTitle>
@@ -152,7 +152,7 @@ const TableCell = ({ children, columnId, className }: TableCellProps) => {
 const NavHistoryDataRow = ({
   reportedOffchainAssets,
   fiatAmountFormatted,
-  requestsProcessed,
+  requestsProcessedInEpoch,
   processedAt,
 }: NavHistoryCellDataMap) => (
   <tr
@@ -173,9 +173,9 @@ const NavHistoryDataRow = ({
       </div>
     </TableCell>
 
-    <TableCell columnId="requestsProcessed">
+    <TableCell columnId="requestsProcessedInEpoch">
       <Paragraph variant="body-s" className={'text-v3-text-100'}>
-        {requestsProcessed}
+        {requestsProcessedInEpoch}
       </Paragraph>
     </TableCell>
 
