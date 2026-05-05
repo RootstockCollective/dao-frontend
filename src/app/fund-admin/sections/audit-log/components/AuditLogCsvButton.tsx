@@ -38,7 +38,7 @@ function sanitizeCsvValue(value: string): string {
 }
 
 function generateCsv(rows: string[][]): string {
-  const headers = ['Date', 'Action', 'Detail', 'Token Amount', 'Token Symbol', 'Role', 'Transaction Hash']
+  const headers = ['Date', 'Action', 'Reason', 'Token Amount', 'Token Symbol', 'Role', 'Transaction Hash']
   const csvRows = [headers.map(sanitizeCsvValue), ...rows.map(r => r.map(sanitizeCsvValue))]
   return csvRows.map(r => r.join(',')).join('\n')
 }
