@@ -2,7 +2,7 @@ import type { z } from 'zod'
 
 import type { AuditLogEntry } from '@/app/fund-admin/sections/audit-log/types'
 
-import type { BtcVaultAuditLogQuerySchema } from '../schemas'
+import { BtcVaultAuditLogQuerySchema } from '../schemas'
 
 export type ParsedQuery = z.infer<typeof BtcVaultAuditLogQuerySchema>
 

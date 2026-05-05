@@ -47,21 +47,38 @@ function applyShowFilters(qb: Knex.QueryBuilder, showFilters: ParsedQuery['show'
   const includeRbtc = selected.has('rbtc')
   const includeWrbtc = selected.has('wrbtc')
 
+  const branches: Array<(inner: Knex.QueryBuilder) => void> = []
+
   if (includeReason) {
-    qb.whereNotNull('detail')
+    branches.push(inner => inner.whereNotNull('detail'))
   }
 
   if (includeRbtc && includeWrbtc) {
-    qb.whereNotNull('amountInWei')
+    branches.push(inner => inner.whereNotNull('amountInWei'))
   } else if (includeRbtc) {
-    qb.whereNotNull('amountInWei')
-    qb.where(function () {
-      this.where('isNative', true).orWhereNull('isNative')
-    })
+    branches.push(inner =>
+      inner.whereNotNull('amountInWei').where(function () {
+        this.where('isNative', true).orWhereNull('isNative')
+      }),
+    )
   } else if (includeWrbtc) {
-    qb.whereNotNull('amountInWei')
-    qb.where('isNative', false)
+    branches.push(inner => inner.whereNotNull('amountInWei').where('isNative', false))
   }
+
+  if (branches.length === 0) return
+
+  if (branches.length === 1) {
+    branches[0](qb)
+    return
+  }
+
+  qb.where(function () {
+    for (const branch of branches) {
+      this.orWhere(function () {
+        branch(this)
+      })
+    }
+  })
 }
 
 function applyFilters(qb: Knex.QueryBuilder, params: ParsedQuery): void {
