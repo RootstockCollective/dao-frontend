@@ -12,6 +12,8 @@ metadata:
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
     alb.ingress.kubernetes.io/ssl-redirect: '443'
+    # All dao-frontend envs share one ALB via this group; saves 4× ALB cost.
+    alb.ingress.kubernetes.io/group.name: dao-frontend-rscoll-dev
     alb.ingress.kubernetes.io/certificate-arn: {{ .Values.ingress.certificateArn }}
     {{- if .Values.ingress.wafAclArn }}
     alb.ingress.kubernetes.io/wafv2-acl-arn: {{ .Values.ingress.wafAclArn }}
