@@ -76,3 +76,8 @@ CLAUDE.md
 
 # Local git worktrees
 .worktrees/
+
+# Helm values overrides with secrets (allow committed environment files)
+helm/secrets.yaml
+helm/values-local.yaml
+helm/values-override.yaml
