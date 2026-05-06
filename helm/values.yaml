@@ -1,4 +1,4 @@
-replicaCount: 2
+replicaCount: 1
 
 image:
   repository: 886436934082.dkr.ecr.us-east-1.amazonaws.com/rscoll-dev-dao-dev
@@ -30,8 +30,8 @@ ingress:
 
 resources:
   requests:
-    cpu: 100m
-    memory: 256Mi
+    cpu: 50m
+    memory: 128Mi
   limits:
     cpu: 500m
     memory: 512Mi
