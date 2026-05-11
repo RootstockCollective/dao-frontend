@@ -2,7 +2,10 @@ import type { Address, Hash, Hex, RpcLog } from 'viem'
 
 import type { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
-import { fetchBlockscoutGetLogsPaginated } from './fetch-blockscout-get-logs-paginated'
+import {
+  type BlockscoutGetLogsFetchInit,
+  fetchBlockscoutGetLogsPaginated,
+} from './fetch-blockscout-get-logs-paginated'
 
 /**
  * Arguments forwarded into {@link fetchBlockscoutGetLogsPaginated}'s `query` (topic2 / extra operators not exposed here).
@@ -18,6 +21,8 @@ interface FetchLogsByTopicParams {
   topic1?: Hex
   /** How `topic0` and `topic1` combine when both are set. */
   topic0_1_opr?: 'and' | 'or'
+  /** Forwarded to the underlying `fetch` (e.g. `next.revalidate` from a Route Handler). */
+  fetchInit?: BlockscoutGetLogsFetchInit
 }
 
 /** Maps a Blockscout log row into viem {@link RpcLog}; strips `null` entries from `topics`. */
@@ -87,6 +92,7 @@ export async function fetchLogsByTopic({
   fromBlock: initialFromBlock = '0',
   topic1,
   topic0_1_opr,
+  fetchInit,
 }: FetchLogsByTopicParams): Promise<{ data: RpcLog[] }> {
   const rows = await fetchBlockscoutGetLogsPaginated({
     query: {
@@ -96,6 +102,7 @@ export async function fetchLogsByTopic({
       topic1,
       topic0_1_opr,
     },
+    fetchInit,
   })
 
   return { data: rows.map(toRpcLog) }
