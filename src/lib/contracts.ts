@@ -1,8 +1,5 @@
 import { zeroAddress } from 'viem'
 
-import { getAbi } from '@/lib/abis/btc-vault'
-import { VaultAbi } from '@/lib/abis/VaultAbi'
-
 import { EarlyAdoptersNFTAbi } from './abis/EarlyAdoptersNFTAbi'
 import { GovernorAbi } from './abis/Governor'
 import { RootcampABI } from './abis/RootcampABI'
@@ -12,7 +9,6 @@ import { VotingVanguardsNftAbi } from './abis/VotingVanguardsNFTAbi'
 import {
   BACKERS_MANAGER_ADDRESS,
   BB_NFT_ADDRESS,
-  BUFFER_ADDRESS,
   BUILDER_REGISTRY_ADDRESS,
   EA_NFT_ADDRESS,
   GENERAL_BUCKET_ADDRESS,
@@ -24,9 +20,7 @@ import {
   OG_CONTRIBUTORS_NFT_ADDRESS,
   OG_FOUNDERS_NFT_ADDRESS,
   OG_PARTNERS_NFT_ADDRESS,
-  PERMISSIONS_MANAGER_ADDRESS,
   RBTC,
-  RBTC_VAULT_ADDRESS,
   REWARD_DISTRIBUTOR_ADDRESS,
   RIF,
   RIF_ADDRESS,
@@ -34,10 +28,8 @@ import {
   ROOTLINGS_S1_NFT_ADDRESS,
   STRIF,
   STRIF_ADDRESS,
-  SYNTHETIC_YIELD_ADDRESS,
   USDRIF,
   USDRIF_ADDRESS,
-  USDRIF_VAULT_ADDRESS,
   USDT0,
   USDT0_ADDRESS,
   VANGUARD_NFT_ADDRESS,
@@ -120,29 +112,4 @@ export const governor = {
 export const stRif = {
   address: STRIF_ADDRESS,
   abi: StRIFTokenAbi,
-} as const
-
-export const vault = {
-  address: USDRIF_VAULT_ADDRESS,
-  abi: VaultAbi,
-} as const
-
-export const rbtcVault = {
-  address: RBTC_VAULT_ADDRESS,
-  abi: getAbi('RBTCAsyncVaultAbi'),
-} as const
-
-export const buffer = {
-  address: BUFFER_ADDRESS,
-  abi: getAbi('BufferAbi'),
-} as const
-
-export const permissionsManager = {
-  address: PERMISSIONS_MANAGER_ADDRESS,
-  abi: getAbi('PermissionsManagerAbi'),
-} as const
-
-export const syntheticYield = {
-  address: SYNTHETIC_YIELD_ADDRESS,
-  abi: getAbi('SyntheticYieldAbi'),
 } as const

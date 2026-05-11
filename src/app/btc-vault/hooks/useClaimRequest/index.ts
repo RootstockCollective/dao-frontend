@@ -1,1 +1,0 @@
-export { useClaimRequest } from './useClaimRequest'

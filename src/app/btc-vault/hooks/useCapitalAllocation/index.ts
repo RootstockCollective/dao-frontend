@@ -1,1 +1,0 @@
-export { useCapitalAllocation } from './useCapitalAllocation'
