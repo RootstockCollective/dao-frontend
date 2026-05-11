@@ -133,6 +133,7 @@ export const fetchProposalCreated = async (fromBlock = 0) => {
     address: GovernorAddress,
     topic0: PROPOSAL_CREATED_EVENT,
     fromBlock: fromBlock.toString(),
+    fetchInit: { next: { revalidate: 60 } },
   })
 }
 
@@ -145,6 +146,7 @@ export const fetchVoteCastEventByAccountAddress = async (address: Address) => {
     topic0: CAST_VOTE_EVENT,
     topic1: padHex(address, { size: 32 }),
     topic0_1_opr: 'and',
+    fetchInit: { next: { revalidate: 60 } },
   })
 }
 
@@ -174,7 +176,7 @@ export const fetchNftHoldersOfAddress = async (
   }
   const pagination = buildPaginationParams(nextParams)
   const url = `${BLOCKSCOUT_URL}/api/v2/tokens/${address}/instances?${pagination}`
-  const res = await fetch(url)
+  const res = await fetch(url, { next: { revalidate: 30 } })
   if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
   const data = (await res.json()) as {
     items: BlockscoutNftInstance[]
@@ -201,7 +203,7 @@ export const fetchTokenHoldersOfAddress = async (
   }
   const pagination = buildPaginationParams(nextParams)
   const url = `${BLOCKSCOUT_URL}/api/v2/tokens/${address}/holders?${pagination}`
-  const res = await fetch(url)
+  const res = await fetch(url, { next: { revalidate: 30 } })
   if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
   const data: ServerResponseV2<TokenHoldersResponse> = await res.json()
   return data
