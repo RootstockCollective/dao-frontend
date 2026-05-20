@@ -1,3 +1,4 @@
+import posthog from 'posthog-js'
 import { useEffect } from 'react'
 
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
@@ -29,6 +30,10 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
       primary: {
         label: isRequesting ? 'Requesting...' : 'Confirm stake',
         onClick: () => {
+          posthog.capture('stake_rif_confirmed', {
+            amount,
+            token_to_receive: tokenToReceive.contract,
+          })
           executeTxFlow({
             onRequestTx: onRequestStake,
             onSuccess: () => {
@@ -58,6 +63,7 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
     onGoToStep,
     setButtonActions,
     refetchBalances,
+    tokenToReceive.contract,
   ])
 
   return (

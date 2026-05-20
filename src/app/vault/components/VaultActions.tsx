@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import posthog from 'posthog-js'
 import { useCallback, useRef, useState } from 'react'
 import { useAccount } from 'wagmi'
 
@@ -94,6 +95,7 @@ export const VaultActions = () => {
       setSwapPopoverOpen(true)
       return
     }
+    posthog.capture('vault_swap_opened')
     swapModal.openModal()
   }
 

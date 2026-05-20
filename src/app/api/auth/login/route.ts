@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { verifySignature } from '@/lib/auth/actions'
+import { verifyJWT } from '@/lib/auth/jwt.server'
 import { sanitizeError } from '@/lib/auth/utils'
 import { logger } from '@/lib/logger'
+import { getPostHogClient } from '@/lib/posthog-server'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -32,6 +34,24 @@ export async function POST(request: NextRequest) {
     // - signature format (0x hex string)
     // - cryptographic signature verification via SIWE
     const { token } = await verifySignature(challengeId, signature)
+
+    // Track sign-in server-side using the wallet address as distinct ID
+    const payload = await verifyJWT(token)
+    if (payload?.userAddress) {
+      const posthog = getPostHogClient()
+      const distinctId = payload.userAddress
+      const clientDistinctId = request.headers.get('X-POSTHOG-DISTINCT-ID')
+      posthog.identify({ distinctId, properties: { wallet_address: distinctId } })
+      posthog.capture({
+        distinctId,
+        event: 'user_signed_in',
+        properties: {
+          wallet_address: distinctId,
+          ...(clientDistinctId ? { $anon_distinct_id: clientDistinctId } : {}),
+        },
+      })
+      await posthog.shutdown()
+    }
 
     // Return token in response body and as HTTP-only cookie
     const response = NextResponse.json({ token })
