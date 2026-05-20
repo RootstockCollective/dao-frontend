@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from 'motion/react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import posthog from 'posthog-js'
 import { useContext, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
@@ -157,6 +158,7 @@ export const BackingPage = () => {
   }, [allocations, initialAllocations])
 
   const distributeBackingEqually = () => {
+    posthog.capture('backing_distributed_equally', { allocations_count: allocationsCount })
     //FIXME: Take into account the inactive builders
     let newAllocations: Allocations = {}
     if (allocationsCount) {

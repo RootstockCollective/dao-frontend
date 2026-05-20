@@ -1,4 +1,5 @@
 import { waitForTransactionReceipt } from '@wagmi/core'
+import posthog from 'posthog-js'
 import { type MouseEvent, useCallback, useRef, useState } from 'react'
 import { zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
@@ -83,6 +84,7 @@ export const VotingDetails = ({
 
   const handleVoting = async (_vote: Vote) => {
     try {
+      posthog.capture('proposal_vote_cast', { proposal_id: proposalId, vote: _vote })
       setIsChoosingVote(false)
       const txHash = await executeTxFlow({
         onRequestTx: () => {
@@ -108,6 +110,7 @@ export const VotingDetails = ({
   }
 
   const handleQueuingProposal = async () => {
+    posthog.capture('proposal_queued', { proposal_id: proposalId })
     const txHash = await executeTxFlow({
       onRequestTx: () => {
         setIsQueueing(true)
@@ -140,6 +143,7 @@ export const VotingDetails = ({
       return
     }
 
+    posthog.capture('proposal_executed', { proposal_id: proposalId })
     const txHash = await executeTxFlow({
       onRequestTx: () => {
         setIsExecuting(true)

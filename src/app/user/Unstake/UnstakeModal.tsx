@@ -1,3 +1,4 @@
+import posthog from 'posthog-js'
 import { useCallback, useMemo, useState } from 'react'
 import { formatEther, parseEther } from 'viem'
 import { useAccount } from 'wagmi'
@@ -97,6 +98,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
   )
 
   const handleConfirmUnstake = useCallback(() => {
+    posthog.capture('unstake_rif_confirmed', { amount })
     executeTxFlow({
       onRequestTx: onRequestUnstake,
       onSuccess: () => {
@@ -105,7 +107,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
       },
       action: 'unstaking',
     })
-  }, [onRequestUnstake, onCloseModal, refetchBalances])
+  }, [amount, onRequestUnstake, onCloseModal, refetchBalances])
 
   return (
     <Modal onClose={onCloseModal} data-testid="UnstakeModal">

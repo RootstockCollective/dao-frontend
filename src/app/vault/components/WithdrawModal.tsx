@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import posthog from 'posthog-js'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { formatEther } from 'viem'
 
@@ -85,6 +86,11 @@ export const WithdrawModal = ({ onCloseModal, onTransactionSuccess }: Props) => 
   )
 
   const handleConfirmWithdraw = useCallback(() => {
+    posthog.capture('vault_withdraw_confirmed', {
+      amount,
+      slippage_percentage: slippagePercentage,
+      token: USDRIF,
+    })
     executeTxFlow({
       onRequestTx: onRequestWithdraw,
       onSuccess: () => {
@@ -93,7 +99,7 @@ export const WithdrawModal = ({ onCloseModal, onTransactionSuccess }: Props) => 
       },
       action: 'vaultWithdraw',
     })
-  }, [onRequestWithdraw, onCloseModal, onTransactionSuccess])
+  }, [onRequestWithdraw, onCloseModal, onTransactionSuccess, amount, slippagePercentage])
 
   useEffect(() => {
     inputRef.current?.focus()

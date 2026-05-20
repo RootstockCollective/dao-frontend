@@ -1,3 +1,4 @@
+import posthog from 'posthog-js'
 import { ReactNode } from 'react'
 
 import { ConditionalTooltip } from '@/app/components'
@@ -106,7 +107,18 @@ export const ClaimRewardsModalView = ({
               ]}
               side="left"
             >
-              <Button variant="primary" onClick={() => isClaimable && onClaim()}>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  if (isClaimable) {
+                    posthog.capture('rewards_claimed', {
+                      reward_type: selectedRewardType,
+                      total_fiat_amount: totalFiatAmount,
+                    })
+                    onClaim()
+                  }
+                }}
+              >
                 Claim now
               </Button>
             </ConditionalTooltip>
