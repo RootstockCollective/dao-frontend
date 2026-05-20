@@ -19,8 +19,8 @@ ingress:
 externalSecrets:
   parameterPaths:
     theGraphApiKey: /rscoll-dev/cr-qa/the-graph-api-key
-    dbConnectionString: /rscoll-dev/bim-qa/database-uri
+    dbConnectionString: /rscoll-dev-eks/cr-qa/database-uri
     daoGraphApiKey: /rscoll-dev/cr-qa/dao-graph-api-key
-    daoDataDbConnectionString: /rscoll-dev/bim-qa/dao-data-database-uri
+    daoDataDbConnectionString: /rscoll-dev-eks/cr-qa/dao-data-database-uri
     btcVaultGraphApiKey: /rscoll-dev/cr-qa/btc-vault-graph-api-key
     coinMarketCapKey: /rscoll-dev-coinmarketcap-key
