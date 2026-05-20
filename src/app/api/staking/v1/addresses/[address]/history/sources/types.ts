@@ -45,7 +45,7 @@ export interface StakingHistoryPageResult {
 
 /**
  * One staking history data source: returns a paginated page and total count from that backend only.
- * Same structural idea as the proposals source chain and BTC vault `BtcVaultHistorySource`.
+ * Same structural idea as the proposals source chain.
  */
 export interface StakingHistorySource {
   name: StakingHistoryDataSourceName

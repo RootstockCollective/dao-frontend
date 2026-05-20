@@ -10,7 +10,7 @@ This document presents my findings and recommendations for improving balance upd
 
 **Root Cause:** Staking, unstaking, and swap flows do not trigger balance refresh after transaction completion. Balances only update via 60-second polling intervals.
 
-**Recommended Fix:** Add explicit `refetchBalances()` calls to the `onSuccess` callback of affected flows, matching the pattern already used in vault operations.
+**Recommended Fix:** Add explicit `refetchBalances()` calls to the `onSuccess` callback of affected flows, matching the pattern already used in delegation operations.
 
 **Impact:** Balance updates will appear within 1-2 seconds of transaction confirmation instead of up to 60 seconds.
 
@@ -29,30 +29,26 @@ I reviewed all transaction flows in the dApp that use `executeTxFlow`. Here's wh
 | Staking | `Steps/StepThree.tsx` | `onCloseModal` | ❌ No |
 | Unstaking | `UnstakeModal.tsx` | `onCloseModal` | ❌ No |
 | Swap | `Steps/SwapStepThree.tsx` | `onCloseModal` | ❌ No |
-| Vault Deposit | `DepositModal.tsx` | `onTransactionSuccess?.()` + `onCloseModal()` | ✅ Yes |
-| Vault Withdraw | `WithdrawModal.tsx` | `onTransactionSuccess?.()` + `onCloseModal()` | ✅ Yes |
 | Delegation | `ConnectedSection.tsx` | `refetch()` | ✅ Yes |
 | Reclaim | `ConnectedSection.tsx` | `refetch()` | ✅ Yes |
 
-### Why Vault Flows Work Correctly
+### Why Delegation Flows Work Correctly
 
-The vault implementation in `VaultActions.tsx` demonstrates the correct pattern:
+The delegation implementation in `ConnectedSection.tsx` demonstrates the correct pattern:
 
 ```typescript
-const { refetch: refetchVaultBalance } = useVaultBalance()
-const { refetchBalances } = useGetAddressBalances()
+const { refetch } = useGetDelegates()
 
-const handleRefreshBalances = useCallback(() => {
-  refetchVaultBalance()
-  refetchBalances()
-}, [refetchVaultBalance, refetchBalances])
-
-// Passed to modals
-<DepositModal onTransactionSuccess={handleRefreshBalances} />
-<WithdrawModal onTransactionSuccess={handleRefreshBalances} />
+executeTxFlow({
+  onRequestTx: onRequestDelegate,
+  onSuccess: () => {
+    refetch()
+  },
+  action: 'delegation',
+})
 ```
 
-The deposit and withdraw modals then call `onTransactionSuccess?.()` in their `onSuccess` callback, triggering the balance refresh.
+The delegation flow calls `refetch()` in its `onSuccess` callback, triggering the data refresh immediately after the transaction is confirmed.
 
 ### Why Staking/Unstaking Flows Are Delayed
 
@@ -175,7 +171,7 @@ void executeTxFlow({
 - [ ] After staking, RIF and stRIF balances update within 2 seconds
 - [ ] After unstaking, stRIF and RIF balances update within 2 seconds
 - [ ] After swap, token balances update within 2 seconds
-- [ ] Vault deposit/withdraw behavior remains unchanged
+- [ ] Delegation behavior remains unchanged
 - [ ] No console errors or failed refetch calls
 
 ---
@@ -186,7 +182,7 @@ To prevent similar issues in future features, I recommend documenting the expect
 
 #### Transaction Success Callback Rules
 
-**For balance-affecting transactions (staking, unstaking, swap, vault operations):**
+**For balance-affecting transactions (staking, unstaking, swap):**
 
 ```typescript
 onSuccess: () => {
@@ -300,8 +296,7 @@ rollbackOptimisticBalance()
 I want to highlight patterns in the codebase that are implemented correctly:
 
 1. **`executeTxFlow` utility** - Provides consistent transaction lifecycle management with toast notifications
-2. **Vault operations** - Demonstrate the correct refresh pattern
-3. **Delegation flow** - Properly refreshes context after transactions
+2. **Delegation flow** - Properly refreshes context after transactions
 4. **Toast notifications** - Already show pending, success, and error states
 5. **Button loading states** - "Requesting...", "In progress" states are implemented
 6. **Transaction status component** - Shows explorer links and failure messages
@@ -317,7 +312,6 @@ The infrastructure is solid. We just need to use it consistently.
 | Refetch fails silently | Low | Medium | Add error handling in refetch calls |
 | RPC state lag causes stale read | Low | Low | Add delay if observed in testing |
 | Multiple rapid transactions cause flickering | Low | Low | Transactions are serialized by wallet |
-| Breaking existing vault behavior | Very Low | High | Vault code remains unchanged |
 
 ---
 
@@ -356,8 +350,6 @@ The balance update delay is caused by a missing `refetchBalances()` call in thre
 
 | File | Pattern to Follow |
 |------|-------------------|
-| `src/app/vault/components/VaultActions.tsx` | Callback pattern |
-| `src/app/vault/components/DepositModal.tsx` | `onTransactionSuccess` usage |
 | `src/app/delegate/sections/DelegateContentSection/ConnectedSection.tsx` | Context refetch pattern |
 
 ### Related Infrastructure

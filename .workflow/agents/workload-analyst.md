@@ -28,7 +28,7 @@ Use the file-read tool to load the story file (e.g. `.workflow/stories/STORY-XXX
 ## Instructions
 
 1. **Identify the Story**
-   - Derive a **story name** from the story. **Story IDs must always start with the prefix `STORY-`** (e.g. STORY-EPIC-B-001 for a story from epic-b, STORY-003 for a numeric id, STORY-BTC-VAULT-003 for a ticket). Use UPPERCASE after the prefix when the source is an epic (e.g. STORY-EPIC-B-001).
+   - Derive a **story name** from the story. **Story IDs must always start with the prefix `STORY-`** (e.g. STORY-EPIC-B-001 for a story from epic-b, STORY-003 for a numeric id, STORY-CR-003 for a ticket). Use UPPERCASE after the prefix when the source is an epic (e.g. STORY-EPIC-B-001).
    - This name will be used for the output file so we know where the story came from.
 
 2. **Analyze Along These Dimensions**
@@ -88,7 +88,7 @@ Use the file-read tool to load the story file (e.g. `.workflow/stories/STORY-XXX
 | Workload analysis | `.workflow/stories-analysis/{story-name}-analysis.md` |
 
 **Naming rule:** `{story-name}-analysis.md`  
-Examples: `STORY-003-analysis.md`, `BTC-VAULT-003-analysis.md`, `add-btc-vault-banners-analysis.md`
+Examples: `STORY-003-analysis.md`, `CR-003-analysis.md`, `add-builder-rewards-analysis.md`
 
 ---
 
@@ -109,7 +109,7 @@ Use this structure in the output file so analyses are consistent and comparable.
 
 - **Story name (for artifact):** {story-name}
 - **Title:** [Story title]
-- **Origin:** [e.g. JIRA BTC-VAULT-003, .workflow/stories/STORY-003.md]
+- **Origin:** [e.g. JIRA CR-003, .workflow/stories/STORY-003.md]
 
 ---
 

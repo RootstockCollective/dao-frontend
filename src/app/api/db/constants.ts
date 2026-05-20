@@ -51,33 +51,6 @@ export const TX_HISTORY_COLUMNS = [
   TX_HISTORY_TOTAL_AMOUNT,
 ]
 
-export const BTC_VAULT_NAV_HISTORY_COLUMNS = [
-  COLUMN_ID,
-  'epochId',
-  'reportedOffchainAssets',
-  'processedAt',
-  'requestsProcessedInEpoch',
-  'blockNumber',
-  'transactionHash',
-]
-
-export const BTC_VAULT_AUDIT_LOG_COLUMNS = [
-  COLUMN_ID,
-  'vault',
-  'type',
-  'amountInWei',
-  'detail',
-  'isNative',
-  'role',
-  'actor',
-  'from',
-  'destination',
-  'blockNumber',
-  'blockTimestamp',
-  'transactionHash',
-  'logIndex',
-]
-
 const BACKER_TO_BUILDER_BACKER = 'backer'
 const BACKER_TO_BUILDER_BUILDER = 'builder'
 const BACKER_TO_BUILDER_TOTAL_ALLOCATION = 'totalAllocation'

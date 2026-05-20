@@ -40,7 +40,7 @@ Apply to ALL new code. When editing existing code that violates these, update th
 
 ## Hook Conventions
 
-- **Naming:** `use[Feature][Action]` — e.g., `useVaultBalance`, `useSwapExecution`.
+- **Naming:** `use[Feature][Action]` — e.g., `useProposalVotes`, `useSwapExecution`.
 - **One exported hook per file.** Exception: tightly coupled hooks sharing private helpers, but split if file exceeds ~200 lines.
 - **File name = primary export name.** No mismatches.
 - **Explicit return types** on hooks exported from `src/shared/hooks/`. Feature-internal hooks may use inference.

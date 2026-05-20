@@ -3,7 +3,7 @@ import { useAccount } from 'wagmi'
 import { MenuData, menuData, menuDataNotConnected } from './menuData'
 
 /**
- * Returns the menu items for the current connection state.
+ * Returns the menu data based on the user's connection state.
  */
 export function useFilteredMenuData(): MenuData[] {
   const { isConnected } = useAccount()

@@ -137,7 +137,7 @@ export interface PannableProgressStepRowProps {
   steps: readonly string[]
   /** 0-based index of the highlighted step (drives pan + label emphasis). */
   currentStepIndex: number
-  /** Proposal detail: body uppercase labels. Vault: tag + caps. */
+  /** Controls label style: body uppercase for proposal detail, tag + caps for stepper. */
   stepLabelVariant: PannableStepLabelVariant
   /** Rendered below the step row inside the measurement container (same card width as labels). */
   progressBar: PannableProgressBarProps
@@ -151,7 +151,6 @@ export interface PannableProgressStepRowProps {
 
 /**
  * Pannable step labels, `>` separators, and tiled progress bar in one measurement shell.
- * Shared by proposal detail and vault stepper.
  */
 export function PannableProgressStepRow({
   steps,
