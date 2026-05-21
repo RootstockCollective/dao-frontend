@@ -37,7 +37,6 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
             onSuccess: () => {
               refetchBalances()
               onCloseModal()
-              console.log('stake_rif_confirmed prev to send posthog capture')
               posthog.capture('stake_rif_confirmed', {
                 amount,
                 amount_decimal: Number(amount) || 0,
@@ -51,7 +50,6 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
                   ) || 0,
                 token_to_receive: tokenToReceive.contract,
               })
-              console.log('stake_rif_confirmed after send posthog capture')
             },
             action: 'staking',
           })
