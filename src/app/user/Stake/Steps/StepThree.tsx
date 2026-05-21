@@ -51,6 +51,26 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
                 token_to_receive: tokenToReceive.contract,
               })
             },
+            onError: (txHash, err) => {
+              console.log('stake_rif_failed prev to send posthog capture')
+              posthog.capture('stake_rif_failed', {
+                amount,
+                amount_decimal: Number(amount) || 0,
+                token: tokenToSend.symbol,
+                token_price_usd: Number(tokenToSend.price) || 0,
+                usd_value:
+                  Number(
+                    Big(amount || 0)
+                      .mul(tokenToSend.price || 0)
+                      .toString(),
+                  ) || 0,
+                token_to_receive: tokenToReceive.contract,
+                failure_reason: err.name === 'Rejected TX' ? 'user_rejected' : 'tx_failed',
+                error_message: err.message,
+                tx_hash: txHash,
+              })
+              console.log('stake_rif_failed after send posthog capture')
+            },
             action: 'staking',
           })
         },
