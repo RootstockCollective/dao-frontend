@@ -41,6 +41,8 @@ All amounts are in human-readable token units (not wei). Token symbols are upper
 
 | Event | When it fires | Properties | Captured in |
 |---|---|---|---|
+| `stake_allowance_approved` | RIF allowance approval transaction mined successfully (step 2 of staking flow, prerequisite for the actual stake) | `amount` (string), `amount_decimal` (number), `token` (RIF), `token_price_usd`, `usd_value`, `tx_hash` | `src/app/user/Stake/Steps/StepTwo.tsx` |
+| `stake_allowance_failed` | Allowance approval transaction reverted, errored, or was rejected by the user in the wallet | same as `_approved` + `failure_reason` (`user_rejected` \| `tx_failed`), `error_message` | `src/app/user/Stake/Steps/StepTwo.tsx` |
 | `stake_rif_confirmed` | RIF → stRIF transaction mined successfully on-chain | `amount` (string), `amount_decimal` (number), `token` (RIF), `token_price_usd`, `usd_value`, `token_to_receive` (stRIF contract) | `src/app/user/Stake/Steps/StepThree.tsx` |
 | `stake_rif_failed` | Stake transaction reverted, errored, or was rejected by the user in the wallet | same as `_confirmed` + `failure_reason` (`user_rejected` \| `tx_failed`), `error_message`, `tx_hash` | `src/app/user/Stake/Steps/StepThree.tsx` |
 | `unstake_rif_confirmed` | stRIF → RIF transaction mined successfully on-chain | `amount`, `amount_decimal`, `token` (stRIF), `token_price_usd`, `usd_value` | `src/app/user/Unstake/UnstakeModal.tsx` |
@@ -49,6 +51,8 @@ All amounts are in human-readable token units (not wei). Token symbols are upper
 **Volume reporting:** use `amount_decimal` (numeric) with PostHog's `Property sum` math for per-token volume. Use `usd_value` to aggregate volume across tokens in a single chart.
 
 **Success rate:** funnel `stake_rif_confirmed` vs `stake_rif_failed` (filter the failed event by `failure_reason = tx_failed` if you only want real failures, excluding wallet rejections).
+
+**Allowance → stake funnel:** for first-time stakers, the on-chain flow is `stake_allowance_approved` → `stake_rif_confirmed`. Build a funnel on these two events to measure drop-off between approving the allowance and actually staking — a common failure mode is users who approve but then bounce before signing the stake.
 
 ### Governance
 
@@ -139,5 +143,6 @@ posthog.capture('feature_action_outcome', {
 
 Track significant additions, removals, and renames here so it's clear what changed and when.
 
+- **2026-05-21** — Added `stake_allowance_approved` and `stake_allowance_failed` to track the RIF allowance approval step that precedes staking. Enables the allowance → stake conversion funnel.
 - **2026-05-21** — Documented the existing event catalog. Added `environment` super property (multi-chain separation), `wallet_address` super property (auto-sync with wagmi), `amount_decimal` / `token` / `token_price_usd` / `usd_value` on stake/unstake captures, and new `stake_rif_failed` / `unstake_rif_failed` events for tracking transaction errors.
 - **2026-05-20** — Initial PostHog integration. 16 events instrumented across auth, vault, staking, governance, rewards, and backing.
