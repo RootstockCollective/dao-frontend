@@ -116,6 +116,23 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
             ) || 0,
         })
       },
+      onError: (txHash, err) => {
+        posthog.capture('unstake_rif_failed', {
+          amount,
+          amount_decimal: Number(amount) || 0,
+          token: stRifToken.symbol,
+          token_price_usd: Number(stRifToken.price) || 0,
+          usd_value:
+            Number(
+              Big(amount || 0)
+                .mul(stRifToken.price || 0)
+                .toString(),
+            ) || 0,
+          failure_reason: err.name === 'Rejected TX' ? 'user_rejected' : 'tx_failed',
+          error_message: err.message,
+          tx_hash: txHash,
+        })
+      },
       action: 'unstaking',
     })
   }, [amount, stRifToken.symbol, stRifToken.price, onRequestUnstake, onCloseModal, refetchBalances])
