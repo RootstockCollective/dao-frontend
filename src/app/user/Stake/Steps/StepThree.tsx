@@ -52,7 +52,6 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
               })
             },
             onError: (txHash, err) => {
-              console.log('stake_rif_failed prev to send posthog capture')
               posthog.capture('stake_rif_failed', {
                 amount,
                 amount_decimal: Number(amount) || 0,
@@ -69,7 +68,6 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
                 error_message: err.message,
                 tx_hash: txHash,
               })
-              console.log('stake_rif_failed after send posthog capture')
             },
             action: 'staking',
           })
