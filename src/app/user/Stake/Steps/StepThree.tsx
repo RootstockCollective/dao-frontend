@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
+import Big from '@/lib/big'
 import { executeTxFlow } from '@/shared/notification'
 
 import { StakeTokenAmountDisplay } from '../components/StakeTokenAmountDisplay'
@@ -13,6 +14,7 @@ import { useStakeRIF } from '../hooks/useStakeRIF'
 export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
   const {
     amount,
+    tokenToSend,
     tokenToReceive,
     stakePreviewFrom: from,
     stakePreviewTo: to,
@@ -30,15 +32,26 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
       primary: {
         label: isRequesting ? 'Requesting...' : 'Confirm stake',
         onClick: () => {
-          posthog.capture('stake_rif_confirmed', {
-            amount,
-            token_to_receive: tokenToReceive.contract,
-          })
           executeTxFlow({
             onRequestTx: onRequestStake,
             onSuccess: () => {
               refetchBalances()
               onCloseModal()
+              console.log('stake_rif_confirmed prev to send posthog capture')
+              posthog.capture('stake_rif_confirmed', {
+                amount,
+                amount_decimal: Number(amount) || 0,
+                token: tokenToSend.symbol,
+                token_price_usd: Number(tokenToSend.price) || 0,
+                usd_value:
+                  Number(
+                    Big(amount || 0)
+                      .mul(tokenToSend.price || 0)
+                      .toString(),
+                  ) || 0,
+                token_to_receive: tokenToReceive.contract,
+              })
+              console.log('stake_rif_confirmed after send posthog capture')
             },
             action: 'staking',
           })
@@ -63,6 +76,8 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
     onGoToStep,
     setButtonActions,
     refetchBalances,
+    tokenToSend.symbol,
+    tokenToSend.price,
     tokenToReceive.contract,
   ])
 

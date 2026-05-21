@@ -98,7 +98,18 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
   )
 
   const handleConfirmUnstake = useCallback(() => {
-    posthog.capture('unstake_rif_confirmed', { amount })
+    posthog.capture('unstake_rif_confirmed', {
+      amount,
+      amount_decimal: Number(amount) || 0,
+      token: stRifToken.symbol,
+      token_price_usd: Number(stRifToken.price) || 0,
+      usd_value:
+        Number(
+          Big(amount || 0)
+            .mul(stRifToken.price || 0)
+            .toString(),
+        ) || 0,
+    })
     executeTxFlow({
       onRequestTx: onRequestUnstake,
       onSuccess: () => {
@@ -107,7 +118,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
       },
       action: 'unstaking',
     })
-  }, [amount, onRequestUnstake, onCloseModal, refetchBalances])
+  }, [amount, stRifToken.symbol, stRifToken.price, onRequestUnstake, onCloseModal, refetchBalances])
 
   return (
     <Modal onClose={onCloseModal} data-testid="UnstakeModal">
