@@ -66,9 +66,21 @@ All amounts are in human-readable token units (not wei). Token symbols are upper
 
 ### Rewards
 
+The claim flow emits three lifecycle events. The split between `recipient_type` (backer vs builder, two distinct contract calls) and `reward_type` (which token bucket the user picked: all / RIF / RBTC / USDRIF) is intentional — they're orthogonal dimensions.
+
 | Event | When it fires | Properties | Captured in |
 |---|---|---|---|
-| `rewards_claimed` | User clicks "Claim now" for available rewards | `reward_type` (backer \| builder), `total_fiat_amount` | `src/app/collective-rewards/components/ClaimRewardModal/ClaimRewardsModalView.tsx` |
+| `rewards_claimed` | **Intent** — user clicks "Claim now" (before the wallet popup). Fires only if rewards are claimable. | `recipient_type` (`backer` \| `builder`), `reward_type` (`all` \| `rif` \| `rbtc` \| `usdrif`), `claimed_fiat_total` (USD of what is actually being claimed), `claimed_rif_amount` / `claimed_rif_fiat`, `claimed_rbtc_amount` / `claimed_rbtc_fiat`, `claimed_usdrif_amount` / `claimed_usdrif_fiat` (token-specific amounts are 0 when not part of the selection), `total_fiat_amount` (total USD available across all tokens — back-compat) | `src/app/collective-rewards/components/ClaimRewardModal/ClaimRewardsModal.tsx` |
+| `rewards_claim_confirmed` | **On-chain success** — claim transaction was mined successfully | same as `rewards_claimed` + `tx_hash` | `src/app/collective-rewards/components/ClaimRewardModal/ClaimRewardsModal.tsx` |
+| `rewards_claim_failed` | Claim transaction reverted, errored, or was rejected by the user in the wallet | same as `rewards_claimed` + `failure_reason` (`user_rejected` \| `tx_failed`), `error_message` | `src/app/collective-rewards/components/ClaimRewardModal/ClaimRewardsModal.tsx` |
+
+**Volume reporting:** sum `claimed_rif_amount` / `claimed_rbtc_amount` / `claimed_usdrif_amount` on `rewards_claim_confirmed` for actual on-chain claimed volume per token. Sum `claimed_fiat_total` for total USD claimed. Use `rewards_claimed` only for intent / drop-off measurement, not for volume.
+
+**Backer vs builder behavior:** breakdown any of the three events by `recipient_type` to compare backer claim patterns vs builder claim patterns. They're separate contract calls (`claimBackerRewards` vs `claimBuilderReward`) and product may want to track them independently.
+
+**Reward type preference:** breakdown by `reward_type` on `rewards_claim_confirmed` to see whether users prefer claiming everything at once or specific tokens.
+
+**Claim success rate:** funnel `rewards_claimed` → `rewards_claim_confirmed`. Drop-off = wallet rejections + on-chain failures. Filter `rewards_claim_failed` by `failure_reason = tx_failed` to isolate real technical failures.
 
 ### Backing
 
@@ -154,6 +166,7 @@ posthog.capture('feature_action_outcome', {
 
 Track significant additions, removals, and renames here so it's clear what changed and when.
 
+- **2026-05-22** — Enriched and split the `rewards_claimed` flow into 3 lifecycle events: `rewards_claimed` (intent — now with per-token amounts and `recipient_type` backer/builder), `rewards_claim_confirmed` (on-chain success), `rewards_claim_failed` (revert / wallet rejection). Capture moved from `ClaimRewardsModalView` to the wrapper components where the recipient type and tx lifecycle live. Fixed the old doc entry where `reward_type` was wrongly described as `backer | builder` — it's actually the token selection (`all | rif | rbtc | usdrif`), and `recipient_type` is the new separate dimension.
 - **2026-05-22** — Refactored backing analytics into `useAllocateVotes` hook (single source of truth, decoupled from UI). Split into 3 lifecycle events: `backing_allocations_saved` (intent), `backing_allocations_confirmed` (on-chain success), `backing_allocations_failed` (revert / wallet rejection). Per-builder `backing_allocation_changed` now fires only on confirmation, so its data reflects on-chain reality.
 - **2026-05-21** — Enriched `backing_allocations_saved` with per-save summary (builders count, total allocated, change breakdown, full diff array). Added `backing_allocation_changed` as one event per builder per save — unlocks per-builder allocation analysis for the Builder Program.
 - **2026-05-21** — Added `stake_allowance_approved` and `stake_allowance_failed` to track the RIF allowance approval step that precedes staking. Enables the allowance → stake conversion funnel.
