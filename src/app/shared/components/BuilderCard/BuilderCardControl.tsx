@@ -1,5 +1,4 @@
 import { useRouter } from 'next/navigation'
-import posthog from 'posthog-js'
 import { useContext, useEffect } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
@@ -54,14 +53,7 @@ const AllocationDrawerContent = () => {
           {isAllocationTxPending ? (
             <TransactionInProgressButton />
           ) : (
-            <Button
-              variant="primary"
-              onClick={() => {
-                posthog.capture('backing_allocations_saved')
-                saveAllocations()
-              }}
-              className="whitespace-nowrap w-full"
-            >
+            <Button variant="primary" onClick={() => saveAllocations()} className="whitespace-nowrap w-full">
               Save new backing amounts
             </Button>
           )}
