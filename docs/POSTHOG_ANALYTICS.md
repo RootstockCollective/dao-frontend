@@ -72,10 +72,21 @@ All amounts are in human-readable token units (not wei). Token symbols are upper
 
 ### Backing
 
+The backing flow emits **three levels of events**: intent (click), on-chain confirmation, and on-chain failure. Plus a per-builder event that fires only on confirmation, designed for Builder Program analysis.
+
 | Event | When it fires | Properties | Captured in |
 |---|---|---|---|
 | `backing_distributed_equally` | User clicks "Distribute equally" across selected builders | `allocations_count` | `src/app/backing/BackingPage.tsx` |
-| `backing_allocations_saved` | User saves updated stRIF allocations on-chain | — | `src/app/shared/components/BuilderCard/BuilderCardControl.tsx` |
+| `backing_allocations_saved` | **Intent** — user clicks "Save new backing amounts" (before the wallet popup) | `token` (stRIF), `builders_count`, `total_allocated_str` / `total_allocated_decimal` (sum across all builders after the proposed save), `change_summary` (`{ added, increased, decreased, removed }`), `changes` (array of per-builder diffs — see schema below) | `src/app/collective-rewards/allocations/hooks/useAllocateVotes.ts` |
+| `backing_allocations_confirmed` | **On-chain success** — allocation transaction was mined successfully | same as `_saved` + `tx_hash` | `src/app/collective-rewards/allocations/hooks/useAllocateVotes.ts` |
+| `backing_allocations_failed` | Allocation transaction reverted, errored, or was rejected by the user in the wallet | same as `_saved` + `failure_reason` (`user_rejected` \| `tx_failed`), `error_message`, `tx_hash` | `src/app/collective-rewards/allocations/hooks/useAllocateVotes.ts` |
+| `backing_allocation_changed` | Fires once per builder whose allocation changed, **only after on-chain confirmation**. If the user changes 5 builders in one save, 5 of these events are emitted alongside `backing_allocations_confirmed`. | `token` (stRIF), `builder_address`, `previous_amount_str`, `previous_amount_decimal`, `new_amount_str`, `new_amount_decimal`, `delta_decimal` (signed: positive = increase), `change_type` (`added` \| `increased` \| `decreased` \| `removed`), `tx_hash` | `src/app/collective-rewards/allocations/hooks/useAllocateVotes.ts` |
+
+**`changes` array schema** (inside `backing_allocations_saved` / `_confirmed` / `_failed`): each item has `builder_address`, `previous_amount_str`, `previous_amount_decimal`, `new_amount_str`, `new_amount_decimal`, `delta_decimal`, `change_type`. Same shape as a per-builder event.
+
+**Intent vs confirmed:** `backing_allocations_saved` always fires when the user clicks save — even if they reject the tx in the wallet or it reverts. Use this to measure user *intent*. Use `backing_allocations_confirmed` for actual on-chain volume. The drop-off between the two = wallet abandonment + tx failure rate.
+
+**Allocation per builder over time (Builder Program):** use `backing_allocation_changed`, math = `Property sum` on `new_amount_decimal`, breakdown by `builder_address`. To track net inflow/outflow, sum `delta_decimal` instead. Filter by `change_type = added` to count first-time backers per builder. This event only fires on confirmed saves, so the data reflects on-chain reality.
 
 ### Auto-captured events (no code)
 
@@ -143,6 +154,8 @@ posthog.capture('feature_action_outcome', {
 
 Track significant additions, removals, and renames here so it's clear what changed and when.
 
+- **2026-05-22** — Refactored backing analytics into `useAllocateVotes` hook (single source of truth, decoupled from UI). Split into 3 lifecycle events: `backing_allocations_saved` (intent), `backing_allocations_confirmed` (on-chain success), `backing_allocations_failed` (revert / wallet rejection). Per-builder `backing_allocation_changed` now fires only on confirmation, so its data reflects on-chain reality.
+- **2026-05-21** — Enriched `backing_allocations_saved` with per-save summary (builders count, total allocated, change breakdown, full diff array). Added `backing_allocation_changed` as one event per builder per save — unlocks per-builder allocation analysis for the Builder Program.
 - **2026-05-21** — Added `stake_allowance_approved` and `stake_allowance_failed` to track the RIF allowance approval step that precedes staking. Enables the allowance → stake conversion funnel.
 - **2026-05-21** — Documented the existing event catalog. Added `environment` super property (multi-chain separation), `wallet_address` super property (auto-sync with wagmi), `amount_decimal` / `token` / `token_price_usd` / `usd_value` on stake/unstake captures, and new `stake_rif_failed` / `unstake_rif_failed` events for tracking transaction errors.
 - **2026-05-20** — Initial PostHog integration. 16 events instrumented across auth, vault, staking, governance, rewards, and backing.
