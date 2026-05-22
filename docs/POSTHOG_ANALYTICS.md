@@ -63,6 +63,16 @@ All amounts are in human-readable token units (not wei). Token symbols are upper
 | `proposal_vote_cast` | User casts a vote (for / against / abstain) | `proposal_id`, `vote` | `src/app/proposals/[id]/components/VotingDetails.tsx` |
 | `proposal_queued` | User queues a succeeded proposal for execution | `proposal_id` | `src/app/proposals/[id]/components/VotingDetails.tsx` |
 | `proposal_executed` | User executes a queued proposal | `proposal_id` | `src/app/proposals/[id]/components/VotingDetails.tsx` |
+| `voting_power_delegated` | **Intent** — user clicks "Delegate" in the delegation modal on `/delegate` | `delegatee_address`, `delegatee_rns` (RNS name if known, else empty string), `voting_power_str`, `voting_power_decimal`, `is_self_delegation` (true if delegating to own wallet) | `src/app/delegate/sections/DelegateContentSection/ConnectedSection.tsx` |
+| `voting_power_delegate_confirmed` | Delegation tx mined on-chain | same as `voting_power_delegated` + `tx_hash` | `src/app/delegate/sections/DelegateContentSection/ConnectedSection.tsx` |
+| `voting_power_delegate_failed` | Delegation tx reverted or was rejected by the user in the wallet | same as `voting_power_delegated` + `failure_reason` (`user_rejected` \| `tx_failed`), `error_message`, `tx_hash` | `src/app/delegate/sections/DelegateContentSection/ConnectedSection.tsx` |
+| `voting_power_reclaimed` | **Intent** — user clicks "Reclaim" in the reclaim modal on `/delegate` (i.e. delegating back to themselves) | `delegatee_address` (= the user's own address), `previous_delegatee_address`, `previous_delegatee_rns`, `voting_power_str`, `voting_power_decimal` | `src/app/delegate/sections/DelegateContentSection/ConnectedSection.tsx` |
+| `voting_power_reclaim_confirmed` | Reclaim tx mined on-chain | same as `voting_power_reclaimed` + `tx_hash` | `src/app/delegate/sections/DelegateContentSection/ConnectedSection.tsx` |
+| `voting_power_reclaim_failed` | Reclaim tx reverted or was rejected by the user in the wallet | same as `voting_power_reclaimed` + `failure_reason`, `error_message`, `tx_hash` | `src/app/delegate/sections/DelegateContentSection/ConnectedSection.tsx` |
+
+**Delegation vs reclaim:** both call the same underlying contract function (`delegate(address)`), but the UI distinguishes them: delegate = giving voting power to someone else, reclaim = taking it back to yourself. Tracking them as separate events makes the dashboards more readable and enables UX comparisons (e.g., does reclaim see more wallet-rejections than delegate?).
+
+**Delegation churn:** count `voting_power_delegate_confirmed` per unique wallet over time, breakdown by `delegatee_address`. Identifies popular delegates and switching behavior. Pair with `voting_power_reclaim_confirmed` to measure how often users re-take control of their vote.
 
 ### Rewards
 
@@ -166,6 +176,7 @@ posthog.capture('feature_action_outcome', {
 
 Track significant additions, removals, and renames here so it's clear what changed and when.
 
+- **2026-05-22** — Added delegation lifecycle events on `/delegate`: `voting_power_delegated` / `_delegate_confirmed` / `_delegate_failed` for delegating to another wallet; `voting_power_reclaimed` / `_reclaim_confirmed` / `_reclaim_failed` for taking voting power back to self. Both flows use the same underlying contract call but are tracked as separate events for clarity.
 - **2026-05-22** — Enriched and split the `rewards_claimed` flow into 3 lifecycle events: `rewards_claimed` (intent — now with per-token amounts and `recipient_type` backer/builder), `rewards_claim_confirmed` (on-chain success), `rewards_claim_failed` (revert / wallet rejection). Capture moved from `ClaimRewardsModalView` to the wrapper components where the recipient type and tx lifecycle live. Fixed the old doc entry where `reward_type` was wrongly described as `backer | builder` — it's actually the token selection (`all | rif | rbtc | usdrif`), and `recipient_type` is the new separate dimension.
 - **2026-05-22** — Refactored backing analytics into `useAllocateVotes` hook (single source of truth, decoupled from UI). Split into 3 lifecycle events: `backing_allocations_saved` (intent), `backing_allocations_confirmed` (on-chain success), `backing_allocations_failed` (revert / wallet rejection). Per-builder `backing_allocation_changed` now fires only on confirmation, so its data reflects on-chain reality.
 - **2026-05-21** — Enriched `backing_allocations_saved` with per-save summary (builders count, total allocated, change breakdown, full diff array). Added `backing_allocation_changed` as one event per builder per save — unlocks per-builder allocation analysis for the Builder Program.
