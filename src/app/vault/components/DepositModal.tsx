@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import posthog from 'posthog-js'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { formatSymbol } from '@/app/shared/formatter'
@@ -158,11 +157,6 @@ export const DepositModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
   )
 
   const handleConfirmDeposit = useCallback(() => {
-    posthog.capture('vault_deposit_confirmed', {
-      amount,
-      slippage_percentage: slippagePercentage,
-      token: USDRIF,
-    })
     executeTxFlow({
       onRequestTx: onRequestDeposit,
       onSuccess: () => {
@@ -178,8 +172,6 @@ export const DepositModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
       setShouldShowTermsModal(true)
       return
     }
-
-    posthog.capture('vault_allowance_approved', { amount, token: USDRIF })
     executeTxFlow({
       onRequestTx: onRequestAllowance,
       onSuccess: () => {},
@@ -189,7 +181,6 @@ export const DepositModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
 
   const handleTermsAccepted = useCallback(() => {
     setShouldShowTermsModal(false)
-    posthog.capture('vault_allowance_approved', { amount, token: USDRIF, after_terms_acceptance: true })
     // Proceed with allowance after accepting terms
     executeTxFlow({
       onRequestTx: onRequestAllowance,

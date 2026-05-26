@@ -84,7 +84,6 @@ export const VotingDetails = ({
 
   const handleVoting = async (_vote: Vote) => {
     try {
-      posthog.capture('proposal_vote_cast', { proposal_id: proposalId, vote: _vote })
       setIsChoosingVote(false)
       const txHash = await executeTxFlow({
         onRequestTx: () => {
@@ -92,11 +91,23 @@ export const VotingDetails = ({
           return onVote(_vote)
         },
         action: 'voting',
-        onSuccess: () => {
+        onSuccess: confirmedHash => {
           setVote(_vote)
+          posthog.capture('proposal_vote_cast', {
+            proposal_id: proposalId,
+            vote: _vote,
+            tx_hash: confirmedHash,
+          })
         },
-        onError: () => {
+        onError: (failedHash, err) => {
           setVote(undefined)
+          posthog.capture('proposal_vote_cast_failed', {
+            proposal_id: proposalId,
+            vote: _vote,
+            tx_hash: failedHash,
+            failure_reason: err.name === 'Rejected TX' ? 'user_rejected' : 'tx_failed',
+            error_message: err.message,
+          })
         },
         onPending: () => setVotingTxIsPending(true),
         onComplete: () => setVotingTxIsPending(false),

@@ -60,7 +60,8 @@ All amounts are in human-readable token units (not wei). Token symbols are upper
 |---|---|---|---|
 | `proposal_page_viewed` | User loads the proposals list page | — | `src/app/proposals/page.tsx` |
 | `proposal_submitted` | User submits a new proposal (tx broadcast) | `proposal_name`, `proposal_category`, `tx_hash` | `src/app/proposals/new/review/page.tsx` |
-| `proposal_vote_cast` | User casts a vote (for / against / abstain) | `proposal_id`, `vote` | `src/app/proposals/[id]/components/VotingDetails.tsx` |
+| `proposal_vote_cast` | Vote transaction (for / against / abstain) mined successfully on-chain | `proposal_id`, `vote`, `tx_hash` | `src/app/proposals/[id]/components/VotingDetails.tsx` |
+| `proposal_vote_cast_failed` | Vote transaction reverted or was rejected by the user in the wallet | `proposal_id`, `vote`, `tx_hash`, `failure_reason` (`user_rejected` \| `tx_failed`), `error_message` | `src/app/proposals/[id]/components/VotingDetails.tsx` |
 | `proposal_queued` | User queues a succeeded proposal for execution | `proposal_id` | `src/app/proposals/[id]/components/VotingDetails.tsx` |
 | `proposal_executed` | User executes a queued proposal | `proposal_id` | `src/app/proposals/[id]/components/VotingDetails.tsx` |
 | `voting_power_delegated` | **Intent** — user clicks "Delegate" in the delegation modal on `/delegate` | `delegatee_address`, `delegatee_rns` (RNS name if known, else empty string), `voting_power_str`, `voting_power_decimal`, `is_self_delegation` (true if delegating to own wallet) | `src/app/delegate/sections/DelegateContentSection/ConnectedSection.tsx` |
@@ -176,6 +177,7 @@ posthog.capture('feature_action_outcome', {
 
 Track significant additions, removals, and renames here so it's clear what changed and when.
 
+- **2026-05-22** — Moved `proposal_vote_cast` capture into `onSuccess` of `executeTxFlow` so it now reflects on-chain confirmation (was intent-time before). Added `proposal_vote_cast_failed` on transaction error / wallet rejection.
 - **2026-05-22** — Added delegation lifecycle events on `/delegate`: `voting_power_delegated` / `_delegate_confirmed` / `_delegate_failed` for delegating to another wallet; `voting_power_reclaimed` / `_reclaim_confirmed` / `_reclaim_failed` for taking voting power back to self. Both flows use the same underlying contract call but are tracked as separate events for clarity.
 - **2026-05-22** — Enriched and split the `rewards_claimed` flow into 3 lifecycle events: `rewards_claimed` (intent — now with per-token amounts and `recipient_type` backer/builder), `rewards_claim_confirmed` (on-chain success), `rewards_claim_failed` (revert / wallet rejection). Capture moved from `ClaimRewardsModalView` to the wrapper components where the recipient type and tx lifecycle live. Fixed the old doc entry where `reward_type` was wrongly described as `backer | builder` — it's actually the token selection (`all | rif | rbtc | usdrif`), and `recipient_type` is the new separate dimension.
 - **2026-05-22** — Refactored backing analytics into `useAllocateVotes` hook (single source of truth, decoupled from UI). Split into 3 lifecycle events: `backing_allocations_saved` (intent), `backing_allocations_confirmed` (on-chain success), `backing_allocations_failed` (revert / wallet rejection). Per-builder `backing_allocation_changed` now fires only on confirmation, so its data reflects on-chain reality.
