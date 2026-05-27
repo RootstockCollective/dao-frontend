@@ -1,4 +1,5 @@
 'use client'
+import posthog from 'posthog-js'
 import { useContext } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
 
@@ -25,6 +26,8 @@ export const DisconnectWorkflowContainer = () => {
   const signOut = useSiweStore(state => state.signOut)
 
   const handleDisconnect = () => {
+    posthog.capture('wallet_disconnected', { wallet_address: address?.toLowerCase() })
+    posthog.reset()
     disconnect()
     signOut()
     resetAllocations()

@@ -1,3 +1,4 @@
+import posthog from 'posthog-js'
 import { useAccount, useSignMessage } from 'wagmi'
 
 import type { RequestChallengeResult, VerifySignatureResult } from '@/lib/auth/actions'
@@ -70,7 +71,10 @@ export function useSignIn(): UseSignInReturn {
       // Verify signature with server and get JWT token
       const loginRes = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-POSTHOG-DISTINCT-ID': posthog.get_distinct_id(),
+        },
         body: JSON.stringify({ challengeId, signature }),
       })
 
@@ -80,6 +84,9 @@ export function useSignIn(): UseSignInReturn {
       }
 
       const { token: jwtToken }: VerifySignatureResult = await loginRes.json()
+
+      // Identify user in PostHog with wallet address as distinct ID
+      posthog.identify(address.toLowerCase(), { wallet_address: address.toLowerCase() })
 
       // Store jwtToken in Zustand store (which also updates localStorage)
       setToken(jwtToken)

@@ -1,6 +1,7 @@
 'use client'
 import { useRouter } from 'next/navigation'
-import { type MouseEvent, useCallback, useState } from 'react'
+import posthog from 'posthog-js'
+import { type MouseEvent, useCallback, useEffect, useState } from 'react'
 import { ErrorBoundary } from 'react-error-boundary'
 import { useAccount } from 'wagmi'
 
@@ -18,6 +19,10 @@ import { ConnectButtonComponent } from '@/shared/walletConnection/components/Con
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 
 export default function ProposalsPage() {
+  useEffect(() => {
+    posthog.capture('proposal_page_viewed')
+  }, [])
+
   return (
     <>
       <HeroComponent

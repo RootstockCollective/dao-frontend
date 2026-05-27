@@ -106,7 +106,14 @@ export const ClaimRewardsModalView = ({
               ]}
               side="left"
             >
-              <Button variant="primary" onClick={() => isClaimable && onClaim()}>
+              <Button
+                variant="primary"
+                onClick={() => {
+                  if (isClaimable) {
+                    onClaim()
+                  }
+                }}
+              >
                 Claim now
               </Button>
             </ConditionalTooltip>

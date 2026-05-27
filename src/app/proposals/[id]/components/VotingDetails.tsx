@@ -1,4 +1,5 @@
 import { waitForTransactionReceipt } from '@wagmi/core'
+import posthog from 'posthog-js'
 import { type MouseEvent, useCallback, useRef, useState } from 'react'
 import { zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
@@ -90,11 +91,23 @@ export const VotingDetails = ({
           return onVote(_vote)
         },
         action: 'voting',
-        onSuccess: () => {
+        onSuccess: confirmedHash => {
           setVote(_vote)
+          posthog.capture('proposal_vote_cast', {
+            proposal_id: proposalId,
+            vote: _vote,
+            tx_hash: confirmedHash,
+          })
         },
-        onError: () => {
+        onError: (failedHash, err) => {
           setVote(undefined)
+          posthog.capture('proposal_vote_cast_failed', {
+            proposal_id: proposalId,
+            vote: _vote,
+            tx_hash: failedHash,
+            failure_reason: err.name === 'Rejected TX' ? 'user_rejected' : 'tx_failed',
+            error_message: err.message,
+          })
         },
         onPending: () => setVotingTxIsPending(true),
         onComplete: () => setVotingTxIsPending(false),
@@ -108,6 +121,7 @@ export const VotingDetails = ({
   }
 
   const handleQueuingProposal = async () => {
+    posthog.capture('proposal_queued', { proposal_id: proposalId })
     const txHash = await executeTxFlow({
       onRequestTx: () => {
         setIsQueueing(true)
@@ -140,6 +154,7 @@ export const VotingDetails = ({
       return
     }
 
+    posthog.capture('proposal_executed', { proposal_id: proposalId })
     const txHash = await executeTxFlow({
       onRequestTx: () => {
         setIsExecuting(true)
