@@ -58,6 +58,24 @@ const MilestoneModal = ({ onClose }: { onClose: () => void }) => {
       ),
     },
     {
+      title: 'MILESTONE 4',
+      description: (
+        <>
+          Use this milestone for <Span bold>scaling</Span> a project that has already proven traction on
+          Rootstock — expanding capacity, integrations, or audience to consolidate the project.
+        </>
+      ),
+    },
+    {
+      title: 'MILESTONE 5',
+      description: (
+        <>
+          Reserved for <Span bold>mature, ecosystem-defining</Span> initiatives that build on previous
+          milestones and deliver lasting impact across the Collective.
+        </>
+      ),
+    },
+    {
       title: 'NO MILESTONE',
       description: (
         <>

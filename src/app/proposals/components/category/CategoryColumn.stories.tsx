@@ -20,7 +20,7 @@ const meta: Meta<typeof Category> = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-// Test all 6 proposal categories
+// Test all 8 proposal categories
 export const Grants: Story = {
   args: {
     category: ProposalCategory.Grants,
@@ -54,5 +54,17 @@ export const Milestone2: Story = {
 export const Milestone3: Story = {
   args: {
     category: ProposalCategory.Milestone3,
+  },
+}
+
+export const Milestone4: Story = {
+  args: {
+    category: ProposalCategory.Milestone4,
+  },
+}
+
+export const Milestone5: Story = {
+  args: {
+    category: ProposalCategory.Milestone5,
   },
 }

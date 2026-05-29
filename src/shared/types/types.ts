@@ -101,4 +101,6 @@ export enum ProposalCategory {
   Milestone1 = 'Milestone 1',
   Milestone2 = 'Milestone 2',
   Milestone3 = 'Milestone 3',
+  Milestone4 = 'Milestone 4',
+  Milestone5 = 'Milestone 5',
 }

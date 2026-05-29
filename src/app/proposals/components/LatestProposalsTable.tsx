@@ -55,7 +55,13 @@ const filterProposals = (proposals: Proposal[], activeFilters: FilterItem[]) => 
           const isAllMilestonesFilter = filterValue === MILESTONE_SEPARATOR
           // "All milestones" matches M1lestone: followed immediately by valid milestone numbers
           // Specific milestone filters match exact pattern followed by whitespace or end
-          const validMilestones = [Milestones.MILESTONE_1, Milestones.MILESTONE_2, Milestones.MILESTONE_3]
+          const validMilestones = [
+            Milestones.MILESTONE_1,
+            Milestones.MILESTONE_2,
+            Milestones.MILESTONE_3,
+            Milestones.MILESTONE_4,
+            Milestones.MILESTONE_5,
+          ]
           const pattern = isAllMilestonesFilter
             ? `${MILESTONE_SEPARATOR}[${validMilestones.join('')}]`
             : `${filterValue}(?:\\s|$)`
