@@ -36,44 +36,23 @@ const MilestoneModal = ({ onClose }: { onClose: () => void }) => {
   const milestones = [
     {
       title: 'MILESTONE 1',
-      description:
-        'This is great for testnet projects or for taking the first step towards a mainnet outcome in the future and is typically paid in advance 😅',
+      description: 'Defined by the user and can be used for any purpose.',
     },
     {
       title: 'MILESTONE 2',
-      description: (
-        <>
-          Typically used for <Span bold>mainnet outcomes</Span> if for example your proposal is to go live
-          with a dapp or protocol on Rootstock mainnet this is the milestone for you 👌
-        </>
-      ),
+      description: <>Defined by the user and can be used for any purpose.</>,
     },
     {
       title: 'MILESTONE 3',
-      description: (
-        <>
-          This is often used for <Span bold>growth</Span> following a mainnet outcome and initial traction,
-          this is where your project can really take off and grow on Rootstock 🚀
-        </>
-      ),
+      description: <>Defined by the user and can be used for any purpose.</>,
     },
     {
       title: 'MILESTONE 4',
-      description: (
-        <>
-          Use this milestone for <Span bold>scaling</Span> a project that has already proven traction on
-          Rootstock — expanding capacity, integrations, or audience to consolidate the project.
-        </>
-      ),
+      description: <>Defined by the user and can be used for any purpose.</>,
     },
     {
       title: 'MILESTONE 5',
-      description: (
-        <>
-          Reserved for <Span bold>mature, ecosystem-defining</Span> initiatives that build on previous
-          milestones and deliver lasting impact across the Collective.
-        </>
-      ),
+      description: <>Defined by the user and can be used for any purpose.</>,
     },
     {
       title: 'NO MILESTONE',
