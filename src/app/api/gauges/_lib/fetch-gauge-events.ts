@@ -8,6 +8,11 @@ import { logger } from '@/lib/logger'
 /** Seconds the Blockscout response is kept in the Next.js Data Cache. */
 export const GAUGE_EVENTS_REVALIDATE_SECONDS = 25
 
+/**
+ * Maximum number of gauge addresses accepted per request.
+ */
+export const MAX_GAUGES_PER_REQUEST = 200
+
 export type GaugeEventsResponse = Record<Address, RpcLog[]>
 
 /**
@@ -33,6 +38,12 @@ export async function buildGaugeEventsResponse(req: Request, topic0: Hex, route:
 
   if (gauges.length === 0) {
     return NextResponse.json({ error: 'Missing required `gauges` query param' }, { status: 400 })
+  }
+  if (gauges.length > MAX_GAUGES_PER_REQUEST) {
+    return NextResponse.json(
+      { error: `Too many gauges; max ${MAX_GAUGES_PER_REQUEST} per request` },
+      { status: 400 },
+    )
   }
   if (!gauges.every(g => isAddress(g))) {
     return NextResponse.json({ error: 'Invalid gauge address in `gauges`' }, { status: 400 })
