@@ -1,6 +1,7 @@
 'use client'
 import { useParams } from 'next/navigation'
-import { useMemo } from 'react'
+import posthog from 'posthog-js'
+import { useEffect, useMemo } from 'react'
 
 import { useGetProposalSnapshot } from '@/app/proposals/hooks/useGetProposalSnapshot'
 import {
@@ -32,6 +33,11 @@ import { type ParsedActionDetails, ProposalType } from './types'
 export default function ProposalView() {
   const { id } = useParams<{ id: string }>() ?? {}
   const proposal = useProposalById(id)
+
+  useEffect(() => {
+    if (!id) return
+    posthog.capture('proposal_detail_viewed', { proposal_id: id })
+  }, [id])
 
   return <>{proposal && <PageWithProposal {...proposal} />}</>
 }

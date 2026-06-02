@@ -165,7 +165,7 @@ export const DepositModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
       },
       action: 'vaultDeposit',
     })
-  }, [onRequestDeposit, onCloseModal, onTransactionSuccess, amount, slippagePercentage])
+  }, [onRequestDeposit, onCloseModal, onTransactionSuccess])
 
   const handleRequestAllowance = useCallback(() => {
     if (!hasAcceptedTerms) {
@@ -177,7 +177,7 @@ export const DepositModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
       onSuccess: () => {},
       action: 'vaultAllowance',
     })
-  }, [onRequestAllowance, hasAcceptedTerms, amount])
+  }, [onRequestAllowance, hasAcceptedTerms])
 
   const handleTermsAccepted = useCallback(() => {
     setShouldShowTermsModal(false)
@@ -187,7 +187,7 @@ export const DepositModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
       onSuccess: () => {},
       action: 'vaultAllowance',
     })
-  }, [onRequestAllowance, amount])
+  }, [onRequestAllowance])
 
   const handleTermsDeclined = useCallback(() => {
     setShouldShowTermsModal(false)
