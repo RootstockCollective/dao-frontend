@@ -33,12 +33,7 @@ export const BUILD_ID = process.env.NEXT_PUBLIC_BUILD_ID as string
 export const RIF_ADDRESS = process.env.NEXT_PUBLIC_RIF_ADDRESS as Address
 export const STRIF_ADDRESS = process.env.NEXT_PUBLIC_STRIF_ADDRESS as Address
 export const USDRIF_ADDRESS = process.env.NEXT_PUBLIC_USDRIF_ADDRESS as Address
-export const USDRIF_VAULT_ADDRESS = process.env.NEXT_PUBLIC_USDRIF_VAULT_ADDRESS as Address
-export const RBTC_VAULT_ADDRESS = process.env.NEXT_PUBLIC_RBTC_VAULT_ADDRESS as Address
 export const WRBTC_ADDRESS = process.env.NEXT_PUBLIC_WRBTC_ADDRESS as Address
-export const BUFFER_ADDRESS = process.env.NEXT_PUBLIC_BUFFER_ADDRESS as Address
-export const PERMISSIONS_MANAGER_ADDRESS = process.env.NEXT_PUBLIC_PERMISSIONS_MANAGER_ADDRESS as Address
-export const SYNTHETIC_YIELD_ADDRESS = process.env.NEXT_PUBLIC_SYNTHETIC_YIELD_ADDRESS as Address
 export const USDT0_ADDRESS = process.env.NEXT_PUBLIC_USDT0_ADDRESS as Address
 
 // DEX Router Addresses
@@ -83,11 +78,6 @@ export const ADMIN_ROLE = '0x7865ee6a85d4460dad7043a6436d34e32aa9ecd622990b81417
 export const FUND_MANAGER_ROLE = '0x241ecf16d79d0f8dbfb92cbc07fe17840425976cf0667f022fe9877caa831b08'
 // keccak256('PAUSER_ROLE')
 export const PAUSER_ROLE = '0x65d7a28e3265b37a6474929f336521b332c1681b933f6cb9f3376673440d862a'
-// From rbtc-vault-sc Roles.sol: keccak256("WHITELISTED_USER_ROLE") — role for whitelisted users allowed to interact with the vault
-export const DEPOSITOR_ROLE = '0x013e1f410e70025de956b8838ba99c3a9a9f7eb3e6d678062363333c8abd7ea0'
-// keccak256('WHITELISTED_USER_ROLE') — mirrors Roles.sol (internal constant, no on-chain getter)
-export const WHITELISTED_USER_ROLE = '0x013e1f410e70025de956b8838ba99c3a9a9f7eb3e6d678062363333c8abd7ea0'
-
 export const AVERAGE_BLOCKTIME = 60_000
 export const CACHE_REVALIDATE_SECONDS = 20
 
@@ -117,10 +107,6 @@ export const GOOGLE_TAG_ID = 'GTM-PTL6VZMT'
 export const MAX_NAME_LENGTH_FOR_PROPOSAL = 100
 export const TALLY_DESCRIPTION_SEPARATOR = '  ' // Tally uses double spaces to separate name and description
 export const WeiPerEther = 10n ** 18n
-export const VAULT_BASIS_POINTS = 10n ** 9n // 1e9 = 100% for vault APY calculations
-export const VAULT_SHARE_MULTIPLIER = 10n ** 6n // 1e6 multiplier for vault shares (used in vault contract to prevent inflation attacks)
-/** On-chain vault share raw units: 18 + VAULT_SHARE_MULTIPLIER = 24 */
-export const VAULT_SHARE_DECIMALS = 24
 export const SECONDS_PER_YEAR = 31_557_600 // 365.25 days — matches SyntheticYield.sol
 // address(uint160(uint256(keccak256("COINBASE_ADDRESS"))))
 export const COINBASE_ADDRESS = '0xf7ab6cfaebbadfe8b5494022c4c6db776bd63b6b' as Address
@@ -138,8 +124,6 @@ const FEATURE_FLAGS: Record<Feature, string> = {
   use_the_graph: process.env.NEXT_PUBLIC_ENABLE_FEATURE_USE_THE_GRAPH ?? '',
   use_state_sync: process.env.NEXT_PUBLIC_ENABLE_FEATURE_USE_STATE_SYNC ?? '',
   debug_logs: process.env.NEXT_PUBLIC_ENABLE_FEATURE_DEBUG_LOGS ?? '',
-  vault: process.env.NEXT_PUBLIC_ENABLE_FEATURE_VAULT ?? '',
-  btc_vault: process.env.NEXT_PUBLIC_ENABLE_FEATURE_BTC_VAULT ?? '',
   sentry_error_tracking: process.env.NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_ERROR_TRACKING ?? '',
   sentry_replay: process.env.NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY ?? '',
   cultivator: process.env.NEXT_PUBLIC_ENABLE_FEATURE_CULTIVATOR ?? '',
@@ -150,15 +134,6 @@ export const getFeatureEnvFlags = (): Record<Feature, string> => FEATURE_FLAGS
 export const MAX_PAGE_SIZE = 1000
 
 export const BLOCKSCOUT_URL = process.env.NEXT_PUBLIC_BLOCKSCOUT_URL as string
-
-export const VAULT_KYC_URL = process.env.NEXT_PUBLIC_VAULT_KYC_URL as string
-export const VAULT_TERMS_CONDITIONS_URL = process.env.NEXT_PUBLIC_VAULT_TERMS_CONDITIONS_URL as string
-
-// Vault slippage configuration
-const DEFAULT_VAULT_SLIPPAGE_PERCENTAGE = 0.5
-export const VAULT_DEFAULT_SLIPPAGE_PERCENTAGE = Number(
-  process.env.NEXT_PUBLIC_VAULT_DEFAULT_SLIPPAGE_PERCENTAGE ?? DEFAULT_VAULT_SLIPPAGE_PERCENTAGE,
-)
 
 /**
  * State sync config constants

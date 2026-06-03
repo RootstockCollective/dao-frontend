@@ -25,7 +25,7 @@ describe('Breadcrumbs', () => {
   })
 
   it('uses primary styling on parent links and text-text-100 on the current segment for a multi-segment path', () => {
-    mockUsePathname.mockReturnValue('/btc-vault/request-history')
+    mockUsePathname.mockReturnValue('/my-rewards/tx-history/backer')
 
     render(<Breadcrumbs />)
 
@@ -37,7 +37,7 @@ describe('Breadcrumbs', () => {
 
     const current = screen.getByTestId('breadcrumb-current')
     expect(current.className).toMatch(/\btext-text-100\b/)
-    expect(current).toHaveTextContent('Transactions History')
+    expect(current).toHaveTextContent('Transaction History')
   })
 
   it('keeps text-text-100 on the current segment when only one path segment follows Home', () => {

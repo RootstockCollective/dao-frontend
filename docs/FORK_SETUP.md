@@ -11,17 +11,15 @@ This guide uses [Foundry's Anvil](https://getfoundry.sh/guides/forking-mainnet-w
 **Important**: The fork environment is a **mainnet fork**, which means:
 
 - ✅ **Works**: Mainnet-only contracts (Uniswap Quoter/Router for swaps)
-- ❌ **Doesn't Work**: Testnet-only contracts (Vault, some DAO contracts)
+- ❌ **Doesn't Work**: Testnet-only contracts (some DAO contracts)
   - These contracts don't exist on mainnet, so they won't exist on the fork
-  - To test Vault functionality, use the `testnet` environment instead
 
 **Why this approach?**
 
 - Swapping contracts (Uniswap) only exist on mainnet, so we need a mainnet fork to test them
-- Other contracts (Vault) only exist on testnet, so they won't work on a mainnet fork
 - This is a common limitation when testing mainnet-only contracts in DeFi
 
-**Solution**: Use `testnet` environment for Vault testing, `fork` environment for swap testing.
+**Solution**: Use `testnet` environment for testnet-only features, `fork` environment for swap testing.
 
 ## ⚠️ Important: Add Fork Network to MetaMask First
 

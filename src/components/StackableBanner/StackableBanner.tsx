@@ -12,7 +12,7 @@ interface StackableBannerProps extends CommonComponentProps {
   mobileBackground?: string
   /** Gap between sections (e.g. "gap-2" for 8px). When set, section wrappers use no vertical padding. */
   contentGap?: string
-  /** Main debris color (e.g. cream for BTC Vault card). */
+  /** Main debris color for the decorative squares. */
   decorativeImageColor?: string
   /** Secondary debris color for the dark square (e.g. #171412 to match dark background). */
   decorativeSecondaryColor?: string

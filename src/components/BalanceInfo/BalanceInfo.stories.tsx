@@ -89,7 +89,7 @@ export const TVL: Story = {
 export const TVLWithSecondaryValue: Story = {
   args: {
     title: 'TVL',
-    tooltipContent: <Label variant="body-s">Total Value Locked — aggregate rBTC held by the vault</Label>,
+    tooltipContent: <Label variant="body-s">Total Value Locked — aggregate rBTC held by the protocol</Label>,
     amount: '999.99999',
     symbol: 'rBTC',
     secondaryValue: '99.99%',

@@ -1,14 +1,7 @@
 import { BigSource } from 'big.js'
 
 import Big from '@/lib/big'
-import {
-  RBTC,
-  RBTC_SYMBOLS,
-  USD,
-  VAULT_BASIS_POINTS,
-  VAULT_SHARE_DECIMALS,
-  WeiPerEther,
-} from '@/lib/constants'
+import { RBTC, RBTC_SYMBOLS, USD, WeiPerEther } from '@/lib/constants'
 import { formatCurrencyWithLabel } from '@/lib/utils'
 
 export const formatMetrics = (amount: bigint, price: BigSource, symbol: string, currency: string = USD) => {
@@ -50,11 +43,6 @@ const usdrif = {
   displayDecimals: 2,
 }
 
-const ctokenvault = {
-  decimals: VAULT_SHARE_DECIMALS,
-  displayDecimals: 2,
-}
-
 const usdt0 = {
   decimals: 6,
   displayDecimals: 2,
@@ -64,7 +52,6 @@ const symbols: { [key: string]: SymbolFormatOptions } = {
   [RBTC.toLowerCase()]: rbtc, // Maps current env's RBTC symbol (rbtc or trbtc) to rbtc config
   strif,
   usdrif,
-  ctokenvault,
   usdt0,
 }
 
@@ -110,25 +97,4 @@ export const formatSymbol = (value: bigint | string, symbol: string): string => 
     maximumFractionDigits: displayDecimals,
     roundingMode: 'floor',
   }).format(scaled.toString() as never)
-}
-
-/**
- * Formats APY values from the vault contract
- * @param apyValue - APY value where VAULT_BASIS_POINTS (1e9) = 100% (e.g., 5e7 = 5%, 1e8 = 10%)
- * @param displayDecimals - Number of decimal places to show (default: 2)
- * @returns Formatted percentage string
- */
-export const formatApy = (apyValue: bigint | string, displayDecimals: number = 2): string => {
-  if (!apyValue || apyValue === '0' || apyValue === 0n) {
-    return '0.00'
-  }
-
-  // APY scale: VAULT_BASIS_POINTS (1e9) = 100%
-  const percentage = Big(apyValue.toString()).div(VAULT_BASIS_POINTS.toString()).mul(100)
-
-  return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: displayDecimals,
-    maximumFractionDigits: displayDecimals,
-    roundingMode: 'halfExpand',
-  }).format(percentage.toString() as never)
 }

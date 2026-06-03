@@ -8,7 +8,7 @@ description: Git commit conventions
 - **Always** use [Conventional Commits](https://www.conventionalcommits.org/) format:
   - `<type>(<optional scope>): <description>`
   - Common types: `feat`, `fix`, `refactor`, `chore`, `docs`, `test`, `perf`, `ci`, `build`, `style`
-  - Scope should describe the affected code area (e.g., `cache`, `api`, `vault`), not a ticket ID
+  - Scope should describe the affected code area (e.g., `cache`, `api`, `staking`), not a ticket ID
   - Use lowercase for type and description start
   - Keep the subject line under 72 characters
   - Add a body separated by a blank line for additional context when needed

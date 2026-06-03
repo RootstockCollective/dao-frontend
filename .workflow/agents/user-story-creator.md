@@ -31,7 +31,7 @@ Create one or more user story files by filling the template with the provided in
 ## Instructions
 
 0. **Check for clarity (if vague, ask questions first)**
-   - If the source is a short or vague description (e.g. "add a dashboard", "fix the vault page"), do **not** guess. Ask 1–3 clarifying questions to get enough context to write a good story.
+   - If the source is a short or vague description (e.g. "add a dashboard", "fix the rewards page"), do **not** guess. Ask 1–3 clarifying questions to get enough context to write a good story.
    - Examples of when to ask: missing user goal, unclear scope, ambiguous acceptance criteria, no mention of edge cases or constraints.
    - Ask in a friendly, concise way. Once the user answers, proceed with steps 1–6.
 
@@ -53,7 +53,7 @@ Create one or more user story files by filling the template with the provided in
 3. **Fill the Template** (for each story)
    - Copy the structure from STORY_TEMPLATE.md exactly (sections, checkboxes, artifact references).
    - Replace every placeholder with concrete content:
-     - **Title:** Short, imperative (e.g. "Show vault balance on dashboard").
+     - **Title:** Short, imperative (e.g. "Show staking balance on dashboard").
      - **Description:** What we build and why (user/value context).
      - **Acceptance Criteria:** Specific and testable; use "AC-1:", "AC-2:", etc.
      - **Technical Notes:** Constraints, dependencies, APIs, or tech considerations.
@@ -79,7 +79,7 @@ Before writing the story, ask for more context if any of these are unclear:
 
 **Example questions** (pick what fits):
 - "Which screen or page should this live on?"
-- "Should this work for disconnected wallet / no vault, or only when the user is fully set up?"
+- "Should this work for disconnected wallet / no rewards, or only when the user is fully set up?"
 - "Is there a design or copy we should follow, or should I propose something?"
 - "Any priority order for the acceptance criteria?"
 ```

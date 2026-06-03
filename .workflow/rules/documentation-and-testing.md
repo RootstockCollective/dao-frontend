@@ -63,6 +63,6 @@ Apply to ALL new code. When editing existing code, add missing documentation to 
 
 ### Conventions
 
-- Test files co-located with source: `useVaultBalance.test.ts` next to `useVaultBalance.ts`.
+- Test files co-located with source: `useProposalVotes.test.ts` next to `useProposalVotes.ts`.
 - Test structure: `describe('[unit name]', () => { it('should [behavior]', ...) })`.
 - No `as any` in test mocks without `// SAFETY:` comment.

@@ -8,8 +8,6 @@ const features = {
   use_the_graph: 'Use the graph protocol for data collection',
   use_state_sync: 'Use the state sync for data collection',
   debug_logs: 'Enable debug logs',
-  vault: 'USDRIF Vault page',
-  btc_vault: 'BTC Vault page',
   sentry_error_tracking: 'Enable Sentry error tracking',
   sentry_replay: 'Enable Sentry session replay',
   cultivator: 'Cultivator badge in Clubs section',

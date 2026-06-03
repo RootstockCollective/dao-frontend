@@ -12,7 +12,6 @@ import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWor
  *
  * Used in:
  * - Delegate: DelegateContentSection when wallet is disconnected
- * - BTC Vault: bottom section when wallet is disconnected
  *
  * Update the "Used in" list when adding or removing consumers.
  */

@@ -20,7 +20,7 @@ The frontend is the primary interface through which all participants interact wi
 |------|-----------|
 | **RIF** | The native utility and governance token of the Rootstock ecosystem. Users stake RIF to participate in governance and earn rewards. |
 | **stRIF** | Staked RIF. Minted 1:1 when a user stakes RIF. Represents voting power in the DAO and is the unit used for backing builders. stRIF is non-transferable — it can only be obtained by staking and returned by unstaking. |
-| **USDRIF** | A USD-pegged stablecoin on Rootstock. Used as a reward token distributed to builders and backers, and as the deposit asset for the yield-generating vault. |
+| **USDRIF** | A USD-pegged stablecoin on Rootstock. Used as a reward token distributed to builders and backers. |
 | **USDT0** | A bridged USDT stablecoin on Rootstock. Swappable with USDRIF through the integrated DEX. |
 | **rBTC** | Native currency of the Rootstock chain (pegged to Bitcoin). Used for gas fees and held in the DAO treasury. |
 
@@ -71,7 +71,6 @@ The frontend is the primary interface through which all participants interact wi
 
 | Term | Definition |
 |------|-----------|
-| **USDRIF Vault** | A yield-generating vault where users deposit USDRIF to earn APY returns. Deposits mint vault shares; withdrawals burn shares. Requires KYC verification and terms acceptance. |
 | **Permit2** | An EIP-712 signature-based token approval mechanism. Instead of two transactions (approve + swap), users sign a message off-chain and execute in one transaction. Includes expiration deadlines and nonce-based replay protection. |
 | **Treasury Buckets** | The treasury is divided into purpose-specific buckets: **Grants** (project funding), **Growth** (ecosystem development), and **General** (flexible allocation). Each bucket has its own on-chain address. |
 
@@ -90,7 +89,7 @@ A stRIF holder (or delegatee) who actively participates in proposal voting. They
 A stRIF holder who prefers not to vote directly. They delegate their voting power to a trusted delegatee — often a community leader or organization — who votes on their behalf. The delegator retains their tokens and can reclaim voting power at any time.
 
 ### Passive Staker
-A RIF holder who stakes primarily for yield (staking rewards, vault APY) without active governance participation. They may hold NFTs for boosted returns but rarely vote or back builders directly.
+A RIF holder who stakes primarily for yield (staking rewards) without active governance participation. They may hold NFTs for boosted returns but rarely vote or back builders directly.
 
 ## Key User Journeys
 
@@ -237,23 +236,6 @@ A RIF holder who stakes primarily for yield (staking rewards, vault APY) without
 
 ---
 
-### 9. Deposit into USDRIF Vault
-
-**Goal:** Deposit USDRIF into the yield vault to earn APY.
-
-**Entry:** `/vault`
-
-**Flow:**
-1. User navigates to the vault page (requires `vault` feature flag).
-2. Accepts Terms & Conditions and passes KYC verification (first time only).
-3. Enters the USDRIF amount to deposit.
-4. Approves USDRIF spending (if first time).
-5. Confirms the deposit — calls `Vault.depositWithSlippage()` (default 0.5% slippage tolerance).
-6. Vault shares are minted proportional to the deposit. Yield accrues continuously.
-7. To withdraw: enters share amount, calls `Vault.withdrawWithSlippage()`, receives USDRIF.
-
-**Prerequisites:** Connected wallet, USDRIF balance > 0, KYC verified, terms accepted.
-
 ## Smart Contracts
 
 ### Governance
@@ -270,7 +252,7 @@ A RIF holder who stakes primarily for yield (staking rewards, vault APY) without
 |----------|-------------------|-------------------|---------|
 | RIF Token | `0x2acc95758f8b5f583470ba265eb685a8f45fc9d5` | `0x19f64674d8a5b4e652319f5e239efd3bc969a1fe` | Native DAO token, staking input |
 | stRIF Token | `0x5db91e24bd32059584bbdb831a901f1199f3d459` | `0xC4b091d97AD25ceA5922f09fe80711B7ACBbb16f` | Staked RIF — voting power, allocation unit |
-| USDRIF | `0x3a15461d8ae0f0fb5fa2629e9da7d66a794a6e37` | `0x8dbf326e12a9ff37ed6ddf75ada548c2640a6482` | USD stablecoin, reward token, vault asset |
+| USDRIF | `0x3a15461d8ae0f0fb5fa2629e9da7d66a794a6e37` | `0x8dbf326e12a9ff37ed6ddf75ada548c2640a6482` | USD stablecoin, reward token |
 | USDT0 | `0x779Ded0c9e1022225f8E0630b35a9b54bE713736` | `0x5a2256DD0DfbC8cE121d923AC7D6E7A3fc7F9922` | Bridged USDT, swap pair with USDRIF |
 
 ### Treasury Buckets
@@ -291,13 +273,6 @@ A RIF holder who stakes primarily for yield (staking rewards, vault APY) without
 | Reward Distributor | `0x5603Ba40257e317e45BA13C3732819Af5E81a9A1` | `0x35EB7d3e0907BCB838fbA3b08C4c65DB5431169f` | Calculates and distributes cycle rewards |
 | Gauge | _(per-builder)_ | _(per-builder)_ | Tracks allocation weight per builder |
 | Cycle Time Keeper | — | — | Manages reward cycle timing |
-
-### Vault
-
-| Contract | Mainnet (Chain 30) | Testnet (Chain 31) | Purpose |
-|----------|-------------------|-------------------|---------|
-| USDRIF Vault | `0xd8169270417050dcef119597a7f6f5674aa5b6C3` | `0x91fF73cC130333dbE2e6FAf4F365fB66F95fa73b` | Yield vault — deposit USDRIF, earn APY |
-| Vault Deposit Limiter | — | — | Enforces max deposit caps |
 
 ### DEX / Swap (Mainnet Only)
 
@@ -361,8 +336,7 @@ dao-frontend/
 │   │   │   ├── metrics/        # On-chain metrics
 │   │   │   ├── proposals/      # DAO proposals
 │   │   │   ├── staking/        # Staking data
-│   │   │   ├── swap/           # DEX swap
-│   │   │   └── vault/          # USDRIF vault
+│   │   │   └── swap/           # DEX swap
 │   │   ├── backing/            # Builder backing/allocation
 │   │   ├── builders/           # Builders page
 │   │   ├── collective-rewards/ # CR feature module
@@ -371,9 +345,8 @@ dao-frontend/
 │   │   ├── my-rewards/         # Personal rewards
 │   │   ├── proposals/          # Proposals page
 │   │   ├── staking-history/    # Historical staking
-│   │   ├── treasury/           # Treasury/vault display
+│   │   ├── treasury/           # Treasury display
 │   │   ├── user/               # User profile
-│   │   ├── vault/              # Vault interface
 │   │   └── providers/          # Context providers
 │   ├── components/             # 70+ reusable UI components
 │   ├── shared/                 # Shared utilities
@@ -405,7 +378,7 @@ dao-frontend/
 - Proposal viewing, creation, and voting
 - Delegation management
 - Governor contract interaction
-- Treasury/vault management
+- Treasury management
 
 ### Collective Rewards (CR)
 - Builder registry and profiles
@@ -415,7 +388,6 @@ dao-frontend/
 
 ### Staking & DeFi
 - RIF token staking with rewards
-- USDRIF vault integration
 - DEX swap (Uniswap V3 + IceCreamSwap aggregation)
 - Multi-hop routing, permit-based transactions
 - Historical transaction tracking with CSV export
@@ -1126,7 +1098,7 @@ Environment flags always take precedence over localStorage-persisted user toggle
 | Client-accessible | `NEXT_PUBLIC_` | `NEXT_PUBLIC_CHAIN_ID` |
 | Server-only | None | `JWT_SECRET`, `DAO_DATA_DB_CONNECTION_STRING` |
 | Contract addresses | `NEXT_PUBLIC_{NAME}_ADDRESS` | `NEXT_PUBLIC_RIF_ADDRESS` |
-| Feature flags | `NEXT_PUBLIC_ENABLE_FEATURE_{NAME}` | `NEXT_PUBLIC_ENABLE_FEATURE_VAULT` |
+| Feature flags | `NEXT_PUBLIC_ENABLE_FEATURE_{NAME}` | `NEXT_PUBLIC_ENABLE_FEATURE_V3_DESIGN` |
 | Service URLs | `NEXT_PUBLIC_{SERVICE}` | `NEXT_PUBLIC_BLOCKSCOUT_URL` |
 
 All contract addresses are centralized in `src/lib/constants.ts` — never hardcode addresses in components.

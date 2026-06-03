@@ -26,10 +26,6 @@ const breadcrumbsMap = {
   '/my-rewards/tx-history/backer': 'Transaction History',
   '/my-rewards/tx-history/builder': 'Claiming History',
   '/staking-history': 'Staking History',
-  '/vault/history': 'USD Vault History',
-  '/btc-vault': 'BTC Vault',
-  '/btc-vault/request-history': 'Transactions History',
-  '/btc-vault/deposit-history': 'TVL History',
   // community URLs
   ...Object.fromEntries(
     communitiesToRender.map(({ nftAddress, title }) => [`/communities/nft/${nftAddress}`, title]),
@@ -56,12 +52,10 @@ export function Breadcrumbs() {
       .map((segment, index) => {
         const href = '/' + segments.slice(0, index + 1).join('/')
         // First try to match the full path, then fall back to segment-based lookup
-        const isBtcVaultDetail = /^\/btc-vault\/request-history\/.+/.test(href)
-        const title = isBtcVaultDetail
-          ? 'Transaction Detail'
-          : breadcrumbsMap[href as keyof typeof breadcrumbsMap] ||
-            breadcrumbsMap[segment as keyof typeof breadcrumbsMap] ||
-            decodeURIComponent(segment)
+        const title =
+          breadcrumbsMap[href as keyof typeof breadcrumbsMap] ||
+          breadcrumbsMap[segment as keyof typeof breadcrumbsMap] ||
+          decodeURIComponent(segment)
 
         return { href, title }
       })

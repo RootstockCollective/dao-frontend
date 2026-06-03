@@ -11,7 +11,7 @@ Apply to ALL new code. When editing existing code that violates these, update th
 | Type                        | Case                          | Example              |
 | --------------------------- | ----------------------------- | -------------------- |
 | Components                  | PascalCase                    | `SomeComponent.tsx`  |
-| Hooks                       | camelCase starting with `use` | `useVaultBalance.ts` |
+| Hooks                       | camelCase starting with `use` | `useStRifBalance.ts` |
 | Other files and all folders | kebab-case                    | `component-utils.ts` |
 
 - File name MUST match the primary export. `useGetMetrics.ts` cannot export `useGetMetricsAbi`.
