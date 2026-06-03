@@ -68,6 +68,7 @@ describe('fetchLogsByTopic', () => {
       transactionIndex: '0x0',
       removed: false,
       topics: ['0xtopic0', '0xtopic1'],
+      timeStamp: '0x1',
     })
 
     const calledUrl = new URL((global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][0])
