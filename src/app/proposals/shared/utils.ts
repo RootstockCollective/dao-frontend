@@ -160,6 +160,14 @@ export const labeledMilestones = [
     value: Milestones.MILESTONE_3,
     label: ProposalCategory.Milestone3,
   },
+  {
+    value: Milestones.MILESTONE_4,
+    label: ProposalCategory.Milestone4,
+  },
+  {
+    value: Milestones.MILESTONE_5,
+    label: ProposalCategory.Milestone5,
+  },
 ]
 
 export const splitCombinedName = (name: string) => {
@@ -334,6 +342,10 @@ export function getProposalCategoryFromParsedData(
         return ProposalCategory.Milestone2
       case Milestones.MILESTONE_3:
         return ProposalCategory.Milestone3
+      case Milestones.MILESTONE_4:
+        return ProposalCategory.Milestone4
+      case Milestones.MILESTONE_5:
+        return ProposalCategory.Milestone5
     }
   }
 
