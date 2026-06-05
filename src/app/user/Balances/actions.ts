@@ -174,9 +174,13 @@ export const fetchNftHoldersOfAddress = async (
   if (!isAddress(address)) {
     throw new Error(`Invalid address: ${address}`)
   }
+  const normalizedAddress = address.toLowerCase()
   const pagination = buildPaginationParams(nextParams)
-  const url = `${BLOCKSCOUT_URL}/api/v2/tokens/${address}/instances?${pagination}`
-  const res = await fetch(url, { next: { revalidate: 30 } })
+  const url = new URL(`/api/v2/tokens/${encodeURIComponent(normalizedAddress)}/instances`, BLOCKSCOUT_URL)
+  if (pagination) {
+    url.search = pagination.slice(1)
+  }
+  const res = await fetch(url.toString(), { next: { revalidate: 30 } })
   if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
   const data = (await res.json()) as {
     items: BlockscoutNftInstance[]
@@ -201,9 +205,13 @@ export const fetchTokenHoldersOfAddress = async (
   if (!isAddress(address)) {
     throw new Error(`Invalid address: ${address}`)
   }
+  const normalizedAddress = address.toLowerCase()
   const pagination = buildPaginationParams(nextParams)
-  const url = `${BLOCKSCOUT_URL}/api/v2/tokens/${address}/holders?${pagination}`
-  const res = await fetch(url, { next: { revalidate: 30 } })
+  const url = new URL(`/api/v2/tokens/${encodeURIComponent(normalizedAddress)}/holders`, BLOCKSCOUT_URL)
+  if (pagination) {
+    url.search = pagination.slice(1)
+  }
+  const res = await fetch(url.toString(), { next: { revalidate: 30 } })
   if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
   const data: ServerResponseV2<TokenHoldersResponse> = await res.json()
   return data
