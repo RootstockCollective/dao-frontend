@@ -94,7 +94,7 @@ const MenuItem = ({ href, text, buttonProps, variants, iconUrl }: MenuData & { v
   const isActive = usePathname().split('/').at(1) === href
   return (
     <li className={cn('relative pl-3', { 'bg-v-charcoal': isSidebarOpen && isActive })}>
-      <Link href={`/${href}`} data-testid={buttonProps.id}>
+      <Link href={`/${href}`} prefetch={false} data-testid={buttonProps.id}>
         <div
           className={cn(
             'h-10 flex flex-row flex-nowrap gap-2 items-center group',
