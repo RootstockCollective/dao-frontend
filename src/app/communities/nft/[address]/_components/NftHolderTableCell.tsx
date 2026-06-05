@@ -20,7 +20,6 @@ export const NftHolderTableCell = ({ icon, row, cell }: Props) => (
         alt={row.original.metadata?.name ?? 'NFT'}
         fill
         className="object-contain"
-        crossOrigin="anonymous"
       />
     </div>
     <a

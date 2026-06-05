@@ -19,14 +19,7 @@ export function NftCard({ image, id, holderAddress, ensDomain, className, ...pro
   return (
     <div className={cn('w-full bg-bg-60 rounded flex flex-col gap-4 p-4', className)} {...props}>
       <div className="grow relative w-full aspect-square">
-        <Image
-          unoptimized
-          src={optimizedImageUrl}
-          fill
-          alt="NFT"
-          crossOrigin="anonymous"
-          className="object-cover"
-        />
+        <Image unoptimized src={optimizedImageUrl} fill alt="NFT" className="object-cover" />
       </div>
       <div className="w-full flex flex-row items-start justify-between md:items-start md:flex-col">
         <a

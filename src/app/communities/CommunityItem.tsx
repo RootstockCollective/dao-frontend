@@ -62,14 +62,7 @@ export const CommunityItem = ({
               variant === 'portrait' ? 'aspect-square' : 'flex-1 aspect-3/4 max-w-1/2',
             )}
           >
-            <Image
-              crossOrigin={isExternalImage ? 'anonymous' : undefined}
-              unoptimized={isExternalImage}
-              src={image}
-              alt={title}
-              fill
-              className="object-cover"
-            />
+            <Image unoptimized={isExternalImage} src={image} alt={title} fill className="object-cover" />
             {enableDebris && (
               <ImageDebris
                 image={image}

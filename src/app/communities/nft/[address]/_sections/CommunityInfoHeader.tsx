@@ -54,7 +54,6 @@ export function CommunityInfoHeader({ address: nftAddress }: { address: Address 
           src={image}
           alt={title}
           className="w-full h-fit object-cover"
-          crossOrigin="anonymous"
           unoptimized
         />
         <ImageDebris className="block sm:hidden" image={image} config="bottomRightDiagonal" />

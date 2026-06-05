@@ -90,14 +90,7 @@ export const NFTBoosterCard = ({ nftThumbPath, boostValue, title, content }: NFT
           <div className="self-stretch p-1 justify-start items-center gap-1 inline-flex">
             <div data-svg-wrapper className="relative w-8 h-8 bg-white">
               {nftThumbPath !== '' && (
-                <Image
-                  crossOrigin={isExternalImage ? 'anonymous' : undefined}
-                  unoptimized={isExternalImage}
-                  src={image}
-                  alt={title}
-                  width={50}
-                  height={50}
-                />
+                <Image unoptimized={isExternalImage} src={image} alt={title} width={50} height={50} />
               )}
             </div>
             <div className="w-[188px] flex-col justify-start items-start gap-0.5 inline-flex">

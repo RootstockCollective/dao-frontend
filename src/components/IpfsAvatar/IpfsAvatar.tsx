@@ -32,7 +32,6 @@ export const IpfsAvatar = ({ imageIpfs, address, name, size = 88, className }: I
           height={size}
           className="w-full h-full object-cover"
           onError={() => setImageError(true)}
-          crossOrigin="anonymous"
           unoptimized
         />
       ) : (
