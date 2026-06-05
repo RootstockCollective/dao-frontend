@@ -133,6 +133,7 @@ function appendPinataTokenToUrl(url: string) {
   const urlObj = new URL(url)
   const pinataGatewayToken = process.env.NEXT_PUBLIC_PINATA_GATEWAY_KEY
   if (pinataGatewayToken) urlObj.searchParams.append('pinataGatewayToken', pinataGatewayToken)
-  if (typeof window !== 'undefined') urlObj.searchParams.append('origin', window.location.origin)
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL
+  if (appUrl) urlObj.searchParams.append('origin', appUrl)
   return urlObj.toString()
 }
