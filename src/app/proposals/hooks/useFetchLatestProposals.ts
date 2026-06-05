@@ -36,6 +36,10 @@ export const useFetchAllProposals = () => {
             (proposal, index, self) =>
               self.findIndex(p => p.args.proposalId === proposal.args.proposalId) === index,
           )
+          // TODO: `timeStamp` no longer exists at runtime since DAO-2147 migrated to `toRpcLog` (viem `RpcLog` drops it).
+          // This sort is currently a no-op (NaN comparator) — server-side sort by `blockNumber` in /proposals/api/route.ts
+          // provides the correct order. Remove this sort + the `@ts-ignore` + the bogus `& { timeStamp: number }` on
+          // `CreateBuilderProposalEventLog`, or sort by `blockNumber` here too.
           // @ts-ignore
           .sort((a, b) => b.timeStamp - a.timeStamp)
       )
@@ -94,7 +98,9 @@ export const useFetchCreateBuilderProposals = (): ProposalQueryResult<ProposalsP
     // deduplicate
     const eventsMap = new Map(events.map(eventItem => [eventItem.args.proposalId, eventItem])).values()
 
-    // why can't we use block number instead of timestamp which is not supported by the type?
+    // TODO: same issue as in `useFetchAllProposals` — `timeStamp` was dropped by `toRpcLog` in DAO-2147, so
+    // `b - a` is `undefined - undefined` → NaN, making this sort a no-op. The /proposals/api/route.ts now sorts
+    // by `blockNumber` server-side, but this client sort should either be removed or rewritten to use `blockNumber`.
     const sortedAndRelayFilteredEvents = Array.from(eventsMap)
       .sort(({ timeStamp: a }, { timeStamp: b }) => b - a)
       .filter(({ args: { calldatas } }) =>
