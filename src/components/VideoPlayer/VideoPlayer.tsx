@@ -30,8 +30,6 @@ export const VideoPlayer = ({ url, className, 'data-testid': dataTestId }: Video
         title={embedConfig.title}
         allow={embedConfig.allow}
         allowFullScreen
-        loading="lazy"
-        referrerPolicy="no-referrer-when-downgrade"
         className="w-full aspect-video rounded"
       />
     </div>
