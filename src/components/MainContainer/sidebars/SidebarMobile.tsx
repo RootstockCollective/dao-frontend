@@ -11,6 +11,7 @@ import { NavIcon } from '../icons/NavIcon'
 import { useLayoutContext } from '../LayoutProvider'
 import { MenuData } from './menuData'
 import styles from './styles.module.css'
+import { throttleNav } from './throttleNav'
 import { useFilteredMenuData } from './useFilteredMenuData'
 import { UsefulLinks } from './UsefulLinks'
 
@@ -64,7 +65,7 @@ const MenuItem = ({ text, href, iconUrl, buttonProps }: MenuData) => {
 
   return (
     <li className={cn('relative pl-3 pr-16', { 'bg-v-charcoal': isActive })}>
-      <Link href={`/${href}`} prefetch={false} data-testid={buttonProps.id}>
+      <Link href={`/${href}`} prefetch={false} onClick={throttleNav} data-testid={buttonProps.id}>
         <div className={cn('h-10 flex flex-nowrap gap-2 items-center', { [styles['nav-active']]: isActive })}>
           {iconUrl ? <Image src={iconUrl} width={20} height={20} alt="Icon" /> : <NavIcon />}
           <p className="text-sm font-light font-rootstock-sans">{text}</p>

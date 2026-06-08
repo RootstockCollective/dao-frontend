@@ -14,6 +14,7 @@ import { NavIcon } from '../icons/NavIcon'
 import { useLayoutContext } from '../LayoutProvider'
 import { MenuData } from './menuData'
 import styles from './styles.module.css'
+import { throttleNav } from './throttleNav'
 import { useFilteredMenuData } from './useFilteredMenuData'
 import { UsefulLinks } from './UsefulLinks'
 
@@ -94,7 +95,7 @@ const MenuItem = ({ href, text, buttonProps, variants, iconUrl }: MenuData & { v
   const isActive = usePathname().split('/').at(1) === href
   return (
     <li className={cn('relative pl-3', { 'bg-v-charcoal': isSidebarOpen && isActive })}>
-      <Link href={`/${href}`} prefetch={false} data-testid={buttonProps.id}>
+      <Link href={`/${href}`} prefetch={false} onClick={throttleNav} data-testid={buttonProps.id}>
         <div
           className={cn(
             'h-10 flex flex-row flex-nowrap gap-2 items-center group',
