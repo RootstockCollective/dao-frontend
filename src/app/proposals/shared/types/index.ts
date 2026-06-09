@@ -114,6 +114,8 @@ export enum Milestones {
   MILESTONE_1 = '1',
   MILESTONE_2 = '2',
   MILESTONE_3 = '3',
+  MILESTONE_4 = '4',
+  MILESTONE_5 = '5',
   NO_MILESTONE = '0',
 }
 

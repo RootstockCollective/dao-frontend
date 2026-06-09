@@ -45,6 +45,20 @@ export function Category({ category, hasGradient = false, className, showText = 
         data-testid="ProposalType_Milestone3"
       />
     ),
+    [ProposalCategory.Milestone4]: (
+      <MilestoneIcon
+        milestone={Milestones.MILESTONE_4}
+        hasGradient={hasGradient}
+        data-testid="ProposalType_Milestone4"
+      />
+    ),
+    [ProposalCategory.Milestone5]: (
+      <MilestoneIcon
+        milestone={Milestones.MILESTONE_5}
+        hasGradient={hasGradient}
+        data-testid="ProposalType_Milestone5"
+      />
+    ),
   } as const satisfies Record<ProposalCategory, React.JSX.Element>
 
   return (
