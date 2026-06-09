@@ -6,10 +6,7 @@ const useBackerRewardsPerToken = ({ address }: Token) => {
 
   const { earned, claimed } = backerRewards[address]
   const totalEarned = Object.values(earned).reduce((acc, earned) => acc + earned, 0n)
-  const totalClaimed = Object.values(claimed).reduce(
-    (acc, value) => acc + value.reduce((acc, value) => acc + value.args.amount_, 0n),
-    0n,
-  )
+  const totalClaimed = Object.values(claimed).reduce((acc, v) => acc + v, 0n)
 
   const total = totalEarned + totalClaimed
 
