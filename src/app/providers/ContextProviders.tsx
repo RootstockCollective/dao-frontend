@@ -3,7 +3,7 @@ import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { createAppKit } from '@reown/appkit/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { NavigationGuardProvider } from 'next-navigation-guard'
-import type { ReactNode } from 'react'
+import { type ReactNode, useState } from 'react'
 import { type State, WagmiProvider } from 'wagmi'
 
 import { BalancesProvider } from '@/app/user/Balances/context/BalancesContext'
@@ -82,7 +82,19 @@ function ChunkErrorHandlerInit({ children }: { children: ReactNode }) {
 }
 
 export const ContextProviders = ({ children, initialState }: Props) => {
-  const queryClient = new QueryClient()
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 30_000,
+            gcTime: 5 * 60_000,
+            retry: 1,
+            refetchOnWindowFocus: false,
+          },
+        },
+      }),
+  )
 
   return (
     <GlobalErrorBoundary>
