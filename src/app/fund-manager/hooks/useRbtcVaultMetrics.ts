@@ -50,8 +50,9 @@ export const useRbtcVaultMetrics = () => {
   const error = vaultError || syntheticError || bufferError
 
   return useMemo(() => {
-    const tvlSum = vaultAssetBalance + reportedOffchainAssets - bufferDebt
-    const tvlRaw = tvlSum < 0n ? 0n : tvlSum
+    const tvlSum =
+      reportedOffchainAssets !== null ? vaultAssetBalance + reportedOffchainAssets - bufferDebt : null
+    const tvlRaw = tvlSum !== null && tvlSum < 0n ? 0n : tvlSum
     const liquidityReserveRaw = freeOnchainLiquidity + bufferAssets
     const ratePerSecondDecimal = Number(syntheticRatePerSecond) / Number(WeiPerEther)
     const syntheticApyDecimal = ratePerSecondDecimal * SECONDS_PER_YEAR
@@ -68,16 +69,21 @@ export const useRbtcVaultMetrics = () => {
         : 0n
     const pricePerShareHumanWei = lockedSharePriceToNavPerHumanShareWei(pricePerShareRawWei)
 
+    const dashMetrics = { amount: '—', fiatAmount: '' } as ReturnType<typeof formatMetrics>
+
     return {
       row1: {
-        tvl: formatMetrics(tvlRaw, rbtcPrice, RBTC),
+        tvl: tvlRaw !== null ? formatMetrics(tvlRaw, rbtcPrice, RBTC) : dashMetrics,
         vaultApy,
         syntheticYieldApy,
         liquidityReserve: formatMetrics(liquidityReserveRaw, rbtcPrice, RBTC),
       },
       row2: {
         currentNav: formatMetrics(totalAssets, rbtcPrice, RBTC),
-        deployedCapital: formatMetrics(reportedOffchainAssets, rbtcPrice, RBTC),
+        deployedCapital:
+          reportedOffchainAssets !== null
+            ? formatMetrics(reportedOffchainAssets, rbtcPrice, RBTC)
+            : dashMetrics,
         unallocatedCapital: formatMetrics(freeOnchainLiquidity, rbtcPrice, RBTC),
         manualBuffer: formatMetrics(bufferAssets, rbtcPrice, RBTC),
       },

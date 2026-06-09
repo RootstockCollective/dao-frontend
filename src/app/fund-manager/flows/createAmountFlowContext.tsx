@@ -12,6 +12,8 @@ export interface AmountFlowContextValue {
   amount: string
   isValidAmount: boolean
   isAmountOverBalance: boolean
+  /** True when amount exceeds optional on-chain limit (e.g. reportedOffchainAssets for deposit). */
+  isAmountOverLimit: boolean
   errorMessage: string
   usdEquivalent: string
   selectedToken: SelectedToken
@@ -23,6 +25,14 @@ export interface AmountFlowContextValue {
   handleAmountChange: (value: string) => void
   handlePercentageClick: (percentage: number) => void
   setSelectedToken: (token: SelectedToken) => void
+  /** Reported off-chain assets display (moveCapitalIn cap) when applicable. */
+  limitInfo?: { amount: string; fiatAmount?: string }
+  /** Formatted max depositable amount (min of wallet balance and reported off-chain cap) for deposit flows. */
+  maxDepositableFormatted?: string
+  /** Deposit-to-vault: reported off-chain cap read state (for limit row / retry). */
+  depositLimitStatus?: 'loading' | 'error' | 'ready'
+  /** Deposit-to-vault: refetch vault reads after a batch error. */
+  onRetryDepositLimit?: () => void | Promise<void>
 }
 
 export const createAmountFlowContext = (displayName: string) => {
@@ -44,6 +54,7 @@ export const createAmountFlowContext = (displayName: string) => {
       amount: amountInput.amount,
       isValidAmount: amountInput.isValidAmount,
       isAmountOverBalance: amountInput.isAmountOverBalance,
+      isAmountOverLimit: false,
       errorMessage: amountInput.errorMessage,
       usdEquivalent: amountInput.usdEquivalent,
       selectedToken: tokenSelection.selectedToken,
