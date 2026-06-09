@@ -79,7 +79,10 @@ export const useGetTotalRewardsFromCycles = () => {
         const { address: tokenAddress, symbol } = TOKENS[tokenKey]
         const price = prices[symbol]?.price ?? 0
 
+        const lowerAddr = tokenAddress.toLowerCase()
         const value = (cycles ?? []).reduce((total, cycle) => {
+          const direct = cycle.rewardPerToken[lowerAddr] ?? cycle.rewardPerToken[tokenAddress]
+          if (direct !== undefined) return total + BigInt(direct)
           const entry = Object.entries(cycle.rewardPerToken).find(([addr]) =>
             isAddressEqual(addr as `0x${string}`, tokenAddress),
           )

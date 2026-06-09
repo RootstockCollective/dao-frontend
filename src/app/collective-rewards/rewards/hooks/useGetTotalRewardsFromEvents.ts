@@ -8,6 +8,7 @@ import {
   UseGetGaugesNotifyRewardReturnType,
 } from '@/app/collective-rewards/rewards'
 import { useGetGaugesArray } from '@/app/collective-rewards/user'
+import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { MetricToken } from '@/app/components/Metric/types'
 import { createMetricToken } from '@/app/components/Metric/utils'
 import { GetPricesResult } from '@/app/user/types'
@@ -29,6 +30,8 @@ export const useGetTotalRewardsFromEvents = () => {
 
   const isLoading = isLoadingGauges || isLoadingRewards
   const error = errorGauges ?? errorRewards ?? null
+
+  useHandleErrors({ error, title: 'Error loading total rewards from events' })
 
   const data = useMemo(() => aggregateRewardEvents(rewardsData, prices), [rewardsData, prices])
 

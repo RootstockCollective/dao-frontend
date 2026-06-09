@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Address, getAddress } from 'viem'
 
 import { useStateSyncHealthCheck } from '@/app/collective-rewards/shared/hooks/useStateSyncHealthCheck'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { AVERAGE_BLOCKTIME, MAX_PAGE_SIZE } from '@/lib/constants'
 
 import { useGetGaugesBackerRewardsClaimed } from './useGetGaugesBackerRewardsClaimed'
 
@@ -41,6 +41,33 @@ function normalizeEventData(
   }, {})
 }
 
+async function fetchAllBackerRewardsClaimed(
+  backer: Address,
+  token: Address,
+): Promise<DbBackerRewardsClaimed[]> {
+  const firstParams = new URLSearchParams({ token, pageSize: String(MAX_PAGE_SIZE), page: '1' })
+  const firstRes = await fetch(`/api/backers/${backer}/rewards-claimed?${firstParams}`)
+  if (!firstRes.ok) throw new Error(`DB fetch failed: ${firstRes.status}`)
+  const { data, count }: { data: DbBackerRewardsClaimed[]; count: number } = await firstRes.json()
+
+  const totalPages = Math.ceil(count / MAX_PAGE_SIZE)
+  if (totalPages <= 1) return data
+
+  const remaining = await Promise.all(
+    Array.from({ length: totalPages - 1 }, (_, i) => {
+      const params = new URLSearchParams({ token, pageSize: String(MAX_PAGE_SIZE), page: String(i + 2) })
+      return fetch(`/api/backers/${backer}/rewards-claimed?${params}`)
+        .then(r => {
+          if (!r.ok) throw new Error(`DB fetch failed: ${r.status}`)
+          return r.json() as Promise<{ data: DbBackerRewardsClaimed[] }>
+        })
+        .then(r => r.data)
+    }),
+  )
+
+  return [...data, ...remaining.flat()]
+}
+
 /**
  * Fetches backer rewards claimed with a health-check-gated fallback chain:
  *   1. DB  (StateSync healthy)  → /api/backers/[backer]/rewards-claimed
@@ -66,12 +93,7 @@ export const useGetBackerRewardsClaimed = (
     error: dbError,
   } = useQuery({
     queryKey: ['backerRewardsClaimed', 'db', backer, token],
-    queryFn: async (): Promise<DbBackerRewardsClaimed[]> => {
-      const res = await fetch(`/api/backers/${backer}/rewards-claimed?token=${token}&pageSize=1000`)
-      if (!res.ok) throw new Error(`DB fetch failed: ${res.status}`)
-      const json = await res.json()
-      return json.data ?? []
-    },
+    queryFn: () => fetchAllBackerRewardsClaimed(backer, token),
     refetchInterval: AVERAGE_BLOCKTIME,
     enabled: !healthCheckIsLoading && isStateSyncHealthy,
   })
@@ -87,7 +109,7 @@ export const useGetBackerRewardsClaimed = (
     error: eventError,
   } = useGetGaugesBackerRewardsClaimed(gauges, token, backer, !healthCheckIsLoading && !isStateSyncHealthy)
 
-  if (healthCheckIsLoading || dbLoading) {
+  if (healthCheckIsLoading || (isStateSyncHealthy && dbLoading)) {
     return { data: {} as ClaimedRewards, isLoading: true, error: null }
   }
 
