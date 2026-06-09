@@ -201,9 +201,11 @@ export function extractRumbleVideoId(url: string): string | null {
 export type VideoPlatform = 'youtube' | 'vimeo' | 'loom' | 'twitch' | 'rumble'
 
 interface VideoEmbedConfig {
+  platform: VideoPlatform
   embedUrl: string
   title: string
   allow: string
+  thumbnailUrl?: string
 }
 
 /**
@@ -216,10 +218,12 @@ export function getVideoEmbedConfig(url: string): VideoEmbedConfig | null {
     const videoId = extractYouTubeVideoId(url)
     if (!videoId) return null
     return {
+      platform: 'youtube',
       embedUrl: `https://www.youtube.com/embed/${videoId}`,
       title: 'YouTube video player',
       allow:
         'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share',
+      thumbnailUrl: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
     }
   }
 
@@ -228,6 +232,7 @@ export function getVideoEmbedConfig(url: string): VideoEmbedConfig | null {
     const videoId = extractVimeoVideoId(url)
     if (!videoId) return null
     return {
+      platform: 'vimeo',
       embedUrl: `https://player.vimeo.com/video/${videoId}`,
       title: 'Vimeo video player',
       allow: 'autoplay; fullscreen; picture-in-picture',
@@ -239,6 +244,7 @@ export function getVideoEmbedConfig(url: string): VideoEmbedConfig | null {
     const videoId = extractLoomVideoId(url)
     if (!videoId) return null
     return {
+      platform: 'loom',
       embedUrl: `https://www.loom.com/embed/${videoId}`,
       title: 'Loom video player',
       allow: 'autoplay; fullscreen; picture-in-picture',
@@ -251,6 +257,7 @@ export function getVideoEmbedConfig(url: string): VideoEmbedConfig | null {
     if (!videoId) return null
     const hostname = typeof window !== 'undefined' ? window.location.hostname : ''
     return {
+      platform: 'twitch',
       embedUrl: `https://player.twitch.tv/?video=${videoId}&parent=${hostname}`,
       title: 'Twitch video player',
       allow: 'autoplay; fullscreen',
