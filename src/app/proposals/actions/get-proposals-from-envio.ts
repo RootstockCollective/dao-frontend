@@ -10,6 +10,7 @@ import { ProposalApiResponse } from '@/app/proposals/shared/types'
 
 const ENVIO_GRAPHQL_URL = process.env.ENVIO_GRAPHQL_URL
 const MIN_PROPOSALS_THRESHOLD = 10
+const FETCH_TIMEOUT_MS = 10_000
 
 // =============================================================================
 // Zod Schemas (Runtime Validation)
@@ -159,6 +160,7 @@ export async function getProposalsFromEnvio(): Promise<ProposalApiResponse[]> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query: ENVIO_PROPOSALS_QUERY }),
     next: { revalidate: 60 },
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
   })
 
   if (!response.ok) {

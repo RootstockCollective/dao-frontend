@@ -3,9 +3,10 @@ import { fetchAllProposals } from '@/app/proposals/actions/fetch-all-proposals'
 export const revalidate = 30
 
 export async function GET() {
-  const { proposals, sourceIndex } = await fetchAllProposals()
-  if (proposals.length === 0) {
-    return Response.json({ error: 'Can not fetch proposals from any source' }, { status: 500 })
+  try {
+    const { proposals, sourceIndex } = await fetchAllProposals()
+    return Response.json(proposals, { headers: { 'X-Source': `source-${sourceIndex}` } })
+  } catch {
+    return Response.json({ error: 'Can not fetch proposals from any source' }, { status: 503 })
   }
-  return Response.json(proposals, { headers: { 'X-Source': `source-${sourceIndex}` } })
 }

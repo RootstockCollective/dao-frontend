@@ -15,6 +15,8 @@ import { PROPOSAL_CREATED_EVENT } from '@/lib/endpoints'
 import { logger } from '@/lib/logger'
 import { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
+const REQUEST_TIMEOUT_MS = 25_000
+
 type ElementType<T> = T extends (infer U)[] ? U : never
 
 type ProposalCreatedEventLog = ElementType<
@@ -102,8 +104,11 @@ interface BlockscoutLogResponse {
 async function fetchProposalLogsFromBlockscout(): Promise<BackendEventByTopic0ResponseValue[]> {
   const allLogs: BackendEventByTopic0ResponseValue[] = []
   let fromBlock = '0'
+  let pages = 0
+  const start = Date.now()
 
   while (true) {
+    pages++
     try {
       const params: Record<string, string> = {
         module: 'logs',
@@ -119,7 +124,9 @@ async function fetchProposalLogsFromBlockscout(): Promise<BackendEventByTopic0Re
         url.searchParams.append(key, value)
       })
 
-      const response = await fetch(url.toString())
+      const response = await fetch(url.toString(), {
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      })
       if (!response.ok) {
         throw new Error(`Blockscout API error: ${response.status} ${response.statusText}`)
       }
@@ -151,11 +158,18 @@ async function fetchProposalLogsFromBlockscout(): Promise<BackendEventByTopic0Re
       // Set fromBlock to the last block number (as decimal string) for the next iteration
       fromBlock = lastBlockNumber
     } catch (error) {
-      logger.error({ err: error }, 'Failed to fetch logs from Blockscout')
+      logger.error(
+        { err: error, pages, elapsedMs: Date.now() - start },
+        'Failed to fetch logs from Blockscout',
+      )
       break
     }
   }
 
+  logger.info(
+    { pages, totalLogs: allLogs.length, elapsedMs: Date.now() - start },
+    'Blockscout proposal fetch complete',
+  )
   return allLogs
 }
 
@@ -205,7 +219,7 @@ function transformEventLogProposal(proposal: ProposalCreatedEventLogWithTimestam
   }
 }
 
-async function getProposalsFromBlockscoutUncached(): Promise<ProposalApiResponse[]> {
+export async function getProposalsFromBlockscoutUncached(): Promise<ProposalApiResponse[]> {
   const logs = await fetchProposalLogsFromBlockscout()
 
   const viemLogs = convertBackendLogsToViemLogs(logs)
