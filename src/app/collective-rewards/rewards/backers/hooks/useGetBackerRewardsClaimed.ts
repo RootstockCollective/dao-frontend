@@ -43,7 +43,13 @@ async function fetchAllBackerRewardsClaimed(
   backer: Address,
   token: Address,
 ): Promise<DbBackerRewardsClaimed[]> {
-  const firstParams = new URLSearchParams({ token, pageSize: String(MAX_PAGE_SIZE), page: '1' })
+  const firstParams = new URLSearchParams({
+    token,
+    pageSize: String(MAX_PAGE_SIZE),
+    page: '1',
+    sortBy: 'id',
+    sortDirection: 'asc',
+  })
   const firstRes = await fetch(`/api/backers/${backer}/rewards-claimed?${firstParams}`)
   if (!firstRes.ok) throw new Error(`DB fetch failed: ${firstRes.status}`)
   const { data, count }: { data: DbBackerRewardsClaimed[]; count: number } = await firstRes.json()
@@ -53,7 +59,13 @@ async function fetchAllBackerRewardsClaimed(
 
   const remaining = await Promise.all(
     Array.from({ length: totalPages - 1 }, (_, i) => {
-      const params = new URLSearchParams({ token, pageSize: String(MAX_PAGE_SIZE), page: String(i + 2) })
+      const params = new URLSearchParams({
+        token,
+        pageSize: String(MAX_PAGE_SIZE),
+        page: String(i + 2),
+        sortBy: 'id',
+        sortDirection: 'asc',
+      })
       return fetch(`/api/backers/${backer}/rewards-claimed?${params}`)
         .then(r => {
           if (!r.ok) throw new Error(`DB fetch failed: ${r.status}`)

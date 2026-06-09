@@ -26,9 +26,15 @@ export const useGetBuilderAllTimeShare = ({
   gauges,
   rifAddress,
 }: UseBuilderAllTimeShareProps): AllTimeShareData => {
-  const { data: isStateSyncHealthy, isLoading: healthCheckIsLoading } = useStateSyncHealthCheck({
+  const {
+    data: isStateSyncHealthy,
+    isLoading: healthCheckIsLoading,
+    error: healthCheckError,
+  } = useStateSyncHealthCheck({
     initialData: true,
   })
+
+  const useCycles = !healthCheckIsLoading && !healthCheckError && !!isStateSyncHealthy
 
   // Source 1: Cycles API (StateSync healthy)
   const {
@@ -39,10 +45,10 @@ export const useGetBuilderAllTimeShare = ({
     queryFn: fetchAllCycles,
     queryKey: ['totalRewardsDistributedCycles'],
     refetchInterval: AVERAGE_BLOCKTIME,
-    enabled: !healthCheckIsLoading && !!isStateSyncHealthy,
+    enabled: useCycles,
   })
 
-  // Source 2: Events fallback (StateSync unhealthy)
+  // Source 2: Events fallback (StateSync unhealthy or health check error)
   const {
     data: notifyReward,
     isLoading: notifyRewardLoading,
@@ -50,7 +56,7 @@ export const useGetBuilderAllTimeShare = ({
   } = useGetGaugesNotifyReward({
     gauges,
     rewardTokens: [rifAddress],
-    enabled: !healthCheckIsLoading && !isStateSyncHealthy,
+    enabled: !healthCheckIsLoading && !useCycles,
   })
 
   const {
@@ -73,7 +79,7 @@ export const useGetBuilderAllTimeShare = ({
 
     let notifyRewards: bigint
 
-    if (isStateSyncHealthy) {
+    if (useCycles) {
       const lowerAddr = rifAddress.toLowerCase()
       notifyRewards = (cycles ?? []).reduce((total, cycle) => {
         const direct = cycle.rewardPerToken[lowerAddr] ?? cycle.rewardPerToken[rifAddress]
@@ -96,15 +102,20 @@ export const useGetBuilderAllTimeShare = ({
     }
 
     return !notifyRewards ? '0%' : `${(totalBuilderRewards * 100n) / notifyRewards}%`
-  }, [builderRewardsPerToken, claimableRewards, cycles, isStateSyncHealthy, notifyReward, rifAddress])
+  }, [builderRewardsPerToken, claimableRewards, cycles, useCycles, notifyReward, rifAddress])
 
   return {
     amount,
     isLoading:
       healthCheckIsLoading ||
-      (isStateSyncHealthy ? cyclesLoading : notifyRewardLoading) ||
+      (useCycles ? cyclesLoading : notifyRewardLoading) ||
       builderRewardsPerTokenLoading ||
       claimableRewardsLoading,
-    error: cyclesError ?? notifyRewardError ?? builderRewardsPerTokenError ?? claimableRewardsError,
+    error:
+      healthCheckError ??
+      cyclesError ??
+      notifyRewardError ??
+      builderRewardsPerTokenError ??
+      claimableRewardsError,
   }
 }
