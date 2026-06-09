@@ -115,9 +115,12 @@ export const useGetBackerRewardsClaimed = (
 
   // Slot 2: The Graph would be returned here before Blockscout.
 
+  // The events fallback is the active source here (StateSync unhealthy, health check
+  // error, or DB error), so only its error is relevant. Surfacing healthCheckError
+  // would push a UI error despite having valid fallback data.
   return {
     data: normalizeEventData(eventData ?? {}),
     isLoading: eventLoading,
-    error: eventError ?? healthCheckError,
+    error: eventError,
   }
 }

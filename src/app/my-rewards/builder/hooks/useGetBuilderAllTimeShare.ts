@@ -106,10 +106,10 @@ export const useGetBuilderAllTimeShare = ({
       (useCycles ? cyclesLoading : notifyRewardLoading) ||
       builderRewardsPerTokenLoading ||
       claimableRewardsLoading,
+    // When the health check errors, useCycles is false and the events fallback is the
+    // active source, so healthCheckError must not be surfaced — otherwise the metric
+    // shows an error despite having valid fallback data.
     error:
-      healthCheckError ??
-      (useCycles ? cyclesError : notifyRewardError) ??
-      builderRewardsPerTokenError ??
-      claimableRewardsError,
+      (useCycles ? cyclesError : notifyRewardError) ?? builderRewardsPerTokenError ?? claimableRewardsError,
   }
 }
