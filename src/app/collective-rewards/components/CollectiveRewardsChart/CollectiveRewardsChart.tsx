@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import {
   Area,
   AreaChart,
@@ -192,7 +192,7 @@ export function CollectiveRewardsDualAxisChart({
 
   return (
     <div className="w-full" style={{ height }}>
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height={height}>
         <AreaChart data={data} margin={chartMargins} stackOffset="none">
           <XAxis
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
