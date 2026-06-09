@@ -6,7 +6,10 @@ import { Address, getAddress } from 'viem'
 import { useStateSyncHealthCheck } from '@/app/collective-rewards/shared/hooks/useStateSyncHealthCheck'
 import { AVERAGE_BLOCKTIME, MAX_PAGE_SIZE } from '@/lib/constants'
 
-import { useGetGaugesBackerRewardsClaimed } from './useGetGaugesBackerRewardsClaimed'
+import {
+  BackerRewardsClaimedEventLog,
+  useGetGaugesBackerRewardsClaimed,
+} from './useGetGaugesBackerRewardsClaimed'
 
 export type ClaimedRewards = Record<Address, bigint>
 
@@ -29,14 +32,9 @@ function normalizeDbData(
   }, {})
 }
 
-function normalizeEventData(
-  eventData: Record<Address, ReturnType<typeof Array.prototype.flat>>,
-): ClaimedRewards {
+function normalizeEventData(eventData: Record<Address, BackerRewardsClaimedEventLog>): ClaimedRewards {
   return Object.entries(eventData).reduce<ClaimedRewards>((acc, [gauge, events]) => {
-    acc[gauge as Address] = (events as { args: { amount_: bigint } }[]).reduce(
-      (sum, event) => sum + event.args.amount_,
-      0n,
-    )
+    acc[gauge as Address] = events.reduce((sum, event) => sum + event.args.amount_, 0n)
     return acc
   }, {})
 }
@@ -82,9 +80,15 @@ export const useGetBackerRewardsClaimed = (
   gauges: Address[],
   builderToGauge: Map<Address, Address>,
 ) => {
-  const { data: isStateSyncHealthy, isLoading: healthCheckIsLoading } = useStateSyncHealthCheck({
+  const {
+    data: isStateSyncHealthy,
+    isLoading: healthCheckIsLoading,
+    error: healthCheckError,
+  } = useStateSyncHealthCheck({
     initialData: true,
   })
+
+  const useDb = !healthCheckIsLoading && !healthCheckError && !!isStateSyncHealthy
 
   // --- Source 1: DB (StateSync healthy) ---
   const {
@@ -95,25 +99,25 @@ export const useGetBackerRewardsClaimed = (
     queryKey: ['backerRewardsClaimed', 'db', backer, token],
     queryFn: () => fetchAllBackerRewardsClaimed(backer, token),
     refetchInterval: AVERAGE_BLOCKTIME,
-    enabled: !healthCheckIsLoading && isStateSyncHealthy,
+    enabled: useDb,
   })
 
   // --- Source 2: The Graph (placeholder) ---
   // Add when the subgraph query is ready. Wire up its own enabled condition,
   // e.g. enabled: !healthCheckIsLoading && !isStateSyncHealthy && !graphHealthy
 
-  // --- Source 3: Blockscout event logs (StateSync unhealthy) ---
+  // --- Source 3: Blockscout event logs (StateSync unhealthy or health check error) ---
   const {
     data: eventData,
     isLoading: eventLoading,
     error: eventError,
-  } = useGetGaugesBackerRewardsClaimed(gauges, token, backer, !healthCheckIsLoading && !isStateSyncHealthy)
+  } = useGetGaugesBackerRewardsClaimed(gauges, token, backer, !healthCheckIsLoading && !useDb)
 
-  if (healthCheckIsLoading || (isStateSyncHealthy && dbLoading)) {
+  if (healthCheckIsLoading || (useDb && dbLoading)) {
     return { data: {} as ClaimedRewards, isLoading: true, error: null }
   }
 
-  if (isStateSyncHealthy) {
+  if (useDb) {
     return { data: normalizeDbData(dbData ?? [], builderToGauge), isLoading: false, error: dbError }
   }
 
@@ -122,6 +126,6 @@ export const useGetBackerRewardsClaimed = (
   return {
     data: normalizeEventData(eventData ?? {}),
     isLoading: eventLoading,
-    error: eventError,
+    error: eventError ?? healthCheckError,
   }
 }
