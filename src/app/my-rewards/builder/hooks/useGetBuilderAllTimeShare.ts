@@ -1,9 +1,12 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import { Address, isAddressEqual } from 'viem'
+import { Address } from 'viem'
 
 import { useGetBuilderRewardsClaimedLogs, useGetGaugesNotifyReward } from '@/app/collective-rewards/rewards'
-import { fetchAllCycles } from '@/app/collective-rewards/rewards/hooks/useGetTotalRewardsFromCycles'
+import {
+  fetchAllCycles,
+  sumCycleRewardForToken,
+} from '@/app/collective-rewards/rewards/hooks/useGetTotalRewardsFromCycles'
 import { useStateSyncHealthCheck } from '@/app/collective-rewards/shared/hooks/useStateSyncHealthCheck'
 import { CycleRewardsItem } from '@/app/collective-rewards/types'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
@@ -80,15 +83,7 @@ export const useGetBuilderAllTimeShare = ({
     let notifyRewards: bigint
 
     if (useCycles) {
-      const lowerAddr = rifAddress.toLowerCase()
-      notifyRewards = (cycles ?? []).reduce((total, cycle) => {
-        const direct = cycle.rewardPerToken[lowerAddr] ?? cycle.rewardPerToken[rifAddress]
-        if (direct !== undefined) return total + BigInt(direct)
-        const entry = Object.entries(cycle.rewardPerToken).find(([addr]) =>
-          isAddressEqual(addr as `0x${string}`, rifAddress),
-        )
-        return entry ? total + BigInt(entry[1]) : total
-      }, 0n)
+      notifyRewards = sumCycleRewardForToken(cycles ?? [], rifAddress)
     } else {
       notifyRewards = Object.values(notifyReward).reduce(
         (acc, events) =>

@@ -1,49 +1,45 @@
 import { useQuery } from '@tanstack/react-query'
 import Big from 'big.js'
 import { useMemo } from 'react'
-import { isAddressEqual } from 'viem'
+import { Address, isAddressEqual } from 'viem'
 
 import { useStateSyncHealthCheck } from '@/app/collective-rewards/shared/hooks/useStateSyncHealthCheck'
 import { CycleRewardsItem } from '@/app/collective-rewards/types'
 import { MetricToken } from '@/app/components/Metric/types'
 import { createMetricToken } from '@/app/components/Metric/utils'
-import { AVERAGE_BLOCKTIME, MAX_PAGE_SIZE } from '@/lib/constants'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
-export const fetchAllCycles = async (): Promise<CycleRewardsItem[]> => {
-  const firstParams = new URLSearchParams({
-    pageSize: String(MAX_PAGE_SIZE),
-    page: '1',
-    sortBy: 'currentCycleStart',
-    sortDirection: 'desc',
-  })
-  const firstResponse = await fetch(`/api/cycles?${firstParams}`)
-  if (!firstResponse.ok) throw new Error('Failed to fetch cycles')
+import { fetchAllPages } from '../utils/fetchAllPages'
 
-  const { data, count }: { data: CycleRewardsItem[]; count: number } = await firstResponse.json()
-
-  const totalPages = Math.ceil(count / MAX_PAGE_SIZE)
-  if (totalPages <= 1) return data
-
-  const remainingPages = await Promise.all(
-    Array.from({ length: totalPages - 1 }, (_, i) => {
-      const params = new URLSearchParams({
-        pageSize: String(MAX_PAGE_SIZE),
-        page: String(i + 2),
+export const fetchAllCycles = (): Promise<CycleRewardsItem[]> =>
+  fetchAllPages<CycleRewardsItem>(
+    (page, pageSize) =>
+      `/api/cycles?${new URLSearchParams({
+        pageSize: String(pageSize),
+        page: String(page),
         sortBy: 'currentCycleStart',
         sortDirection: 'desc',
-      })
-      return fetch(`/api/cycles?${params}`)
-        .then(r => {
-          if (!r.ok) throw new Error('Failed to fetch cycles page')
-          return r.json() as Promise<{ data: CycleRewardsItem[] }>
-        })
-        .then(r => r.data)
-    }),
+      })}`,
+    'Failed to fetch cycles',
   )
 
-  return [...data, ...remainingPages.flat()]
+/**
+ * Sums a single token's `rewardPerToken` amount across every cycle.
+ * The cycles API serialises token keys as lowercase hex, so the direct lookup
+ * almost always hits; the `isAddressEqual` scan only guards a non-normalised key.
+ */
+export const sumCycleRewardForToken = (cycles: CycleRewardsItem[], tokenAddress: Address): bigint => {
+  const lowerAddr = tokenAddress.toLowerCase()
+  return cycles.reduce((total, cycle) => {
+    const direct = cycle.rewardPerToken[lowerAddr] ?? cycle.rewardPerToken[tokenAddress]
+    if (direct !== undefined) return total + BigInt(direct)
+    const entry = Object.entries(cycle.rewardPerToken).find(([addr]) =>
+      isAddressEqual(addr as `0x${string}`, tokenAddress),
+    )
+    return entry ? total + BigInt(entry[1]) : total
+  }, 0n)
 }
 
 export const useGetTotalRewardsFromCycles = () => {
@@ -79,15 +75,7 @@ export const useGetTotalRewardsFromCycles = () => {
         const { address: tokenAddress, symbol } = TOKENS[tokenKey]
         const price = prices[symbol]?.price ?? 0
 
-        const lowerAddr = tokenAddress.toLowerCase()
-        const value = (cycles ?? []).reduce((total, cycle) => {
-          const direct = cycle.rewardPerToken[lowerAddr] ?? cycle.rewardPerToken[tokenAddress]
-          if (direct !== undefined) return total + BigInt(direct)
-          const entry = Object.entries(cycle.rewardPerToken).find(([addr]) =>
-            isAddressEqual(addr as `0x${string}`, tokenAddress),
-          )
-          return entry ? total + BigInt(entry[1]) : total
-        }, 0n)
+        const value = sumCycleRewardForToken(cycles ?? [], tokenAddress)
 
         const metricToken = createMetricToken({ symbol, value, price })
         acc.rewardPerToken.push(metricToken)

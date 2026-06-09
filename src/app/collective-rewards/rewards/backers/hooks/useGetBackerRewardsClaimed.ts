@@ -4,8 +4,9 @@ import { useQuery } from '@tanstack/react-query'
 import { Address, getAddress } from 'viem'
 
 import { useStateSyncHealthCheck } from '@/app/collective-rewards/shared/hooks/useStateSyncHealthCheck'
-import { AVERAGE_BLOCKTIME, MAX_PAGE_SIZE } from '@/lib/constants'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
+import { fetchAllPages } from '../../utils/fetchAllPages'
 import {
   BackerRewardsClaimedEventLog,
   useGetGaugesBackerRewardsClaimed,
@@ -39,50 +40,24 @@ function normalizeEventData(eventData: Record<Address, BackerRewardsClaimedEvent
   }, {})
 }
 
-async function fetchAllBackerRewardsClaimed(
-  backer: Address,
-  token: Address,
-): Promise<DbBackerRewardsClaimed[]> {
-  const firstParams = new URLSearchParams({
-    token,
-    pageSize: String(MAX_PAGE_SIZE),
-    page: '1',
-    sortBy: 'id',
-    sortDirection: 'asc',
-  })
-  const firstRes = await fetch(`/api/backers/${backer}/rewards-claimed?${firstParams}`)
-  if (!firstRes.ok) throw new Error(`DB fetch failed: ${firstRes.status}`)
-  const { data, count }: { data: DbBackerRewardsClaimed[]; count: number } = await firstRes.json()
-
-  const totalPages = Math.ceil(count / MAX_PAGE_SIZE)
-  if (totalPages <= 1) return data
-
-  const remaining = await Promise.all(
-    Array.from({ length: totalPages - 1 }, (_, i) => {
-      const params = new URLSearchParams({
+const fetchAllBackerRewardsClaimed = (backer: Address, token: Address): Promise<DbBackerRewardsClaimed[]> =>
+  fetchAllPages<DbBackerRewardsClaimed>(
+    (page, pageSize) =>
+      `/api/backers/${backer}/rewards-claimed?${new URLSearchParams({
         token,
-        pageSize: String(MAX_PAGE_SIZE),
-        page: String(i + 2),
+        pageSize: String(pageSize),
+        page: String(page),
         sortBy: 'id',
         sortDirection: 'asc',
-      })
-      return fetch(`/api/backers/${backer}/rewards-claimed?${params}`)
-        .then(r => {
-          if (!r.ok) throw new Error(`DB fetch failed: ${r.status}`)
-          return r.json() as Promise<{ data: DbBackerRewardsClaimed[] }>
-        })
-        .then(r => r.data)
-    }),
+      })}`,
+    'DB fetch failed',
   )
-
-  return [...data, ...remaining.flat()]
-}
 
 /**
  * Fetches backer rewards claimed with a health-check-gated fallback chain:
  *   1. DB  (StateSync healthy)  → /api/backers/[backer]/rewards-claimed
  *   2. The Graph  (slot reserved — add its own enabled condition when ready)
- *   3. Blockscout event logs  (StateSync unhealthy)
+ *   3. Blockscout event logs  (StateSync unhealthy, or the DB query failed)
  *
  * Output is always Record<gaugeAddress, totalClaimedAmount> for the given token.
  */
@@ -114,23 +89,28 @@ export const useGetBackerRewardsClaimed = (
     enabled: useDb,
   })
 
+  // A failed DB fetch (StateSync reported healthy but the query errored) falls back
+  // to events, mirroring the unhealthy path — otherwise the metric would surface a
+  // hard error with no recovery.
+  const dbFailed = useDb && !!dbError
+
   // --- Source 2: The Graph (placeholder) ---
   // Add when the subgraph query is ready. Wire up its own enabled condition,
   // e.g. enabled: !healthCheckIsLoading && !isStateSyncHealthy && !graphHealthy
 
-  // --- Source 3: Blockscout event logs (StateSync unhealthy or health check error) ---
+  // --- Source 3: Blockscout event logs (StateSync unhealthy, health check error, or DB error) ---
   const {
     data: eventData,
     isLoading: eventLoading,
     error: eventError,
-  } = useGetGaugesBackerRewardsClaimed(gauges, token, backer, !healthCheckIsLoading && !useDb)
+  } = useGetGaugesBackerRewardsClaimed(gauges, token, backer, !healthCheckIsLoading && (!useDb || dbFailed))
 
   if (healthCheckIsLoading || (useDb && dbLoading)) {
     return { data: {} as ClaimedRewards, isLoading: true, error: null }
   }
 
-  if (useDb) {
-    return { data: normalizeDbData(dbData ?? [], builderToGauge), isLoading: false, error: dbError }
+  if (useDb && !dbFailed) {
+    return { data: normalizeDbData(dbData ?? [], builderToGauge), isLoading: false, error: null }
   }
 
   // Slot 2: The Graph would be returned here before Blockscout.
