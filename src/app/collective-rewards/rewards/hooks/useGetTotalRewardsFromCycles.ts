@@ -11,7 +11,7 @@ import { AVERAGE_BLOCKTIME, MAX_PAGE_SIZE } from '@/lib/constants'
 import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
-const fetchAllCycles = async (): Promise<CycleRewardsItem[]> => {
+export const fetchAllCycles = async (): Promise<CycleRewardsItem[]> => {
   const firstParams = new URLSearchParams({
     pageSize: String(MAX_PAGE_SIZE),
     page: '1',
