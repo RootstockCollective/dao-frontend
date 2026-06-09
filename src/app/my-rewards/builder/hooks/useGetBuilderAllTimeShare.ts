@@ -113,8 +113,7 @@ export const useGetBuilderAllTimeShare = ({
       claimableRewardsLoading,
     error:
       healthCheckError ??
-      cyclesError ??
-      notifyRewardError ??
+      (useCycles ? cyclesError : notifyRewardError) ??
       builderRewardsPerTokenError ??
       claimableRewardsError,
   }
