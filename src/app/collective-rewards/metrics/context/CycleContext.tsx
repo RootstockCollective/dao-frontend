@@ -59,7 +59,7 @@ export const CycleContextProvider = ({ children }: CycleProviderProps) => {
     error: endDistributionWindowError,
   } = useReadCycleTimeKeeper(
     { functionName: 'endDistributionWindow', args: [timestamp] },
-    { initialData: 0n },
+    { placeholderData: 0n },
   )
 
   const {
