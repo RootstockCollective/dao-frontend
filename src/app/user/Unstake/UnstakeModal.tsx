@@ -38,7 +38,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
 
   const { data: backerTotalAllocation = 0n } = useReadBackersManager(
     { functionName: 'backerTotalAllocation', args: [address!] },
-    { refetchInterval: 10000, enabled: !!address, initialData: 0n },
+    { refetchInterval: 10000, enabled: !!address, placeholderData: 0n },
   )
 
   const stRifToken: StakingToken = useMemo(

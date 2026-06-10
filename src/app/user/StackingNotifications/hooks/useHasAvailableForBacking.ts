@@ -17,7 +17,7 @@ export const useHasAvailableBacking = (backerAddress: Address) => {
       args: [backerAddress ?? zeroAddress],
     },
     {
-      initialData: 0n,
+      placeholderData: 0n,
       enabled: !!backerAddress,
     },
   )

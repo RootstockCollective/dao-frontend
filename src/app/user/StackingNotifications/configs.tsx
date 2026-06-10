@@ -55,9 +55,10 @@ export const getBannerConfigForStartBuilding = (isStartBuilding: boolean): Banne
 }
 
 export const getBannerConfigForCycleEnding = (cycle: Cycle): BannerConfig | null => {
-  if (!cycle || !cycle.cycleNext) return null
+  if (!cycle || !cycle.cycleNext || cycle.cycleNext.toMillis() <= 0) return null
   const diff = cycle.cycleNext.diffNow()
-  const isCycleEnding = diff.as('days') < 4
+  const diffDays = diff.as('days')
+  const isCycleEnding = diffDays >= 0 && diffDays < 4
   if (!isCycleEnding) return null
   const staticConfig = BANNER_CONFIGS[CYCLE_ENDING]
   if (!staticConfig) return null
