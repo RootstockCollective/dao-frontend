@@ -1,10 +1,9 @@
 import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { RBTC } from '@/lib/constants'
-import { formatCurrencyWithLabel } from '@/lib/utils'
+import { formatCurrencyWithLabel, formatDateMonthFirst } from '@/lib/utils'
 import type { Row } from '@/shared/context'
 
 import type { DepositWindowRow } from '../../services/types'
-import { formatDateMonthFirst } from '../../services/ui/formatters'
 import type { ColumnId, DepositHistoryCellDataMap } from './DepositHistoryTable.config'
 
 /**
