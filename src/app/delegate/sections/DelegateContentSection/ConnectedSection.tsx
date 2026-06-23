@@ -42,28 +42,19 @@ export const ConnectedSection = () => {
   const handleDelegate = useCallback(
     (address: Address) => {
       setIsRequestingDelegate(true)
-      const baseProps = {
-        delegatee_address: address,
-        delegatee_rns: displayedDelegatee?.rns ?? '',
-        voting_power_str: cards.own.contentValue,
-        voting_power_decimal: Number(cards.own.contentValue) || 0,
-        is_self_delegation: address.toLowerCase() === ownAddress?.toLowerCase(),
-      }
-      posthog.capture('voting_power_delegated', baseProps)
       executeTxFlow({
         onRequestTx: () => onDelegate(address),
         onPending: () => {
           setIsDelegationPending(true)
           setIsDelegateModalOpened(false)
         },
-        onSuccess: txHash => {
-          posthog.capture('voting_power_delegate_confirmed', { ...baseProps, tx_hash: txHash })
+        onSuccess: () => {
           refetch()
           onHideDelegates()
         },
         onError: (txHash, err) => {
           posthog.capture('voting_power_delegate_failed', {
-            ...baseProps,
+            delegatee_address: address,
             failure_reason: err.name === 'Rejected TX' ? 'user_rejected' : 'tx_failed',
             error_message: err.message,
             tx_hash: txHash,
@@ -77,41 +68,21 @@ export const ConnectedSection = () => {
         action: 'delegation',
       })
     },
-    [
-      onDelegate,
-      setIsDelegationPending,
-      setIsDelegateModalOpened,
-      refetch,
-      setNextDelegatee,
-      displayedDelegatee?.rns,
-      cards.own.contentValue,
-      ownAddress,
-    ],
+    [onDelegate, setIsDelegationPending, setIsDelegateModalOpened, refetch, setNextDelegatee],
   )
 
   const handleReclaim = useCallback(() => {
     setIsRequestingReclaim(true)
-    const baseProps = {
-      delegatee_address: ownAddress,
-      previous_delegatee_address: displayedDelegatee?.address,
-      previous_delegatee_rns: displayedDelegatee?.rns ?? '',
-      voting_power_str: cards.own.contentValue,
-      voting_power_decimal: Number(cards.own.contentValue) || 0,
-    }
-    posthog.capture('voting_power_reclaimed', baseProps)
     executeTxFlow({
       onRequestTx: () => onDelegate(ownAddress as Address),
       onPending: () => {
         setIsReclaimPending(true)
         setIsReclaimModalOpened(false)
       },
-      onSuccess: txHash => {
-        posthog.capture('voting_power_reclaim_confirmed', { ...baseProps, tx_hash: txHash })
-        refetch()
-      },
+      onSuccess: refetch,
       onError: (txHash, err) => {
         posthog.capture('voting_power_reclaim_failed', {
-          ...baseProps,
+          previous_delegatee_address: displayedDelegatee?.address,
           failure_reason: err.name === 'Rejected TX' ? 'user_rejected' : 'tx_failed',
           error_message: err.message,
           tx_hash: txHash,
@@ -132,8 +103,6 @@ export const ConnectedSection = () => {
     refetch,
     setNextDelegatee,
     displayedDelegatee?.address,
-    displayedDelegatee?.rns,
-    cards.own.contentValue,
   ])
 
   const onShowDelegates = () => {

@@ -91,13 +91,8 @@ export const VotingDetails = ({
           return onVote(_vote)
         },
         action: 'voting',
-        onSuccess: confirmedHash => {
+        onSuccess: () => {
           setVote(_vote)
-          posthog.capture('proposal_vote_cast', {
-            proposal_id: proposalId,
-            vote: _vote,
-            tx_hash: confirmedHash,
-          })
         },
         onError: (failedHash, err) => {
           setVote(undefined)
@@ -121,7 +116,6 @@ export const VotingDetails = ({
   }
 
   const handleQueuingProposal = async () => {
-    posthog.capture('proposal_queued', { proposal_id: proposalId })
     const txHash = await executeTxFlow({
       onRequestTx: () => {
         setIsQueueing(true)
@@ -154,7 +148,6 @@ export const VotingDetails = ({
       return
     }
 
-    posthog.capture('proposal_executed', { proposal_id: proposalId })
     const txHash = await executeTxFlow({
       onRequestTx: () => {
         setIsExecuting(true)

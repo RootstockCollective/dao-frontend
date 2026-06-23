@@ -1,6 +1,6 @@
 import posthog from 'posthog-js'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { Address, formatEther } from 'viem'
+import { useEffect, useMemo, useState } from 'react'
+import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 
 import { useBackerRewardsContext } from '@/app/collective-rewards/rewards/backers'
@@ -26,52 +26,6 @@ const getRewardTokenAddress = (value: ClaimRewardType) => {
   }
 }
 
-interface ClaimSnapshot {
-  recipient_type: 'backer' | 'builder'
-  reward_type: ClaimRewardType
-  claimed_fiat_total: number
-  claimed_rif_amount: number
-  claimed_rif_fiat: number
-  claimed_rbtc_amount: number
-  claimed_rbtc_fiat: number
-  claimed_usdrif_amount: number
-  claimed_usdrif_fiat: number
-  total_fiat_amount: number
-}
-
-const buildClaimSnapshot = (params: {
-  recipientType: 'backer' | 'builder'
-  selectedRewardType: ClaimRewardType
-  tokenAmounts: Record<string, bigint>
-  tokenFiatAmounts: Record<string, number>
-  totalFiatAmount: number
-}): ClaimSnapshot => {
-  const { recipientType, selectedRewardType, tokenAmounts, tokenFiatAmounts, totalFiatAmount } = params
-  const isAll = selectedRewardType === 'all'
-  const includes = (key: 'rif' | 'rbtc' | 'usdrif') => isAll || selectedRewardType === key
-
-  const amountFor = (key: 'rif' | 'rbtc' | 'usdrif') =>
-    includes(key) ? Number(formatEther(tokenAmounts[key] ?? 0n)) || 0 : 0
-  const fiatFor = (key: 'rif' | 'rbtc' | 'usdrif') => (includes(key) ? (tokenFiatAmounts[key] ?? 0) : 0)
-
-  const claimedRifFiat = fiatFor('rif')
-  const claimedRbtcFiat = fiatFor('rbtc')
-  const claimedUsdrifFiat = fiatFor('usdrif')
-
-  return {
-    recipient_type: recipientType,
-    reward_type: selectedRewardType,
-    claimed_fiat_total: claimedRifFiat + claimedRbtcFiat + claimedUsdrifFiat,
-    claimed_rif_amount: amountFor('rif'),
-    claimed_rif_fiat: claimedRifFiat,
-    claimed_rbtc_amount: amountFor('rbtc'),
-    claimed_rbtc_fiat: claimedRbtcFiat,
-    claimed_usdrif_amount: amountFor('usdrif'),
-    claimed_usdrif_fiat: claimedUsdrifFiat,
-    total_fiat_amount: totalFiatAmount,
-  }
-}
-
 const ClaimBackerRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isBacker'>) => {
   const [selectedRewardType, setSelectedRewardType] = useState<ClaimRewardType>('all')
 
@@ -82,7 +36,6 @@ const ClaimBackerRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isBa
     isPendingTx,
     isSuccess,
     error: claimError,
-    receipt,
   } = useClaimBackerRewards(getRewardTokenAddress(selectedRewardType))
 
   const { data: backerRewards, isLoading, error } = useBackerRewardsContext()
@@ -121,40 +74,15 @@ const ClaimBackerRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isBa
     }
   }, [backerRewards, prices])
 
-  const pendingSnapshotRef = useRef<ClaimSnapshot | null>(null)
-
-  const handleClaim = () => {
-    if (!isClaimable) return
-    const snapshot = buildClaimSnapshot({
-      recipientType: 'backer',
-      selectedRewardType,
-      tokenAmounts,
-      tokenFiatAmounts,
-      totalFiatAmount,
-    })
-    pendingSnapshotRef.current = snapshot
-    posthog.capture('rewards_claimed', snapshot)
-    claimRewards()
-  }
-
   useEffect(() => {
-    if (!isSuccess || !pendingSnapshotRef.current) return
-    posthog.capture('rewards_claim_confirmed', {
-      ...pendingSnapshotRef.current,
-      tx_hash: receipt?.transactionHash,
-    })
-    pendingSnapshotRef.current = null
-  }, [isSuccess, receipt])
-
-  useEffect(() => {
-    if (!claimError || !pendingSnapshotRef.current) return
+    if (!claimError) return
     posthog.capture('rewards_claim_failed', {
-      ...pendingSnapshotRef.current,
+      recipient_type: 'backer',
+      reward_type: selectedRewardType,
       failure_reason: isUserRejectedTxError(claimError) ? 'user_rejected' : 'tx_failed',
       error_message: claimError.message,
     })
-    pendingSnapshotRef.current = null
-  }, [claimError])
+  }, [claimError, selectedRewardType])
 
   return (
     <ClaimRewardsModalView
@@ -164,7 +92,7 @@ const ClaimBackerRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isBa
       tokenAmounts={tokenAmounts}
       tokenFiatAmounts={tokenFiatAmounts}
       totalFiatAmount={totalFiatAmount}
-      onClaim={handleClaim}
+      onClaim={claimRewards}
       isClaimable={isClaimable}
       isLoading={isLoading}
       isTxPending={isPendingTx || isLoadingReceipt}
@@ -252,7 +180,6 @@ const ClaimBuilderRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isB
     isPendingTx,
     isSuccess,
     error: errorClaim,
-    receipt,
   } = useClaimBuilderRewards(builderAddress as Address, buildersGauge as Address)
 
   useHandleErrors({ error: errorGauge, title: 'Error fetching builder gauge' })
@@ -268,40 +195,15 @@ const ClaimBuilderRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isB
     }
   }, [isSuccess, onClose])
 
-  const pendingSnapshotRef = useRef<ClaimSnapshot | null>(null)
-
-  const handleClaim = () => {
-    if (!isClaimable) return
-    const snapshot = buildClaimSnapshot({
-      recipientType: 'builder',
-      selectedRewardType,
-      tokenAmounts,
-      tokenFiatAmounts,
-      totalFiatAmount,
-    })
-    pendingSnapshotRef.current = snapshot
-    posthog.capture('rewards_claimed', snapshot)
-    claimRewards()
-  }
-
   useEffect(() => {
-    if (!isSuccess || !pendingSnapshotRef.current) return
-    posthog.capture('rewards_claim_confirmed', {
-      ...pendingSnapshotRef.current,
-      tx_hash: receipt?.transactionHash,
-    })
-    pendingSnapshotRef.current = null
-  }, [isSuccess, receipt])
-
-  useEffect(() => {
-    if (!errorClaim || !pendingSnapshotRef.current) return
+    if (!errorClaim) return
     posthog.capture('rewards_claim_failed', {
-      ...pendingSnapshotRef.current,
+      recipient_type: 'builder',
+      reward_type: selectedRewardType,
       failure_reason: isUserRejectedTxError(errorClaim) ? 'user_rejected' : 'tx_failed',
       error_message: errorClaim.message,
     })
-    pendingSnapshotRef.current = null
-  }, [errorClaim])
+  }, [errorClaim, selectedRewardType])
 
   return (
     <ClaimRewardsModalView
@@ -311,7 +213,7 @@ const ClaimBuilderRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isB
       tokenAmounts={tokenAmounts}
       tokenFiatAmounts={tokenFiatAmounts}
       totalFiatAmount={totalFiatAmount}
-      onClaim={handleClaim}
+      onClaim={claimRewards}
       isClaimable={isClaimable}
       isLoading={isLoadingRif || isLoadingRbtc || isLoadingUsdrif || isLoadingGauge}
       isTxPending={isPendingTx || isLoadingReceipt}

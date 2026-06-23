@@ -128,11 +128,6 @@ export default function ProposalReview() {
           throw new Error('Unknown proposal category')
       }
 
-      posthog.capture('proposal_submitted', {
-        proposal_name: proposalName,
-        proposal_category: record.category,
-        tx_hash: txHash,
-      })
       const onComplete = () => setLoading(false)
       waitForTxInBg(txHash as `0x${string}`, proposalName, record.category, onComplete)
     } catch (error) {

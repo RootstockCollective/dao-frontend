@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef } from 'react'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
 import { Header, Label } from '@/components/Typography'
-import Big from '@/lib/big'
 import { executeTxFlow } from '@/shared/notification'
 
 import { StakeTokenAmountDisplay } from '../components/StakeTokenAmountDisplay'
@@ -42,34 +41,11 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
   const handleRequestAllowance = useCallback(() => {
     executeTxFlow({
       onRequestTx: onRequestAllowance,
-      onSuccess: txHash => {
-        posthog.capture('stake_allowance_approved', {
-          amount,
-          amount_decimal: Number(amount) || 0,
-          token: tokenToSend.symbol,
-          token_price_usd: Number(tokenToSend.price) || 0,
-          usd_value:
-            Number(
-              Big(amount || 0)
-                .mul(tokenToSend.price || 0)
-                .toString(),
-            ) || 0,
-          tx_hash: txHash,
-        })
-        onGoNext()
-      },
+      onSuccess: onGoNext,
       onError: (txHash, err) => {
         posthog.capture('stake_allowance_failed', {
-          amount,
           amount_decimal: Number(amount) || 0,
           token: tokenToSend.symbol,
-          token_price_usd: Number(tokenToSend.price) || 0,
-          usd_value:
-            Number(
-              Big(amount || 0)
-                .mul(tokenToSend.price || 0)
-                .toString(),
-            ) || 0,
           failure_reason: err.name === 'Rejected TX' ? 'user_rejected' : 'tx_failed',
           error_message: err.message,
           tx_hash: txHash,
@@ -77,7 +53,7 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
       },
       action: 'allowance',
     })
-  }, [onRequestAllowance, onGoNext, amount, tokenToSend.symbol, tokenToSend.price])
+  }, [onRequestAllowance, onGoNext, amount, tokenToSend.symbol])
 
   // Set button actions directly
   useEffect(() => {
