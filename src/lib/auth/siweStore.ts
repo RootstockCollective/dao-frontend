@@ -1,3 +1,4 @@
+import posthog from 'posthog-js'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
@@ -95,6 +96,7 @@ export const useSiweStore = create<SiweState>()(
        * Note: Zustand persist middleware handles localStorage cleanup automatically
        */
       signOut: () => {
+        posthog.reset()
         set(state => {
           state.jwtToken = null
           state.error = null
