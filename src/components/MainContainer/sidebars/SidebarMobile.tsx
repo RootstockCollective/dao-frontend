@@ -1,7 +1,7 @@
 import { motion, type Variants } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { Fragment, useMemo } from 'react'
 
 import { Span } from '@/components/Typography'
@@ -11,6 +11,7 @@ import { NavIcon } from '../icons/NavIcon'
 import { useLayoutContext } from '../LayoutProvider'
 import { MenuData } from './menuData'
 import styles from './styles.module.css'
+import { throttleNav } from './throttleNav'
 import { useFilteredMenuData } from './useFilteredMenuData'
 import { UsefulLinks } from './UsefulLinks'
 
@@ -61,21 +62,10 @@ export function SidebarMobile() {
 
 const MenuItem = ({ text, href, iconUrl, buttonProps }: MenuData) => {
   const isActive = usePathname()?.substring(1) === href
-  const { closeSidebar } = useLayoutContext()
-  const router = useRouter()
-
-  const handleClick = () => {
-    // Close sidebar immediately to prevent interference with navigation
-    closeSidebar()
-    // Use setTimeout to ensure sidebar closes before navigation
-    setTimeout(() => {
-      router.push(`/${href}`)
-    }, 100)
-  }
 
   return (
     <li className={cn('relative pl-3 pr-16', { 'bg-v-charcoal': isActive })}>
-      <Link href={`/${href}`} onClick={handleClick} data-testid={buttonProps.id}>
+      <Link href={`/${href}`} prefetch={false} onClick={throttleNav} data-testid={buttonProps.id}>
         <div className={cn('h-10 flex flex-nowrap gap-2 items-center', { [styles['nav-active']]: isActive })}>
           {iconUrl ? <Image src={iconUrl} width={20} height={20} alt="Icon" /> : <NavIcon />}
           <p className="text-sm font-light font-rootstock-sans">{text}</p>

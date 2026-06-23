@@ -198,7 +198,7 @@ const ClaimBuilderRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isB
     { address: buildersGauge as Address, functionName: 'builderRewards', args: [TOKENS.rif.address] },
     {
       enabled: !!buildersGauge,
-      initialData: 0n,
+      placeholderData: 0n,
     },
   )
   const {
@@ -209,7 +209,7 @@ const ClaimBuilderRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isB
     { address: buildersGauge as Address, functionName: 'builderRewards', args: [TOKENS.rbtc.address] },
     {
       enabled: !!buildersGauge,
-      initialData: 0n,
+      placeholderData: 0n,
     },
   )
 
@@ -221,7 +221,7 @@ const ClaimBuilderRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isB
     { address: buildersGauge as Address, functionName: 'builderRewards', args: [TOKENS.usdrif.address] },
     {
       enabled: !!buildersGauge,
-      initialData: 0n,
+      placeholderData: 0n,
     },
   )
 
