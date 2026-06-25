@@ -8,6 +8,7 @@ import { type State, WagmiProvider } from 'wagmi'
 
 import { BalancesProvider } from '@/app/user/Balances/context/BalancesContext'
 import { GlobalErrorBoundary } from '@/components/ErrorPage/GlobalErrorBoundary'
+import { SecurityNoticeProvider } from '@/components/SecurityNoticeModal'
 import { currentEnvChain, wagmiAdapter, wagmiAdapterConfig } from '@/config'
 import { REOWN_METADATA_URL, REOWN_PROJECT_ID } from '@/lib/constants'
 import { useChunkErrorHandler } from '@/lib/hooks/useChunkErrorHandler'
@@ -109,7 +110,9 @@ export const ContextProviders = ({ children, initialState }: Props) => {
                       <BalancesProvider>
                         <TooltipProvider>
                           <ReviewProposalProvider>
-                            <NavigationGuardProvider>{children}</NavigationGuardProvider>
+                            <NavigationGuardProvider>
+                              <SecurityNoticeProvider>{children}</SecurityNoticeProvider>
+                            </NavigationGuardProvider>
                           </ReviewProposalProvider>
                         </TooltipProvider>
                       </BalancesProvider>

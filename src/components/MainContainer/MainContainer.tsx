@@ -9,7 +9,6 @@ import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 import { DelayedRender } from '../DelayedRender'
 import Scroll from '../Scroll'
-import { SecurityNoticeModal } from '../SecurityNoticeModal'
 import { ContainerDesktop } from './ContainerDesktop'
 import ContainerMobile from './ContainerMobile'
 import { LayoutProvider } from './LayoutProvider'
@@ -23,7 +22,6 @@ export const MainContainer = ({ children }: PropsWithChildren) => {
     <DelayedRender>
       <LayoutProvider>
         <ToastContainer />
-        <SecurityNoticeModal />
         <StepperProvider>
           {shouldDisplayContent ? (
             <>

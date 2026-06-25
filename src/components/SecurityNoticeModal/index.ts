@@ -1,1 +1,2 @@
-export * from './SecurityNoticeModal'
+export * from './SecurityNoticeModalContent'
+export * from './SecurityNoticeProvider'
