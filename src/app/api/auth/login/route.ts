@@ -50,7 +50,6 @@ export async function POST(request: NextRequest) {
           ...(clientDistinctId ? { $anon_distinct_id: clientDistinctId } : {}),
         },
       })
-      // flushAt: 1 sends in the background; do NOT shutdown()/flush() per request (singleton).
     }
 
     // Return token in response body and as HTTP-only cookie
