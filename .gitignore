@@ -76,3 +76,7 @@ CLAUDE.md
 
 # Local git worktrees
 .worktrees/
+
+.claude/
+_bmad-output/
+_bmad
