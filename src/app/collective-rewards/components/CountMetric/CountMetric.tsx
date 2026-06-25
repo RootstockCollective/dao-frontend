@@ -6,8 +6,9 @@ import { Header, Label } from '@/components/Typography'
 interface CountMetricProps extends CommonComponentProps {
   title: string
   isLoading: boolean
+  onClick?: () => void
 }
-export const CountMetric = ({ title, children, isLoading }: CountMetricProps) => {
+export const CountMetric = ({ title, children, isLoading, onClick }: CountMetricProps) => {
   return (
     <Metric
       className="text-v3-text-0 items-start"
@@ -16,7 +17,12 @@ export const CountMetric = ({ title, children, isLoading }: CountMetricProps) =>
       {isLoading ? (
         <LoadingSpinner size="small" />
       ) : (
-        <Header className="text-xl md:text-[2rem]">{children}</Header>
+        <Header
+          className={`text-xl md:text-[2rem] ${onClick ? 'cursor-pointer hover:underline' : ''}`}
+          onClick={onClick}
+        >
+          {children}
+        </Header>
       )}
     </Metric>
   )
