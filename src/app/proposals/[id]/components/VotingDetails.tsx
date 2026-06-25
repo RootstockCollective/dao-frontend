@@ -9,6 +9,7 @@ import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { useProposalQuorumAtSnapshot } from '@/app/proposals/hooks/useProposalQuorumAtSnapshot'
 import { useGetVoteForSpecificProposal } from '@/app/proposals/hooks/useVoteCast'
 import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
+import { txFailureProps } from '@/components/ErrorPage/commonErrors'
 import { Modal } from '@/components/Modal'
 import { NewPopover } from '@/components/NewPopover'
 import { Span } from '@/components/Typography'
@@ -100,8 +101,7 @@ export const VotingDetails = ({
             proposal_id: proposalId,
             vote: _vote,
             tx_hash: failedHash,
-            failure_reason: err.name === 'Rejected TX' ? 'user_rejected' : 'tx_failed',
-            error_message: err.message,
+            ...txFailureProps(err),
           })
         },
         onPending: () => setVotingTxIsPending(true),

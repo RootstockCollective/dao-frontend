@@ -45,6 +45,7 @@ export const useClaimBackerRewards = (rewardToken?: Address) => {
     isClaimable,
     claimRewards: () => isClaimable && claimBackerReward(),
     error,
+    hash,
     isPendingTx: isPending,
     isLoadingReceipt: isLoading,
     isSuccess,

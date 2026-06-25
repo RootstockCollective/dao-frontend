@@ -92,6 +92,21 @@ export const isUserRejectedTxError = (error: unknown, depth = 0): boolean => {
   return false
 }
 
+/** Max length stored for analytics error messages — full detail/stacktrace lives in Sentry. */
+const MAX_ANALYTICS_ERROR_MESSAGE = 300
+
+/**
+ * Builds the PostHog failure properties shared by every `*_failed` tx event.
+ * Centralizes the `user_rejected` vs `tx_failed` classification (works for both the
+ * synthetic error from `executeTxFlow` and raw wagmi errors) and truncates the message.
+ */
+export const txFailureProps = (
+  error: unknown,
+): { failure_reason: 'user_rejected' | 'tx_failed'; error_message: string } => ({
+  failure_reason: isUserRejectedTxError(error) ? 'user_rejected' : 'tx_failed',
+  error_message: toError(error).message.slice(0, MAX_ANALYTICS_ERROR_MESSAGE),
+})
+
 /**
  * Detects if an error is a ChunkLoadError (failed to load a dynamic import chunk).
  * Accepts `unknown` to align with react-error-boundary v6.1+ FallbackProps.

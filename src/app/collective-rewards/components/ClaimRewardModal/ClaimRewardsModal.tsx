@@ -1,4 +1,3 @@
-import posthog from 'posthog-js'
 import { useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
@@ -6,7 +5,6 @@ import { useAccount } from 'wagmi'
 import { useBackerRewardsContext } from '@/app/collective-rewards/rewards/backers'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { getFiatAmount } from '@/app/shared/formatter'
-import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
@@ -16,6 +14,7 @@ import { useClaimBackerRewards } from '../../rewards/backers/hooks/useClaimBacke
 import { useClaimBuilderRewards } from '../../rewards/builders/hooks/useClaimBuilderRewards'
 import { ClaimRewardsModalView } from './ClaimRewardsModalView'
 import { ClaimRewardType } from './types'
+import { useRewardsClaimFailedCapture } from './useRewardsClaimFailedCapture'
 
 const getRewardTokenAddress = (value: ClaimRewardType) => {
   switch (value) {
@@ -36,6 +35,7 @@ const ClaimBackerRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isBa
     isPendingTx,
     isSuccess,
     error: claimError,
+    hash: claimHash,
   } = useClaimBackerRewards(getRewardTokenAddress(selectedRewardType))
 
   const { data: backerRewards, isLoading, error } = useBackerRewardsContext()
@@ -74,15 +74,11 @@ const ClaimBackerRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isBa
     }
   }, [backerRewards, prices])
 
-  useEffect(() => {
-    if (!claimError) return
-    posthog.capture('rewards_claim_failed', {
-      recipient_type: 'backer',
-      reward_type: selectedRewardType,
-      failure_reason: isUserRejectedTxError(claimError) ? 'user_rejected' : 'tx_failed',
-      error_message: claimError.message,
-    })
-  }, [claimError, selectedRewardType])
+  useRewardsClaimFailedCapture('backer', {
+    error: claimError,
+    rewardType: selectedRewardType,
+    hash: claimHash,
+  })
 
   return (
     <ClaimRewardsModalView
@@ -180,6 +176,7 @@ const ClaimBuilderRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isB
     isPendingTx,
     isSuccess,
     error: errorClaim,
+    hash: claimHash,
   } = useClaimBuilderRewards(builderAddress as Address, buildersGauge as Address)
 
   useHandleErrors({ error: errorGauge, title: 'Error fetching builder gauge' })
@@ -195,15 +192,11 @@ const ClaimBuilderRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isB
     }
   }, [isSuccess, onClose])
 
-  useEffect(() => {
-    if (!errorClaim) return
-    posthog.capture('rewards_claim_failed', {
-      recipient_type: 'builder',
-      reward_type: selectedRewardType,
-      failure_reason: isUserRejectedTxError(errorClaim) ? 'user_rejected' : 'tx_failed',
-      error_message: errorClaim.message,
-    })
-  }, [errorClaim, selectedRewardType])
+  useRewardsClaimFailedCapture('builder', {
+    error: errorClaim,
+    rewardType: selectedRewardType,
+    hash: claimHash,
+  })
 
   return (
     <ClaimRewardsModalView

@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
+import { txFailureProps } from '@/components/ErrorPage/commonErrors'
 import { executeTxFlow } from '@/shared/notification'
 
 import { StakeTokenAmountDisplay } from '../components/StakeTokenAmountDisplay'
@@ -41,8 +42,7 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
               posthog.capture('stake_rif_failed', {
                 amount_decimal: Number(amount) || 0,
                 token: tokenToSend.symbol,
-                failure_reason: err.name === 'Rejected TX' ? 'user_rejected' : 'tx_failed',
-                error_message: err.message,
+                ...txFailureProps(err),
                 tx_hash: txHash,
               })
             },
