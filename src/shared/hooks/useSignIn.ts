@@ -85,8 +85,11 @@ export function useSignIn(): UseSignInReturn {
 
       const { token: jwtToken }: VerifySignatureResult = await loginRes.json()
 
-      // Identify user in PostHog with wallet address as distinct ID
-      posthog.identify(address.toLowerCase(), { wallet_address: address.toLowerCase() })
+      // Mark the user as verified in PostHog. The wallet is already the distinct ID
+      // (identified on connect in PostHogWalletSync), so we only set the verification
+      // properties here instead of re-identifying.
+      posthog.setPersonProperties({ is_verified: true }, { first_verified_at: new Date().toISOString() })
+      posthog.register({ auth_status: 'verified' })
 
       // Store jwtToken in Zustand store (which also updates localStorage)
       setToken(jwtToken)

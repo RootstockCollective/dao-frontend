@@ -16,15 +16,19 @@ Registered globally in `src/instrumentation-client.ts` via `posthog.register({ e
 
 ## Identity model
 
-| Layer | Mechanism | Value |
-|---|---|---|
-| Anonymous browsing | PostHog auto-generated `distinct_id` (cookie) | random UUID |
-| Wallet connected | Super property `wallet_address` on every event | lowercase 0x address |
-| SIWE-authenticated | `posthog.identify(walletAddress)` lowercase 0x address  |
+A user moves through three states: **anonymous → connected → verified**. We model this with two complementary mechanisms — a per-event super property (`auth_status`) for the state *at the time of an event*, and a person property (`is_verified`) for whether the wallet *ever* verified.
 
-- `wallet_address` is registered as a **super property** as soon as the user connects a wallet (see `src/shared/walletConnection/PostHogWalletSync.tsx`). You can filter or break down by wallet on any insight without manually adding it to each capture.
-- On `posthog.identify` we also set `wallet_address` as a **person property**, so the Persons view shows the wallet.
-- On disconnect (`DisconnectWorkflowContainer`), `posthog.reset()` clears the distinct_id and super properties — the next session starts fresh.
+| State | Trigger | distinct_id | `auth_status` (super property) | Person properties |
+|---|---|---|---|---|
+| Anonymous browsing | First visit | PostHog auto-generated random UUID (cookie) | `anonymous` | — |
+| Wallet connected | User connects a wallet | `posthog.identify(walletAddress)` → lowercase 0x address | `connected` | `wallet_address`, `first_seen` (set-once) |
+| SIWE-verified | User completes the SIWE signature | unchanged (already the wallet) | `verified` | `is_verified: true`, `first_verified_at` (set-once) |
+
+- **On connect** (`src/shared/walletConnection/PostHogWalletSync.tsx`) we call `posthog.identify(walletAddress)`. This pins the `distinct_id` to the wallet and merges the prior anonymous browsing history into that Person, so even pre-connection events are attributed to the wallet. `wallet_address` is also registered as a **super property** for easy filtering/breakdown on any insight.
+- **Why identify on connect, not on SIWE:** the signature is only required for minor actions, so most meaningful usage happens with the wallet merely connected. Identifying on connect ensures those users still get a Person profile instead of staying anonymous.
+- **On SIWE verification** (`src/shared/hooks/useSignIn.ts`) the wallet is already the distinct_id, so we do **not** re-identify. We only set the person property `is_verified` (with `first_verified_at` set-once) and flip the `auth_status` super property to `verified`.
+- **`auth_status` vs `is_verified`:** use the `auth_status` super property to break events down by the user's state *when the event fired* (e.g. failures before vs after signing). Use the `is_verified` person property to build cohorts of wallets that ever verified vs. wallets that only ever connect.
+- On disconnect (`DisconnectWorkflowContainer`), `posthog.reset()` clears the distinct_id and super properties (including `auth_status`) and generates a fresh anonymous distinct_id — the next session starts clean. The `is_verified` person property persists on the profile across sessions.
 
 ## Event catalog
 
