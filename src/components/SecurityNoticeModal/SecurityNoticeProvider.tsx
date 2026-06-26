@@ -1,7 +1,6 @@
 'use client'
 
 import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo } from 'react'
-import useLocalStorageState from 'use-local-storage-state'
 
 import { useFeatureFlags } from '@/shared/context/FeatureFlag'
 import { useModal } from '@/shared/hooks/useModal'
@@ -17,6 +16,19 @@ import { SecurityNoticeModalContent } from './SecurityNoticeModalContent'
 const INCIDENT_ID = 'rewards-distribution-2026-06'
 
 const STORAGE_KEY = 'security-notice-dismissed'
+
+// Read/write the dismissal flag directly from localStorage (client-only). We
+// avoid useLocalStorageState here on purpose: its value hydrates to the default
+// on the first render, which would race the startup effect and re-open the
+// modal on every reload even after the user dismissed it.
+const isIncidentDismissed = (): boolean =>
+  typeof window !== 'undefined' && window.localStorage.getItem(STORAGE_KEY) === INCIDENT_ID
+
+const markIncidentDismissed = (): void => {
+  if (typeof window !== 'undefined') {
+    window.localStorage.setItem(STORAGE_KEY, INCIDENT_ID)
+  }
+}
 
 interface SecurityNoticeContextValue {
   /**
@@ -45,17 +57,15 @@ export const SecurityNoticeProvider = ({ children }: { children: ReactNode }) =>
   const { flags } = useFeatureFlags()
   const isEnabled = !!flags.security_notice
   const { isModalOpened, openModal, closeModal } = useModal()
-  const [dismissedIncident, setDismissedIncident] = useLocalStorageState<string | null>(STORAGE_KEY, {
-    defaultValue: null,
-  })
 
-  // Auto-show once per incident on app startup, only while the incident flag is on.
+  // Auto-show once per incident on app startup, only while the incident flag is
+  // on and the user hasn't dismissed it. Runs after mount, so localStorage is
+  // available and reflects the real persisted value.
   useEffect(() => {
-    if (isEnabled && dismissedIncident !== INCIDENT_ID) {
+    if (isEnabled && !isIncidentDismissed()) {
       openModal()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isEnabled, dismissedIncident])
+  }, [isEnabled, openModal])
 
   const showSecurityNotice = useCallback(() => {
     if (isEnabled) {
@@ -64,9 +74,9 @@ export const SecurityNoticeProvider = ({ children }: { children: ReactNode }) =>
   }, [isEnabled, openModal])
 
   const handleClose = useCallback(() => {
-    setDismissedIncident(INCIDENT_ID)
+    markIncidentDismissed()
     closeModal()
-  }, [setDismissedIncident, closeModal])
+  }, [closeModal])
 
   const value = useMemo(() => ({ showSecurityNotice }), [showSecurityNotice])
 
