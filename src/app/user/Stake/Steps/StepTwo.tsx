@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef } from 'react'
 
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
+import { txFailureProps } from '@/components/ErrorPage/commonErrors'
 import { Header, Label } from '@/components/Typography'
 import { executeTxFlow } from '@/shared/notification'
 
@@ -46,8 +47,7 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
         posthog.capture('stake_allowance_failed', {
           amount_decimal: Number(amount) || 0,
           token: tokenToSend.symbol,
-          failure_reason: err.name === 'Rejected TX' ? 'user_rejected' : 'tx_failed',
-          error_message: err.message,
+          ...txFailureProps(err),
           tx_hash: txHash,
         })
       },

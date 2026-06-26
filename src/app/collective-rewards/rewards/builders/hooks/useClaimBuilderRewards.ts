@@ -42,6 +42,7 @@ const useClaimBuilderReward = (builder: Address, gauge: Address, rewardToken?: A
     claimRewards: () => claimBuilderReward(),
     isPaused,
     error,
+    hash,
     isPendingTx: isPending,
     isLoadingReceipt: isLoading,
     isSuccess,

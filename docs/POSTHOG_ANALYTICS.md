@@ -49,7 +49,6 @@ All amounts are in human-readable token units (not wei). Token symbols are upper
 
 | Event | When it fires | Properties | Captured in |
 |---|---|---|---|
-| `proposal_page_viewed` | User loads the proposals list page | — | `src/app/proposals/page.tsx` |
 | `proposal_vote_cast_failed` | Vote transaction reverted or was rejected by the user in the wallet | `proposal_id`, `vote`, `tx_hash`, `failure_reason` (`user_rejected` \| `tx_failed`), `error_message` | `src/app/proposals/[id]/components/VotingDetails.tsx` |
 | `voting_power_delegate_failed` | Delegation tx reverted or was rejected by the user in the wallet | `delegatee_address`, `failure_reason` (`user_rejected` \| `tx_failed`), `error_message`, `tx_hash` | `src/app/delegate/sections/DelegateContentSection/ConnectedSection.tsx` |
 | `voting_power_reclaim_failed` | Reclaim tx reverted or was rejected by the user in the wallet | `previous_delegatee_address`, `failure_reason`, `error_message`, `tx_hash` | `src/app/delegate/sections/DelegateContentSection/ConnectedSection.tsx` |
@@ -60,7 +59,7 @@ Successful claims are tracked on-chain by a separate tool. PostHog only keeps th
 
 | Event | When it fires | Properties | Captured in |
 |---|---|---|---|
-| `rewards_claim_failed` | Claim transaction reverted, errored, or was rejected by the user in the wallet | `recipient_type` (`backer` \| `builder`), `reward_type` (`all` \| `rif` \| `rbtc` \| `usdrif`), `failure_reason` (`user_rejected` \| `tx_failed`), `error_message` | `src/app/collective-rewards/components/ClaimRewardModal/ClaimRewardsModal.tsx` |
+| `rewards_claim_failed` | Claim transaction reverted, errored, or was rejected by the user in the wallet | `recipient_type` (`backer` \| `builder`), `reward_type` (`all` \| `rif` \| `rbtc` \| `usdrif`), `failure_reason` (`user_rejected` \| `tx_failed`), `error_message`, `tx_hash` (when a tx was broadcast) | `src/app/collective-rewards/components/ClaimRewardModal/ClaimRewardsModal.tsx` |
 
 **Diagnosing failures:** filter by `failure_reason = tx_failed` to isolate real technical failures (excluding wallet rejections). Breakdown by `recipient_type` to compare backer vs builder failure patterns.
 
@@ -88,27 +87,29 @@ All carry `environment` and `wallet_address` (when a wallet is connected).
 
 1. **Decide the event name.** Use `snake_case`, past tense for completed actions (`stake_rif_confirmed`), present participle / past tense for failures (`stake_rif_failed`). Group by feature prefix (`proposal_*`, `backing_*`).
 2. **Pick the right call site.** For transactions, capture inside `executeTxFlow`'s `onSuccess` (confirmed) and `onError` (failed) — this guarantees the event reflects real on-chain outcome, not just an intent.
-3. **Include domain-specific properties.** For value-moving events, always include: `amount` (string, raw), `amount_decimal` (number), `token` (symbol), and where possible `usd_value` — this is what enables volume reporting.
+3. **Include domain-specific properties.** We currently only track failures, so the common shape is `failure_reason`, `error_message`, and `tx_hash` (when a tx was broadcast). Add whatever domain context is readily available at the call site — e.g. `token` and `amount_decimal` for staking, `proposal_id` / `vote` for voting, `recipient_type` / `reward_type` for rewards. We do **not** compute `usd_value` on failure events.
 4. **Do not re-add identity properties.** `environment` and `wallet_address` come from super properties automatically.
-5. **For server-side captures**, use `getPostHogClient()` from `src/lib/posthog-server.ts`. It already injects `environment` into every captured event. Make sure to call `posthog.shutdown()` (or rely on `flushAt: 1`) before the response returns, otherwise the event may not flush.
+5. **For server-side captures**, use `getPostHogClient()` from `src/lib/posthog-server.ts`. It already injects `environment` into every captured event. The client is a long-lived singleton with `flushAt: 1`, so `capture()` sends in the background immediately — do **not** call `posthog.shutdown()` per request (it tears down shared state and races across concurrent requests). A single `shutdown()` on `SIGTERM`/`SIGINT` drains the queue on container shutdown (`src/instrumentation.ts`).
 6. **Update this document** — add a row to the relevant section above. The PR is not complete without it.
 
 ### Minimum capture template
 
+Failure event captured from `executeTxFlow`'s `onError` (or a wagmi error effect):
+
 ```ts
-posthog.capture('feature_action_outcome', {
-  // For transactions:
-  amount,
-  amount_decimal: Number(amount) || 0,
+import { txFailureProps } from '@/components/ErrorPage/commonErrors'
+
+posthog.capture('feature_action_failed', {
+  // Domain context (best-effort, whatever is available at the call site):
   token: tokenSymbol,
-  token_price_usd: Number(price) || 0,
-  usd_value: Number(Big(amount || 0).mul(price || 0).toString()) || 0,
-  // For failures, also add:
-  failure_reason: err.name === 'Rejected TX' ? 'user_rejected' : 'tx_failed',
-  error_message: err.message,
-  tx_hash: txHash,
+  amount_decimal: Number(amount) || 0,
+  // Shared failure props: failure_reason ('user_rejected' | 'tx_failed') + truncated error_message:
+  ...txFailureProps(error),
+  tx_hash: txHash, // omit when no tx was broadcast (e.g. wallet rejection)
 })
 ```
+
+> Always use `txFailureProps(error)` for the failure classification + message. It works for both the synthetic error from `executeTxFlow` and raw wagmi errors, and keeps `error_message` truncated (full detail/stacktrace lives in Sentry).
 
 ### Setup files (engineering reference)
 

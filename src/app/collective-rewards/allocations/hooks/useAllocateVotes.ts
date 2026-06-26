@@ -3,7 +3,7 @@ import { useContext, useEffect } from 'react'
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 
 import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
-import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
+import { txFailureProps } from '@/components/ErrorPage/commonErrors'
 import { BackersManagerAbi } from '@/lib/abis/tok/BackersManagerAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
 
@@ -42,8 +42,7 @@ export const useAllocateVotes = () => {
     if (!error) return
     posthog.capture('backing_allocations_failed', {
       token: 'stRIF',
-      failure_reason: isUserRejectedTxError(error) ? 'user_rejected' : 'tx_failed',
-      error_message: error.message,
+      ...txFailureProps(error),
       tx_hash: hash,
     })
   }, [error, hash])

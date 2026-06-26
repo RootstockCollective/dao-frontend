@@ -8,6 +8,7 @@ import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBa
 import { StakingToken } from '@/app/user/Stake/types'
 import { Button } from '@/components/Button'
 import { Divider } from '@/components/Divider'
+import { txFailureProps } from '@/components/ErrorPage/commonErrors'
 import { Modal } from '@/components/Modal'
 import { Header } from '@/components/Typography'
 import Big from '@/lib/big'
@@ -108,8 +109,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
         posthog.capture('unstake_rif_failed', {
           amount_decimal: Number(amount) || 0,
           token: stRifToken.symbol,
-          failure_reason: err.name === 'Rejected TX' ? 'user_rejected' : 'tx_failed',
-          error_message: err.message,
+          ...txFailureProps(err),
           tx_hash: txHash,
         })
       },

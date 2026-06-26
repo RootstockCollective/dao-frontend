@@ -50,7 +50,6 @@ export async function POST(request: NextRequest) {
           ...(clientDistinctId ? { $anon_distinct_id: clientDistinctId } : {}),
         },
       })
-      await posthog.shutdown()
     }
 
     // Return token in response body and as HTTP-only cookie
