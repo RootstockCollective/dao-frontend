@@ -5,8 +5,10 @@ import { useAccount } from 'wagmi'
 import { useBackerRewardsContext } from '@/app/collective-rewards/rewards/backers'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { getFiatAmount } from '@/app/shared/formatter'
+import { SecurityNoticeModalContent } from '@/components/SecurityNoticeModal'
 import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context'
+import { useFeatureFlags } from '@/shared/context/FeatureFlag'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 
@@ -200,6 +202,15 @@ interface ClaimRewardsModalProps {
 }
 
 export default function ClaimRewardsModal({ onClose, isBacker }: ClaimRewardsModalProps) {
+  const { flags } = useFeatureFlags()
+
+  // Security incident gate: while the notice flag is on, rewards distribution is
+  // paused, so surface the security notice instead of the claim flow. Turn the
+  // `security_notice` flag off to restore claiming.
+  if (flags.security_notice) {
+    return <SecurityNoticeModalContent onClose={onClose} />
+  }
+
   if (isBacker) {
     return <ClaimBackerRewardsModal onClose={onClose} />
   }
