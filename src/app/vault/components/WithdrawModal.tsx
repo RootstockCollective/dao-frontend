@@ -93,7 +93,7 @@ export const WithdrawModal = ({ onCloseModal, onTransactionSuccess }: Props) => 
       },
       action: 'vaultWithdraw',
     })
-  }, [onRequestWithdraw, onCloseModal, onTransactionSuccess, amount, slippagePercentage])
+  }, [onRequestWithdraw, onCloseModal, onTransactionSuccess])
 
   useEffect(() => {
     inputRef.current?.focus()
