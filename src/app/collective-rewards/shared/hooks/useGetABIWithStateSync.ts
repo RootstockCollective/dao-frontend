@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import Big from 'big.js'
 
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
@@ -30,6 +30,7 @@ export const useGetMetricsAbiWithStateSync = () => {
     },
     queryKey: ['abiData'],
     refetchInterval: AVERAGE_BLOCKTIME,
+    placeholderData: keepPreviousData,
     enabled: !healthCheckIsLoading && isStateSyncHealthy,
   })
 
@@ -38,9 +39,10 @@ export const useGetMetricsAbiWithStateSync = () => {
   const unhealthyStateSyncError =
     (!healthCheckIsLoading && !isStateSyncHealthy && new Error('Unhealthy state sync')) || null
 
+  const hasData = !!abiData
   return {
-    data: isStateSyncHealthy ? data : Big(0),
+    data: hasData ? data : Big(0),
     isLoading: healthCheckIsLoading || abiDataIsLoading,
-    error: healthCheckError || abiDataError || unhealthyStateSyncError,
+    error: hasData ? null : healthCheckError || abiDataError || unhealthyStateSyncError,
   }
 }
