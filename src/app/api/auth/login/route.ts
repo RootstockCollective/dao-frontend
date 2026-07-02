@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
           event: 'user_signed_in',
           properties: { wallet_address: distinctId },
         })
+        await posthog.flush()
       } catch (analyticsError) {
         logger.error({ err: analyticsError, route: '/api/auth/login' }, 'PostHog tracking failed')
       }

@@ -9,7 +9,7 @@ import { useDelegateContext } from '@/app/delegate/contexts/DelegateContext'
 import { DelegatesContainer } from '@/app/delegate/sections/DelegateContentSection/DelegatesContainer'
 import { DelegationDetailsSection } from '@/app/delegate/sections/DelegateContentSection/DelegationDetailsSection'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
-import { txFailureProps } from '@/components/ErrorPage/commonErrors'
+import { isUserRejectedTxError, txFailureProps } from '@/components/ErrorPage/commonErrors'
 import { cn, formatNumberWithCommas } from '@/lib/utils'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 import { executeTxFlow } from '@/shared/notification/executeTxFlow'
@@ -54,6 +54,7 @@ export const ConnectedSection = () => {
           onHideDelegates()
         },
         onError: (txHash, err) => {
+          if (isUserRejectedTxError(err)) return
           posthog.capture('voting_power_delegate_failed', {
             delegatee_address: address.toLowerCase(),
             ...txFailureProps(err),
@@ -81,6 +82,7 @@ export const ConnectedSection = () => {
       },
       onSuccess: refetch,
       onError: (txHash, err) => {
+        if (isUserRejectedTxError(err)) return
         posthog.capture('voting_power_reclaim_failed', {
           previous_delegatee_address: displayedDelegatee?.address?.toLowerCase(),
           ...txFailureProps(err),
