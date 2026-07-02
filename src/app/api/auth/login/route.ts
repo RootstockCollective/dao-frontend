@@ -35,21 +35,24 @@ export async function POST(request: NextRequest) {
     // - cryptographic signature verification via SIWE
     const { token } = await verifySignature(challengeId, signature)
 
-    // Track sign-in server-side using the wallet address as distinct ID
+    // Track sign-in server-side using the wallet address as distinct ID.
+    // Analytics is non-essential: a PostHog failure must never fail an otherwise
+    // successful login, so it's isolated from the route's error handling.
     const payload = await verifyJWT(token)
     if (payload?.userAddress) {
-      const posthog = getPostHogClient()
-      const distinctId = payload.userAddress
-      const clientDistinctId = request.headers.get('X-POSTHOG-DISTINCT-ID')
-      posthog.identify({ distinctId, properties: { wallet_address: distinctId } })
-      posthog.capture({
-        distinctId,
-        event: 'user_signed_in',
-        properties: {
-          wallet_address: distinctId,
-          ...(clientDistinctId ? { $anon_distinct_id: clientDistinctId } : {}),
-        },
-      })
+      try {
+        const posthog = getPostHogClient()
+        const distinctId = payload.userAddress
+        posthog.identify({ distinctId, properties: { wallet_address: distinctId } })
+        posthog.capture({
+          distinctId,
+          event: 'user_signed_in',
+          properties: { wallet_address: distinctId },
+        })
+        await posthog.flush()
+      } catch (analyticsError) {
+        logger.error({ err: analyticsError, route: '/api/auth/login' }, 'PostHog tracking failed')
+      }
     }
 
     // Return token in response body and as HTTP-only cookie

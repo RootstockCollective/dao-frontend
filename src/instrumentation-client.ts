@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/nextjs'
 import posthog from 'posthog-js'
 
+import { POSTHOG_ENVIRONMENT } from '@/lib/posthog-environment'
 import { initSentryIfEnabled } from '@/lib/sentry/sentry-client'
 import { getEnvFlag } from '@/shared/context/FeatureFlag/flags.utils'
 
@@ -25,6 +26,6 @@ posthog.init(process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN!, {
   capture_exceptions: true,
   debug: process.env.NEXT_PUBLIC_PROFILE === 'dev',
   loaded: ph => {
-    ph.register({ environment: process.env.NEXT_PUBLIC_PROFILE || 'unknown' })
+    ph.register({ environment: POSTHOG_ENVIRONMENT })
   },
 })

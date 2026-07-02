@@ -9,7 +9,7 @@ import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { useProposalQuorumAtSnapshot } from '@/app/proposals/hooks/useProposalQuorumAtSnapshot'
 import { useGetVoteForSpecificProposal } from '@/app/proposals/hooks/useVoteCast'
 import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
-import { txFailureProps } from '@/components/ErrorPage/commonErrors'
+import { isUserRejectedTxError, txFailureProps } from '@/components/ErrorPage/commonErrors'
 import { Modal } from '@/components/Modal'
 import { NewPopover } from '@/components/NewPopover'
 import { Span } from '@/components/Typography'
@@ -97,6 +97,7 @@ export const VotingDetails = ({
         },
         onError: (failedHash, err) => {
           setVote(undefined)
+          if (isUserRejectedTxError(err)) return
           posthog.capture('proposal_vote_cast_failed', {
             proposal_id: proposalId,
             vote: _vote,
