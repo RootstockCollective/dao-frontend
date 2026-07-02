@@ -3,6 +3,8 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 
+import { POSTHOG_ENVIRONMENT } from '@/lib/posthog-environment'
+
 import { extractUserAddressFromToken, isTokenExpired } from './jwt'
 
 interface SiweState {
@@ -97,6 +99,7 @@ export const useSiweStore = create<SiweState>()(
        */
       signOut: () => {
         posthog.reset()
+        posthog.register({ environment: POSTHOG_ENVIRONMENT })
         set(state => {
           state.jwtToken = null
           state.error = null

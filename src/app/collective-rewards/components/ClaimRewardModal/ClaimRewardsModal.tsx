@@ -34,7 +34,7 @@ const ClaimBackerRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isBa
     isLoadingReceipt,
     isPendingTx,
     isSuccess,
-    error: claimError,
+    txError: claimTxError,
     hash: claimHash,
   } = useClaimBackerRewards(getRewardTokenAddress(selectedRewardType))
 
@@ -75,7 +75,7 @@ const ClaimBackerRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isBa
   }, [backerRewards, prices])
 
   useRewardsClaimFailedCapture('backer', {
-    error: claimError,
+    error: claimTxError,
     rewardType: selectedRewardType,
     hash: claimHash,
   })
@@ -176,6 +176,7 @@ const ClaimBuilderRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isB
     isPendingTx,
     isSuccess,
     error: errorClaim,
+    txError: claimTxError,
     hash: claimHash,
   } = useClaimBuilderRewards(builderAddress as Address, buildersGauge as Address)
 
@@ -193,7 +194,7 @@ const ClaimBuilderRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isB
   }, [isSuccess, onClose])
 
   useRewardsClaimFailedCapture('builder', {
-    error: errorClaim,
+    error: claimTxError,
     rewardType: selectedRewardType,
     hash: claimHash,
   })

@@ -19,7 +19,11 @@ export const useClaimBackerRewards = (rewardToken?: Address) => {
   const isClaimable = !backerRewardsLoading && gaugesWithEarns(rewardToken).length > 0
   const gauges = gaugesWithEarns(rewardToken)
 
-  const error = executionError || receiptError || backerRewardsError
+  // `error` includes the read-side `backerRewardsError` for the UI toast below.
+  // `txError` is transaction-only, for consumers that must not treat a data-loading
+  // failure as a claim failure (e.g. the `rewards_claim_failed` analytics capture).
+  const txError = executionError || receiptError
+  const error = txError || backerRewardsError
 
   const claimBackerReward = () => {
     return writeContractAsync({
@@ -45,6 +49,7 @@ export const useClaimBackerRewards = (rewardToken?: Address) => {
     isClaimable,
     claimRewards: () => isClaimable && claimBackerReward(),
     error,
+    txError,
     hash,
     isPendingTx: isPending,
     isLoadingReceipt: isLoading,

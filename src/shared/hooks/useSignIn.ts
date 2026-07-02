@@ -73,7 +73,6 @@ export function useSignIn(): UseSignInReturn {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-POSTHOG-DISTINCT-ID': posthog.get_distinct_id(),
         },
         body: JSON.stringify({ challengeId, signature }),
       })
