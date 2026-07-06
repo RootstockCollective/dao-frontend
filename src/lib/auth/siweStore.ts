@@ -96,6 +96,12 @@ export const useSiweStore = create<SiweState>()(
       /**
        * Signs out the user by clearing all authentication state
        * Note: Zustand persist middleware handles localStorage cleanup automatically
+       *
+       * The JWT is also mirrored in an HTTP-only `auth-token` cookie set by
+       * /api/auth/login. That cookie cannot be cleared from client JS, so we
+       * call /api/auth/logout to have the server expire it — otherwise a stale
+       * credential lingers after disconnect and keeps authenticating requests
+       * (e.g. likes) via the cookie fallback.
        */
       signOut: () => {
         posthog.reset()
@@ -105,6 +111,9 @@ export const useSiweStore = create<SiweState>()(
           state.error = null
           state.isLoading = false
         })
+        // Fire-and-forget: clearing the store is the source of truth for the UI,
+        // so a logout network failure must not block sign-out.
+        void fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
       },
     })),
     {
