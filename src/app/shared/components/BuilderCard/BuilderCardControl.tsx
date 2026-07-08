@@ -53,7 +53,7 @@ const AllocationDrawerContent = () => {
           {isAllocationTxPending ? (
             <TransactionInProgressButton />
           ) : (
-            <Button variant="primary" onClick={saveAllocations} className="whitespace-nowrap w-full">
+            <Button variant="primary" onClick={() => saveAllocations()} className="whitespace-nowrap w-full">
               Save new backing amounts
             </Button>
           )}

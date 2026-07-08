@@ -14,6 +14,7 @@ import { useClaimBackerRewards } from '../../rewards/backers/hooks/useClaimBacke
 import { useClaimBuilderRewards } from '../../rewards/builders/hooks/useClaimBuilderRewards'
 import { ClaimRewardsModalView } from './ClaimRewardsModalView'
 import { ClaimRewardType } from './types'
+import { useRewardsClaimFailedCapture } from './useRewardsClaimFailedCapture'
 
 const getRewardTokenAddress = (value: ClaimRewardType) => {
   switch (value) {
@@ -27,9 +28,15 @@ const getRewardTokenAddress = (value: ClaimRewardType) => {
 const ClaimBackerRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isBacker'>) => {
   const [selectedRewardType, setSelectedRewardType] = useState<ClaimRewardType>('all')
 
-  const { claimRewards, isClaimable, isLoadingReceipt, isPendingTx, isSuccess } = useClaimBackerRewards(
-    getRewardTokenAddress(selectedRewardType),
-  )
+  const {
+    claimRewards,
+    isClaimable,
+    isLoadingReceipt,
+    isPendingTx,
+    isSuccess,
+    txError: claimTxError,
+    hash: claimHash,
+  } = useClaimBackerRewards(getRewardTokenAddress(selectedRewardType))
 
   const { data: backerRewards, isLoading, error } = useBackerRewardsContext()
   useHandleErrors({ error, title: 'Error loading rewards' })
@@ -66,6 +73,12 @@ const ClaimBackerRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isBa
       totalFiatAmount,
     }
   }, [backerRewards, prices])
+
+  useRewardsClaimFailedCapture('backer', {
+    error: claimTxError,
+    rewardType: selectedRewardType,
+    hash: claimHash,
+  })
 
   return (
     <ClaimRewardsModalView
@@ -163,6 +176,8 @@ const ClaimBuilderRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isB
     isPendingTx,
     isSuccess,
     error: errorClaim,
+    txError: claimTxError,
+    hash: claimHash,
   } = useClaimBuilderRewards(builderAddress as Address, buildersGauge as Address)
 
   useHandleErrors({ error: errorGauge, title: 'Error fetching builder gauge' })
@@ -177,6 +192,12 @@ const ClaimBuilderRewardsModal = ({ onClose }: Omit<ClaimRewardsModalProps, 'isB
       onClose()
     }
   }, [isSuccess, onClose])
+
+  useRewardsClaimFailedCapture('builder', {
+    error: claimTxError,
+    rewardType: selectedRewardType,
+    hash: claimHash,
+  })
 
   return (
     <ClaimRewardsModalView

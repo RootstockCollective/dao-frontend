@@ -1,5 +1,7 @@
 import * as Sentry from '@sentry/nextjs'
+import posthog from 'posthog-js'
 
+import { POSTHOG_ENVIRONMENT } from '@/lib/posthog-environment'
 import { initSentryIfEnabled } from '@/lib/sentry/sentry-client'
 import { getEnvFlag } from '@/shared/context/FeatureFlag/flags.utils'
 
@@ -16,3 +18,14 @@ initSentryIfEnabled({
 })
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart
+
+posthog.init(process.env.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN!, {
+  api_host: '/ingest',
+  ui_host: 'https://us.posthog.com',
+  defaults: '2026-01-30',
+  capture_exceptions: true,
+  debug: process.env.NEXT_PUBLIC_PROFILE === 'dev',
+  loaded: ph => {
+    ph.register({ environment: POSTHOG_ENVIRONMENT })
+  },
+})

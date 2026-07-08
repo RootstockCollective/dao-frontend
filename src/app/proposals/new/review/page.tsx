@@ -1,6 +1,7 @@
 'use client'
 
 import moment from 'moment'
+import posthog from 'posthog-js'
 import { useCallback, useState } from 'react'
 import type { Address } from 'viem'
 import { useAccount } from 'wagmi'
@@ -131,6 +132,10 @@ export default function ProposalReview() {
       waitForTxInBg(txHash as `0x${string}`, proposalName, record.category, onComplete)
     } catch (error) {
       if (isUserRejectedTxError(error)) return setLoading(false)
+      posthog.captureException(error instanceof Error ? error : new Error('Proposal submission error'), {
+        category: record?.category,
+        proposal_name: record?.form?.proposalName,
+      })
       showToast({
         title: 'Proposal error',
         severity: 'error',

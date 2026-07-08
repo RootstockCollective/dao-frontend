@@ -1,4 +1,5 @@
 import { waitForTransactionReceipt } from '@wagmi/core'
+import posthog from 'posthog-js'
 import { type MouseEvent, useCallback, useRef, useState } from 'react'
 import { zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
@@ -8,6 +9,7 @@ import { useGetProposalVotes } from '@/app/proposals/hooks/useGetProposalVotes'
 import { useProposalQuorumAtSnapshot } from '@/app/proposals/hooks/useProposalQuorumAtSnapshot'
 import { useGetVoteForSpecificProposal } from '@/app/proposals/hooks/useVoteCast'
 import { useVotingPowerAtSnapshot } from '@/app/proposals/hooks/useVotingPowerAtSnapshot'
+import { isUserRejectedTxError, txFailureProps } from '@/components/ErrorPage/commonErrors'
 import { Modal } from '@/components/Modal'
 import { NewPopover } from '@/components/NewPopover'
 import { Span } from '@/components/Typography'
@@ -93,8 +95,15 @@ export const VotingDetails = ({
         onSuccess: () => {
           setVote(_vote)
         },
-        onError: () => {
+        onError: (failedHash, err) => {
           setVote(undefined)
+          if (isUserRejectedTxError(err)) return
+          posthog.capture('proposal_vote_cast_failed', {
+            proposal_id: proposalId,
+            vote: _vote,
+            tx_hash: failedHash,
+            ...txFailureProps(err),
+          })
         },
         onPending: () => setVotingTxIsPending(true),
         onComplete: () => setVotingTxIsPending(false),

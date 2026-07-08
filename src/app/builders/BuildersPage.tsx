@@ -24,7 +24,9 @@ export const BuildersPage = () => {
           <Metrics />
         </MetricsContainer>
         <BecomeBuilderBanner />
-        <BuildersTableContainer />
+        <div id="builders-table" className="w-full scroll-mt-6">
+          <BuildersTableContainer />
+        </div>
       </div>
     </div>
   )

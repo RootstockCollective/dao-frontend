@@ -1,6 +1,6 @@
 {
   "name": "dao-frontend",
-  "version": "1.20.3",
+  "version": "1.21.0",
   "scripts": {
     "prepare": "husky",
     "dev": "NODE_OPTIONS='--enable-source-maps' next dev | pino-pretty",
@@ -76,6 +76,8 @@
     "next-navigation-guard": "^0.2.0",
     "pg": "^8.16.3",
     "pino": "10.3.1",
+    "posthog-js": "1.374.2",
+    "posthog-node": "5.34.6",
     "prisma": "6.19.3",
     "react": "19.2.4",
     "react-dom": "19.2.4",

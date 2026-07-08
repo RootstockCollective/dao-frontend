@@ -1,3 +1,4 @@
+import posthog from 'posthog-js'
 import { useAccount, useSignMessage } from 'wagmi'
 
 import type { RequestChallengeResult, VerifySignatureResult } from '@/lib/auth/actions'
@@ -70,7 +71,9 @@ export function useSignIn(): UseSignInReturn {
       // Verify signature with server and get JWT token
       const loginRes = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ challengeId, signature }),
       })
 
@@ -80,6 +83,12 @@ export function useSignIn(): UseSignInReturn {
       }
 
       const { token: jwtToken }: VerifySignatureResult = await loginRes.json()
+
+      // Mark the user as verified in PostHog. The wallet is already the distinct ID
+      // (identified on connect in PostHogWalletSync), so we only set the verification
+      // properties here instead of re-identifying.
+      posthog.setPersonProperties({ is_verified: true }, { first_verified_at: new Date().toISOString() })
+      posthog.register({ auth_status: 'verified' })
 
       // Store jwtToken in Zustand store (which also updates localStorage)
       setToken(jwtToken)

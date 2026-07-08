@@ -1,7 +1,9 @@
-import { useContext, useEffect } from 'react'
+import posthog from 'posthog-js'
+import { useContext, useEffect, useRef } from 'react'
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 
 import { useAwaitedTxReporting } from '@/app/collective-rewards/shared/hooks'
+import { isUserRejectedTxError, txFailureProps } from '@/components/ErrorPage/commonErrors'
 import { BackersManagerAbi } from '@/lib/abis/tok/BackersManagerAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
 
@@ -34,6 +36,22 @@ export const useAllocateVotes = () => {
       refetchRawAllocations()
     }
   }, [isSuccess, refetchRawAllocations])
+
+  const lastCapturedErrorRef = useRef<unknown>(null)
+  useEffect(() => {
+    if (!error) {
+      lastCapturedErrorRef.current = null
+      return
+    }
+    if (lastCapturedErrorRef.current === error) return
+    lastCapturedErrorRef.current = error
+    if (isUserRejectedTxError(error)) return
+    posthog.capture('backing_allocations_failed', {
+      token: 'stRIF',
+      ...txFailureProps(error),
+      tx_hash: hash,
+    })
+  }, [error, hash])
 
   const saveAllocations = () => {
     const [gauges, allocs] = getVoteAllocations({
