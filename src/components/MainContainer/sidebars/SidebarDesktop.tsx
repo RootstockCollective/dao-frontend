@@ -14,6 +14,7 @@ import { NavIcon } from '../icons/NavIcon'
 import { useLayoutContext } from '../LayoutProvider'
 import { MenuData } from './menuData'
 import styles from './styles.module.css'
+import { SupportButton } from './SupportButton'
 import { throttleNav } from './throttleNav'
 import { useFilteredMenuData } from './useFilteredMenuData'
 import { UsefulLinks } from './UsefulLinks'
@@ -84,6 +85,7 @@ export const SidebarDesktop = () => {
           className={cn('shrink-0 px-6 py-4', { 'pointer-events-none': !isSidebarOpen })}
         >
           <UsefulLinks />
+          <SupportButton />
         </motion.div>
       </div>
     </motion.aside>

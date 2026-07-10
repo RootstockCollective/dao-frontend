@@ -11,6 +11,7 @@ import { NavIcon } from '../icons/NavIcon'
 import { useLayoutContext } from '../LayoutProvider'
 import { MenuData } from './menuData'
 import styles from './styles.module.css'
+import { SupportButton } from './SupportButton'
 import { throttleNav } from './throttleNav'
 import { useFilteredMenuData } from './useFilteredMenuData'
 import { UsefulLinks } from './UsefulLinks'
@@ -55,6 +56,7 @@ export function SidebarMobile() {
           ))}
         </ul>
         <UsefulLinks className="ml-4 mt-12" />
+        <SupportButton className="ml-4 mt-2" />
       </div>
     </motion.div>
   )
