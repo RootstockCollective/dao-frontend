@@ -34,6 +34,7 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
     "@hookform/resolvers": "^3.10.0",
+    "@marsidev/react-turnstile": "1.5.3",
     "@next/third-parties": "16.2.6",
     "@prisma/client": "6.19.3",
     "@radix-ui/react-accordion": "^1.2.12",
