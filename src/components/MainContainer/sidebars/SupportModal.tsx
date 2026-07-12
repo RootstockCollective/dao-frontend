@@ -2,7 +2,7 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
-import { useCallback, useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -11,6 +11,7 @@ import { TextArea, TextInput } from '@/components/FormFields'
 import { ErrorMessage } from '@/components/FormFields/ErrorMessage'
 import { Modal } from '@/components/Modal'
 import { Header, Paragraph } from '@/components/Typography'
+import { showToast } from '@/shared/notification'
 
 // Cloudflare-published test key that always passes. Safe as a public default;
 // production builds must set NEXT_PUBLIC_TURNSTILE_SITE_KEY to a real siteKey.
@@ -38,6 +39,7 @@ interface SupportModalProps {
 
 export const SupportModal = ({ onClose }: SupportModalProps) => {
   const turnstileRef = useRef<TurnstileInstance | null>(null)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const {
     control,
@@ -55,9 +57,33 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
     turnstileRef.current?.reset()
   }, [setValue])
 
-  const onSubmit = handleSubmit(async _values => {
-    // TODO: wire up backend ticket submission — POST `_values` including turnstileToken.
-    onClose()
+  const onSubmit = handleSubmit(async values => {
+    setSubmitError(null)
+    try {
+      const response = await fetch('/api/support/verify-captcha', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ token: values.turnstileToken }),
+      })
+      const data = (await response.json().catch(() => ({}))) as { success?: boolean }
+
+      if (!response.ok || !data.success) {
+        setSubmitError('Captcha verification failed. Please try again.')
+        resetTurnstile()
+        return
+      }
+
+      showToast({
+        severity: 'success',
+        title: 'Support request sent',
+        content: 'Thanks — we will get back to you shortly.',
+        dataTestId: 'SupportSuccessToast',
+      })
+      onClose()
+    } catch {
+      setSubmitError('Network error. Please try again.')
+      resetTurnstile()
+    }
   })
 
   return (
@@ -100,6 +126,12 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
             )}
           />
         </div>
+
+        {submitError && (
+          <p className="mt-4 text-error text-sm" data-testid="SupportSubmitError">
+            {submitError}
+          </p>
+        )}
 
         <div className="mt-8 flex flex-col-reverse md:flex-row gap-3 md:justify-end">
           <Button
