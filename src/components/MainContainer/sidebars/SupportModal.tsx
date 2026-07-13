@@ -60,15 +60,23 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
   const onSubmit = handleSubmit(async values => {
     setSubmitError(null)
     try {
-      const response = await fetch('/api/support/verify-captcha', {
+      const response = await fetch('/api/support/ticket', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ token: values.turnstileToken }),
+        body: JSON.stringify({
+          token: values.turnstileToken,
+          description: values.description,
+          email: values.email,
+        }),
       })
-      const data = (await response.json().catch(() => ({}))) as { success?: boolean }
+      const data = (await response.json().catch(() => ({}))) as { success?: boolean; error?: string }
 
       if (!response.ok || !data.success) {
-        setSubmitError('Captcha verification failed. Please try again.')
+        const message =
+          data.error === 'delivery_failed'
+            ? 'Could not deliver your request. Please try again in a moment.'
+            : 'Captcha verification failed. Please try again.'
+        setSubmitError(message)
         resetTurnstile()
         return
       }
