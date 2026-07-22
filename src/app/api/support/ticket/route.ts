@@ -7,6 +7,10 @@ const ROUTE = '/api/support/ticket'
 
 const MAX_DESCRIPTION_LENGTH = 1000
 const MIN_DESCRIPTION_LENGTH = 10
+const MAX_EMAIL_LENGTH = 254
+
+// Pragmatic email shape check (mirrors the client-side zod validation)
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 interface SiteVerifyResponse {
   success: boolean
@@ -75,6 +79,9 @@ export async function POST(request: NextRequest) {
   }
   if (description.length < MIN_DESCRIPTION_LENGTH || description.length > MAX_DESCRIPTION_LENGTH) {
     return NextResponse.json({ success: false, error: 'invalid_description' }, { status: 400 })
+  }
+  if (email && (email.length > MAX_EMAIL_LENGTH || !EMAIL_REGEX.test(email))) {
+    return NextResponse.json({ success: false, error: 'invalid_email' }, { status: 400 })
   }
 
   const remoteip = request.headers.get('x-forwarded-for')?.split(',')[0].trim()
