@@ -19,6 +19,14 @@ interface TicketRequestBody {
   email?: unknown
 }
 
+/**
+ * Escapes characters that Slack interprets in `mrkdwn` text so that
+ * user-supplied content can't inject mentions (e.g. `<!channel>`, `<@U…>`)
+ * or break the block layout. See https://api.slack.com/reference/surfaces/formatting#escaping
+ */
+const escapeSlack = (text: string): string =>
+  text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+
 const buildSlackBlocks = (description: string, email: string | undefined, receivedAt: string) => [
   {
     type: 'header',
@@ -27,14 +35,14 @@ const buildSlackBlocks = (description: string, email: string | undefined, receiv
   {
     type: 'section',
     fields: [
-      { type: 'mrkdwn', text: `*From:*\n${email ?? '_anonymous_'}` },
+      { type: 'mrkdwn', text: `*From:*\n${email ? escapeSlack(email) : '_anonymous_'}` },
       { type: 'mrkdwn', text: `*Received:*\n${receivedAt}` },
     ],
   },
   { type: 'divider' },
   {
     type: 'section',
-    text: { type: 'mrkdwn', text: `*Description:*\n${description}` },
+    text: { type: 'mrkdwn', text: `*Description:*\n${escapeSlack(description)}` },
   },
 ]
 
@@ -100,7 +108,7 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        text: `New support ticket from ${email ?? 'anonymous'}`,
+        text: `New support ticket from ${email ? escapeSlack(email) : 'anonymous'}`,
         blocks: buildSlackBlocks(description, email, new Date().toISOString()),
       }),
     })
