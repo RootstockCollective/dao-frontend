@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { z } from 'zod'
 
 import { logger } from '@/lib/logger'
+import { SUPPORT_TOPICS } from '@/shared/constants'
 
 const SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
 const ROUTE = '/api/support/ticket'
@@ -9,19 +11,33 @@ const MAX_DESCRIPTION_LENGTH = 1000
 const MIN_DESCRIPTION_LENGTH = 10
 const MAX_EMAIL_LENGTH = 254
 
-// Pragmatic email shape check (mirrors the client-side zod validation)
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-
 interface SiteVerifyResponse {
   success: boolean
   'error-codes'?: string[]
 }
 
-interface TicketRequestBody {
-  token?: unknown
-  description?: unknown
-  email?: unknown
+// Validates and types the untrusted request body in one step. Empty/omitted
+// email normalizes to `undefined`.
+const ticketSchema = z.object({
+  token: z.string().trim().min(1),
+  topic: z.enum(SUPPORT_TOPICS),
+  description: z.string().trim().min(MIN_DESCRIPTION_LENGTH).max(MAX_DESCRIPTION_LENGTH),
+  email: z
+    .union([z.literal(''), z.string().trim().email().max(MAX_EMAIL_LENGTH)])
+    .optional()
+    .transform(value => value || undefined),
+})
+
+type TicketData = z.infer<typeof ticketSchema>
+
+// Maps the first failing field to the error code the client already understands.
+const FIELD_ERROR_CODES: Record<keyof TicketData, string> = {
+  token: 'missing_token',
+  topic: 'invalid_topic',
+  description: 'invalid_description',
+  email: 'invalid_email',
 }
+const FIELD_PRIORITY: (keyof TicketData)[] = ['token', 'topic', 'description', 'email']
 
 /**
  * Escapes characters that Slack interprets in `mrkdwn` text so that
@@ -31,7 +47,16 @@ interface TicketRequestBody {
 const escapeSlack = (text: string): string =>
   text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
 
-const buildSlackBlocks = (description: string, email: string | undefined, receivedAt: string) => [
+const generateTicketRef = (): string =>
+  `SUP-${crypto.randomUUID().replaceAll('-', '').slice(0, 8).toUpperCase()}`
+
+const buildSlackBlocks = (
+  ticketRef: string,
+  topic: string,
+  description: string,
+  email: string | undefined,
+  receivedAt: string,
+) => [
   {
     type: 'header',
     text: { type: 'plain_text', text: 'New support ticket', emoji: false },
@@ -39,6 +64,8 @@ const buildSlackBlocks = (description: string, email: string | undefined, receiv
   {
     type: 'section',
     fields: [
+      { type: 'mrkdwn', text: `*Ticket:*\n${ticketRef}` },
+      { type: 'mrkdwn', text: `*Topic:*\n${topic}` },
       { type: 'mrkdwn', text: `*From:*\n${email ? escapeSlack(email) : '_anonymous_'}` },
       { type: 'mrkdwn', text: `*Received:*\n${receivedAt}` },
     ],
@@ -62,27 +89,23 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'server_misconfigured' }, { status: 500 })
   }
 
-  let body: TicketRequestBody
+  let rawBody: unknown
   try {
-    body = (await request.json()) as TicketRequestBody
+    rawBody = await request.json()
   } catch {
     return NextResponse.json({ success: false, error: 'invalid_body' }, { status: 400 })
   }
 
-  const token = typeof body.token === 'string' ? body.token.trim() : ''
-  const description = typeof body.description === 'string' ? body.description.trim() : ''
-  const emailRaw = typeof body.email === 'string' ? body.email.trim() : ''
-  const email = emailRaw.length > 0 ? emailRaw : undefined
+  const parsed = ticketSchema.safeParse(rawBody)
+  if (!parsed.success) {
+    const failedField = FIELD_PRIORITY.find(field =>
+      parsed.error.issues.some(issue => issue.path[0] === field),
+    )
+    const error = failedField ? FIELD_ERROR_CODES[failedField] : 'invalid_body'
+    return NextResponse.json({ success: false, error }, { status: 400 })
+  }
 
-  if (!token) {
-    return NextResponse.json({ success: false, error: 'missing_token' }, { status: 400 })
-  }
-  if (description.length < MIN_DESCRIPTION_LENGTH || description.length > MAX_DESCRIPTION_LENGTH) {
-    return NextResponse.json({ success: false, error: 'invalid_description' }, { status: 400 })
-  }
-  if (email && (email.length > MAX_EMAIL_LENGTH || !EMAIL_REGEX.test(email))) {
-    return NextResponse.json({ success: false, error: 'invalid_email' }, { status: 400 })
-  }
+  const { token, topic, description, email } = parsed.data
 
   const remoteip = request.headers.get('x-forwarded-for')?.split(',')[0].trim()
 
@@ -110,13 +133,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'verification_failed' }, { status: 502 })
   }
 
+  const ticketRef = generateTicketRef()
+
   try {
     const slackResponse = await fetch(webhookUrl, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        text: `New support ticket from ${email ? escapeSlack(email) : 'anonymous'}`,
-        blocks: buildSlackBlocks(description, email, new Date().toISOString()),
+        text: `New support ticket ${ticketRef} (${topic}) from ${email ? escapeSlack(email) : 'anonymous'}`,
+        blocks: buildSlackBlocks(ticketRef, topic, description, email, new Date().toISOString()),
       }),
     })
 
@@ -133,5 +158,5 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'delivery_failed' }, { status: 502 })
   }
 
-  return NextResponse.json({ success: true })
+  return NextResponse.json({ success: true, ticket: ticketRef })
 }

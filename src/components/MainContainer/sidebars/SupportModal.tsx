@@ -7,10 +7,11 @@ import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { Button } from '@/components/Button'
-import { TextArea, TextInput } from '@/components/FormFields'
+import { SelectField, TextArea, TextInput } from '@/components/FormFields'
 import { ErrorMessage } from '@/components/FormFields/ErrorMessage'
 import { Modal } from '@/components/Modal'
-import { Header, Paragraph } from '@/components/Typography'
+import { Header, Paragraph, Span } from '@/components/Typography'
+import { SUPPORT_TOPICS } from '@/shared/constants'
 import { showToast } from '@/shared/notification'
 
 // Cloudflare-published test key that always passes. Safe as a public default;
@@ -22,6 +23,7 @@ const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || TURNSTI
 const emptyString = z.literal('').transform(() => {})
 
 const supportSchema = z.object({
+  topic: z.enum(SUPPORT_TOPICS, { message: 'Please select a topic' }),
   description: z
     .string()
     .trim()
@@ -44,6 +46,8 @@ const resolveSubmitError = (status: number, errorCode?: string): string => {
       return 'Please enter a valid email.'
     case 'invalid_description':
       return 'Please provide a description between 10 and 1000 characters.'
+    case 'invalid_topic':
+      return 'Please select a valid topic.'
     case 'server_misconfigured':
     case 'verification_failed':
       return 'Something went wrong on our side. Please try again later.'
@@ -84,11 +88,16 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           token: values.turnstileToken,
+          topic: values.topic,
           description: values.description,
           email: values.email,
         }),
       })
-      const data = (await response.json().catch(() => ({}))) as { success?: boolean; error?: string }
+      const data = (await response.json().catch(() => ({}))) as {
+        success?: boolean
+        error?: string
+        ticket?: string
+      }
 
       if (!response.ok || !data.success) {
         setSubmitError(resolveSubmitError(response.status, data.error))
@@ -99,7 +108,9 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
       showToast({
         severity: 'success',
         title: 'Support request sent',
-        content: 'Thanks — we will get back to you shortly.',
+        content: data.ticket
+          ? `Thanks — we will get back to you shortly. Your reference is ${data.ticket}.`
+          : 'Thanks — we will get back to you shortly.',
         dataTestId: 'SupportSuccessToast',
       })
       onClose()
@@ -120,6 +131,18 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
         </Paragraph>
 
         <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <Span variant="tag" className="text-text-60">
+              What do you need help with?
+            </Span>
+            <SelectField
+              name="topic"
+              control={control}
+              options={[...SUPPORT_TOPICS]}
+              placeholder="Select a topic"
+              data-testid="SupportTopic"
+            />
+          </div>
           <TextInput name="email" control={control} label="Email (optional)" data-testid="SupportEmail" />
           <TextArea
             name="description"

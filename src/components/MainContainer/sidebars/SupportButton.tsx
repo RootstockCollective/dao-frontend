@@ -1,8 +1,8 @@
 'use client'
 
+import { Headset } from 'lucide-react'
 import { HTMLAttributes } from 'react'
 
-import { KotoQuestionMarkIcon } from '@/components/Icons'
 import { Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 import { useModal } from '@/shared/hooks/useModal'
@@ -24,7 +24,7 @@ export const SupportButton = ({ className, labelClassName, ...props }: SupportBu
         className="flex w-full items-center gap-2 py-3 cursor-pointer text-warm-gray hover:text-text-100"
         data-testid="SidebarSupportButton"
       >
-        <KotoQuestionMarkIcon size={16} />
+        <Headset size={16} />
         <Span variant="tag" className={cn('text-warm-gray', labelClassName)}>
           Support
         </Span>
