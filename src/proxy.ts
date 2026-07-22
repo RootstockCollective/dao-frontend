@@ -12,6 +12,7 @@ const RATE_LIMIT_CONFIGS: Record<string, RouteRateLimitConfig> = {
   '/api/auth/challenge': { prefix: 'auth_challenge', limit: 5, windowMs: 60_000 },
   '/api/auth/login': { prefix: 'auth_login', limit: 5, windowMs: 60_000 },
   '/api/auth/verify': { prefix: 'auth_verify', limit: 20, windowMs: 60_000 },
+  '/api/support/ticket': { prefix: 'support_ticket', limit: 5, windowMs: 600_000 },
 }
 
 // Falls back to 127.0.0.1 when no proxy headers are present (local dev, tests).
@@ -62,5 +63,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/api/auth/:path*'],
+  matcher: ['/api/auth/:path*', '/api/support/:path*'],
 }
