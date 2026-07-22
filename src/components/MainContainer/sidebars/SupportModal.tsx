@@ -33,6 +33,25 @@ const supportSchema = z.object({
 
 type SupportFormValues = z.infer<typeof supportSchema>
 
+const resolveSubmitError = (status: number, errorCode?: string): string => {
+  if (status === 429) {
+    return 'Too many requests. Please wait a moment and try again.'
+  }
+  switch (errorCode) {
+    case 'delivery_failed':
+      return 'Could not deliver your request. Please try again in a moment.'
+    case 'invalid_email':
+      return 'Please enter a valid email.'
+    case 'invalid_description':
+      return 'Please provide a description between 10 and 1000 characters.'
+    case 'server_misconfigured':
+    case 'verification_failed':
+      return 'Something went wrong on our side. Please try again later.'
+    default:
+      return 'Captcha verification failed. Please try again.'
+  }
+}
+
 interface SupportModalProps {
   onClose: () => void
 }
@@ -72,11 +91,7 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
       const data = (await response.json().catch(() => ({}))) as { success?: boolean; error?: string }
 
       if (!response.ok || !data.success) {
-        const message =
-          data.error === 'delivery_failed'
-            ? 'Could not deliver your request. Please try again in a moment.'
-            : 'Captcha verification failed. Please try again.'
-        setSubmitError(message)
+        setSubmitError(resolveSubmitError(response.status, data.error))
         resetTurnstile()
         return
       }
