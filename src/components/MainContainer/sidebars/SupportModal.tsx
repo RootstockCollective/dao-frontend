@@ -140,8 +140,14 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
                     ref={turnstileRef}
                     siteKey={TURNSTILE_SITE_KEY}
                     onSuccess={token => field.onChange(token)}
-                    onExpire={() => field.onChange('')}
-                    onError={() => field.onChange('')}
+                    onExpire={() => {
+                      field.onChange('')
+                      setSubmitError(null)
+                    }}
+                    onError={() => {
+                      field.onChange('')
+                      setSubmitError(null)
+                    }}
                     options={{ theme: 'dark' }}
                   />
                 </div>
