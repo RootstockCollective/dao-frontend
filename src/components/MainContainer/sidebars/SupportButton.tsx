@@ -4,7 +4,6 @@ import { Headset } from 'lucide-react'
 import { HTMLAttributes } from 'react'
 
 import { Span } from '@/components/Typography'
-import { cn } from '@/lib/utils'
 import { useModal } from '@/shared/hooks/useModal'
 
 import { SupportModal } from './SupportModal'
