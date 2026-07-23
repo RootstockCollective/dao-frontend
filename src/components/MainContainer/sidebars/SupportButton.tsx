@@ -25,7 +25,7 @@ export const SupportButton = ({ className, labelClassName, ...props }: SupportBu
         data-testid="SidebarSupportButton"
       >
         <Headset size={16} />
-        <Span variant="tag" className={cn('text-warm-gray', labelClassName)}>
+        <Span variant="tag" className={labelClassName}>
           Support
         </Span>
       </button>
