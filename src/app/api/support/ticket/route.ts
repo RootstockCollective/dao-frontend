@@ -10,6 +10,10 @@ const ROUTE = '/api/support/ticket'
 const MAX_DESCRIPTION_LENGTH = 1000
 const MIN_DESCRIPTION_LENGTH = 10
 const MAX_EMAIL_LENGTH = 254
+// Legit payloads top out around ~3.5 KB (Turnstile token + capped fields).
+// Rejecting anything larger before JSON.parse blocks DoS amplification with
+// oversized bodies that would otherwise consume memory just to be discarded.
+const MAX_BODY_BYTES = 8_192
 
 interface SiteVerifyResponse {
   success: boolean
@@ -40,12 +44,23 @@ const FIELD_ERROR_CODES: Record<keyof TicketData, string> = {
 const FIELD_PRIORITY: (keyof TicketData)[] = ['token', 'topic', 'description', 'email']
 
 /**
+ * Strips Unicode control characters a reader can't see but that change how
+ * text is rendered — RTL overrides (U+202A–202E), directional isolates
+ * (U+2066–2069), zero-width spaces/joiners (U+200B–200D), and BOM (U+FEFF).
+ * These are used to disguise URLs (e.g. `evil.com/‮exe.doc`) or hide payloads
+ * inside otherwise-innocent text.
+ */
+const stripInvisibleControls = (text: string): string =>
+  text.replaceAll(/[\u202A-\u202E\u2066-\u2069\u200B-\u200D\uFEFF]/g, '')
+
+/**
  * Escapes characters that Slack interprets in `mrkdwn` text so that
  * user-supplied content can't inject mentions (e.g. `<!channel>`, `<@U…>`)
- * or break the block layout. See https://api.slack.com/reference/surfaces/formatting#escaping
+ * or break the block layout, and strips invisible control chars.
+ * See https://api.slack.com/reference/surfaces/formatting#escaping
  */
-const escapeSlack = (text: string): string =>
-  text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
+const escapeSlackMrkdwn = (text: string): string =>
+  stripInvisibleControls(text).replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
 
 const generateTicketRef = (): string =>
   `SUP-${crypto.randomUUID().replaceAll('-', '').slice(0, 8).toUpperCase()}`
@@ -62,18 +77,33 @@ const buildSlackBlocks = (
     text: { type: 'plain_text', text: 'New support ticket', emoji: false },
   },
   {
+    type: 'context',
+    elements: [
+      {
+        type: 'mrkdwn',
+        text: ':warning: Content submitted by an unverified user. Verify any link before clicking.',
+      },
+    ],
+  },
+  {
     type: 'section',
     fields: [
       { type: 'mrkdwn', text: `*Ticket:*\n${ticketRef}` },
       { type: 'mrkdwn', text: `*Topic:*\n${topic}` },
-      { type: 'mrkdwn', text: `*From:*\n${email ? escapeSlack(email) : '_anonymous_'}` },
+      { type: 'mrkdwn', text: `*From:*\n${email ? escapeSlackMrkdwn(email) : '_anonymous_'}` },
       { type: 'mrkdwn', text: `*Received:*\n${receivedAt}` },
     ],
   },
   { type: 'divider' },
   {
     type: 'section',
-    text: { type: 'mrkdwn', text: `*Description:*\n${escapeSlack(description)}` },
+    text: { type: 'mrkdwn', text: '*Description:*' },
+  },
+  {
+    type: 'section',
+    // plain_text disables Slack's URL auto-linkification, so a phishing link
+    // in the description is not clickable — the agent must copy it out.
+    text: { type: 'plain_text', text: stripInvisibleControls(description), emoji: false },
   },
 ]
 
@@ -87,6 +117,11 @@ export async function POST(request: NextRequest) {
       'Support endpoint is missing required env vars',
     )
     return NextResponse.json({ success: false, error: 'server_misconfigured' }, { status: 500 })
+  }
+
+  const contentLength = Number(request.headers.get('content-length') ?? 0)
+  if (contentLength > MAX_BODY_BYTES) {
+    return NextResponse.json({ success: false, error: 'body_too_large' }, { status: 413 })
   }
 
   let rawBody: unknown
@@ -107,26 +142,20 @@ export async function POST(request: NextRequest) {
 
   const { token, topic, description, email } = parsed.data
 
-  const remoteip = request.headers.get('x-forwarded-for')?.split(',')[0].trim()
-
   try {
+    // `remoteip` is intentionally omitted — the only header we could source it
+    // from (`x-forwarded-for`) is attacker-controllable and would let a spoofed
+    // value reach Cloudflare. siteverify accepts requests without it.
     const cfResponse = await fetch(SITEVERIFY_URL, {
       method: 'POST',
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        secret,
-        response: token,
-        ...(remoteip ? { remoteip } : {}),
-      }),
+      body: new URLSearchParams({ secret, response: token }),
     })
     const verification = (await cfResponse.json()) as SiteVerifyResponse
 
     if (!verification.success) {
       logger.warn({ route: ROUTE, errorCodes: verification['error-codes'] }, 'Turnstile verification failed')
-      return NextResponse.json(
-        { success: false, errorCodes: verification['error-codes'] ?? [] },
-        { status: 403 },
-      )
+      return NextResponse.json({ success: false, error: 'captcha_failed' }, { status: 403 })
     }
   } catch (err) {
     logger.error({ err, route: ROUTE }, 'Error contacting Cloudflare siteverify')
@@ -140,7 +169,7 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        text: `New support ticket ${ticketRef} (${topic}) from ${email ? escapeSlack(email) : 'anonymous'}`,
+        text: `New support ticket ${ticketRef} (${topic}) from ${email ? escapeSlackMrkdwn(email) : 'anonymous'}`,
         blocks: buildSlackBlocks(ticketRef, topic, description, email, new Date().toISOString()),
       }),
     })
