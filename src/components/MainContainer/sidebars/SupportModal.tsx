@@ -14,11 +14,20 @@ import { Header, Paragraph, Span } from '@/components/Typography'
 import { SUPPORT_TOPICS } from '@/shared/constants'
 import { showToast } from '@/shared/notification'
 
-// Cloudflare-published test key that always passes. Safe as a public default;
-// production builds must set NEXT_PUBLIC_TURNSTILE_SITE_KEY to a real siteKey.
+// Cloudflare-published test key that always passes verification. Never ship it —
+// paired with a matching test secret it would let any client through without a
+// real captcha.
 const TURNSTILE_TEST_SITE_KEY = '1x00000000000000000000AA'
 
-const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || TURNSTILE_TEST_SITE_KEY
+const envSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+
+if (process.env.NODE_ENV === 'production' && !envSiteKey) {
+  throw new Error(
+    'NEXT_PUBLIC_TURNSTILE_SITE_KEY must be set in production. The test siteKey always passes and must never ship.',
+  )
+}
+
+const TURNSTILE_SITE_KEY = envSiteKey || TURNSTILE_TEST_SITE_KEY
 
 const emptyString = z.literal('').transform(() => {})
 
@@ -39,6 +48,9 @@ const resolveSubmitError = (status: number, errorCode?: string): string => {
   if (status === 429) {
     return 'Too many requests. Please wait a moment and try again.'
   }
+  if (status === 413) {
+    return 'Your message is too large. Please shorten it and try again.'
+  }
   switch (errorCode) {
     case 'delivery_failed':
       return 'Could not deliver your request. Please try again in a moment.'
@@ -51,6 +63,7 @@ const resolveSubmitError = (status: number, errorCode?: string): string => {
     case 'server_misconfigured':
     case 'verification_failed':
       return 'Something went wrong on our side. Please try again later.'
+    case 'captcha_failed':
     default:
       return 'Captcha verification failed. Please try again.'
   }
