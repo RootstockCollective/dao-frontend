@@ -47,8 +47,7 @@ export const IntroModal = () => {
     } else if (tokenStatus === null) {
       closeModal()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoaded, tokenStatus])
+  }, [isLoaded, tokenStatus, openModal, closeModal])
 
   // Don't render if no required tokens or loading is not complete
   if (!tokenStatus || !isLoaded || !isModalOpened) {

@@ -158,7 +158,7 @@ export const BackerRewardsTable = () => {
       type: 'SET_DEFAULT_SORT',
       payload: { columnId: 'unclaimed', direction: SORT_DIRECTION_ASC },
     })
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dispatch])
 
   useEffect(() => {
     dispatch({
@@ -175,13 +175,10 @@ export const BackerRewardsTable = () => {
   }, [isLoading, dispatch])
 
   useEffect(() => {
-    if (!error) return
-    if (error) {
-      dispatch({
-        type: 'SET_ERROR',
-        payload: error.message,
-      })
-    }
+    dispatch({
+      type: 'SET_ERROR',
+      payload: error ? error.message : null,
+    })
   }, [error, dispatch])
 
   useEffect(() => {
