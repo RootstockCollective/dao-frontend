@@ -17,23 +17,21 @@ export type UseReadContractConfig<TAbi extends Abi, TFunctionName extends ViewPu
         args: FunctionParams<TAbi, TFunctionName>
       }
 
+/**
+ * Config for calling one function across many addresses. The same `args` are used for every
+ * address; use `UseReadContractForMultipleArgsConfig` when the args vary per call.
+ */
 export type UseReadContractsConfig<TAbi extends Abi, TFunctionName extends ViewPureFunctionName<TAbi>> =
   FunctionParams<TAbi, TFunctionName> extends never | readonly []
     ? {
         functionName: TFunctionName
         addresses: Address[]
       }
-    :
-        | {
-            functionName: TFunctionName
-            args: FunctionParams<TAbi, TFunctionName>
-            addresses: Address[]
-          }
-        | {
-            functionName: TFunctionName
-            argsPerCall: Array<FunctionParams<TAbi, TFunctionName>>
-            addresses: Address[]
-          }
+    : {
+        functionName: TFunctionName
+        args: FunctionParams<TAbi, TFunctionName>
+        addresses: Address[]
+      }
 
 export interface UseReadContractForMultipleArgsConfig<
   TAbi extends Abi,

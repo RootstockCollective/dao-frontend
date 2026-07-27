@@ -27,15 +27,21 @@ import {
  * cross that boundary and are confined to this file.
  */
 
+/** Per-hook overrides of the shared query defaults. Merged over them, never replacing them. */
 export interface ReadHookQueryDefaults {
   retry?: boolean
   refetchInterval?: number | false
 }
 
-const DEFAULT_QUERY_DEFAULTS: ReadHookQueryDefaults = {
+const DEFAULT_QUERY: Required<ReadHookQueryDefaults> = {
   retry: true,
   refetchInterval: AVERAGE_BLOCKTIME,
 }
+
+const withDefaults = (overrides?: ReadHookQueryDefaults): Required<ReadHookQueryDefaults> => ({
+  ...DEFAULT_QUERY,
+  ...overrides,
+})
 
 type QueryOverrides<TAbi extends Abi, TFunctionName extends ViewPureFunctionName<TAbi>> = Omit<
   UseReadContractParameters<TAbi, TFunctionName>['query'],
@@ -82,9 +88,11 @@ const reduceResults = <TData>(
 export const createContractReadHook = <TAbi extends Abi>(
   abi: TAbi,
   address: Address,
-  queryDefaults: ReadHookQueryDefaults = DEFAULT_QUERY_DEFAULTS,
-) =>
-  function useContractRead<TFunctionName extends ViewPureFunctionName<TAbi>>(
+  queryDefaults?: ReadHookQueryDefaults,
+) => {
+  const defaults = withDefaults(queryDefaults)
+
+  return function useContractRead<TFunctionName extends ViewPureFunctionName<TAbi>>(
     config: UseReadContractConfig<TAbi, TFunctionName>,
     query?: QueryOverrides<TAbi, TFunctionName>,
   ): UseReadContractReturnType<TAbi, TFunctionName> {
@@ -94,11 +102,12 @@ export const createContractReadHook = <TAbi extends Abi>(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ...(config as any),
       query: {
-        ...queryDefaults,
+        ...defaults,
         ...query,
       },
-    }) as UseReadContractReturnType<TAbi, TFunctionName>
+    })
   }
+}
 
 /**
  * Builds a read hook bound to a fixed ABI whose address is supplied by the caller,
@@ -106,9 +115,11 @@ export const createContractReadHook = <TAbi extends Abi>(
  */
 export const createContractReadWithAddressHook = <TAbi extends Abi>(
   abi: TAbi,
-  queryDefaults: ReadHookQueryDefaults = DEFAULT_QUERY_DEFAULTS,
-) =>
-  function useContractReadWithAddress<TFunctionName extends ViewPureFunctionName<TAbi>>(
+  queryDefaults?: ReadHookQueryDefaults,
+) => {
+  const defaults = withDefaults(queryDefaults)
+
+  return function useContractReadWithAddress<TFunctionName extends ViewPureFunctionName<TAbi>>(
     config: UseReadContractWithAddressConfig<TAbi, TFunctionName>,
     query?: QueryOverrides<TAbi, TFunctionName>,
   ): UseReadContractReturnType<TAbi, TFunctionName> {
@@ -120,11 +131,12 @@ export const createContractReadWithAddressHook = <TAbi extends Abi>(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ...(callConfig as any),
       query: {
-        ...queryDefaults,
+        ...defaults,
         ...query,
       },
-    }) as UseReadContractReturnType<TAbi, TFunctionName>
+    })
   }
+}
 
 /**
  * Builds a hook that calls the same function on the same ABI across many addresses.
@@ -134,9 +146,11 @@ export const createContractReadWithAddressHook = <TAbi extends Abi>(
 export const createContractMultiAddressReadHook = <TAbi extends Abi>(
   abi: TAbi,
   contractName: string,
-  queryDefaults: ReadHookQueryDefaults = DEFAULT_QUERY_DEFAULTS,
-) =>
-  function useContractMultiAddressRead<TFunctionName extends ViewPureFunctionName<TAbi>>(
+  queryDefaults?: ReadHookQueryDefaults,
+) => {
+  const defaults = withDefaults(queryDefaults)
+
+  return function useContractMultiAddressRead<TFunctionName extends ViewPureFunctionName<TAbi>>(
     config: UseReadContractsConfig<TAbi, TFunctionName>,
     query?: QueryOverrides<TAbi, TFunctionName>,
   ) {
@@ -154,7 +168,7 @@ export const createContractMultiAddressReadHook = <TAbi extends Abi>(
         ...(callConfig as any),
       })),
       query: {
-        ...queryDefaults,
+        ...defaults,
         ...query,
       },
     })
@@ -173,6 +187,7 @@ export const createContractMultiAddressReadHook = <TAbi extends Abi>(
       ...queryData,
     }
   }
+}
 
 /**
  * Builds a hook that calls the same function on a fixed ABI and address once per argument set.
@@ -183,9 +198,11 @@ export const createContractMultiArgsReadHook = <TAbi extends Abi>(
   abi: TAbi,
   address: Address,
   contractName: string,
-  queryDefaults: ReadHookQueryDefaults = DEFAULT_QUERY_DEFAULTS,
-) =>
-  function useContractMultiArgsRead<TFunctionName extends ViewPureFunctionName<TAbi>>(
+  queryDefaults?: ReadHookQueryDefaults,
+) => {
+  const defaults = withDefaults(queryDefaults)
+
+  return function useContractMultiArgsRead<TFunctionName extends ViewPureFunctionName<TAbi>>(
     { args, ...callConfig }: UseReadContractForMultipleArgsConfig<TAbi, TFunctionName>,
     query?: QueryOverrides<TAbi, TFunctionName>,
   ) {
@@ -200,7 +217,7 @@ export const createContractMultiArgsReadHook = <TAbi extends Abi>(
         ...(callConfig as any),
       })),
       query: {
-        ...queryDefaults,
+        ...defaults,
         ...query,
       },
     })
@@ -215,3 +232,4 @@ export const createContractMultiArgsReadHook = <TAbi extends Abi>(
       ...queryData,
     }
   }
+}
