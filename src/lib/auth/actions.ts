@@ -5,8 +5,8 @@ import { isAddress, isHex } from 'viem'
 import { currentEnvChain } from '@/config/config'
 
 import { CHALLENGE_TTL_MS, getAndConsumeChallenge, storeChallenge } from './challengeStore'
+import { assertTrustedHost, isAllowedDomain } from './domain'
 import { signJWT } from './jwt.server'
-import { isProduction } from './utils'
 
 export interface RequestChallengeResult {
   challengeId: string
@@ -35,9 +35,9 @@ export async function requestChallenge(address: string, host: string): Promise<R
     throw new Error('Missing host header')
   }
 
-  const domain = host.split(':')[0]
-  const protocol = isProduction ? 'https' : 'http'
-  const origin = `${protocol}://${host}`
+  // The Host header is caller-supplied, so it is only usable after being checked
+  // against the origins this deployment actually serves (EIP-4361 domain binding)
+  const { domain, origin } = assertTrustedHost(host)
   const chainId = currentEnvChain.id
 
   // Cryptographically secure nonce to prevent replay attacks
@@ -62,6 +62,7 @@ export async function requestChallenge(address: string, host: string): Promise<R
   const challengeId = storeChallenge({
     message,
     address: address.toLowerCase(),
+    domain,
   })
 
   return { challengeId, message }
@@ -95,11 +96,20 @@ export async function verifySignature(
     throw new Error('Invalid or expired challenge')
   }
 
+  // Re-check the expected domain rather than trusting the value recorded at
+  // issuance, so a challenge cannot be redeemed against an origin this
+  // deployment has since stopped serving
+  if (!isAllowedDomain(challenge.domain)) {
+    throw new Error(`Untrusted domain: ${challenge.domain}`)
+  }
+
   const siweMessage = new SiweMessage(challenge.message)
 
   let verifyResult: Awaited<ReturnType<typeof siweMessage.verify>>
   try {
-    verifyResult = await siweMessage.verify({ signature })
+    // EIP-4361 (Relying Party Implementer Steps): the signed `domain` MUST be
+    // checked against the expected origin, not merely parsed from the message
+    verifyResult = await siweMessage.verify({ signature, domain: challenge.domain })
   } catch {
     throw new Error('Signature verification failed')
   }

@@ -54,6 +54,7 @@ Key components: `LikeButton.tsx`, `useLike.ts`, `SiweTooltipContent.tsx`
 | `siweStore.ts`                | Zustand store for JWT token, auth state, and `signOut`        |
 | `actions.ts`                  | Server-side auth logic: `requestChallenge`, `verifySignature` |
 | `challengeStore.ts`           | Server-side challenge storage and validation                  |
+| `domain.ts`                   | Trusted domain allowlist for EIP-4361 domain binding          |
 | `jwt.ts`                      | Client-side JWT utilities (decode, check expiry)              |
 | `jwt.server.ts`               | Server-side JWT signing and verification                      |
 | `session.ts`                  | Session management utilities                                  |
@@ -62,12 +63,16 @@ Key components: `LikeButton.tsx`, `useLike.ts`, `SiweTooltipContent.tsx`
 | `api/auth/challenge/route.ts` | POST endpoint for SIWE challenge creation                     |
 | `api/auth/login/route.ts`     | POST endpoint for signature verification and JWT issuance     |
 | `api/auth/verify/route.ts`    | POST endpoint for JWT validation                              |
-| `middleware.ts` (src root)    | Rate limiting middleware for all auth API routes              |
+| `proxy.ts` (src root)         | Rate limiting middleware for all auth API routes              |
 | `rateLimit.ts` (src/lib)      | In-memory sliding window rate limiter                         |
 
 ## Security Considerations
 
 - **Challenge is server-generated**: The SIWE message is created entirely on the server, preventing client-side manipulation of the nonce, domain, or expiration.
+- **Domain binding** ([EIP-4361 Relying Party steps](https://eips.ethereum.org/EIPS/eip-4361#relying-party-implementer-steps)): a challenge is only issued for an origin this deployment actually serves, and the same expected domain is passed to `siweMessage.verify()` at redemption. The `Host` header is caller-supplied, so it is not trusted as the expected origin on its own.
+  - By default, `rootstockcollective.xyz` and its subdomains are accepted, plus `localhost` / loopback outside production.
+  - Set `SIWE_ALLOWED_DOMAINS` (server-only, comma-separated hostnames) to serve SIWE from any other origin. When set, it replaces the defaults entirely — subdomains of a listed domain are **not** implied.
+  - Requests from an unlisted origin fail at `/api/auth/challenge` with `Invalid request`.
 - **JWT on disconnect**: When the user disconnects their wallet, the JWT is destroyed and all authenticated UI state (e.g. like icons) is reset. On reconnect, the user must re-authenticate via SIWE to restore their session.
 - **Token expiry**: Expired JWTs are cleared automatically on store rehydration.
 - **Rate limiting**: All auth endpoints are rate-limited via middleware (5 req/min for challenge and login, 20 req/min for verify) to prevent brute-force and DoS attacks.
