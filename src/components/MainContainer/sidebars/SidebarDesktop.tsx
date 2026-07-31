@@ -76,17 +76,20 @@ export const SidebarDesktop = () => {
             ))}
           </ul>
         </div>
-        {/* Useful links */}
-        <motion.div
-          variants={variants}
-          initial="text"
-          animate="text"
-          transition={{ duration: transition.duration, ease: 'easeOut' }}
-          className={cn('shrink-0 px-6 py-4', { 'pointer-events-none': !isSidebarOpen })}
-        >
-          <UsefulLinks />
-          <SupportButton />
-        </motion.div>
+        <div className="shrink-0 px-6 py-4">
+          {/* Useful links */}
+          <motion.div
+            variants={variants}
+            initial="text"
+            animate="text"
+            transition={{ duration: transition.duration, ease: 'easeOut' }}
+            className={cn({ 'pointer-events-none': !isSidebarOpen })}
+          >
+            <UsefulLinks />
+          </motion.div>
+          {/* Support stays reachable when the sidebar is collapsed */}
+          <SupportButton isCollapsed={!isSidebarOpen} variants={variants} transition={transition} />
+        </div>
       </div>
     </motion.aside>
   )
