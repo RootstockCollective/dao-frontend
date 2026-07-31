@@ -1,0 +1,34 @@
+'use client'
+
+import { Headset } from 'lucide-react'
+import { HTMLAttributes } from 'react'
+
+import { Span } from '@/components/Typography'
+import { useModal } from '@/shared/hooks/useModal'
+
+import { SupportModal } from './SupportModal'
+
+interface SupportButtonProps extends HTMLAttributes<HTMLDivElement> {
+  labelClassName?: string
+}
+
+export const SupportButton = ({ className, labelClassName, ...props }: SupportButtonProps) => {
+  const { isModalOpened, openModal, closeModal } = useModal()
+
+  return (
+    <div className={className} {...props}>
+      <button
+        type="button"
+        onClick={openModal}
+        className="flex w-full items-center gap-2 py-3 cursor-pointer text-warm-gray hover:text-text-100"
+        data-testid="SidebarSupportButton"
+      >
+        <Headset size={16} />
+        <Span variant="tag" className={labelClassName}>
+          Support
+        </Span>
+      </button>
+      {isModalOpened && <SupportModal onClose={closeModal} />}
+    </div>
+  )
+}

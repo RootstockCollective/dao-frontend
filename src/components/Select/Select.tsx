@@ -3,6 +3,7 @@ import { CheckIcon, ChevronDown } from 'lucide-react'
 import { motion } from 'motion/react'
 import { type ReactNode, useState } from 'react'
 
+import { usePortalContainer } from '@/components/PortalContainerContext'
 import { cn } from '@/lib/utils'
 
 interface SelectProps extends Select.SelectTriggerProps {
@@ -47,6 +48,7 @@ function SelectDropdown({
   const [isOpen, setIsOpen] = useState(false)
   const [isAnimating, setIsAnimating] = useState(false)
   const [showShadow, setShowShadow] = useState(false)
+  const portalContainer = usePortalContainer()
 
   const handleOpenChange = (open: boolean) => {
     // Block changes during animation
@@ -96,7 +98,7 @@ function SelectDropdown({
           </motion.div>
         </Select.Icon>
       </Select.Trigger>
-      <Select.Portal>
+      <Select.Portal container={portalContainer ?? undefined}>
         <Select.Content
           sideOffset={8}
           position="popper"

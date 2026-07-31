@@ -1,6 +1,6 @@
 {
   "name": "dao-frontend",
-  "version": "1.21.0",
+  "version": "1.22.0",
   "scripts": {
     "prepare": "husky",
     "dev": "NODE_OPTIONS='--enable-source-maps' next dev | pino-pretty",
@@ -34,6 +34,7 @@
     "@dnd-kit/modifiers": "^9.0.0",
     "@dnd-kit/sortable": "^10.0.0",
     "@hookform/resolvers": "^3.10.0",
+    "@marsidev/react-turnstile": "1.5.3",
     "@next/third-parties": "16.2.6",
     "@prisma/client": "6.19.3",
     "@radix-ui/react-accordion": "^1.2.12",
