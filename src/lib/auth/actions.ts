@@ -96,9 +96,9 @@ export async function verifySignature(
     throw new Error('Invalid or expired challenge')
   }
 
-  // Re-check the expected domain rather than trusting the value recorded at
-  // issuance, so a challenge cannot be redeemed against an origin this
-  // deployment has since stopped serving
+  // This is the check that carries weight at redemption: the domain the
+  // challenge was issued for must still be one this deployment serves, so a
+  // challenge cannot be redeemed against an origin we have stopped serving.
   if (!isAllowedDomain(challenge.domain)) {
     throw new Error(`Untrusted domain: ${challenge.domain}`)
   }
@@ -107,8 +107,11 @@ export async function verifySignature(
 
   let verifyResult: Awaited<ReturnType<typeof siweMessage.verify>>
   try {
-    // EIP-4361 (Relying Party Implementer Steps): the signed `domain` MUST be
-    // checked against the expected origin, not merely parsed from the message
+    // EIP-4361 (Relying Party Implementer Steps) requires the signed `domain`
+    // to be checked against the expected origin. Note that while the message
+    // comes from our own store this comparison cannot fail — the guarantee
+    // rests on the allowlist at issuance, not here. It is kept so the check
+    // still holds if the message ever arrives from somewhere less trusted.
     verifyResult = await siweMessage.verify({ signature, domain: challenge.domain })
   } catch {
     throw new Error('Signature verification failed')

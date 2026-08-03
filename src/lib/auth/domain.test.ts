@@ -16,15 +16,25 @@ describe('assertTrustedHost', () => {
     vi.unstubAllEnvs()
   })
 
-  it('accepts the deployment apex and its subdomains', async () => {
+  it('accepts every deployed hostname', async () => {
     const { assertTrustedHost } = await getDomainModule()
 
-    expect(assertTrustedHost('rootstockcollective.xyz')).toEqual({
-      domain: 'rootstockcollective.xyz',
-      origin: 'https://rootstockcollective.xyz',
+    expect(assertTrustedHost('app.rootstockcollective.xyz')).toEqual({
+      domain: 'app.rootstockcollective.xyz',
+      origin: 'https://app.rootstockcollective.xyz',
     })
-    expect(assertTrustedHost('app.rootstockcollective.xyz').domain).toBe('app.rootstockcollective.xyz')
-    expect(assertTrustedHost('qa.dao.rootstockcollective.xyz').domain).toBe('qa.dao.rootstockcollective.xyz')
+
+    for (const host of [
+      'dev.app.rootstockcollective.xyz',
+      'testnet.app.rootstockcollective.xyz',
+      'qa.cr.rootstockcollective.xyz',
+      'qa.dao.rootstockcollective.xyz',
+      'release-candidate.app.rootstockcollective.xyz',
+      'release-candidate-testnet.app.rootstockcollective.xyz',
+      'release-candidate-mainnet.app.rootstockcollective.xyz',
+    ]) {
+      expect(assertTrustedHost(host).domain).toBe(host)
+    }
   })
 
   it('rejects an untrusted Host header', async () => {
@@ -33,12 +43,39 @@ describe('assertTrustedHost', () => {
     expect(() => assertTrustedHost('untrusted.example')).toThrow(/Untrusted domain/)
   })
 
-  it('rejects lookalike domains that merely contain the apex', async () => {
+  it('does not trust sibling subdomains of the apex', async () => {
     const { assertTrustedHost } = await getDomainModule()
 
-    // Suffix match must be on a label boundary, not a substring
-    expect(() => assertTrustedHost('notrootstockcollective.xyz')).toThrow(/Untrusted domain/)
-    expect(() => assertTrustedHost('rootstockcollective.xyz.untrusted.example')).toThrow(/Untrusted domain/)
+    // Third-party platforms serving user-authored content live here; the app
+    // must not extend its sign-in trust to them
+    expect(() => assertTrustedHost('gov.rootstockcollective.xyz')).toThrow(/Untrusted domain/)
+    expect(() => assertTrustedHost('wiki.rootstockcollective.xyz')).toThrow(/Untrusted domain/)
+    expect(() => assertTrustedHost('rootstockcollective.xyz')).toThrow(/Untrusted domain/)
+  })
+
+  it('rejects lookalike and malformed authorities that resemble a deployed host', async () => {
+    const { assertTrustedHost } = await getDomainModule()
+
+    for (const host of [
+      'notapp.rootstockcollective.xyz',
+      'app.rootstockcollective.xyz.untrusted.example',
+      'app.rootstockcollective.xyz@untrusted.example',
+      'untrusted.example@app.rootstockcollective.xyz',
+      '.app.rootstockcollective.xyz',
+      'app..rootstockcollective.xyz',
+      '-app.rootstockcollective.xyz',
+      'app_x.rootstockcollective.xyz',
+      'app/x.rootstockcollective.xyz',
+      'app x.rootstockcollective.xyz',
+      'app.rootstockcollective.xyz.',
+      'app.rootstockcollective.xyz:99999',
+      'app.rootstockcollective.xyz:0',
+      '[::1]:3000:4000',
+      '[]',
+      '',
+    ]) {
+      expect(() => assertTrustedHost(host), host).toThrow(/Untrusted domain/)
+    }
   })
 
   it('rejects loopback hosts in production', async () => {
@@ -64,17 +101,16 @@ describe('assertTrustedHost', () => {
 
     expect(assertTrustedHost('dao.example.org').domain).toBe('dao.example.org')
     expect(assertTrustedHost('other.example.org').domain).toBe('other.example.org')
-    // The built-in default no longer applies once the deployment configures its own
+    // The built-in list no longer applies once the deployment configures its own
     expect(() => assertTrustedHost('app.rootstockcollective.xyz')).toThrow(/Untrusted domain/)
     // Nor do subdomains of a configured domain
     expect(() => assertTrustedHost('sub.dao.example.org')).toThrow(/Untrusted domain/)
   })
 
-  it('normalises case and rejects malformed authorities', async () => {
+  it('normalises case and surrounding whitespace', async () => {
     const { assertTrustedHost } = await getDomainModule()
 
     expect(assertTrustedHost('APP.RootstockCollective.XYZ').domain).toBe('app.rootstockcollective.xyz')
-    expect(() => assertTrustedHost('app.rootstockcollective.xyz:notaport')).toThrow(/Untrusted domain/)
-    expect(() => assertTrustedHost('')).toThrow(/Untrusted domain/)
+    expect(assertTrustedHost('  app.rootstockcollective.xyz  ').domain).toBe('app.rootstockcollective.xyz')
   })
 })

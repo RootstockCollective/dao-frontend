@@ -7,13 +7,31 @@
  * expectation on its own.
  *
  * The expected domain therefore comes from server-side configuration only:
- * `SIWE_ALLOWED_DOMAINS` when set, otherwise the deployment apex below.
+ * `SIWE_ALLOWED_DOMAINS` when set, otherwise the hostnames listed below.
+ *
+ * The list is exact rather than a suffix match on the apex domain. Sibling
+ * subdomains host third-party platforms that serve user-authored content
+ * (`gov.` is Discourse, `wiki.` is a hosted wiki), and a suffix match would
+ * extend this app's sign-in trust to all of them.
  */
 
 import { isProduction } from './utils'
 
-/** All deployed environments live under this apex domain (see README env table) */
-const DEFAULT_ALLOWED_APEX = 'rootstockcollective.xyz'
+/**
+ * Hostnames this app is deployed on — see the environment table in the root
+ * README and `.github/workflows/*.deploy.yaml`. A new environment must be added
+ * here, or configured through `SIWE_ALLOWED_DOMAINS`, before SIWE works on it.
+ */
+const DEPLOYED_HOSTNAMES = [
+  'app.rootstockcollective.xyz',
+  'dev.app.rootstockcollective.xyz',
+  'testnet.app.rootstockcollective.xyz',
+  'qa.cr.rootstockcollective.xyz',
+  'qa.dao.rootstockcollective.xyz',
+  'release-candidate.app.rootstockcollective.xyz',
+  'release-candidate-testnet.app.rootstockcollective.xyz',
+  'release-candidate-mainnet.app.rootstockcollective.xyz',
+]
 
 /** Loopback hosts, accepted outside production so local development keeps working */
 const LOCAL_HOSTNAMES = ['localhost', '127.0.0.1', '::1']
@@ -52,7 +70,8 @@ function splitHost(host: string): { hostname: string; port: string } {
     port = parts[1] ?? ''
   }
 
-  if (port && !/^\d+$/.test(port)) {
+  // The port reaches the SIWE `uri`, so only accept one that could be served
+  if (port && !(/^\d{1,5}$/.test(port) && Number(port) >= 1 && Number(port) <= 65535)) {
     return { hostname: '', port: '' }
   }
 
@@ -72,6 +91,10 @@ function configuredDomains(): string[] {
 
 /**
  * Whether a hostname is an origin this deployment actually serves.
+ *
+ * Membership is exact, so no hostname that is merely shaped like one of ours
+ * (extra labels, userinfo, stray dots) can match.
+ *
  * @param hostname - Bare hostname, without port
  */
 export function isAllowedDomain(hostname: string): boolean {
@@ -88,7 +111,7 @@ export function isAllowedDomain(hostname: string): boolean {
     return true
   }
 
-  return hostname === DEFAULT_ALLOWED_APEX || hostname.endsWith(`.${DEFAULT_ALLOWED_APEX}`)
+  return DEPLOYED_HOSTNAMES.includes(hostname)
 }
 
 /**
