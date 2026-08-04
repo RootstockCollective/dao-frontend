@@ -96,34 +96,28 @@ function StakingHistoryTable() {
       type: 'SORT_BY_COLUMN',
       payload: { columnId: 'period', direction: 'desc' },
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [dispatch])
 
   useEffect(() => {
     dispatch({
       type: 'SET_ROWS',
       payload: rowData,
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rowData])
+  }, [dispatch, rowData])
 
   useEffect(() => {
     dispatch({
       type: 'SET_LOADING',
       payload: isLoading || false,
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoading])
+  }, [dispatch, isLoading])
 
   useEffect(() => {
-    if (error) {
-      dispatch({
-        type: 'SET_ERROR',
-        payload: error.message,
-      })
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [error])
+    dispatch({
+      type: 'SET_ERROR',
+      payload: error ? error.message : null,
+    })
+  }, [dispatch, error])
 
   return (
     <div className="w-full flex flex-col gap-6 md:gap-10">

@@ -133,22 +133,27 @@ const AllocationBar = ({
     }
   }
 
-  const onMouseUp = () => setDragTarget(null)
+  // `handleResize` closes over items/values/onChange, which change on every render while
+  // dragging. Keep the latest version in a ref so the window listeners stay subscribed for
+  // the whole drag instead of being torn down and re-added on each mousemove.
+  const handleResizeRef = useRef(handleResize)
+  useEffect(() => {
+    handleResizeRef.current = handleResize
+  })
 
   useEffect(() => {
-    if (dragTargetIndex !== null) {
-      window.addEventListener('mousemove', handleResize)
-      window.addEventListener('mouseup', onMouseUp)
-    } else {
-      window.removeEventListener('mousemove', handleResize)
-      window.removeEventListener('mouseup', onMouseUp)
-    }
+    if (dragTargetIndex === null) return
+
+    const onMouseMove = (event: MouseEvent) => handleResizeRef.current(event)
+    const onMouseUp = () => setDragTarget(null)
+
+    window.addEventListener('mousemove', onMouseMove)
+    window.addEventListener('mouseup', onMouseUp)
     return () => {
-      window.removeEventListener('mousemove', handleResize)
+      window.removeEventListener('mousemove', onMouseMove)
       window.removeEventListener('mouseup', onMouseUp)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dragTargetIndex, currentValues])
+  }, [dragTargetIndex])
 
   // dnd-kit reorder logic
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
