@@ -1,31 +1,7 @@
-import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
-
-import { type CycleTimeKeeperAbi, getAbi } from '@/lib/abis/tok'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { CycleTimeKeeperAbi } from '@/lib/abis/tok/CycleTimeKeeperAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
 
-import { UseReadContractConfig, ViewPureFunctionName } from '../types'
+import { createContractReadHook } from '../createReadHooks'
 
-type CycleTimeKeeperFunctionName = ViewPureFunctionName<CycleTimeKeeperAbi>
-
-type CycleTimeKeeperConfig<TFunctionName extends CycleTimeKeeperFunctionName> = UseReadContractConfig<
-  CycleTimeKeeperAbi,
-  TFunctionName
->
-
-export const useReadCycleTimeKeeper = <TFunctionName extends CycleTimeKeeperFunctionName>(
-  config: CycleTimeKeeperConfig<TFunctionName>,
-  query?: Omit<UseReadContractParameters<CycleTimeKeeperAbi, TFunctionName>['query'], 'select'>,
-): UseReadContractReturnType<CycleTimeKeeperAbi, TFunctionName> => {
-  return useReadContract({
-    abi: getAbi('CycleTimeKeeperAbi'),
-    address: BackersManagerAddress,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ...(config as any),
-    query: {
-      retry: true,
-      refetchInterval: AVERAGE_BLOCKTIME,
-      ...query,
-    },
-  })
-}
+// The CycleTimeKeeper functions live on the BackersManager deployment.
+export const useReadCycleTimeKeeper = createContractReadHook(CycleTimeKeeperAbi, BackersManagerAddress)

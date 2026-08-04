@@ -1,61 +1,10 @@
-import { useMemo } from 'react'
-import { UseReadContractParameters, UseReadContractReturnType, useReadContracts } from 'wagmi'
-
-import { type BuilderRegistryAbi, getAbi } from '@/lib/abis/tok'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
 import { BuilderRegistryAddress } from '@/lib/contracts'
 
-import { UseReadContractForMultipleArgsConfig, ViewPureFunctionName } from '../types'
+import { createContractMultiArgsReadHook } from '../createReadHooks'
 
-type BuilderRegistryFunctionName = ViewPureFunctionName<BuilderRegistryAbi>
-
-type ReadBuilderRegistriesConfig<TFunctionName extends BuilderRegistryFunctionName> =
-  UseReadContractForMultipleArgsConfig<BuilderRegistryAbi, TFunctionName>
-
-type ReadBuilderRegistriesReturnType<
-  TAbi extends BuilderRegistryAbi,
-  TFunctionName extends ViewPureFunctionName<TAbi>,
-> = UseReadContractReturnType<TAbi, TFunctionName>['data']
-
-const abi = getAbi('BuilderRegistryAbi')
-
-export const useReadBuilderRegistryForMultipleArgs = <TFunctionName extends BuilderRegistryFunctionName>(
-  { args, ...config }: ReadBuilderRegistriesConfig<TFunctionName>,
-  query?: Omit<UseReadContractParameters<BuilderRegistryAbi, TFunctionName>['query'], 'select'>,
-) => {
-  const { data: results, ...queryData } = useReadContracts({
-    contracts: args.map(argsPerCall => ({
-      abi,
-      address: BuilderRegistryAddress,
-      args: argsPerCall,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      ...(config as any),
-    })),
-    query: {
-      retry: true,
-      refetchInterval: AVERAGE_BLOCKTIME,
-      ...query,
-    },
-  })
-
-  type ReturnType = ReadBuilderRegistriesReturnType<BuilderRegistryAbi, TFunctionName>
-
-  const data = useMemo(
-    () =>
-      results?.reduce<ReturnType[]>((acc, { result, error, status }, i) => {
-        if (status !== 'success' || error) {
-          console.error(
-            `Call index: ${i}: data fetch not successful for BuilderRegistry.${config.functionName}.`,
-            error ? error : 'Unknown error',
-          )
-        }
-
-        return [...acc, result as ReturnType]
-      }, []) ?? [],
-    [results, config.functionName],
-  )
-  return {
-    data,
-    ...queryData,
-  }
-}
+export const useReadBuilderRegistryForMultipleArgs = createContractMultiArgsReadHook(
+  BuilderRegistryAbi,
+  BuilderRegistryAddress,
+  'BuilderRegistry',
+)

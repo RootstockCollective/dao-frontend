@@ -1,31 +1,6 @@
-import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
-
-import { getAbi, type RewardDistributorAbi } from '@/lib/abis/tok'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { RewardDistributorAbi } from '@/lib/abis/tok/RewardDistributorAbi'
 import { RewardDistributorAddress } from '@/lib/contracts'
 
-import { UseReadContractConfig, ViewPureFunctionName } from '../types'
+import { createContractReadHook } from '../createReadHooks'
 
-type RewardDistributorFunctionName = ViewPureFunctionName<RewardDistributorAbi>
-
-type RewardDistributorConfig<TFunctionName extends RewardDistributorFunctionName> = UseReadContractConfig<
-  RewardDistributorAbi,
-  TFunctionName
->
-
-export const useReadRewardDistributor = <TFunctionName extends RewardDistributorFunctionName>(
-  config: RewardDistributorConfig<TFunctionName>,
-  query?: Omit<UseReadContractParameters<RewardDistributorAbi, TFunctionName>['query'], 'select'>,
-): UseReadContractReturnType<RewardDistributorAbi, TFunctionName> => {
-  return useReadContract({
-    abi: getAbi('RewardDistributorAbi'),
-    address: RewardDistributorAddress,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ...(config as any),
-    query: {
-      retry: true,
-      refetchInterval: AVERAGE_BLOCKTIME,
-      ...query,
-    },
-  })
-}
+export const useReadRewardDistributor = createContractReadHook(RewardDistributorAbi, RewardDistributorAddress)
