@@ -46,9 +46,9 @@ export const ProposalProggressBar = ({ proposalState }: ProgressBarProps) => {
 
   const getProgressBarColor = () => {
     if (proposalState === ProposalState.Defeated || proposalState === ProposalState.Canceled) {
-      return ['#4B5CF0', '#F47A2A', '#ff6688']
+      return ['#4B5CF0', '#F79319', '#ff6688']
     }
-    return ['#4B5CF0', '#F47A2A', '#1BC47D']
+    return ['#4B5CF0', '#F79319', '#1BC47D']
   }
 
   return (

@@ -81,10 +81,13 @@ html[data-theme='default'] {
   --text-10: #25211e;
   --text-0: #171412;
 
-  --color-primary: #f47a2a;
+  --color-primary: #f79319;
 
   /* System Status */
   --status-success: #1bc47d;
+  /* Same hue, darkened for light surfaces: --status-success only reaches 2.27:1 on white,
+     which fails both AA text (4.5:1) and non-text contrast (3:1). This one is 5.37:1. */
+  --status-success-on-light: #0f7a4d;
   --status-error: #ff6688;
 
   /* Brand Colors */

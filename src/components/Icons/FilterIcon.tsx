@@ -57,7 +57,7 @@ export function FilterIcon({
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      {highlighted && <circle cx="20" cy="7" r="4" fill="#F47A2A" />}
+      {highlighted && <circle cx="20" cy="7" r="4" fill="#F79319" />}
     </svg>
   )
 }

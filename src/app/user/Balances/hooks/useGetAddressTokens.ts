@@ -37,12 +37,17 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
   const {
     data: rbtc,
     isLoading: rbtcLoading,
+    isFetching: rbtcFetching,
     error: rbtcError,
     refetch: refetchRbtc,
-  } = useBalance({ address, chainId })
+    // Polls like the ERC-20 multicall below. Without this rBTC was fetched once and never
+    // again — `refetchOnWindowFocus` is off globally, so a user who bridged in another tab
+    // came back to a balance frozen at whatever it was when the page loaded.
+  } = useBalance({ address, chainId, query: { refetchInterval: AVERAGE_BLOCKTIME } })
   const {
     data: contracts,
     isLoading: contractsLoading,
+    isFetching: contractsFetching,
     error: contractsError,
     refetch: refetchContracts,
   } = useReadContracts({
@@ -115,6 +120,9 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
       ),
     ] as AddressToken[],
     isLoading: rbtcLoading || contractsLoading || IsTokenDataLoading,
+    // Unlike `isLoading`, this stays true across a refetch that already has data, so callers
+    // can show a "checking" state without blanking the balances they are already displaying.
+    isFetching: rbtcFetching || contractsFetching,
     error: rbtcError ?? contractsError ?? tokenDataError,
     refetch,
   }

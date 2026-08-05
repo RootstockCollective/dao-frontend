@@ -4,6 +4,8 @@ import { useRef } from 'react'
 
 import { BalanceInfoForUser } from '@/app/user/Balances/BalanceInfoForUser'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { useIntroDismissal } from '@/app/user/IntroModal/hooks/useIntroDismissal'
+import { useStakingRequirements } from '@/app/user/IntroModal/hooks/useStakingRequirements'
 import { StakingFlow } from '@/app/user/Stake'
 import { UnstakeModal } from '@/app/user/Unstake'
 import { Button } from '@/components/Button'
@@ -56,11 +58,43 @@ export const BalancesSection = () => {
         </div>
         <BalanceInfoForUser symbol={RBTC} className={balanceStyle} />
       </div>
+      <ResumeOnboardingButton />
       <div>
         {stakeModal.isModalOpened && <StakingFlow onCloseModal={stakeModal.closeModal} />}
         {unstakeModal.isModalOpened && <UnstakeModal onCloseModal={unstakeModal.closeModal} />}
       </div>
     </>
+  )
+}
+
+/**
+ * Way back into the staking onboarding after closing it. Without this, "Skip for now" is a
+ * one-way door — including for someone who hit it by accident.
+ *
+ * `useIntroDismissal` is backed by a shared store, so clicking this genuinely reopens the
+ * modal rather than only clearing storage for the next page load.
+ */
+const ResumeOnboardingButton = () => {
+  const { isHidden, restore } = useIntroDismissal()
+  const { needsRif, needsGas, needsStRif, isReady } = useStakingRequirements()
+
+  // Offered only when there is onboarding left to resume. A fully staked user who dismissed
+  // this months ago would otherwise get a link that reopens nothing.
+  const hasSomethingToDo = needsRif || needsGas || needsStRif
+
+  if (!isReady || !isHidden || !hasSomethingToDo) {
+    return null
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={restore}
+      className="text-text-40 hover:text-text-100 mb-6 self-start underline underline-offset-4 transition-colors"
+      data-testid="ResumeOnboarding"
+    >
+      <Span variant="body-s">Show me how to get started with staking</Span>
+    </button>
   )
 }
 
