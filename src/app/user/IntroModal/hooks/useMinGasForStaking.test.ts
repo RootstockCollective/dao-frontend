@@ -23,7 +23,6 @@ describe('useMinGasForStaking', () => {
     const { result } = renderHook(() => useMinGasForStaking())
 
     expect(result.current.isLoading).toBe(true)
-    expect(result.current.isFallback).toBe(false)
     expect(result.current.minGas).toBe('0.0002')
   })
 
@@ -33,7 +32,6 @@ describe('useMinGasForStaking', () => {
     const { result } = renderHook(() => useMinGasForStaking())
 
     expect(result.current.isLoading).toBe(false)
-    expect(result.current.isFallback).toBe(true)
     expect(result.current.minGas).toBe('0.0002')
   })
 
@@ -41,8 +39,6 @@ describe('useMinGasForStaking', () => {
     mockUseGasPrice.mockReturnValue({ data: undefined, isLoading: false, isError: false })
 
     const { result } = renderHook(() => useMinGasForStaking())
-
-    expect(result.current.isFallback).toBe(true)
     expect(result.current.minGas).toBe('0.0002')
   })
 
@@ -52,7 +48,6 @@ describe('useMinGasForStaking', () => {
     const { result } = renderHook(() => useMinGasForStaking())
 
     expect(result.current.isLoading).toBe(false)
-    expect(result.current.isFallback).toBe(false)
     // 670k gas units x 0.06 gwei x safety factor 2 = 0.00008040, rounded up to 4dp.
     expect(result.current.minGas).toBe('0.0001')
   })

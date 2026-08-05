@@ -65,8 +65,11 @@ export const IntroModalContent = ({
   return (
     <Modal
       width={920}
-      // Tall enough that all four provider tiles on the RIF step fit without scrolling.
-      height={700}
+      // 700px is what the RIF step needs to show all four provider tiles without scrolling,
+      // and it stays constant across steps so the panel never resizes under the user. A
+      // single-step flow has no such step, so it sizes to its content instead of leaving a
+      // third of the panel empty.
+      height={totalSteps === 1 ? 'auto' : 700}
       onClose={onClose}
       onEscape={onClose}
       trapFocus
@@ -105,7 +108,9 @@ export const IntroModalContent = ({
         </AnimatedGradientSurface>
 
         <div className="flex min-h-0 flex-1 flex-col">
-          <div className="min-h-0 flex-1 overflow-y-auto p-4 pt-10 md:p-6 md:pt-12">
+          {/* The mask fades the last rows out instead of guillotining a card mid-sentence
+              against the footer, which read as a rendering bug rather than as "scroll me". */}
+          <div className="min-h-0 flex-1 overflow-y-auto p-4 pt-10 [mask-image:linear-gradient(to_bottom,#000_calc(100%-1.5rem),transparent)] md:p-6 md:pt-12">
             {/* Hidden when there is only one step: "STEP 1 OF 1" is noise, and StepDots
                 already hides itself for the same reason. */}
             {totalSteps > 1 && (
@@ -190,8 +195,15 @@ export const IntroModalContent = ({
             {isLastStep ? (
               <Button
                 onClick={onStake}
-                disabled={needsRif || needsGas}
-                className={cn(PILL, 'w-auto')}
+                disabled={!isEverythingMet}
+                // `disabled-primary` is a near-white that vanishes against this cream panel,
+                // so the button read as enabled-but-inert. Muted fill plus a border makes the
+                // off state legible; the checklist above it is what says why.
+                className={cn(
+                  PILL,
+                  'w-auto',
+                  'disabled:border-bg-20 disabled:bg-bg-20/30 disabled:text-bg-40',
+                )}
                 data-testid="intro-stake"
               >
                 Stake RIF

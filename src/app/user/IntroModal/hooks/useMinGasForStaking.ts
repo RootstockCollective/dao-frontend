@@ -46,8 +46,6 @@ interface UseMinGasForStakingReturn {
   minGas: string
   /** True while the gas price is in flight. Callers must not freeze a step list until this settles. */
   isLoading: boolean
-  /** True when `minGas` is the constant fallback rather than a live estimate. */
-  isFallback: boolean
 }
 
 /**
@@ -61,11 +59,11 @@ export const useMinGasForStaking = (): UseMinGasForStakingReturn => {
 
   return useMemo(() => {
     if (isLoading) {
-      return { minGas: FALLBACK_MIN_GAS, isLoading: true, isFallback: false }
+      return { minGas: FALLBACK_MIN_GAS, isLoading: true }
     }
 
     if (isError || !gasPrice) {
-      return { minGas: FALLBACK_MIN_GAS, isLoading: false, isFallback: true }
+      return { minGas: FALLBACK_MIN_GAS, isLoading: false }
     }
 
     const estimate = Big(formatEther(TOTAL_GAS_UNITS * gasPrice * SAFETY_FACTOR))
@@ -76,7 +74,6 @@ export const useMinGasForStaking = (): UseMinGasForStakingReturn => {
       // non-zero figure rather than displaying "0 rBTC".
       minGas: capped.toFixedNoTrailing(DISPLAY_DECIMALS, 3),
       isLoading: false,
-      isFallback: false,
     }
   }, [gasPrice, isLoading, isError])
 }
