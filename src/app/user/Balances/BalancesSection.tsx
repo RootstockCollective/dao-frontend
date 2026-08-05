@@ -4,6 +4,7 @@ import { useRef } from 'react'
 
 import { BalanceInfoForUser } from '@/app/user/Balances/BalanceInfoForUser'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
+import { useIntroDismissal } from '@/app/user/IntroModal/hooks/useIntroDismissal'
 import { StakingFlow } from '@/app/user/Stake'
 import { UnstakeModal } from '@/app/user/Unstake'
 import { Button } from '@/components/Button'
@@ -56,11 +57,34 @@ export const BalancesSection = () => {
         </div>
         <BalanceInfoForUser symbol={RBTC} className={balanceStyle} />
       </div>
+      <ResumeOnboardingButton />
       <div>
         {stakeModal.isModalOpened && <StakingFlow onCloseModal={stakeModal.closeModal} />}
         {unstakeModal.isModalOpened && <UnstakeModal onCloseModal={unstakeModal.closeModal} />}
       </div>
     </>
+  )
+}
+
+/**
+ * Way back into the staking onboarding after skipping it. Without this, "Skip for now" is a
+ * one-way door — including for someone who hit it by accident.
+ */
+const ResumeOnboardingButton = () => {
+  const { isDismissed, restore } = useIntroDismissal()
+
+  if (!isDismissed) {
+    return null
+  }
+
+  return (
+    <button
+      onClick={restore}
+      className="text-text-40 hover:text-text-100 mb-6 underline underline-offset-4 transition-colors"
+      data-testid="ResumeOnboarding"
+    >
+      <Span variant="body-s">Show me how to get started with staking</Span>
+    </button>
   )
 }
 

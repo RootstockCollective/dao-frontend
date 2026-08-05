@@ -1,206 +1,178 @@
-import Image from 'next/image'
-
+import { AnimatedGradientSurface } from '@/components/AnimatedGradientSurface'
 import { Button } from '@/components/Button'
-import { ArrowRightIcon, ArrowUpRightLightIcon } from '@/components/Icons'
 import { Modal } from '@/components/Modal'
+import { RequirementRow } from '@/components/RequirementRow'
+import { StepDots } from '@/components/StepDots'
 import { Header, Label, Paragraph, Span } from '@/components/Typography'
-import Big from '@/lib/big'
-import { cn, formatNumberWithCommas } from '@/lib/utils'
-import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { cn } from '@/lib/utils'
 
-import { CONTENT_CONFIG, IMAGE_CONFIG, type IntroModalContentProps, type IntroModalStatus } from './config'
+import { ProviderCard } from './components/ProviderCard'
+import { WalletCard } from './components/WalletCard'
+import { STEP_CONTENT } from './config'
+import { INTRO_STEP_GAS, INTRO_STEP_SUMMARY, type UseIntroStepsReturn } from './hooks/useIntroSteps'
 
-const GLASS_STYLE =
-  'rounded bg-[rgba(255,255,255,0.16)] shadow-[inset_0px_0px_14px_0px_rgba(255,255,255,0.25)] backdrop-blur-[3px]'
+/** Pill radius is local to this screen — the shared Button is deliberately still `rounded-sm`. */
+const PILL = 'rounded-full'
 
 interface Props {
-  tokenStatus: IntroModalStatus
+  wizard: UseIntroStepsReturn
+  rifBalance: string
+  rbtcBalance: string
+  needsRif: boolean
+  needsGas: boolean
+  /** The same figure the gas gate uses, so copy and gate can never disagree. */
+  minGas: string
+  onOpenProvider: (url: string) => void
+  onSkip: () => void
+  onStake: () => void
   onClose: () => void
-  onContinue: (url: string, external: boolean) => void
-  rbtcBalance?: string
-  rifBalance?: string
 }
 
-export const IntroModalContent = ({ tokenStatus, rbtcBalance, rifBalance, onClose, onContinue }: Props) => {
-  const currentConfig = IMAGE_CONFIG[tokenStatus]
-  const currentContent = CONTENT_CONFIG[tokenStatus]
-  const action = currentContent.action
-  const isDesktop = useIsDesktop()
-
-  const handleContinue = () => onContinue(action.url, action.external)
+export const IntroModalContent = ({
+  wizard,
+  rifBalance,
+  rbtcBalance,
+  needsRif,
+  needsGas,
+  minGas,
+  onOpenProvider,
+  onSkip,
+  onStake,
+  onClose,
+}: Props) => {
+  const { currentStep, currentIndex, totalSteps, isFirstStep, isLastStep, goNext, goBack } = wizard
+  const content = STEP_CONTENT[currentStep.id]
 
   return (
     <Modal
       width={920}
+      // Tall enough that all four provider tiles on the RIF step fit without scrolling.
+      height={700}
       onClose={onClose}
+      onEscape={onClose}
+      trapFocus
+      ariaLabel="Get ready to stake RIF"
       closeButtonColor="black"
-      className="bg-text-80 overflow-y-auto"
-      data-testid={isDesktop ? 'intro-modal-desktop' : 'intro-modal-mobile'}
+      // Two overrides of the shared Modal, both scoped here:
+      // - the panel itself must not scroll, so the step body scrolls inside it and the footer
+      //   buttons stay reachable on a fullscreen mobile sheet;
+      // - a generous corner radius, but only from md up — on mobile this is a fullscreen sheet
+      //   and rounded corners against the viewport edge look like a rendering bug.
+      className="bg-text-80 overflow-y-hidden rounded-none md:rounded-3xl"
+      data-testid="intro-modal"
     >
-      <div className="flex flex-col md:flex-row p-4 md:gap-6 relative justify-center h-full">
-        {isDesktop ? (
-          <>
-            <Image
-              src={`${currentConfig.desktop.pixels}`}
-              alt="Floating Pixels"
-              width={40}
-              height={30}
-              className="absolute block left-1/2 top-8 -translate-x-[calc(55%)] z-base"
-            />
-            <div className="flex-1 relative">
-              <Image
-                src={`${currentConfig.desktop.bg}`}
-                alt="Intro Modal"
-                fill
-                className="object-cover object-top-right"
-              />
-              <YourWalletInfo content={currentContent} rbtcBalance={rbtcBalance} rifBalance={rifBalance} />
+      <div className="flex h-full flex-col md:flex-row">
+        {/* Carries its own left-corner radius so the rounding does not depend on the modal
+            panel clipping a child that establishes its own overflow context. Mobile is a flat
+            top band inside a fullscreen sheet, so no radius there. */}
+        <AnimatedGradientSurface
+          step={currentIndex}
+          className="h-[30dvh] shrink-0 md:h-auto md:w-[36%] md:rounded-l-3xl"
+        >
+          {/* The surface wraps children in its own full-height div, so the layout has to live
+              on a child of it rather than on the surface's own className. */}
+          <div className="flex h-full flex-col justify-between gap-4 p-4 md:p-6">
+            <Label variant="tag" caps className="text-text-100">
+              Your wallet
+            </Label>
+            <WalletCard rifBalance={rifBalance} rbtcBalance={rbtcBalance} needsRif={needsRif} />
+          </div>
+        </AnimatedGradientSurface>
+
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div className="min-h-0 flex-1 overflow-y-auto p-4 pt-10 md:p-6 md:pt-12">
+            <div className="mb-6 flex flex-row items-center justify-between gap-4">
+              <Label variant="tag" caps className="text-bg-40" data-testid="intro-step-counter">
+                Step {currentIndex + 1} of {totalSteps}
+              </Label>
+              <StepDots total={totalSteps} current={currentIndex} />
             </div>
-            <div className="flex-1 flex flex-col justify-between p-4 md:p-0 md:pt-24">
-              <StakeDescription content={currentContent} />
-              <div className="flex justify-end">
-                {currentContent.action.external ? (
-                  <ContinueButton className="mt-12" onClick={handleContinue} />
-                ) : (
-                  <ContinueToStakingButton className="mt-12" onClick={handleContinue} />
-                )}
+
+            <Label variant="tag" caps className="text-bg-40">
+              {content.eyebrow}
+            </Label>
+            <Header variant="h1" caps className="text-bg-100 mt-1" data-testid="intro-step-title">
+              {content.title}
+            </Header>
+
+            {content.description && <Paragraph className="text-bg-100 mt-4">{content.description}</Paragraph>}
+
+            {currentStep.id === INTRO_STEP_GAS && <GasCallout minGas={minGas} />}
+
+            {content.providers.length > 0 && (
+              <div className="mt-6 flex flex-col gap-3">
+                {content.providers.map(provider => (
+                  <ProviderCard
+                    key={`${provider.name}-${provider.tagline}`}
+                    provider={provider}
+                    onOpen={onOpenProvider}
+                  />
+                ))}
               </div>
-            </div>
-          </>
-        ) : (
-          <div className="mt-12 flex flex-col flex-1 justify-between">
-            <div className="flex flex-col gap-4">
-              <div className="relative h-40">
-                <Image src={`${currentConfig.mobile.bg}`} alt="Intro Modal" fill className="object-cover" />
-                <Image
-                  src={`${currentConfig.mobile.pixels}`}
-                  alt="Floating Pixels"
-                  width={30}
-                  height={20}
-                  className="absolute bottom-[-30px] right-0"
-                />
+            )}
+
+            {currentStep.id === INTRO_STEP_SUMMARY && (
+              <div className="mt-6 flex flex-col gap-3">
+                <RequirementRow position={1} label="RIF in your wallet" isDone={!needsRif} />
+                <RequirementRow position={2} label="rBTC for gas" isDone={!needsGas} />
               </div>
-              <StakeDescription content={currentContent} />
-            </div>
-            {currentContent.action.external ? (
-              <ContinueButton onClick={handleContinue} />
-            ) : (
-              <ContinueToStakingButton onClick={handleContinue} />
             )}
           </div>
-        )}
+
+          <div className="flex shrink-0 flex-row items-center justify-between gap-4 p-4 md:p-6">
+            {isFirstStep ? (
+              <button
+                type="button"
+                onClick={onSkip}
+                className="text-bg-100 underline underline-offset-4"
+                data-testid="intro-skip"
+              >
+                <Span variant="body-s">Skip for now — just explore</Span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={goBack}
+                className="text-bg-100 underline underline-offset-4"
+                data-testid="intro-back"
+              >
+                <Span variant="body-s">Back</Span>
+              </button>
+            )}
+
+            {isLastStep ? (
+              <Button
+                onClick={onStake}
+                disabled={needsRif || needsGas}
+                className={cn(PILL, 'w-auto')}
+                data-testid="intro-stake"
+              >
+                Stake RIF
+              </Button>
+            ) : (
+              <Button onClick={goNext} className={cn(PILL, 'w-auto')} data-testid="intro-next">
+                Next
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
     </Modal>
   )
 }
 
-const StakeDescription = ({ content }: { content: IntroModalContentProps }) => (
-  <div className="flex flex-1 flex-col justify-center gap-4" data-testid="stake-description">
-    <Label variant="tag" className="text-bg-100" caps data-testid="stake-label">
-      STAKE
-    </Label>
+const GasCallout = ({ minGas }: { minGas: string }) => (
+  <div className="bg-bg-100/5 mt-6 flex flex-row items-start justify-between gap-4 rounded-2xl p-4">
     <div>
-      <Header variant="e2" className="text-bg-20" caps data-testid="stake-subtitle">
-        {content.title}
-      </Header>
-      <Header variant="e2" className="text-bg-100" caps data-testid="stake-title">
-        {content.subtitle}
+      <Label variant="tag" caps className="text-bg-40">
+        You need about
+      </Label>
+      <Header variant="e3" className="text-bg-100 mt-1" data-testid="intro-min-gas">
+        {minGas} rBTC
       </Header>
     </div>
-    <Paragraph className="text-bg-100" data-testid="stake-description-text">
-      {content.description}
+    <Paragraph variant="body-s" className="text-bg-40 max-w-[50%] text-right">
+      Covers approving and staking, with room for a few votes.
     </Paragraph>
   </div>
-)
-
-interface YourWalletInfoProps {
-  content: IntroModalContentProps
-  rbtcBalance?: string
-  rifBalance?: string
-}
-
-const YourWalletInfo = ({ content, rbtcBalance, rifBalance }: YourWalletInfoProps) => {
-  return (
-    <div
-      className={cn(
-        'absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2',
-        'p-4 w-[360px]',
-        GLASS_STYLE,
-      )}
-      data-testid="wallet-info"
-    >
-      <Header variant="e3" className="text-text-100 mb-8" caps data-testid="wallet-info-title">
-        Your Wallet
-      </Header>
-
-      {content.showRbtc && (
-        <Header
-          variant="e2"
-          className="text-text-100 flex flex-row items-end gap-2"
-          caps
-          data-testid="wallet-info-rbtc"
-        >
-          <Span className="flex flex-row items-center gap-2">
-            BTC
-            <ArrowRightIcon size={16} />
-          </Span>
-          <Span variant="e2" className="text-text-100">
-            RBTC
-          </Span>
-        </Header>
-      )}
-      {content.showRif && (
-        <Header
-          variant="e2"
-          className="text-text-100 flex flex-row items-end gap-2"
-          caps
-          data-testid="wallet-info-rif"
-        >
-          <Span className="flex flex-row items-center gap-2">
-            USD
-            <ArrowRightIcon size={16} />
-          </Span>
-          <Span variant="e2" className="text-text-100">
-            RIF
-          </Span>
-        </Header>
-      )}
-      {content.showBalance && rbtcBalance && rifBalance && (
-        <div className="text-text-100 flex flex-col items-start gap-2">
-          <Header variant="e2" className="text-text-100">
-            {formatNumberWithCommas(Big(rbtcBalance).toFixedNoTrailing(6))} RBTC
-          </Header>
-          <Header variant="e2" className="text-text-100">
-            {formatNumberWithCommas(Big(rifBalance).toFixedNoTrailing(2))} RIF
-          </Header>
-        </div>
-      )}
-      <Paragraph variant="body-s" className="text-text-100 mt-2" data-testid="wallet-info-description">
-        {content.walletInfo}
-      </Paragraph>
-    </div>
-  )
-}
-
-interface ContinueButtonProps {
-  onClick: () => void
-  className?: string
-}
-
-const ContinueButton = ({ className, onClick }: ContinueButtonProps) => (
-  <Button
-    variant="secondary"
-    className={cn('flex items-center gap-1', className)}
-    onClick={onClick}
-    data-testid="intro-modal-continue-button"
-  >
-    <Span bold>Continue</Span>
-    <ArrowUpRightLightIcon size={24} />
-  </Button>
-)
-
-const ContinueToStakingButton = ({ className, onClick }: ContinueButtonProps) => (
-  <Button variant="primary" className={cn('flex items-center gap-1', className)} onClick={onClick}>
-    <Span bold>Continue to staking</Span>
-  </Button>
 )
