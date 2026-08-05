@@ -21,6 +21,12 @@ interface IntroStepContent {
   description: string
   /** Places to go for this step. Opening one keeps the modal open, on purpose. */
   providers: ProviderLink[]
+  /**
+   * Shown instead of `description` once every requirement is met. The summary step is
+   * reachable in that state — a user who holds RIF and gas but has never staked sees it as
+   * their only step — and telling them to wait for funds that already landed is simply false.
+   */
+  descriptionWhenReady?: string
 }
 
 export const STEP_CONTENT: Record<IntroStepId, IntroStepContent> = {
@@ -44,7 +50,7 @@ export const STEP_CONTENT: Record<IntroStepId, IntroStepContent> = {
       {
         name: 'OKU',
         Icon: OkuIcon,
-        tagline: 'Bridge from Ethereum to Rootstock',
+        tagline: 'Bridge ETH into RIF on Rootstock',
         url: currentLinks.getRifOku,
       },
       {
@@ -74,7 +80,8 @@ export const STEP_CONTENT: Record<IntroStepId, IntroStepContent> = {
   [INTRO_STEP_SUMMARY]: {
     eyebrow: 'Last step',
     title: 'Ready to stake',
-    description: 'You can stake as soon as both land. Nothing is locked until then.',
+    description: 'You can stake as soon as both land. Nothing happens until you confirm.',
+    descriptionWhenReady: 'Everything is in place. Choose how much RIF to stake on the next screen.',
     providers: [],
   },
 }

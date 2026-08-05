@@ -1,3 +1,5 @@
+import type { Address } from 'viem'
+
 import { AnimatedGradientSurface } from '@/components/AnimatedGradientSurface'
 import { Button } from '@/components/Button'
 import { Modal } from '@/components/Modal'
@@ -8,11 +10,15 @@ import { cn } from '@/lib/utils'
 
 import { ProviderCard } from './components/ProviderCard'
 import { WalletCard } from './components/WalletCard'
+import { WalletIdentity } from './components/WalletIdentity'
 import { STEP_CONTENT } from './config'
 import { INTRO_STEP_GAS, INTRO_STEP_SUMMARY, type UseIntroStepsReturn } from './hooks/useIntroSteps'
 
 /** Pill radius is local to this screen — the shared Button is deliberately still `rounded-sm`. */
 const PILL = 'rounded-full'
+
+const TEXT_BUTTON =
+  'text-bg-100 rounded-sm underline underline-offset-4 focus-visible:outline-bg-100 focus-visible:outline-2 focus-visible:outline-offset-2'
 
 interface Props {
   wizard: UseIntroStepsReturn
@@ -26,15 +32,23 @@ interface Props {
   onSkip: () => void
   onStake: () => void
   onClose: () => void
+  /** The connected wallet, shown so the user knows where to send funds. */
+  address?: Address
+  /** True while a balance re-read is in flight. */
+  isRefreshing?: boolean
+  onRefresh?: () => void
 }
 
 export const IntroModalContent = ({
   wizard,
+  address,
   rifBalance,
   rbtcBalance,
   needsRif,
   needsGas,
   minGas,
+  isRefreshing = false,
+  onRefresh,
   onOpenProvider,
   onSkip,
   onStake,
@@ -42,6 +56,11 @@ export const IntroModalContent = ({
 }: Props) => {
   const { currentStep, currentIndex, totalSteps, isFirstStep, isLastStep, goNext, goBack } = wizard
   const content = STEP_CONTENT[currentStep.id]
+  const isEverythingMet = !needsRif && !needsGas
+  const description =
+    currentStep.id === INTRO_STEP_SUMMARY && isEverythingMet
+      ? (content.descriptionWhenReady ?? content.description)
+      : content.description
 
   return (
     <Modal
@@ -67,75 +86,103 @@ export const IntroModalContent = ({
             top band inside a fullscreen sheet, so no radius there. */}
         <AnimatedGradientSurface
           step={currentIndex}
-          className="h-[30dvh] shrink-0 md:h-auto md:w-[36%] md:rounded-l-3xl"
+          // `min-h` rather than a fixed `h` on mobile: at 30dvh the wallet card was clipped on
+          // any phone shorter than ~700px. It now takes the height its content needs.
+          className="min-h-[30dvh] shrink-0 md:h-auto md:min-h-0 md:w-[36%] md:rounded-l-3xl"
         >
           {/* The surface wraps children in its own full-height div, so the layout has to live
               on a child of it rather than on the surface's own className. */}
           <div className="flex h-full flex-col justify-between gap-4 p-4 md:p-6">
-            <Label variant="tag" caps className="text-text-100">
-              Your wallet
-            </Label>
-            <WalletCard rifBalance={rifBalance} rbtcBalance={rbtcBalance} needsRif={needsRif} />
+            {/* Padded away from the modal's absolutely-positioned close button. */}
+            <WalletIdentity address={address} className="pr-10" />
+            <WalletCard
+              rifBalance={rifBalance}
+              rbtcBalance={rbtcBalance}
+              needsRif={needsRif}
+              needsGas={needsGas}
+            />
           </div>
         </AnimatedGradientSurface>
 
         <div className="flex min-h-0 flex-1 flex-col">
           <div className="min-h-0 flex-1 overflow-y-auto p-4 pt-10 md:p-6 md:pt-12">
-            <div className="mb-6 flex flex-row items-center justify-between gap-4">
-              <Label variant="tag" caps className="text-bg-40" data-testid="intro-step-counter">
-                Step {currentIndex + 1} of {totalSteps}
+            {/* Hidden when there is only one step: "STEP 1 OF 1" is noise, and StepDots
+                already hides itself for the same reason. */}
+            {totalSteps > 1 && (
+              <div className="mb-6 flex flex-row items-center justify-between gap-4">
+                <Label variant="tag" caps className="text-bg-40" data-testid="intro-step-counter">
+                  Step {currentIndex + 1} of {totalSteps}
+                </Label>
+                <StepDots total={totalSteps} current={currentIndex} />
+              </div>
+            )}
+
+            {/* The step swaps content in place with no navigation, so without this a screen
+                reader user hears nothing at all after pressing Next. */}
+            <div aria-live="polite" aria-atomic="true">
+              <Label variant="tag" caps className="text-bg-40">
+                {content.eyebrow}
               </Label>
-              <StepDots total={totalSteps} current={currentIndex} />
+              <Header variant="h2" caps className="text-bg-100 mt-1" data-testid="intro-step-title">
+                {content.title}
+              </Header>
+
+              {description && <Paragraph className="text-bg-100 mt-4">{description}</Paragraph>}
             </div>
-
-            <Label variant="tag" caps className="text-bg-40">
-              {content.eyebrow}
-            </Label>
-            <Header variant="h1" caps className="text-bg-100 mt-1" data-testid="intro-step-title">
-              {content.title}
-            </Header>
-
-            {content.description && <Paragraph className="text-bg-100 mt-4">{content.description}</Paragraph>}
 
             {currentStep.id === INTRO_STEP_GAS && <GasCallout minGas={minGas} />}
 
             {content.providers.length > 0 && (
-              <div className="mt-6 flex flex-col gap-3">
+              <ul className="mt-6 flex list-none flex-col gap-3 p-0">
                 {content.providers.map(provider => (
-                  <ProviderCard
-                    key={`${provider.name}-${provider.tagline}`}
-                    provider={provider}
-                    onOpen={onOpenProvider}
-                  />
+                  <li key={`${provider.name}-${provider.tagline}`}>
+                    <ProviderCard provider={provider} onOpen={onOpenProvider} />
+                  </li>
                 ))}
-              </div>
+              </ul>
             )}
 
             {currentStep.id === INTRO_STEP_SUMMARY && (
-              <div className="mt-6 flex flex-col gap-3">
-                <RequirementRow position={1} label="RIF in your wallet" isDone={!needsRif} />
-                <RequirementRow position={2} label="rBTC for gas" isDone={!needsGas} />
-              </div>
+              <>
+                <ul className="mt-6 flex list-none flex-col gap-3 p-0">
+                  <li>
+                    <RequirementRow position={1} label="RIF in your wallet" isDone={!needsRif} />
+                  </li>
+                  <li>
+                    <RequirementRow position={2} label="rBTC for gas" isDone={!needsGas} />
+                  </li>
+                </ul>
+
+                {/* Only here. The earlier steps say "go and do this" — they are not screens
+                    the user is waiting on, and repeating this under each one competes with
+                    Next for attention. This is the screen that asks "are we there yet", so
+                    this is where re-checking has something to point at. Returning from a
+                    provider tab refreshes on its own, and the balances poll besides; this is
+                    for the user who is sitting here watching a bridge take its time. */}
+                {onRefresh && !isEverythingMet && (
+                  <button
+                    type="button"
+                    onClick={onRefresh}
+                    disabled={isRefreshing}
+                    className={cn(TEXT_BUTTON, 'mt-4 disabled:no-underline disabled:opacity-60')}
+                    data-testid="intro-refresh"
+                  >
+                    <Span variant="body-s">
+                      {isRefreshing ? 'Checking your wallet…' : 'Already sent? Check again'}
+                    </Span>
+                  </button>
+                )}
+              </>
             )}
           </div>
 
           <div className="flex shrink-0 flex-row items-center justify-between gap-4 p-4 md:p-6">
             {isFirstStep ? (
-              <button
-                type="button"
-                onClick={onSkip}
-                className="text-bg-100 underline underline-offset-4"
-                data-testid="intro-skip"
-              >
+              <button type="button" onClick={onSkip} className={TEXT_BUTTON} data-testid="intro-skip">
                 <Span variant="body-s">Skip for now — just explore</Span>
               </button>
             ) : (
-              <button
-                type="button"
-                onClick={goBack}
-                className="text-bg-100 underline underline-offset-4"
-                data-testid="intro-back"
-              >
+              <button type="button" onClick={goBack} className={TEXT_BUTTON} data-testid="intro-back">
                 <Span variant="body-s">Back</Span>
               </button>
             )}
@@ -167,9 +214,14 @@ const GasCallout = ({ minGas }: { minGas: string }) => (
       <Label variant="tag" caps className="text-bg-40">
         You need about
       </Label>
-      <Header variant="e3" className="text-bg-100 mt-1" data-testid="intro-min-gas">
-        {minGas} rBTC
-      </Header>
+      {/* Not a heading — it is the callout's value. `e3` is uppercase by design, which is why
+          the unit is a separate, un-capsed span: "RBTC" is not how the token is written. */}
+      <Span variant="e3" className="text-bg-100 mt-1 block" data-testid="intro-min-gas">
+        {minGas}{' '}
+        <Span variant="body" bold className="text-bg-100">
+          rBTC
+        </Span>
+      </Span>
     </div>
     <Paragraph variant="body-s" className="text-bg-40 max-w-[50%] text-right">
       Covers approving and staking, with room for a few votes.

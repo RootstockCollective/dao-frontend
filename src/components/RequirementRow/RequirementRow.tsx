@@ -37,7 +37,7 @@ export const RequirementRow = ({
     <span
       className={cn(
         'flex h-6 w-6 shrink-0 items-center justify-center rounded-full border',
-        isDone ? 'border-success bg-success' : 'border-bg-40',
+        isDone ? 'border-success-on-light bg-success-on-light' : 'border-bg-40',
       )}
       aria-hidden
     >
@@ -56,7 +56,7 @@ export const RequirementRow = ({
 
     <Paragraph
       variant="body-s"
-      className={isDone ? 'text-success' : 'text-bg-40'}
+      className={isDone ? 'text-success-on-light' : 'text-bg-40'}
       data-testid={`${dataTestId}-status`}
     >
       {isDone ? doneLabel : pendingLabel}

@@ -33,11 +33,11 @@ const onboardingProviders = {
     'https://www.sushi.com/rootstock/swap?token0=NATIVE&token1=0x2acc95758f8b5f583470ba265eb685a8f45fc9d5',
   getRifSymbiosis:
     'https://app.symbiosis.finance/swap?chainIn=Ethereum&chainOut=Rootstock&tokenIn=ETH&tokenOut=0x2acc95758f8b5f583470ba265eb685a8f45fc9d5',
-  // Deliberately the rBTC bridge, not the RIF one: Oku accepts a RIF destination without
-  // erroring but only quotes behind a connected wallet, so the RIF route is unproven. Bridging
-  // to rBTC is verified, and Sushi covers the rBTC -> RIF hop on Rootstock.
+  // Bridges straight to RIF: confirmed to land on Oku with ETH selected to sell and Rootstock
+  // RIF to buy. Oku only quotes a route behind a connected wallet, but that is true of the
+  // whole aggregator and is not a reason to send the user somewhere they did not ask to go.
   getRifOku:
-    'https://oku.trade/bridge?inputChain=ethereum&inToken=0x0000000000000000000000000000000000000000&outputChain=rootstock&outToken=0x0000000000000000000000000000000000000000',
+    'https://oku.trade/bridge?inputChain=ethereum&inToken=0x0000000000000000000000000000000000000000&outputChain=rootstock&outToken=0x2acc95758f8b5f583470ba265eb685a8f45fc9d5',
   getRifBinance: 'https://www.binance.com/en/trade/RIF_USDT?type=spot',
   getRbtcOku:
     'https://oku.trade/bridge?inputChain=ethereum&inToken=0x0000000000000000000000000000000000000000&outputChain=rootstock&outToken=0x0000000000000000000000000000000000000000',

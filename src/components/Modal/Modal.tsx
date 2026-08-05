@@ -63,6 +63,12 @@ export const Modal = ({
 
   if (!fullscreen && height !== 'auto' && typeof height === 'number') {
     containerStyle.height = `${height}px`
+    // `fullscreen` keys off viewport WIDTH only, so a wide-but-short viewport (landscape
+    // phone, 1024x600, devtools docked) still lands here. Without a ceiling the panel keeps
+    // its full height inside a `max-h-dvh overflow-hidden` centred container and gets clipped
+    // at both edges — with the footer buttons among the casualties, unreachable because the
+    // wrapper does not scroll. Mirrors the 95vw the width branch already applies.
+    containerStyle.maxHeight = '95dvh'
   }
 
   useEffect(() => {
@@ -89,11 +95,16 @@ export const Modal = ({
       const last = focusable[focusable.length - 1]
       const active = document.activeElement
 
+      // Focus can sit outside the panel without the user having tabbed there — clicking the
+      // backdrop moves it to <body>. Both directions have to pull it back, or the next Tab
+      // walks into the page behind the modal.
+      const hasEscaped = !panelRef.current.contains(active)
+
       // Wrap around at both ends so Tab can never walk out to the page behind the modal.
-      if (event.shiftKey && (active === first || !panelRef.current.contains(active))) {
+      if (event.shiftKey && (active === first || hasEscaped)) {
         event.preventDefault()
         last.focus()
-      } else if (!event.shiftKey && active === last) {
+      } else if (!event.shiftKey && (active === last || hasEscaped)) {
         event.preventDefault()
         first.focus()
       }

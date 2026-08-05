@@ -120,6 +120,23 @@ describe('Modal', () => {
       expect(document.activeElement).toBe(first)
     })
 
+    // Clicking the backdrop moves focus to <body> without the user ever tabbing there. Only
+    // Shift+Tab used to pull it back, so a forward Tab walked straight into the page behind.
+    it('pulls focus back into the panel when Tab is pressed from outside it', () => {
+      render(
+        <Modal onClose={vi.fn()} trapFocus>
+          <button>first</button>
+          <button>last</button>
+        </Modal>,
+      )
+
+      ;(document.activeElement as HTMLElement | null)?.blur()
+      fireEvent.keyDown(document, { key: 'Tab' })
+
+      // The close button is the panel's first focusable, so that is where a forward wrap lands.
+      expect(document.activeElement).toBe(screen.getByTestId('CloseButton'))
+    })
+
     it('restores focus to the trigger on unmount', () => {
       const trigger = document.createElement('button')
       document.body.appendChild(trigger)
