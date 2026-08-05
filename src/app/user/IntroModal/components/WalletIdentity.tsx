@@ -7,6 +7,8 @@ import { BiCopyIcon } from '@/components/Icons'
 import { Span } from '@/components/Typography'
 import { cn, shortAddress } from '@/lib/utils'
 
+import { GLASS_STYLE } from './glass'
+
 interface WalletIdentityProps {
   address?: Address
   className?: string
@@ -42,7 +44,16 @@ export const WalletIdentity = ({ address, className }: WalletIdentityProps) => {
   }
 
   return (
-    <div className={cn('flex flex-row items-center gap-2', className)} data-testid="intro-wallet-identity">
+    // Same dark glass as the balances card. White text straight on the gradient measures
+    // 2.3:1 against the orange end and worse under the pale blob; on the glass it is 9:1.
+    <div
+      className={cn(
+        'inline-flex w-fit flex-row items-center gap-2 rounded-full py-1.5 pr-2 pl-1.5',
+        GLASS_STYLE,
+        className,
+      )}
+      data-testid="intro-wallet-identity"
+    >
       <span className="shrink-0 rounded-full bg-white leading-none">
         <Jdenticon size="20" value={address} />
       </span>

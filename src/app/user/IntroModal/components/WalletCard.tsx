@@ -2,12 +2,7 @@ import { Paragraph, Span } from '@/components/Typography'
 import Big from '@/lib/big'
 import { cn, formatNumberWithCommas } from '@/lib/utils'
 
-/**
- * Dark glass, not light. The card sits on the bright part of the gradient, so a white overlay
- * washes out and the white text loses contrast — it has to darken what is behind it.
- */
-const GLASS_STYLE =
-  'rounded-2xl bg-bg-100/65 shadow-[inset_0px_0px_14px_0px_rgba(255,255,255,0.12)] backdrop-blur-md'
+import { GLASS_STYLE } from './glass'
 
 interface WalletCardProps {
   rifBalance: string
@@ -43,7 +38,7 @@ const getStatusLabel = (needsRif: boolean, needsGas: boolean) => {
  * the reward for having gone.
  */
 export const WalletCard = ({ rifBalance, rbtcBalance, needsRif, needsGas, className }: WalletCardProps) => (
-  <div className={cn('p-4', GLASS_STYLE, className)} data-testid="wallet-info">
+  <div className={cn('rounded-2xl p-4', GLASS_STYLE, className)} data-testid="wallet-info">
     {/* Heading typography without heading semantics: a balance is data, not a section title,
         and as an <h1> it outranked the step title and became the dialog's first heading. */}
     <Span variant="h1" caps className="text-text-100 flex flex-row items-end gap-2">
