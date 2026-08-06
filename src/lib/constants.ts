@@ -182,3 +182,10 @@ export const PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD = Number(
 )
 
 export const ABI_CYCLES_LIMIT = 12
+
+/**
+ * Distribution cycles in a year, at the current 14-day cadence. This is the exponent that
+ * annualises a single cycle's payout in the ABI formula, so anything projecting a yearly
+ * figure has to use the same number or it will disagree with the published ABI.
+ */
+export const CYCLES_PER_YEAR = 26

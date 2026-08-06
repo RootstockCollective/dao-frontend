@@ -1,5 +1,8 @@
 import { JSX } from 'react'
-const DEFAULT_CLASSES = 'rounded-[6px] bg-white h-[6px] rounded-[20px] relative flex overflow-hidden'
+
+import { cn } from '@/lib/utils'
+
+const TRACK_CLASSES = 'h-[6px] relative flex rounded-[20px]'
 
 interface Value {
   value: number
@@ -8,19 +11,38 @@ interface Value {
 
 interface Props {
   values: Value[]
+  /**
+   * Draw each slice as its own rounded pill separated by a gap, rather than one continuous
+   * track. Reads better when the slices are two parts of a single quantity.
+   */
+  segmented?: boolean
+  className?: string
+  /** Describes the breakdown for screen readers, e.g. "Backers 64%, Builders 36%". */
+  'aria-label'?: string
 }
 
-export const ComparativeProgressBar = ({ values }: Props) => {
+export const ComparativeProgressBar = ({
+  values,
+  segmented = false,
+  className,
+  'aria-label': ariaLabel,
+}: Props) => {
   const total = values.reduce((acc, { value }) => acc + value, 0)
 
   return (
-    <div className={DEFAULT_CLASSES}>
-      {values.map(({ value, color }, index) => {
-        const percentage = (value / total) * 100
-        return (
-          <div key={index} style={{ width: `${percentage}%`, height: '6px', backgroundColor: color }}></div>
-        )
-      })}
+    <div
+      role="img"
+      aria-label={ariaLabel}
+      className={cn(TRACK_CLASSES, segmented ? 'gap-1' : 'bg-white overflow-hidden', className)}
+    >
+      {values.map(({ value, color }, index) => (
+        <div
+          key={index}
+          // A bar with nothing in it would otherwise compute a NaN width.
+          style={{ width: total > 0 ? `${(value / total) * 100}%` : '0%', backgroundColor: color }}
+          className={cn('h-full', segmented && 'rounded-[20px]')}
+        />
+      ))}
     </div>
   )
 }
