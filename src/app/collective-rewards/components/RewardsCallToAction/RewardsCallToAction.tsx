@@ -8,15 +8,13 @@ import { WeiPerEther } from '@/lib/constants'
 import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
-import { useGetCycleHistory } from '../../rewards/hooks/useGetCycleHistory'
-import { useGetActiveBuildersCount } from '../../shared/hooks/useGetActiveBuildersCount'
+import { useCycleDashboard } from '../../context/CycleDashboardContext'
 import { useHandleErrors } from '../../utils'
 import { RewardsCallToActionContent } from './RewardsCallToActionContent'
 
 export const RewardsCallToAction = ({ className }: { className?: string }) => {
   const { data: estimatedRewards, error } = useGetBuilderEstimatedRewards()
-  const { data: cycles } = useGetCycleHistory()
-  const { data: buildersData } = useGetActiveBuildersCount()
+  const { runningCycle, buildersCount } = useCycleDashboard()
   const { prices } = usePricesContext()
 
   useHandleErrors({ error, title: 'Error loading upcoming rewards' })
@@ -52,8 +50,9 @@ export const RewardsCallToAction = ({ className }: { className?: string }) => {
     <RewardsCallToActionContent
       backersUpcoming={backersUpcoming}
       buildersUpcoming={buildersUpcoming}
-      backersCount={cycles[0]?.backersCount ?? null}
-      buildersCount={buildersData?.count ?? null}
+      // These describe what is heading out in the open cycle, so they ignore the page selection.
+      backersCount={runningCycle?.backersCount ?? null}
+      buildersCount={buildersCount}
       className={className}
     />
   )

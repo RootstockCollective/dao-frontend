@@ -13,6 +13,7 @@ import {
 } from 'recharts'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { SegmentedControl } from '@/components/SegmentedControl'
 import { Header, Label, Span } from '@/components/Typography'
 import { STRIF } from '@/lib/constants'
 import { cn, millify } from '@/lib/utils'
@@ -90,31 +91,24 @@ const RangeToggle = ({
   value: CycleChartRange
   onChange: (range: CycleChartRange) => void
 }) => (
-  <div className="flex items-center gap-1 shrink-0" role="group" aria-label="Chart range">
-    {RANGE_OPTIONS.map(({ id, label }) => (
-      <button
-        key={id}
-        type="button"
-        onClick={() => onChange(id)}
-        aria-pressed={value === id}
-        className={cn(
-          'px-3 py-1.5 rounded-full transition-colors cursor-pointer',
-          value === id ? 'bg-v3-bg-accent-60' : 'hover:bg-v3-bg-accent-60/50',
-        )}
+  <SegmentedControl
+    label="Chart range"
+    className="shrink-0"
+    value={value}
+    onChange={onChange}
+    options={RANGE_OPTIONS.map(({ id, label }) => ({ value: id, label }))}
+    optionClassName="px-3 py-1.5 rounded-full hover:bg-v3-bg-accent-60/50"
+    selectedOptionClassName="bg-v3-bg-accent-60"
+    renderLabel={({ label }, isSelected) => (
+      <Label
+        variant="tag-s"
+        caps
+        className={cn('tracking-wider cursor-[inherit]', isSelected ? 'text-v3-text-100' : 'text-v3-text-40')}
       >
-        <Label
-          variant="tag-s"
-          caps
-          className={cn(
-            'tracking-wider cursor-[inherit]',
-            value === id ? 'text-v3-text-100' : 'text-v3-text-40',
-          )}
-        >
-          {label}
-        </Label>
-      </button>
-    ))}
-  </div>
+        {label}
+      </Label>
+    )}
+  />
 )
 
 export interface CycleBackingChartProps {

@@ -1,5 +1,7 @@
 'use client'
 
+import { ReactNode } from 'react'
+
 import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/ComparativeProgressBar'
 import { Span } from '@/components/Typography'
 import Big from '@/lib/big'
@@ -7,12 +9,13 @@ import { STRIF } from '@/lib/constants'
 import { cn, millify } from '@/lib/utils'
 
 import { ONE_DAY_IN_MS } from '../../constants/chartConstants'
+import { SPLIT_COLORS } from '../../constants/dashboardColors'
 import { CycleHistoryEntry } from '../../types'
-import { formatUsdCompact, formatUsdWhole } from '../../utils/dashboardFormatters'
+import { formatCycleWindow, formatUsdCompact, formatUsdWhole } from '../../utils/dashboardFormatters'
 import { AbiHeroCard } from './AbiHeroCard'
 import { MetricCard } from './MetricCard'
 
-const SubLabel = ({ children, className }: { children: React.ReactNode; className?: string }) => (
+const SubLabel = ({ children, className }: { children: ReactNode; className?: string }) => (
   <Span variant="body-xs" className={cn('text-v3-text-40 truncate', className)}>
     {children}
   </Span>
@@ -28,13 +31,16 @@ const getCycleProgress = (cycle: CycleHistoryEntry, nowMs: number) => {
 
 export interface DashboardMetricsContentProps {
   abiPct: number
-  /** Distributed across every cycle to date. */
+  /** Distributed across every cycle to date. Not tied to the selected cycle. */
   paidAllTime: Big
   /** stRIF price, for the fiat equivalent of total backing. */
   strifPrice: number
-  /** The cycle currently open. Everything in this row describes it. */
-  runningCycle?: CycleHistoryEntry
-  /** Active Builders right now. */
+  /**
+   * The cycle these tiles describe. Follows the page's selection, so the labels have to say
+   * which cycle they mean — "paid this cycle" is only true while that cycle is open.
+   */
+  cycle?: CycleHistoryEntry
+  /** Active Builders right now. Applied only when the selected cycle is the running one. */
   buildersCount?: number | null
   /** Injected so stories and tests stay deterministic. */
   nowMs?: number
@@ -43,26 +49,33 @@ export interface DashboardMetricsContentProps {
 }
 
 export const DashboardMetricsContent = ({
-  runningCycle,
   abiPct,
   paidAllTime,
-  buildersCount = null,
   strifPrice,
+  cycle,
+  buildersCount = null,
   nowMs = Date.now(),
   isLoading = false,
   className,
 }: DashboardMetricsContentProps) => {
-  const paidThisCycle = runningCycle?.rewardsFiat ?? Big(0)
-  const backing = runningCycle?.backing ?? 0n
-  const backersCount = runningCycle?.backersCount ?? null
-  const progress = runningCycle ? getCycleProgress(runningCycle, nowMs) : null
+  const isRunning = cycle?.status === 'running'
+  const paidInCycle = cycle?.rewardsFiat ?? Big(0)
+  const backing = cycle?.backing ?? 0n
+  const backersCount = cycle?.backersCount ?? null
+  // A Builder roster only exists for today, so it cannot describe a settled cycle.
+  const cycleBuildersCount = isRunning ? buildersCount : null
+  const progress = cycle && isRunning ? getCycleProgress(cycle, nowMs) : null
+
+  const paidLabel = isRunning || !cycle ? 'Paid this cycle' : `Paid in cycle ${cycle.cycleNumber}`
 
   const participants =
-    backersCount !== null || buildersCount !== null ? (backersCount ?? 0) + (buildersCount ?? 0) : null
+    backersCount !== null || cycleBuildersCount !== null
+      ? (backersCount ?? 0) + (cycleBuildersCount ?? 0)
+      : null
 
   const participantsBreakdown = [
     backersCount !== null && `${backersCount} Backers`,
-    buildersCount !== null && `${buildersCount} Builders`,
+    cycleBuildersCount !== null && `${cycleBuildersCount} Builders`,
   ].filter(Boolean)
 
   return (
@@ -72,7 +85,8 @@ export const DashboardMetricsContent = ({
     >
       <AbiHeroCard
         abiPct={abiPct}
-        paidThisCycle={paidThisCycle}
+        paidInCycle={paidInCycle}
+        paidInCycleLabel={paidLabel}
         paidAllTime={paidAllTime}
         isLoading={isLoading}
       />
@@ -93,7 +107,11 @@ export const DashboardMetricsContent = ({
         <MetricCard
           label="Distributed all-time"
           value={formatUsdWhole(paidAllTime)}
-          sub={<SubLabel className="text-success">+{formatUsdWhole(paidThisCycle)} this cycle</SubLabel>}
+          sub={
+            <SubLabel className="text-success">
+              +{formatUsdWhole(paidInCycle)} {isRunning ? 'this cycle' : 'that cycle'}
+            </SubLabel>
+          }
           data-testid="metric-distributed"
         />
 
@@ -108,19 +126,22 @@ export const DashboardMetricsContent = ({
 
         <MetricCard
           label={
-            runningCycle && progress
-              ? `Cycle ${runningCycle.cycleNumber} · Day ${progress.currentDay} of ${progress.totalDays}`
+            cycle
+              ? progress
+                ? `Cycle ${cycle.cycleNumber} · Day ${progress.currentDay} of ${progress.totalDays}`
+                : `Cycle ${cycle.cycleNumber} · ${formatCycleWindow(cycle.start, cycle.end)}`
               : 'Current cycle'
           }
-          value={formatUsdWhole(paidThisCycle)}
+          value={formatUsdWhole(paidInCycle)}
           footer={
+            // A settled cycle has no progress left to show; a bar frozen at 100% would be noise.
             progress ? (
               <ComparativeProgressBar
                 className="mt-1"
                 aria-label={`Day ${progress.currentDay} of ${progress.totalDays}`}
                 values={[
                   { value: progress.currentDay, color: 'var(--color-v3-primary)' },
-                  { value: progress.totalDays - progress.currentDay, color: 'var(--color-v3-bg-accent-60)' },
+                  { value: progress.totalDays - progress.currentDay, color: SPLIT_COLORS.track },
                 ]}
               />
             ) : null

@@ -11,9 +11,6 @@ import { REWARD_TOKEN_COLORS, SPLIT_COLORS } from '../../constants/dashboardColo
 import { CycleHistoryEntry, CycleTokenReward } from '../../types'
 import { formatUsdWhole } from '../../utils/dashboardFormatters'
 
-/** Shown wherever a USD figure is derived from spot prices rather than the price at distribution. */
-export const SPOT_PRICE_NOTE = 'USD valued at current prices'
-
 const TokenRow = ({ reward }: { reward: CycleTokenReward }) => (
   <li className="flex items-start justify-between gap-4 py-4 border-b border-v3-bg-accent-60 last:border-b-0">
     <div className="flex items-center gap-2">
@@ -136,10 +133,6 @@ export const CycleDistribution = ({
           buildersCount={buildersCount}
         />
       )}
-
-      <Paragraph variant="body-xs" className="text-v3-text-40">
-        {SPOT_PRICE_NOTE}
-      </Paragraph>
     </div>
   )
 }

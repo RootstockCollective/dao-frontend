@@ -18,8 +18,8 @@ const meta: Meta<typeof DashboardMetricsContent> = {
     docs: {
       description: {
         component:
-          'The dashboard header: the ABI figure alongside four tiles describing the running cycle. ' +
-          'Every number here comes from the same cycle history that feeds the table below it.',
+          'The dashboard header. These tiles follow the cycle selected anywhere on the page, so ' +
+          'their labels name the cycle rather than assuming it is the open one.',
       },
     },
   },
@@ -29,9 +29,10 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-export const Default: Story = {
+/** The running cycle: "paid this cycle", a Builder count, and days remaining. */
+export const RunningCycle: Story = {
   args: {
-    runningCycle: mockCycleHistory[0],
+    cycle: mockCycleHistory[0],
     abiPct: 5,
     paidAllTime,
     buildersCount: 16,
@@ -40,11 +41,22 @@ export const Default: Story = {
   },
 }
 
+/**
+ * A settled cycle selected from the table. The labels name it, the date window replaces the
+ * day counter, and the Builder count drops — today's roster cannot describe a past cycle.
+ */
+export const SettledCycle: Story = {
+  args: {
+    ...RunningCycle.args,
+    cycle: mockCycleHistory[3],
+  },
+}
+
 /** Without the indexed counts, Participants falls back rather than reporting a partial total. */
 export const WithoutParticipantCounts: Story = {
   args: {
-    ...Default.args,
-    runningCycle: { ...mockCycleHistory[0], backersCount: null },
+    ...RunningCycle.args,
+    cycle: { ...mockCycleHistory[0], backersCount: null },
     buildersCount: null,
   },
 }

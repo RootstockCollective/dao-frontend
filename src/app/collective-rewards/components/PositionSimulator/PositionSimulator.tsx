@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 
+import { SegmentedControl } from '@/components/SegmentedControl'
 import { Header, Label, Paragraph, Span } from '@/components/Typography'
 import Big from '@/lib/big'
 import { CYCLES_PER_YEAR, RIF, STRIF } from '@/lib/constants'
@@ -70,29 +71,23 @@ export const PositionSimulator = ({ abiPct, rifPrice, className }: PositionSimul
           </Header>
         </div>
 
-        <div className="grid grid-cols-4 gap-2" role="group" aria-label="Position size">
-          {PRESETS.map(({ value, label }) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setPosition(value)}
-              aria-pressed={position === value}
-              className={cn(
-                'py-2 rounded-full border transition-colors cursor-pointer',
-                position === value
-                  ? 'bg-v3-text-80 border-v3-text-80'
-                  : 'bg-transparent border-v3-bg-accent-60 hover:border-v3-bg-accent-40',
-              )}
+        <SegmentedControl
+          label="Position size"
+          className="grid grid-cols-4 gap-2"
+          value={String(position)}
+          onChange={next => setPosition(Number(next))}
+          options={PRESETS.map(({ value, label }) => ({ value: String(value), label }))}
+          optionClassName="py-2 rounded-full border bg-transparent border-v3-bg-accent-60 hover:border-v3-bg-accent-40"
+          selectedOptionClassName="bg-v3-text-80 border-v3-text-80"
+          renderLabel={({ label }, isSelected) => (
+            <Span
+              variant="body-s"
+              className={cn('cursor-[inherit]', isSelected ? 'text-v3-text-0' : 'text-v3-text-40')}
             >
-              <Span
-                variant="body-s"
-                className={cn('cursor-[inherit]', position === value ? 'text-v3-text-0' : 'text-v3-text-40')}
-              >
-                {label}
-              </Span>
-            </button>
-          ))}
-        </div>
+              {label}
+            </Span>
+          )}
+        />
       </div>
 
       <div className="bg-v3-primary rounded-lg px-4 py-3 flex flex-col gap-0.5">

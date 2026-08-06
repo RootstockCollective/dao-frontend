@@ -1,20 +1,17 @@
 'use client'
 
-import { useGetCycleHistory } from '../../rewards/hooks/useGetCycleHistory'
-import { useGetActiveBuildersCount } from '../../shared/hooks/useGetActiveBuildersCount'
-import { useHandleErrors } from '../../utils'
+import { useCycleDashboard } from '../../context/CycleDashboardContext'
 import { CycleDashboardContent } from './CycleDashboardContent'
 
 export const CycleDashboard = ({ className }: { className?: string }) => {
-  const { data: cycles, isLoading, error } = useGetCycleHistory()
-  const { data: buildersData } = useGetActiveBuildersCount()
-
-  useHandleErrors({ error, title: 'Error loading cycle history' })
+  const { cycles, selectedCycle, selectCycle, buildersCount, isLoading } = useCycleDashboard()
 
   return (
     <CycleDashboardContent
       cycles={cycles}
-      buildersCount={buildersData?.count ?? null}
+      selectedCycle={selectedCycle}
+      onSelectCycle={selectCycle}
+      buildersCount={buildersCount}
       isLoading={isLoading}
       className={className}
     />

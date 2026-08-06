@@ -5,6 +5,7 @@ import { Header, Label, Paragraph, Span } from '@/components/Typography'
 import Big from '@/lib/big'
 import { cn } from '@/lib/utils'
 
+import { SPOT_PRICE_NOTE } from '../../constants/dashboardCopy'
 import { formatUsdWhole } from '../../utils/dashboardFormatters'
 
 const ABI_INFO = (
@@ -24,11 +25,14 @@ const ABI_INFO = (
   </Paragraph>
 )
 
-const Figure = ({ label, value }: { label: string; value: string }) => (
+const Figure = ({ label, value, note }: { label: string; value: string; note?: string }) => (
   <div className="flex flex-col gap-1 min-w-0">
-    <Label variant="tag-s" caps className="text-v3-text-60 tracking-wider">
-      {label}
-    </Label>
+    <div className="flex items-center gap-1">
+      <Label variant="tag-s" caps className="text-v3-text-60 tracking-wider">
+        {label}
+      </Label>
+      {note && <InfoIconButton info={<Paragraph className="text-sm">{note}</Paragraph>} />}
+    </div>
     <Paragraph className="text-v3-text-100 truncate">{value}</Paragraph>
   </div>
 )
@@ -36,18 +40,21 @@ const Figure = ({ label, value }: { label: string; value: string }) => (
 export interface AbiHeroCardProps {
   /** Annualised backer incentive, as a percentage. */
   abiPct: number
-  /** Distributed so far in the running cycle. */
-  paidThisCycle: Big
+  /** Distributed in the cycle the page is describing. */
+  paidInCycle: Big
   /** Distributed across every cycle to date. */
   paidAllTime: Big
+  /** Names the cycle, since it follows the page's selection rather than always being "this". */
+  paidInCycleLabel?: string
   isLoading?: boolean
   className?: string
 }
 
 export const AbiHeroCard = ({
   abiPct,
-  paidThisCycle,
+  paidInCycle,
   paidAllTime,
+  paidInCycleLabel = 'Paid this cycle',
   isLoading = false,
   className,
 }: AbiHeroCardProps) => (
@@ -88,8 +95,8 @@ export const AbiHeroCard = ({
     </div>
 
     <div className="relative flex gap-8">
-      <Figure label="Paid this cycle" value={formatUsdWhole(paidThisCycle)} />
-      <Figure label="All-time" value={formatUsdWhole(paidAllTime)} />
+      <Figure label={paidInCycleLabel} value={formatUsdWhole(paidInCycle)} />
+      <Figure label="All-time" value={formatUsdWhole(paidAllTime)} note={SPOT_PRICE_NOTE} />
     </div>
   </div>
 )

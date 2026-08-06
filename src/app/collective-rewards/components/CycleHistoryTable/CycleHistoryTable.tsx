@@ -1,6 +1,6 @@
 'use client'
 
-import { KeyboardEvent } from 'react'
+import { KeyboardEvent, useRef } from 'react'
 
 import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/ComparativeProgressBar'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
@@ -16,7 +16,6 @@ interface Column {
   label: string
   /** Percentage of the table width. */
   width: string
-  align?: 'left' | 'right'
 }
 
 const COLUMNS: Column[] = [
@@ -90,18 +89,30 @@ const StatusCell = ({ status }: { status: CycleHistoryEntry['status'] }) =>
 interface CycleRowProps {
   cycle: CycleHistoryEntry
   isSelected: boolean
+  /** Only one row is in the tab order; the arrow keys move between them. */
+  isTabbable: boolean
   onSelect?: (cycleNumber: number) => void
+  onNavigate?: (offset: number) => void
 }
 
-const CycleRow = ({ cycle, isSelected, onSelect }: CycleRowProps) => {
+const CycleRow = ({ cycle, isSelected, isTabbable, onSelect, onNavigate }: CycleRowProps) => {
   const isSelectable = Boolean(onSelect)
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTableRowElement>) => {
     if (!onSelect) return
-    if (event.key !== 'Enter' && event.key !== ' ') return
-    // Space would otherwise scroll the page out from under the table.
-    event.preventDefault()
-    onSelect(cycle.cycleNumber)
+
+    if (event.key === 'Enter' || event.key === ' ') {
+      // Space would otherwise scroll the page out from under the table.
+      event.preventDefault()
+      onSelect(cycle.cycleNumber)
+      return
+    }
+
+    const offset = { ArrowDown: 1, ArrowUp: -1 }[event.key]
+    if (offset) {
+      event.preventDefault()
+      onNavigate?.(offset)
+    }
   }
 
   const cellClasses = (index: number) =>
@@ -110,12 +121,13 @@ const CycleRow = ({ cycle, isSelected, onSelect }: CycleRowProps) => {
   return (
     <tr
       aria-selected={isSelectable ? isSelected : undefined}
-      tabIndex={isSelectable ? 0 : undefined}
+      tabIndex={isSelectable ? (isTabbable ? 0 : -1) : undefined}
       onClick={isSelectable ? () => onSelect?.(cycle.cycleNumber) : undefined}
       onKeyDown={handleKeyDown}
       className={cn(
-        'transition-colors outline-none',
-        isSelectable && 'cursor-pointer hover:bg-v3-bg-accent-60 focus-visible:bg-v3-bg-accent-60',
+        'transition-colors',
+        isSelectable &&
+          'cursor-pointer hover:bg-v3-bg-accent-60 focus-visible:bg-v3-bg-accent-60 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-v3-text-100',
       )}
       data-testid={`cycle-history-row-${cycle.cycleNumber}`}
     >
@@ -168,66 +180,85 @@ export const CycleHistoryTable = ({
   onSelectCycle,
   isLoading = false,
   className,
-}: CycleHistoryTableProps) => (
-  <div className={cn('bg-v3-bg-accent-80 rounded-lg p-4 md:p-6', className)} data-testid="cycle-history">
-    <div className="flex items-baseline justify-between gap-4 pb-4">
-      <Label variant="tag-s" caps className="text-v3-text-40 tracking-wider">
-        Cycle history
-      </Label>
-      {onSelectCycle && (
-        <Span variant="body-xs" className="text-v3-text-40 text-right">
-          Select a row to load it above
-        </Span>
+}: CycleHistoryTableProps) => {
+  const bodyRef = useRef<HTMLTableSectionElement>(null)
+
+  const selectedIndex = cycles.findIndex(({ cycleNumber }) => cycleNumber === selectedCycle)
+  // With nothing selected the first row carries the tab stop, so the table is still reachable.
+  const tabbableIndex = selectedIndex === -1 ? 0 : selectedIndex
+
+  const navigateFrom = (index: number, offset: number) => {
+    const nextIndex = Math.min(Math.max(index + offset, 0), cycles.length - 1)
+    if (nextIndex === index) return
+
+    onSelectCycle?.(cycles[nextIndex].cycleNumber)
+    bodyRef.current?.querySelectorAll('tr')[nextIndex]?.focus()
+  }
+
+  return (
+    <div className={cn('bg-v3-bg-accent-80 rounded-lg p-4 md:p-6', className)} data-testid="cycle-history">
+      <div className="flex items-baseline justify-between gap-4 pb-4">
+        <Label variant="tag-s" caps className="text-v3-text-40 tracking-wider">
+          Cycle history
+        </Label>
+        {onSelectCycle && cycles.length > 0 && (
+          <Span variant="body-xs" className="text-v3-text-40 text-right">
+            Select a row to load it above
+          </Span>
+        )}
+      </div>
+
+      {isLoading && cycles.length === 0 ? (
+        // Sized explicitly: the default scales to 20% of its container, which is enormous here.
+        <div className="flex items-center justify-center py-12">
+          <LoadingSpinner size="small" />
+        </div>
+      ) : cycles.length === 0 ? (
+        <EmptyState>No cycles to show yet</EmptyState>
+      ) : (
+        <div className="w-full overflow-x-auto">
+          <table role="grid" className="w-full min-w-[860px] table-fixed border-separate border-spacing-y-1">
+            <colgroup>
+              {COLUMNS.map(({ id, width }) => (
+                <col key={id} style={{ width }} />
+              ))}
+            </colgroup>
+
+            <thead>
+              <tr>
+                {COLUMNS.map(({ id, label }, index) => (
+                  <th
+                    key={id}
+                    scope="col"
+                    className={cn(
+                      'text-left pb-3 font-normal',
+                      index === 0 && 'pl-4',
+                      index === COLUMNS.length - 1 && 'pr-4',
+                    )}
+                  >
+                    <Label variant="tag-s" caps className="text-v3-text-40 tracking-wider">
+                      {label}
+                    </Label>
+                  </th>
+                ))}
+              </tr>
+            </thead>
+
+            <tbody ref={bodyRef}>
+              {cycles.map((cycle, index) => (
+                <CycleRow
+                  key={cycle.cycleNumber}
+                  cycle={cycle}
+                  isSelected={cycle.cycleNumber === selectedCycle}
+                  isTabbable={index === tabbableIndex}
+                  onSelect={onSelectCycle}
+                  onNavigate={offset => navigateFrom(index, offset)}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
-
-    {isLoading && cycles.length === 0 ? (
-      <div className="flex items-center justify-center py-12">
-        <LoadingSpinner />
-      </div>
-    ) : cycles.length === 0 ? (
-      <EmptyState>No cycles to show yet</EmptyState>
-    ) : (
-      <div className="w-full overflow-x-auto">
-        <table role="grid" className="w-full min-w-[860px] table-fixed border-separate border-spacing-y-1">
-          <colgroup>
-            {COLUMNS.map(({ id, width }) => (
-              <col key={id} style={{ width }} />
-            ))}
-          </colgroup>
-
-          <thead>
-            <tr>
-              {COLUMNS.map(({ id, label }, index) => (
-                <th
-                  key={id}
-                  scope="col"
-                  className={cn(
-                    'text-left pb-3 font-normal',
-                    index === 0 && 'pl-4',
-                    index === COLUMNS.length - 1 && 'pr-4',
-                  )}
-                >
-                  <Label variant="tag-s" caps className="text-v3-text-40 tracking-wider">
-                    {label}
-                  </Label>
-                </th>
-              ))}
-            </tr>
-          </thead>
-
-          <tbody>
-            {cycles.map(cycle => (
-              <CycleRow
-                key={cycle.cycleNumber}
-                cycle={cycle}
-                isSelected={cycle.cycleNumber === selectedCycle}
-                onSelect={onSelectCycle}
-              />
-            ))}
-          </tbody>
-        </table>
-      </div>
-    )}
-  </div>
-)
+  )
+}
