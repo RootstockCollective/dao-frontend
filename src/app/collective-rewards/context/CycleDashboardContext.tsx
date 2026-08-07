@@ -53,12 +53,25 @@ export const CycleDashboardProvider = ({ children }: { children: ReactNode }) =>
   const value = useMemo<CycleDashboardValue>(() => {
     // Cycles arrive newest first, so the head is the one currently running.
     const runningCycle = cycles[0]
+    /**
+     * A settled cycle whose NotifyReward events never landed renders a dash where its split
+     * should be, and if it happens to be the newest one that is the first thing a visitor
+     * sees. Skip past it to the newest cycle that can answer in full.
+     *
+     * A *running* cycle is exempt: it legitimately has no split for the first hours of its
+     * life, and it is the one the page is built around — dropping to an older cycle would
+     * hide the live one behind stale figures.
+     */
+    const defaultCycle =
+      runningCycle?.status === 'running'
+        ? runningCycle
+        : (cycles.find(({ backersShare }) => backersShare !== null) ?? runningCycle)
 
     return {
       cycles,
       isLoading,
       runningCycle,
-      selectedCycle: cycles.find(({ cycleNumber }) => cycleNumber === selectedCycleNumber) ?? runningCycle,
+      selectedCycle: cycles.find(({ cycleNumber }) => cycleNumber === selectedCycleNumber) ?? defaultCycle,
       selectCycle,
       paidAllTime: cycles.reduce((acc, { rewardsFiat }) => acc.add(rewardsFiat), Big(0)),
       buildersCount: buildersData?.count ?? null,
