@@ -3,6 +3,8 @@ import { ReactNode } from 'react'
 import { Header, Label } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
+import { CARD_RADIUS } from '../../constants/dashboardSurface'
+
 export interface MetricCardProps {
   label: ReactNode
   value: ReactNode
@@ -24,7 +26,7 @@ export const MetricCard = ({
   'data-testid': dataTestId = 'MetricCard',
 }: MetricCardProps) => (
   <div
-    className={cn('bg-v3-bg-accent-80 rounded-lg p-4 md:p-5 flex flex-col gap-2 min-w-0', className)}
+    className={cn('bg-v3-bg-accent-80 p-4 md:p-5 flex flex-col gap-2 min-w-0', CARD_RADIUS, className)}
     data-testid={dataTestId}
   >
     <Label variant="tag-s" caps className="text-v3-text-40 tracking-wider">

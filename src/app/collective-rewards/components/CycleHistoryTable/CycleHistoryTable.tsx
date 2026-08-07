@@ -5,11 +5,17 @@ import { KeyboardEvent, useRef } from 'react'
 import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/ComparativeProgressBar'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Label, Paragraph, Span } from '@/components/Typography'
-import { cn, millify } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 
 import { SPLIT_COLORS } from '../../constants/dashboardColors'
+import { CARD_RADIUS } from '../../constants/dashboardSurface'
 import { CycleHistoryEntry } from '../../types'
-import { formatCycleWindow, formatSplitLabel, formatUsdWhole } from '../../utils/dashboardFormatters'
+import {
+  formatBackingCompact,
+  formatCycleWindow,
+  formatSplitLabel,
+  formatUsdWhole,
+} from '../../utils/dashboardFormatters'
 
 interface Column {
   id: string
@@ -29,19 +35,14 @@ const COLUMNS: Column[] = [
 ]
 
 /**
- * A row's selected outline is drawn per cell rather than on the `<tr>`, because borders on
- * table rows don't render reliably. `border-separate` keeps the cell borders from collapsing
- * into each other.
+ * Selection is a filled row plus a short accent bar in the first cell, rather than an outline
+ * around the whole row. An outline had to be assembled per cell — borders on a `<tr>` don't
+ * render reliably — which meant `border-separate`, a transparent border on every cell to stop
+ * the rows shifting, and rounded corners split across two cells. A background needs none of
+ * that, and it reads as quieter next to ten other rows.
  */
-const cellBorderClasses = (isSelected: boolean, isFirst: boolean, isLast: boolean) =>
-  cn(
-    'border-y border-transparent py-4 align-middle',
-    isSelected && 'border-v3-primary',
-    isFirst && 'border-l rounded-l-lg pl-4',
-    isLast && 'border-r rounded-r-lg pr-4',
-    isSelected && isFirst && 'border-l-v3-primary',
-    isSelected && isLast && 'border-r-v3-primary',
-  )
+const cellClasses = (isFirst: boolean, isLast: boolean) =>
+  cn('py-4 align-middle', isFirst && 'relative pl-4 md:pl-6', isLast && 'pr-4 md:pr-6')
 
 const EmptyState = ({ children }: { children: string }) => (
   <div className="flex items-center justify-center py-12">
@@ -75,16 +76,23 @@ const SplitCell = ({ backersShare }: { backersShare: number | null }) => {
   )
 }
 
-const StatusCell = ({ status }: { status: CycleHistoryEntry['status'] }) =>
-  status === 'running' ? (
-    <Span variant="body-s" className="text-success">
-      Running
-    </Span>
-  ) : (
-    <Span variant="body-s" className="text-v3-text-40">
-      Settled
+/** A bordered pill, so the two states read as one column of tokens rather than loose words. */
+const StatusCell = ({ status }: { status: CycleHistoryEntry['status'] }) => {
+  const isRunning = status === 'running'
+
+  return (
+    <Span
+      variant="tag-s"
+      caps
+      className={cn(
+        'inline-flex shrink-0 rounded-full border px-2.5 py-1 tracking-wider whitespace-nowrap',
+        isRunning ? 'border-v3-primary/50 text-v3-primary' : 'border-v3-bg-accent-60 text-v3-text-40',
+      )}
+    >
+      {isRunning ? 'Running' : 'Settled'}
     </Span>
   )
+}
 
 interface CycleRowProps {
   cycle: CycleHistoryEntry
@@ -115,8 +123,7 @@ const CycleRow = ({ cycle, isSelected, isTabbable, onSelect, onNavigate }: Cycle
     }
   }
 
-  const cellClasses = (index: number) =>
-    cellBorderClasses(isSelected, index === 0, index === COLUMNS.length - 1)
+  const cell = (index: number) => cellClasses(index === 0, index === COLUMNS.length - 1)
 
   return (
     <tr
@@ -125,39 +132,47 @@ const CycleRow = ({ cycle, isSelected, isTabbable, onSelect, onNavigate }: Cycle
       onClick={isSelectable ? () => onSelect?.(cycle.cycleNumber) : undefined}
       onKeyDown={handleKeyDown}
       className={cn(
-        'transition-colors',
+        'transition-colors border-t border-v3-bg-accent-60',
+        isSelected && 'bg-v3-bg-accent-60/80',
         isSelectable &&
-          'cursor-pointer hover:bg-v3-bg-accent-60 focus-visible:bg-v3-bg-accent-60 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-v3-text-100',
+          'cursor-pointer hover:bg-v3-bg-accent-60/60 focus-visible:bg-v3-bg-accent-60 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-v3-text-100',
       )}
       data-testid={`cycle-history-row-${cycle.cycleNumber}`}
     >
-      <td className={cellClasses(0)}>
+      <td className={cell(0)}>
+        {/* Decorative: the row already announces itself through `aria-selected`. */}
+        {isSelected && (
+          <span
+            aria-hidden
+            className="absolute left-0 top-1/2 h-7 w-0.5 -translate-y-1/2 rounded-full bg-v3-primary"
+          />
+        )}
         <Span className="font-kk-topo text-v3-text-100">Cycle {cycle.cycleNumber}</Span>
       </td>
 
-      <td className={cellClasses(1)}>
+      <td className={cell(1)}>
         <Span variant="body-s" className="text-v3-text-40 whitespace-nowrap">
           {formatCycleWindow(cycle.start, cycle.end)}
         </Span>
       </td>
 
-      <td className={cellClasses(2)}>
-        <Span className="text-v3-text-100">{millify(cycle.backing)}</Span>
+      <td className={cell(2)}>
+        <Span className="text-v3-text-100">{formatBackingCompact(cycle.backing)}</Span>
       </td>
 
-      <td className={cellClasses(3)}>
+      <td className={cell(3)}>
         <Span className="text-v3-text-100">{formatUsdWhole(cycle.rewardsFiat)}</Span>
       </td>
 
-      <td className={cellClasses(4)}>
+      <td className={cell(4)}>
         <SplitCell backersShare={cycle.backersShare} />
       </td>
 
-      <td className={cellClasses(5)}>
+      <td className={cell(5)}>
         <Span className="text-v3-text-100">{cycle.backersCount ?? '—'}</Span>
       </td>
 
-      <td className={cellClasses(6)}>
+      <td className={cell(6)}>
         <StatusCell status={cycle.status} />
       </td>
     </tr>
@@ -196,8 +211,12 @@ export const CycleHistoryTable = ({
   }
 
   return (
-    <div className={cn('bg-v3-bg-accent-80 rounded-lg p-4 md:p-6', className)} data-testid="cycle-history">
-      <div className="flex items-baseline justify-between gap-4 pb-4">
+    <div
+      className={cn('bg-v3-bg-accent-80 overflow-hidden', CARD_RADIUS, className)}
+      data-testid="cycle-history"
+    >
+      {/* The rule separates the panel's title from the grid, which starts its own header row. */}
+      <div className="flex items-baseline justify-between gap-4 border-b border-v3-bg-accent-60 p-4 md:p-6">
         <Label variant="tag-s" caps className="text-v3-text-40 tracking-wider">
           Cycle history
         </Label>
@@ -216,8 +235,10 @@ export const CycleHistoryTable = ({
       ) : cycles.length === 0 ? (
         <EmptyState>No cycles to show yet</EmptyState>
       ) : (
+        // Full-bleed so a selected row's fill reaches both edges of the panel; the cells carry
+        // the horizontal padding instead.
         <div className="w-full overflow-x-auto">
-          <table role="grid" className="w-full min-w-[860px] table-fixed border-separate border-spacing-y-1">
+          <table role="grid" className="w-full min-w-[860px] table-fixed">
             <colgroup>
               {COLUMNS.map(({ id, width }) => (
                 <col key={id} style={{ width }} />
@@ -231,9 +252,9 @@ export const CycleHistoryTable = ({
                     key={id}
                     scope="col"
                     className={cn(
-                      'text-left pb-3 font-normal',
-                      index === 0 && 'pl-4',
-                      index === COLUMNS.length - 1 && 'pr-4',
+                      'text-left pt-4 pb-3 font-normal md:pt-5',
+                      index === 0 && 'pl-4 md:pl-6',
+                      index === COLUMNS.length - 1 && 'pr-4 md:pr-6',
                     )}
                   >
                     <Label variant="tag-s" caps className="text-v3-text-40 tracking-wider">

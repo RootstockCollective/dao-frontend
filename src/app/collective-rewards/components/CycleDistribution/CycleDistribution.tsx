@@ -2,22 +2,27 @@
 
 import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/ComparativeProgressBar'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
+import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Paragraph, Span } from '@/components/Typography'
 import Big from '@/lib/big'
 import { cn, formatCurrency } from '@/lib/utils'
 
 import { formatSymbol } from '../../../shared/formatter'
-import { REWARD_TOKEN_COLORS, SPLIT_COLORS } from '../../constants/dashboardColors'
+import { SPLIT_COLORS } from '../../constants/dashboardColors'
+import { CARD_RADIUS } from '../../constants/dashboardSurface'
 import { CycleHistoryEntry, CycleTokenReward } from '../../types'
 import { formatUsdWhole } from '../../utils/dashboardFormatters'
 
+const TOKEN_LOGO_SIZE = 22
+
 const TokenRow = ({ reward }: { reward: CycleTokenReward }) => (
   <li className="flex items-start justify-between gap-4 py-4 border-b border-v3-bg-accent-60 last:border-b-0">
-    <div className="flex items-center gap-2">
-      <span
-        aria-hidden
-        className="w-2 h-2 rounded-full shrink-0"
-        style={{ backgroundColor: REWARD_TOKEN_COLORS[reward.tokenKey] }}
+    <div className="flex items-center gap-3">
+      {/* The mark identifies the token; the symbol beside it already names it, so it is decorative. */}
+      <TokenImage
+        symbol={reward.symbol}
+        size={TOKEN_LOGO_SIZE}
+        className="shrink-0 rounded-full object-contain"
       />
       <Span className="text-v3-text-100">{reward.symbol}</Span>
     </div>
@@ -103,7 +108,7 @@ export const CycleDistribution = ({
 
   return (
     <div
-      className={cn('bg-v3-bg-accent-80 rounded-lg p-6 flex flex-col gap-6', className)}
+      className={cn('bg-v3-bg-accent-80 p-6 flex h-full flex-col gap-6', CARD_RADIUS, className)}
       data-testid="cycle-distribution"
     >
       <div className="flex flex-col gap-2">

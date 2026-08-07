@@ -6,6 +6,7 @@ import Big from '@/lib/big'
 import { cn } from '@/lib/utils'
 
 import { SPOT_PRICE_NOTE } from '../../constants/dashboardCopy'
+import { CARD_RADIUS } from '../../constants/dashboardSurface'
 import { formatUsdWhole } from '../../utils/dashboardFormatters'
 
 const ABI_INFO = (
@@ -60,7 +61,8 @@ export const AbiHeroCard = ({
 }: AbiHeroCardProps) => (
   <div
     className={cn(
-      'relative overflow-hidden rounded-lg border border-v3-primary/50 bg-v3-bg-accent-100',
+      'relative overflow-hidden border border-v3-primary/50 bg-v3-bg-accent-100',
+      CARD_RADIUS,
       'p-5 md:p-6 flex flex-col justify-between gap-8 min-w-0',
       className,
     )}

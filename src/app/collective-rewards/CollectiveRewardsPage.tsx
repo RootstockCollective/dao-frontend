@@ -20,7 +20,7 @@ export const CollectiveRewardsPage = () => (
     </Header>
 
     <CycleDashboardProvider>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-4">
         <section aria-labelledby="cr-summary-heading">
           <h2 id="cr-summary-heading" className="sr-only">
             Rewards summary

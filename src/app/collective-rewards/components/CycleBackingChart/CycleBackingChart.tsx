@@ -1,26 +1,18 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ReferenceArea,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from 'recharts'
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { SegmentedControl } from '@/components/SegmentedControl'
 import { Header, Label, Span } from '@/components/Typography'
 import { STRIF } from '@/lib/constants'
-import { cn, millify } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 
 import { BACKING_SERIES_COLOR } from '../../constants/dashboardColors'
+import { CARD_RADIUS } from '../../constants/dashboardSurface'
 import { CycleHistoryEntry } from '../../types'
-import { formatCycleWindow } from '../../utils/dashboardFormatters'
+import { formatBackingCompact, formatCycleWindow } from '../../utils/dashboardFormatters'
 import { CycleBackingTooltip } from './CycleBackingTooltip'
 
 export type CycleChartRange = 'ten-cycles' | 'six-months' | 'all'
@@ -39,10 +31,18 @@ const RANGE_OPTIONS: RangeOption[] = [
   { id: 'all', label: 'All', cycles: null },
 ]
 
-const CHART_HEIGHT = 320
+/**
+ * Floor rather than a fixed height: the card stretches to match the distribution panel beside
+ * it, and the plot takes whatever that leaves so the two never end on different lines.
+ */
+const CHART_MIN_HEIGHT = 220
 /** Above this many categories the axis labels collide, so we thin them out. */
 const MAX_X_LABELS = 10
-/** Room for the first tick label, which is centred on x=0 and would otherwise be clipped. */
+/**
+ * Room for the first and last tick labels, which are centred on the plot's edges and would
+ * otherwise be clipped. Both sides need it now that the value axis is gone and no longer
+ * reserves width on the right.
+ */
 const X_LABEL_GUTTER = 20
 
 export interface CycleChartPoint {
@@ -152,16 +152,10 @@ export const CycleBackingChart = ({
   const highlightedIndex = data.findIndex(({ cycleNumber }) => cycleNumber === selectedCycle)
   const resolvedIndex = highlightedIndex === -1 ? data.length - 1 : highlightedIndex
   const highlighted = data[resolvedIndex]
-  /**
-   * A band needs two distinct categories to have any width — passing the same label for both
-   * edges renders nothing. Shading from the previous cycle covers the selected cycle's segment,
-   * which is what the design shows.
-   */
-  const bandStart = data[resolvedIndex - 1]?.label ?? highlighted?.label
 
   return (
     <div
-      className={cn('bg-v3-bg-accent-80 rounded-lg p-4 md:p-6 flex flex-col gap-4', className)}
+      className={cn('bg-v3-bg-accent-80 p-4 md:p-6 flex h-full flex-col gap-4', CARD_RADIUS, className)}
       data-testid="cycle-backing-chart"
     >
       <div className="flex flex-wrap items-start justify-between gap-4">
@@ -171,7 +165,7 @@ export const CycleBackingChart = ({
           </Label>
           <div className="flex flex-wrap items-baseline gap-3">
             <Header variant="h1" className="text-v3-text-100">
-              {highlighted ? `${millify(highlighted.backing)} ${STRIF}` : '—'}
+              {highlighted ? `${formatBackingCompact(highlighted.backing)} ${STRIF}` : '—'}
             </Header>
             {highlighted && (
               <Span variant="body-s" className="text-v3-text-40">
@@ -185,15 +179,17 @@ export const CycleBackingChart = ({
       </div>
 
       {isLoading && data.length === 0 ? (
-        <div className="flex items-center justify-center" style={{ height: CHART_HEIGHT }}>
+        <div className="flex flex-1 items-center justify-center" style={{ minHeight: CHART_MIN_HEIGHT }}>
           <LoadingSpinner />
         </div>
       ) : (
-        <div style={{ height: CHART_HEIGHT }}>
+        // `min-h-0` so the plot can be sized by the row rather than by its own content, which
+        // is what a flex child defaults to and would stop the container from ever shrinking.
+        <div className="min-h-0 flex-1" style={{ minHeight: CHART_MIN_HEIGHT }}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={data}
-              margin={{ top: 8, right: 0, bottom: 0, left: X_LABEL_GUTTER }}
+              margin={{ top: 8, right: X_LABEL_GUTTER, bottom: 0, left: X_LABEL_GUTTER }}
               onClick={({ activeLabel }) => {
                 const clicked = data.find(({ label }) => label === activeLabel)
                 if (clicked) onSelectCycle?.(clicked.cycleNumber)
@@ -207,11 +203,14 @@ export const CycleBackingChart = ({
                 </linearGradient>
               </defs>
 
-              <CartesianGrid stroke="var(--color-v3-bg-accent-60)" vertical={false} />
-
+              {/*
+                No gridlines and no visible value axis: the design reads this as a shape, not a
+                measurement. Every figure the axis used to carry is still stated exactly — the
+                selected cycle in the header above, any other cycle in the tooltip.
+              */}
               <XAxis
                 dataKey="label"
-                axisLine={{ stroke: 'var(--color-v3-bg-accent-60)' }}
+                axisLine={false}
                 tickLine={false}
                 interval={xInterval}
                 tickMargin={12}
@@ -219,34 +218,21 @@ export const CycleBackingChart = ({
                 className="font-rootstock-sans"
               />
 
+              {/*
+                Hidden rather than deleted. The scale still has to be declared: `hide` drops the
+                line, ticks and reserved width but keeps the baseline pinned to zero, so the
+                filled area continues to describe the real magnitude. Dropping the element
+                entirely would hand the domain to recharts' defaults and silently change what
+                the shape means.
+              */}
               <YAxis
-                orientation="right"
+                hide
                 // Recharts picks round ticks off the data max; a hand-rolled ceiling
                 // overshot badly (28M of backing produced a 40M axis).
                 domain={[0, 'auto']}
-                tickCount={5}
-                // Headroom in pixels rather than domain units, so the peak clears the top
-                // edge without pushing the ticks off round numbers.
+                // Headroom in pixels rather than domain units, so the peak clears the top edge.
                 padding={{ top: 20 }}
-                // Wrapped because recharts passes the tick index as the second argument,
-                // which millify would read as its separator.
-                tickFormatter={value => millify(value)}
-                axisLine={{ stroke: 'var(--color-v3-primary)' }}
-                tickLine={false}
-                width={52}
-                tick={{ fill: 'var(--color-v3-text-40)', fontSize: 12 }}
-                className="font-rootstock-sans"
               />
-
-              {highlighted && bandStart !== highlighted.label && (
-                <ReferenceArea
-                  x1={bandStart}
-                  x2={highlighted.label}
-                  fill="var(--color-v3-text-100)"
-                  fillOpacity={0.06}
-                  ifOverflow="extendDomain"
-                />
-              )}
 
               <Area
                 type="monotone"

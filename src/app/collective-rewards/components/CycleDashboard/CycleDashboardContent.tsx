@@ -5,6 +5,7 @@ import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
 import { SPOT_PRICE_NOTE } from '../../constants/dashboardCopy'
+import { CARD_RADIUS } from '../../constants/dashboardSurface'
 import { CycleHistoryEntry } from '../../types'
 import { CycleBackingChart } from '../CycleBackingChart'
 import { CycleDistribution } from '../CycleDistribution'
@@ -15,7 +16,12 @@ import { CycleHistoryTable } from '../CycleHistoryTable'
  * column collapses to an empty 360px gap while the chart loads beside it.
  */
 const DistributionPlaceholder = ({ isLoading }: { isLoading: boolean }) => (
-  <div className="bg-v3-bg-accent-80 rounded-lg p-6 flex items-center justify-center min-h-[280px]">
+  <div
+    className={cn(
+      'bg-v3-bg-accent-80 p-6 flex h-full items-center justify-center min-h-[280px]',
+      CARD_RADIUS,
+    )}
+  >
     {isLoading ? (
       <LoadingSpinner size="small" />
     ) : (
@@ -48,14 +54,18 @@ export const CycleDashboardContent = ({
 }: CycleDashboardContentProps) => (
   <section
     aria-labelledby="cycle-dashboard-heading"
-    className={cn('flex flex-col gap-2', className)}
+    className={cn('flex flex-col gap-4', className)}
     data-testid="cycle-dashboard"
   >
     <h2 id="cycle-dashboard-heading" className="sr-only">
       Backing and distribution by cycle
     </h2>
 
-    <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-2 items-start">
+    {/*
+      Stretched rather than top-aligned: the chart and the distribution panel are one row, and
+      letting each take its natural height left a gap under whichever came up shorter.
+    */}
+    <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-4 items-stretch">
       <CycleBackingChart
         cycles={cycles}
         selectedCycle={selectedCycle?.cycleNumber ?? null}

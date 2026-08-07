@@ -6,12 +6,17 @@ import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/Comp
 import { Span } from '@/components/Typography'
 import Big from '@/lib/big'
 import { STRIF } from '@/lib/constants'
-import { cn, millify } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 
 import { ONE_DAY_IN_MS } from '../../constants/chartConstants'
 import { SPLIT_COLORS } from '../../constants/dashboardColors'
 import { CycleHistoryEntry } from '../../types'
-import { formatCycleWindow, formatUsdCompact, formatUsdWhole } from '../../utils/dashboardFormatters'
+import {
+  formatBackingCompact,
+  formatCycleWindow,
+  formatUsdCompact,
+  formatUsdWhole,
+} from '../../utils/dashboardFormatters'
 import { AbiHeroCard } from './AbiHeroCard'
 import { MetricCard } from './MetricCard'
 
@@ -80,7 +85,7 @@ export const DashboardMetricsContent = ({
 
   return (
     <div
-      className={cn('grid grid-cols-1 lg:grid-cols-[minmax(280px,1fr)_minmax(0,2fr)] gap-2', className)}
+      className={cn('grid grid-cols-1 lg:grid-cols-[minmax(280px,1fr)_minmax(0,2fr)] gap-4', className)}
       data-testid="dashboard-metrics"
     >
       <AbiHeroCard
@@ -92,10 +97,10 @@ export const DashboardMetricsContent = ({
       />
 
       {/* The cycle tile carries the longest label ("Cycle 46 · Day 11 of 14"), so it gets the slack. */}
-      <div className="grid grid-cols-2 gap-2 xl:grid-cols-[repeat(3,minmax(0,1fr))_minmax(0,1.3fr)]">
+      <div className="grid grid-cols-2 gap-4 xl:grid-cols-[repeat(3,minmax(0,1fr))_minmax(0,1.3fr)]">
         <MetricCard
           label="Total backing"
-          value={millify(backing)}
+          value={formatBackingCompact(backing)}
           sub={
             <SubLabel>
               {STRIF} · {formatUsdCompact(Big(backing.toString()).mul(strifPrice))}
