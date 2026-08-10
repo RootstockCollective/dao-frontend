@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const DEFAULT_LAG_THRESHOLD_BLOCKS = 1000
+const FETCH_TIMEOUT_MS = 10_000
 
 async function fetchLastSyncedBlock(graphqlUrl: string, syncProgressId: string): Promise<number> {
   const syncProgressQuery = `
@@ -14,6 +15,7 @@ async function fetchLastSyncedBlock(graphqlUrl: string, syncProgressId: string):
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query: syncProgressQuery }),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
   })
   if (!syncRes.ok) {
     throw new Error(`Envio SyncProgress query failed: ${syncRes.status}`)
@@ -41,6 +43,7 @@ async function fetchLastSyncedBlock(graphqlUrl: string, syncProgressId: string):
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ query: proposalFallbackQuery }),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
   })
   if (!propRes.ok) {
     throw new Error(`Envio Proposal fallback query failed: ${propRes.status}`)
@@ -64,6 +67,7 @@ async function fetchChainTip(rpcUrl: string): Promise<number> {
   const res = await fetch(rpcUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     body: JSON.stringify({
       jsonrpc: '2.0',
       method: 'eth_blockNumber',
@@ -98,6 +102,7 @@ async function postSlackAlert(
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ text }),
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
   })
   if (!res.ok) {
     throw new Error(`Slack webhook failed: ${res.status} ${await res.text()}`)

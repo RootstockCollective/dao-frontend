@@ -2,7 +2,7 @@ import { unstable_cache } from 'next/cache'
 
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
 
-import { getCachedProposals } from './fetch-all-proposals'
+import { fetchAllProposals, getCachedProposals } from './fetch-all-proposals'
 
 /**
  * Fetches a single proposal by ID using the cached proposals
@@ -14,7 +14,7 @@ export async function getProposalById(proposalId: string): Promise<ProposalApiRe
 
 /** Transforms the proposals list into a map keyed by proposalId for fast lookup */
 async function transformProposalsIntoMap(): Promise<Record<string, string>> {
-  const { proposals } = await getCachedProposals()
+  const { proposals } = await fetchAllProposals()
   return proposals.reduce(
     (acc, proposal) => ({ ...acc, [proposal.proposalId]: proposal.proposalId }),
     {} as Record<string, string>,
