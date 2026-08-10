@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useMemo } from 'react'
+import { createContext, ReactNode, useContext } from 'react'
 
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useGetSpecificPrices } from '@/app/user/Balances/hooks/useGetSpecificPrices'
@@ -10,16 +10,7 @@ import { getTokenBalance } from '../balanceUtils'
 interface BalancesContextValue {
   balances: TokenBalanceRecord
   isBalancesLoading: boolean
-  /** True while a re-read is in flight, including one over balances already on screen. */
-  isBalancesFetching: boolean
   prices: GetPricesResult
-  /**
-   * Forces an immediate re-read of every balance. The polls are on a block-time interval,
-   * which is far too slow for a screen the user is actively waiting on — anything that knows
-   * funds should have landed by now (a finished transaction, a returning tab, a "check again"
-   * click) should call this rather than wait out the interval.
-   */
-  refetchBalances: () => void
 }
 
 const BalancesContext = createContext<BalancesContextValue>({
@@ -31,9 +22,7 @@ const BalancesContext = createContext<BalancesContextValue>({
     [USDT0]: getTokenBalance(USDT0),
   },
   isBalancesLoading: true,
-  isBalancesFetching: false,
   prices: {},
-  refetchBalances: () => {},
 })
 
 interface BalancesProviderProps {
@@ -41,15 +30,14 @@ interface BalancesProviderProps {
 }
 
 export const BalancesProvider = ({ children }: BalancesProviderProps) => {
-  const { balances, isBalancesLoading, isBalancesFetching, refetchBalances } = useGetAddressBalances()
+  const { balances, isBalancesLoading } = useGetAddressBalances()
   const prices = useGetSpecificPrices()
 
-  const value = useMemo(
-    () => ({ balances, isBalancesLoading, isBalancesFetching, prices, refetchBalances }),
-    [balances, isBalancesLoading, isBalancesFetching, prices, refetchBalances],
+  return (
+    <BalancesContext.Provider value={{ balances, isBalancesLoading, prices }}>
+      {children}
+    </BalancesContext.Provider>
   )
-
-  return <BalancesContext.Provider value={value}>{children}</BalancesContext.Provider>
 }
 
 export const useBalancesContext = () => useContext(BalancesContext)
