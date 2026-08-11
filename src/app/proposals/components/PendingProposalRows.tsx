@@ -1,15 +1,13 @@
 import moment from 'moment'
 
-import { GrantsIcon, HammerIcon } from '@/app/proposals/components/icons'
-import { MilestoneIcon } from '@/app/proposals/components/MilestoneIcon'
 import { type PendingProposal } from '@/app/proposals/hooks/usePendingProposals'
-import { Milestones } from '@/app/proposals/shared/types'
 import { SpinnerIcon } from '@/components/Icons'
 import { Tooltip } from '@/components/Tooltip'
 import { Paragraph, Span } from '@/components/Typography'
 import { shortAddress } from '@/lib/utils'
 import { PENDING_PROPOSAL_WAIT_MESSAGE, VERIFYING_PROPOSAL_WAIT_MESSAGE } from '@/shared/txMessages'
-import { ProposalCategory } from '@/shared/types'
+
+import { CategoryIcon } from './category/Category'
 
 interface PendingProposalRowsProps {
   pendingProposals: PendingProposal[]
@@ -30,6 +28,8 @@ const PendingProposalBadge = ({ label, compact = false }: { label: string; compa
       color="var(--color-bg-100)"
       className="shrink-0 animate-spin"
       aria-label="Proposal loading"
+      aria-hidden="true"
+      focusable="false"
     />
     <Span variant="body-xs" className="uppercase tracking-[0.08em]" bold>
       {label}
@@ -57,25 +57,6 @@ const getPendingProposalCopy = (proposal: PendingProposal) =>
         timing: 'Live in a few minutes',
         tooltip: PENDING_PROPOSAL_WAIT_MESSAGE,
       }
-
-const PendingCategoryIcon = ({ category }: { category: ProposalCategory }) => {
-  switch (category) {
-    case ProposalCategory.Grants:
-      return <GrantsIcon aria-label={category} />
-    case ProposalCategory.Milestone1:
-      return <MilestoneIcon milestone={Milestones.MILESTONE_1} aria-label={category} />
-    case ProposalCategory.Milestone2:
-      return <MilestoneIcon milestone={Milestones.MILESTONE_2} aria-label={category} />
-    case ProposalCategory.Milestone3:
-      return <MilestoneIcon milestone={Milestones.MILESTONE_3} aria-label={category} />
-    case ProposalCategory.Milestone4:
-      return <MilestoneIcon milestone={Milestones.MILESTONE_4} aria-label={category} />
-    case ProposalCategory.Milestone5:
-      return <MilestoneIcon milestone={Milestones.MILESTONE_5} aria-label={category} />
-    default:
-      return <HammerIcon aria-label={category} />
-  }
-}
 
 const SubmittedBy = ({ proposer }: Pick<PendingProposal, 'proposer'>) => (
   <div className="flex min-w-0 items-center gap-1">
@@ -132,7 +113,7 @@ export function PendingProposalDesktopRows({
             <Paragraph className="text-text-40">—</Paragraph>
           </div>
           <div role="cell" className="flex items-center overflow-hidden">
-            <PendingCategoryIcon category={proposal.category} />
+            <CategoryIcon category={proposal.category} aria-label={proposal.category} />
           </div>
           <div role="cell" className="flex items-center justify-center overflow-hidden">
             <PendingStatus label={copy.status} />
@@ -150,7 +131,6 @@ export function PendingProposalMobileRows({ pendingProposals }: PendingProposalR
     return (
       <Tooltip key={proposal.transactionHash} text={copy.tooltip} side="top">
         <div
-          role="row"
           aria-disabled="true"
           tabIndex={0}
           className="mb-5 cursor-wait border-b border-bg-60 bg-primary/5 px-2 pb-5 outline-none focus-visible:ring-1 focus-visible:ring-primary"
@@ -165,7 +145,7 @@ export function PendingProposalMobileRows({ pendingProposals }: PendingProposalR
             <PendingStatus label={copy.status} />
           </div>
           <div className="mt-2 flex items-center gap-2 text-primary">
-            <PendingCategoryIcon category={proposal.category} />
+            <CategoryIcon category={proposal.category} aria-label={proposal.category} />
             <Paragraph variant="body-s">{copy.timing}</Paragraph>
           </div>
         </div>

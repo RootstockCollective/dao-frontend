@@ -19,6 +19,13 @@ export const TX_MESSAGES = {
       severity: 'info',
       loading: true,
     },
+    delayed: {
+      title: 'Still confirming',
+      content:
+        'The transaction was sent, but confirmation is taking longer than expected. No need to submit again.',
+      severity: 'info',
+      loading: false,
+    },
     success: {
       title: 'Almost there',
       content:

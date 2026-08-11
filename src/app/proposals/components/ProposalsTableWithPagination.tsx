@@ -216,6 +216,7 @@ const ProposalsTableWithPagination = forwardRef<ProposalsTableRef, ProposalsTabl
       // Prevent pagination reset on data change
       autoResetPageIndex: false,
     })
+    const visiblePendingProposals = pagination.pageIndex === 0 ? pendingProposals : []
 
     return (
       <>
@@ -227,14 +228,14 @@ const ProposalsTableWithPagination = forwardRef<ProposalsTableRef, ProposalsTabl
             table={table}
             renderLeadingRows={gridTemplateColumns => (
               <PendingProposalDesktopRows
-                pendingProposals={pendingProposals}
+                pendingProposals={visiblePendingProposals}
                 gridTemplateColumns={gridTemplateColumns}
               />
             )}
             data-testid="TableProposals"
           />
         ) : (
-          <ProposalsTableMobile table={table} pendingProposals={pendingProposals} />
+          <ProposalsTableMobile table={table} pendingProposals={visiblePendingProposals} />
         )}
         {proposals.length > 0 && (
           <Pagination pagination={pagination} setPagination={setPagination} data={proposals} table={table} />

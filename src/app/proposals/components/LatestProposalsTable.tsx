@@ -184,6 +184,8 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   const hasSelectedFilters = useMemo(() => {
     return activeFilters.filter(f => !f.isAll && f.type !== FilterType.SEARCH).length > 0
   }, [activeFilters])
+  const hasActiveFilters = useMemo(() => activeFilters.some(filter => !filter.isAll), [activeFilters])
+  const visiblePendingProposals = hasActiveFilters ? [] : pendingProposals
 
   return (
     <div className="py-4 px-6 rounded-sm bg-bg-80">
@@ -262,11 +264,11 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
           </div>
         </motion.div>
         <div className="grow overflow-y-auto">
-          {filteredProposalList.length > 0 || pendingProposals.length > 0 ? (
+          {filteredProposalList.length > 0 || visiblePendingProposals.length > 0 ? (
             <ProposalsTable
               ref={proposalsTableRef}
               proposals={filteredProposalList}
-              pendingProposals={pendingProposals}
+              pendingProposals={visiblePendingProposals}
               isFilterSidebarOpen={isFilterSidebarOpen}
             />
           ) : (

@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useMemo } from 'react'
 import useLocalStorageState from 'use-local-storage-state'
 import type { Address, Hash } from 'viem'
-import { isAddressEqual } from 'viem'
+import { isAddress, isAddressEqual, isHash } from 'viem'
 import { useAccount } from 'wagmi'
 
 import type { Proposal } from '@/app/proposals/shared/types'
 import { currentEnvChain } from '@/config'
-import type { ProposalCategory } from '@/shared/types'
+import { ProposalCategory } from '@/shared/types'
 
 export const PENDING_PROPOSALS_STORAGE_KEY = 'pending-proposals-v1'
 export const PENDING_PROPOSAL_TTL_MS = 60 * 60 * 1000
@@ -30,6 +30,43 @@ export interface PendingProposal {
 
 type PendingProposalInput = Omit<PendingProposal, 'submittedAt' | 'expiresAt' | 'chainId'>
 type SyncedProposal = Pick<Proposal, 'proposalId' | 'name' | 'proposer' | 'Starts'>
+
+const pendingProposalStages = new Set<PendingProposalStage>(['confirming', 'syncing'])
+const proposalCategories = new Set<ProposalCategory>(Object.values(ProposalCategory))
+
+function isPendingProposal(value: unknown): value is PendingProposal {
+  if (!value || typeof value !== 'object') return false
+
+  const proposal = value as Record<string, unknown>
+  return (
+    typeof proposal.transactionHash === 'string' &&
+    isHash(proposal.transactionHash) &&
+    typeof proposal.name === 'string' &&
+    typeof proposal.proposer === 'string' &&
+    isAddress(proposal.proposer, { strict: false }) &&
+    typeof proposal.category === 'string' &&
+    proposalCategories.has(proposal.category as ProposalCategory) &&
+    typeof proposal.stage === 'string' &&
+    pendingProposalStages.has(proposal.stage as PendingProposalStage) &&
+    typeof proposal.submittedAt === 'number' &&
+    Number.isFinite(proposal.submittedAt) &&
+    typeof proposal.expiresAt === 'number' &&
+    Number.isFinite(proposal.expiresAt) &&
+    proposal.expiresAt >= proposal.submittedAt &&
+    typeof proposal.chainId === 'number' &&
+    Number.isInteger(proposal.chainId) &&
+    (proposal.proposalId === undefined || typeof proposal.proposalId === 'string')
+  )
+}
+
+export function parsePendingProposals(value: unknown): PendingProposal[] {
+  return Array.isArray(value) ? value.filter(isPendingProposal) : []
+}
+
+const pendingProposalSerializer = {
+  stringify: (value: unknown) => JSON.stringify(value) ?? '[]',
+  parse: (value: string) => parsePendingProposals(JSON.parse(value)),
+}
 
 function normalizeProposalName(name: string) {
   return name.trim().toLocaleLowerCase()
@@ -76,7 +113,7 @@ function pendingProposalListsMatch(left: PendingProposal[], right: PendingPropos
 export function usePendingProposalStorage() {
   const [storedPendingProposals, setStoredPendingProposals] = useLocalStorageState<PendingProposal[]>(
     PENDING_PROPOSALS_STORAGE_KEY,
-    { defaultValue: [] },
+    { defaultValue: [], serializer: pendingProposalSerializer },
   )
 
   const addPendingProposal = useCallback(
@@ -127,11 +164,10 @@ export function usePendingProposals(proposals: Proposal[]) {
   )
 
   useEffect(() => {
-    setStoredPendingProposals(current => {
-      const reconciled = reconcilePendingProposals(current, proposals)
-      return pendingProposalListsMatch(current, reconciled) ? current : reconciled
-    })
-  }, [proposals, setStoredPendingProposals])
+    if (!pendingProposalListsMatch(storedPendingProposals, reconciledPendingProposals)) {
+      setStoredPendingProposals(reconciledPendingProposals)
+    }
+  }, [reconciledPendingProposals, setStoredPendingProposals, storedPendingProposals])
 
   return useMemo(() => {
     if (!address) return []

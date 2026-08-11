@@ -99,10 +99,7 @@ describe('getProposalCategoryFromMilestone', () => {
     expect(getProposalCategoryFromMilestone(milestone)).toBe(expectedCategory)
   })
 
-  test.each([Milestones.NO_MILESTONE, undefined])(
-    'should use Grants when milestone is %s',
-    milestone => {
-      expect(getProposalCategoryFromMilestone(milestone)).toBe(ProposalCategory.Grants)
-    },
-  )
+  test.each([Milestones.NO_MILESTONE, undefined])('should use Grants when milestone is %s', milestone => {
+    expect(getProposalCategoryFromMilestone(milestone)).toBe(ProposalCategory.Grants)
+  })
 })

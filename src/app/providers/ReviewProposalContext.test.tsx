@@ -1,4 +1,4 @@
-import { waitForTransactionReceipt } from '@wagmi/core'
+import { getTransactionReceipt, waitForTransactionReceipt } from '@wagmi/core'
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { useRouter } from 'next/navigation'
 import useLocalStorageState from 'use-local-storage-state'
@@ -7,12 +7,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useAccount } from 'wagmi'
 
 import { usePendingProposalStorage } from '@/app/proposals/hooks/usePendingProposals'
+import type { ProposalRecord } from '@/app/proposals/shared/types'
 import { showToast, updateToast } from '@/shared/notification'
 import { ProposalCategory } from '@/shared/types'
 
 import { ReviewProposalProvider, useReviewProposal } from './ReviewProposalContext'
 
 vi.mock('@wagmi/core', () => ({
+  getTransactionReceipt: vi.fn(),
   waitForTransactionReceipt: vi.fn(),
 }))
 
@@ -39,6 +41,7 @@ vi.mock('@/app/proposals/hooks/usePendingProposals', () => ({
 
 vi.mock('@/config', () => ({
   config: {},
+  currentEnvChain: { id: 31 },
 }))
 
 vi.mock('@/shared/notification', () => ({
@@ -54,13 +57,22 @@ const SUCCESS_RECEIPT = {
   status: 'success',
   logs: [],
 } as unknown as Awaited<ReturnType<typeof waitForTransactionReceipt>>
+const REVERTED_RECEIPT = {
+  ...SUCCESS_RECEIPT,
+  status: 'reverted',
+} as unknown as Awaited<ReturnType<typeof getTransactionReceipt>>
 const PROPOSAL_CREATED_EVENT = {
   args: {
     proposalId: PROPOSAL_ID,
     proposer: AUTHOR,
   },
 }
+const DRAFT = {
+  category: ProposalCategory.Grants,
+  form: { proposalName: PROPOSAL_NAME },
+} as unknown as ProposalRecord
 
+const mockGetTransactionReceipt = vi.mocked(getTransactionReceipt)
 const mockWaitForTransactionReceipt = vi.mocked(waitForTransactionReceipt)
 const mockUseRouter = vi.mocked(useRouter)
 const mockUseLocalStorageState = vi.mocked(useLocalStorageState)
@@ -82,12 +94,7 @@ function TestConsumer() {
   return (
     <button
       onClick={() =>
-        void waitForTxInBg(
-          TRANSACTION_HASH,
-          PROPOSAL_NAME,
-          ProposalCategory.Grants,
-          mockOnComplete,
-        )
+        void waitForTxInBg(TRANSACTION_HASH, PROPOSAL_NAME, ProposalCategory.Grants, mockOnComplete)
       }
     >
       Publish
@@ -106,11 +113,12 @@ describe('ReviewProposalProvider', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
 
     mockUseRouter.mockReturnValue({ push: mockPush } as never)
     mockUseAccount.mockReturnValue({ address: AUTHOR } as never)
     mockUseLocalStorageState.mockReturnValue([
-      null,
+      DRAFT,
       mockSetRecord,
       { isPersistent: true, removeItem: vi.fn() },
     ] as never)
@@ -127,7 +135,7 @@ describe('ReviewProposalProvider', () => {
     vi.restoreAllMocks()
   })
 
-  it('clears the submitted draft before navigating and does not clear it again after confirmation', async () => {
+  it('navigates immediately and clears only the draft that produced the confirmed proposal', async () => {
     let resolveReceipt!: (receipt: Awaited<ReturnType<typeof waitForTransactionReceipt>>) => void
     const receiptPromise = new Promise<Awaited<ReturnType<typeof waitForTransactionReceipt>>>(resolve => {
       resolveReceipt = resolve
@@ -139,11 +147,9 @@ describe('ReviewProposalProvider', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Publish' }))
 
     await waitFor(() => {
-      expect(mockSetRecord).toHaveBeenCalledOnce()
       expect(mockPush).toHaveBeenCalledWith('/proposals')
     })
-    expect(mockSetRecord).toHaveBeenCalledWith(null)
-    expect(mockSetRecord.mock.invocationCallOrder[0]).toBeLessThan(mockPush.mock.invocationCallOrder[0])
+    expect(mockSetRecord).not.toHaveBeenCalled()
 
     resolveReceipt(SUCCESS_RECEIPT)
 
@@ -152,6 +158,12 @@ describe('ReviewProposalProvider', () => {
       expect(mockOnComplete).toHaveBeenCalledOnce()
     })
     expect(mockSetRecord).toHaveBeenCalledOnce()
+    const clearSubmittedDraft = mockSetRecord.mock.calls[0][0] as (
+      current: ProposalRecord | null,
+    ) => ProposalRecord | null
+    const newerDraft = { ...DRAFT }
+    expect(clearSubmittedDraft(DRAFT)).toBeNull()
+    expect(clearSubmittedDraft(newerDraft)).toBe(newerDraft)
     expect(mockAddPendingProposal).toHaveBeenNthCalledWith(2, {
       transactionHash: TRANSACTION_HASH,
       proposalId: PROPOSAL_ID.toString(),
@@ -167,9 +179,32 @@ describe('ReviewProposalProvider', () => {
     )
   })
 
-  it('removes the confirming placeholder when receipt confirmation fails', async () => {
-    const confirmationError = new Error('Proposal transaction reverted')
-    mockWaitForTransactionReceipt.mockRejectedValue(confirmationError)
+  it('keeps the placeholder and draft when an RPC failure leaves confirmation uncertain', async () => {
+    mockWaitForTransactionReceipt.mockRejectedValue(new Error('RPC unavailable'))
+    mockGetTransactionReceipt.mockRejectedValue(new Error('Receipt unavailable'))
+
+    renderProvider()
+    fireEvent.click(screen.getByRole('button', { name: 'Publish' }))
+
+    await waitFor(() => {
+      expect(mockOnComplete).toHaveBeenCalledOnce()
+    })
+    expect(mockAddPendingProposal).toHaveBeenCalledOnce()
+    expect(mockRemovePendingProposal).not.toHaveBeenCalled()
+    expect(mockSetRecord).not.toHaveBeenCalled()
+    expect(mockParseEventLogs).not.toHaveBeenCalled()
+    expect(mockUpdateToast).toHaveBeenCalledWith(
+      TRANSACTION_HASH,
+      expect.objectContaining({
+        dataTestId: `info-tx-${TRANSACTION_HASH}`,
+        title: 'Still confirming',
+      }),
+    )
+  })
+
+  it('removes the placeholder after a receipt proves the transaction reverted', async () => {
+    mockWaitForTransactionReceipt.mockRejectedValue(new Error('Proposal transaction reverted'))
+    mockGetTransactionReceipt.mockResolvedValue(REVERTED_RECEIPT)
 
     renderProvider()
     fireEvent.click(screen.getByRole('button', { name: 'Publish' }))
@@ -177,8 +212,7 @@ describe('ReviewProposalProvider', () => {
     await waitFor(() => {
       expect(mockRemovePendingProposal).toHaveBeenCalledWith(TRANSACTION_HASH)
     })
-    expect(mockAddPendingProposal).toHaveBeenCalledOnce()
-    expect(mockParseEventLogs).not.toHaveBeenCalled()
+    expect(mockSetRecord).not.toHaveBeenCalled()
     expect(mockUpdateToast).toHaveBeenCalledWith(
       TRANSACTION_HASH,
       expect.objectContaining({ dataTestId: `error-tx-${TRANSACTION_HASH}` }),
@@ -197,12 +231,77 @@ describe('ReviewProposalProvider', () => {
       expect(mockRemovePendingProposal).toHaveBeenCalledWith(TRANSACTION_HASH)
     })
     expect(mockAddPendingProposal).toHaveBeenCalledOnce()
+    expect(mockSetRecord).not.toHaveBeenCalled()
     expect(mockUpdateToast).toHaveBeenCalledTimes(1)
     expect(mockUpdateToast).toHaveBeenCalledWith(
       TRANSACTION_HASH,
       expect.objectContaining({ dataTestId: `error-tx-${TRANSACTION_HASH}` }),
     )
     expect(mockOnComplete).toHaveBeenCalledOnce()
+  })
+
+  it('does not turn a successful submission into an error when the wallet address disappears', async () => {
+    mockUseAccount.mockReturnValue({ address: undefined } as never)
+    mockWaitForTransactionReceipt.mockResolvedValue(SUCCESS_RECEIPT)
+    mockParseEventLogs.mockReturnValue([PROPOSAL_CREATED_EVENT] as never)
+
+    renderProvider()
+    fireEvent.click(screen.getByRole('button', { name: 'Publish' }))
+
+    await waitFor(() => {
+      expect(mockOnComplete).toHaveBeenCalledOnce()
+    })
+    expect(mockPush).toHaveBeenCalledWith('/proposals')
+    expect(mockAddPendingProposal).toHaveBeenCalledOnce()
+    expect(mockAddPendingProposal).toHaveBeenCalledWith(
+      expect.objectContaining({
+        transactionHash: TRANSACTION_HASH,
+        proposer: AUTHOR,
+        stage: 'syncing',
+      }),
+    )
+    expect(mockRemovePendingProposal).not.toHaveBeenCalled()
+    expect(mockUpdateToast).toHaveBeenCalledWith(
+      TRANSACTION_HASH,
+      expect.objectContaining({ dataTestId: `success-tx-${TRANSACTION_HASH}` }),
+    )
+  })
+
+  it('resumes monitoring confirming proposals after a reload', async () => {
+    mockUsePendingProposalStorage.mockReturnValue({
+      storedPendingProposals: [
+        {
+          transactionHash: TRANSACTION_HASH,
+          name: PROPOSAL_NAME,
+          proposer: AUTHOR,
+          category: ProposalCategory.Grants,
+          stage: 'confirming',
+          submittedAt: Date.now(),
+          expiresAt: Date.now() + 60_000,
+          chainId: 31,
+        },
+      ],
+      setStoredPendingProposals: vi.fn(),
+      addPendingProposal: mockAddPendingProposal,
+      removePendingProposal: mockRemovePendingProposal,
+    })
+    mockWaitForTransactionReceipt.mockResolvedValue(SUCCESS_RECEIPT)
+    mockParseEventLogs.mockReturnValue([PROPOSAL_CREATED_EVENT] as never)
+
+    renderProvider()
+
+    await waitFor(() => {
+      expect(mockAddPendingProposal).toHaveBeenCalledWith(
+        expect.objectContaining({
+          transactionHash: TRANSACTION_HASH,
+          proposalId: PROPOSAL_ID.toString(),
+          stage: 'syncing',
+        }),
+      )
+    })
+    expect(mockShowToast).not.toHaveBeenCalled()
+    expect(mockUpdateToast).not.toHaveBeenCalled()
+    expect(mockSetRecord).not.toHaveBeenCalled()
   })
 
   it('shows the pending notification before waiting for the receipt', async () => {
