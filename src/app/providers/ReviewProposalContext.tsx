@@ -75,17 +75,13 @@ export function ReviewProposalProvider({ children }: PropsWithChildren) {
           category: proposalCategory,
           stage: 'confirming',
         })
+        setRecord(null)
         router.push('/proposals')
 
         // Wait for transaction confirmation
         const receipt = await waitForTransactionReceipt(config, {
           hash: proposalTxHash,
         })
-
-        if (receipt.status === 'reverted') {
-          removePendingProposal(proposalTxHash)
-          throw new Error('Proposal transaction reverted')
-        }
 
         const [proposalCreatedEvent] = parseEventLogs({
           abi: GovernorAbi,
@@ -94,14 +90,14 @@ export function ReviewProposalProvider({ children }: PropsWithChildren) {
         })
 
         if (!proposalCreatedEvent) {
-          console.error('ProposalCreated event missing from confirmed proposal tx', proposalTxHash)
+          throw new Error('ProposalCreated event missing from confirmed proposal tx')
         }
 
         addPendingProposal({
           transactionHash: proposalTxHash,
-          proposalId: proposalCreatedEvent?.args.proposalId.toString(),
+          proposalId: proposalCreatedEvent.args.proposalId.toString(),
           name: proposalName,
-          proposer: proposalCreatedEvent?.args.proposer ?? address,
+          proposer: proposalCreatedEvent.args.proposer,
           category: proposalCategory,
           stage: 'syncing',
         })
@@ -113,10 +109,9 @@ export function ReviewProposalProvider({ children }: PropsWithChildren) {
           txHash: proposalTxHash,
           toastId: proposalTxHash,
         })
-
-        // Clear stored form data after success
-        setRecord(null)
       } catch (err) {
+        removePendingProposal(proposalTxHash)
+
         if (!isUserRejectedTxError(err)) {
           console.error('Error confirming proposal tx', err)
 

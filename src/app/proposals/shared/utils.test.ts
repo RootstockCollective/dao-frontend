@@ -1,5 +1,8 @@
+import { ProposalCategory } from '@/shared/types'
 import { describe, expect, test } from 'vitest'
-import { getDiscourseLinkFromProposalDescription } from './utils' // adjust import path
+
+import { Milestones } from './types'
+import { getDiscourseLinkFromProposalDescription, getProposalCategoryFromMilestone } from './utils'
 
 describe('getDiscourseLinkFromProposalDescription', () => {
   test('should return undefined when description does not contain DiscourseLink:', () => {
@@ -83,4 +86,23 @@ describe('getDiscourseLinkFromProposalDescription', () => {
 
     expect(result).toBe('link-content')
   })
+})
+
+describe('getProposalCategoryFromMilestone', () => {
+  test.each([
+    [Milestones.MILESTONE_1, ProposalCategory.Milestone1],
+    [Milestones.MILESTONE_2, ProposalCategory.Milestone2],
+    [Milestones.MILESTONE_3, ProposalCategory.Milestone3],
+    [Milestones.MILESTONE_4, ProposalCategory.Milestone4],
+    [Milestones.MILESTONE_5, ProposalCategory.Milestone5],
+  ])('should map milestone %s to proposal category %s', (milestone, expectedCategory) => {
+    expect(getProposalCategoryFromMilestone(milestone)).toBe(expectedCategory)
+  })
+
+  test.each([Milestones.NO_MILESTONE, undefined])(
+    'should use Grants when milestone is %s',
+    milestone => {
+      expect(getProposalCategoryFromMilestone(milestone)).toBe(ProposalCategory.Grants)
+    },
+  )
 })

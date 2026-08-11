@@ -1,7 +1,9 @@
 import moment from 'moment'
 
 import { GrantsIcon, HammerIcon } from '@/app/proposals/components/icons'
+import { MilestoneIcon } from '@/app/proposals/components/MilestoneIcon'
 import { type PendingProposal } from '@/app/proposals/hooks/usePendingProposals'
+import { Milestones } from '@/app/proposals/shared/types'
 import { SpinnerIcon } from '@/components/Icons'
 import { Tooltip } from '@/components/Tooltip'
 import { Paragraph, Span } from '@/components/Typography'
@@ -56,12 +58,24 @@ const getPendingProposalCopy = (proposal: PendingProposal) =>
         tooltip: PENDING_PROPOSAL_WAIT_MESSAGE,
       }
 
-const PendingCategoryIcon = ({ category }: { category: ProposalCategory }) =>
-  category === ProposalCategory.Grants ? (
-    <GrantsIcon aria-label={category} />
-  ) : (
-    <HammerIcon aria-label={category} />
-  )
+const PendingCategoryIcon = ({ category }: { category: ProposalCategory }) => {
+  switch (category) {
+    case ProposalCategory.Grants:
+      return <GrantsIcon aria-label={category} />
+    case ProposalCategory.Milestone1:
+      return <MilestoneIcon milestone={Milestones.MILESTONE_1} aria-label={category} />
+    case ProposalCategory.Milestone2:
+      return <MilestoneIcon milestone={Milestones.MILESTONE_2} aria-label={category} />
+    case ProposalCategory.Milestone3:
+      return <MilestoneIcon milestone={Milestones.MILESTONE_3} aria-label={category} />
+    case ProposalCategory.Milestone4:
+      return <MilestoneIcon milestone={Milestones.MILESTONE_4} aria-label={category} />
+    case ProposalCategory.Milestone5:
+      return <MilestoneIcon milestone={Milestones.MILESTONE_5} aria-label={category} />
+    default:
+      return <HammerIcon aria-label={category} />
+  }
+}
 
 const SubmittedBy = ({ proposer }: Pick<PendingProposal, 'proposer'>) => (
   <div className="flex min-w-0 items-center gap-1">
