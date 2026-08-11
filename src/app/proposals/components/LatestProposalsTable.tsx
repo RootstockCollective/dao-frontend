@@ -3,6 +3,7 @@ import moment from 'moment'
 import { AnimatePresence, motion } from 'motion/react'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import { usePendingProposals } from '@/app/proposals/hooks/usePendingProposals'
 import { Milestones, Proposal } from '@/app/proposals/shared/types'
 import { DebounceSearch } from '@/components/DebounceSearch'
 import { Header } from '@/components/Typography'
@@ -131,6 +132,7 @@ interface LatestProposalsTableProps {
 const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   const isDesktop = useIsDesktop()
   const proposalsTableRef = useRef<ProposalsTableRef>(null)
+  const pendingProposals = usePendingProposals(proposals)
 
   // Sticky header hook - only enabled on mobile/tablet
   const { headerRef } = useStickyHeader({
@@ -260,10 +262,11 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
           </div>
         </motion.div>
         <div className="grow overflow-y-auto">
-          {filteredProposalList.length > 0 ? (
+          {filteredProposalList.length > 0 || pendingProposals.length > 0 ? (
             <ProposalsTable
               ref={proposalsTableRef}
               proposals={filteredProposalList}
+              pendingProposals={pendingProposals}
               isFilterSidebarOpen={isFilterSidebarOpen}
             />
           ) : (

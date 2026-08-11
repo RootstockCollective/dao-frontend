@@ -4,10 +4,13 @@ import { waitForTransactionReceipt } from '@wagmi/core'
 import { useRouter } from 'next/navigation'
 import { createContext, PropsWithChildren, useCallback, useContext, useMemo } from 'react'
 import useLocalStorageState from 'use-local-storage-state'
-import { Hash } from 'viem'
+import { Hash, parseEventLogs } from 'viem'
+import { useAccount } from 'wagmi'
 
+import { usePendingProposalStorage } from '@/app/proposals/hooks/usePendingProposals'
 import { isUserRejectedTxError } from '@/components/ErrorPage/commonErrors'
 import { config } from '@/config'
+import { GovernorAbi } from '@/lib/abis/Governor'
 import { showToast, updateToast } from '@/shared/notification'
 import { TX_MESSAGES } from '@/shared/txMessages'
 import { ProposalCategory } from '@/shared/types'
@@ -35,9 +38,11 @@ const ReviewProposalContext = createContext<ReviewProposalState | null>(null)
  */
 export function ReviewProposalProvider({ children }: PropsWithChildren) {
   const router = useRouter()
+  const { address } = useAccount()
   const [record, setRecord] = useLocalStorageState<ProposalRecord | null>('review-proposal', {
     defaultValue: null,
   })
+  const { addPendingProposal, removePendingProposal } = usePendingProposalStorage()
 
   /**
    * Monitors proposal transaction in background and shows toast notifications.
@@ -46,8 +51,8 @@ export function ReviewProposalProvider({ children }: PropsWithChildren) {
   const waitForTxInBg = useCallback(
     async (
       proposalTxHash: Hash,
-      _proposalName: string,
-      _proposalCategory: ProposalCategory,
+      proposalName: string,
+      proposalCategory: ProposalCategory,
       onComplete?: () => void,
     ) => {
       const { success, error, pending } = TX_MESSAGES.proposal
@@ -61,9 +66,44 @@ export function ReviewProposalProvider({ children }: PropsWithChildren) {
           toastId: proposalTxHash,
         })
 
+        if (!address) throw new Error('Unknown proposal author address')
+
+        addPendingProposal({
+          transactionHash: proposalTxHash,
+          name: proposalName,
+          proposer: address,
+          category: proposalCategory,
+          stage: 'confirming',
+        })
+        router.push('/proposals')
+
         // Wait for transaction confirmation
-        await waitForTransactionReceipt(config, {
+        const receipt = await waitForTransactionReceipt(config, {
           hash: proposalTxHash,
+        })
+
+        if (receipt.status === 'reverted') {
+          removePendingProposal(proposalTxHash)
+          throw new Error('Proposal transaction reverted')
+        }
+
+        const [proposalCreatedEvent] = parseEventLogs({
+          abi: GovernorAbi,
+          logs: receipt.logs,
+          eventName: 'ProposalCreated',
+        })
+
+        if (!proposalCreatedEvent) {
+          console.error('ProposalCreated event missing from confirmed proposal tx', proposalTxHash)
+        }
+
+        addPendingProposal({
+          transactionHash: proposalTxHash,
+          proposalId: proposalCreatedEvent?.args.proposalId.toString(),
+          name: proposalName,
+          proposer: proposalCreatedEvent?.args.proposer ?? address,
+          category: proposalCategory,
+          stage: 'syncing',
         })
 
         // Update to success toast
@@ -74,9 +114,8 @@ export function ReviewProposalProvider({ children }: PropsWithChildren) {
           toastId: proposalTxHash,
         })
 
-        // Clear stored record and navigate after success
+        // Clear stored form data after success
         setRecord(null)
-        router.push('/proposals')
       } catch (err) {
         if (!isUserRejectedTxError(err)) {
           console.error('Error confirming proposal tx', err)
@@ -93,7 +132,7 @@ export function ReviewProposalProvider({ children }: PropsWithChildren) {
         onComplete?.()
       }
     },
-    [router, setRecord],
+    [addPendingProposal, address, removePendingProposal, router, setRecord],
   )
 
   const value = useMemo<ReviewProposalState>(

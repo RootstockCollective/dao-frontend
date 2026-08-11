@@ -1,3 +1,8 @@
+export const PENDING_PROPOSAL_WAIT_MESSAGE =
+  'Already on-chain. It will be live in a few minutes. No need to submit again.'
+export const VERIFYING_PROPOSAL_WAIT_MESSAGE =
+  'Transaction sent. Waiting for on-chain confirmation. No need to submit again.'
+
 export const TX_MESSAGES = {
   proposal: {
     error: {
@@ -15,9 +20,9 @@ export const TX_MESSAGES = {
       loading: true,
     },
     success: {
-      title: 'Proposal successfully created',
+      title: 'Almost there',
       content:
-        'Your proposal has been published successfully! It is now visible to the community for voting. Thank you for your contribution to the Collective.',
+        'Your proposal is already on-chain. It will be live in a few minutes. No need to submit again.',
       severity: 'success',
       loading: false,
     },
