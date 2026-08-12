@@ -24,6 +24,7 @@ vi.mock(import('wagmi'), async importOriginal => ({
 const AUTHOR = '0x0000000000000000000000000000000000000001' as Address
 const OTHER_AUTHOR = '0x0000000000000000000000000000000000000002' as Address
 const TRANSACTION_HASH = `0x${'1'.repeat(64)}` as Hash
+const LATER_TRANSACTION_HASH = `0x${'9'.repeat(64)}` as Hash
 const SUBMITTED_AT = 1_750_000_000_000
 const mockUseAccount = vi.mocked(useAccount)
 
@@ -175,5 +176,33 @@ describe('usePendingProposals', () => {
     renderHook(() => usePendingProposals([]))
 
     expect(setItemSpy).not.toHaveBeenCalled()
+  })
+
+  it('removes only the reconciled placeholders, leaving the rest of storage alone', async () => {
+    const syncedPendingProposal = activePendingProposal()
+    const unrelatedPendingProposal = {
+      ...activePendingProposal(),
+      transactionHash: LATER_TRANSACTION_HASH,
+      name: 'Second proposal',
+    }
+    localStorage.setItem(
+      PENDING_PROPOSALS_STORAGE_KEY,
+      JSON.stringify([syncedPendingProposal, unrelatedPendingProposal]),
+    )
+
+    const syncedProposal = {
+      proposalId: '42',
+      name: syncedPendingProposal.name,
+      proposer: AUTHOR,
+      Starts: moment(syncedPendingProposal.submittedAt),
+    }
+    renderHook(() => usePendingProposals([syncedProposal] as never))
+
+    await waitFor(() => {
+      const stored = parsePendingProposals(
+        JSON.parse(localStorage.getItem(PENDING_PROPOSALS_STORAGE_KEY) ?? 'null'),
+      )
+      expect(stored.map(proposal => proposal.transactionHash)).toEqual([LATER_TRANSACTION_HASH])
+    })
   })
 })

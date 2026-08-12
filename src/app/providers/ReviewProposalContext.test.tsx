@@ -267,7 +267,7 @@ describe('ReviewProposalProvider', () => {
     )
   })
 
-  it('resumes monitoring confirming proposals after a reload', async () => {
+  const resumeConfirmingPlaceholder = () => {
     mockUsePendingProposalStorage.mockReturnValue({
       storedPendingProposals: [
         {
@@ -287,6 +287,10 @@ describe('ReviewProposalProvider', () => {
     })
     mockWaitForTransactionReceipt.mockResolvedValue(SUCCESS_RECEIPT)
     mockParseEventLogs.mockReturnValue([PROPOSAL_CREATED_EVENT] as never)
+  }
+
+  it('resumes monitoring confirming proposals after a reload', async () => {
+    resumeConfirmingPlaceholder()
 
     renderProvider()
 
@@ -301,7 +305,26 @@ describe('ReviewProposalProvider', () => {
     })
     expect(mockShowToast).not.toHaveBeenCalled()
     expect(mockUpdateToast).not.toHaveBeenCalled()
-    expect(mockSetRecord).not.toHaveBeenCalled()
+  })
+
+  it('clears the draft behind a proposal that confirms after a reload, keeping unrelated ones', async () => {
+    resumeConfirmingPlaceholder()
+
+    renderProvider()
+
+    await waitFor(() => {
+      expect(mockSetRecord).toHaveBeenCalledOnce()
+    })
+    const clearSubmittedDraft = mockSetRecord.mock.calls[0][0] as (
+      current: ProposalRecord | null,
+    ) => ProposalRecord | null
+    const unrelatedDraft = {
+      category: ProposalCategory.Grants,
+      form: { proposalName: 'A different proposal' },
+    } as unknown as ProposalRecord
+
+    expect(clearSubmittedDraft(DRAFT)).toBeNull()
+    expect(clearSubmittedDraft(unrelatedDraft)).toBe(unrelatedDraft)
   })
 
   it('shows the pending notification before waiting for the receipt', async () => {

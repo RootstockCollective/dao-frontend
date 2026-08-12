@@ -164,9 +164,20 @@ export function usePendingProposals(proposals: Proposal[]) {
   )
 
   useEffect(() => {
-    if (!pendingProposalListsMatch(storedPendingProposals, reconciledPendingProposals)) {
-      setStoredPendingProposals(reconciledPendingProposals)
-    }
+    if (pendingProposalListsMatch(storedPendingProposals, reconciledPendingProposals)) return
+
+    // Drop exactly the placeholders this render found stale rather than overwriting the list
+    // with a snapshot. Removing known hashes commutes with a concurrent insert, so a
+    // placeholder stored by another submission in the meantime survives either write order.
+    const stalePendingProposals = new Set(
+      storedPendingProposals
+        .filter(proposal => !reconciledPendingProposals.includes(proposal))
+        .map(proposal => proposal.transactionHash),
+    )
+
+    setStoredPendingProposals(current =>
+      current.filter(proposal => !stalePendingProposals.has(proposal.transactionHash)),
+    )
   }, [reconciledPendingProposals, setStoredPendingProposals, storedPendingProposals])
 
   return useMemo(() => {

@@ -34,6 +34,24 @@ class DefinitiveProposalConfirmationError extends Error {}
 type ProposalConfirmationDetails = Pick<PendingProposal, 'transactionHash' | 'name' | 'category'>
 
 /**
+ * Tells whether the stored draft is the one that produced the proposal that just confirmed.
+ *
+ * Within the session we hold the exact draft that was submitted, so identity is the strongest
+ * signal and keeps a newer draft the author started meanwhile. After a reload that reference is
+ * gone and the placeholder's proposal name is all we have left to recognise the draft by.
+ */
+function isSubmittedDraft(
+  current: ProposalRecord | null,
+  proposalName: string,
+  submittedRecord?: ProposalRecord | null,
+) {
+  if (!current) return false
+  if (submittedRecord) return current === submittedRecord
+
+  return current.form.proposalName === proposalName
+}
+
+/**
  * Provides proposal review state management for multi-step proposal creation.
  *
  * Persists form data in localStorage, handles navigation between steps,
@@ -97,9 +115,7 @@ export function ReviewProposalProvider({ children }: PropsWithChildren) {
           stage: 'syncing',
         })
 
-        if (submittedRecord) {
-          setRecord(current => (current === submittedRecord ? null : current))
-        }
+        setRecord(current => (isSubmittedDraft(current, name, submittedRecord) ? null : current))
 
         if (showNotifications) {
           updateToast(transactionHash, {
