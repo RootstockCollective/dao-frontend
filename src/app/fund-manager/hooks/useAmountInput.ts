@@ -33,7 +33,7 @@ export const useAmountInput = ({
   const handlePercentageClick = useCallback(
     (percentage: number) => {
       const balanceStr = formatUnits(balance, decimals)
-      const calculatedAmount = Big(balanceStr).mul(percentage).toString()
+      const calculatedAmount = Big(balanceStr).mul(percentage).toFixedNoTrailing(decimals, 0)
       setAmount(calculatedAmount)
     },
     [balance, decimals],

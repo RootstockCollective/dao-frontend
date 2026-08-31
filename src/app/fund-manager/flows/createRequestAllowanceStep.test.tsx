@@ -25,6 +25,7 @@ const createMockContext = (overrides: Partial<AmountFlowContextValue> = {}): Amo
   amount: '1',
   isValidAmount: true,
   isAmountOverBalance: false,
+  isAmountOverLimit: false,
   errorMessage: '',
   usdEquivalent: '$50,000.00',
   selectedToken: 'WrBTC',
