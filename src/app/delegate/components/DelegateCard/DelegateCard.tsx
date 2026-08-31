@@ -54,7 +54,7 @@ export const DelegateCard = ({
       <BuilderHeader
         address={address}
         name={name}
-        imageIpfs={imageIpfs}
+        image={imageIpfs}
         className="mt-8"
         showFullName={false}
         shouldNotRedirect

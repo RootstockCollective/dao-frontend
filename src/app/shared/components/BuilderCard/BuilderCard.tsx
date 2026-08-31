@@ -53,7 +53,7 @@ export interface BuilderCardProps {
 }
 
 export const BuilderCard = ({
-  builder: { address, builderName, gauge, proposal, stateFlags, backerRewardPct },
+  builder: { address, builderName, gauge, proposal, stateFlags, backerRewardPct, image },
   allocationInputProps,
   estimatedRewards,
   dataTestId = '',
@@ -95,6 +95,7 @@ export const BuilderCard = ({
         <BuilderHeader
           address={address}
           name={builderName}
+          image={image}
           builderPageLink={builderPageLink}
           className="mt-8"
           showFullName={false}

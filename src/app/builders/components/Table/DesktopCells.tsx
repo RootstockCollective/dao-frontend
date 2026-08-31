@@ -1,7 +1,7 @@
 import { HtmlHTMLAttributes, ReactElement, ReactNode } from 'react'
 import { useAccount } from 'wagmi'
 
-import { Jdenticon } from '@/components/Header/Jdenticon'
+import { IpfsAvatar } from '@/components/IpfsAvatar'
 import { cn } from '@/lib/utils'
 import { useTableContext } from '@/shared/context'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
@@ -82,7 +82,13 @@ export const BuilderCell = (props: BuilderCellProps): ReactElement => {
         isSelected={isSelected}
         className="md:pt-3 md:pb-3 rounded-full"
       >
-        <Jdenticon className="rounded-full bg-white w-10" value={props.builder.address} />
+        <IpfsAvatar
+          fallbackClassName="bg-white"
+          size={40}
+          address={props.builder.address}
+          image={props.builder.image}
+          name={props.builder.builderName}
+        />
       </SelectorCell>
 
       <BuilderNameCell {...builderProps} />

@@ -9,7 +9,8 @@ import { cn, shortAddress, truncate } from '@/lib/utils'
 interface BuilderHeaderProps {
   address: Address
   name?: string
-  imageIpfs?: string | null
+  /** Root-relative asset path, IPFS CID, or gateway URL. See `IpfsAvatar`. */
+  image?: string | null
   builderPageLink?: string
   className?: string
   showFullName?: boolean
@@ -20,7 +21,7 @@ interface BuilderHeaderProps {
 export const BuilderHeader = ({
   address,
   name,
-  imageIpfs,
+  image,
   builderPageLink,
   className,
   showFullName = true,
@@ -37,7 +38,7 @@ export const BuilderHeader = ({
       data-testid="builderHeaderContainer"
     >
       <div data-testid="builderAvatar">
-        <IpfsAvatar imageIpfs={imageIpfs} address={address} name={name || shortedAddress} size={88} />
+        <IpfsAvatar image={image} address={address} name={name || shortedAddress} size={88} />
       </div>
       <Header
         className="mt-2 text-center text-v3-primary"

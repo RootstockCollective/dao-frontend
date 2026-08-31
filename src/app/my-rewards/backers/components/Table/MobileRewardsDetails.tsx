@@ -8,8 +8,8 @@ import { RewardsCell } from '@/app/builders/components/Table/Cell/RewardsCell/Re
 import { Button } from '@/components/Button'
 import { Collapsible } from '@/components/Collapsible'
 import { Divider } from '@/components/Divider'
-import { Jdenticon } from '@/components/Header/Jdenticon'
 import { CogIcon } from '@/components/Icons/v3design/CogIcon'
+import { IpfsAvatar } from '@/components/IpfsAvatar'
 import { EmptyPlaceholder } from '@/components/Table/components'
 import { Span } from '@/components/Typography'
 import { Row } from '@/shared/context/TableContext/types'
@@ -34,7 +34,13 @@ const RewardDetailsItem = ({
         <Collapsible.Root className="gap-4" defaultOpen={false}>
           <div className="flex justify-between align-start align-self-stretch">
             <div className="flex align-items-center gap-3 place-items-center">
-              <Jdenticon className="rounded-full bg-white w-10" value={builder.builder.address} />
+              <IpfsAvatar
+                fallbackClassName="bg-white"
+                size={40}
+                address={builder.builder.address}
+                image={builder.builder.image}
+                name={builder.builder.builderName}
+              />
               <BuilderName
                 builder={builder.builder}
                 isHighlighted={false}

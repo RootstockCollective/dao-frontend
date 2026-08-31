@@ -1,0 +1,42 @@
+[
+  {
+    "name": "MoneyOnChain",
+    "address": "0x665078DB7ee465b49D4F56f2aCACC903f62623f2",
+    "image": "/images/builders/moneyonchain.svg"
+  },
+  {
+    "name": "Boltz",
+    "address": "0x6731B962e7fd2B1EC731bb17Be3B8B3544e18896",
+    "image": "/images/builders/boltz.png"
+  },
+  {
+    "name": "Steer Protocol",
+    "address": "0xd9DB26176DD2A905aaF9213581366A5bb3913573",
+    "image": "/images/builders/steer-protocol.png"
+  },
+  {
+    "name": "Vottun",
+    "address": "0x9684fe1eC8829f72c9b6f4CF2ca81A1a81e8bff0",
+    "image": "/images/builders/vottun.svg"
+  },
+  {
+    "name": "Symbiosis",
+    "address": "0x7c5d5222f60853159bbDCc058088587618D61B24",
+    "image": "/images/builders/symbiosis.png"
+  },
+  {
+    "name": "Beexo Wallet",
+    "address": "0xa42279209E7cC8Da94dd3653FD7D8AC1ac744ada",
+    "image": "/images/builders/beexo-wallet.png"
+  },
+  {
+    "name": "OpenOcean",
+    "address": "0x1D1114666D0f21E479C122C138a527DfBC0F2D00",
+    "image": "/images/builders/openocean.png"
+  },
+  {
+    "name": "OpenOcean (reward receiver migration)",
+    "address": "0x7A1aEd10CcEA5FE1463A09dFd80A6062752c9696",
+    "image": "/images/builders/openocean.png"
+  }
+]
