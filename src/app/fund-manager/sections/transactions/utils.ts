@@ -1,12 +1,12 @@
 import type { Address } from 'viem'
 
 import type { RequestType } from '@/app/btc-vault/services/types'
-import { formatDateMonthFirst } from '@/app/btc-vault/services/ui/formatters'
 import { getTxHistoryStatusLabel } from '@/app/btc-vault/services/ui/mappers'
 import type { DisplayStatus } from '@/app/btc-vault/services/ui/types'
 import type { BtcVaultEntityHistoryRow } from '@/app/fund-manager/sections/transactions/hooks/useGetBtcVaultEntitiesHistory'
 import Big from '@/lib/big'
 import { RBTC, WeiPerEther } from '@/lib/constants'
+import { formatDateMonthFirst } from '@/lib/utils'
 import { formatCurrency, formatCurrencyWithLabel, shortAddress } from '@/lib/utils'
 import type { Row } from '@/shared/context'
 
