@@ -11,6 +11,7 @@ import {
 import { useSearchParams } from 'next/navigation'
 import { forwardRef, memo, useCallback, useImperativeHandle, useMemo, useState } from 'react'
 
+import type { PendingProposal } from '@/app/proposals/hooks/usePendingProposals'
 import { Proposal } from '@/app/proposals/shared/types'
 import { Countdown } from '@/components/Countdown'
 import { Pagination } from '@/components/Pagination'
@@ -21,12 +22,14 @@ import Big from '@/lib/big'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 import { Category } from '../components/category'
+import { PendingProposalDesktopRows } from './PendingProposalRows'
 import { ProposalsTableMobile } from './ProposalsTableMobile'
 import { ProposalNameColumn, ProposerColumn } from './table-columns/ProposalNameColumn'
 import { QuorumColumn, VotesColumn } from './table-columns/VotesColumn'
 
 interface ProposalsTableWithPaginationProps {
   proposals: Proposal[]
+  pendingProposals: PendingProposal[]
   isFilterSidebarOpen: boolean
 }
 
@@ -35,7 +38,7 @@ export interface ProposalsTableRef {
 }
 
 const ProposalsTableWithPagination = forwardRef<ProposalsTableRef, ProposalsTableWithPaginationProps>(
-  ({ proposals, isFilterSidebarOpen }, ref) => {
+  ({ proposals, pendingProposals, isFilterSidebarOpen }, ref) => {
     const searchParams = useSearchParams()
     const isDesktop = useIsDesktop()
 
@@ -213,6 +216,7 @@ const ProposalsTableWithPagination = forwardRef<ProposalsTableRef, ProposalsTabl
       // Prevent pagination reset on data change
       autoResetPageIndex: false,
     })
+    const visiblePendingProposals = pagination.pageIndex === 0 ? pendingProposals : []
 
     return (
       <>
@@ -222,12 +226,20 @@ const ProposalsTableWithPagination = forwardRef<ProposalsTableRef, ProposalsTabl
             aria-label="Proposal table"
             stackFirstColumn
             table={table}
+            renderLeadingRows={gridTemplateColumns => (
+              <PendingProposalDesktopRows
+                pendingProposals={visiblePendingProposals}
+                gridTemplateColumns={gridTemplateColumns}
+              />
+            )}
             data-testid="TableProposals"
           />
         ) : (
-          <ProposalsTableMobile table={table} />
+          <ProposalsTableMobile table={table} pendingProposals={visiblePendingProposals} />
         )}
-        <Pagination pagination={pagination} setPagination={setPagination} data={proposals} table={table} />
+        {proposals.length > 0 && (
+          <Pagination pagination={pagination} setPagination={setPagination} data={proposals} table={table} />
+        )}
       </>
     )
   },

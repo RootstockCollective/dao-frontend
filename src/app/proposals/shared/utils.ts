@@ -170,6 +170,23 @@ export const labeledMilestones = [
   },
 ]
 
+export const getProposalCategoryFromMilestone = (milestone?: Milestones): ProposalCategory => {
+  switch (milestone) {
+    case Milestones.MILESTONE_1:
+      return ProposalCategory.Milestone1
+    case Milestones.MILESTONE_2:
+      return ProposalCategory.Milestone2
+    case Milestones.MILESTONE_3:
+      return ProposalCategory.Milestone3
+    case Milestones.MILESTONE_4:
+      return ProposalCategory.Milestone4
+    case Milestones.MILESTONE_5:
+      return ProposalCategory.Milestone5
+    default:
+      return ProposalCategory.Grants
+  }
+}
+
 export const splitCombinedName = (name: string) => {
   const [proposalName, builderName] = name.split(DISPLAY_NAME_SEPARATOR)
   return { proposalName, builderName }
@@ -334,19 +351,7 @@ export function getProposalCategoryFromParsedData(
   const milestoneMatch = description.match(milestoneRegex)
 
   if (milestoneMatch) {
-    const milestoneNumber = milestoneMatch[1]
-    switch (milestoneNumber) {
-      case Milestones.MILESTONE_1:
-        return ProposalCategory.Milestone1
-      case Milestones.MILESTONE_2:
-        return ProposalCategory.Milestone2
-      case Milestones.MILESTONE_3:
-        return ProposalCategory.Milestone3
-      case Milestones.MILESTONE_4:
-        return ProposalCategory.Milestone4
-      case Milestones.MILESTONE_5:
-        return ProposalCategory.Milestone5
-    }
+    return getProposalCategoryFromMilestone(milestoneMatch[1] as Milestones)
   }
 
   // If not builder functions and not milestone, it must be a grant
