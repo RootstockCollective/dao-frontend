@@ -23,6 +23,60 @@ This guide uses [Foundry's Anvil](https://getfoundry.sh/guides/forking-mainnet-w
 
 **Solution**: Use `testnet` environment for Vault testing, `fork` environment for swap testing.
 
+## Swaps, Multicall3, and why Anvil gas limits matter
+
+This section is for anyone new to the repo **or** to Ethereum JSON-RPC. It explains how the app loads swap quotes on a fork and why `npm run fork:anvil` uses the flags it does.
+
+### Background: reading contracts without sending a transaction
+
+To show “you will receive X” for a swap, the app must **ask the chain** what Uniswap’s **Quoter** contract would return. Those asks are **read-only**: they do not move funds. Over HTTP, the usual JSON-RPC method is **`eth_call`**: “simulate this contract call at the latest block and return the result.”
+
+Each `eth_call` has a **gas budget** (how much EVM work the node allows for that simulation). If the simulation needs more gas than allowed, the node returns an error such as **`EVM error OutOfGas`** (often with JSON-RPC code **`-32603`**). That is **not** the same as “no liquidity”—it means the **node refused to finish the simulation**.
+
+### Why there are many reads for one swap (Auto fee tier)
+
+Uniswap V3 splits the same token pair into **separate pools** by **fee tier** (e.g. 0.01%, 0.05%, 0.3%, 1%). In **Auto** mode the app does not know in advance which pool has the best price, so it **probes every standard tier** by calling the Quoter once per tier (four reads for a single-hop pair).
+
+Doing four separate `eth_call`s to the public RPC works but is **slow** (four round trips). The app instead batches those reads.
+
+### What Multicall3 is (in one paragraph)
+
+**Multicall3** is a small, widely deployed **helper contract** (address `0xcA11…` on many chains, including Rootstock mainnet). Its popular entrypoint is **`aggregate3`**: you pass a list of `(target, callData, allowFailure)` entries. The contract **runs each inner call in one EVM execution**. From the **RPC client’s perspective**, that is still **one** outer `eth_call` to Multicall3—not four `eth_call`s to the Quoter.
+
+Libraries like **viem** expose this as `publicClient.multicall({ contracts: [...] })`. The Uniswap swap provider (`src/lib/swap/providers/uniswap.ts`) uses that for **Auto** fee quoting, multihop fee combinations, and **available fee tier** probes (`getAvailableFeeTiers`).
+
+### Inner failures vs outer failures (important for debugging)
+
+With **`allowFailure: true`** (viem’s default here), if one Quoter call **reverts** (e.g. pool missing for that tier), Multicall3 **still returns**: you get a **per-item** `success` / `failure` in the result. That is expected.
+
+A different class of problem is when the **entire** outer `eth_call` to Multicall3 **fails** (whole batch **OutOfGas**, transport error, etc.). Then **viem throws** before you get per-tier results. On a **local Anvil fork**, heavy batched simulations hit this more often than on many **public** nodes, because **Anvil is not the same software** as the Rootstock RPC: same forked **state**, different **simulation rules and gas limits**.
+
+### Why `npm run fork:anvil` sets `--gas-limit 500000000`
+
+Anvil applies a **block gas limit** to simulations. The default is often **much lower** than what a large Multicall3 + Uniswap Quoter simulation needs. Raising the limit with **`--gas-limit 500000000`** gives `eth_call` headroom so **one batched** quote probe is less likely to fail with **outer** OutOfGas.
+
+**Restart Anvil** after changing this script so the new limit is in effect.
+
+**Note:** `anvil` does **not** allow **`--gas-limit`** and **`--disable-block-gas-limit`** together (it will exit with a CLI error). Pick one approach; we standardized on a **high explicit `--gas-limit`** for predictability.
+
+### What the app does when the outer multicall still fails (`multicallWithGasEnvelopeRetry`)
+
+If the **whole** Multicall3 `eth_call` fails with errors that look like **OutOfGas / RPC `-32603` / “EVM error”**, the code **retries once** with viem’s **`batchSize: 1`**. In viem’s multicall implementation, that threshold is based on **encoded calldata size**, so in practice it forces **smaller chunks** (often **one Quoter read per outer `eth_call`**). You get **more** RPC round trips, but quotes still work on strict environments.
+
+This helper lives in:
+
+- `src/lib/swap/multicallWithGasEnvelopeRetry.ts`
+
+It is used for **Uniswap quoter batching** and for **`getTokenDecimalsBatch`** in `src/lib/swap/utils.ts` (decimals for multiple tokens in **one** multicall, with **deduplicated** addresses).
+
+### CI uses the same Anvil gas limit as local dev
+
+GitHub Actions starts Anvil for fork tests with the **same** `--gas-limit 500000000` as `package.json` → `fork:anvil`, so CI does not fail quotes that pass locally only because of a higher block gas limit.
+
+### How to inspect RPC traffic yourself
+
+Use your browser’s **Developer Tools → Network** tab (filter by **Fetch/XHR**) while the app talks to `http://127.0.0.1:8545`. Each JSON-RPC request is typically one HTTP POST; look for **`eth_call`** in the payload. A successful **batched** Multicall3 quote is usually **one** `eth_call` to the multicall contract, not one per fee tier.
+
 ## ⚠️ Important: Add Fork Network to MetaMask First
 
 **Yes, you need to add the fork network to MetaMask** to connect your wallet to the local Anvil fork.
@@ -36,6 +90,8 @@ This guide uses [Foundry's Anvil](https://getfoundry.sh/guides/forking-mainnet-w
    ```
 
    Keep this terminal running! Anvil must be active for MetaMask to connect.
+
+   The script sets **`--gas-limit 500000000`** so batched Multicall3 quote simulations are less likely to hit outer `OutOfGas` on Anvil. See [Swaps, Multicall3, and why Anvil gas limits matter](#swaps-multicall3-and-why-anvil-gas-limits-matter). **Restart Anvil** after changing fork flags.
 
 2. **Open MetaMask** and click the network dropdown (usually shows "Ethereum Mainnet" or similar)
 3. **Click "Add Network"** or "Add a network manually"
