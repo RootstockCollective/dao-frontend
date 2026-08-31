@@ -1,6 +1,24 @@
 #!/usr/bin/env sh
 set -e
 
+echo "pre-push: checking for mixed-case Ethereum addresses"
+MIXED=$(git diff origin/main...HEAD --diff-filter=ACMR --unified=0 \
+  -- '*.ts' '*.tsx' '*.json' '*.yaml' '*.yml' '.env*' \
+  | grep '^+[^+]' \
+  | grep -oE '0x[0-9a-fA-F]+' \
+  | awk 'length == 42' \
+  | grep '[A-F]' || true)
+
+if [ -n "$MIXED" ]; then
+  echo ""
+  echo "ERROR: Mixed-case Ethereum addresses found in your changes:"
+  echo "$MIXED" | sort -u | while read -r addr; do echo "  $addr"; done
+  echo ""
+  echo "Use lowercase addresses for consistency."
+  echo "To bypass: git push --no-verify"
+  exit 1
+fi
+
 echo "pre-push: running unit tests (excluding swap integration tests)"
 # Exclude swap tests that require mainnet RPC - CI will run those with proper infrastructure
 npx vitest run --exclude '**/swap/**/*.test.ts' --exclude '**/providers/uniswap.test.ts'
