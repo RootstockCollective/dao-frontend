@@ -2,7 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
 import { logger } from '@/lib/logger'
-import { SUPPORT_TOPICS } from '@/shared/constants'
+import {
+  isValidSupportReference,
+  SUPPORT_REFERENCE_TYPES,
+  SUPPORT_TOPICS,
+  type SupportReferenceType,
+} from '@/shared/constants'
 
 const SITEVERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
 const ROUTE = '/api/support/ticket'
@@ -15,6 +20,8 @@ const MAX_EMAIL_LENGTH = 254
 // oversized bodies that would otherwise consume memory just to be discarded.
 const MAX_BODY_BYTES = 8_192
 
+const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER?.replace(/\/+$/, '')
+
 interface SiteVerifyResponse {
   success: boolean
   'error-codes'?: string[]
@@ -22,15 +29,23 @@ interface SiteVerifyResponse {
 
 // Validates and types the untrusted request body in one step. Empty/omitted
 // email normalizes to `undefined`.
-const ticketSchema = z.object({
-  token: z.string().trim().min(1),
-  topic: z.enum(SUPPORT_TOPICS),
-  description: z.string().trim().min(MIN_DESCRIPTION_LENGTH).max(MAX_DESCRIPTION_LENGTH),
-  email: z
-    .union([z.literal(''), z.string().trim().email().max(MAX_EMAIL_LENGTH)])
-    .optional()
-    .transform(value => value || undefined),
-})
+const ticketSchema = z
+  .object({
+    token: z.string().trim().min(1),
+    topic: z.enum(SUPPORT_TOPICS),
+    referenceType: z.enum(SUPPORT_REFERENCE_TYPES),
+    reference: z.string().trim().min(1),
+    description: z.string().trim().min(MIN_DESCRIPTION_LENGTH).max(MAX_DESCRIPTION_LENGTH),
+    email: z
+      .union([z.literal(''), z.string().trim().email().max(MAX_EMAIL_LENGTH)])
+      .optional()
+      .transform(value => value || undefined),
+  })
+  .superRefine(({ referenceType, reference }, ctx) => {
+    if (!isValidSupportReference(referenceType, reference)) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['reference'], message: 'invalid_reference' })
+    }
+  })
 
 type TicketData = z.infer<typeof ticketSchema>
 
@@ -38,10 +53,19 @@ type TicketData = z.infer<typeof ticketSchema>
 const FIELD_ERROR_CODES: Record<keyof TicketData, string> = {
   token: 'missing_token',
   topic: 'invalid_topic',
+  referenceType: 'invalid_reference_type',
+  reference: 'invalid_reference',
   description: 'invalid_description',
   email: 'invalid_email',
 }
-const FIELD_PRIORITY: (keyof TicketData)[] = ['token', 'topic', 'description', 'email']
+const FIELD_PRIORITY: (keyof TicketData)[] = [
+  'token',
+  'topic',
+  'referenceType',
+  'reference',
+  'description',
+  'email',
+]
 
 /**
  * Strips Unicode control characters a reader can't see but that change how
@@ -65,9 +89,17 @@ const escapeSlackMrkdwn = (text: string): string =>
 const generateTicketRef = (): string =>
   `SUP-${crypto.randomUUID().replaceAll('-', '').slice(0, 8).toUpperCase()}`
 
+const formatReference = (referenceType: SupportReferenceType, reference: string): string => {
+  if (!EXPLORER_URL) return reference
+  const path = referenceType === 'Transaction hash' ? 'tx' : 'address'
+  return `<${EXPLORER_URL}/${path}/${reference}|${reference}>`
+}
+
 const buildSlackBlocks = (
   ticketRef: string,
   topic: string,
+  referenceType: SupportReferenceType,
+  reference: string,
   description: string,
   email: string | undefined,
   receivedAt: string,
@@ -92,6 +124,7 @@ const buildSlackBlocks = (
       { type: 'mrkdwn', text: `*Topic:*\n${topic}` },
       { type: 'mrkdwn', text: `*From:*\n${email ? escapeSlackMrkdwn(email) : '_anonymous_'}` },
       { type: 'mrkdwn', text: `*Received:*\n${receivedAt}` },
+      { type: 'mrkdwn', text: `*${referenceType}:*\n${formatReference(referenceType, reference)}` },
     ],
   },
   { type: 'divider' },
@@ -140,7 +173,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error }, { status: 400 })
   }
 
-  const { token, topic, description, email } = parsed.data
+  const { token, topic, referenceType, reference, description, email } = parsed.data
 
   try {
     // `remoteip` is intentionally omitted — the only header we could source it
@@ -170,7 +203,15 @@ export async function POST(request: NextRequest) {
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
         text: `New support ticket ${ticketRef} (${topic}) from ${email ? escapeSlackMrkdwn(email) : 'anonymous'}`,
-        blocks: buildSlackBlocks(ticketRef, topic, description, email, new Date().toISOString()),
+        blocks: buildSlackBlocks(
+          ticketRef,
+          topic,
+          referenceType,
+          reference,
+          description,
+          email,
+          new Date().toISOString(),
+        ),
       }),
     })
 

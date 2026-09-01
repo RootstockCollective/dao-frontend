@@ -4,14 +4,24 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
 import { useCallback, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useAccount } from 'wagmi'
 import { z } from 'zod'
 
 import { Button } from '@/components/Button'
 import { SelectField, TextArea, TextInput } from '@/components/FormFields'
 import { ErrorMessage } from '@/components/FormFields/ErrorMessage'
 import { Modal } from '@/components/Modal'
+import { Select } from '@/components/Select'
 import { Header, Paragraph, Span } from '@/components/Typography'
-import { SUPPORT_TOPICS } from '@/shared/constants'
+import {
+  isValidSupportReference,
+  MAX_SUPPORT_REFERENCE_LENGTH,
+  SUPPORT_REFERENCE_ERRORS,
+  SUPPORT_REFERENCE_LABELS,
+  SUPPORT_REFERENCE_TYPES,
+  SUPPORT_TOPICS,
+  type SupportReferenceType,
+} from '@/shared/constants'
 import { showToast } from '@/shared/notification'
 
 // Cloudflare-published test key that always passes verification. Never ship it —
@@ -31,16 +41,28 @@ const TURNSTILE_SITE_KEY = envSiteKey || TURNSTILE_TEST_SITE_KEY
 
 const emptyString = z.literal('').transform(() => {})
 
-const supportSchema = z.object({
-  topic: z.enum(SUPPORT_TOPICS, { message: 'Please select a topic' }),
-  description: z
-    .string()
-    .trim()
-    .min(10, 'Please provide at least 10 characters')
-    .max(1000, 'Description must be under 1000 characters'),
-  turnstileToken: z.string().min(1, 'Please complete the captcha'),
-  email: z.union([emptyString, z.string().trim().email('Please enter a valid email')]).optional(),
-})
+const supportSchema = z
+  .object({
+    topic: z.enum(SUPPORT_TOPICS, { message: 'Please select a topic' }),
+    referenceType: z.enum(SUPPORT_REFERENCE_TYPES, { message: 'Please select a reference type' }),
+    reference: z.string().trim().min(1, 'This field is required'),
+    description: z
+      .string()
+      .trim()
+      .min(10, 'Please provide at least 10 characters')
+      .max(1000, 'Description must be under 1000 characters'),
+    turnstileToken: z.string().min(1, 'Please complete the captcha'),
+    email: z.union([emptyString, z.string().trim().email('Please enter a valid email')]).optional(),
+  })
+  .superRefine(({ referenceType, reference }, ctx) => {
+    if (reference && !isValidSupportReference(referenceType, reference)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['reference'],
+        message: SUPPORT_REFERENCE_ERRORS[referenceType],
+      })
+    }
+  })
 
 type SupportFormValues = z.infer<typeof supportSchema>
 
@@ -60,6 +82,10 @@ const resolveSubmitError = (status: number, errorCode?: string): string => {
       return 'Please provide a description between 10 and 1000 characters.'
     case 'invalid_topic':
       return 'Please select a valid topic.'
+    case 'invalid_reference_type':
+      return 'Please select a valid reference type.'
+    case 'invalid_reference':
+      return 'Please enter a valid wallet address or transaction hash.'
     case 'server_misconfigured':
     case 'verification_failed':
       return 'Something went wrong on our side. Please try again later.'
@@ -76,17 +102,38 @@ interface SupportModalProps {
 export const SupportModal = ({ onClose }: SupportModalProps) => {
   const turnstileRef = useRef<TurnstileInstance | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const { address } = useAccount()
 
   const {
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { isSubmitting },
   } = useForm<SupportFormValues>({
     resolver: zodResolver(supportSchema),
-    defaultValues: { email: '', description: '', turnstileToken: '' },
+    defaultValues: {
+      email: '',
+      description: '',
+      turnstileToken: '',
+      referenceType: 'Wallet address',
+      reference: address ?? '',
+    },
     mode: 'onSubmit',
   })
+
+  const referenceType = watch('referenceType')
+
+  const handleReferenceTypeChange = useCallback(
+    (value: string, onChange: (next: string) => void) => {
+      const nextType = value as SupportReferenceType
+      onChange(nextType)
+      setValue('reference', nextType === 'Wallet address' ? (address ?? '') : '', {
+        shouldValidate: false,
+      })
+    },
+    [address, setValue],
+  )
 
   const resetTurnstile = useCallback(() => {
     setValue('turnstileToken', '', { shouldValidate: false })
@@ -102,6 +149,8 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
         body: JSON.stringify({
           token: values.turnstileToken,
           topic: values.topic,
+          referenceType: values.referenceType,
+          reference: values.reference,
           description: values.description,
           email: values.email,
         }),
@@ -156,6 +205,39 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
               data-testid="SupportTopic"
             />
           </div>
+          <div className="flex flex-col gap-1.5">
+            <Span variant="tag" className="text-text-60">
+              Wallet address or transaction hash
+            </Span>
+            <Controller
+              control={control}
+              name="referenceType"
+              render={({ field, fieldState: { error } }) => (
+                <ErrorMessage errorMsg={error?.message} dataTestId="SupportReferenceTypeError">
+                  <Select
+                    options={[...SUPPORT_REFERENCE_TYPES]}
+                    placeholder="Select a reference type"
+                    value={field.value}
+                    onBlur={field.onBlur}
+                    onValueChange={value => handleReferenceTypeChange(value, field.onChange)}
+                    data-testid="SupportReferenceType"
+                  />
+                </ErrorMessage>
+              )}
+            />
+            <TextInput
+              name="reference"
+              control={control}
+              label={SUPPORT_REFERENCE_LABELS[referenceType] ?? 'Wallet address or transaction hash'}
+              maxLength={MAX_SUPPORT_REFERENCE_LENGTH}
+              spellCheck={false}
+              data-testid="SupportReference"
+            />
+            <Span variant="body-xs" className="text-text-60">
+              Required — it lets us trace your issue on-chain.
+            </Span>
+          </div>
+
           <TextInput name="email" control={control} label="Email (optional)" data-testid="SupportEmail" />
           <TextArea
             name="description"
