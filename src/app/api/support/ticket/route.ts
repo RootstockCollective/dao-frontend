@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { z } from 'zod'
 
+import { EXPLORER_URL } from '@/lib/constants'
 import { logger } from '@/lib/logger'
 import {
   isValidSupportReference,
@@ -19,8 +20,6 @@ const MAX_EMAIL_LENGTH = 254
 // Rejecting anything larger before JSON.parse blocks DoS amplification with
 // oversized bodies that would otherwise consume memory just to be discarded.
 const MAX_BODY_BYTES = 8_192
-
-const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER?.replace(/\/+$/, '')
 
 interface SiteVerifyResponse {
   success: boolean
@@ -90,9 +89,10 @@ const generateTicketRef = (): string =>
   `SUP-${crypto.randomUUID().replaceAll('-', '').slice(0, 8).toUpperCase()}`
 
 const formatReference = (referenceType: SupportReferenceType, reference: string): string => {
-  if (!EXPLORER_URL) return reference
+  const label = escapeSlackMrkdwn(reference)
+  if (!EXPLORER_URL) return label
   const path = referenceType === 'Transaction hash' ? 'tx' : 'address'
-  return `<${EXPLORER_URL}/${path}/${reference}|${reference}>`
+  return `<${EXPLORER_URL}/${path}/${encodeURIComponent(reference)}|${label}>`
 }
 
 const buildSlackBlocks = (
@@ -202,7 +202,7 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        text: `New support ticket ${ticketRef} (${topic}) from ${email ? escapeSlackMrkdwn(email) : 'anonymous'}`,
+        text: `New support ticket ${ticketRef} (${topic}) from ${email ? escapeSlackMrkdwn(email) : 'anonymous'} — ${referenceType}: ${escapeSlackMrkdwn(reference)}`,
         blocks: buildSlackBlocks(
           ticketRef,
           topic,

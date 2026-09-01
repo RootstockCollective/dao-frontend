@@ -14,13 +14,14 @@ import { Modal } from '@/components/Modal'
 import { Select } from '@/components/Select'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import {
+  isSupportReferenceType,
   isValidSupportReference,
   MAX_SUPPORT_REFERENCE_LENGTH,
   SUPPORT_REFERENCE_ERRORS,
   SUPPORT_REFERENCE_LABELS,
+  SUPPORT_REFERENCE_MAX_LENGTHS,
   SUPPORT_REFERENCE_TYPES,
   SUPPORT_TOPICS,
-  type SupportReferenceType,
 } from '@/shared/constants'
 import { showToast } from '@/shared/notification'
 
@@ -105,6 +106,7 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
   const { address } = useAccount()
 
   const {
+    clearErrors,
     control,
     handleSubmit,
     setValue,
@@ -122,17 +124,19 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
     mode: 'onSubmit',
   })
 
-  const referenceType = watch('referenceType')
+  const watchedReferenceType = watch('referenceType')
+  const referenceType = isSupportReferenceType(watchedReferenceType) ? watchedReferenceType : undefined
 
   const handleReferenceTypeChange = useCallback(
     (value: string, onChange: (next: string) => void) => {
-      const nextType = value as SupportReferenceType
-      onChange(nextType)
+      onChange(value)
+      const nextType = isSupportReferenceType(value) ? value : undefined
       setValue('reference', nextType === 'Wallet address' ? (address ?? '') : '', {
         shouldValidate: false,
       })
+      clearErrors('reference')
     },
-    [address, setValue],
+    [address, clearErrors, setValue],
   )
 
   const resetTurnstile = useCallback(() => {
@@ -228,8 +232,12 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
             <TextInput
               name="reference"
               control={control}
-              label={SUPPORT_REFERENCE_LABELS[referenceType] ?? 'Wallet address or transaction hash'}
-              maxLength={MAX_SUPPORT_REFERENCE_LENGTH}
+              label={
+                referenceType ? SUPPORT_REFERENCE_LABELS[referenceType] : 'Wallet address or transaction hash'
+              }
+              maxLength={
+                referenceType ? SUPPORT_REFERENCE_MAX_LENGTHS[referenceType] : MAX_SUPPORT_REFERENCE_LENGTH
+              }
               spellCheck={false}
               data-testid="SupportReference"
             />

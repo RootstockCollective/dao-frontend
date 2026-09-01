@@ -16,8 +16,12 @@ export const SUPPORT_ADDRESS_REGEX = /^0x[0-9a-fA-F]{40}$/
 /** EVM transaction hash: `0x` + 64 hex chars. */
 export const SUPPORT_TX_HASH_REGEX = /^0x[0-9a-fA-F]{64}$/
 
-/** Longest accepted reference (a tx hash), used to cap the field client- and server-side. */
-export const MAX_SUPPORT_REFERENCE_LENGTH = 66
+export const SUPPORT_REFERENCE_MAX_LENGTHS: Record<SupportReferenceType, number> = {
+  'Wallet address': 42,
+  'Transaction hash': 66,
+}
+
+export const MAX_SUPPORT_REFERENCE_LENGTH = Math.max(...Object.values(SUPPORT_REFERENCE_MAX_LENGTHS))
 
 export const SUPPORT_REFERENCE_LABELS: Record<SupportReferenceType, string> = {
   'Wallet address': 'Wallet address (0x...)',
@@ -28,6 +32,9 @@ export const SUPPORT_REFERENCE_ERRORS: Record<SupportReferenceType, string> = {
   'Wallet address': 'Enter a valid wallet address (0x followed by 40 hex characters)',
   'Transaction hash': 'Enter a valid transaction hash (0x followed by 64 hex characters)',
 }
+
+export const isSupportReferenceType = (value: string): value is SupportReferenceType =>
+  (SUPPORT_REFERENCE_TYPES as readonly string[]).includes(value)
 
 export const isValidSupportReference = (type: SupportReferenceType, value: string): boolean =>
   type === 'Transaction hash' ? SUPPORT_TX_HASH_REGEX.test(value) : SUPPORT_ADDRESS_REGEX.test(value)
