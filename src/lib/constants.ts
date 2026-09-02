@@ -182,3 +182,19 @@ export const PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD = Number(
 )
 
 export const ABI_CYCLES_LIMIT = 12
+
+/**
+ * Distribution cycles in a year, at the current 14-day cadence. This is the exponent that
+ * annualises a single cycle's payout in the ABI formula, so anything projecting a yearly
+ * figure has to use the same number or it will disagree with the published ABI.
+ */
+export const CYCLES_PER_YEAR = 26
+
+/**
+ * How many cycles the Collective Rewards dashboard loads.
+ *
+ * Every source behind the cycle table has to agree on this. The cycle rows and the per-cycle
+ * Backer counts come from different endpoints, and if one reaches further back than the other
+ * the extra rows render a dash in the Backers column with nothing to explain it.
+ */
+export const CYCLE_HISTORY_LIMIT = 100

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 
 import { CycleRewardsItem } from '@/app/collective-rewards/types'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { AVERAGE_BLOCKTIME, CYCLE_HISTORY_LIMIT } from '@/lib/constants'
 
 export const useGetChartRewardsData = () => {
   const { data, isLoading, error } = useQuery<CycleRewardsItem[], Error>({
@@ -9,7 +9,8 @@ export const useGetChartRewardsData = () => {
       const params = new URLSearchParams({
         sortBy: 'currentCycleStart',
         sortDirection: 'desc',
-        pageSize: '100',
+        // Shared with the per-cycle Backer counts so both reach back equally far.
+        pageSize: String(CYCLE_HISTORY_LIMIT),
       })
 
       const response = await fetch(`/api/cycles?${params}`)
