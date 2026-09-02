@@ -43,8 +43,8 @@ export interface AbiHeroCardProps {
   abiPct: number
   /** Distributed in the cycle the page is describing. */
   paidInCycle: Big
-  /** Distributed across every cycle to date. */
-  paidAllTime: Big
+  /** Distributed to date. `null` while the reward events are still loading. */
+  paidAllTime: Big | null
   /** Names the cycle, since it follows the page's selection rather than always being "this". */
   paidInCycleLabel?: string
   isLoading?: boolean
@@ -88,7 +88,13 @@ export const AbiHeroCard = ({
 
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
         <Header variant="e1" className="text-v3-text-100">
-          {isLoading ? <LoadingSpinner size="small" /> : `${abiPct.toFixed(0)}%`}
+          {isLoading ? (
+            <LoadingSpinner size="small" />
+          ) : Number.isFinite(abiPct) ? (
+            `${abiPct.toFixed(0)}%`
+          ) : (
+            '—'
+          )}
         </Header>
         <Span variant="body-s" className="text-v3-text-60">
           estimated
@@ -98,7 +104,11 @@ export const AbiHeroCard = ({
 
     <div className="relative flex gap-8">
       <Figure label={paidInCycleLabel} value={formatUsdWhole(paidInCycle)} />
-      <Figure label="All-time" value={formatUsdWhole(paidAllTime)} note={SPOT_PRICE_NOTE} />
+      <Figure
+        label="All-time"
+        value={paidAllTime === null ? '—' : formatUsdWhole(paidAllTime)}
+        note={SPOT_PRICE_NOTE}
+      />
     </div>
   </div>
 )

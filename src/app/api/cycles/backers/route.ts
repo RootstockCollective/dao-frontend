@@ -2,20 +2,24 @@ import { NextResponse } from 'next/server'
 
 import { logger } from '@/lib/logger'
 
-import { BackersPerCycleRow, buildBackersPerCycleQuery, parseCycleLimit } from './query'
+import { BACKERS_PER_CYCLE_REVALIDATE_SECONDS, getCachedBackersPerCycle } from './action'
+import { parseCycleLimit } from './query'
 
 const ROUTE = '/api/cycles/backers'
-
-/** The counts only move when a cycle closes, so a short cache costs nothing. */
-export const revalidate = 60
 
 export async function GET(req: Request) {
   try {
     const limit = parseCycleLimit(new URL(req.url).searchParams.get('limit'))
-    const result = await buildBackersPerCycleQuery(limit)
-    const data = (result?.rows ?? []) as BackersPerCycleRow[]
+    const data = await getCachedBackersPerCycle(limit)
 
-    return NextResponse.json({ data })
+    return NextResponse.json(
+      { data },
+      {
+        headers: {
+          'Cache-Control': `public, s-maxage=${BACKERS_PER_CYCLE_REVALIDATE_SECONDS}, stale-while-revalidate=${BACKERS_PER_CYCLE_REVALIDATE_SECONDS}`,
+        },
+      },
+    )
   } catch (err) {
     logger.error({ err, route: ROUTE }, 'Database error')
     return NextResponse.json({ error: 'Database error' }, { status: 500 })

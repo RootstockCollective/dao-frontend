@@ -13,8 +13,11 @@ interface CycleDashboardValue {
   cycles: CycleHistoryEntry[]
   isLoading: boolean
   selectCycle: (cycleNumber: number) => void
-  /** Combined USD distributed across every cycle to date. */
-  paidAllTime: Big
+  /**
+   * Combined USD distributed to date, from the reward events. `null` until they load, which
+   * is not the same as a total of zero.
+   */
+  paidAllTime: Big | null
   /** Active Builders right now. Only meaningful against the running cycle. */
   buildersCount: number | null
   /** The cycle every section of the page describes. Defaults to the running one. */
@@ -42,7 +45,7 @@ export const useCycleDashboard = () => {
  * page rather than once per section that needs it.
  */
 export const CycleDashboardProvider = ({ children }: { children: ReactNode }) => {
-  const { data: cycles, isLoading, error } = useGetCycleHistory()
+  const { data: cycles, paidAllTime, isLoading, error } = useGetCycleHistory()
   const { data: buildersData } = useGetActiveBuildersCount()
   const [selectedCycleNumber, setSelectedCycleNumber] = useState<number | null>(null)
 
@@ -73,10 +76,10 @@ export const CycleDashboardProvider = ({ children }: { children: ReactNode }) =>
       runningCycle,
       selectedCycle: cycles.find(({ cycleNumber }) => cycleNumber === selectedCycleNumber) ?? defaultCycle,
       selectCycle,
-      paidAllTime: cycles.reduce((acc, { rewardsFiat }) => acc.add(rewardsFiat), Big(0)),
+      paidAllTime,
       buildersCount: buildersData?.count ?? null,
     }
-  }, [cycles, isLoading, selectedCycleNumber, selectCycle, buildersData?.count])
+  }, [cycles, isLoading, selectedCycleNumber, selectCycle, paidAllTime, buildersData?.count])
 
   return <CycleDashboardContext.Provider value={value}>{children}</CycleDashboardContext.Provider>
 }

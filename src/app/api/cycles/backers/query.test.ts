@@ -1,11 +1,8 @@
 import { describe, expect, it } from 'vitest'
 
-import {
-  buildBackersPerCycleQuery,
-  DEFAULT_CYCLE_LIMIT,
-  MAX_CYCLE_LIMIT,
-  parseCycleLimit,
-} from './query'
+import { CYCLE_HISTORY_LIMIT } from '@/lib/constants'
+
+import { buildBackersPerCycleQuery, MAX_CYCLE_LIMIT, parseCycleLimit } from './query'
 
 /**
  * knex builds SQL without touching a connection, so these assertions cover the query's shape
@@ -21,7 +18,7 @@ describe('buildBackersPerCycleQuery', () => {
   })
 
   it('defaults the limit when none is given', () => {
-    expect(sqlFor()).toContain(`LIMIT ${DEFAULT_CYCLE_LIMIT}`)
+    expect(sqlFor()).toContain(`LIMIT ${CYCLE_HISTORY_LIMIT}`)
   })
 
   it('quotes every camelCase identifier so Postgres does not fold them to lowercase', () => {
@@ -40,24 +37,48 @@ describe('buildBackersPerCycleQuery', () => {
     }
   })
 
-  it('carries Backers forward to later cycles rather than only counting in-cycle activity', () => {
-    // The inequality join is what makes a Backer who stopped transacting still count.
-    expect(sqlFor(10)).toContain('p.cycle_start <= c.cycle_start')
+  it('carries Backers forward with a running window rather than an inequality join', () => {
+    // The window is what makes a Backer who stopped transacting still count, without
+    // re-joining every earlier allocation row to every later cycle.
+    expect(sqlFor(10)).toContain('SUM(delta) OVER (PARTITION BY "backer" ORDER BY cycle_start)')
+  })
+
+  it('turns each running balance into a half-open interval', () => {
+    const sql = sqlFor(10)
+
+    expect(sql).toContain('LEAD(cycle_start) OVER (PARTITION BY "backer" ORDER BY cycle_start)')
+    expect(sql).toContain('h.to_cycle IS NULL OR h.to_cycle > c.cycle_start')
+  })
+
+  it('filters non-positive balances in the join, not before LEAD', () => {
+    // Dropping them inside `held` would stretch a Backer's interval across the cycles where
+    // they held nothing, counting them in cycles they had withdrawn from.
+    const sql = sqlFor(10)
+
+    expect(sql).toContain('ON h.net > 0')
+    expect(sql).not.toMatch(/FROM running\s+WHERE net > 0/)
+  })
+
+  it('keeps cycles with no Backers instead of dropping them from the result', () => {
+    expect(sqlFor(10)).toContain('LEFT JOIN held h')
   })
 
   it('treats anything but an explicit decrease as an increase', () => {
     expect(sqlFor(10)).toContain('CASE WHEN "increased" = false THEN -1 ELSE 1 END')
-  })
-
-  it('counts only positive net allocations', () => {
-    expect(sqlFor(10)).toContain('COUNT(*) FILTER (WHERE net > 0)')
   })
 })
 
 describe('parseCycleLimit', () => {
   it('falls back to the default for missing, non-numeric or non-positive values', () => {
     for (const raw of [null, '', 'abc', '0', '-5', '1.5']) {
-      expect(parseCycleLimit(raw)).toBe(DEFAULT_CYCLE_LIMIT)
+      expect(parseCycleLimit(raw)).toBe(CYCLE_HISTORY_LIMIT)
+    }
+  })
+
+  it('rejects anything that is not plain decimal digits', () => {
+    // `Number()` would read these as 32, 1000 and 12 respectively.
+    for (const raw of ['0x20', '1e3', ' 12 ', '+12', '12abc']) {
+      expect(parseCycleLimit(raw)).toBe(CYCLE_HISTORY_LIMIT)
     }
   })
 

@@ -36,8 +36,11 @@ const getCycleProgress = (cycle: CycleHistoryEntry, nowMs: number) => {
 
 export interface DashboardMetricsContentProps {
   abiPct: number
-  /** Distributed across every cycle to date. Not tied to the selected cycle. */
-  paidAllTime: Big
+  /**
+   * Distributed to date, from the reward events. Not tied to the selected cycle, and `null`
+   * until those events load.
+   */
+  paidAllTime: Big | null
   /** stRIF price, for the fiat equivalent of total backing. */
   strifPrice: number
   /**
@@ -111,7 +114,7 @@ export const DashboardMetricsContent = ({
 
         <MetricCard
           label="Distributed all-time"
-          value={formatUsdWhole(paidAllTime)}
+          value={paidAllTime === null ? '—' : formatUsdWhole(paidAllTime)}
           sub={
             <SubLabel className="text-success">
               +{formatUsdWhole(paidInCycle)} {isRunning ? 'this cycle' : 'that cycle'}

@@ -1,11 +1,12 @@
 import { useMemo } from 'react'
 
 import { useGetGaugesArray } from '@/app/collective-rewards/user'
+import Big from '@/lib/big'
 import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
 import { CycleHistoryEntry } from '../../types'
-import { buildCycleHistory } from '../../utils/buildCycleHistory'
+import { buildCycleHistory, getAllTimeRewardsFiat } from '../../utils/buildCycleHistory'
 import { useGetBackersPerCycle } from './useGetBackersPerCycle'
 import { useGetChartBackingData } from './useGetChartBackingData'
 import { useGetChartRewardsData } from './useGetChartRewardsData'
@@ -15,6 +16,11 @@ const REWARD_TOKEN_ADDRESSES = REWARD_TOKEN_KEYS.map(tokenKey => TOKENS[tokenKey
 
 interface UseGetCycleHistoryResult {
   data: CycleHistoryEntry[]
+  /**
+   * Combined USD distributed across every cycle to date. `null` until the reward events have
+   * loaded, so an unloaded total never renders as a confident $0.
+   */
+  paidAllTime: Big | null
   /** True only while the sources the table cannot render without are still in flight. */
   isLoading: boolean
   error: Error | null
@@ -38,7 +44,7 @@ export const useGetCycleHistory = (): UseGetCycleHistoryResult => {
   } = useGetChartBackingData()
 
   const { data: gauges } = useGetGaugesArray()
-  const { data: notifyRewards } = useGetGaugesNotifyReward({
+  const { data: notifyRewards, isLoading: notifyRewardsLoading } = useGetGaugesNotifyReward({
     gauges: gauges ?? [],
     rewardTokens: REWARD_TOKEN_ADDRESSES,
   })
@@ -59,8 +65,19 @@ export const useGetCycleHistory = (): UseGetCycleHistoryResult => {
     })
   }, [cycles, dailyAllocations, notifyRewards, backersPerCycle, prices])
 
+  /**
+   * Read straight from the reward events rather than by summing the rows above: that is the
+   * source the published all-time figure has always used, and it isn't capped by the number
+   * of cycles the table loaded.
+   */
+  const paidAllTime = useMemo(
+    () => (notifyRewardsLoading || !notifyRewards ? null : getAllTimeRewardsFiat(notifyRewards, prices)),
+    [notifyRewards, notifyRewardsLoading, prices],
+  )
+
   return {
     data,
+    paidAllTime,
     isLoading: cyclesLoading || allocationsLoading,
     error: cyclesError ?? allocationsError ?? null,
   }

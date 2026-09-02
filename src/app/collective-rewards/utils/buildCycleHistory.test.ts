@@ -8,7 +8,7 @@ import { GetPricesResult } from '../../user/types'
 import { FIRST_CYCLE_START_SECONDS, ONE_DAY_IN_SECONDS } from '../constants/chartConstants'
 import { UseGetGaugesNotifyRewardReturnType } from '../rewards'
 import { CycleRewardsItem, DailyAllocationItem } from '../types'
-import { buildCycleHistory, getCycleNumber } from './buildCycleHistory'
+import { buildCycleHistory, getAllTimeRewardsFiat, getCycleNumber, toCycleStartKey } from './buildCycleHistory'
 
 const CYCLE_DURATION = 14 * ONE_DAY_IN_SECONDS
 const GAUGE = '0x0000000000000000000000000000000000000001' as Address
@@ -204,6 +204,14 @@ describe('buildCycleHistory', () => {
 
       expect(entry.backersCount).toBeNull()
     })
+
+    it('looks the cycle up by its normalised key', () => {
+      // What the hook stores: `toCycleStartKey` is applied on both sides of the join.
+      const key = toCycleStartKey(`${cycleStart(10)}.0`)!
+      const [entry] = build({ backersPerCycle: { [key]: 292 } })
+
+      expect(entry.backersCount).toBe(292)
+    })
   })
 
   describe('status', () => {
@@ -218,5 +226,72 @@ describe('buildCycleHistory', () => {
 
       expect(entry.status).toBe('settled')
     })
+  })
+
+  it('assigns each event to its own cycle in one pass', () => {
+    // The bucketing is a binary search over cycle windows rather than a rescan per cycle;
+    // this is the case that breaks if a boundary is off by one.
+    const entries = build({
+      cycles: [cycleItem(10), cycleItem(11), cycleItem(12)],
+      notifyRewards: {
+        [GAUGE]: [
+          notifyEvent(TOKENS.rif.address, cycleStart(10) + 1, wei(900), wei(100)),
+          notifyEvent(TOKENS.rif.address, cycleStart(11) + 1, wei(100), wei(900)),
+        ],
+      } as UseGetGaugesNotifyRewardReturnType,
+      nowSeconds: cycleStart(13),
+    })
+
+    const byCycle = new Map(entries.map(({ cycleNumber, backersShare }) => [cycleNumber, backersShare]))
+
+    expect(byCycle.get(10)).toBe(0.9)
+    expect(byCycle.get(11)).toBe(0.1)
+    expect(byCycle.get(12)).toBeNull()
+  })
+})
+
+describe('toCycleStartKey', () => {
+  it('normalises the shapes a cycle start arrives in', () => {
+    for (const raw of ['1747008000', '1747008000.0', 1747008000, ' 1747008000 ']) {
+      expect(toCycleStartKey(raw)).toBe('1747008000')
+    }
+  })
+
+  it('returns null for anything that is not a timestamp', () => {
+    for (const raw of ['', 'abc', 'NaN']) {
+      expect(toCycleStartKey(raw)).toBeNull()
+    }
+  })
+})
+
+describe('getAllTimeRewardsFiat', () => {
+  const notifyRewards = (events: ReturnType<typeof notifyEvent>[]) =>
+    ({ [GAUGE]: events }) as UseGetGaugesNotifyRewardReturnType
+
+  it('sums both sides of every event at current prices', () => {
+    // 600 + 400 RIF at $0.10, plus 1 rBTC at $100k.
+    const total = getAllTimeRewardsFiat(
+      notifyRewards([
+        notifyEvent(TOKENS.rif.address, cycleStart(10), wei(600), wei(400)),
+        notifyEvent(TOKENS.rbtc.address, cycleStart(2), wei(1), 0n),
+      ]),
+      prices,
+    )
+
+    expect(total.toNumber()).toBe(100_100)
+  })
+
+  it('counts events from cycles the table never loaded', () => {
+    // The whole point of reading the events: the figure is not capped by the cycle page size.
+    const total = getAllTimeRewardsFiat(
+      notifyRewards([notifyEvent(TOKENS.rif.address, cycleStart(1), wei(1_000), 0n)]),
+      prices,
+    )
+
+    expect(total.toNumber()).toBe(100)
+  })
+
+  it('is zero when nothing has loaded', () => {
+    expect(getAllTimeRewardsFiat({}, prices).toNumber()).toBe(0)
   })
 })

@@ -49,8 +49,9 @@ export interface PositionSimulatorProps {
 export const PositionSimulator = ({ abiPct, rifPrice, className }: PositionSimulatorProps) => {
   const [position, setPosition] = useState(DEFAULT_POSITION)
 
-  const annualRif = Big(position).mul(abiPct).div(100)
-  const perCycleRif = annualRif.div(CYCLES_PER_YEAR)
+  const annualRate = Number.isFinite(abiPct) ? abiPct / 100 : 0
+  const annualRif = Big(position).mul(annualRate)
+  const perCycleRif = Big(position).mul(Math.pow(1 + annualRate, 1 / CYCLES_PER_YEAR) - 1)
 
   return (
     <div
@@ -92,7 +93,7 @@ export const PositionSimulator = ({ abiPct, rifPrice, className }: PositionSimul
 
       <div className="bg-v3-primary rounded-lg px-4 py-3 flex flex-col gap-0.5">
         <Header variant="h3" className="text-v3-text-0">
-          {abiPct.toFixed(0)}% ABI
+          {Number.isFinite(abiPct) ? `${abiPct.toFixed(0)}% ABI` : 'ABI —'}
         </Header>
         <Span variant="body-xs" className="text-v3-text-0/80">
           Estimated

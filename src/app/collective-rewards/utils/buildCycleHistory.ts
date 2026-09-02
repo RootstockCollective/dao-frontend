@@ -1,5 +1,3 @@
-import { isAddressEqual } from 'viem'
-
 import Big from '@/lib/big'
 import { WeiPerEther } from '@/lib/constants'
 import { REWARD_TOKEN_KEYS, RewardTokenKey, TOKENS } from '@/lib/tokens'
@@ -11,6 +9,16 @@ import { CycleHistoryEntry, CycleRewardsItem, CycleTokenReward, DailyAllocationI
 
 const toFiat = (value: bigint, price: number): Big =>
   Big(value.toString()).div(WeiPerEther.toString()).mul(price)
+
+/** Address → token key, built once so per-event lookups aren't a linear scan with a comparison. */
+const REWARD_TOKEN_KEY_BY_ADDRESS = new Map<string, RewardTokenKey>(
+  REWARD_TOKEN_KEYS.map(tokenKey => [TOKENS[tokenKey].address.toLowerCase(), tokenKey]),
+)
+
+export const toCycleStartKey = (value: string | number | bigint): string | null => {
+  const seconds = Number(value)
+  return Number.isFinite(seconds) && seconds > 0 ? String(Math.trunc(seconds)) : null
+}
 
 /** Cycle numbers are derived the same way the chart derives them, so the two never disagree. */
 export const getCycleNumber = (cycleStartSeconds: number, cycleDurationSeconds: number): number =>
@@ -38,20 +46,76 @@ const buildRewards = (
   }
 }
 
-/**
- * Total stRIF backing when the cycle closed, taken from the most recent daily snapshot at or
- * before the close. `DailyAllocation` only has rows for days where something changed, so the
- * last known value has to be carried forward.
- */
-const getBackingAtClose = (sortedAllocations: DailyAllocationItem[], cycleEndSeconds: number): bigint => {
-  let backing = 0n
+/** One cycle's window, carrying the index of the cycle it came from. */
+interface CycleWindow {
+  index: number
+  startSeconds: number
+  endSeconds: number
+}
 
-  for (const { day, totalAllocation } of sortedAllocations) {
-    if (day > cycleEndSeconds) break
-    backing = BigInt(Big(totalAllocation).div(WeiPerEther.toString()).toFixed(0))
+/**
+ * Index of the cycle containing `timestamp`, or -1. Windows must be sorted ascending by start;
+ * the binary search is what keeps event bucketing off the cycles × events path.
+ */
+const findCycleIndex = (windows: CycleWindow[], timestamp: number): number => {
+  let low = 0
+  let high = windows.length - 1
+  let candidate = -1
+
+  while (low <= high) {
+    const mid = (low + high) >> 1
+
+    if (windows[mid].startSeconds <= timestamp) {
+      candidate = mid
+      low = mid + 1
+    } else {
+      high = mid - 1
+    }
+  }
+  return candidate !== -1 && timestamp < windows[candidate].endSeconds ? candidate : -1
+}
+
+interface CycleSplit {
+  backersFiat: Big
+  buildersFiat: Big
+}
+
+/**
+ * Assigns every NotifyReward event to the cycle it fell in, in a single pass over the events.
+ *
+ * Doing this per cycle instead meant re-walking every gauge's full event list once for each
+ * cycle on the page, and that whole fold re-runs on every price tick.
+ */
+const bucketRewardEventsByCycle = (
+  notifyRewards: UseGetGaugesNotifyRewardReturnType,
+  prices: GetPricesResult,
+  windows: CycleWindow[],
+): Map<number, CycleSplit> => {
+  const buckets = new Map<number, CycleSplit>()
+
+  for (const events of Object.values(notifyRewards)) {
+    for (const event of events) {
+      // Blockscout hands back a hex string here even though the type says number.
+      const timestamp = Number(event.timeStamp)
+      if (!Number.isFinite(timestamp)) continue
+
+      const windowIndex = findCycleIndex(windows, timestamp)
+      if (windowIndex === -1) continue
+
+      const tokenKey = REWARD_TOKEN_KEY_BY_ADDRESS.get(event.args.rewardToken_.toLowerCase())
+      if (!tokenKey) continue
+
+      const cycleIndex = windows[windowIndex].index
+      const split = buckets.get(cycleIndex) ?? { backersFiat: Big(0), buildersFiat: Big(0) }
+      const price = prices[TOKENS[tokenKey].symbol]?.price ?? 0
+
+      split.backersFiat = split.backersFiat.add(toFiat(event.args.backersAmount_, price))
+      split.buildersFiat = split.buildersFiat.add(toFiat(event.args.builderAmount_, price))
+      buckets.set(cycleIndex, split)
+    }
   }
 
-  return backing
+  return buckets
 }
 
 /**
@@ -61,41 +125,75 @@ const getBackingAtClose = (sortedAllocations: DailyAllocationItem[], cycleEndSec
  * Returns `null` when no events fall inside the window: an unloaded cycle and a cycle that
  * genuinely paid Backers nothing must not look the same in the UI.
  */
-const getBackersShare = (
+const getBackersShare = (split: CycleSplit | undefined): number | null => {
+  if (!split) return null
+
+  const total = split.backersFiat.add(split.buildersFiat)
+  if (total.eq(0)) return null
+
+  return Number(split.backersFiat.div(total).toFixed(4))
+}
+
+/**
+ * Total stRIF backing when each cycle closed, taken from the most recent daily snapshot at or
+ * before the close. `DailyAllocation` only has rows for days where something changed, so the
+ * last known value has to be carried forward.
+ *
+ * Swept once across cycles and snapshots together rather than rescanning the snapshots for
+ * every cycle, which is the same answer for a fraction of the BigInt conversions.
+ */
+const buildBackingByCycle = (
+  dailyAllocations: DailyAllocationItem[],
+  windows: CycleWindow[],
+): Map<number, bigint> => {
+  const sortedAllocations = [...dailyAllocations].sort((a, b) => a.day - b.day)
+  const byCloseAscending = [...windows].sort((a, b) => a.endSeconds - b.endSeconds)
+  const backingByCycle = new Map<number, bigint>()
+
+  let allocationIndex = 0
+  let backing = 0n
+
+  for (const { index, endSeconds } of byCloseAscending) {
+    while (
+      allocationIndex < sortedAllocations.length &&
+      sortedAllocations[allocationIndex].day <= endSeconds
+    ) {
+      backing = BigInt(
+        Big(sortedAllocations[allocationIndex].totalAllocation).div(WeiPerEther.toString()).toFixed(0),
+      )
+      allocationIndex++
+    }
+
+    backingByCycle.set(index, backing)
+  }
+
+  return backingByCycle
+}
+
+/**
+ * Combined USD value of every reward ever distributed, at current prices.
+ *
+ * Deliberately read from the NotifyReward events rather than by summing the per-cycle
+ * `rewardPerToken` totals: the events are the source the published all-time figure has always
+ * used, and they aren't bounded by how many cycles the table happens to have loaded.
+ */
+export const getAllTimeRewardsFiat = (
   notifyRewards: UseGetGaugesNotifyRewardReturnType,
   prices: GetPricesResult,
-  cycleStartSeconds: number,
-  cycleEndSeconds: number,
-): number | null => {
-  let backersFiat = Big(0)
-  let buildersFiat = Big(0)
-  let matched = false
+): Big => {
+  let total = Big(0)
 
   for (const events of Object.values(notifyRewards)) {
     for (const event of events) {
-      // Blockscout hands back a hex string here even though the type says number.
-      const timestamp = Number(event.timeStamp)
-      if (!Number.isFinite(timestamp)) continue
-      if (timestamp < cycleStartSeconds || timestamp >= cycleEndSeconds) continue
-
-      const tokenKey = REWARD_TOKEN_KEYS.find((key: RewardTokenKey) =>
-        isAddressEqual(event.args.rewardToken_, TOKENS[key].address),
-      )
+      const tokenKey = REWARD_TOKEN_KEY_BY_ADDRESS.get(event.args.rewardToken_.toLowerCase())
       if (!tokenKey) continue
 
       const price = prices[TOKENS[tokenKey].symbol]?.price ?? 0
-      backersFiat = backersFiat.add(toFiat(event.args.backersAmount_, price))
-      buildersFiat = buildersFiat.add(toFiat(event.args.builderAmount_, price))
-      matched = true
+      total = total.add(toFiat(event.args.backersAmount_ + event.args.builderAmount_, price))
     }
   }
 
-  if (!matched) return null
-
-  const total = backersFiat.add(buildersFiat)
-  if (total.eq(0)) return null
-
-  return Number(backersFiat.div(total).toFixed(4))
+  return total
 }
 
 export interface BuildCycleHistoryParams {
@@ -122,24 +220,34 @@ export const buildCycleHistory = ({
   prices,
   nowSeconds,
 }: BuildCycleHistoryParams): CycleHistoryEntry[] => {
-  const sortedAllocations = [...dailyAllocations].sort((a, b) => a.day - b.day)
+  const windows: CycleWindow[] = cycles
+    .map((cycle, index) => {
+      const startSeconds = Number(cycle.currentCycleStart)
+
+      return { index, startSeconds, endSeconds: startSeconds + Number(cycle.currentCycleDuration) }
+    })
+    .sort((a, b) => a.startSeconds - b.startSeconds)
+
+  const backingByCycle = buildBackingByCycle(dailyAllocations, windows)
+  const splitByCycle = bucketRewardEventsByCycle(notifyRewards, prices, windows)
 
   return cycles
-    .map<CycleHistoryEntry>(cycle => {
+    .map<CycleHistoryEntry>((cycle, index) => {
       const startSeconds = Number(cycle.currentCycleStart)
       const durationSeconds = Number(cycle.currentCycleDuration)
       const endSeconds = startSeconds + durationSeconds
       const { rewards, rewardsFiat } = buildRewards(cycle.rewardPerToken, prices)
+      const backersKey = toCycleStartKey(cycle.currentCycleStart)
 
       return {
         cycleNumber: getCycleNumber(startSeconds, durationSeconds),
         start: new Date(startSeconds * 1000),
         end: new Date(endSeconds * 1000),
-        backing: getBackingAtClose(sortedAllocations, endSeconds),
+        backing: backingByCycle.get(index) ?? 0n,
         rewards,
         rewardsFiat,
-        backersShare: getBackersShare(notifyRewards, prices, startSeconds, endSeconds),
-        backersCount: backersPerCycle[cycle.currentCycleStart] ?? null,
+        backersShare: getBackersShare(splitByCycle.get(index)),
+        backersCount: (backersKey !== null ? backersPerCycle[backersKey] : undefined) ?? null,
         status: nowSeconds < endSeconds ? 'running' : 'settled',
       }
     })

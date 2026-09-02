@@ -40,18 +40,31 @@ export const SegmentedControl = <T extends string>({
   renderLabel,
 }: SegmentedControlProps<T>) => {
   const containerRef = useRef<HTMLDivElement>(null)
+  const selectedIndex = options.findIndex(option => option.value === value)
+  const tabbableIndex = selectedIndex === -1 ? 0 : selectedIndex
+
+  const select = (index: number) => {
+    const next = options[index]
+    if (!next) return
+
+    onChange(next.value)
+    containerRef.current?.querySelectorAll<HTMLElement>('[role="radio"]')[index]?.focus()
+  }
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (options.length === 0) return
+
+    if (event.key === 'Home' || event.key === 'End') {
+      event.preventDefault()
+      select(event.key === 'Home' ? 0 : options.length - 1)
+      return
+    }
+
     const offset = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key]
     if (!offset) return
 
     event.preventDefault()
-    const currentIndex = options.findIndex(option => option.value === value)
-    const next = options[(currentIndex + offset + options.length) % options.length]
-
-    onChange(next.value)
-    // Focus follows selection, as the radio group pattern expects.
-    containerRef.current?.querySelector<HTMLElement>(`[data-value="${next.value}"]`)?.focus()
+    select((tabbableIndex + offset + options.length) % options.length)
   }
 
   return (
@@ -62,7 +75,7 @@ export const SegmentedControl = <T extends string>({
       onKeyDown={handleKeyDown}
       className={cn('flex items-center gap-1', className)}
     >
-      {options.map(option => {
+      {options.map((option, index) => {
         const isSelected = option.value === value
 
         return (
@@ -73,7 +86,7 @@ export const SegmentedControl = <T extends string>({
             aria-checked={isSelected}
             data-value={option.value}
             // Roving tabindex: the group is a single stop, arrows move within it.
-            tabIndex={isSelected ? 0 : -1}
+            tabIndex={index === tabbableIndex ? 0 : -1}
             onClick={() => onChange(option.value)}
             className={cn(
               'transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-v3-text-100',

@@ -189,3 +189,12 @@ export const ABI_CYCLES_LIMIT = 12
  * figure has to use the same number or it will disagree with the published ABI.
  */
 export const CYCLES_PER_YEAR = 26
+
+/**
+ * How many cycles the Collective Rewards dashboard loads.
+ *
+ * Every source behind the cycle table has to agree on this. The cycle rows and the per-cycle
+ * Backer counts come from different endpoints, and if one reaches further back than the other
+ * the extra rows render a dash in the Backers column with nothing to explain it.
+ */
+export const CYCLE_HISTORY_LIMIT = 100

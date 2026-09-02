@@ -11,14 +11,9 @@ interface Value {
 
 interface Props {
   values: Value[]
-  /**
-   * Draw each slice as its own rounded pill separated by a gap, rather than one continuous
-   * track. Reads better when the slices are two parts of a single quantity.
-   */
+  'aria-label': string
   segmented?: boolean
   className?: string
-  /** Describes the breakdown for screen readers, e.g. "Backers 64%, Builders 36%". */
-  'aria-label'?: string
 }
 
 export const ComparativeProgressBar = ({

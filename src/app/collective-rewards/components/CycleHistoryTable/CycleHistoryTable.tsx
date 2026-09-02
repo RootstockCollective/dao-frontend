@@ -123,7 +123,10 @@ const CycleRow = ({ cycle, isSelected, isTabbable, onSelect, onNavigate }: Cycle
     }
   }
 
-  const cell = (index: number) => cellClasses(index === 0, index === COLUMNS.length - 1)
+  const cell = (index: number) => ({
+    role: 'gridcell' as const,
+    className: cellClasses(index === 0, index === COLUMNS.length - 1),
+  })
 
   return (
     <tr
@@ -139,7 +142,7 @@ const CycleRow = ({ cycle, isSelected, isTabbable, onSelect, onNavigate }: Cycle
       )}
       data-testid={`cycle-history-row-${cycle.cycleNumber}`}
     >
-      <td className={cell(0)}>
+      <td {...cell(0)}>
         {/* Decorative: the row already announces itself through `aria-selected`. */}
         {isSelected && (
           <span
@@ -150,29 +153,29 @@ const CycleRow = ({ cycle, isSelected, isTabbable, onSelect, onNavigate }: Cycle
         <Span className="font-kk-topo text-v3-text-100">Cycle {cycle.cycleNumber}</Span>
       </td>
 
-      <td className={cell(1)}>
+      <td {...cell(1)}>
         <Span variant="body-s" className="text-v3-text-40 whitespace-nowrap">
           {formatCycleWindow(cycle.start, cycle.end)}
         </Span>
       </td>
 
-      <td className={cell(2)}>
+      <td {...cell(2)}>
         <Span className="text-v3-text-100">{formatBackingCompact(cycle.backing)}</Span>
       </td>
 
-      <td className={cell(3)}>
+      <td {...cell(3)}>
         <Span className="text-v3-text-100">{formatUsdWhole(cycle.rewardsFiat)}</Span>
       </td>
 
-      <td className={cell(4)}>
+      <td {...cell(4)}>
         <SplitCell backersShare={cycle.backersShare} />
       </td>
 
-      <td className={cell(5)}>
+      <td {...cell(5)}>
         <Span className="text-v3-text-100">{cycle.backersCount ?? '—'}</Span>
       </td>
 
-      <td className={cell(6)}>
+      <td {...cell(6)}>
         <StatusCell status={cycle.status} />
       </td>
     </tr>
