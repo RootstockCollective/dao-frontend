@@ -59,7 +59,6 @@
 
   /* System Status */
   --color-success: var(--status-success);
-  --color-success-on-light: var(--status-success-on-light);
   --color-error: var(--status-error);
 
   /* Brand */

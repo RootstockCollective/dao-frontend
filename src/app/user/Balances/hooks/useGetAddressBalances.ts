@@ -11,14 +11,12 @@ export const useGetAddressBalances = () => {
   const {
     data,
     isLoading: isBalancesLoading,
-    isFetching: isBalancesFetching,
     refetch: refetchBalances,
   } = useGetAddressTokens(address as Address, chainId as number)
 
   return useMemo(
     () => ({
       isBalancesLoading,
-      isBalancesFetching,
       balances: {
         [RIF]: getTokenBalance(RIF, data),
         [RBTC]: getTokenBalance(RBTC, data),
@@ -28,6 +26,6 @@ export const useGetAddressBalances = () => {
       },
       refetchBalances,
     }),
-    [data, isBalancesLoading, isBalancesFetching, refetchBalances],
+    [data, isBalancesLoading, refetchBalances],
   )
 }

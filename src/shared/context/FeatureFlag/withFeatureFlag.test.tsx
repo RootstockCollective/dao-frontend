@@ -34,6 +34,8 @@ describe('withFeatureFlag HOC', () => {
     refresh: vi.fn(),
     replace: vi.fn(),
     prefetch: vi.fn(),
+    // Required by AppRouterInstance since Next 16.3; used as a bfcache remount key.
+    bfcacheId: 'test-bfcache-id',
   }
 
   beforeEach(() => {

@@ -4,12 +4,25 @@ import { useState } from 'react'
 import { Expandable, ExpandableContent, ExpandableHeader } from '@/components/Expandable'
 import { Span } from '@/components/Typography'
 
+import type { PendingProposal } from '../hooks/usePendingProposals'
 import { Proposal } from '../shared/types'
+import { PendingProposalMobileRows } from './PendingProposalRows'
 
 // Proposals table component for mobile
-export const ProposalsTableMobile = ({ table }: { table: ReactTable<Proposal> }) => {
-  return table.getRowModel().rows.map(row => <ExpandableRow key={row.id} row={row} />)
-}
+export const ProposalsTableMobile = ({
+  table,
+  pendingProposals,
+}: {
+  table: ReactTable<Proposal>
+  pendingProposals: PendingProposal[]
+}) => (
+  <>
+    <PendingProposalMobileRows pendingProposals={pendingProposals} />
+    {table.getRowModel().rows.map(row => (
+      <ExpandableRow key={row.id} row={row} />
+    ))}
+  </>
+)
 
 // Each row is an expandable component
 const ExpandableRow = ({ row }: { row: Row<Proposal> }) => {

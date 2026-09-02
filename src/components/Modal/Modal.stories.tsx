@@ -82,67 +82,6 @@ export const CustomContent: Story = {
   ),
 }
 
-/**
- * Opt-in dialog semantics. With `trapFocus`, Tab and Shift+Tab wrap inside the panel, focus
- * returns to whatever opened it on unmount, and the panel is announced as a labelled dialog.
- * Left off, the 18 pre-existing call sites keep exactly the behaviour they had.
- */
-export const FocusTrapped: Story = {
-  render: args => (
-    <ModalWrapper {...args} trapFocus ariaLabel="Accessible dialog" width={480}>
-      <div className="p-6 flex flex-col gap-3 items-start">
-        <h2 className="text-xl font-bold font-kk-topo">Tab is trapped in here</h2>
-        <p>Tab past the last control and focus wraps back to the close button.</p>
-        <button className="bg-primary text-bg-100 px-4 py-2 rounded">First</button>
-        <button className="bg-primary text-bg-100 px-4 py-2 rounded">Last</button>
-      </div>
-    </ModalWrapper>
-  ),
-}
-
-/** Escape is opt-in too, so a modal mid-transaction cannot be dismissed out from under it. */
-export const DismissibleWithEscape: Story = {
-  render: args => {
-    const Wrapper = () => {
-      const { isModalOpened, openModal, closeModal } = useModal()
-      useEffect(() => openModal(), [openModal])
-
-      return isModalOpened ? (
-        <Modal {...args} width={480} onClose={closeModal} onEscape={closeModal} trapFocus ariaLabel="Press escape">
-          <div className="p-6">
-            <h2 className="text-xl font-bold mb-2 font-kk-topo">Press Escape</h2>
-            <p>Without an `onEscape` handler the key does nothing.</p>
-          </div>
-        </Modal>
-      ) : (
-        <button className="m-8 underline" onClick={openModal}>
-          Reopen
-        </button>
-      )
-    }
-
-    return <Wrapper />
-  },
-}
-
-/**
- * A fixed pixel height is capped at 95dvh, so a short viewport shrinks the panel instead of
- * clipping its footer past the edge of a container that does not scroll.
- */
-export const FixedHeightOnAShortViewport: Story = {
-  render: args => (
-    <ModalWrapper {...args} height={700} width={600}>
-      <div className="flex h-full flex-col justify-between p-6">
-        <h2 className="text-xl font-bold font-kk-topo">700px tall</h2>
-        <button className="bg-primary text-bg-100 px-4 py-2 rounded self-start">
-          Still reachable at any height
-        </button>
-      </div>
-    </ModalWrapper>
-  ),
-  parameters: { viewport: { defaultViewport: 'mobile2' } },
-}
-
 export const ResponsiveTest: Story = {
   render: args => <ModalWrapper {...args} />,
   parameters: {
