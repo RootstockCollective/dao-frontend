@@ -23,6 +23,7 @@
     "fork:anvil": "sh -c 'anvil --fork-url \"$ROOTSTOCK_RPC_URL\" --chain-id 31337 --fork-block-number \"${RS_FORK_BLOCK_NUMBER:-8707257}\" --timeout 120000'",
     "postinstall": "prisma generate",
     "db:migrate:dao": "prisma migrate deploy",
+    "db:seed:builders": "node scripts/seed-builder-profiles.mjs",
     "db:studio": "prisma studio",
     "db:up": "docker compose up dao-data-db -d",
     "db:down": "docker compose down dao-data-db"

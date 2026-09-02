@@ -21,3 +21,20 @@ model ProposalLike {
   @@map("ProposalLikes")
   @@schema("dao_data")
 }
+
+/// Curated, app-owned configuration for a builder.
+/// The indexer (see `@/lib/db`) owns the on-chain builder data and knows nothing
+/// about this table, so the two are merged in application code, never in SQL.
+/// `address` is the builder address, which is also the builder's id in the indexer
+/// (`Builder.id`). Always stored lowercased.
+model BuilderProfile {
+  id        Int      @id @default(autoincrement())
+  address   String   @unique(map: "unique_builder_profile_address") @db.VarChar(42)
+  /// Either a root-relative path to an asset in `public/` (e.g. `/images/builders/foo.svg`)
+  /// or a bare IPFS CID. Resolved for display by `IpfsAvatar`.
+  image     String?  @db.VarChar(500)
+  updatedAt DateTime @updatedAt @db.Timestamptz()
+
+  @@map("BuilderProfiles")
+  @@schema("dao_data")
+}
