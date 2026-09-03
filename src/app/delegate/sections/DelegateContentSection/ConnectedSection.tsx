@@ -1,4 +1,5 @@
 'use client'
+import posthog from 'posthog-js'
 import { useCallback, useRef, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
@@ -8,6 +9,7 @@ import { useDelegateContext } from '@/app/delegate/contexts/DelegateContext'
 import { DelegatesContainer } from '@/app/delegate/sections/DelegateContentSection/DelegatesContainer'
 import { DelegationDetailsSection } from '@/app/delegate/sections/DelegateContentSection/DelegationDetailsSection'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
+import { isUserRejectedTxError, txFailureProps } from '@/components/ErrorPage/commonErrors'
 import { cn, formatNumberWithCommas } from '@/lib/utils'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 import { executeTxFlow } from '@/shared/notification/executeTxFlow'
@@ -51,6 +53,14 @@ export const ConnectedSection = () => {
           refetch()
           onHideDelegates()
         },
+        onError: (txHash, err) => {
+          if (isUserRejectedTxError(err)) return
+          posthog.capture('voting_power_delegate_failed', {
+            delegatee_address: address.toLowerCase(),
+            ...txFailureProps(err),
+            tx_hash: txHash,
+          })
+        },
         onComplete: () => {
           setIsDelegationPending(false)
           setIsRequestingDelegate(false)
@@ -71,6 +81,14 @@ export const ConnectedSection = () => {
         setIsReclaimModalOpened(false)
       },
       onSuccess: refetch,
+      onError: (txHash, err) => {
+        if (isUserRejectedTxError(err)) return
+        posthog.capture('voting_power_reclaim_failed', {
+          previous_delegatee_address: displayedDelegatee?.address?.toLowerCase(),
+          ...txFailureProps(err),
+          tx_hash: txHash,
+        })
+      },
       onComplete: () => {
         setIsReclaimPending(false)
         setIsRequestingReclaim(false)
@@ -78,7 +96,15 @@ export const ConnectedSection = () => {
       },
       action: 'reclaiming',
     })
-  }, [onDelegate, ownAddress, setIsReclaimPending, setIsReclaimModalOpened, refetch, setNextDelegatee])
+  }, [
+    onDelegate,
+    ownAddress,
+    setIsReclaimPending,
+    setIsReclaimModalOpened,
+    refetch,
+    setNextDelegatee,
+    displayedDelegatee?.address,
+  ])
 
   const onShowDelegates = () => {
     setShouldShowDelegates(true)

@@ -1,29 +1,6 @@
-import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
+import { GaugeAbi } from '@/lib/abis/tok/GaugeAbi'
 
-import { GaugeAbi, getAbi } from '@/lib/abis/tok'
+import { createContractReadWithAddressHook } from '../createReadHooks'
 
-import { UseReadContractWithAddressConfig, ViewPureFunctionName } from '../types'
-
-type GaugeFunctionName = ViewPureFunctionName<GaugeAbi>
-
-type GaugeConfig<TFunctionName extends GaugeFunctionName> = UseReadContractWithAddressConfig<
-  GaugeAbi,
-  TFunctionName
->
-
-export const useReadGauge = <TFunctionName extends GaugeFunctionName>(
-  { address, ...config }: GaugeConfig<TFunctionName>,
-  query?: Omit<UseReadContractParameters<GaugeAbi, TFunctionName>['query'], 'select'>,
-): UseReadContractReturnType<GaugeAbi, TFunctionName> => {
-  return useReadContract({
-    abi: getAbi('GaugeAbi'),
-    address,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ...(config as any),
-    query: {
-      retry: true,
-      refetchInterval: false,
-      ...query,
-    },
-  })
-}
+// Gauges are read on demand for a given builder, so they don't poll on every block.
+export const useReadGauge = createContractReadWithAddressHook(GaugeAbi, { refetchInterval: false })

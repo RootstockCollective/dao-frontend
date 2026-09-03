@@ -1,7 +1,9 @@
-// import { fetchBtcVaultNavHistoryPageFromStateSync } from './stateSync'
-// import { fetchBtcVaultNavHistoryPageFromSubgraph } from './subgraph'
-import { fetchBtcVaultNavHistoryPageFromBlockscout } from './blockscout'
-import type { BtcVaultNavHistoryPageResult } from './types'
+import { logger } from '@/lib/logger'
+
+import { fetchBtcVaultNavHistoryPagedFromBlockscout } from './blockscout'
+import { fetchBtcVaultNavHistoryPageFromStateSync } from './stateSync'
+import { fetchBtcVaultNavHistoryPageFromSubgraph } from './subgraph'
+import type { BtcVaultNavHistoryPageResult, NavHistoryPagedParams } from './types'
 
 export type {
   BtcVaultNavDepositRequest,
@@ -9,22 +11,35 @@ export type {
   BtcVaultNavHistoryPageResult,
   BtcVaultNavHistorySortField,
   BtcVaultNavRedeemRequest,
+  NavHistoryPagedParams,
 } from './types'
 
-/**
- * All NAV history rows sourced from **Blockscout** (`OffchainAssetsReported`
- * + `DepositRequested` + `RedeemRequest` logs). No pagination / sort params —
- * returns every row (sorted `processedAt` desc) plus `deposits` / `redeems`
- * grouped by epoch. State-sync and subgraph paths are commented out below;
- * re-enable them if Blockscout becomes unavailable.
- */
-export async function fetchBtcVaultNavHistoryPage(): Promise<BtcVaultNavHistoryPageResult> {
-  return await fetchBtcVaultNavHistoryPageFromBlockscout()
+export async function fetchBtcVaultNavHistoryPage(
+  params: NavHistoryPagedParams,
+): Promise<BtcVaultNavHistoryPageResult> {
+  const sources = [
+    fetchBtcVaultNavHistoryPageFromStateSync,
+    fetchBtcVaultNavHistoryPageFromSubgraph,
+    fetchBtcVaultNavHistoryPagedFromBlockscout,
+  ] as const
 
-  // try {
-  //   return await fetchBtcVaultNavHistoryPageFromStateSync(params)
-  // } catch (error) {
-  //   console.warn('[btc-vault] NAV history: state sync failed; falling back to subgraph.', error)
-  //   return await fetchBtcVaultNavHistoryPageFromSubgraph(params)
-  // }
+  let lastErr: unknown
+
+  for (const [index, fetchFromSource] of sources.entries()) {
+    try {
+      return await fetchFromSource(params)
+    } catch (err) {
+      lastErr = err
+
+      const hasNextSource = index < sources.length - 1
+
+      if (hasNextSource) {
+        logger.warn({ err }, '[btc-vault] NAV history source failed; falling back to next source.')
+      }
+    }
+  }
+
+  logger.error({ err: lastErr }, '[btc-vault] NAV history: all sources failed.')
+
+  throw lastErr
 }

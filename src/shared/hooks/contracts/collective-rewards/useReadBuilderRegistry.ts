@@ -1,31 +1,6 @@
-import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
-
-import { type BuilderRegistryAbi, getAbi } from '@/lib/abis/tok'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { BuilderRegistryAbi } from '@/lib/abis/tok/BuilderRegistryAbi'
 import { BuilderRegistryAddress } from '@/lib/contracts'
 
-import { UseReadContractConfig, ViewPureFunctionName } from '../types'
+import { createContractReadHook } from '../createReadHooks'
 
-type BuilderRegistryFunctionName = ViewPureFunctionName<BuilderRegistryAbi>
-
-type BuilderRegistryConfig<TFunctionName extends BuilderRegistryFunctionName> = UseReadContractConfig<
-  BuilderRegistryAbi,
-  TFunctionName
->
-
-export const useReadBuilderRegistry = <TFunctionName extends BuilderRegistryFunctionName>(
-  config: BuilderRegistryConfig<TFunctionName>,
-  query?: Omit<UseReadContractParameters<BuilderRegistryAbi, TFunctionName>['query'], 'select'>,
-): UseReadContractReturnType<BuilderRegistryAbi, TFunctionName> => {
-  return useReadContract({
-    abi: getAbi('BuilderRegistryAbi'),
-    address: BuilderRegistryAddress,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ...(config as any),
-    query: {
-      retry: true,
-      refetchInterval: AVERAGE_BLOCKTIME,
-      ...query,
-    },
-  })
-}
+export const useReadBuilderRegistry = createContractReadHook(BuilderRegistryAbi, BuilderRegistryAddress)

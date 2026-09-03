@@ -46,7 +46,7 @@ export const BtcVaultGlobalHistoryQuerySchema = baseHistoryQuerySchema.extend({
 export const BtcVaultNavHistorySortFieldEnum = z.enum([
   'processedAt',
   'reportedOffchainAssets',
-  'requestsProcessed',
+  'requestsProcessedInEpoch',
 ])
 
 /** Query schema for GET /api/btc-vault/v1/nav-history */

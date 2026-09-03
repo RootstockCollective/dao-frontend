@@ -56,9 +56,26 @@ export const BTC_VAULT_NAV_HISTORY_COLUMNS = [
   'epochId',
   'reportedOffchainAssets',
   'processedAt',
-  'requestsProcessed',
+  'requestsProcessedInEpoch',
   'blockNumber',
   'transactionHash',
+]
+
+export const BTC_VAULT_AUDIT_LOG_COLUMNS = [
+  COLUMN_ID,
+  'vault',
+  'type',
+  'amountInWei',
+  'detail',
+  'isNative',
+  'role',
+  'actor',
+  'from',
+  'destination',
+  'blockNumber',
+  'blockTimestamp',
+  'transactionHash',
+  'logIndex',
 ]
 
 const BACKER_TO_BUILDER_BACKER = 'backer'

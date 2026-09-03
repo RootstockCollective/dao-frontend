@@ -17,7 +17,7 @@ import { DesktopNavHistory } from './DesktopNavHistory'
 
 const SORT_FIELD_BY_COLUMN: Partial<Record<NavColumnId, BtcVaultNavHistorySortField>> = {
   reportedOffchainAssets: 'reportedOffchainAssets',
-  requestsProcessed: 'requestsProcessed',
+  requestsProcessedInEpoch: 'requestsProcessedInEpoch',
   processedAt: 'processedAt',
 }
 

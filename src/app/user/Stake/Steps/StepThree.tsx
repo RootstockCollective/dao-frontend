@@ -1,8 +1,10 @@
+import posthog from 'posthog-js'
 import { useEffect } from 'react'
 
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
+import { isUserRejectedTxError, txFailureProps } from '@/components/ErrorPage/commonErrors'
 import { executeTxFlow } from '@/shared/notification'
 
 import { StakeTokenAmountDisplay } from '../components/StakeTokenAmountDisplay'
@@ -12,6 +14,7 @@ import { useStakeRIF } from '../hooks/useStakeRIF'
 export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
   const {
     amount,
+    tokenToSend,
     tokenToReceive,
     stakePreviewFrom: from,
     stakePreviewTo: to,
@@ -34,6 +37,15 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
             onSuccess: () => {
               refetchBalances()
               onCloseModal()
+            },
+            onError: (txHash, err) => {
+              if (isUserRejectedTxError(err)) return
+              posthog.capture('stake_rif_failed', {
+                amount_decimal: Number(amount) || 0,
+                token: tokenToSend.symbol,
+                ...txFailureProps(err),
+                tx_hash: txHash,
+              })
             },
             action: 'staking',
           })
@@ -58,6 +70,7 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
     onGoToStep,
     setButtonActions,
     refetchBalances,
+    tokenToSend.symbol,
   ])
 
   return (

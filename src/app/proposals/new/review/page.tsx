@@ -1,6 +1,7 @@
 'use client'
 
 import moment from 'moment'
+import posthog from 'posthog-js'
 import { useCallback, useState } from 'react'
 import type { Address } from 'viem'
 import { useAccount } from 'wagmi'
@@ -15,7 +16,11 @@ import { useCreateTreasuryTransferProposal } from '@/app/proposals/hooks/useCrea
 import { useRemoveBuilderProposal } from '@/app/proposals/hooks/useRemoveBuilderProposal'
 import { Milestones } from '@/app/proposals/shared/types'
 import { DISCOURSE_LINK_SEPARATOR, DISPLAY_NAME_SEPARATOR, NO_MILESTONE } from '@/app/proposals/shared/utils'
-import { labeledMilestones, MILESTONE_SEPARATOR } from '@/app/proposals/shared/utils'
+import {
+  getProposalCategoryFromMilestone,
+  labeledMilestones,
+  MILESTONE_SEPARATOR,
+} from '@/app/proposals/shared/utils'
 import { useReviewProposal } from '@/app/providers'
 import type { GetPricesResult } from '@/app/user/types'
 import { isUserRejectedTxError } from '@/components/ErrorPage'
@@ -91,10 +96,12 @@ export default function ProposalReview() {
       const { description, proposalName, discourseLink } = record.form
       let txHash: string
       let proposalDescription: string
+      let pendingProposalCategory: ProposalCategory = record.category
 
       switch (record.category) {
         case ProposalCategory.Grants: {
           const { targetAddress, token, transferAmount, milestone } = record.form
+          pendingProposalCategory = getProposalCategoryFromMilestone(milestone)
           const milestoneString =
             milestone !== Milestones.NO_MILESTONE ? `${MILESTONE_SEPARATOR + milestone} ` : ''
           proposalDescription = `${proposalName};${description} ${DISCOURSE_LINK_SEPARATOR}${discourseLink} ${milestoneString}`
@@ -128,9 +135,13 @@ export default function ProposalReview() {
       }
 
       const onComplete = () => setLoading(false)
-      waitForTxInBg(txHash as `0x${string}`, proposalName, record.category, onComplete)
+      waitForTxInBg(txHash as `0x${string}`, proposalName, pendingProposalCategory, onComplete)
     } catch (error) {
       if (isUserRejectedTxError(error)) return setLoading(false)
+      posthog.captureException(error instanceof Error ? error : new Error('Proposal submission error'), {
+        category: record?.category,
+        proposal_name: record?.form?.proposalName,
+      })
       showToast({
         title: 'Proposal error',
         severity: 'error',

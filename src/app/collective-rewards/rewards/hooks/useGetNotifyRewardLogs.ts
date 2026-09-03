@@ -6,6 +6,9 @@ import { fetchGaugeNotifyRewardLogs } from '@/app/collective-rewards/actions'
 import { GaugeAbi } from '@/lib/abis/tok/GaugeAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
+// TODO: migrate to GET /api/gauges/notify-reward?gauges=<gauge> so this single-gauge hook
+// shares the cached pipeline with useGetGaugesEvents instead of going through the server action.
+
 export type GaugeNotifyRewardEventLog = ReturnType<
   typeof parseEventLogs<typeof GaugeAbi, true, 'NotifyReward'>
 >

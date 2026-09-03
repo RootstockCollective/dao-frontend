@@ -5,6 +5,9 @@ import { fetchBuilderRewardsClaimed } from '@/app/collective-rewards/actions'
 import { GaugeAbi } from '@/lib/abis/tok/GaugeAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
+// TODO: migrate to GET /api/gauges/builder-rewards-claimed?gauges=<gauge> so this single-gauge hook
+// shares the cached pipeline with useGetGaugesEvents instead of going through the server action.
+
 type BuilderRewardsClaimedEventLog = ReturnType<
   typeof parseEventLogs<typeof GaugeAbi, true, 'BuilderRewardsClaimed'>
 >

@@ -3,7 +3,7 @@ import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { createAppKit } from '@reown/appkit/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { NavigationGuardProvider } from 'next-navigation-guard'
-import type { ReactNode } from 'react'
+import { type ReactNode, useState } from 'react'
 import { type State, WagmiProvider } from 'wagmi'
 
 import { BalancesProvider } from '@/app/user/Balances/context/BalancesContext'
@@ -13,6 +13,7 @@ import { REOWN_METADATA_URL, REOWN_PROJECT_ID } from '@/lib/constants'
 import { useChunkErrorHandler } from '@/lib/hooks/useChunkErrorHandler'
 import { FeatureFlagProvider } from '@/shared/context/FeatureFlag'
 import { ConnectWalletProvider } from '@/shared/walletConnection/connection/ConnectWalletProvider'
+import { PostHogWalletSync } from '@/shared/walletConnection/PostHogWalletSync'
 
 import { AllocationsContextProvider } from '../collective-rewards/allocations/context'
 import { BuilderContextProviderWithPrices } from '../collective-rewards/user'
@@ -82,30 +83,44 @@ function ChunkErrorHandlerInit({ children }: { children: ReactNode }) {
 }
 
 export const ContextProviders = ({ children, initialState }: Props) => {
-  const queryClient = new QueryClient()
+  const [queryClient] = useState(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            staleTime: 30_000,
+            gcTime: 5 * 60_000,
+            retry: 1,
+            refetchOnWindowFocus: false,
+          },
+        },
+      }),
+  )
 
   return (
     <GlobalErrorBoundary>
       <ChunkErrorHandlerInit>
         <FeatureFlagProvider>
           <WagmiProvider config={wagmiAdapterConfig} initialState={initialState}>
-            <QueryClientProvider client={queryClient}>
-              <ConnectWalletProvider>
-                <BuilderContextProviderWithPrices>
-                  <BoosterProvider>
-                    <AllocationsContextProvider>
-                      <BalancesProvider>
-                        <TooltipProvider>
-                          <ReviewProposalProvider>
-                            <NavigationGuardProvider>{children}</NavigationGuardProvider>
-                          </ReviewProposalProvider>
-                        </TooltipProvider>
-                      </BalancesProvider>
-                    </AllocationsContextProvider>
-                  </BoosterProvider>
-                </BuilderContextProviderWithPrices>
-              </ConnectWalletProvider>
-            </QueryClientProvider>
+            <PostHogWalletSync>
+              <QueryClientProvider client={queryClient}>
+                <ConnectWalletProvider>
+                  <BuilderContextProviderWithPrices>
+                    <BoosterProvider>
+                      <AllocationsContextProvider>
+                        <BalancesProvider>
+                          <TooltipProvider>
+                            <ReviewProposalProvider>
+                              <NavigationGuardProvider>{children}</NavigationGuardProvider>
+                            </ReviewProposalProvider>
+                          </TooltipProvider>
+                        </BalancesProvider>
+                      </AllocationsContextProvider>
+                    </BoosterProvider>
+                  </BuilderContextProviderWithPrices>
+                </ConnectWalletProvider>
+              </QueryClientProvider>
+            </PostHogWalletSync>
           </WagmiProvider>
         </FeatureFlagProvider>
       </ChunkErrorHandlerInit>

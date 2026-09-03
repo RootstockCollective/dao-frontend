@@ -24,11 +24,14 @@ const REWARD_DISTRIBUTION_REWARDS: Hex = '0xd6a836213168f39ab7f02eb32044ca51969f
 
 const defaultFromBlock = EVENTS_FROM_BLOCK.toString()
 
+const REVALIDATE_SECONDS = 25
+
 export const fetchGaugeNotifyRewardLogs = async (gaugeAddress: Address, fromBlock = 0) => {
   return fetchLogsByTopic({
     address: gaugeAddress,
     topic0: GAUGE_NOTIFY_REWARD_EVENT,
     fromBlock: fromBlock > 0 ? fromBlock.toString() : defaultFromBlock,
+    fetchInit: { next: { revalidate: REVALIDATE_SECONDS } },
   })
 }
 
@@ -37,6 +40,7 @@ export const fetchBuilderRewardsClaimed = async (gaugeAddress: Address, fromBloc
     address: gaugeAddress,
     topic0: BUILDER_REWARDS_CLAIMED_EVENT,
     fromBlock: fromBlock > 0 ? fromBlock.toString() : defaultFromBlock,
+    fetchInit: { next: { revalidate: REVALIDATE_SECONDS } },
   })
 }
 
@@ -45,6 +49,7 @@ export const fetchBackerRewardsClaimed = async (gaugeAddress: Address, fromBlock
     address: gaugeAddress,
     topic0: BACKER_REWARDS_CLAIMED_EVENT,
     fromBlock: fromBlock > 0 ? fromBlock.toString() : defaultFromBlock,
+    fetchInit: { next: { revalidate: REVALIDATE_SECONDS } },
   })
 }
 
@@ -53,6 +58,7 @@ export const fetchRewardDistributionFinished = async (fromBlock = 0) => {
     address: BackersManagerAddress,
     topic0: REWARD_DISTRIBUTION_FINISHED,
     fromBlock: fromBlock > 0 ? fromBlock.toString() : defaultFromBlock,
+    fetchInit: { next: { revalidate: REVALIDATE_SECONDS } },
   })
 }
 
@@ -61,5 +67,6 @@ export const fetchRewardDistributionRewards = async (fromBlock = 0) => {
     address: BackersManagerAddress,
     topic0: REWARD_DISTRIBUTION_REWARDS,
     fromBlock: fromBlock > 0 ? fromBlock.toString() : defaultFromBlock,
+    fetchInit: { next: { revalidate: REVALIDATE_SECONDS } },
   })
 }

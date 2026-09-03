@@ -1,3 +1,4 @@
+import posthog from 'posthog-js'
 import { useCallback, useMemo, useState } from 'react'
 import { formatEther, parseEther } from 'viem'
 import { useAccount } from 'wagmi'
@@ -7,6 +8,7 @@ import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBa
 import { StakingToken } from '@/app/user/Stake/types'
 import { Button } from '@/components/Button'
 import { Divider } from '@/components/Divider'
+import { isUserRejectedTxError, txFailureProps } from '@/components/ErrorPage/commonErrors'
 import { Modal } from '@/components/Modal'
 import { Header } from '@/components/Typography'
 import Big from '@/lib/big'
@@ -38,7 +40,7 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
 
   const { data: backerTotalAllocation = 0n } = useReadBackersManager(
     { functionName: 'backerTotalAllocation', args: [address!] },
-    { refetchInterval: 10000, enabled: !!address, initialData: 0n },
+    { refetchInterval: 10000, enabled: !!address, placeholderData: 0n },
   )
 
   const stRifToken: StakingToken = useMemo(
@@ -103,9 +105,18 @@ export const UnstakeModal = ({ onCloseModal }: Props) => {
         refetchBalances()
         onCloseModal()
       },
+      onError: (txHash, err) => {
+        if (isUserRejectedTxError(err)) return
+        posthog.capture('unstake_rif_failed', {
+          amount_decimal: Number(amount) || 0,
+          token: stRifToken.symbol,
+          ...txFailureProps(err),
+          tx_hash: txHash,
+        })
+      },
       action: 'unstaking',
     })
-  }, [onRequestUnstake, onCloseModal, refetchBalances])
+  }, [amount, stRifToken.symbol, onRequestUnstake, onCloseModal, refetchBalances])
 
   return (
     <Modal onClose={onCloseModal} data-testid="UnstakeModal">

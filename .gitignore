@@ -81,3 +81,7 @@ CLAUDE.md
 helm/secrets.yaml
 helm/values-local.yaml
 helm/values-override.yaml
+
+.claude/
+_bmad-output/
+_bmad

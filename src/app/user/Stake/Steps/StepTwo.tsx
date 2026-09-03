@@ -1,7 +1,9 @@
+import posthog from 'posthog-js'
 import { useCallback, useEffect, useRef } from 'react'
 
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
+import { isUserRejectedTxError, txFailureProps } from '@/components/ErrorPage/commonErrors'
 import { Header, Label } from '@/components/Typography'
 import { executeTxFlow } from '@/shared/notification'
 
@@ -41,9 +43,18 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
     executeTxFlow({
       onRequestTx: onRequestAllowance,
       onSuccess: onGoNext,
+      onError: (txHash, err) => {
+        if (isUserRejectedTxError(err)) return
+        posthog.capture('stake_allowance_failed', {
+          amount_decimal: Number(amount) || 0,
+          token: tokenToSend.symbol,
+          ...txFailureProps(err),
+          tx_hash: txHash,
+        })
+      },
       action: 'allowance',
     })
-  }, [onRequestAllowance, onGoNext])
+  }, [onRequestAllowance, onGoNext, amount, tokenToSend.symbol])
 
   // Set button actions directly
   useEffect(() => {

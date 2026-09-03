@@ -2,7 +2,13 @@ import type { Address, Hash, Hex, RpcLog } from 'viem'
 
 import type { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
-import { fetchBlockscoutGetLogsPaginated } from './fetch-blockscout-get-logs-paginated'
+import {
+  type BlockscoutGetLogsFetchInit,
+  fetchBlockscoutGetLogsPaginated,
+} from './fetch-blockscout-get-logs-paginated'
+
+/** viem {@link RpcLog} extended with Blockscout's `timeStamp` (hex string, e.g. `"0x627a3b2c"`). */
+export type RpcLogWithTimestamp = RpcLog & { timeStamp: string }
 
 /**
  * Arguments forwarded into {@link fetchBlockscoutGetLogsPaginated}'s `query` (topic2 / extra operators not exposed here).
@@ -18,10 +24,12 @@ interface FetchLogsByTopicParams {
   topic1?: Hex
   /** How `topic0` and `topic1` combine when both are set. */
   topic0_1_opr?: 'and' | 'or'
+  /** Forwarded to the underlying `fetch` (e.g. `next.revalidate` from a Route Handler). */
+  fetchInit?: BlockscoutGetLogsFetchInit
 }
 
-/** Maps a Blockscout log row into viem {@link RpcLog}; strips `null` entries from `topics`. */
-function toRpcLog(log: BackendEventByTopic0ResponseValue): RpcLog {
+/** Maps a Blockscout log row into {@link RpcLogWithTimestamp}; strips `null` entries from `topics`. */
+function toRpcLog(log: BackendEventByTopic0ResponseValue): RpcLogWithTimestamp {
   return {
     address: log.address as Address,
     blockHash: null,
@@ -32,6 +40,7 @@ function toRpcLog(log: BackendEventByTopic0ResponseValue): RpcLog {
     transactionIndex: log.transactionIndex as Hex,
     removed: false,
     topics: log.topics.filter((t): t is string => t !== null) as [] | [Hex, ...Hex[]],
+    timeStamp: log.timeStamp,
   }
 }
 
@@ -45,7 +54,7 @@ function toRpcLog(log: BackendEventByTopic0ResponseValue): RpcLog {
  * @param fromBlock — Pagination start (decimal string); default `'0'`.
  * @param topic1 — Optional indexed argument topic.
  * @param topic0_1_opr — How `topic0` and `topic1` combine (`and` / `or`).
- * @returns `{ data }` where `data` is deduped {@link RpcLog} entries in fetch order across pages.
+ * @returns `{ data }` where `data` is deduped {@link RpcLogWithTimestamp} entries in fetch order across pages.
  *
  * @see {@link fetchBlockscoutGetLogsPaginated} — Use directly when you need `topic2`, extra operators, or raw rows.
  *
@@ -87,7 +96,8 @@ export async function fetchLogsByTopic({
   fromBlock: initialFromBlock = '0',
   topic1,
   topic0_1_opr,
-}: FetchLogsByTopicParams): Promise<{ data: RpcLog[] }> {
+  fetchInit,
+}: FetchLogsByTopicParams): Promise<{ data: RpcLogWithTimestamp[] }> {
   const rows = await fetchBlockscoutGetLogsPaginated({
     query: {
       address,
@@ -96,6 +106,7 @@ export async function fetchLogsByTopic({
       topic1,
       topic0_1_opr,
     },
+    fetchInit,
   })
 
   return { data: rows.map(toRpcLog) }

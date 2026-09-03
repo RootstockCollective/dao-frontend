@@ -60,10 +60,10 @@ export const AUDIT_LOG_SHOW_FILTERS: ReadonlyArray<{ label: string; value: Audit
 ]
 
 export const AUDIT_LOG_ROLE_FILTERS: ReadonlyArray<{ label: string; value: AuditLogUserRole }> = [
-  { label: 'Admin', value: 'ADMIN' },
+  { label: 'Injector', value: 'BUFFER_INJECTOR' },
   { label: 'Fund manager', value: 'MANAGER' },
-  { label: 'Investor', value: 'INVESTOR' },
   { label: 'Whitelister', value: 'WHITELISTER' },
+  { label: 'Pauser', value: 'PAUSER' },
 ]
 
 export const ROLE_STYLES: Record<AuditLogUserRole, string> = {

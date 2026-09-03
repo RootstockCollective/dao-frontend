@@ -19,6 +19,19 @@ export const VaultAbi = [
   },
   {
     type: 'function',
+    name: 'MAX_STRATEGIES',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     name: 'UPGRADE_INTERFACE_VERSION',
     inputs: [],
     outputs: [
@@ -314,7 +327,7 @@ export const VaultAbi = [
       {
         name: 'permissionsManager_',
         type: 'address',
-        internalType: 'contract PermissionsManager',
+        internalType: 'contract PermissionsManagerRootstockUSDVault',
       },
       {
         name: 'depositLimiter_',
@@ -325,6 +338,32 @@ export const VaultAbi = [
         name: 'bufferRatio_',
         type: 'uint256',
         internalType: 'uint256',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'initializeStrategies',
+    inputs: [
+      {
+        name: 'strategies_',
+        type: 'address[]',
+        internalType: 'contract IStrategy[]',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'initializeSubsidyPool',
+    inputs: [
+      {
+        name: 'subsidyPool_',
+        type: 'address',
+        internalType: 'contract ISubsidyPool',
       },
     ],
     outputs: [],
@@ -367,7 +406,7 @@ export const VaultAbi = [
     name: 'maxDeposit',
     inputs: [
       {
-        name: '',
+        name: 'receiver',
         type: 'address',
         internalType: 'address',
       },
@@ -386,7 +425,7 @@ export const VaultAbi = [
     name: 'maxMint',
     inputs: [
       {
-        name: '',
+        name: 'receiver',
         type: 'address',
         internalType: 'address',
       },
@@ -506,13 +545,40 @@ export const VaultAbi = [
   },
   {
     type: 'function',
+    name: 'pause',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'pauseWithdrawals',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'paused',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
     name: 'permissionsManager',
     inputs: [],
     outputs: [
       {
         name: '',
         type: 'address',
-        internalType: 'contract PermissionsManager',
+        internalType: 'contract PermissionsManagerRootstockUSDVault',
       },
     ],
     stateMutability: 'view',
@@ -618,6 +684,69 @@ export const VaultAbi = [
       },
     ],
     stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'reallocateAllFromStrategy',
+    inputs: [
+      {
+        name: 'fromStrategy',
+        type: 'address',
+        internalType: 'contract IStrategy',
+      },
+      {
+        name: 'toStrategy',
+        type: 'address',
+        internalType: 'contract IStrategy',
+      },
+    ],
+    outputs: [
+      {
+        name: 'withdrawn',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+      {
+        name: 'deposited',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'reallocateFromStrategy',
+    inputs: [
+      {
+        name: 'fromStrategy',
+        type: 'address',
+        internalType: 'contract IStrategy',
+      },
+      {
+        name: 'toStrategy',
+        type: 'address',
+        internalType: 'contract IStrategy',
+      },
+      {
+        name: 'amount',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    outputs: [
+      {
+        name: 'withdrawn',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+      {
+        name: 'deposited',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'nonpayable',
   },
   {
     type: 'function',
@@ -899,6 +1028,20 @@ export const VaultAbi = [
   },
   {
     type: 'function',
+    name: 'unpause',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'unpauseWithdrawals',
+    inputs: [],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
     name: 'upgradeToAndCall',
     inputs: [
       {
@@ -938,6 +1081,49 @@ export const VaultAbi = [
     outputs: [
       {
         name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'withdrawAllFromStrategy',
+    inputs: [
+      {
+        name: 'fromStrategy',
+        type: 'address',
+        internalType: 'contract IStrategy',
+      },
+    ],
+    outputs: [
+      {
+        name: 'withdrawn',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'withdrawFromStrategy',
+    inputs: [
+      {
+        name: 'fromStrategy',
+        type: 'address',
+        internalType: 'contract IStrategy',
+      },
+      {
+        name: 'amount',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    outputs: [
+      {
+        name: 'withdrawn',
         type: 'uint256',
         internalType: 'uint256',
       },
@@ -1006,6 +1192,19 @@ export const VaultAbi = [
         name: '',
         type: 'uint256',
         internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'withdrawalsPaused',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
       },
     ],
     stateMutability: 'view',
@@ -1081,6 +1280,37 @@ export const VaultAbi = [
   },
   {
     type: 'event',
+    name: 'FundsReallocated',
+    inputs: [
+      {
+        name: 'fromStrategy',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'toStrategy',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'withdrawn',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+      {
+        name: 'deposited',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
     name: 'Initialized',
     inputs: [
       {
@@ -1088,6 +1318,57 @@ export const VaultAbi = [
         type: 'uint64',
         indexed: false,
         internalType: 'uint64',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'ManualBufferDeposited',
+    inputs: [
+      {
+        name: 'depositor',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'amount',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'ManualBufferWithdrawn',
+    inputs: [
+      {
+        name: 'depositor',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'amount',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'Paused',
+    inputs: [
+      {
+        name: 'account',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
       },
     ],
     anonymous: false,
@@ -1122,10 +1403,10 @@ export const VaultAbi = [
     name: 'StrategiesSorted',
     inputs: [
       {
-        name: 'strategyCount',
-        type: 'uint256',
-        indexed: false,
-        internalType: 'uint256',
+        name: 'highestApyStrategy',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
     ],
     anonymous: false,
@@ -1145,6 +1426,25 @@ export const VaultAbi = [
         type: 'uint256',
         indexed: false,
         internalType: 'uint256',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'StrategyCallFailed',
+    inputs: [
+      {
+        name: 'strategy',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'operation',
+        type: 'uint8',
+        indexed: false,
+        internalType: 'enum RootstockUSDVault.StrategyOperation',
       },
     ],
     anonymous: false,
@@ -1189,6 +1489,25 @@ export const VaultAbi = [
   },
   {
     type: 'event',
+    name: 'StrategyWithdrawn',
+    inputs: [
+      {
+        name: 'fromStrategy',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'withdrawn',
+        type: 'uint256',
+        indexed: false,
+        internalType: 'uint256',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
     name: 'SubsidyPoolSet',
     inputs: [
       {
@@ -1221,6 +1540,19 @@ export const VaultAbi = [
         type: 'uint256',
         indexed: false,
         internalType: 'uint256',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'Unpaused',
+    inputs: [
+      {
+        name: 'account',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
       },
     ],
     anonymous: false,
@@ -1271,6 +1603,32 @@ export const VaultAbi = [
         type: 'uint256',
         indexed: false,
         internalType: 'uint256',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'WithdrawalsPaused',
+    inputs: [
+      {
+        name: 'account',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'WithdrawalsUnpaused',
+    inputs: [
+      {
+        name: 'account',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
       },
     ],
     anonymous: false,
@@ -1474,6 +1832,16 @@ export const VaultAbi = [
   },
   {
     type: 'error',
+    name: 'EnforcedPause',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'ExpectedPause',
+    inputs: [],
+  },
+  {
+    type: 'error',
     name: 'FailedCall',
     inputs: [],
   },
@@ -1569,6 +1937,11 @@ export const VaultAbi = [
   },
   {
     type: 'error',
+    name: 'NothingWithdrawn',
+    inputs: [],
+  },
+  {
+    type: 'error',
     name: 'ReentrancyGuardReentrantCall',
     inputs: [],
   },
@@ -1578,6 +1951,17 @@ export const VaultAbi = [
     inputs: [
       {
         name: 'token',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+  },
+  {
+    type: 'error',
+    name: 'SameStrategy',
+    inputs: [
+      {
+        name: 'strategy',
         type: 'address',
         internalType: 'address',
       },
@@ -1644,6 +2028,22 @@ export const VaultAbi = [
         name: 'maxSharesIn',
         type: 'uint256',
         internalType: 'uint256',
+      },
+    ],
+  },
+  {
+    type: 'error',
+    name: 'StrategiesAlreadyInitialized',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'StrategyAccrueInterestFailed',
+    inputs: [
+      {
+        name: 'strategy',
+        type: 'address',
+        internalType: 'address',
       },
     ],
   },
@@ -1719,6 +2119,17 @@ export const VaultAbi = [
   },
   {
     type: 'error',
+    name: 'SubsidyPoolAlreadyInitialized',
+    inputs: [
+      {
+        name: 'currentSubsidyPool',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+  },
+  {
+    type: 'error',
     name: 'UUPSUnauthorizedCallContext',
     inputs: [],
   },
@@ -1732,6 +2143,16 @@ export const VaultAbi = [
         internalType: 'bytes32',
       },
     ],
+  },
+  {
+    type: 'error',
+    name: 'VaultInsolvent',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'WithdrawalsArePaused',
+    inputs: [],
   },
   {
     type: 'error',

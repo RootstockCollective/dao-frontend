@@ -3,6 +3,7 @@ import moment from 'moment'
 import { AnimatePresence, motion } from 'motion/react'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
+import { usePendingProposals } from '@/app/proposals/hooks/usePendingProposals'
 import { Milestones, Proposal } from '@/app/proposals/shared/types'
 import { DebounceSearch } from '@/components/DebounceSearch'
 import { Header } from '@/components/Typography'
@@ -55,7 +56,13 @@ const filterProposals = (proposals: Proposal[], activeFilters: FilterItem[]) => 
           const isAllMilestonesFilter = filterValue === MILESTONE_SEPARATOR
           // "All milestones" matches M1lestone: followed immediately by valid milestone numbers
           // Specific milestone filters match exact pattern followed by whitespace or end
-          const validMilestones = [Milestones.MILESTONE_1, Milestones.MILESTONE_2, Milestones.MILESTONE_3]
+          const validMilestones = [
+            Milestones.MILESTONE_1,
+            Milestones.MILESTONE_2,
+            Milestones.MILESTONE_3,
+            Milestones.MILESTONE_4,
+            Milestones.MILESTONE_5,
+          ]
           const pattern = isAllMilestonesFilter
             ? `${MILESTONE_SEPARATOR}[${validMilestones.join('')}]`
             : `${filterValue}(?:\\s|$)`
@@ -125,6 +132,7 @@ interface LatestProposalsTableProps {
 const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   const isDesktop = useIsDesktop()
   const proposalsTableRef = useRef<ProposalsTableRef>(null)
+  const pendingProposals = usePendingProposals(proposals)
 
   // Sticky header hook - only enabled on mobile/tablet
   const { headerRef } = useStickyHeader({
@@ -176,6 +184,8 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
   const hasSelectedFilters = useMemo(() => {
     return activeFilters.filter(f => !f.isAll && f.type !== FilterType.SEARCH).length > 0
   }, [activeFilters])
+  const hasActiveFilters = useMemo(() => activeFilters.some(filter => !filter.isAll), [activeFilters])
+  const visiblePendingProposals = hasActiveFilters ? [] : pendingProposals
 
   return (
     <div className="py-4 px-6 rounded-sm bg-bg-80">
@@ -254,10 +264,11 @@ const LatestProposalsTable = ({ proposals }: LatestProposalsTableProps) => {
           </div>
         </motion.div>
         <div className="grow overflow-y-auto">
-          {filteredProposalList.length > 0 ? (
+          {filteredProposalList.length > 0 || visiblePendingProposals.length > 0 ? (
             <ProposalsTable
               ref={proposalsTableRef}
               proposals={filteredProposalList}
+              pendingProposals={visiblePendingProposals}
               isFilterSidebarOpen={isFilterSidebarOpen}
             />
           ) : (

@@ -233,7 +233,7 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
       type: 'SET_DEFAULT_SORT',
       payload: { columnId: 'backer_rewards', direction: 'desc' },
     })
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [dispatch])
 
   useEffect(() => {
     dispatch({
@@ -250,13 +250,10 @@ export const BuildersTable = ({ filterOption }: { filterOption: BuilderFilterOpt
   }, [isLoading, isContextLoading, dispatch])
 
   useEffect(() => {
-    if (!error) return
-    if (error) {
-      dispatch({
-        type: 'SET_ERROR',
-        payload: error.message,
-      })
-    }
+    dispatch({
+      type: 'SET_ERROR',
+      payload: error ? error.message : null,
+    })
   }, [error, dispatch])
 
   /**

@@ -14,6 +14,8 @@ import { NavIcon } from '../icons/NavIcon'
 import { useLayoutContext } from '../LayoutProvider'
 import { MenuData } from './menuData'
 import styles from './styles.module.css'
+import { SupportButton } from './SupportButton'
+import { throttleNav } from './throttleNav'
 import { useFilteredMenuData } from './useFilteredMenuData'
 import { UsefulLinks } from './UsefulLinks'
 
@@ -74,16 +76,20 @@ export const SidebarDesktop = () => {
             ))}
           </ul>
         </div>
-        {/* Useful links */}
-        <motion.div
-          variants={variants}
-          initial="text"
-          animate="text"
-          transition={{ duration: transition.duration, ease: 'easeOut' }}
-          className={cn('shrink-0 px-6 py-4', { 'pointer-events-none': !isSidebarOpen })}
-        >
-          <UsefulLinks />
-        </motion.div>
+        <div className="shrink-0 px-6 py-4">
+          {/* Useful links */}
+          <motion.div
+            variants={variants}
+            initial="text"
+            animate="text"
+            transition={{ duration: transition.duration, ease: 'easeOut' }}
+            className={cn({ 'pointer-events-none': !isSidebarOpen })}
+          >
+            <UsefulLinks />
+          </motion.div>
+          {/* Support stays reachable when the sidebar is collapsed */}
+          <SupportButton isCollapsed={!isSidebarOpen} variants={variants} transition={transition} />
+        </div>
       </div>
     </motion.aside>
   )
@@ -94,7 +100,7 @@ const MenuItem = ({ href, text, buttonProps, variants, iconUrl }: MenuData & { v
   const isActive = usePathname().split('/').at(1) === href
   return (
     <li className={cn('relative pl-3', { 'bg-v-charcoal': isSidebarOpen && isActive })}>
-      <Link href={`/${href}`} data-testid={buttonProps.id}>
+      <Link href={`/${href}`} prefetch={false} onClick={throttleNav} data-testid={buttonProps.id}>
         <div
           className={cn(
             'h-10 flex flex-row flex-nowrap gap-2 items-center group',

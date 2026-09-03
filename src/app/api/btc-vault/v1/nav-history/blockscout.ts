@@ -1,15 +1,18 @@
 import { unstable_cache } from 'next/cache'
-import { type Address, getAbiItem, type Hex, toEventSelector } from 'viem'
+import { type Address, decodeEventLog, getAbiItem, type Hex, toEventSelector } from 'viem'
 
 import { RBTCAsyncVaultAbi } from '@/lib/abis/btc-vault/RBTCAsyncVaultAbi'
 import { fetchBlockscoutGetLogsPaginated } from '@/lib/blockscout/fetch-blockscout-get-logs-paginated'
 import { RBTC_VAULT_ADDRESS } from '@/lib/constants'
+import type { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
+import { paginateSortedBlockscoutNavRows } from './blockscoutPagination'
 import type {
   BtcVaultNavDepositRequest,
   BtcVaultNavHistoryItem,
   BtcVaultNavHistoryPageResult,
   BtcVaultNavRedeemRequest,
+  NavHistoryPagedParams,
 } from './types'
 
 type VaultEventName = 'OffchainAssetsReported' | 'DepositRequested' | 'RedeemRequest'
@@ -18,21 +21,119 @@ function topic0For(name: VaultEventName): Hex {
   return toEventSelector(getAbiItem({ abi: RBTCAsyncVaultAbi, name }))
 }
 
-function hexToNumber(hex: string): number {
+function hexToNumber(hex: string | undefined): number {
+  if (hex == null || hex === '') return 0
   return parseInt(hex, 16)
 }
 
-function topicToAddress(topic: string | null | undefined): string {
-  if (!topic) return '0x'
-  return ('0x' + topic.slice(-40)).toLowerCase()
+/**
+ * Subgraph `handleOffchainAssetsReported`: `requestsProcessedInEpoch` is prior epoch `openedRequestCount`
+ * (`newEpochId - 1` when `newEpochId > 0`).
+ */
+export function priorEpochIdForOpenedRequestCount(newEpochId: number): number | null {
+  if (newEpochId <= 0) return null
+  return newEpochId - 1
 }
 
-function firstUint256FromData(data: string): string {
-  return BigInt('0x' + data.slice(2, 66)).toString()
+/**
+ * ABI-decodes a Blockscout-shaped log against {@link RBTCAsyncVaultAbi}.
+ * Returns `null` when the topic signature, topic count, or data length doesn't match the requested event,
+ * so callers can drop malformed rows instead of bucketing them under sentinel addresses/epochs.
+ */
+function safeDecodeVaultLog<TName extends VaultEventName>(
+  log: BackendEventByTopic0ResponseValue,
+  eventName: TName,
+) {
+  const topics = log.topics.filter((t): t is string => t !== null)
+  if (topics.length === 0) return null
+  try {
+    return decodeEventLog({
+      abi: RBTCAsyncVaultAbi,
+      eventName,
+      data: log.data as Hex,
+      topics: topics as [Hex, ...Hex[]],
+    })
+  } catch {
+    return null
+  }
+}
+
+function pushToBucket<K, V>(bucket: Map<K, V[]>, key: K, value: V): void {
+  const existing = bucket.get(key)
+  if (existing) existing.push(value)
+  else bucket.set(key, [value])
+}
+
+function buildDepositRequestsByEpoch(
+  logs: BackendEventByTopic0ResponseValue[],
+): Map<number, BtcVaultNavDepositRequest[]> {
+  const byEpoch = new Map<number, BtcVaultNavDepositRequest[]>()
+  for (const log of logs) {
+    const decoded = safeDecodeVaultLog(log, 'DepositRequested')
+    if (!decoded) continue
+    const { owner, epochId, assets } = decoded.args
+    pushToBucket(byEpoch, Number(epochId), {
+      owner: owner.toLowerCase(),
+      assets: assets.toString(),
+    })
+  }
+  return byEpoch
+}
+
+function buildRedeemRequestsByEpoch(
+  logs: BackendEventByTopic0ResponseValue[],
+): Map<number, BtcVaultNavRedeemRequest[]> {
+  const byEpoch = new Map<number, BtcVaultNavRedeemRequest[]>()
+  for (const log of logs) {
+    const decoded = safeDecodeVaultLog(log, 'RedeemRequest')
+    if (!decoded) continue
+    const { owner, epochId, shares } = decoded.args
+    pushToBucket(byEpoch, Number(epochId), {
+      owner: owner.toLowerCase(),
+      shares: shares.toString(),
+    })
+  }
+  return byEpoch
+}
+
+export function buildBtcVaultNavHistoryItemsFromBlockscoutLogs(
+  navLogs: BackendEventByTopic0ResponseValue[],
+  depositLogs: BackendEventByTopic0ResponseValue[],
+  redeemLogs: BackendEventByTopic0ResponseValue[],
+): BtcVaultNavHistoryItem[] {
+  const depositsByEpoch = buildDepositRequestsByEpoch(depositLogs)
+  const redeemsByEpoch = buildRedeemRequestsByEpoch(redeemLogs)
+
+  const items: BtcVaultNavHistoryItem[] = []
+  for (const log of navLogs) {
+    const decoded = safeDecodeVaultLog(log, 'OffchainAssetsReported')
+    if (!decoded) continue
+
+    const { newEpochId, reportedOffchainAssets } = decoded.args
+    const epochId = Number(newEpochId)
+    const prior = priorEpochIdForOpenedRequestCount(epochId)
+    const deposits = prior === null ? [] : (depositsByEpoch.get(prior) ?? [])
+    const redeems = prior === null ? [] : (redeemsByEpoch.get(prior) ?? [])
+    const transactionHash = log.transactionHash.toLowerCase()
+    const logIndex = hexToNumber(log.logIndex)
+
+    items.push({
+      id: `${transactionHash}-${logIndex}`,
+      epochId,
+      reportedOffchainAssets: reportedOffchainAssets.toString(),
+      processedAt: hexToNumber(log.timeStamp),
+      requestsProcessedInEpoch: deposits.length + redeems.length,
+      blockNumber: hexToNumber(log.blockNumber),
+      transactionHash,
+      deposits,
+      redeems,
+    })
+  }
+  return items
 }
 
 async function fetchAllNavRows(): Promise<BtcVaultNavHistoryItem[]> {
-  const address = RBTC_VAULT_ADDRESS as Address
+  const address: Address = RBTC_VAULT_ADDRESS
 
   const [navLogs, depositLogs, redeemLogs] = await Promise.all([
     fetchBlockscoutGetLogsPaginated({
@@ -46,56 +147,24 @@ async function fetchAllNavRows(): Promise<BtcVaultNavHistoryItem[]> {
     }),
   ])
 
-  const depositsByEpoch = new Map<number, BtcVaultNavDepositRequest[]>()
-  for (const log of depositLogs) {
-    const epochId = hexToNumber(log.topics[2] ?? '0x0')
-    const entry: BtcVaultNavDepositRequest = {
-      owner: topicToAddress(log.topics[1]),
-      assets: firstUint256FromData(log.data),
-    }
-    const existing = depositsByEpoch.get(epochId)
-    if (existing) existing.push(entry)
-    else depositsByEpoch.set(epochId, [entry])
-  }
-
-  const redeemsByEpoch = new Map<number, BtcVaultNavRedeemRequest[]>()
-  for (const log of redeemLogs) {
-    const epochId = hexToNumber(log.topics[2] ?? '0x0')
-    const entry: BtcVaultNavRedeemRequest = {
-      owner: topicToAddress(log.topics[1]),
-      shares: firstUint256FromData(log.data),
-    }
-    const existing = redeemsByEpoch.get(epochId)
-    if (existing) existing.push(entry)
-    else redeemsByEpoch.set(epochId, [entry])
-  }
-
-  const rows: BtcVaultNavHistoryItem[] = navLogs.map(log => {
-    const epochId = hexToNumber(log.topics[1] ?? '0x0')
-    const deposits = depositsByEpoch.get(epochId) ?? []
-    const redeems = redeemsByEpoch.get(epochId) ?? []
-    return {
-      id: `${log.transactionHash}-${log.logIndex}`,
-      epochId,
-      reportedOffchainAssets: BigInt(log.data).toString(),
-      processedAt: hexToNumber(log.timeStamp),
-      requestsProcessed: deposits.length + redeems.length,
-      blockNumber: hexToNumber(log.blockNumber),
-      transactionHash: log.transactionHash.toLowerCase(),
-      deposits,
-      redeems,
-    }
-  })
-
-  rows.sort((a, b) => b.processedAt - a.processedAt)
-  return rows
+  return buildBtcVaultNavHistoryItemsFromBlockscoutLogs(navLogs, depositLogs, redeemLogs)
 }
 
-const getCachedNavRows = unstable_cache(fetchAllNavRows, ['btc-vault-nav-history', 'blockscout'], {
-  revalidate: 20,
-})
+/**
+ * Cache key includes the vault address so different deploys/networks never share entries.
+ * Falls back to a literal when the env-derived constant is missing so the module still loads under tests.
+ */
+const NAV_HISTORY_CACHE_ADDRESS_KEY = String(RBTC_VAULT_ADDRESS ?? 'unset').toLowerCase()
 
-export async function fetchBtcVaultNavHistoryPageFromBlockscout(): Promise<BtcVaultNavHistoryPageResult> {
-  const rows = await getCachedNavRows()
-  return { data: rows, total: rows.length }
+const getCachedNavRows = unstable_cache(
+  fetchAllNavRows,
+  ['btc-vault-nav-history', 'blockscout', NAV_HISTORY_CACHE_ADDRESS_KEY],
+  { revalidate: 20 },
+)
+
+export async function fetchBtcVaultNavHistoryPagedFromBlockscout(
+  params: NavHistoryPagedParams,
+): Promise<BtcVaultNavHistoryPageResult> {
+  const allRows = await getCachedNavRows()
+  return paginateSortedBlockscoutNavRows(allRows, params)
 }

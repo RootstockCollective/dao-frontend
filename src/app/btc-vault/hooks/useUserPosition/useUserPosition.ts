@@ -107,16 +107,7 @@ export function useUserPosition(address: Address | undefined): {
     }
 
     return toUserPositionDisplay(position, rbtcPrice)
-  }, [
-    isConnected,
-    nativeBalance?.value,
-    vaultTokens,
-    totalSupply,
-    totalAssets,
-    positionValue,
-    rbtcPrice,
-    principalData,
-  ])
+  }, [isConnected, nativeBalance?.value, vaultTokens, totalSupply, positionValue, rbtcPrice, principalData])
 
   return { data, isLoading, isError }
 }

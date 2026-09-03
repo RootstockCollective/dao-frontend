@@ -1,16 +1,13 @@
-import { NextRequest } from 'next/server'
-
 import { fetchProposalCreated } from '@/app/user/Balances/actions'
-import { BackendEventByTopic0ResponseValue, CachedData, handleCachedGetRequest } from '@/shared/utils'
 
-let cachedProposals: CachedData = {
-  lastUpdated: Date.now(),
-  data: [] as BackendEventByTopic0ResponseValue[],
-  isFetching: false,
-  error: '',
-  lastFromBlock: 0,
-}
+export const revalidate = 25
 
-export async function GET(request: NextRequest) {
-  return handleCachedGetRequest(cachedProposals, request, fetchProposalCreated)
+// @TODO remove and use /api/proposals/v1
+export async function GET() {
+  const { data } = await fetchProposalCreated()
+  data.sort((a, b) => {
+    const diff = BigInt(b.blockNumber ?? '0x0') - BigInt(a.blockNumber ?? '0x0')
+    return diff > 0n ? 1 : diff < 0n ? -1 : 0
+  })
+  return Response.json(data)
 }

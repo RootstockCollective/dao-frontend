@@ -172,7 +172,6 @@ export const DepositModal = ({ onCloseModal, onTransactionSuccess }: Props) => {
       setShouldShowTermsModal(true)
       return
     }
-
     executeTxFlow({
       onRequestTx: onRequestAllowance,
       onSuccess: () => {},

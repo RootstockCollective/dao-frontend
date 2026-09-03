@@ -11,6 +11,8 @@
 interface StoredChallenge {
   message: string
   address: string
+  /** Expected `domain` of the signed message, validated when the challenge was issued */
+  domain: string
   expiresAt: number
 }
 

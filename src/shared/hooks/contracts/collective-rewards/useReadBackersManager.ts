@@ -1,31 +1,6 @@
-import { useReadContract, UseReadContractParameters, UseReadContractReturnType } from 'wagmi'
-
-import { type BackersManagerAbi, getAbi } from '@/lib/abis/tok'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { BackersManagerAbi } from '@/lib/abis/tok/BackersManagerAbi'
 import { BackersManagerAddress } from '@/lib/contracts'
 
-import { UseReadContractConfig, ViewPureFunctionName } from '../types'
+import { createContractReadHook } from '../createReadHooks'
 
-type BackersManagerFunctionName = ViewPureFunctionName<BackersManagerAbi>
-
-type BackersManagerConfig<TFunctionName extends BackersManagerFunctionName> = UseReadContractConfig<
-  BackersManagerAbi,
-  TFunctionName
->
-
-export const useReadBackersManager = <TFunctionName extends BackersManagerFunctionName>(
-  config: BackersManagerConfig<TFunctionName>,
-  query?: Omit<UseReadContractParameters<BackersManagerAbi, TFunctionName>['query'], 'select'>,
-): UseReadContractReturnType<BackersManagerAbi, TFunctionName> => {
-  return useReadContract({
-    abi: getAbi('BackersManagerAbi'),
-    address: BackersManagerAddress,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ...(config as any),
-    query: {
-      retry: true,
-      refetchInterval: AVERAGE_BLOCKTIME,
-      ...query,
-    },
-  })
-}
+export const useReadBackersManager = createContractReadHook(BackersManagerAbi, BackersManagerAddress)

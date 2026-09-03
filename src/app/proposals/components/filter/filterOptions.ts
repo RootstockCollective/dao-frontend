@@ -16,6 +16,8 @@ export const categoryFilterOptions: FilterOption[] = [
   { label: 'Grants - milestone 1', value: `${MILESTONE_SEPARATOR}${Milestones.MILESTONE_1}` },
   { label: 'Grants - milestone 2', value: `${MILESTONE_SEPARATOR}${Milestones.MILESTONE_2}` },
   { label: 'Grants - milestone 3', value: `${MILESTONE_SEPARATOR}${Milestones.MILESTONE_3}` },
+  { label: 'Grants - milestone 4', value: `${MILESTONE_SEPARATOR}${Milestones.MILESTONE_4}` },
+  { label: 'Grants - milestone 5', value: `${MILESTONE_SEPARATOR}${Milestones.MILESTONE_5}` },
 ]
 
 export const statusFilterOptions: FilterOption[] = [

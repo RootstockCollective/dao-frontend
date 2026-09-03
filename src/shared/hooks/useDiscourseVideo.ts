@@ -10,8 +10,6 @@ import { useDiscourseTopic } from './useDiscourseTopic'
 export function useDiscourseVideo(discourseUrl: string | null | undefined) {
   const topicQuery = useDiscourseTopic(discourseUrl)
 
-  console.log('topicQuery', topicQuery?.data)
-
   return {
     data: topicQuery.data ? extractVideoUrlFromDiscourseTopic(topicQuery.data) : null,
     isLoading: topicQuery.isLoading,

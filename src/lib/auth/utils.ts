@@ -9,6 +9,7 @@ export function sanitizeError(message: string): string {
     // Request validation errors
     if (message.includes('Invalid address')) return 'Invalid request'
     if (message.includes('Missing host')) return 'Invalid request'
+    if (message.includes('Untrusted domain')) return 'Invalid request'
 
     // Token/authentication errors
     if (message.includes('Missing token')) return 'Authentication required'

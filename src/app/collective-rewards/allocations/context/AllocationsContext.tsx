@@ -150,7 +150,7 @@ export const AllocationsContextProvider = ({ children }: { children: ReactNode }
       args: [backerAddress ?? zeroAddress],
     },
     {
-      initialData: 0n,
+      placeholderData: 0n,
       enabled: !!backerAddress,
     },
   )

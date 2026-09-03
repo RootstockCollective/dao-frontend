@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { verifySignature } from '@/lib/auth/actions'
+import { verifyJWT } from '@/lib/auth/jwt.server'
 import { sanitizeError } from '@/lib/auth/utils'
 import { logger } from '@/lib/logger'
+import { getPostHogClient } from '@/lib/posthog-server'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -32,6 +34,26 @@ export async function POST(request: NextRequest) {
     // - signature format (0x hex string)
     // - cryptographic signature verification via SIWE
     const { token } = await verifySignature(challengeId, signature)
+
+    // Track sign-in server-side using the wallet address as distinct ID.
+    // Analytics is non-essential: a PostHog failure must never fail an otherwise
+    // successful login, so it's isolated from the route's error handling.
+    const payload = await verifyJWT(token)
+    if (payload?.userAddress) {
+      try {
+        const posthog = getPostHogClient()
+        const distinctId = payload.userAddress
+        posthog.identify({ distinctId, properties: { wallet_address: distinctId } })
+        posthog.capture({
+          distinctId,
+          event: 'user_signed_in',
+          properties: { wallet_address: distinctId },
+        })
+        await posthog.flush()
+      } catch (analyticsError) {
+        logger.error({ err: analyticsError, route: '/api/auth/login' }, 'PostHog tracking failed')
+      }
+    }
 
     // Return token in response body and as HTTP-only cookie
     const response = NextResponse.json({ token })

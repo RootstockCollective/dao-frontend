@@ -1,6 +1,9 @@
+import posthog from 'posthog-js'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
+
+import { POSTHOG_ENVIRONMENT } from '@/lib/posthog-environment'
 
 import { extractUserAddressFromToken, isTokenExpired } from './jwt'
 
@@ -93,13 +96,24 @@ export const useSiweStore = create<SiweState>()(
       /**
        * Signs out the user by clearing all authentication state
        * Note: Zustand persist middleware handles localStorage cleanup automatically
+       *
+       * The JWT is also mirrored in an HTTP-only `auth-token` cookie set by
+       * /api/auth/login. That cookie cannot be cleared from client JS, so we
+       * call /api/auth/logout to have the server expire it — otherwise a stale
+       * credential lingers after disconnect and keeps authenticating requests
+       * (e.g. likes) via the cookie fallback.
        */
       signOut: () => {
+        posthog.reset()
+        posthog.register({ environment: POSTHOG_ENVIRONMENT })
         set(state => {
           state.jwtToken = null
           state.error = null
           state.isLoading = false
         })
+        // Fire-and-forget: clearing the store is the source of truth for the UI,
+        // so a logout network failure must not block sign-out.
+        void fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
       },
     })),
     {

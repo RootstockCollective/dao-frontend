@@ -1,11 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
-import { AbiEvent, Address, parseEventLogs } from 'viem'
+import { AbiEvent, Address, parseEventLogs, RpcLog } from 'viem'
 
-import {
-  fetchBackerRewardsClaimed,
-  fetchBuilderRewardsClaimed,
-  fetchGaugeNotifyRewardLogs,
-} from '@/app/collective-rewards/actions'
 import { GaugeAbi } from '@/lib/abis/tok/GaugeAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
@@ -16,24 +11,34 @@ type EventName = Extract<
 >
 type GaugeEventLog<T extends EventName> = ReturnType<typeof parseEventLogs<typeof GaugeAbi, true, T>>
 
-const eventFetchers: Record<EventName, Function> = {
-  BackerRewardsClaimed: fetchBackerRewardsClaimed,
-  NotifyReward: fetchGaugeNotifyRewardLogs,
-  BuilderRewardsClaimed: fetchBuilderRewardsClaimed,
+const eventRoutes: Record<EventName, string> = {
+  NotifyReward: '/api/gauges/notify-reward',
+  BackerRewardsClaimed: '/api/gauges/backer-rewards-claimed',
+  BuilderRewardsClaimed: '/api/gauges/builder-rewards-claimed',
 }
 
 export const useGetGaugesEvents = <T extends EventName>(gauges: Address[], eventName: T) => {
   const { data, isLoading, error } = useQuery({
     queryFn: async () => {
-      const values = await Promise.all(gauges.map(gauge => eventFetchers[eventName](gauge)))
-      return values.reduce<Record<Address, GaugeEventLog<T>>>((acc, { data }, index) => {
-        const events = parseEventLogs({
-          abi: GaugeAbi,
-          logs: data,
-          eventName,
-        })
+      if (gauges.length === 0) {
+        return {} as Record<Address, GaugeEventLog<T>>
+      }
 
-        acc[gauges[index]] = events
+      const url = `${eventRoutes[eventName]}?gauges=${gauges.join(',')}`
+      const res = await fetch(url)
+      if (!res.ok) {
+        throw new Error(`Failed to fetch ${eventName} logs: ${res.status} ${res.statusText}`)
+      }
+
+      const eventsByGauge = (await res.json()) as Record<Address, RpcLog[]>
+
+      return gauges.reduce<Record<Address, GaugeEventLog<T>>>((acc, gauge) => {
+        const rawLogs = eventsByGauge[gauge] ?? []
+        acc[gauge] = parseEventLogs({
+          abi: GaugeAbi,
+          logs: rawLogs,
+          eventName,
+        }) as GaugeEventLog<T>
         return acc
       }, {})
     },

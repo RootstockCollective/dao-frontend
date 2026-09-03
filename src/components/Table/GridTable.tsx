@@ -1,5 +1,5 @@
 import { flexRender, type Table as ReactTable } from '@tanstack/react-table'
-import { type HTMLAttributes } from 'react'
+import { type HTMLAttributes, type ReactNode } from 'react'
 
 import { cn } from '@/lib/utils'
 
@@ -19,6 +19,10 @@ interface Props<T> extends HTMLAttributes<HTMLDivElement> {
    * Additional classes applied to the header row (merged via cn, so they can override defaults).
    */
   headerClassName?: string
+  /**
+   * Render rows that should stay ahead of the table's sorted and paginated data.
+   */
+  renderLeadingRows?: (gridTemplateColumns: string) => ReactNode
 }
 
 /**
@@ -32,6 +36,7 @@ export function GridTable<T>({
   stackFirstColumn = false,
   rowStyles,
   headerClassName,
+  renderLeadingRows,
   ...props
 }: Props<T>) {
   // Build grid template from column definitions' meta.width (fallback to 1fr)
@@ -73,6 +78,7 @@ export function GridTable<T>({
       </div>
       {/* Table body */}
       <div role="rowgroup">
+        {renderLeadingRows?.(gridTemplateColumns)}
         {/* Table rows */}
         {table.getRowModel().rows.map(row => (
           <div

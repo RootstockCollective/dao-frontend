@@ -42,6 +42,7 @@ const useClaimBuilderReward = (builder: Address, gauge: Address, rewardToken?: A
     claimRewards: () => claimBuilderReward(),
     isPaused,
     error,
+    hash,
     isPendingTx: isPending,
     isLoadingReceipt: isLoading,
     isSuccess,
@@ -57,35 +58,40 @@ export const useClaimBuilderRewards = (builder: Address, gauge: Address) => {
   } = TOKENS
 
   const { error: claimBuilderRewardError, ...rest } = useClaimBuilderReward(builder, gauge)
-  const { isClaimable: rifClaimable, error: claimRifError } = useClaimBuilderRewardsPerToken(
-    builder,
-    gauge,
-    rifAddress,
-  )
-  const { isClaimable: rbtcClaimable, error: claimRbtcError } = useClaimBuilderRewardsPerToken(
-    builder,
-    gauge,
-    rbtcAddress,
-  )
+  const {
+    isClaimable: rifClaimable,
+    error: claimRifError,
+    txError: rifTxError,
+  } = useClaimBuilderRewardsPerToken(builder, gauge, rifAddress)
+  const {
+    isClaimable: rbtcClaimable,
+    error: claimRbtcError,
+    txError: rbtcTxError,
+  } = useClaimBuilderRewardsPerToken(builder, gauge, rbtcAddress)
 
-  const { isClaimable: usdrifClaimable, error: claimUsdrifError } = useClaimBuilderRewardsPerToken(
-    builder,
-    gauge,
-    usdrifAddress,
-  )
+  const {
+    isClaimable: usdrifClaimable,
+    error: claimUsdrifError,
+    txError: usdrifTxError,
+  } = useClaimBuilderRewardsPerToken(builder, gauge, usdrifAddress)
 
   const isClaimable = rifClaimable || rbtcClaimable || usdrifClaimable
   const error = claimBuilderRewardError ?? claimRifError ?? claimRbtcError ?? claimUsdrifError
+  // Transaction-only errors, excluding the per-token `builderRewards` read errors — for
+  // consumers that must not treat a data-loading failure as a claim failure (e.g. the
+  // `rewards_claim_failed` analytics capture).
+  const txError = claimBuilderRewardError ?? rifTxError ?? rbtcTxError ?? usdrifTxError
 
   return {
     ...rest,
     isClaimable,
     error,
+    txError,
   }
 }
 
 const useClaimBuilderRewardsPerToken = (builder: Address, gauge: Address, rewardToken: Address) => {
-  const { error: claimBuilderRewardError, ...rest } = useClaimBuilderReward(builder, gauge, rewardToken)
+  const { error: txError, ...rest } = useClaimBuilderReward(builder, gauge, rewardToken)
   const {
     data: rewards,
     isLoading,
@@ -93,11 +99,12 @@ const useClaimBuilderRewardsPerToken = (builder: Address, gauge: Address, reward
   } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [rewardToken] })
 
   const isClaimable = !isLoading && rewards !== 0n
-  const error = claimBuilderRewardError ?? getBuilderRewardsError
+  const error = txError ?? getBuilderRewardsError
 
   return {
     ...rest,
     isClaimable,
     error,
+    txError,
   }
 }
