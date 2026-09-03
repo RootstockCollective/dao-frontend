@@ -21,6 +21,7 @@ import { Button } from '@/components/Button'
 import { CommonComponentProps, StylableComponentProps } from '@/components/commonProps'
 import { WarningIcon } from '@/components/Icons'
 import { Paragraph } from '@/components/Typography'
+import { getBuilderIconCid } from '@/lib/builderIcons'
 import { cn } from '@/lib/utils'
 
 import { getBuilderColor } from '../utils'
@@ -95,6 +96,7 @@ export const BuilderCard = ({
         <BuilderHeader
           address={address}
           name={builderName}
+          imageIpfs={getBuilderIconCid(address)}
           builderPageLink={builderPageLink}
           className="mt-8"
           showFullName={false}

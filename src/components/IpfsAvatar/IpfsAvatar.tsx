@@ -12,9 +12,19 @@ interface IpfsAvatarProps {
   name?: string
   size?: number
   className?: string
+  fallbackClassName?: string
+  fallbackValue?: string
 }
 
-export const IpfsAvatar = ({ imageIpfs, address, name, size = 88, className }: IpfsAvatarProps) => {
+export const IpfsAvatar = ({
+  imageIpfs,
+  address,
+  name,
+  size = 88,
+  className,
+  fallbackClassName = 'bg-v3-text-100',
+  fallbackValue,
+}: IpfsAvatarProps) => {
   const imageUrl = imageIpfs ? ipfsGatewayUrl(imageIpfs) : null
   const [imageError, setImageError] = useState(false)
 
@@ -36,7 +46,11 @@ export const IpfsAvatar = ({ imageIpfs, address, name, size = 88, className }: I
           unoptimized
         />
       ) : (
-        <Jdenticon className="bg-v3-text-100" value={address.toLowerCase()} size={size.toString()} />
+        <Jdenticon
+          className={fallbackClassName}
+          value={fallbackValue ?? address.toLowerCase()}
+          size={size.toString()}
+        />
       )}
     </div>
   )

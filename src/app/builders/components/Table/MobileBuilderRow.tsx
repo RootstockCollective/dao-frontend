@@ -3,7 +3,7 @@ import { useAccount } from 'wagmi'
 
 import { ConnectTooltip } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltip'
 import { ConnectTooltipContent } from '@/app/components/Tooltip/ConnectTooltip/ConnectTooltipContent'
-import { Jdenticon } from '@/components/Header/Jdenticon'
+import { BuilderIcon } from '@/components/BuilderIcon'
 import { cn } from '@/lib/utils'
 import { useLongPressTouch } from '@/shared/hooks/useLongPressTouch'
 import { useAppKitFlow } from '@/shared/walletConnection/connection/useAppKitFlow'
@@ -111,7 +111,12 @@ export const MobileBuilderRow = ({ logic, actionCount, ...props }: MobileBuilder
                     isSelected={isRowSelected}
                     className="pt-3 pb-3 rounded-full"
                   >
-                    <Jdenticon className="rounded-full bg-white w-10" value={builder.builder.address} />
+                    <BuilderIcon
+                      className="rounded-full"
+                      address={builder.builder.address}
+                      name={builder.builder.builderName}
+                      size={40}
+                    />
                   </SelectorCell>
                 </div>
                 <BuilderNameCell {...builder} isHighlighted={isRowSelected} />
