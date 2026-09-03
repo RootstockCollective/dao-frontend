@@ -1,8 +1,9 @@
 import { Address } from 'viem'
 
 /**
- * Slugs with an empty CID, and addresses that are not listed, fall back to the
- * generated jdenticon — so this can be filled in incrementally.
+ * Icon slug -> Pinata CID. Uploading an image once and referencing it by slug lets the
+ * same icon be reused by a builder's addresses across networks.
+ * this is a temporal solution while we implement this to be loaded from a server
  */
 export const BUILDER_ICON_CIDS = {
   //TODO clear these cids once we have the new icons
@@ -32,7 +33,7 @@ export type BuilderIconKey = keyof typeof BUILDER_ICON_CIDS
 /**
  * Builder address -> icon slug, for every network.
  */
-export const BUILDER_ICON_KEY_BY_ADDRESS: Record<string, BuilderIconKey> = {
+const BUILDER_ICON_KEY_BY_ADDRESS: Record<string, BuilderIconKey> = {
   // ─── Rootstock mainnet (chainId 30) ───
   // Registry 0x8cb62c58AC3D1253c6467537FDDc563857eD76cb — snapshot 2026-09-03
   '0xd9fcae4315920387f00725c78285d6d41c30b967': 'asamiClub',
