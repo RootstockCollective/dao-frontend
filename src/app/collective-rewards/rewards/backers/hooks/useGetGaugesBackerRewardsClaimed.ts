@@ -12,8 +12,9 @@ export const useGetGaugesBackerRewardsClaimed = (
   gauges: Address[],
   rewardToken?: Address,
   backer?: Address,
+  enabled = true,
 ) => {
-  const { data: eventsData, isLoading, error } = useGetGaugesEvents(gauges, 'BackerRewardsClaimed')
+  const { data: eventsData, isLoading, error } = useGetGaugesEvents(gauges, 'BackerRewardsClaimed', enabled)
 
   const data = useMemo(() => {
     if (!eventsData) {

@@ -3,18 +3,16 @@
 import { createContext, ReactNode, useContext, useMemo, useState } from 'react'
 import { Address } from 'viem'
 
-import {
-  BackerRewardsClaimedEventLog,
-  Token,
-  useGetGaugesBackerRewardsClaimed,
-} from '@/app/collective-rewards/rewards'
+import { Token } from '@/app/collective-rewards/rewards'
 import { CompleteBuilder, StateWithUpdate } from '@/app/collective-rewards/types'
 import { filterBuildersByState, useBuilderContext } from '@/app/collective-rewards/user'
 import { useReadGauges } from '@/shared/hooks/contracts'
 
+import { ClaimedRewards, useGetBackerRewardsClaimed } from '../hooks/useGetBackerRewardsClaimed'
+
 export interface TokenBackerRewards {
   earned: Record<Address, bigint>
-  claimed: Record<Address, BackerRewardsClaimedEventLog>
+  claimed: ClaimedRewards
   estimated: Record<Address, bigint>
 }
 
@@ -54,7 +52,12 @@ function mapToRecord(rewardsAmount: (bigint | undefined)[], gauges: `0x${string}
   }, {})
 }
 
-const useGetTokenRewards = (backer: Address, token: Token, gauges: Address[]) => {
+const useGetTokenRewards = (
+  backer: Address,
+  token: Token,
+  gauges: Address[],
+  builderToGauge: Map<Address, Address>,
+) => {
   const {
     data: earned,
     isLoading: earnedLoading,
@@ -73,7 +76,7 @@ const useGetTokenRewards = (backer: Address, token: Token, gauges: Address[]) =>
     data: claimed,
     isLoading: claimedLoading,
     error: claimedError,
-  } = useGetGaugesBackerRewardsClaimed(gauges, token.address, backer)
+  } = useGetBackerRewardsClaimed(backer, token.address, gauges, builderToGauge)
 
   const isLoading = earnedLoading || estimatedLoading || claimedLoading
   const error = earnedError ?? estimatedError ?? claimedError
@@ -98,22 +101,29 @@ export const BackerRewardsContextProvider = ({
   tokens: { rif, rbtc, usdrif },
 }: BackerRewardsProviderProps) => {
   const { builders, isLoading: buildersLoading, error: buildersError } = useBuilderContext()
-  const gauges = useMemo(() => {
+  const { gauges, builderToGauge } = useMemo(() => {
     const filteredBuilders = filterBuildersByState<CompleteBuilder>(builders)
-    return filteredBuilders.map(({ gauge }) => gauge)
+    return {
+      gauges: filteredBuilders.map(({ gauge }) => gauge),
+      builderToGauge: new Map(filteredBuilders.map(({ address, gauge }) => [address, gauge])),
+    }
   }, [builders])
 
-  const { data: rifRewards, isLoading: rifLoading, error: rifError } = useGetTokenRewards(backer, rif, gauges)
+  const {
+    data: rifRewards,
+    isLoading: rifLoading,
+    error: rifError,
+  } = useGetTokenRewards(backer, rif, gauges, builderToGauge)
   const {
     data: rbtcRewards,
     isLoading: rbtcLoading,
     error: rbtcError,
-  } = useGetTokenRewards(backer, rbtc, gauges)
+  } = useGetTokenRewards(backer, rbtc, gauges, builderToGauge)
   const {
     data: usdrifRewards,
     isLoading: usdrifLoading,
     error: usdrifError,
-  } = useGetTokenRewards(backer, usdrif, gauges)
+  } = useGetTokenRewards(backer, usdrif, gauges, builderToGauge)
   const [isDetailedView, setIsDetailedView] = useState(false)
 
   const isLoading = buildersLoading || rifLoading || rbtcLoading || usdrifLoading
