@@ -58,12 +58,25 @@ const BUILDER_ICON_KEY_BY_ADDRESS: Record<string, BuilderIconKey> = {
   '0x920a531871f524f49c4346b2528260ff152d3c4e': 'tally', // halted
   '0x9763146dd94e0e6fd96ca88839e88ebda34a7f94': 'tropykus', // halted
 
-  // ─── Rootstock testnet (chainId 31) ───
-  '0x1768813c5cff9b11d62d8029ee481e82b383f498': 'moneyOnChain',
-  '0xb73ffb572cbf14d382a0b698250f79b31fa32962': 'asamiClub',
-  '0x623Ab477eAB37C65E90726F86Fd4ebFfEB274a47': 'boltz',
-  // Registries in use: 0x5fc1dd93… (.env.testnet), 0xad125E6D… (.env.dev/.env.dao.qa),
-  // 0xDf1ED223… (.env.cr.qa/.env.testnet.local).
+  // ─── Rootstock testnet (chainId 31) ─── ONLY FOR TESTNET-QA VALIDATION
+  '0x1768813c5CFF9b11D62D8029Ee481E82B383f498': 'asamiClub',
+  '0xb73FFB572Cbf14D382A0B698250F79B31Fa32962': 'beexoWallet',
+  '0x2FC5c0650b0C197D5751399773E76f0936BB303c': 'boltz',
+  '0xFFeFada43AaE4009828e64137BfC01B9042E92F6': 'dzap',
+  '0x623Ab477eAB37C65E90726F86Fd4ebFfEB274a47': 'layerBank',
+  '0xA18F4FBEE88592beE3d51D90Ba791e769A9b902f': 'moneyOnChain',
+  '0xd8F8695DD784E27a0Bf057fB30f1E67DcE73AD93': 'openOcean',
+  '0x8F10473F1c2f1dA76F6E921aA6eE8c54aD43F7b7': 'routerProtocol',
+  '0xb0F0D0e27BF82236E01d8FaB590b46A470F45cfF': 'sailingProtocol',
+  '0x528dDe4344DefEae1b5eA18819AC1D3B2df38249': 'simpleFi',
+  '0x35D7fDc0a47Ef6bF7A0aB87D4d218e16F03AA35E': 'steerProtocol',
+  '0x837E99724d9daE5e52E98C1A881CaC0B561DA6DE': 'steliosAndMick',
+  '0x3371351953FE6b6366546Cf01686318D1B3A1722': 'symbiosis',
+  '0x55A6AA81f8f89e1C14482CE3a6Fb40bAB57971B5': 'vottun',
+  '0x81DF35317dF983E419630908eF6Cb2Bb48CE21Ca': 'wakeUpLabs',
+  '0xfF6737a79EAcBA98B7e0a1623818AcDef9fb6870': 'wesatoshisLabs',
+  '0x49B1B12074ab4ea4dbe42A6C09055DdD7191a73F': 'woodSwap',
+  '0x9E7213A2B936a92F95ee66b70a3DeE4B8eFB459d': 'beexoWallet',
 }
 
 /**
