@@ -16,7 +16,7 @@ const ExpandedContent = () => {
           src="/images/become-a-builder-banner-big.png"
           alt="Become a Builder Banner"
           fill
-          className="object-fill"
+          className="object-cover object-right"
           priority
         />
       </div>
