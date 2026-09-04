@@ -1,10 +1,12 @@
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Address } from 'viem'
 
 import { Jdenticon } from '@/components/Header/Jdenticon'
-import { ipfsGatewayUrl } from '@/lib/ipfs'
+import { applyPinataImageOptions, ipfsGatewayUrl } from '@/lib/ipfs'
 import { cn } from '@/lib/utils'
+
+const RESOLUTION_MULTIPLIER = 2
 
 interface IpfsAvatarProps {
   address: Address
@@ -12,11 +14,34 @@ interface IpfsAvatarProps {
   name?: string
   size?: number
   className?: string
+  fallbackClassName?: string
+  fallbackValue?: string
 }
 
-export const IpfsAvatar = ({ imageIpfs, address, name, size = 88, className }: IpfsAvatarProps) => {
-  const imageUrl = imageIpfs ? ipfsGatewayUrl(imageIpfs) : null
+export const IpfsAvatar = ({
+  imageIpfs,
+  address,
+  name,
+  size = 88,
+  className,
+  fallbackClassName = 'bg-v3-text-100',
+  fallbackValue,
+}: IpfsAvatarProps) => {
+  const imageUrl = useMemo(() => {
+    if (!imageIpfs) return null
+    const gatewayUrl = ipfsGatewayUrl(imageIpfs)
+    if (!gatewayUrl) return null
+    return applyPinataImageOptions(gatewayUrl, {
+      width: size * RESOLUTION_MULTIPLIER,
+      height: size * RESOLUTION_MULTIPLIER,
+      fit: 'cover',
+      format: 'webp',
+    })
+  }, [imageIpfs, size])
+
   const [imageError, setImageError] = useState(false)
+
+  useEffect(() => setImageError(false), [imageUrl])
 
   return (
     <div
@@ -36,7 +61,11 @@ export const IpfsAvatar = ({ imageIpfs, address, name, size = 88, className }: I
           unoptimized
         />
       ) : (
-        <Jdenticon className="bg-v3-text-100" value={address.toLowerCase()} size={size.toString()} />
+        <Jdenticon
+          className={fallbackClassName}
+          value={fallbackValue ?? address.toLowerCase()}
+          size={size.toString()}
+        />
       )}
     </div>
   )
