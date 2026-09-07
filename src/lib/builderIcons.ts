@@ -56,7 +56,8 @@ const BUILDER_ICON_KEY_BY_ADDRESS: Record<string, BuilderIconKey> = {
   // Halted gauges — still listed in the table, so they can have icons too
   '0x7be0c111b96b5282f4e16ac87129b34dde19c6d6': 'beexoWallet', // halted
   '0x920a531871f524f49c4346b2528260ff152d3c4e': 'tally', // halted
-  '0x9763146dd94e0e6fd96ca88839e88ebda34a7f94': 'tropykus', // halted
+  '0x9763146dd94e0e6fd96ca88839e88ebda34a7f94': 'tropykus', // halted,
+  '0xeCd960325d5FFd74262876FB36dc732f8d9c7b62': 'jxlabs',
 
   // ─── Rootstock testnet (chainId 31) ─── ONLY FOR TESTNET-QA VALIDATION
   '0x1768813c5CFF9b11D62D8029Ee481E82B383f498': 'asamiClub',
