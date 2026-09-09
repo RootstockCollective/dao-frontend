@@ -61,6 +61,7 @@ export const TransferToManagerProvider = ({ children }: Props) => {
     amount,
     isValidAmount,
     isAmountOverBalance,
+    isAmountOverLimit: false,
     errorMessage,
     usdEquivalent,
     selectedToken,
