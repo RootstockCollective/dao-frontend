@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Read decimals for both tokens in parallel
+    // Read decimals for both tokens in one multicall (deduped; same RPC envelope retry as Quoter batches)
     // getTokenDecimalsBatch returns map with normalized (checksummed) addresses as keys
     const decimalsMap = await getTokenDecimalsBatch([tokenIn, tokenOut])
     const tokenInDecimals = decimalsMap[getAddress(tokenIn)]

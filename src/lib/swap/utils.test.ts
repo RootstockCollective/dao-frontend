@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { Address } from 'viem'
+import { Address, getAddress } from 'viem'
 import Big from '@/lib/big'
 import {
   scaleAmount,
@@ -356,26 +356,28 @@ describe('swap/utils', () => {
       const result = await getTokenDecimalsBatch([mockTokenAddress1, mockTokenAddress2, mockTokenAddress3])
 
       expect(result).toEqual({
-        [mockTokenAddress1]: 18,
-        [mockTokenAddress2]: 6,
-        [mockTokenAddress3]: 8,
+        [getAddress(mockTokenAddress1)]: 18,
+        [getAddress(mockTokenAddress2)]: 6,
+        [getAddress(mockTokenAddress3)]: 8,
       })
-      expect(mockedPublicClient.multicall).toHaveBeenCalledWith({
-        contracts: expect.arrayContaining([
-          expect.objectContaining({
-            address: mockTokenAddress1,
-            functionName: 'decimals',
-          }),
-          expect.objectContaining({
-            address: mockTokenAddress2,
-            functionName: 'decimals',
-          }),
-          expect.objectContaining({
-            address: mockTokenAddress3,
-            functionName: 'decimals',
-          }),
-        ]),
-      })
+      expect(mockedPublicClient.multicall).toHaveBeenCalledWith(
+        expect.objectContaining({
+          contracts: expect.arrayContaining([
+            expect.objectContaining({
+              address: getAddress(mockTokenAddress1),
+              functionName: 'decimals',
+            }),
+            expect.objectContaining({
+              address: getAddress(mockTokenAddress2),
+              functionName: 'decimals',
+            }),
+            expect.objectContaining({
+              address: getAddress(mockTokenAddress3),
+              functionName: 'decimals',
+            }),
+          ]),
+        }),
+      )
     })
 
     it('should handle single token', async () => {
@@ -384,7 +386,29 @@ describe('swap/utils', () => {
       const result = await getTokenDecimalsBatch([mockTokenAddress1])
 
       expect(result).toEqual({
-        [mockTokenAddress1]: 18,
+        [getAddress(mockTokenAddress1)]: 18,
+      })
+    })
+
+    it('deduplicates addresses so each token is read once per multicall', async () => {
+      mockedPublicClient.multicall.mockResolvedValueOnce([
+        { status: 'success', result: 18 },
+        { status: 'success', result: 6 },
+      ] as any)
+
+      const result = await getTokenDecimalsBatch([mockTokenAddress1, mockTokenAddress1, mockTokenAddress2])
+
+      expect(mockedPublicClient.multicall).toHaveBeenCalledWith(
+        expect.objectContaining({
+          contracts: [
+            expect.objectContaining({ address: getAddress(mockTokenAddress1) }),
+            expect.objectContaining({ address: getAddress(mockTokenAddress2) }),
+          ],
+        }),
+      )
+      expect(result).toEqual({
+        [getAddress(mockTokenAddress1)]: 18,
+        [getAddress(mockTokenAddress2)]: 6,
       })
     })
 
@@ -418,12 +442,11 @@ describe('swap/utils', () => {
       )
     })
 
-    it('should handle empty array', async () => {
-      mockedPublicClient.multicall.mockResolvedValueOnce([])
-
+    it('should handle empty array without RPC', async () => {
       const result = await getTokenDecimalsBatch([])
 
       expect(result).toEqual({})
+      expect(mockedPublicClient.multicall).not.toHaveBeenCalled()
     })
   })
 })
