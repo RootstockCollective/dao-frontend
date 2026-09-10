@@ -71,7 +71,7 @@ export const BuilderCard = ({
   return (
     <WindshieldWiperAnimation
       backgroundColor="bg-v3-bg-accent-60"
-      animatedBackgroundColor="bg-v3-bg-accent-100"
+      animatedBackgroundColor="bg-white"
       showAnimation={showAnimation}
       index={index}
     >

@@ -5,10 +5,10 @@ import { BackersPercentage } from '@/app/builders/components/Table/Cell/BackersP
 import { BackingCell } from '@/app/builders/components/Table/Cell/BackingCell/BackingCell'
 import { BuilderName } from '@/app/builders/components/Table/Cell/BuilderNameCell/BuilderName'
 import { RewardsCell } from '@/app/builders/components/Table/Cell/RewardsCell/RewardsCell'
+import { BuilderIcon } from '@/components/BuilderIcon'
 import { Button } from '@/components/Button'
 import { Collapsible } from '@/components/Collapsible'
 import { Divider } from '@/components/Divider'
-import { Jdenticon } from '@/components/Header/Jdenticon'
 import { CogIcon } from '@/components/Icons/v3design/CogIcon'
 import { EmptyPlaceholder } from '@/components/Table/components'
 import { Span } from '@/components/Typography'
@@ -34,7 +34,12 @@ const RewardDetailsItem = ({
         <Collapsible.Root className="gap-4" defaultOpen={false}>
           <div className="flex justify-between align-start align-self-stretch">
             <div className="flex align-items-center gap-3 place-items-center">
-              <Jdenticon className="rounded-full bg-white w-10" value={builder.builder.address} />
+              <BuilderIcon
+                className="rounded-full"
+                address={builder.builder.address}
+                name={builder.builder.builderName}
+                size={40}
+              />
               <BuilderName
                 builder={builder.builder}
                 isHighlighted={false}
