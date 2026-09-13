@@ -29,6 +29,13 @@ export interface Builder {
   stateFlags?: BuilderStateFlags
   gauge?: Address
   backerRewardPct?: BackerRewardPercentage
+  /**
+   * Curated builder icon, merged in from the app-owned `BuilderProfiles` table.
+   * Either a root-relative path to an asset in `public/` or an IPFS CID.
+   * Undefined when the builder has no curated icon, in which case the UI falls
+   * back to a generated identicon.
+   */
+  image?: string | null
 }
 
 export interface BuilderWithRewardShares extends Required<Builder> {

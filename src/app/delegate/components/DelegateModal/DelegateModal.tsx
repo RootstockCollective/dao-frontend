@@ -44,7 +44,7 @@ export const DelegateModal = ({
       <div className="flex flex-col gap-2 items-center py-4 px-8">
         <Paragraph className="pr-8 text-bg-100 md:mt-4 mt-16">{title}</Paragraph>
         <div className="rounded-full bg-text-100 md:mt-4 mt-10">
-          <IpfsAvatar imageIpfs={imageIpfs} address={address} name={name} size={88} />
+          <IpfsAvatar image={imageIpfs} address={address} name={name} size={88} />
         </div>
         <div className="flex flex-col items-center">
           {name ? (

@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Address } from 'viem'
 
 import { Builder } from '@/app/collective-rewards/types'
-import { Jdenticon } from '@/components/Header/Jdenticon'
+import { IpfsAvatar } from '@/components/IpfsAvatar'
 import { Paragraph } from '@/components/Typography'
 import { cn, shortAddress, truncate } from '@/lib/utils'
 
@@ -45,10 +45,13 @@ export const BuilderAvatar = ({
 
   return (
     <div className={cn('flex items-center gap-2', isDesktop && 'gap-3', className)}>
-      <Jdenticon
-        className={cn('rounded-full bg-white', avatarSizeClass)}
-        value={builderAddress ?? address}
-        size={isDesktop ? '40' : '32'}
+      <IpfsAvatar
+        className={avatarSizeClass}
+        fallbackClassName="bg-white"
+        address={(builderAddress ?? address) as Address}
+        image={builder?.image}
+        name={builderName}
+        size={isDesktop ? 40 : 32}
       />
       <div className={cn('flex items-center', isDesktop && 'min-w-0 flex-1')}>
         {hasProposalLink ? (
