@@ -1,9 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/lib/constants', () => ({
-  BLOCKSCOUT_URL: 'https://rootstock.blockscout.test',
   CHAIN_ID: '30',
 }))
+
+// Host resolution reads the environment per call, so the mocked constant is not enough.
+process.env.NEXT_PUBLIC_BLOCKSCOUT_URL = 'https://rootstock.blockscout.test'
 
 const ADDRESS = '0xa7671bd525f529b60bf9f6c28fbe5d64f2cd0d73' as const
 const TOPIC = '0x72421f1eeaa316f3b67618996c0df193d45328d3645bb1866b6beb11a0c8230e' as const

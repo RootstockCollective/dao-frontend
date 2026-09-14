@@ -1,4 +1,5 @@
-const BLOCKSCOUT_STATS_URL = 'https://rootstock.blockscout.com/api/v2/stats'
+import { buildBlockscoutRestUrl } from '@/lib/blockscout/blockscout-api'
+
 const FALLBACK_BLOCK_TIME_MS = 25_000
 
 interface BlockscoutStatsResponse {
@@ -13,7 +14,11 @@ interface BlockscoutStatsResponse {
  */
 export async function computeAverageBlockTime(): Promise<number> {
   try {
-    const response = await fetch(BLOCKSCOUT_STATS_URL, { signal: AbortSignal.timeout(10_000) })
+    // Server-side only: the PRO key must not reach the browser. If this is ever wired into a
+    // client component, route it through an API route of ours the way `/api/rns` does.
+    const response = await fetch(buildBlockscoutRestUrl('stats'), {
+      signal: AbortSignal.timeout(10_000),
+    })
 
     if (!response.ok) {
       console.error(`[BlockTime] Blockscout API returned ${response.status}`)

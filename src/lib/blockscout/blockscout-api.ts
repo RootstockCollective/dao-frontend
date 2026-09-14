@@ -1,70 +1,146 @@
 /**
- * Resolves which Blockscout API answers our RPC-style (`module=`/`action=`) calls.
+ * Single place that decides which Blockscout API answers our calls, and how to authenticate.
  *
- * Public explorer instances (`rootstock.blockscout.com`) are bot-protected: measured against
- * mainnet, an unauthenticated caller gets **10 requests per ~16-minute window per IP**, after which
- * every request is a hard 429 until the window resets. That is ~0.01 req/s, orders of magnitude
- * below what the gauge routes need, and it is why they answered 504.
+ * ## Why this exists
  *
- * The PRO API (`api.blockscout.com`) serves the same endpoints behind a real quota: one host for
- * every chain, selected with `chain_id`, authenticated with `apikey`.
+ * Blockscout deprecated the per-instance API ("PER INSTANCE API WILL BE DEPRECATED JULY 1").
+ * Public explorer instances are now bot-protected: measured against `rootstock.blockscout.com`,
+ * an unauthenticated caller gets **10 requests per ~16-minute window per IP**, then hard 429s until
+ * it resets. That is ~0.01 req/s — far below what any of our routes need, and why the gauge routes
+ * answered 504.
+ *
+ * The replacement is the multichain PRO API on `api.blockscout.com`, which serves the same data
+ * behind a real quota (5 rps on the free tier).
+ *
+ * ## The two shapes are not symmetric
+ *
+ * This is the trap worth knowing: `chain_id` moves depending on which API you call.
+ *
+ * | Style   | Per-instance (old)              | PRO (new)                                           |
+ * | ------- | ------------------------------- | --------------------------------------------------- |
+ * | RPC     | `{host}/api?module=…`           | `api.blockscout.com/v2/api?chain_id=30&apikey=…`     |
+ * | REST v2 | `{host}/api/v2/{path}`          | `api.blockscout.com/30/api/v2/{path}?apikey=…`       |
+ *
+ * RPC takes `chain_id` as a **query param**; REST takes it as a **path segment**.
  *
  * @remarks
- * - **Opt-in.** With no key configured we keep calling the public instance, so environments without
- *   one behave exactly as before rather than failing closed.
- * - **Server-only.** {@link BLOCKSCOUT_API_KEY} is deliberately *not* a `NEXT_PUBLIC_` variable —
- *   that would ship the key to every browser. Only import this from server code.
- * - Scope is the RPC-style API. REST v2 callers (`/api/v2/addresses/…` in `rns.ts`, `Balances`) and
- *   the browser-side `fetchEpochSettledLogs` still use `NEXT_PUBLIC_BLOCKSCOUT_URL`, which also
- *   remains the explorer origin for UI links (see `src/config/config.ts`). Do not repoint it.
+ * - **Opt-in.** With no key configured every call keeps going to the public instance, so
+ *   environments without one behave exactly as before rather than failing closed.
+ * - **Server-only.** {@link process.env.BLOCKSCOUT_API_KEY} is deliberately not `NEXT_PUBLIC_` —
+ *   that would ship the key to every browser. Import this from server code only; browser callers
+ *   must go through one of our own API routes instead.
+ * - `NEXT_PUBLIC_BLOCKSCOUT_URL` stays the **explorer origin for UI links** (see
+ *   `src/config/config.ts`) and the fallback API host. Do not repoint it at the PRO API.
  */
-import { BLOCKSCOUT_URL, CHAIN_ID } from '@/lib/constants'
+import { CHAIN_ID } from '@/lib/constants'
 
-/** Multichain PRO API base. `/api` is appended by callers, giving `…/v2/api?chain_id=…`. */
-const DEFAULT_PRO_API_URL = 'https://api.blockscout.com/v2'
+/** Multichain PRO API host root. Both the RPC and REST bases are derived from it. */
+const DEFAULT_PRO_API_HOST = 'https://api.blockscout.com'
 
-const apiKey = process.env.BLOCKSCOUT_API_KEY?.trim()
-const proApiUrl = process.env.BLOCKSCOUT_PRO_API_URL?.trim() || DEFAULT_PRO_API_URL
+/**
+ * Every setting is read per call rather than captured at import time.
+ *
+ * Module-scope capture binds whatever the environment held when the first importer loaded, which
+ * silently ignores later changes — including the ones tests make in `beforeEach`, leaving them to
+ * hit the network for real.
+ */
+const apiKey = (): string | undefined => process.env.BLOCKSCOUT_API_KEY?.trim() || undefined
 
-export interface BlockscoutApiTarget {
-  /** Origin to build request URLs from; callers append their own path. */
+const proApiHost = (): string =>
+  stripTrailingSlash(process.env.BLOCKSCOUT_PRO_API_HOST?.trim() || DEFAULT_PRO_API_HOST)
+
+/**
+ * The public instance is the fallback host, so its absence is only fatal when there is no key to
+ * fall back *from*. Failing here beats building `undefined/api` and reporting a confusing 404.
+ */
+function requirePublicInstanceUrl(): string {
+  const base = (process.env.NEXT_PUBLIC_BLOCKSCOUT_URL ?? '').trim()
+  if (!base) {
+    throw new Error(
+      'Blockscout is not configured: set BLOCKSCOUT_API_KEY to use the PRO API, or NEXT_PUBLIC_BLOCKSCOUT_URL to fall back to a public instance',
+    )
+  }
+  return stripTrailingSlash(base)
+}
+
+const stripTrailingSlash = (value: string): string => value.replace(/\/$/, '')
+const stripLeadingSlash = (value: string): string => value.replace(/^\//, '')
+
+export interface BlockscoutRpcTarget {
+  /** Origin to build request URLs from; callers append `/api` themselves. */
   baseUrl: string
-  /** Query params every request must carry (`chain_id`, `apikey`), empty on the public instance. */
+  /** Query params every request must carry (`chain_id`, `apikey`); empty on the public instance. */
   authParams: Record<string, string>
   /** True when requests go to the authenticated PRO API. */
   isPro: boolean
 }
 
 /**
- * @returns Where to send RPC-style Blockscout calls, and what to append to authenticate.
+ * Resolves the target for RPC-style calls (`?module=…&action=…`).
+ *
+ * @param baseUrlOverride — Pins a specific explorer. Honoured verbatim and **never** authenticated,
+ *   so a deliberately pinned instance can never receive our key.
  *
  * @example
  * ```ts
- * const { baseUrl, authParams } = resolveBlockscoutApiTarget()
+ * const { baseUrl, authParams } = resolveBlockscoutRpcTarget()
  * const url = new URL(`${baseUrl}/api`)
  * for (const [k, v] of Object.entries({ ...authParams, ...params })) url.searchParams.append(k, v)
  * ```
  */
-export function resolveBlockscoutApiTarget(baseUrlOverride?: string): BlockscoutApiTarget {
-  // An explicit override is a deliberate choice by the caller (tests, a pinned instance); honour it
-  // verbatim rather than silently redirecting it at the PRO API.
+export function resolveBlockscoutRpcTarget(baseUrlOverride?: string): BlockscoutRpcTarget {
   if (baseUrlOverride) {
-    return { baseUrl: baseUrlOverride, authParams: {}, isPro: false }
+    return { baseUrl: stripTrailingSlash(baseUrlOverride), authParams: {}, isPro: false }
   }
 
-  if (!apiKey) {
-    return { baseUrl: BLOCKSCOUT_URL, authParams: {}, isPro: false }
+  const key = apiKey()
+  if (!key) {
+    return { baseUrl: requirePublicInstanceUrl(), authParams: {}, isPro: false }
   }
 
   return {
-    baseUrl: proApiUrl,
-    // chain_id is required: one host serves every chain, so omitting it is not "default to ours".
-    authParams: { chain_id: CHAIN_ID, apikey: apiKey },
+    // RPC lives under /v2 and selects the chain with a query param.
+    baseUrl: `${proApiHost()}/v2`,
+    authParams: { chain_id: CHAIN_ID, apikey: key },
     isPro: true,
   }
 }
 
-/** Whether the PRO API is configured. Exposed so callers can log/pace differently. */
+/**
+ * Builds a full REST v2 URL, authenticated when a key is configured.
+ *
+ * @param path — Endpoint below `api/v2`, with or without a leading slash
+ *   (e.g. `addresses/0x…`, `tokens/0x…/holders`).
+ * @param searchParams — Extra query params to append.
+ * @returns An absolute URL string ready for `fetch`.
+ *
+ * @example
+ * ```ts
+ * // PRO:    https://api.blockscout.com/30/api/v2/addresses/0xabc?apikey=proapi_xxx
+ * // Public: https://rootstock.blockscout.com/api/v2/addresses/0xabc
+ * buildBlockscoutRestUrl(`addresses/${address}`)
+ * ```
+ */
+export function buildBlockscoutRestUrl(path: string, searchParams: Record<string, string> = {}): string {
+  const cleanPath = stripLeadingSlash(path)
+
+  // REST puts the chain in the path, unlike RPC — see the table above.
+  const key = apiKey()
+  const url = key
+    ? new URL(`${proApiHost()}/${CHAIN_ID}/api/v2/${cleanPath}`)
+    : new URL(`${requirePublicInstanceUrl()}/api/v2/${cleanPath}`)
+
+  if (key) {
+    url.searchParams.set('apikey', key)
+  }
+  for (const [key, value] of Object.entries(searchParams)) {
+    url.searchParams.set(key, value)
+  }
+
+  return url.toString()
+}
+
+/** Whether the PRO API is configured. Exposed so callers can log or pace differently. */
 export function isBlockscoutProApiEnabled(): boolean {
-  return Boolean(apiKey)
+  return Boolean(apiKey())
 }

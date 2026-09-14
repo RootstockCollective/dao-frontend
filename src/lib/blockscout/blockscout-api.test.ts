@@ -1,9 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 vi.mock('@/lib/constants', () => ({
-  BLOCKSCOUT_URL: 'https://rootstock.blockscout.test',
   CHAIN_ID: '30',
 }))
+
+const PUBLIC_INSTANCE = 'https://rootstock.blockscout.test'
 
 /** The module reads env at import time, so each case needs a fresh module registry. */
 const loadWithEnv = async (env: Record<string, string | undefined>) => {
@@ -18,12 +19,13 @@ const loadWithEnv = async (env: Record<string, string | undefined>) => {
   return import('./blockscout-api')
 }
 
-describe('resolveBlockscoutApiTarget', () => {
+describe('resolveBlockscoutRpcTarget', () => {
   const original = { ...process.env }
 
   beforeEach(() => {
     delete process.env.BLOCKSCOUT_API_KEY
-    delete process.env.BLOCKSCOUT_PRO_API_URL
+    delete process.env.BLOCKSCOUT_PRO_API_HOST
+    process.env.NEXT_PUBLIC_BLOCKSCOUT_URL = PUBLIC_INSTANCE
   })
 
   afterEach(() => {
@@ -32,24 +34,24 @@ describe('resolveBlockscoutApiTarget', () => {
   })
 
   it('keeps using the public instance when no key is configured', async () => {
-    const { resolveBlockscoutApiTarget, isBlockscoutProApiEnabled } = await loadWithEnv({
+    const { resolveBlockscoutRpcTarget, isBlockscoutProApiEnabled } = await loadWithEnv({
       BLOCKSCOUT_API_KEY: undefined,
     })
 
-    const target = resolveBlockscoutApiTarget()
+    const target = resolveBlockscoutRpcTarget()
 
-    expect(target.baseUrl).toBe('https://rootstock.blockscout.test')
+    expect(target.baseUrl).toBe(PUBLIC_INSTANCE)
     expect(target.authParams).toEqual({})
     expect(target.isPro).toBe(false)
     expect(isBlockscoutProApiEnabled()).toBe(false)
   })
 
   it('switches to the PRO API and carries chain_id plus apikey once a key is set', async () => {
-    const { resolveBlockscoutApiTarget, isBlockscoutProApiEnabled } = await loadWithEnv({
+    const { resolveBlockscoutRpcTarget, isBlockscoutProApiEnabled } = await loadWithEnv({
       BLOCKSCOUT_API_KEY: 'proapi_secret',
     })
 
-    const target = resolveBlockscoutApiTarget()
+    const target = resolveBlockscoutRpcTarget()
 
     // `/api` is appended by callers, so this must produce https://api.blockscout.com/v2/api.
     expect(target.baseUrl).toBe('https://api.blockscout.com/v2')
@@ -60,15 +62,15 @@ describe('resolveBlockscoutApiTarget', () => {
   })
 
   it('treats a blank key as absent rather than authenticating with an empty string', async () => {
-    const { resolveBlockscoutApiTarget } = await loadWithEnv({ BLOCKSCOUT_API_KEY: '   ' })
+    const { resolveBlockscoutRpcTarget } = await loadWithEnv({ BLOCKSCOUT_API_KEY: '   ' })
 
-    expect(resolveBlockscoutApiTarget().isPro).toBe(false)
+    expect(resolveBlockscoutRpcTarget().isPro).toBe(false)
   })
 
   it('never redirects an explicit base url override at the PRO API', async () => {
-    const { resolveBlockscoutApiTarget } = await loadWithEnv({ BLOCKSCOUT_API_KEY: 'proapi_secret' })
+    const { resolveBlockscoutRpcTarget } = await loadWithEnv({ BLOCKSCOUT_API_KEY: 'proapi_secret' })
 
-    const target = resolveBlockscoutApiTarget('https://custom.explorer')
+    const target = resolveBlockscoutRpcTarget('https://custom.explorer')
 
     expect(target.baseUrl).toBe('https://custom.explorer')
     // Crucially, the key is not leaked onto an instance the caller pinned on purpose.
@@ -76,11 +78,11 @@ describe('resolveBlockscoutApiTarget', () => {
   })
 
   it('allows the PRO base url to be repointed by env', async () => {
-    const { resolveBlockscoutApiTarget } = await loadWithEnv({
+    const { resolveBlockscoutRpcTarget } = await loadWithEnv({
       BLOCKSCOUT_API_KEY: 'proapi_secret',
-      BLOCKSCOUT_PRO_API_URL: 'https://staging.api.blockscout.test/v2',
+      BLOCKSCOUT_PRO_API_HOST: 'https://staging.api.blockscout.test',
     })
 
-    expect(resolveBlockscoutApiTarget().baseUrl).toBe('https://staging.api.blockscout.test/v2')
+    expect(resolveBlockscoutRpcTarget().baseUrl).toBe('https://staging.api.blockscout.test/v2')
   })
 })
