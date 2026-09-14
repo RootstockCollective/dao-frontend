@@ -1,5 +1,19 @@
-/** ~1.5 req/s. Empirically the fastest sustained rate mainnet Blockscout tolerates. */
-const DEFAULT_MIN_INTERVAL_MS = 650
+import { isBlockscoutProApiEnabled } from './blockscout-api'
+
+/**
+ * ~1.5 req/s. Not a tolerance so much as damage control: an unauthenticated caller gets roughly
+ * 10 requests per 16-minute window per IP, so no pacing makes a public instance workable — this
+ * only keeps us from burning the window instantly.
+ */
+const DEFAULT_PUBLIC_MIN_INTERVAL_MS = 650
+
+/** 4 req/s, one under the PRO free tier's 5 RPS so a burst does not sit exactly on the limit. */
+const DEFAULT_PRO_MIN_INTERVAL_MS = 250
+
+function defaultMinIntervalMs(): number {
+  return isBlockscoutProApiEnabled() ? DEFAULT_PRO_MIN_INTERVAL_MS : DEFAULT_PUBLIC_MIN_INTERVAL_MS
+}
+
 /** The budget is per IP, so parallelism buys nothing and only wastes it in bursts. */
 const DEFAULT_MAX_CONCURRENCY = 1
 const DEFAULT_MAX_ATTEMPTS = 4
@@ -29,7 +43,7 @@ function defaultConfig(): BlockscoutThrottleConfig {
   return {
     minIntervalMs: isTestEnv
       ? 0
-      : numberFromEnv(process.env.BLOCKSCOUT_MIN_INTERVAL_MS, DEFAULT_MIN_INTERVAL_MS),
+      : numberFromEnv(process.env.BLOCKSCOUT_MIN_INTERVAL_MS, defaultMinIntervalMs()),
     maxConcurrency: Math.max(
       1,
       numberFromEnv(process.env.BLOCKSCOUT_MAX_CONCURRENCY, DEFAULT_MAX_CONCURRENCY),
