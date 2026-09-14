@@ -6,9 +6,9 @@ import { useAccount } from 'wagmi'
 import { CycleContextProvider, useCycleContext } from '@/app/collective-rewards/metrics'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { useRequiredTokens } from '@/app/user/IntroModal/hooks/useRequiredTokens'
-import { BannerContent } from '@/components/StackableBanner/BannerContent'
-import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
+import { Button } from '@/components/Button'
 
+import { NotificationBanner } from './components'
 import {
   getBannerConfigForBacking,
   getBannerConfigForCycleEnded,
@@ -18,6 +18,7 @@ import {
   getBannerConfigForTokenStatus,
   selectRandomBannerConfigs,
 } from './configs'
+import { DEFAULT_NOTIFICATION_BACKGROUND } from './constants'
 import { useGetBuilderState } from './hooks/useGetBuilderState'
 import { useHasAvailableBacking } from './hooks/useHasAvailableForBacking'
 import { BannerConfig } from './types'
@@ -97,7 +98,8 @@ import { handleActionClick } from './utils'
  * 3. Add your detection function to the activeBannerConfigs array below
  * 4. If your detection depends on async data, add loading state to dependencies array
  *
- * Check BannerContent.stories.tsx to see banners config
+ * Each selected banner renders as its own NotificationBanner card. Dismissing one hides it
+ * for the session and reveals a Restore button that brings every dismissed card back.
  *
  * @returns JSX.Element with banner notifications or null if no banners should be shown
  */
@@ -219,6 +221,9 @@ const StackingNotificationsContent = () => {
   // Only block rendering on FIRST load, not on subsequent polling updates
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
 
+  // Dismissals last for the session only: a reload brings every notification back
+  const [dismissedIds, setDismissedIds] = useState<string[]>([])
+
   useEffect(() => {
     if (areDependenciesLoaded && !hasLoadedOnce) {
       setHasLoadedOnce(true)
@@ -238,20 +243,42 @@ const StackingNotificationsContent = () => {
     return null
   }
 
+  const visibleBannerConfigs = bannerConfigsForDisplay.filter(config => !dismissedIds.includes(config.id))
+  const hasDismissedBanners = bannerConfigsForDisplay.length > visibleBannerConfigs.length
+
+  if (visibleBannerConfigs.length === 0 && !hasDismissedBanners) {
+    return null
+  }
+
   // Render the selected banners
   return (
-    <StackableBanner>
-      {bannerConfigsForDisplay.map((config, index) => (
-        <BannerContent
-          key={`banner-${index}`}
+    <div className="flex w-full flex-col gap-2" data-testid="StackingNotifications">
+      {visibleBannerConfigs.map((config, index) => (
+        <NotificationBanner
+          key={config.id}
           title={config.title}
           description={config.description}
+          backgroundSrc={config.backgroundSrc ?? DEFAULT_NOTIFICATION_BACKGROUND}
           buttonText={config.buttonText}
           buttonOnClick={() => handleActionClick(config, router)}
           rightContent={config.rightContent}
+          showDecorativeSquares={index === 0}
+          onDismiss={() => setDismissedIds(ids => [...ids, config.id])}
         />
       ))}
-    </StackableBanner>
+
+      {hasDismissedBanners && (
+        <div className="flex justify-end">
+          <Button
+            variant="secondary-outline"
+            onClick={() => setDismissedIds([])}
+            data-testid="RestoreNotificationsButton"
+          >
+            Restore
+          </Button>
+        </div>
+      )}
+    </div>
   )
 }
 

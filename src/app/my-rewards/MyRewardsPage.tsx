@@ -10,14 +10,14 @@ import { useIsBacker } from '@/app/collective-rewards/rewards'
 import { withBuilderSettingsProvider } from '@/app/collective-rewards/settings'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { Header, Paragraph, Span } from '@/components/Typography'
+import { Paragraph, Span } from '@/components/Typography'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 
 import { CRWhitepaperLink } from '../collective-rewards/shared/components/CRWhitepaperLinkNew'
 import { BackerRewards } from './backers/components/BackerRewards'
 import { BackerRewardsNotConnected } from './backers/components/BackerRewardsNotConnected'
 import { BuilderRewards } from './builder/components/BuilderRewards'
-import { NonBacker } from './components'
+import { MyRewardsBanner, NonBacker } from './components'
 import { Section } from './components/Section'
 
 const NAME = 'My Rewards'
@@ -53,15 +53,9 @@ const MyRewardsPage = () => {
         data-testid={NAME}
         className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm"
       >
-        <Header caps variant="h1" className="text-3xl leading-10 pb-10">
-          {NAME}
-        </Header>
         <div data-testid="main-container" className="flex flex-col w-full items-start gap-2">
+          <MyRewardsBanner />
           <Section>
-            <Paragraph className="flex items-start flex-1 basis-0">
-              Track and claim the rewards you earn from backing Collective Rewards Builders. Claim Rewards and
-              restake for higher Rewards and voting power.
-            </Paragraph>
             <Paragraph className="flex flex-col items-start gap-2 flex-1 basis-0">
               <Span>Learn more about the Collective Rewards in the Whitepaper</Span>
               <Span>

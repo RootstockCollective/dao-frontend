@@ -5,6 +5,10 @@ import { currentLinks } from '@/lib/links'
 
 import { BannerConfigMap } from './types'
 
+/** Generic artwork used by every notification that has no dedicated background yet. */
+export const DEFAULT_NOTIFICATION_BACKGROUND = '/images/notification-default.webp'
+const BACK_NOTIFICATION_BACKGROUND = '/images/notification-back.webp'
+
 // Static token images - created once outside component to avoid re-renders
 const rbtcImage = <TokenImage symbol={RBTC} size={26} className="inline-block mt-[-0.2rem]" />
 const rifImage = <TokenImage symbol={RIF} size={24} className="inline-block mt-[-0.2rem]" />
@@ -16,6 +20,7 @@ export const CYCLE_ENDING = 'CYCLE_ENDING'
 export const CYCLE_ENDED = 'CYCLE_ENDED'
 
 const NEED_RBTC_AND_RIF = {
+  id: 'NEED_RBTC_AND_RIF',
   title: <span>GET {rbtcImage} rBTC</span>,
   buttonText: 'Get rBTC',
   description:
@@ -66,6 +71,7 @@ export const BANNER_CONFIGS: BannerConfigMap = {
   [NEED_RBTC]: NEED_RBTC_AND_RIF,
   [NEED_RBTC_RIF]: NEED_RBTC_AND_RIF,
   [NEED_RIF]: {
+    id: NEED_RIF,
     title: <span>GET {rifImage} RIF</span>,
     buttonText: 'Get RIF',
     description:
@@ -76,6 +82,7 @@ export const BANNER_CONFIGS: BannerConfigMap = {
     },
   },
   [NEED_STRIF]: {
+    id: NEED_STRIF,
     title: <span>STAKE {rifImage} RIF</span>,
     buttonText: 'Stake RIF',
     description: 'Use RIF to stake and RBTC to pay for transactions fees.',
@@ -85,6 +92,8 @@ export const BANNER_CONFIGS: BannerConfigMap = {
     },
   },
   [NOT_BACKING]: {
+    id: NOT_BACKING,
+    backgroundSrc: BACK_NOTIFICATION_BACKGROUND,
     title: <span>BACK</span>,
     buttonText: 'See all Builders',
     description: 'Back Builders to start earning rewards.',
@@ -94,6 +103,7 @@ export const BANNER_CONFIGS: BannerConfigMap = {
     },
   },
   [KYC_ONLY]: {
+    id: KYC_ONLY,
     title: <span>TAKE THE NEXT STEP</span>,
     buttonText: 'Create Proposal',
     description:
@@ -104,6 +114,7 @@ export const BANNER_CONFIGS: BannerConfigMap = {
     },
   },
   [START_BUILDING]: {
+    id: START_BUILDING,
     title: <span>START BUILDING</span>,
     buttonText: 'See all Builders',
     description:
@@ -114,6 +125,7 @@ export const BANNER_CONFIGS: BannerConfigMap = {
     },
   },
   [CYCLE_ENDING]: {
+    id: CYCLE_ENDING,
     title: <span>NEW CYCLE STARTING SOON</span>,
     buttonText: 'Back Builders',
     description: 'Adjust your backing to make the most of the upcoming rewards.',
@@ -125,6 +137,7 @@ export const BANNER_CONFIGS: BannerConfigMap = {
     },
   },
   [CYCLE_ENDED]: {
+    id: CYCLE_ENDED,
     title: <span>CYCLE JUST ENDED</span>,
     buttonText: 'Claim Rewards',
     description:

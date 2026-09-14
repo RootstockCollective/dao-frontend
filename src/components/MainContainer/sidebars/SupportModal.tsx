@@ -2,12 +2,14 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
+import Image from 'next/image'
 import { useCallback, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 import { useAccount } from 'wagmi'
 import { z } from 'zod'
 
 import { Button } from '@/components/Button'
+import { DismissButton } from '@/components/DismissButton'
 import { SelectField, TextArea, TextInput } from '@/components/FormFields'
 import { ErrorMessage } from '@/components/FormFields/ErrorMessage'
 import { Modal } from '@/components/Modal'
@@ -39,6 +41,10 @@ if (process.env.NODE_ENV === 'production' && !envSiteKey) {
 }
 
 const TURNSTILE_SITE_KEY = envSiteKey || TURNSTILE_TEST_SITE_KEY
+
+const HERO_IMAGE_SRC = '/images/support-modal-hero.webp'
+const HERO_OVERLAY =
+  'linear-gradient(180deg, rgba(23,20,18,0) 40%, rgba(23,20,18,0.55) 75%, rgba(23,20,18,0.95) 100%)'
 
 const emptyString = z.literal('').transform(() => {})
 
@@ -187,11 +193,33 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
   })
 
   return (
-    <Modal onClose={onClose} width={520} data-testid="SupportModal">
+    <Modal onClose={onClose} width={560} hideCloseButton data-testid="SupportModal">
+      <div className="relative">
+        <div className="relative h-[160px] w-full overflow-hidden md:h-[200px]">
+          <Image
+            src={HERO_IMAGE_SRC}
+            alt=""
+            aria-hidden="true"
+            fill
+            priority
+            sizes="(min-width: 768px) 560px, 100vw"
+            className="object-cover"
+          />
+          {/* Fades the artwork into the modal so the title stays readable */}
+          <div className="absolute inset-0" style={{ background: HERO_OVERLAY }} />
+          <Header variant="h2" className="absolute bottom-4 left-4 md:left-6">
+            CONTACT SUPPORT
+          </Header>
+        </div>
+        <DismissButton
+          aria-label="Close"
+          onClick={onClose}
+          className="absolute right-4 top-4 z-base"
+          data-testid="CloseButton"
+        />
+      </div>
+
       <form onSubmit={onSubmit} className="flex flex-col p-4 md:p-6">
-        <Header variant="h2" className="mt-10 mb-2">
-          CONTACT SUPPORT
-        </Header>
         <Paragraph variant="body-s" className="text-text-60 mb-6">
           Tell us what you need help with. Leave an email if you would like a reply.
         </Paragraph>
@@ -255,7 +283,16 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
             maxRows={10}
             data-testid="SupportDescription"
           />
+        </div>
 
+        {submitError && (
+          <p className="mt-4 text-error text-sm" data-testid="SupportSubmitError">
+            {submitError}
+          </p>
+        )}
+
+        {/* Captcha and actions share a row so they read as one footer */}
+        <div className="mt-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <Controller
             control={control}
             name="turnstileToken"
@@ -280,29 +317,23 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
               </ErrorMessage>
             )}
           />
-        </div>
 
-        {submitError && (
-          <p className="mt-4 text-error text-sm" data-testid="SupportSubmitError">
-            {submitError}
-          </p>
-        )}
-
-        <div className="mt-8 flex flex-col-reverse md:flex-row gap-3 md:justify-end">
-          <Button
-            type="button"
-            variant="secondary-outline"
-            onClick={() => {
-              resetTurnstile()
-              onClose()
-            }}
-            data-testid="SupportCancel"
-          >
-            Cancel
-          </Button>
-          <Button type="submit" variant="primary" disabled={isSubmitting} data-testid="SupportSend">
-            Send
-          </Button>
+          <div className="flex flex-col-reverse gap-3 md:flex-row md:justify-end">
+            <Button
+              type="button"
+              variant="secondary-outline"
+              onClick={() => {
+                resetTurnstile()
+                onClose()
+              }}
+              data-testid="SupportCancel"
+            >
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary" disabled={isSubmitting} data-testid="SupportSend">
+              Send
+            </Button>
+          </div>
         </div>
       </form>
     </Modal>

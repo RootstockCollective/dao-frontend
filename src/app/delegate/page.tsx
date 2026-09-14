@@ -1,3 +1,4 @@
+import { DelegationBanner } from '@/app/delegate/components/DelegationBanner'
 import { DelegateContextProvider } from '@/app/delegate/contexts/DelegateContext'
 import { DelegateContentSection, VotingPowerSection } from '@/app/delegate/sections'
 import { HeroComponent } from '@/components/HeroComponent'
@@ -5,6 +6,7 @@ import { HeroComponent } from '@/components/HeroComponent'
 export default function Delegate() {
   return (
     <DelegateContextProvider>
+      <DelegationBanner />
       <HeroComponent
         imageSrc="/images/hero/delegation-banner.png"
         title="DELEGATE YOUR VOTING POWER"

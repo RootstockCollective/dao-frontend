@@ -13,6 +13,7 @@ import {
 import { HeroCommunitiesComponent } from '@/app/communities/components'
 import { getEnvFlag } from '@/shared/context/FeatureFlag/flags.utils'
 
+import { CommunitiesBanner } from './components/CommunitiesBanner'
 import { ResponsiveCommunityItemHOC } from './components/ResponsiveCommunityItemHOC'
 import { SectionContainer } from './components/SectionContainer'
 
@@ -30,6 +31,7 @@ export default function Communities() {
   return (
     <div>
       <div className="flex flex-col gap-2">
+        <CommunitiesBanner />
         <HeroCommunitiesComponent />
         <SectionContainer
           title="BADGES"

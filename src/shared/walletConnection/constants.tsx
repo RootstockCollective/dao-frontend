@@ -47,10 +47,11 @@ export const onRampDisclaimerText =
 export const routePatterns = [
   //  NFT community pages don't have headers according to the design
   { pattern: /^\/communities\/nft\//, component: null },
-  { pattern: /^\/communities/, component: <HeaderTitle variant="h1">COMMUNITIES</HeaderTitle> },
-  { pattern: /^\/proposals$/, component: <HeaderTitle variant="h1">PROPOSALS</HeaderTitle> },
-  { pattern: /^\/delegate$/, component: <HeaderTitle variant="h1">DELEGATION</HeaderTitle> },
-  { pattern: /^\/treasury$/, component: <HeaderTitle variant="h1">TREASURY</HeaderTitle> },
+  // These pages render their own title inside their page banner
+  { pattern: /^\/communities/, component: null },
+  { pattern: /^\/proposals$/, component: null },
+  { pattern: /^\/delegate$/, component: null },
+  { pattern: /^\/treasury$/, component: null },
   { pattern: /^\/vault$/, component: <HeaderTitle variant="h1">USD VAULT</HeaderTitle> },
   { pattern: /^\/btc-vault$/, component: <HeaderTitle variant="h1">BTC VAULT</HeaderTitle> },
   // Add more patterns as needed

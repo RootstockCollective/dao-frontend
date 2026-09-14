@@ -1,37 +1,86 @@
-import { DecorativeSquares } from '@/app/backing/components/DecorativeSquares'
+'use client'
+
+import Image from 'next/image'
+import { useState } from 'react'
+
 import { CRWhitepaperLink } from '@/app/collective-rewards/shared/components/CRWhitepaperLinkNew'
 import { CommonComponentProps } from '@/components/commonProps'
+import { DismissButton } from '@/components/DismissButton'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
+const BACKGROUND_SRC = '/images/backing-info-bg.webp'
+
+/** Fades the artwork out towards the left so the copy stays readable. */
+const DESKTOP_OVERLAY =
+  'linear-gradient(90deg, #171412 0%, #171412 30%, rgba(23,20,18,0.9) 44%, rgba(23,20,18,0.4) 62%, rgba(23,20,18,0) 80%)'
+const MOBILE_OVERLAY =
+  'linear-gradient(180deg, rgba(23,20,18,0.95) 0%, rgba(23,20,18,0.9) 55%, rgba(23,20,18,0.65) 100%)'
+
+const PERKS = [
+  'Earn a share of the rewards from Builders you back',
+  'Influence how rewards are distributed to Builders',
+  'Retain full ownership and access to your stRIF',
+]
+
+const PerkBullet = () => (
+  <span
+    aria-hidden="true"
+    className="mt-[0.4rem] inline-block size-[0.6rem] shrink-0 rounded-full border border-v3-primary"
+  />
+)
+
 export const BackingBanner = ({ className = '' }: CommonComponentProps) => {
+  // Dismissal lasts for the session only: a reload brings the card back
+  const [isDismissed, setIsDismissed] = useState(false)
+
+  if (isDismissed) {
+    return null
+  }
+
   return (
     <div
       className={cn(
-        'relative flex flex-col items-start gap-2 self-stretch py-6 px-4 md:p-6 text-v3-text-0',
+        'relative w-full self-stretch overflow-hidden rounded-lg bg-v3-bg-accent-100 text-v3-text-100',
         className,
       )}
-      style={{
-        background: 'linear-gradient(270deg, #442351 0%, #C0F7FF 49.49%, #E3FFEB 139.64%)',
-      }}
       data-testid="BackingBanner"
     >
-      <DecorativeSquares className="absolute left-0 top-[-30px] z-base" color="#d2fbf6" />
-      <Header variant="h3">{`WHAT'S IN IT FOR ME?`}</Header>
-      <ul className="flex flex-col gap-2 md:gap-0 list-[circle] pl-6">
-        <li>
-          <Paragraph>Earn a share of the rewards from Builders you back</Paragraph>
-        </li>
-        <li>
-          <Paragraph>Influence how rewards are distributed to Builders</Paragraph>
-        </li>
-        <li>
-          <Paragraph>Retain full ownership and access to your stRIF</Paragraph>
-        </li>
-      </ul>
-      <Span className="mt-2">
-        See the <CRWhitepaperLink>Whitepaper</CRWhitepaperLink>
-      </Span>
+      <Image
+        src={BACKGROUND_SRC}
+        alt=""
+        aria-hidden="true"
+        fill
+        sizes="(min-width: 768px) 50vw, 100vw"
+        className="object-cover object-right"
+      />
+      <div className="absolute inset-0 md:hidden" style={{ background: MOBILE_OVERLAY }} />
+      <div className="absolute inset-0 hidden md:block" style={{ background: DESKTOP_OVERLAY }} />
+
+      <DismissButton
+        aria-label="Dismiss the What's in it for me banner"
+        onClick={() => setIsDismissed(true)}
+        className="absolute right-4 top-4 z-base"
+        data-testid="DismissBackingBannerButton"
+      />
+
+      <div className="relative flex flex-col items-start gap-4 px-4 py-6 md:p-6">
+        <Header caps variant="h3">{`What's in it for me?`}</Header>
+
+        <ul className="flex list-none flex-col gap-2">
+          {PERKS.map(perk => (
+            <li key={perk} className="flex items-start gap-3">
+              <PerkBullet />
+              <Paragraph>{perk}</Paragraph>
+            </li>
+          ))}
+        </ul>
+
+        <Span className="mt-2 text-v3-primary">
+          {/* CRWhitepaperLink spreads props last, so className replaces its own defaults */}
+          See the <CRWhitepaperLink className="gap-1 underline">Whitepaper</CRWhitepaperLink>
+        </Span>
+      </div>
     </div>
   )
 }

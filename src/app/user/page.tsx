@@ -9,7 +9,8 @@ import { StackingNotifications } from '@/app/user/StackingNotifications/Stacking
 import { useGetProposalsWithGraph } from '../proposals/hooks/useGetProposalsWithGraph'
 import { TreasuryContextProviderWithPrices } from '../treasury/contexts/TreasuryContext'
 import { CollectiveBalancesSection } from './components/collective-balances-section'
-import { TopHeroComponentNotConnected } from './components/top-hero'
+import { CollectivePossibilities } from './components/CollectivePossibilities'
+import { HoldingsBanner } from './components/HoldingsBanner'
 import { IntroModal } from './IntroModal'
 import { LatestCollectiveSection } from './latest-collective'
 import { MyActivityAndBalances } from './my-holdings/MyActivityAndBalances'
@@ -26,11 +27,13 @@ export default function User() {
       {isConnected ? (
         <>
           <StackingNotifications />
+          <HoldingsBanner />
           <MyActivityAndBalances />
         </>
       ) : (
         <>
-          <TopHeroComponentNotConnected />
+          <CollectivePossibilities />
+          <HoldingsBanner />
           <TreasuryContextProviderWithPrices>
             <CollectiveBalancesSection />
           </TreasuryContextProviderWithPrices>
