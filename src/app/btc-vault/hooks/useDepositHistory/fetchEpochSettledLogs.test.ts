@@ -7,9 +7,12 @@ import { fetchEpochSettledLogs, type EpochSettledEvent } from './fetchEpochSettl
 
 // Mock constants so tests don't depend on env vars
 vi.mock('@/lib/constants', () => ({
-  BLOCKSCOUT_URL: 'https://blockscout.example.com',
+  CHAIN_ID: '30',
   RBTC_VAULT_ADDRESS: '0x1234567890abcdef1234567890abcdef12345678',
 }))
+
+// Host resolution reads the environment per call, so the mocked constant is not enough.
+process.env.NEXT_PUBLIC_BLOCKSCOUT_URL = 'https://blockscout.example.com'
 
 /**
  * Helper: build a Blockscout RPC-style log entry (BackendEventByTopic0ResponseValue)

@@ -1,8 +1,8 @@
 import type { Address, Hex } from 'viem'
 
-import { BLOCKSCOUT_URL } from '@/lib/constants'
 import type { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
+import { resolveBlockscoutRpcTarget } from './blockscout-api'
 import { throttledBlockscoutFetch } from './request-throttle'
 
 /**
@@ -66,7 +66,9 @@ export type BlockscoutGetLogsFetchInit = RequestInit & {
  * Arguments for {@link fetchBlockscoutGetLogsPaginated}.
  *
  * @property query — Contract + topics (+ optional block range) sent to Blockscout `getLogs`.
- * @property blockscoutBaseUrl — Explorer origin without trailing slash; defaults to {@link BLOCKSCOUT_URL}.
+ * @property blockscoutBaseUrl — Pins a specific explorer origin (no trailing slash). Omit it to let
+ *   {@link resolveBlockscoutRpcTarget} choose: the PRO API when a key is configured, the public
+ *   instance otherwise. An override is never redirected at the PRO API.
  * @property fetchInit — Merged into `fetch` after the default timeout signal (e.g. `next.revalidate` in Route Handlers).
  */
 export interface FetchBlockscoutGetLogsPaginatedParams {
@@ -112,7 +114,7 @@ function buildPageParams(query: BlockscoutGetLogsQuery, fromBlock: string): Reco
  * deduplicating by `transactionHash` + `logIndex`.
  *
  * @param params.query — Typed getLogs filter (address, topics, optional block bounds).
- * @param params.blockscoutBaseUrl — Optional explorer base; defaults to {@link BLOCKSCOUT_URL}.
+ * @param params.blockscoutBaseUrl — Optional explorer base; see {@link resolveBlockscoutRpcTarget}.
  * @param params.fetchInit — Optional `fetch` options merged after defaults.
  * @returns Raw log rows as returned by Blockscout (includes `timeStamp` for server-side use).
  *
@@ -156,11 +158,12 @@ function buildPageParams(query: BlockscoutGetLogsQuery, fromBlock: string): Reco
  */
 export async function fetchBlockscoutGetLogsPaginated({
   query,
-  blockscoutBaseUrl = BLOCKSCOUT_URL,
+  blockscoutBaseUrl,
   fetchInit,
   timeoutMs = REQUEST_TIMEOUT_MS,
 }: FetchBlockscoutGetLogsPaginatedParams): Promise<BackendEventByTopic0ResponseValue[]> {
-  const base = blockscoutBaseUrl.replace(/\/$/, '')
+  const { baseUrl, authParams } = resolveBlockscoutRpcTarget(blockscoutBaseUrl)
+  const base = baseUrl.replace(/\/$/, '')
   const allLogs: BackendEventByTopic0ResponseValue[] = []
   const seenKeys = new Set<string>()
   let fromBlock = query.fromBlock ?? '0'
@@ -171,7 +174,7 @@ export async function fetchBlockscoutGetLogsPaginated({
 
     const params = buildPageParams(query, fromBlock)
     const url = new URL(`${base}/api`)
-    for (const [key, value] of Object.entries(params)) {
+    for (const [key, value] of Object.entries({ ...authParams, ...params })) {
       url.searchParams.append(key, value)
     }
 
