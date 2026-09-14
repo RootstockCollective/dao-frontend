@@ -3,6 +3,8 @@ import type { Address, Hex } from 'viem'
 import { BLOCKSCOUT_URL } from '@/lib/constants'
 import type { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
+import { throttledBlockscoutFetch } from './request-throttle'
+
 /**
  * Max getLogs pages per call chain to cap explorer load (same as legacy `fetchLogsByTopic`).
  * Beyond this, pagination stops and returned logs may be incomplete—monitor if that becomes likely.
@@ -106,6 +108,8 @@ function buildPageParams(query: BlockscoutGetLogsQuery, fromBlock: string): Reco
  * @returns Raw log rows as returned by Blockscout (includes `timeStamp` for server-side use).
  *
  * @remarks
+ * - Every page goes through {@link throttledBlockscoutFetch}, so calls are paced process-wide and
+ *   retried on 429/5xx. Expect wall-clock time to grow with page count under contention.
  * - If pagination reaches {@link BLOCKSCOUT_GET_LOGS_MAX_PAGES}, fetching stops and the result set may be truncated.
  * - **Empty `getLogs` responses:** Blockscout sometimes returns `status: '0'` with `result` `null` or `[]` when no
  *   logs match (e.g. message `No records found`). That is treated as a normal empty page—pagination ends and the
@@ -160,7 +164,8 @@ export async function fetchBlockscoutGetLogsPaginated({
       url.searchParams.append(key, value)
     }
 
-    const response = await fetch(url.toString(), {
+    // Paced + retried: Blockscout rate-limits per IP and answers 429 well below our natural fan-out.
+    const response = await throttledBlockscoutFetch(url.toString(), {
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       ...fetchInit,
     })
