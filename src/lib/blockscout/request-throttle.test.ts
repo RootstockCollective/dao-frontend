@@ -82,9 +82,7 @@ describe('throttledBlockscoutFetch', () => {
     const fetchMock = vi.fn().mockRejectedValue(new Error('socket hang up'))
     global.fetch = fetchMock
 
-    await expect(throttledBlockscoutFetch('https://blockscout.test/api')).rejects.toThrow(
-      'socket hang up',
-    )
+    await expect(throttledBlockscoutFetch('https://blockscout.test/api')).rejects.toThrow('socket hang up')
     expect(fetchMock).toHaveBeenCalledTimes(2)
   })
 
@@ -111,6 +109,71 @@ describe('throttledBlockscoutFetch', () => {
     expect(maxInFlight).toBe(1)
     // Three requests at >=40ms spacing cannot finish faster than two intervals.
     expect(startTimes[2] - startTimes[0]).toBeGreaterThanOrEqual(70)
+  })
+
+  it('gives every attempt a fresh deadline instead of reusing an expiring one', async () => {
+    configureBlockscoutThrottle({ maxAttempts: 3, maxBackoffMs: 30, minIntervalMs: 0 })
+
+    const abortedOnEntry: boolean[] = []
+    const fetchMock = vi.fn().mockImplementation(async (_url: string, init?: RequestInit) => {
+      abortedOnEntry.push(Boolean(init?.signal?.aborted))
+      if (init?.signal?.aborted) {
+        throw new Error('aborted before the attempt even started')
+      }
+      return abortedOnEntry.length < 3 ? jsonResponse(429) : jsonResponse(200)
+    })
+    global.fetch = fetchMock
+
+    // Shorter than the backoff the two 429s will burn, so a single shared signal would expire.
+    const response = await throttledBlockscoutFetch('https://blockscout.test/api', undefined, {
+      timeoutMs: 20,
+    })
+
+    expect(abortedOnEntry).toEqual([false, false, false])
+    expect(response.status).toBe(200)
+  })
+
+  it('starts the deadline when the request leaves the queue, not when it joins it', async () => {
+    configureBlockscoutThrottle({ maxConcurrency: 1, minIntervalMs: 40, maxAttempts: 1 })
+
+    const abortedOnEntry: boolean[] = []
+    global.fetch = vi.fn().mockImplementation(async (_url: string, init?: RequestInit) => {
+      abortedOnEntry.push(Boolean(init?.signal?.aborted))
+      return jsonResponse(200)
+    })
+
+    // Five paced requests take ~160ms to drain; a 50ms budget started at enqueue time would have
+    // aborted everything from the second one onward.
+    const responses = await Promise.all(
+      Array.from({ length: 5 }, () =>
+        throttledBlockscoutFetch('https://blockscout.test/api', undefined, { timeoutMs: 50 }),
+      ),
+    )
+
+    expect(abortedOnEntry).toEqual([false, false, false, false, false])
+    expect(responses.every(r => r.status === 200)).toBe(true)
+  })
+
+  it('honours a caller signal and stops retrying once it aborts', async () => {
+    configureBlockscoutThrottle({ maxAttempts: 4, maxBackoffMs: 5, minIntervalMs: 0 })
+
+    const controller = new AbortController()
+    const fetchMock = vi.fn().mockImplementation(async (_url: string, init?: RequestInit) => {
+      if (init?.signal?.aborted) {
+        throw new Error('caller aborted')
+      }
+      controller.abort()
+      return jsonResponse(429)
+    })
+    global.fetch = fetchMock
+
+    const response = await throttledBlockscoutFetch('https://blockscout.test/api', {
+      signal: controller.signal,
+    })
+
+    // The 429 comes back untouched rather than burning the remaining attempts on a dead signal.
+    expect(response.status).toBe(429)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
   })
 
   it('clamps an absurd x-ratelimit-reset to maxBackoffMs', async () => {

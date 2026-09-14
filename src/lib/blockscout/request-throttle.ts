@@ -133,17 +133,47 @@ async function discardBody(response: Response): Promise<void> {
   }
 }
 
+export interface ThrottledFetchOptions {
+  /**
+   * Per-attempt network deadline, measured from the moment the request leaves the queue.
+   *
+   * Must not be expressed as an `AbortSignal` on `init`: a signal created at call time would also
+   * count the queue wait and every preceding retry's backoff against the network budget, so a
+   * request that waited its turn would abort the instant it was finally allowed to run.
+   */
+  timeoutMs?: number
+}
+
+/**
+ * Builds the signal for a single attempt: a fresh deadline, plus the caller's own signal when it
+ * supplied one, so caller-driven cancellation still works without leaking across attempts.
+ */
+function attemptSignal(callerSignal: AbortSignal | null | undefined, timeoutMs: number | undefined) {
+  const deadline = timeoutMs === undefined ? undefined : AbortSignal.timeout(timeoutMs)
+  if (!callerSignal) {
+    return deadline
+  }
+  return deadline ? AbortSignal.any([callerSignal, deadline]) : callerSignal
+}
+
 /**
  * Performs a Blockscout request through the shared paced queue, retrying on 429 and transient 5xx.
  *
  * @param url — Absolute Blockscout API URL.
- * @param init — Passed straight to `fetch` (including Next.js `next.revalidate`).
+ * @param init — Passed straight to `fetch` (including Next.js `next.revalidate`). Any `signal` here
+ *   is treated as caller-driven cancellation and composed with each attempt's deadline; pass the
+ *   deadline itself via {@link ThrottledFetchOptions.timeoutMs}, never as a pre-built timeout signal.
+ * @param options — Throttle-aware knobs; see {@link ThrottledFetchOptions}.
  * @returns The first successful response, or — once retries are exhausted — the last response
  *   received, unread. Callers keep ownership of `response.ok` handling, so error messages and
  *   status inspection stay exactly as they were before throttling was introduced.
  * @throws The last transport error, when no attempt produced a response at all.
  */
-export async function throttledBlockscoutFetch(url: string, init?: RequestInit): Promise<Response> {
+export async function throttledBlockscoutFetch(
+  url: string,
+  init?: RequestInit,
+  options?: ThrottledFetchOptions,
+): Promise<Response> {
   let lastError: unknown
 
   for (let attempt = 0; attempt < config.maxAttempts; attempt += 1) {
@@ -151,7 +181,8 @@ export async function throttledBlockscoutFetch(url: string, init?: RequestInit):
 
     let response: Response | undefined
     try {
-      response = await fetch(url, init)
+      // Built after acquireSlot() so the deadline covers only this attempt's network time.
+      response = await fetch(url, { ...init, signal: attemptSignal(init?.signal, options?.timeoutMs) })
     } catch (err) {
       lastError = err
     } finally {
@@ -170,8 +201,10 @@ export async function throttledBlockscoutFetch(url: string, init?: RequestInit):
         cooldownUntil = Math.max(cooldownUntil, Date.now() + retryDelayMs(response, attempt))
       }
 
-      // Hand the failure back untouched so the caller owns the error message.
-      if (isLastAttempt) {
+      // Hand the failure back untouched so the caller owns the error message. Caller-driven
+      // cancellation ends the sequence the same way: returning the response it already paid for
+      // beats discarding it to throw a generic error.
+      if (isLastAttempt || init?.signal?.aborted) {
         return response
       }
 
@@ -179,6 +212,11 @@ export async function throttledBlockscoutFetch(url: string, init?: RequestInit):
     }
 
     if (isLastAttempt) {
+      break
+    }
+
+    // Caller-driven cancellation is final; only our own per-attempt deadline is worth retrying.
+    if (init?.signal?.aborted) {
       break
     }
 
