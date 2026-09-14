@@ -26,6 +26,8 @@
  * @remarks
  * - **Opt-in.** With no key configured every call keeps going to the public instance, so
  *   environments without one behave exactly as before rather than failing closed.
+ * - **`BLOCKSCOUT_API_KEY` may hold several keys**, comma-separated. Requests round-robin across
+ *   them; see `blockscout-key-pool.ts` for what that does and does not buy.
  * - **Server-only.** {@link process.env.BLOCKSCOUT_API_KEY} is deliberately not `NEXT_PUBLIC_` —
  *   that would ship the key to every browser. Import this from server code only; browser callers
  *   must go through one of our own API routes instead.
@@ -33,6 +35,8 @@
  *   `src/config/config.ts`) and the fallback API host. Do not repoint it at the PRO API.
  */
 import { CHAIN_ID } from '@/lib/constants'
+
+import { getBlockscoutKeyCount, nextBlockscoutApiKey } from './blockscout-key-pool'
 
 /** Multichain PRO API host root. Both the RPC and REST bases are derived from it. */
 const DEFAULT_PRO_API_HOST = 'https://api.blockscout.com'
@@ -44,7 +48,12 @@ const DEFAULT_PRO_API_HOST = 'https://api.blockscout.com'
  * silently ignores later changes — including the ones tests make in `beforeEach`, leaving them to
  * hit the network for real.
  */
-const apiKey = (): string | undefined => process.env.BLOCKSCOUT_API_KEY?.trim() || undefined
+/**
+ * Takes the next key in rotation. See {@link nextBlockscoutApiKey} — `BLOCKSCOUT_API_KEY` holds one
+ * key or a comma-separated list, and consecutive calls walk the list so no single key absorbs the
+ * whole load.
+ */
+const apiKey = (): string | undefined => nextBlockscoutApiKey()
 
 const proApiHost = (): string =>
   stripTrailingSlash(process.env.BLOCKSCOUT_PRO_API_HOST?.trim() || DEFAULT_PRO_API_HOST)
@@ -142,5 +151,6 @@ export function buildBlockscoutRestUrl(path: string, searchParams: Record<string
 
 /** Whether the PRO API is configured. Exposed so callers can log or pace differently. */
 export function isBlockscoutProApiEnabled(): boolean {
-  return Boolean(apiKey())
+  // Asks the pool's size rather than taking a key, so a status check does not advance rotation.
+  return getBlockscoutKeyCount() > 0
 }

@@ -1,4 +1,5 @@
 import { isBlockscoutProApiEnabled } from './blockscout-api'
+import { cooldownBlockscoutApiKey, getBlockscoutKeyCount } from './blockscout-key-pool'
 
 /**
  * ~1.5 req/s. Not a tolerance so much as damage control: an unauthenticated caller gets roughly
@@ -10,8 +11,29 @@ const DEFAULT_PUBLIC_MIN_INTERVAL_MS = 650
 /** 4 req/s, one under the PRO free tier's 5 RPS so a burst does not sit exactly on the limit. */
 const DEFAULT_PRO_MIN_INTERVAL_MS = 250
 
+/**
+ * Pacing is global but the rps cap is per key, so the interval divides by however many keys are in
+ * rotation: with consecutive requests landing on different keys, each key still sees roughly
+ * {@link DEFAULT_PRO_MIN_INTERVAL_MS} between its own.
+ *
+ * Keys issued from separate accounts carry separate daily allowances too, so this raises both the
+ * rate and the volume. Keys sharing one account would raise only the rate — see
+ * `blockscout-key-pool.ts`.
+ */
 function defaultMinIntervalMs(): number {
-  return isBlockscoutProApiEnabled() ? DEFAULT_PRO_MIN_INTERVAL_MS : DEFAULT_PUBLIC_MIN_INTERVAL_MS
+  if (!isBlockscoutProApiEnabled()) {
+    return DEFAULT_PUBLIC_MIN_INTERVAL_MS
+  }
+  return DEFAULT_PRO_MIN_INTERVAL_MS / Math.max(1, getBlockscoutKeyCount())
+}
+
+/** Recovers the key a request was authenticated with, so a 429 parks that key and not the others. */
+function apiKeyFromUrl(url: string): string | undefined {
+  try {
+    return new URL(url).searchParams.get('apikey') ?? undefined
+  } catch {
+    return undefined
+  }
 }
 
 /** The budget is per IP, so parallelism buys nothing and only wastes it in bursts. */
@@ -211,8 +233,17 @@ export async function throttledBlockscoutFetch(
       }
 
       if (response.status === 429) {
-        // Back every other caller off too: the budget is shared across the process.
-        cooldownUntil = Math.max(cooldownUntil, Date.now() + retryDelayMs(response, attempt))
+        const backoffMs = retryDelayMs(response, attempt)
+        const limitedKey = apiKeyFromUrl(url)
+
+        if (getBlockscoutKeyCount() > 1) {
+          // Several keys in rotation: only the one that was limited steps aside. Stopping the whole
+          // process would discard exactly the headroom the extra keys were added for.
+          cooldownBlockscoutApiKey(limitedKey, backoffMs)
+        } else {
+          // One key, or none: the budget really is shared, so back every caller off.
+          cooldownUntil = Math.max(cooldownUntil, Date.now() + backoffMs)
+        }
       }
 
       // Hand the failure back untouched so the caller owns the error message. Caller-driven
