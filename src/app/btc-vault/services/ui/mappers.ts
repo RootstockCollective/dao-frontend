@@ -1,7 +1,13 @@
 import { DEPOSIT_ACTIONS } from '@/app/api/btc-vault/v1/schemas'
 import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
 import { RBTC } from '@/lib/constants'
-import { formatCurrencyWithLabel, shortAddress } from '@/lib/utils'
+import {
+  formatCurrencyWithLabel,
+  formatDateDayFirst,
+  formatDateMonthFirst,
+  formatPercentage,
+  shortAddress,
+} from '@/lib/utils'
 
 import {
   ACTIVE_REQUEST_REASON,
@@ -29,15 +35,7 @@ import type {
 } from '../types'
 import { lockedSharePriceFromEpochSnapshot, lockedSharePriceToNavPerHumanShareWei } from '../vaultShareNav'
 import type { BtcVaultHistoryApiResponse, BtcVaultHistoryItemWithStatus } from './api-types'
-import {
-  formatApyPercent,
-  formatCountdown,
-  formatDateMonthFirst,
-  formatDateShort,
-  formatPercent,
-  formatTimestamp,
-  shortenTxHash,
-} from './formatters'
+import { formatApyPercent, formatCountdown, shortenTxHash } from './formatters'
 import type {
   ActionEligibility,
   ActiveRequestDisplay,
@@ -127,7 +125,7 @@ export function toEpochDisplay(raw: EpochState): EpochDisplay {
     raw.status === 'open'
       ? `Closes in ${formatCountdown(raw.endTime)}`
       : raw.status === 'claimable' && raw.settledAt != null
-        ? `Settled ${formatTimestamp(raw.settledAt)}`
+        ? `Settled ${formatDateDayFirst(raw.settledAt)}`
         : raw.status.charAt(0).toUpperCase() + raw.status.slice(1)
   return {
     epochId: raw.epochId,
@@ -135,7 +133,7 @@ export function toEpochDisplay(raw: EpochState): EpochDisplay {
     statusSummary,
     isAcceptingRequests,
     endTime: raw.endTime,
-    closesAtFormatted: formatDateShort(raw.endTime),
+    closesAtFormatted: formatDateDayFirst(raw.endTime),
   }
 }
 
@@ -161,7 +159,7 @@ export function toUserPositionDisplay(raw: UserPosition, rbtcPrice: number): Use
     rbtcBalanceFormatted: formatSymbol(raw.rbtcBalance, RBTC),
     vaultTokensFormatted: formatSymbol(raw.vaultTokens, 'ctokenvault'),
     positionValueFormatted: formatSymbol(raw.positionValue, RBTC),
-    percentOfVaultFormatted: formatPercent(raw.percentOfVault),
+    percentOfVaultFormatted: formatPercentage(raw.percentOfVault),
     vaultTokensRaw: raw.vaultTokens,
     rbtcBalanceRaw: raw.rbtcBalance,
 
@@ -170,7 +168,7 @@ export function toUserPositionDisplay(raw: UserPosition, rbtcPrice: number): Use
     currentEarningsFormatted: formatSymbol(currentEarnings, RBTC),
     totalBalanceFormatted: formatSymbol(raw.positionValue, RBTC),
     totalBalanceRaw: raw.positionValue,
-    yieldPercentToDateFormatted: formatPercent(yieldPercent),
+    yieldPercentToDateFormatted: formatPercentage(yieldPercent),
 
     fiatWalletBalance: hasFiat ? formatCurrencyWithLabel(getFiatAmount(raw.rbtcBalance, rbtcPrice)) : null,
     fiatVaultShares: hasFiat ? formatCurrencyWithLabel(getFiatAmount(raw.positionValue, rbtcPrice)) : null,
@@ -328,7 +326,7 @@ export function toActiveRequestDisplay(
     type: req.type,
     amountFormatted,
     status: req.status,
-    createdAtFormatted: formatTimestamp(req.timestamps.created),
+    createdAtFormatted: formatDateDayFirst(req.timestamps.created),
     claimable: claimableInfo?.claimable ?? false,
     lockedSharePriceFormatted:
       claimableInfo?.lockedSharePrice != null
@@ -337,7 +335,7 @@ export function toActiveRequestDisplay(
     finalizeId: req.type === 'deposit' ? req.epochId : req.batchRedeemId,
     epochId: req.epochId,
     batchRedeemId: req.batchRedeemId,
-    lastUpdatedFormatted: formatDateShort(lastUpdated),
+    lastUpdatedFormatted: formatDateDayFirst(lastUpdated),
     sharesFormatted,
     usdEquivalentFormatted,
     ...(req.displayStatus && { displayStatus: req.displayStatus }),
@@ -428,8 +426,8 @@ export function toPaginatedHistoryDisplay(
         type: req.type,
         amountFormatted,
         status: req.status,
-        createdAtFormatted: formatTimestamp(req.timestamps.created),
-        finalizedAtFormatted: req.timestamps.finalized ? formatTimestamp(req.timestamps.finalized) : null,
+        createdAtFormatted: formatDateDayFirst(req.timestamps.created),
+        finalizedAtFormatted: req.timestamps.finalized ? formatDateDayFirst(req.timestamps.finalized) : null,
         submitTxShort: req.txHashes.submit ? shortenTxHash(req.txHashes.submit) : null,
         finalizeTxShort: req.txHashes.finalize ? shortenTxHash(req.txHashes.finalize) : null,
         submitTxFull: req.txHashes.submit ?? null,
@@ -438,7 +436,7 @@ export function toPaginatedHistoryDisplay(
         displayStatusLabel,
         fiatAmountFormatted,
         claimTokenType: isDeposit ? ('rbtc' as const) : ('shares' as const),
-        updatedAtFormatted: formatDateShort(updatedAt),
+        updatedAtFormatted: formatDateDayFirst(updatedAt),
       }
     }),
     total: raw.total,
@@ -547,7 +545,7 @@ export function apiHistoryToPaginatedDisplay(
       fiatAmountFormatted:
         isDeposit && rbtcPrice > 0 ? formatCurrencyWithLabel(getFiatAmount(amountWei, rbtcPrice)) : null,
       claimTokenType: isDeposit ? ('rbtc' as const) : ('shares' as const),
-      updatedAtFormatted: formatDateShort(item.timestamp),
+      updatedAtFormatted: formatDateDayFirst(item.timestamp),
     }
   })
 
