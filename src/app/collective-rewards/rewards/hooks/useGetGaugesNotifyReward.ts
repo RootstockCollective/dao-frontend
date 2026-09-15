@@ -11,6 +11,7 @@ export interface UseGetGaugesNotifyRewardParams {
   rewardTokens?: Address[]
   fromTimestamp?: number
   toTimestamp?: number
+  enabled?: boolean
 }
 
 export const useGetGaugesNotifyReward = ({
@@ -18,8 +19,9 @@ export const useGetGaugesNotifyReward = ({
   rewardTokens,
   fromTimestamp,
   toTimestamp,
+  enabled = true,
 }: UseGetGaugesNotifyRewardParams) => {
-  const { data: eventsPerGauge, isLoading, error } = useGetGaugesEvents(gauges, 'NotifyReward')
+  const { data: eventsPerGauge, isLoading, error } = useGetGaugesEvents(gauges, 'NotifyReward', enabled)
 
   const data: UseGetGaugesNotifyRewardReturnType = useMemo(() => {
     return gauges.reduce<UseGetGaugesNotifyRewardReturnType>((acc, gauge) => {

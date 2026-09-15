@@ -1,7 +1,15 @@
+import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { Address } from 'viem'
 
 import { useGetBuilderRewardsClaimedLogs, useGetGaugesNotifyReward } from '@/app/collective-rewards/rewards'
+import {
+  fetchAllCycles,
+  sumCycleRewardForToken,
+} from '@/app/collective-rewards/rewards/hooks/useGetTotalRewardsFromCycles'
+import { useStateSyncHealthCheck } from '@/app/collective-rewards/shared/hooks/useStateSyncHealthCheck'
+import { CycleRewardsItem } from '@/app/collective-rewards/types'
+import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 
 interface UseBuilderAllTimeShareProps {
@@ -22,10 +30,37 @@ export const useGetBuilderAllTimeShare = ({
   rifAddress,
 }: UseBuilderAllTimeShareProps): AllTimeShareData => {
   const {
+    data: isStateSyncHealthy,
+    isLoading: healthCheckIsLoading,
+    error: healthCheckError,
+  } = useStateSyncHealthCheck({
+    initialData: true,
+  })
+
+  const useCycles = !healthCheckIsLoading && !healthCheckError && !!isStateSyncHealthy
+
+  // Source 1: Cycles API (StateSync healthy)
+  const {
+    data: cycles,
+    isLoading: cyclesLoading,
+    error: cyclesError,
+  } = useQuery<CycleRewardsItem[], Error>({
+    queryFn: fetchAllCycles,
+    queryKey: ['totalRewardsDistributedCycles'],
+    refetchInterval: AVERAGE_BLOCKTIME,
+    enabled: useCycles,
+  })
+
+  // Source 2: Events fallback (StateSync unhealthy or health check error)
+  const {
     data: notifyReward,
     isLoading: notifyRewardLoading,
     error: notifyRewardError,
-  } = useGetGaugesNotifyReward({ gauges, rewardTokens: [rifAddress] })
+  } = useGetGaugesNotifyReward({
+    gauges,
+    rewardTokens: [rifAddress],
+    enabled: !healthCheckIsLoading && !useCycles,
+  })
 
   const {
     data: builderRewardsPerToken,
@@ -39,36 +74,42 @@ export const useGetBuilderAllTimeShare = ({
     error: claimableRewardsError,
   } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [rifAddress] })
 
-  // Calculate the percentage using useMemo for performance optimization
   const amount = useMemo(() => {
-    // Calculate builder's claimed rewards
     const builderClaimedRewards =
-      builderRewardsPerToken[rifAddress]?.reduce((acc, event) => {
-        const amount = event.args.amount_
-        return acc + amount
-      }, 0n) ?? 0n
+      builderRewardsPerToken[rifAddress]?.reduce((acc, event) => acc + event.args.amount_, 0n) ?? 0n
 
-    // Calculate total builder rewards (claimed + claimable)
     const totalBuilderRewards = builderClaimedRewards + (claimableRewards ?? 0n)
 
-    // Calculate total notify rewards across all gauges
-    const notifyRewards = Object.values(notifyReward).reduce(
-      (acc, events) =>
-        acc +
-        events.reduce(
-          (acc, { args: { backersAmount_, builderAmount_ } }) => acc + backersAmount_ + builderAmount_,
-          0n,
-        ),
-      0n,
-    )
+    let notifyRewards: bigint
 
-    // Calculate the percentage
+    if (useCycles) {
+      notifyRewards = sumCycleRewardForToken(cycles ?? [], rifAddress)
+    } else {
+      notifyRewards = Object.values(notifyReward).reduce(
+        (acc, events) =>
+          acc +
+          events.reduce(
+            (sum, { args: { backersAmount_, builderAmount_ } }) => sum + backersAmount_ + builderAmount_,
+            0n,
+          ),
+        0n,
+      )
+    }
+
     return !notifyRewards ? '0%' : `${(totalBuilderRewards * 100n) / notifyRewards}%`
-  }, [builderRewardsPerToken, claimableRewards, notifyReward, rifAddress])
+  }, [builderRewardsPerToken, claimableRewards, cycles, useCycles, notifyReward, rifAddress])
 
   return {
     amount,
-    isLoading: notifyRewardLoading || builderRewardsPerTokenLoading || claimableRewardsLoading,
-    error: notifyRewardError || builderRewardsPerTokenError || claimableRewardsError,
+    isLoading:
+      healthCheckIsLoading ||
+      (useCycles ? cyclesLoading : notifyRewardLoading) ||
+      builderRewardsPerTokenLoading ||
+      claimableRewardsLoading,
+    // When the health check errors, useCycles is false and the events fallback is the
+    // active source, so healthCheckError must not be surfaced — otherwise the metric
+    // shows an error despite having valid fallback data.
+    error:
+      (useCycles ? cyclesError : notifyRewardError) ?? builderRewardsPerTokenError ?? claimableRewardsError,
   }
 }

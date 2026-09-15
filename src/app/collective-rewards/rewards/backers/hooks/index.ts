@@ -1,5 +1,6 @@
 export * from './useClaimBackerRewards'
 export * from './useGetBackerRewards'
+export * from './useGetBackerRewardsClaimed'
 export * from './useGetBackerStakingHistory'
 export * from './useGetGaugesBackerRewardsClaimed'
 export * from './useGetRBI'

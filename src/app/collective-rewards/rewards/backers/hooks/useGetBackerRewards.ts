@@ -23,7 +23,7 @@ export type BackerRewards = CompleteBuilder & {
 const tokenRewardsMetrics = (tokenRewards: TokenBackerRewards, gauge: Address) => {
   const estimatedRewards = tokenRewards.estimated[gauge] ?? 0n
   const earned = tokenRewards.earned[gauge] ?? 0n
-  const claimed = tokenRewards.claimed[gauge]?.reduce((acc, value) => acc + value.args.amount_, 0n) ?? 0n
+  const claimed = tokenRewards.claimed[gauge] ?? 0n
 
   return {
     claimableRewards: earned,

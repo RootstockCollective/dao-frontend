@@ -13,10 +13,7 @@ const useGetTokenRewards = ({ address, symbol }: Token) => {
 
   const { earned, claimed } = data[address]
   const totalEarned = Object.values(earned).reduce((acc, earned) => acc + earned, 0n)
-  const totalClaimed = Object.values(claimed).reduce(
-    (acc, value) => acc + value.reduce((acc, value) => acc + value.args.amount_, 0n),
-    0n,
-  )
+  const totalClaimed = Object.values(claimed).reduce((acc, v) => acc + v, 0n)
 
   return {
     data: Big((totalClaimed + totalEarned).toString())

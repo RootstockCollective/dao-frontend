@@ -17,13 +17,9 @@ const eventRoutes: Record<EventName, string> = {
   BuilderRewardsClaimed: '/api/gauges/builder-rewards-claimed',
 }
 
-export const useGetGaugesEvents = <T extends EventName>(gauges: Address[], eventName: T) => {
+export const useGetGaugesEvents = <T extends EventName>(gauges: Address[], eventName: T, enabled = true) => {
   const { data, isLoading, error } = useQuery({
     queryFn: async () => {
-      if (gauges.length === 0) {
-        return {} as Record<Address, GaugeEventLog<T>>
-      }
-
       const url = `${eventRoutes[eventName]}?gauges=${gauges.join(',')}`
       const res = await fetch(url)
       if (!res.ok) {
@@ -44,6 +40,7 @@ export const useGetGaugesEvents = <T extends EventName>(gauges: Address[], event
     },
     queryKey: ['useGetGaugesEvents', eventName, gauges],
     refetchInterval: AVERAGE_BLOCKTIME,
+    enabled: enabled && gauges.length > 0,
   })
 
   return {
