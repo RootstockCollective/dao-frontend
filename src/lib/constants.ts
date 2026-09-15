@@ -26,7 +26,7 @@ function resolveEnv(): EnvChainKey {
 }
 
 export const ENV: EnvChainKey = resolveEnv()
-export const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER
+export const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER?.replace(/\/+$/, '')
 export const BUILD_ID = process.env.NEXT_PUBLIC_BUILD_ID as string
 
 // TOKENS
