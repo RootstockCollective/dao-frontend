@@ -7,7 +7,7 @@ import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
 
 import { DepositWindowSection } from './components/DepositWindowSection'
-import { DisclosureContent } from './components/DisclosureContent'
+import { DisclosureContent } from './components/disclosure/DisclosureContent'
 import { EligibilityBannerContent } from './components/EligibilityBannerContent'
 import { PauseBannerContent } from './components/PauseBannerContent'
 import type { EpochDisplay } from './services/ui/types'
