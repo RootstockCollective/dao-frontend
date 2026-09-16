@@ -1,6 +1,6 @@
 import { AddrResolver } from '@rsksmart/rns-sdk'
 
-import { BLOCKSCOUT_URL, NODE_URL, RNS_REGISTRY_ADDRESS } from '@/lib/constants'
+import { NODE_URL, RNS_REGISTRY_ADDRESS } from '@/lib/constants'
 
 export const resolveRnsDomain = async (domain: string) => {
   const addrResolver = new AddrResolver(RNS_REGISTRY_ADDRESS, NODE_URL as string)
@@ -13,9 +13,16 @@ export const resolveRnsDomain = async (domain: string) => {
 }
 
 /**
- * Fetches ENS domain name for a given Ethereum address from Blockscout API.
- * Uses localStorage cache with 30-second TTL to minimize API calls.
- * Returns the ENS domain name if found, undefined otherwise.
+ * Resolves an address to its RNS/ENS domain name, via our own `/api/rns/:address` route.
+ *
+ * @remarks
+ * Browser-only by design (it early-returns on the server and caches in `localStorage`), which is
+ * precisely why it cannot call Blockscout itself: the PRO API needs a key, and a key the browser
+ * can read is a leaked key. The route does the upstream call server-side and caches it for
+ * everyone; the `localStorage` entry below stays as a per-visitor short-circuit.
+ *
+ * @returns The domain name, or `undefined` when the address has none or the lookup fails —
+ *   callers render the raw address in that case, so failures stay silent on purpose.
  */
 export async function getEnsDomainName(address: string): Promise<string | undefined> {
   // Check if window object exists (for server-side safety)
@@ -39,7 +46,7 @@ export async function getEnsDomainName(address: string): Promise<string | undefi
   }
 
   try {
-    const response = await fetch(`${BLOCKSCOUT_URL}/api/v2/addresses/${address}`)
+    const response = await fetch(`/api/rns/${address}`)
 
     if (!response.ok) {
       localStorage.setItem(cacheKey, JSON.stringify({ result: undefined, timestamp: Date.now() }))

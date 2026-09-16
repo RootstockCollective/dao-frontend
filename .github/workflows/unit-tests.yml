@@ -45,7 +45,10 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
-          version: stable
+          # Pinned, not `stable`: from 1.8.0 onward Anvil pins its genesis state reads
+          # with EIP-1898 block identifiers ({"blockHash": ..., "requireCanonical": ...}),
+          # which RSKj rejects, so the fork never starts. Bump once Rootstock supports them.
+          version: v1.7.1
 
       - name: Start Anvil Fork
         env:
