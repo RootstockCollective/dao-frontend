@@ -1,6 +1,8 @@
 import { getAbiItem, type Hex, toEventSelector } from 'viem'
 
 import { RBTCAsyncVaultAbi } from '@/lib/abis/btc-vault/RBTCAsyncVaultAbi'
+import { resolveBlockscoutRpcTarget } from '@/lib/blockscout/blockscout-api'
+import { throttledBlockscoutFetch } from '@/lib/blockscout/request-throttle'
 
 import {
   ACTION_TO_EVENT_NAMES,
@@ -49,7 +51,6 @@ export function topic0sForActionFilter(actionFilter: Set<string> | null): Hex[] 
  * Fetches logs for one `topic0` via Blockscout `getLogs`.
  */
 export async function fetchVaultLogsAllPagesForTopic(
-  blockscoutBaseUrl: string,
   vaultAddressLower: string,
   topic0: Hex,
 ): Promise<BlockscoutLogItem[]> {
@@ -69,14 +70,15 @@ export async function fetchVaultLogsAllPagesForTopic(
       topic0: topic0.toLowerCase(),
     }
 
-    const url = new URL(`${blockscoutBaseUrl}/api`)
-    for (const [paramKey, value] of Object.entries(params)) {
+    const { baseUrl, authParams } = resolveBlockscoutRpcTarget()
+    const url = new URL(`${baseUrl}/api`)
+    for (const [paramKey, value] of Object.entries({ ...authParams, ...params })) {
       url.searchParams.append(paramKey, value)
     }
 
-    const response = await fetch(url.toString(), {
-      signal: AbortSignal.timeout(25_000),
-    })
+    // Shares the process-wide pacing with every other Blockscout caller: the PRO quota is per key,
+    // so an unpaced burst here would 429 the gauge routes too.
+    const response = await throttledBlockscoutFetch(url.toString(), {}, { timeoutMs: 25_000 })
     if (!response.ok) {
       throw new Error(`Blockscout getLogs failed: HTTP ${response.status} ${response.statusText}`)
     }
@@ -114,7 +116,6 @@ export async function fetchVaultLogsAllPagesForTopic(
  * Topics are scanned in chunks to limit explorer load; within a chunk, scans run in parallel.
  */
 export async function fetchVaultLogsForTopics(
-  blockscoutBaseUrl: string,
   vaultAddressLower: string,
   topic0s: Hex[],
 ): Promise<BlockscoutLogItem[]> {
@@ -126,7 +127,7 @@ export async function fetchVaultLogsForTopics(
   for (let i = 0; i < topic0s.length; i += MAX_PARALLEL_BTC_VAULT_TOPIC_SCANS) {
     const chunk = topic0s.slice(i, i + MAX_PARALLEL_BTC_VAULT_TOPIC_SCANS)
     const batch = await Promise.all(
-      chunk.map(topic => fetchVaultLogsAllPagesForTopic(blockscoutBaseUrl, vaultAddressLower, topic)),
+      chunk.map(topic => fetchVaultLogsAllPagesForTopic(vaultAddressLower, topic)),
     )
     perTopic.push(...batch)
   }

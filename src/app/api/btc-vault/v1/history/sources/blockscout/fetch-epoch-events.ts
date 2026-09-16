@@ -10,12 +10,9 @@ import type { EpochEventInfo } from './types'
 /**
  * Fetches all `EpochSettled` logs from Blockscout and returns a map keyed by epochId string.
  */
-export async function fetchEpochSettledMap(
-  blockscoutBaseUrl: string,
-  vaultAddressLower: string,
-): Promise<Map<string, EpochEventInfo>> {
+export async function fetchEpochSettledMap(vaultAddressLower: string): Promise<Map<string, EpochEventInfo>> {
   const topic0 = toEventSelector(getAbiItem({ abi: RBTCAsyncVaultAbi, name: 'EpochSettled' }))
-  const rawLogs = await fetchVaultLogsAllPagesForTopic(blockscoutBaseUrl, vaultAddressLower, topic0)
+  const rawLogs = await fetchVaultLogsAllPagesForTopic(vaultAddressLower, topic0)
 
   const map = new Map<string, EpochEventInfo>()
   for (const item of rawLogs) {
@@ -52,11 +49,10 @@ export async function fetchEpochSettledMap(
  * takes precedence.
  */
 export async function fetchEpochFundingProgressMap(
-  blockscoutBaseUrl: string,
   vaultAddressLower: string,
 ): Promise<Map<string, EpochEventInfo>> {
   const topic0 = toEventSelector(getAbiItem({ abi: RBTCAsyncVaultAbi, name: 'EpochFundingProgress' }))
-  const rawLogs = await fetchVaultLogsAllPagesForTopic(blockscoutBaseUrl, vaultAddressLower, topic0)
+  const rawLogs = await fetchVaultLogsAllPagesForTopic(vaultAddressLower, topic0)
 
   const map = new Map<string, EpochEventInfo>()
   for (const item of rawLogs) {

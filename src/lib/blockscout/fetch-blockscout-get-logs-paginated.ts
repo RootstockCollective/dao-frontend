@@ -1,7 +1,9 @@
 import type { Address, Hex } from 'viem'
 
-import { BLOCKSCOUT_URL } from '@/lib/constants'
 import type { BackendEventByTopic0ResponseValue } from '@/shared/utils'
+
+import { resolveBlockscoutRpcTarget } from './blockscout-api'
+import { throttledBlockscoutFetch } from './request-throttle'
 
 /**
  * Max getLogs pages per call chain to cap explorer load (same as legacy `fetchLogsByTopic`).
@@ -9,6 +11,10 @@ import type { BackendEventByTopic0ResponseValue } from '@/shared/utils'
  */
 export const BLOCKSCOUT_GET_LOGS_MAX_PAGES = 200
 
+/**
+ * Network budget for a single getLogs page, applied per attempt from the moment the request leaves
+ * the throttle queue. Queue wait and retry backoff deliberately sit outside it.
+ */
 const REQUEST_TIMEOUT_MS = 25_000
 
 interface BlockscoutLogsResponse {
@@ -46,8 +52,11 @@ export interface BlockscoutGetLogsQuery {
 }
 
 /**
- * Optional `fetch` init merged after defaults. Use `next.revalidate` in Next.js Route Handlers;
- * pass `signal` to override the default `AbortSignal.timeout`.
+ * Optional `fetch` init merged after defaults. Use `next.revalidate` in Next.js Route Handlers.
+ *
+ * A `signal` here means caller-driven cancellation: it is composed with each attempt's own deadline
+ * rather than replacing it, and once it aborts no further attempts are made. It is not a way to set
+ * the request timeout — {@link REQUEST_TIMEOUT_MS} owns that, per attempt.
  */
 export type BlockscoutGetLogsFetchInit = RequestInit & {
   next?: { revalidate?: number | false; tags?: string[] }
@@ -57,13 +66,17 @@ export type BlockscoutGetLogsFetchInit = RequestInit & {
  * Arguments for {@link fetchBlockscoutGetLogsPaginated}.
  *
  * @property query — Contract + topics (+ optional block range) sent to Blockscout `getLogs`.
- * @property blockscoutBaseUrl — Explorer origin without trailing slash; defaults to {@link BLOCKSCOUT_URL}.
+ * @property blockscoutBaseUrl — Pins a specific explorer origin (no trailing slash). Omit it to let
+ *   {@link resolveBlockscoutRpcTarget} choose: the PRO API when a key is configured, the public
+ *   instance otherwise. An override is never redirected at the PRO API.
  * @property fetchInit — Merged into `fetch` after the default timeout signal (e.g. `next.revalidate` in Route Handlers).
  */
 export interface FetchBlockscoutGetLogsPaginatedParams {
   query: BlockscoutGetLogsQuery
   blockscoutBaseUrl?: string
   fetchInit?: BlockscoutGetLogsFetchInit
+  /** Per-attempt network budget; defaults to {@link REQUEST_TIMEOUT_MS}. */
+  timeoutMs?: number
 }
 
 /** Flattens {@link BlockscoutGetLogsQuery} plus the current pagination `fromBlock` into URL search params. */
@@ -101,11 +114,14 @@ function buildPageParams(query: BlockscoutGetLogsQuery, fromBlock: string): Reco
  * deduplicating by `transactionHash` + `logIndex`.
  *
  * @param params.query — Typed getLogs filter (address, topics, optional block bounds).
- * @param params.blockscoutBaseUrl — Optional explorer base; defaults to {@link BLOCKSCOUT_URL}.
+ * @param params.blockscoutBaseUrl — Optional explorer base; see {@link resolveBlockscoutRpcTarget}.
  * @param params.fetchInit — Optional `fetch` options merged after defaults.
  * @returns Raw log rows as returned by Blockscout (includes `timeStamp` for server-side use).
  *
  * @remarks
+ * - Every page goes through {@link throttledBlockscoutFetch}, so calls are paced process-wide and
+ *   retried on 429/5xx. Expect wall-clock time to grow with page count under contention: queue wait
+ *   is unbounded by design here, and only the network leg of each attempt is capped.
  * - If pagination reaches {@link BLOCKSCOUT_GET_LOGS_MAX_PAGES}, fetching stops and the result set may be truncated.
  * - **Empty `getLogs` responses:** Blockscout sometimes returns `status: '0'` with `result` `null` or `[]` when no
  *   logs match (e.g. message `No records found`). That is treated as a normal empty page—pagination ends and the
@@ -142,10 +158,12 @@ function buildPageParams(query: BlockscoutGetLogsQuery, fromBlock: string): Reco
  */
 export async function fetchBlockscoutGetLogsPaginated({
   query,
-  blockscoutBaseUrl = BLOCKSCOUT_URL,
+  blockscoutBaseUrl,
   fetchInit,
+  timeoutMs = REQUEST_TIMEOUT_MS,
 }: FetchBlockscoutGetLogsPaginatedParams): Promise<BackendEventByTopic0ResponseValue[]> {
-  const base = blockscoutBaseUrl.replace(/\/$/, '')
+  const { baseUrl, authParams } = resolveBlockscoutRpcTarget(blockscoutBaseUrl)
+  const base = baseUrl.replace(/\/$/, '')
   const allLogs: BackendEventByTopic0ResponseValue[] = []
   const seenKeys = new Set<string>()
   let fromBlock = query.fromBlock ?? '0'
@@ -156,14 +174,14 @@ export async function fetchBlockscoutGetLogsPaginated({
 
     const params = buildPageParams(query, fromBlock)
     const url = new URL(`${base}/api`)
-    for (const [key, value] of Object.entries(params)) {
+    for (const [key, value] of Object.entries({ ...authParams, ...params })) {
       url.searchParams.append(key, value)
     }
 
-    const response = await fetch(url.toString(), {
-      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
-      ...fetchInit,
-    })
+    // Paced + retried: Blockscout rate-limits per IP and answers 429 well below our natural fan-out.
+    // The timeout is handed over rather than pre-built, so it starts when the request leaves the
+    // queue instead of when it joins it — otherwise a paced request aborts before it ever runs.
+    const response = await throttledBlockscoutFetch(url.toString(), fetchInit ?? {}, { timeoutMs })
 
     if (!response.ok) {
       throw new Error(`Blockscout getLogs failed: HTTP ${response.status} ${response.statusText}`)

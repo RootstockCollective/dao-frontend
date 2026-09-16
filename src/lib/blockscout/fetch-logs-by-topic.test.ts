@@ -4,7 +4,11 @@ import { fetchLogsByTopic } from './fetch-logs-by-topic'
 
 vi.mock('@/lib/constants', () => ({
   BLOCKSCOUT_URL: 'https://blockscout.test',
+  CHAIN_ID: '30',
 }))
+
+// Host resolution reads the environment per call, so the mocked constant is not enough.
+process.env.NEXT_PUBLIC_BLOCKSCOUT_URL = 'https://blockscout.test'
 
 const mockLog = (blockHex: string, logIndex: string, txHash: string) => ({
   address: '0xabc',
