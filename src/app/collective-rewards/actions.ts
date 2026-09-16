@@ -9,10 +9,6 @@ import { BackersManagerAddress } from '@/lib/contracts'
 // keccak256('NotifyReward(address,uint256,uint256)')
 const GAUGE_NOTIFY_REWARD_EVENT: Hex = '0x3c0f5c48b0ffa2c570c1a0f4fbf7b0f8982213afff9eb42cd258ead865cf3c9d'
 
-// keccak256('BuilderRewardsClaimed(address,address,uint256)')
-const BUILDER_REWARDS_CLAIMED_EVENT: Hex =
-  '0xc309438e69ba53ef6afef64839bd1ab1acc4a9a8fd28c8e0356075ca66f72c1b'
-
 // keccak256('RewardDistributionFinished(address)')
 const REWARD_DISTRIBUTION_FINISHED: Hex = '0x2e0a637781c44a621d21ae02c97a62860799594e47e453e0491eb348ebf83bff'
 
@@ -27,15 +23,6 @@ export const fetchGaugeNotifyRewardLogs = async (gaugeAddress: Address, fromBloc
   return fetchLogsByTopic({
     address: gaugeAddress,
     topic0: GAUGE_NOTIFY_REWARD_EVENT,
-    fromBlock: fromBlock > 0 ? fromBlock.toString() : defaultFromBlock,
-    fetchInit: { next: { revalidate: REVALIDATE_SECONDS } },
-  })
-}
-
-export const fetchBuilderRewardsClaimed = async (gaugeAddress: Address, fromBlock = 0) => {
-  return fetchLogsByTopic({
-    address: gaugeAddress,
-    topic0: BUILDER_REWARDS_CLAIMED_EVENT,
     fromBlock: fromBlock > 0 ? fromBlock.toString() : defaultFromBlock,
     fetchInit: { next: { revalidate: REVALIDATE_SECONDS } },
   })
