@@ -1,6 +1,7 @@
 import { getAbiItem, type Hex, toEventSelector } from 'viem'
 
 import { RBTCAsyncVaultAbi } from '@/lib/abis/btc-vault/RBTCAsyncVaultAbi'
+import { logger } from '@/lib/logger'
 
 import {
   ACTION_TO_EVENT_NAMES,
@@ -57,6 +58,7 @@ export async function fetchVaultLogsAllPagesForTopic(
   const seenKeys = new Set<string>()
   let fromBlock = '0'
   let pages = 0
+  const start = Date.now()
 
   while (pages < MAX_BLOCKSCOUT_GETLOGS_PAGES) {
     pages += 1
@@ -106,6 +108,10 @@ export async function fetchVaultLogsAllPagesForTopic(
     fromBlock = lastBlockNumber
   }
 
+  logger.info(
+    { topic0, pages, items: allItems.length, elapsedMs: Date.now() - start },
+    'BTC vault topic fetch complete',
+  )
   return allItems
 }
 
@@ -121,6 +127,12 @@ export async function fetchVaultLogsForTopics(
   if (topic0s.length === 0) {
     return []
   }
+
+  const totalStart = Date.now()
+  logger.info(
+    { topics: topic0s.length, chunkSize: MAX_PARALLEL_BTC_VAULT_TOPIC_SCANS },
+    'BTC vault log fetch started',
+  )
 
   const perTopic: BlockscoutLogItem[][] = []
   for (let i = 0; i < topic0s.length; i += MAX_PARALLEL_BTC_VAULT_TOPIC_SCANS) {
@@ -142,5 +154,9 @@ export async function fetchVaultLogsForTopics(
       merged.push(item)
     }
   }
+  logger.info(
+    { topics: topic0s.length, merged: merged.length, totalElapsedMs: Date.now() - totalStart },
+    'BTC vault log fetch complete',
+  )
   return merged
 }

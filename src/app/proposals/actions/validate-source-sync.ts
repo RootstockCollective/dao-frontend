@@ -6,6 +6,8 @@ import { PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD } from '@/lib/constant
 import { db } from '@/lib/db'
 import { daoClient } from '@/shared/components/ApolloClient'
 
+const GET_BLOCK_NUMBER_TIMEOUT_MS = 10_000
+
 const SUBGRAPH_META_QUERY = apolloGQL`
   query GetSubgraphMeta {
     _meta {
@@ -47,7 +49,12 @@ export async function validateDBSync(): Promise<void> {
     }
 
     const dbBlockNumber = BigInt(metadataRecord.blockNumber)
-    const latestBlockNumber = await getBlockNumber(config)
+    const latestBlockNumber = await Promise.race([
+      getBlockNumber(config),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('getBlockNumber timed out')), GET_BLOCK_NUMBER_TIMEOUT_MS),
+      ),
+    ])
 
     if (!latestBlockNumber) {
       throw new Error('Failed to fetch latest block number from blockchain')
@@ -83,7 +90,12 @@ export async function validateSubgraphSync(): Promise<void> {
     }
 
     const subgraphBlockNumber = BigInt(data._meta.block.number)
-    const latestBlockNumber = await getBlockNumber(config)
+    const latestBlockNumber = await Promise.race([
+      getBlockNumber(config),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('getBlockNumber timed out')), GET_BLOCK_NUMBER_TIMEOUT_MS),
+      ),
+    ])
 
     if (!latestBlockNumber) {
       throw new Error('Failed to fetch latest block number from blockchain')

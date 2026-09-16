@@ -6,6 +6,8 @@ import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { config } from '@/config'
 import { PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD } from '@/lib/constants'
 
+const GET_BLOCK_NUMBER_TIMEOUT_MS = 10_000
+
 function transformGraphQLProposal(proposal: ProposalGraphQLResponse): ProposalApiResponse {
   return buildProposal(proposal, {
     parseTargets: targets => targets,
@@ -40,7 +42,12 @@ function validateProposalStructure(proposal: ProposalGraphQLResponse, index: num
  * @throws {Error} When the chain head cannot be read, or the subgraph is beyond the allowed lag
  */
 async function validateSubgraphSyncFromMeta(subgraphBlockNumber: number): Promise<void> {
-  const latestBlockNumber = await getBlockNumber(config)
+  const latestBlockNumber = await Promise.race([
+    getBlockNumber(config),
+    new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('getBlockNumber timed out')), GET_BLOCK_NUMBER_TIMEOUT_MS),
+    ),
+  ])
 
   if (!latestBlockNumber) {
     throw new Error('The Graph: failed to fetch latest block number from blockchain')

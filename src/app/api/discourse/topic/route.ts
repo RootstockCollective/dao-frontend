@@ -48,8 +48,8 @@ export async function GET(request: NextRequest) {
         Accept: 'application/json',
         'User-Agent': 'RootstockCollective-DAO-Frontend',
       },
-      // Add cache control to reduce load on Discourse
-      next: { revalidate: 300 }, // Cache for 5 minutes
+      next: { revalidate: 300 },
+      signal: AbortSignal.timeout(10_000),
     })
 
     if (!response.ok) {
