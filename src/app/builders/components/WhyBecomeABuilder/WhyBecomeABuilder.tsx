@@ -65,7 +65,6 @@ export const WhyBecomeABuilder = ({ className }: CommonComponentProps) => {
           <div className="relative h-[200px] w-full shrink-0 overflow-hidden rounded-sm lg:h-[260px] lg:w-[300px]">
             <Image
               src={ILLUSTRATION_SRC}
-              quality={85}
               alt=""
               aria-hidden="true"
               fill
