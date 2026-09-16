@@ -5,16 +5,12 @@ import { GaugeAbi } from '@/lib/abis/tok/GaugeAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 type EventEntry = Extract<(typeof GaugeAbi)[number], AbiEvent>
-type EventName = Extract<
-  EventEntry['name'],
-  'NotifyReward' | 'BackerRewardsClaimed' | 'BuilderRewardsClaimed'
->
+type EventName = Extract<EventEntry['name'], 'NotifyReward' | 'BackerRewardsClaimed'>
 type GaugeEventLog<T extends EventName> = ReturnType<typeof parseEventLogs<typeof GaugeAbi, true, T>>
 
 const eventRoutes: Record<EventName, string> = {
   NotifyReward: '/api/gauges/notify-reward',
   BackerRewardsClaimed: '/api/gauges/backer-rewards-claimed',
-  BuilderRewardsClaimed: '/api/gauges/builder-rewards-claimed',
 }
 
 export const useGetGaugesEvents = <T extends EventName>(gauges: Address[], eventName: T) => {
