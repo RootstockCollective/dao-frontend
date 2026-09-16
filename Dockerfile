@@ -1,5 +1,5 @@
 # ---------- shared base with native deps ----------
-FROM node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03 AS base
+FROM node:26-alpine@sha256:30f5a66e7265ef70aac56b4753ffa7905e54eca1084bc25503893ad8e9273f05 AS base
 
 # Install required dependencies for Trezor (and possibly Ledger)
 RUN apk add --no-cache \
@@ -63,7 +63,7 @@ FROM base AS prod-deps
 RUN npm ci --omit=dev --ignore-scripts --verbose
 
 # ---------- stage 3: runner ----------
-FROM node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03 AS runner
+FROM node:26-alpine@sha256:30f5a66e7265ef70aac56b4753ffa7905e54eca1084bc25503893ad8e9273f05 AS runner
 
 WORKDIR /app
 
