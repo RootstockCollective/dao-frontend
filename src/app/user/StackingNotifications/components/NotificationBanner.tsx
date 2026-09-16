@@ -61,9 +61,7 @@ export const NotificationBanner = ({
     <div className="absolute inset-0 md:hidden" style={{ background: MOBILE_OVERLAY }} />
     <div className="absolute inset-0 hidden md:block" style={{ background: DESKTOP_OVERLAY }} />
 
-    {showDecorativeSquares && (
-      <BannerDecorativeSquares className="absolute left-4 top-3 z-base md:left-6 md:top-4" />
-    )}
+    {showDecorativeSquares && <BannerDecorativeSquares className="absolute left-3 top-3 z-base" />}
 
     <DismissButton
       aria-label="Dismiss this notification"

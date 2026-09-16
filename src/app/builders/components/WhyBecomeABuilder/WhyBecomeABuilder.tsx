@@ -11,7 +11,7 @@ import { cn } from '@/lib/utils'
 
 export const WHY_BECOME_A_BUILDER_STORAGE_KEY = 'builders-why-become-open'
 
-const ILLUSTRATION_SRC = '/images/become-a-builder-banner-big.png'
+const ILLUSTRATION_SRC = '/images/why-become-a-builder.webp'
 
 const PERKS = [
   {
@@ -65,6 +65,7 @@ export const WhyBecomeABuilder = ({ className }: CommonComponentProps) => {
           <div className="relative h-[200px] w-full shrink-0 overflow-hidden rounded-sm lg:h-[260px] lg:w-[300px]">
             <Image
               src={ILLUSTRATION_SRC}
+              quality={85}
               alt=""
               aria-hidden="true"
               fill
