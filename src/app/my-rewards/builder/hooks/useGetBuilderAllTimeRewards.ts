@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Address } from 'viem'
 
-import { useGetBuilderRewardsClaimedLogs } from '@/app/collective-rewards/rewards'
+import { getClaimedForToken, useGetBuilderRewardsClaimed } from '@/app/collective-rewards/rewards'
 import { TOKENS } from '@/lib/tokens'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 
@@ -19,10 +19,10 @@ interface AllTimeRewardsData {
 
 export const useGetBuilderAllTimeRewards = ({ gauge }: UseBuilderAllTimeRewardsProps): AllTimeRewardsData => {
   const {
-    data: builderRewardsPerToken,
+    data: claimed,
     isLoading: builderRewardsPerTokenLoading,
     error: builderRewardsPerTokenError,
-  } = useGetBuilderRewardsClaimedLogs(gauge)
+  } = useGetBuilderRewardsClaimed(gauge)
 
   const {
     data: rifClaimableRewards,
@@ -43,25 +43,11 @@ export const useGetBuilderAllTimeRewards = ({ gauge }: UseBuilderAllTimeRewardsP
   } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [TOKENS.usdrif.address] })
 
   const { rifAllTimeRewards, rbtcAllTimeRewards, usdrifAllTimeRewards } = useMemo(() => {
-    // Calculate total claimed rewards for RIF
-    const rifTotalClaimedRewards =
-      builderRewardsPerToken[TOKENS.rif.address]?.reduce((acc, event) => {
-        const amount = event.args.amount_ ?? 0n
-        return acc + amount
-      }, 0n) ?? 0n
-
-    // Calculate total claimed rewards for rBTC
-    const rbtcTotalClaimedRewards =
-      builderRewardsPerToken[TOKENS.rbtc.address]?.reduce((acc, event) => {
-        const amount = event.args.amount_ ?? 0n
-        return acc + amount
-      }, 0n) ?? 0n
-
-    const usdrifTotalClaimedRewards =
-      builderRewardsPerToken[TOKENS.usdrif.address]?.reduce((acc, event) => {
-        const amount = event.args.amount_ ?? 0n
-        return acc + amount
-      }, 0n) ?? 0n
+    // BuilderRewardsClaimed is accumulated per claim by the subgraph, so these are values, not
+    // lists to reduce.
+    const rifTotalClaimedRewards = getClaimedForToken(claimed, TOKENS.rif.address)
+    const rbtcTotalClaimedRewards = getClaimedForToken(claimed, TOKENS.rbtc.address)
+    const usdrifTotalClaimedRewards = getClaimedForToken(claimed, TOKENS.usdrif.address)
 
     const rifAllTimeRewards = rifTotalClaimedRewards + (rifClaimableRewards ?? 0n)
     const rbtcAllTimeRewards = rbtcTotalClaimedRewards + (rbtcClaimableRewards ?? 0n)
@@ -72,7 +58,7 @@ export const useGetBuilderAllTimeRewards = ({ gauge }: UseBuilderAllTimeRewardsP
       rbtcAllTimeRewards,
       usdrifAllTimeRewards,
     }
-  }, [builderRewardsPerToken, rifClaimableRewards, rbtcClaimableRewards, usdrifClaimableRewards])
+  }, [claimed, rifClaimableRewards, rbtcClaimableRewards, usdrifClaimableRewards])
 
   return {
     rif: rifAllTimeRewards,
