@@ -79,6 +79,7 @@ const createMockContext = (overrides: Partial<AmountFlowContextValue> = {}): Amo
   amount: '',
   isValidAmount: false,
   isAmountOverBalance: false,
+  isAmountOverLimit: false,
   errorMessage: '',
   usdEquivalent: '',
   selectedToken: RBTC,
@@ -158,6 +159,50 @@ describe('createDepositAmountStep', () => {
       })
       const { container } = render(<DepositAmountStep {...defaultProps} />)
       expect(within(container).getByTestId('WalletBalanceLabel')).toBeInTheDocument()
+    })
+
+    it('renders reported offchain assets metric card when limitInfo is provided', () => {
+      const DepositAmountStep = createDepositAmountStep({
+        contractAddress: CONTRACT_ADDRESS,
+        addressLabel: ADDRESS_LABEL,
+        useFlowContext: () =>
+          createMockContext({
+            depositLimitStatus: 'ready',
+            limitInfo: { amount: '1.5', fiatAmount: '$75,000.00 USD' },
+          }),
+      })
+      const { container } = render(<DepositAmountStep {...defaultProps} />)
+      const card = within(container).getByTestId('ReportedOffchainAssetsCard')
+      expect(card).toHaveTextContent('Current reported off-chain')
+      expect(card).toHaveTextContent('1.5')
+      expect(card).toHaveTextContent('$75,000.00 USD')
+      expect(card).toHaveTextContent(RBTC)
+    })
+
+    it('renders max depositable label when maxDepositableFormatted is provided', () => {
+      const DepositAmountStep = createDepositAmountStep({
+        contractAddress: CONTRACT_ADDRESS,
+        addressLabel: ADDRESS_LABEL,
+        useFlowContext: () =>
+          createMockContext({
+            maxDepositableFormatted: '0.75',
+          }),
+      })
+      const { container } = render(<DepositAmountStep {...defaultProps} />)
+      const maxLabel = within(container).getByTestId('MaxDepositableLabel')
+      expect(maxLabel).toHaveTextContent('Max:')
+      expect(maxLabel).toHaveTextContent('0.75')
+      expect(maxLabel).toHaveTextContent(RBTC)
+    })
+
+    it('does not render max depositable label when maxDepositableFormatted is omitted', () => {
+      const DepositAmountStep = createDepositAmountStep({
+        contractAddress: CONTRACT_ADDRESS,
+        addressLabel: ADDRESS_LABEL,
+        useFlowContext: () => createMockContext(),
+      })
+      const { container } = render(<DepositAmountStep {...defaultProps} />)
+      expect(within(container).queryByTestId('MaxDepositableLabel')).not.toBeInTheDocument()
     })
   })
 
@@ -255,6 +300,19 @@ describe('createDepositAmountStep', () => {
       const { container } = render(<DepositAmountStep {...defaultProps} />)
       await userEvent.click(within(container).getByTestId('50Button'))
       expect(handlePercentageClick).toHaveBeenCalledWith(0.5)
+    })
+
+    it('calls handlePercentageClick with 1 when Max button is clicked', async () => {
+      const handlePercentageClick = vi.fn()
+      const DepositAmountStep = createDepositAmountStep({
+        contractAddress: CONTRACT_ADDRESS,
+        addressLabel: ADDRESS_LABEL,
+        useFlowContext: () => createMockContext({ handlePercentageClick }),
+      })
+
+      const { container } = render(<DepositAmountStep {...defaultProps} />)
+      await userEvent.click(within(container).getByTestId('MaxButton'))
+      expect(handlePercentageClick).toHaveBeenCalledWith(1)
     })
 
     it('renders token selector', () => {
