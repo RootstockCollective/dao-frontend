@@ -30,25 +30,29 @@ ingress:
 
 resources:
   requests:
-    cpu: 50m
-    memory: 128Mi
+    cpu: 250m
+    memory: 384Mi
   limits:
-    cpu: 500m
-    memory: 512Mi
+    cpu: "1"
+    memory: 640Mi
 
 livenessProbe:
   httpGet:
     path: /
     port: 3000
   initialDelaySeconds: 30
-  periodSeconds: 10
+  periodSeconds: 15
+  timeoutSeconds: 5
+  failureThreshold: 6
 
 readinessProbe:
   httpGet:
     path: /
     port: 3000
   initialDelaySeconds: 10
-  periodSeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
 
 externalSecrets:
   enabled: true
