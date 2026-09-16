@@ -7,8 +7,6 @@ import type { BtcVaultHistorySource } from './types'
 
 const TABLE_HISTORY = 'BtcVaultHistory'
 const TABLE_HISTORY_COUNTER = 'BtcVaultHistoryCounter'
-const TABLE_DEPOSIT_REQUEST = 'BtcDepositRequest'
-const TABLE_REDEEM_REQUEST = 'BtcRedeemRequest'
 
 /** Counter row covering every user, mirroring the subgraph's `global` counter id. */
 const GLOBAL_COUNTER_ID = 'global'
@@ -39,7 +37,11 @@ function toDbBytes(value: string): Buffer {
   return Buffer.from(value, 'utf8')
 }
 
-/** `Bytes` columns come back as Buffers; render them the way the subgraph would. */
+/**
+ * `Bytes` columns come back as Buffers holding the UTF-8 bytes of the subgraph's string, so this
+ * is a decode, not a hex render. (`nav-history/stateSync.ts` hex-renders the same kind of column,
+ * which produces an 86-character string — that one is wrong.)
+ */
 function fromDbBytes(value: unknown): string {
   if (Buffer.isBuffer(value)) return value.toString('utf8').toLowerCase()
   return String(value).toLowerCase()
@@ -50,6 +52,7 @@ function normalizeRow(raw: Record<string, unknown>): BtcVaultHistoryItem {
     id: fromDbBytes(raw.id),
     user: fromDbBytes(raw.user),
     action: String(raw.action),
+    status: raw.status === null || raw.status === undefined ? undefined : String(raw.status),
     assets: String(raw.assets),
     shares: String(raw.shares),
     epochId: String(raw.epochId),
@@ -68,6 +71,7 @@ async function fetchHistoryPage(params: BtcVaultHistoryQueryParams): Promise<Btc
       'id',
       'user',
       'action',
+      'status',
       'assets',
       'shares',
       'epochId',
@@ -77,6 +81,10 @@ async function fetchHistoryPage(params: BtcVaultHistoryQueryParams): Promise<Btc
     )
     .whereIn('action', actions)
     .orderBy(sort_field, sort_direction)
+    // Ties on timestamp are the norm — several vault actions share a block. Without a second key
+    // Postgres may order two LIMIT/OFFSET queries differently, duplicating one row across pages
+    // and dropping another. Same tiebreak as nav-history and audit-log.
+    .orderBy('id', 'asc')
     .limit(limit)
     .offset((page - 1) * limit)
 
@@ -111,60 +119,45 @@ async function fetchHistoryTotal(address: string | undefined, type?: string[]): 
 }
 
 /**
- * Resolves `displayStatus` for `*_REQUEST` rows from the request tables.
+ * Resolves `displayStatus` from the status the row already carries.
  *
- * Request ids are `<user>-<epochId>`, matching how the subgraph builds them. Every other action
- * maps straight from the action name and needs no lookup.
+ * `BtcVaultHistory.status` is a non-null `BtcRequestStatus` in the subgraph and is rewritten on
+ * every lifecycle transition, so no lookup into the request tables is needed. That also avoids
+ * rebuilding request ids, which are `<controller>-<epochId>-<nonce>` — a detail worth not
+ * duplicating. Non-request actions map from the action name, as in the other sources.
  */
-async function enrichWithRequestStatus(
+function withDisplayStatus(
   items: BtcVaultHistoryItem[],
-): Promise<BtcVaultHistoryItemWithStatus[]> {
-  const depositIds = new Set<string>()
-  const redeemIds = new Set<string>()
-
-  for (const item of items) {
-    const id = `${item.user.toLowerCase()}-${item.epochId}`
-    if (item.action === 'DEPOSIT_REQUEST') depositIds.add(id)
-    else if (item.action === 'REDEEM_REQUEST') redeemIds.add(id)
-  }
-
-  const statusById = new Map<string, string>()
-
-  const loadStatuses = async (table: string, ids: Set<string>) => {
-    if (ids.size === 0) return
-    const rows = await db(table)
-      .select('id', 'status')
-      .whereIn('id', [...ids].map(toDbBytes))
-    for (const row of rows) {
-      statusById.set(fromDbBytes(row.id), String(row.status))
-    }
-  }
-
-  await Promise.all([
-    loadStatuses(TABLE_DEPOSIT_REQUEST, depositIds),
-    loadStatuses(TABLE_REDEEM_REQUEST, redeemIds),
-  ])
-
+  mapActionOnly: (item: BtcVaultHistoryItem) => BtcVaultHistoryItemWithStatus,
+): BtcVaultHistoryItemWithStatus[] {
   return items.map((item): BtcVaultHistoryItemWithStatus => {
     if (item.action !== 'DEPOSIT_REQUEST' && item.action !== 'REDEEM_REQUEST') {
       return { ...item, displayStatus: mapActionToDisplayStatus(item.action) }
     }
 
-    const id = `${item.user.toLowerCase()}-${item.epochId}`
-    const status = statusById.get(id)?.toUpperCase()
-
-    if (status === 'CLAIMABLE') {
-      return { ...item, displayStatus: item.action === 'DEPOSIT_REQUEST' ? 'open_to_claim' : 'claim_pending' }
+    switch (item.status?.toUpperCase()) {
+      case 'CLAIMABLE':
+        return {
+          ...item,
+          displayStatus: item.action === 'DEPOSIT_REQUEST' ? 'open_to_claim' : 'claim_pending',
+        }
+      case 'ACCEPTED':
+        return { ...item, displayStatus: 'approved' }
+      case 'CLAIMED':
+        return { ...item, displayStatus: 'successful' }
+      case 'CANCELLED':
+        return { ...item, displayStatus: 'cancelled' }
+      case 'PENDING':
+        return { ...item, displayStatus: 'pending' }
+      default:
+        // No status on the row: fall back rather than assert a lifecycle we did not read.
+        return mapActionOnly(item)
     }
-    if (status === 'ACCEPTED') return { ...item, displayStatus: 'approved' }
-    if (status === 'CLAIMED') return { ...item, displayStatus: 'successful' }
-    if (status === 'CANCELLED') return { ...item, displayStatus: 'cancelled' }
-    return { ...item, displayStatus: 'pending' }
   })
 }
 
 export interface GetFromStateSyncSourceOptions {
-  /** Used when the request-status lookup fails, matching the other sources' degraded behaviour. */
+  /** Used for rows that carry no status, matching the other sources' degraded behaviour. */
   mapActionOnly: (item: BtcVaultHistoryItem) => BtcVaultHistoryItemWithStatus
 }
 
@@ -182,15 +175,20 @@ export function getFromStateSyncSource(options: GetFromStateSyncSourceOptions): 
         fetchHistoryPage(params),
         fetchHistoryTotal(params.address, params.type),
       ])
+
+      // A source that has nothing must not answer for one that might. `total` is the counter, so
+      // an empty page with a non-zero total is a legitimate past-the-end request and is kept;
+      // empty with nothing counted means this database cannot serve the route — an unpopulated
+      // table, a sync that has not caught up, the wrong environment — and the cascade should move
+      // on to The Graph instead of rendering an empty history.
+      if (items.length === 0 && total === 0) {
+        throw new Error('state-sync has no BTC vault history rows for this query')
+      }
+
       return { items, total }
     },
     async enrichWithStatus(items: BtcVaultHistoryItem[]) {
-      try {
-        return await enrichWithRequestStatus(items)
-      } catch (error) {
-        console.warn('[btc-vault] state-sync enrichment failed; using action-only displayStatus', error)
-        return items.map(mapActionOnly)
-      }
+      return withDisplayStatus(items, mapActionOnly)
     },
   }
 }
