@@ -31,10 +31,14 @@ export const useGetTotalRewardsDistributed = () => {
     },
     queryKey: ['useGetTotalRewardsDistributed'],
     refetchInterval: AVERAGE_BLOCKTIME,
+    // A stable empty record, rather than `data ?? {}` at the return. That fallback minted a new
+    // identity on every render while the query was in flight, and it reaches the dependency array
+    // of `useGetBuilderAllTimeShare`, re-running that memo each time. Matches the sibling hook.
+    initialData: {},
   })
 
   return {
-    data: data ?? {},
+    data,
     isLoading,
     error,
   }
