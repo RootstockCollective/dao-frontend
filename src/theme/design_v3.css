@@ -19,6 +19,19 @@
     --color-v3-success: rgb(27, 196, 125);
     --color-v3-error: rgb(242, 72, 34);
 
+    /*
+      Banners. The palette here is warm on purpose: pure white reads cold against the
+      artwork, so titles and copy step down to bone and warm grey instead.
+    */
+    --color-banner-title: #f4f1ea;
+    --color-banner-body: #c6beb4;
+    --color-banner-label: #f57a2b;
+    --color-banner-accent: #f57a2b;
+    /* Outline and drop shadow under the call to action. */
+    --color-banner-ink: #0b0908;
+    /* Label sitting on top of the accent fill. */
+    --color-banner-on-accent: #25211e;
+
     --color-v3-rif-blue: rgb(75, 92, 240);
     --color-v3-rsk-purple: rgb(158, 118, 255);
     --color-v3-rsk-pink: rgb(255, 113, 225);

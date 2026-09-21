@@ -46,12 +46,6 @@ export interface BannerConfig extends Omit<BannerContentProps, 'buttonOnClick'> 
      */
     external: boolean
   }
-
-  /**
-   * Background artwork for the notification card, anchored to its right edge.
-   * Falls back to the generic gradient when omitted.
-   */
-  backgroundSrc?: string
 }
 
 /**

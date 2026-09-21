@@ -21,7 +21,8 @@ export interface NotificationBannerProps {
   buttonText?: string
   buttonOnClick?: () => void
   rightContent?: ReactNode
-  /** The decorative squares sit on the first card of the stack only. */
+  backgroundPosition?: string
+  scrim?: string
   showDecorativeSquares?: boolean
   className?: string
 }
@@ -38,29 +39,29 @@ export const NotificationBanner = ({
   buttonText,
   buttonOnClick,
   rightContent,
+  backgroundPosition = '100% 50%',
+  scrim = BANNER_DESKTOP_OVERLAY,
   showDecorativeSquares = false,
   className,
 }: NotificationBannerProps) => (
   <div
     data-testid="NotificationBanner"
-    className={cn(
-      'relative w-full self-stretch overflow-hidden rounded bg-v3-bg-accent-100 text-v3-text-100',
-      className,
-    )}
+    className={cn('relative w-full self-stretch overflow-hidden rounded bg-v3-bg-accent-100', className)}
   >
     <Image
       src={backgroundSrc}
       alt=""
       aria-hidden="true"
       fill
-      sizes="100vw"
-      className="object-cover object-right"
+      sizes="(min-width: 768px) 90vw, 100vw"
+      className="object-cover"
+      style={{ objectPosition: backgroundPosition }}
     />
     <div className="absolute inset-0 md:hidden" style={{ background: BANNER_MOBILE_OVERLAY }} />
-    <div className="absolute inset-0 hidden md:block" style={{ background: BANNER_DESKTOP_OVERLAY }} />
+    <div className="absolute inset-0 hidden md:block" style={{ background: scrim }} />
 
     {showDecorativeSquares && (
-      <BannerDecorativeSquares width={24} height={24} className="absolute left-4 top-4 z-base" />
+      <BannerDecorativeSquares width={24} height={24} className="absolute left-3 top-3 z-base" />
     )}
 
     <DismissButton
@@ -72,29 +73,28 @@ export const NotificationBanner = ({
 
     <div
       className={cn(
-        'relative flex flex-col gap-4 px-4 py-5 md:min-h-[120px] md:flex-row md:items-center md:gap-6 md:px-6 md:pl-14',
-        showDecorativeSquares && 'pt-12 md:pt-5',
+        'relative flex flex-col gap-4 px-4 py-5 md:h-[132px] md:flex-row md:items-center md:justify-between md:gap-6 md:px-10 md:py-0',
+        showDecorativeSquares && 'pt-12 md:pt-0',
       )}
     >
-      <div className="flex flex-col gap-1 md:w-1/2 md:shrink-0 md:pr-6">
-        <Header caps variant="h3">
+      <div className="flex flex-col gap-1 md:max-w-[36rem]">
+        <Header caps variant="h3" className="text-banner-title">
           {title}
         </Header>
-        <Paragraph>{description}</Paragraph>
+        <Paragraph className="text-[15px] leading-[1.4] text-banner-body">{description}</Paragraph>
       </div>
 
-      {/* The button sits in a column of its own and hugs its right edge, so every
-          notification lines its button up at the same spot regardless of label length
-          or of whether the card carries right-hand content. */}
-      <div className="flex md:flex-1 md:justify-end">
-        {buttonText && buttonOnClick && (
-          <Button variant="primary" onClick={buttonOnClick}>
-            {buttonText}
-          </Button>
-        )}
-      </div>
+      {rightContent}
 
-      <div className="md:w-[12rem] md:shrink-0 md:text-right">{rightContent}</div>
+      {buttonText && buttonOnClick && (
+        <Button
+          variant="primary"
+          onClick={buttonOnClick}
+          className="shrink-0 border-banner-ink bg-banner-accent text-banner-on-accent shadow-[0_3px_0_var(--color-banner-ink)]"
+        >
+          {buttonText}
+        </Button>
+      )}
     </div>
   </div>
 )

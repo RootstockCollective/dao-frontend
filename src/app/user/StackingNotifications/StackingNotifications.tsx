@@ -15,9 +15,9 @@ import {
   getBannerConfigForKycOnly,
   getBannerConfigForStartBuilding,
   getBannerConfigForTokenStatus,
-  selectRandomBannerConfigs,
+  selectBannerConfigs,
 } from './configs'
-import { DEFAULT_NOTIFICATION_BACKGROUND } from './constants'
+import { STACK_ARTWORK } from './constants'
 import { useGetBuilderState } from './hooks/useGetBuilderState'
 import { useHasAvailableBacking } from './hooks/useHasAvailableForBacking'
 import { BannerConfig } from './types'
@@ -88,7 +88,7 @@ import { handleActionClick } from './utils'
  * COMPONENT BEHAVIOR:
  * 1. Loads user state data from various hooks
  * 2. Determines which banners should be shown based on detection functions
- * 3. Groups banners by category and randomly selects one per category
+ * 3. Keeps the two highest-priority banners, in the order the stack reads in
  * 4. Renders the selected banners with action buttons
  *
  * EXTENDING THIS COMPONENT:
@@ -210,7 +210,7 @@ const StackingNotificationsContent = () => {
   // ===============================
 
   const bannerConfigsForDisplay = useMemo(
-    () => selectRandomBannerConfigs(activeBannerConfigs),
+    () => selectBannerConfigs(activeBannerConfigs),
     [activeBannerConfigs],
   )
 
@@ -251,19 +251,31 @@ const StackingNotificationsContent = () => {
   // Render the selected banners
   return (
     <div className="flex w-full flex-col gap-2" data-testid="StackingNotifications">
-      {visibleBannerConfigs.map((config, index) => (
-        <NotificationBanner
-          key={config.id}
-          title={config.title}
-          description={config.description}
-          backgroundSrc={config.backgroundSrc ?? DEFAULT_NOTIFICATION_BACKGROUND}
-          buttonText={config.buttonText}
-          buttonOnClick={() => handleActionClick(config, router)}
-          rightContent={config.rightContent}
-          showDecorativeSquares={index === 0}
-          onDismiss={() => setDismissedIds(ids => [...ids, config.id])}
-        />
-      ))}
+      {/* Walking the whole stack rather than what is left of it keeps every card's looks tied
+          to the place it was given, so dismissing one never restyles the others. */}
+      {bannerConfigsForDisplay.map((config, position) => {
+        if (dismissedIds.includes(config.id)) {
+          return null
+        }
+
+        const { backgroundSrc, backgroundPosition, scrim } = STACK_ARTWORK[position]
+
+        return (
+          <NotificationBanner
+            key={config.id}
+            title={config.title}
+            description={config.description}
+            backgroundSrc={backgroundSrc}
+            backgroundPosition={backgroundPosition}
+            scrim={scrim}
+            buttonText={config.buttonText}
+            buttonOnClick={() => handleActionClick(config, router)}
+            rightContent={config.rightContent}
+            showDecorativeSquares={position === 0}
+            onDismiss={() => setDismissedIds(ids => [...ids, config.id])}
+          />
+        )
+      })}
     </div>
   )
 }

@@ -6,9 +6,24 @@ import { currentLinks } from '@/lib/links'
 
 import { BannerConfigMap } from './types'
 
-/** Generic artwork used by every notification that has no dedicated background yet. */
-export const DEFAULT_NOTIFICATION_BACKGROUND = BANNER_DEFAULT_ARTWORK
-const BACK_NOTIFICATION_BACKGROUND = '/images/notification-back.webp'
+const COINS_BANNER = '/images/notification-back.webp'
+
+const COINS_BANNER_SCRIM =
+  'linear-gradient(90deg, #17110E 0%, rgba(23,17,14,0.95) 32%, rgba(23,17,14,0.62) 52%, rgba(23,17,14,0.18) 74%, rgba(23,17,14,0) 100%)'
+
+export const STACK_ARTWORK: ReadonlyArray<{
+  readonly backgroundSrc: string
+  readonly backgroundPosition?: string
+  readonly scrim?: string
+}> = [
+  { backgroundSrc: BANNER_DEFAULT_ARTWORK },
+  {
+    backgroundSrc: COINS_BANNER,
+    // Keeps the stacked coins in frame rather than the empty table to their right.
+    backgroundPosition: '78% 50%',
+    scrim: COINS_BANNER_SCRIM,
+  },
+]
 
 // Static token images - created once outside component to avoid re-renders
 const rbtcImage = <TokenImage symbol={RBTC} size={26} className="inline-block mt-[-0.2rem]" />
@@ -94,7 +109,6 @@ export const BANNER_CONFIGS: BannerConfigMap = {
   },
   [NOT_BACKING]: {
     id: NOT_BACKING,
-    backgroundSrc: BACK_NOTIFICATION_BACKGROUND,
     title: <span>BACK</span>,
     buttonText: 'See all Builders',
     description: 'Back Builders to start earning rewards.',

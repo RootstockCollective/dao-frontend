@@ -57,7 +57,7 @@ export const PageBanner = ({
     <div
       data-testid={dataTestId}
       className={cn(
-        'relative w-full self-stretch overflow-hidden rounded bg-v3-bg-accent-100 text-v3-text-100',
+        'relative w-full self-stretch overflow-hidden rounded bg-v3-bg-accent-100 text-banner-title',
         className,
       )}
     >
@@ -90,15 +90,19 @@ export const PageBanner = ({
             {eyebrow && (
               <div className="flex items-center gap-2">
                 <AccentSquare />
-                <Span caps bold variant="body-s" className="tracking-widest text-v3-primary">
+                <Span caps bold variant="body-s" className="text-[12px] tracking-[0.16em] text-banner-label">
                   {eyebrow}
                 </Span>
               </div>
             )}
-            <Header caps variant="h1" className="text-3xl leading-10">
+            <Header caps variant="h1" className="text-3xl leading-10 text-banner-title">
               {title}
             </Header>
-            {typeof description === 'string' ? <Paragraph>{description}</Paragraph> : description}
+            {typeof description === 'string' ? (
+              <Paragraph className="text-banner-body">{description}</Paragraph>
+            ) : (
+              description
+            )}
           </div>
           {children}
         </div>

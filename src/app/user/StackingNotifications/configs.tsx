@@ -3,27 +3,58 @@ import { DateTime } from 'luxon'
 import { Cycle } from '@/app/collective-rewards/metrics'
 import { Header } from '@/components/Typography'
 
-import { BANNER_CONFIGS, CYCLE_ENDED, CYCLE_ENDING, KYC_ONLY, NOT_BACKING, START_BUILDING } from './constants'
+import {
+  BANNER_CONFIGS,
+  CYCLE_ENDED,
+  CYCLE_ENDING,
+  KYC_ONLY,
+  NOT_BACKING,
+  STACK_ARTWORK,
+  START_BUILDING,
+} from './constants'
 import { BannerConfig } from './types'
 
+const STACK_ORDER = [CYCLE_ENDED, CYCLE_ENDING, NOT_BACKING]
+
+const BANNER_FAMILIES = new Map<string, string>([
+  [CYCLE_ENDED, 'cycle'],
+  [CYCLE_ENDING, 'cycle'],
+])
+
 /**
- * Randomly shuffles banner configs and returns at most 2 banners.
- * This ensures we don't overwhelm the user with too many banners at once.
+ * Picks the notifications to show. The stack holds one card per artwork in STACK_ARTWORK, so
+ * the page still opens on its own content and every card is guaranteed a look of its own.
  *
  * @param bannerConfigs - Array of banner configurations to process
- * @returns Array of at most 2 randomly selected banner configs
+ * @returns The highest-priority banner configs, at most one per artwork
  *
  * @example
- * // If you have 5 banner configs, this will return 2 randomly selected ones
- * // If you have 1 or fewer configs, returns them as-is
+ * // A user whose cycle just ended and who has stRIF left to back sees
+ * // CYCLE JUST ENDED with BACK under it, in that order, on every load
  */
-export const selectRandomBannerConfigs = (bannerConfigs: BannerConfig[]): BannerConfig[] => {
-  // Dynamically group by categories that actually exist in the configs
+export const selectBannerConfigs = (bannerConfigs: BannerConfig[]): BannerConfig[] => {
   if (bannerConfigs.length <= 1) {
     return bannerConfigs
   }
 
-  return [...bannerConfigs].sort(() => 0.5 - Math.random()).slice(0, 2)
+  const rank = ({ id }: BannerConfig) => {
+    const position = STACK_ORDER.indexOf(id)
+    return position === -1 ? STACK_ORDER.length : position
+  }
+
+  const seenFamilies = new Set<string>()
+
+  return [...bannerConfigs]
+    .sort((a, b) => rank(a) - rank(b))
+    .filter(({ id }) => {
+      const family = BANNER_FAMILIES.get(id)
+      if (!family) return true
+      if (seenFamilies.has(family)) return false
+
+      seenFamilies.add(family)
+      return true
+    })
+    .slice(0, STACK_ARTWORK.length)
 }
 
 /**
@@ -65,7 +96,7 @@ export const getBannerConfigForCycleEnding = (cycle: Cycle): BannerConfig | null
   return {
     ...staticConfig,
     rightContent: (
-      <Header variant="h1" className="text-black md:text-white">
+      <Header variant="h1" className="text-banner-title">
         {`${diff.toFormat("d'd' hh'h' mm'm'")}`}
       </Header>
     ),
