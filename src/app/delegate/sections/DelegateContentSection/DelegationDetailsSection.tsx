@@ -6,8 +6,14 @@ import { DelegateCard } from '@/app/delegate/components/DelegateCard'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
 import { Button } from '@/components/Button'
 import { EditIconKoto } from '@/components/Icons'
+import {
+  BANNER_DEFAULT_ARTWORK,
+  BANNER_DESKTOP_OVERLAY,
+  BANNER_MOBILE_OVERLAY,
+  BannerDecorativeSquares,
+} from '@/components/PageBanner'
 import { Header, Paragraph, Span } from '@/components/Typography'
-import { cn, shortAddress } from '@/lib/utils'
+import { shortAddress } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 import { useDelegateContext } from '../../contexts/DelegateContext'
@@ -58,30 +64,36 @@ export const DelegationDetailsSection = ({ onShowReclaim, onShowDelegates }: Pro
         isReclaimPending={isReclaimPending}
       />
       <div className="flex w-full flex-col-reverse md:flex-col gap-6">
-        {/* Banner here with delegation perks */}
-        <div className="text-bg-100 p-6 mt-10 md:mt-0 md:mb-10 relative bg-gradient-to-r from-[#E3FFEB] via-[#66CD8E] to-[#00031E]">
+        {/* Banner here with delegation perks: same artwork, overlays and decorative
+            squares as the rest of the banners across the app. */}
+        <div className="relative mt-10 w-full overflow-hidden rounded bg-v3-bg-accent-100 text-v3-text-100 md:mb-10 md:mt-0">
           <Image
-            src="/images/hero/delegation-perks-pixels.svg"
-            alt="Pixels Divider"
-            width={50}
-            height={40}
-            className={cn(
-              'absolute left-0 z-base md:left-0 scale-y-[-1] md:scale-y-100',
-              isDesktop ? '-bottom-[30px]' : '-top-[30px]',
-            )}
+            src={BANNER_DEFAULT_ARTWORK}
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes="(min-width: 768px) 50vw, 100vw"
+            className="object-cover object-right"
           />
-          <Header variant="h3">DELEGATION PERKS</Header>
-          <ul className="list-[circle] list-inside">
-            <li>
-              <Span>your tokens stay in your wallet</Span>
-            </li>
-            <li>
-              <Span>you save on gas cost while being represented</Span>
-            </li>
-            <li>
-              <Span>your Rewards will keep accumulating as usual</Span>
-            </li>
-          </ul>
+          <div className="absolute inset-0 md:hidden" style={{ background: BANNER_MOBILE_OVERLAY }} />
+          <div className="absolute inset-0 hidden md:block" style={{ background: BANNER_DESKTOP_OVERLAY }} />
+
+          <BannerDecorativeSquares width={24} height={24} className="absolute left-4 top-4 z-base" />
+
+          <div className="relative flex flex-col gap-2 px-4 pb-5 pt-12 md:px-6">
+            <Header variant="h3">DELEGATION PERKS</Header>
+            <ul className="list-[circle] list-inside">
+              <li>
+                <Span>your tokens stay in your wallet</Span>
+              </li>
+              <li>
+                <Span>you save on gas cost while being represented</Span>
+              </li>
+              <li>
+                <Span>your Rewards will keep accumulating as usual</Span>
+              </li>
+            </ul>
+          </div>
         </div>
         <div className="flex flex-col gap-6">
           <div className="flex flex-col gap-1">

@@ -13,7 +13,8 @@ export interface DismissButtonProps {
 
 /**
  * The close control shared by every dismissible banner and notification:
- * a small square with rounded corners.
+ * a small square with rounded corners. It is the only X banners should use, so
+ * that the control looks and sits the same on every screen.
  */
 export const DismissButton = ({
   'aria-label': ariaLabel,
@@ -31,7 +32,8 @@ export const DismissButton = ({
       onClick={onClick}
       data-testid={dataTestId}
       className={cn(
-        'flex size-7 shrink-0 cursor-pointer items-center justify-center rounded transition-colors',
+        'flex size-6 shrink-0 cursor-pointer items-center justify-center rounded transition-colors',
+        "relative before:absolute before:-inset-1.5 before:content-['']",
         isOnDark
           ? 'border border-v3-text-100/20 hover:bg-v3-text-100/10'
           : 'border border-v3-bg-accent-100/15 hover:bg-v3-bg-accent-100/5',
@@ -39,7 +41,7 @@ export const DismissButton = ({
       )}
     >
       <CloseIconKoto
-        size={16}
+        size={14}
         color={isOnDark ? 'var(--color-v3-text-100)' : 'var(--color-v3-bg-accent-100)'}
       />
     </button>

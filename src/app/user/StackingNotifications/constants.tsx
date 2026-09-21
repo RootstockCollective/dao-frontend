@@ -1,4 +1,5 @@
 import { NEED_RBTC, NEED_RBTC_RIF, NEED_RIF, NEED_STRIF } from '@/app/user/IntroModal/hooks/useRequiredTokens'
+import { BANNER_DEFAULT_ARTWORK } from '@/components/PageBanner'
 import { TokenImage } from '@/components/TokenImage'
 import { RBTC, RIF } from '@/lib/constants'
 import { currentLinks } from '@/lib/links'
@@ -6,7 +7,7 @@ import { currentLinks } from '@/lib/links'
 import { BannerConfigMap } from './types'
 
 /** Generic artwork used by every notification that has no dedicated background yet. */
-export const DEFAULT_NOTIFICATION_BACKGROUND = '/images/notification-default.webp'
+export const DEFAULT_NOTIFICATION_BACKGROUND = BANNER_DEFAULT_ARTWORK
 const BACK_NOTIFICATION_BACKGROUND = '/images/notification-back.webp'
 
 // Static token images - created once outside component to avoid re-renders

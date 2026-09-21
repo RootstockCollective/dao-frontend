@@ -6,7 +6,6 @@ import { useAccount } from 'wagmi'
 import { CycleContextProvider, useCycleContext } from '@/app/collective-rewards/metrics'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { useRequiredTokens } from '@/app/user/IntroModal/hooks/useRequiredTokens'
-import { Button } from '@/components/Button'
 
 import { NotificationBanner } from './components'
 import {
@@ -99,7 +98,7 @@ import { handleActionClick } from './utils'
  * 4. If your detection depends on async data, add loading state to dependencies array
  *
  * Each selected banner renders as its own NotificationBanner card. Dismissing one hides it
- * for the session and reveals a Restore button that brings every dismissed card back.
+ * for the session; a reload brings it back.
  *
  * @returns JSX.Element with banner notifications or null if no banners should be shown
  */
@@ -244,9 +243,8 @@ const StackingNotificationsContent = () => {
   }
 
   const visibleBannerConfigs = bannerConfigsForDisplay.filter(config => !dismissedIds.includes(config.id))
-  const hasDismissedBanners = bannerConfigsForDisplay.length > visibleBannerConfigs.length
 
-  if (visibleBannerConfigs.length === 0 && !hasDismissedBanners) {
+  if (visibleBannerConfigs.length === 0) {
     return null
   }
 
@@ -266,18 +264,6 @@ const StackingNotificationsContent = () => {
           onDismiss={() => setDismissedIds(ids => [...ids, config.id])}
         />
       ))}
-
-      {hasDismissedBanners && (
-        <div className="flex justify-end">
-          <Button
-            variant="secondary-outline"
-            onClick={() => setDismissedIds([])}
-            data-testid="RestoreNotificationsButton"
-          >
-            Restore
-          </Button>
-        </div>
-      )}
     </div>
   )
 }

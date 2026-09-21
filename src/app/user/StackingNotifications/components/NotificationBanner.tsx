@@ -5,15 +5,13 @@ import { ReactNode } from 'react'
 
 import { Button } from '@/components/Button'
 import { DismissButton } from '@/components/DismissButton'
-import { BannerDecorativeSquares } from '@/components/PageBanner'
+import {
+  BANNER_DESKTOP_OVERLAY,
+  BANNER_MOBILE_OVERLAY,
+  BannerDecorativeSquares,
+} from '@/components/PageBanner'
 import { Header, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
-
-/** Fades the artwork out towards the left so the copy stays readable. */
-const DESKTOP_OVERLAY =
-  'linear-gradient(90deg, #171412 0%, #171412 24%, rgba(23,20,18,0.88) 38%, rgba(23,20,18,0.35) 58%, rgba(23,20,18,0) 76%)'
-const MOBILE_OVERLAY =
-  'linear-gradient(180deg, rgba(23,20,18,0.95) 0%, rgba(23,20,18,0.9) 55%, rgba(23,20,18,0.6) 100%)'
 
 export interface NotificationBannerProps {
   title: ReactNode
@@ -58,23 +56,24 @@ export const NotificationBanner = ({
       sizes="100vw"
       className="object-cover object-right"
     />
-    <div className="absolute inset-0 md:hidden" style={{ background: MOBILE_OVERLAY }} />
-    <div className="absolute inset-0 hidden md:block" style={{ background: DESKTOP_OVERLAY }} />
+    <div className="absolute inset-0 md:hidden" style={{ background: BANNER_MOBILE_OVERLAY }} />
+    <div className="absolute inset-0 hidden md:block" style={{ background: BANNER_DESKTOP_OVERLAY }} />
 
-    {showDecorativeSquares && <BannerDecorativeSquares className="absolute left-3 top-3 z-base" />}
+    {showDecorativeSquares && (
+      <BannerDecorativeSquares width={24} height={24} className="absolute left-4 top-4 z-base" />
+    )}
 
     <DismissButton
       aria-label="Dismiss this notification"
       onClick={onDismiss}
-      className="absolute right-4 top-4 z-base md:right-6"
+      className="absolute right-4 top-4 z-base"
       data-testid="DismissNotificationButton"
     />
 
     <div
       className={cn(
-        'relative flex min-h-[120px] flex-col gap-4 px-4 py-6 md:flex-row md:items-center md:px-6',
-        // Leave room for the squares so they never sit on top of the title
-        showDecorativeSquares && 'pt-12 md:pt-12',
+        'relative flex flex-col gap-4 px-4 py-5 md:min-h-[120px] md:flex-row md:items-center md:gap-6 md:px-6 md:pl-14',
+        showDecorativeSquares && 'pt-12 md:pt-5',
       )}
     >
       <div className="flex flex-col gap-1 md:w-1/2 md:shrink-0 md:pr-6">

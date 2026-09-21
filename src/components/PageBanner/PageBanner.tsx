@@ -8,13 +8,8 @@ import { DismissButton } from '@/components/DismissButton'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
+import { BANNER_DESKTOP_OVERLAY, BANNER_MOBILE_OVERLAY } from './bannerAssets'
 import { BannerDecorativeSquares } from './BannerDecorativeSquares'
-
-/** Fades the artwork out towards the left so the copy stays readable. */
-const DESKTOP_OVERLAY =
-  'linear-gradient(90deg, #171412 0%, #171412 24%, rgba(23,20,18,0.88) 38%, rgba(23,20,18,0.35) 58%, rgba(23,20,18,0) 76%)'
-const MOBILE_OVERLAY =
-  'linear-gradient(180deg, rgba(23,20,18,0.95) 0%, rgba(23,20,18,0.9) 55%, rgba(23,20,18,0.6) 100%)'
 
 export interface PageBannerProps {
   title: string
@@ -75,8 +70,8 @@ export const PageBanner = ({
         sizes="100vw"
         className="object-cover object-right"
       />
-      <div className="absolute inset-0 md:hidden" style={{ background: MOBILE_OVERLAY }} />
-      <div className="absolute inset-0 hidden md:block" style={{ background: DESKTOP_OVERLAY }} />
+      <div className="absolute inset-0 md:hidden" style={{ background: BANNER_MOBILE_OVERLAY }} />
+      <div className="absolute inset-0 hidden md:block" style={{ background: BANNER_DESKTOP_OVERLAY }} />
 
       {!eyebrow && <BannerDecorativeSquares className="absolute left-3 top-3 z-base" />}
 
@@ -84,7 +79,7 @@ export const PageBanner = ({
         <DismissButton
           aria-label={`Dismiss the ${title} banner`}
           onClick={() => setIsDismissed(true)}
-          className="absolute right-4 top-4 z-base md:right-6"
+          className="absolute right-4 top-4 z-base"
           data-testid="DismissBannerButton"
         />
       )}

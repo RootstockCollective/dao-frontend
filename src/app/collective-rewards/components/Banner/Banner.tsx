@@ -11,7 +11,15 @@ export const Banner = ({ imageSrc, altText, DecorativeComponent }: BannerProps) 
   return (
     <div className="relative">
       <div className="h-[240px] overflow-hidden relative">
-        <Image src={imageSrc} alt={altText} fill />
+        {/* object-cover keeps the artwork's proportions whatever the card's width;
+            sizes stops Next from serving the full-width image for a half-width card. */}
+        <Image
+          src={imageSrc}
+          alt={altText}
+          fill
+          sizes="(min-width: 768px) 50vw, 100vw"
+          className="object-cover"
+        />
       </div>
       <DecorativeComponent
         width={50}

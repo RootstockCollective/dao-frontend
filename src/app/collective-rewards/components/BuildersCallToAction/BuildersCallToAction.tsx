@@ -17,7 +17,7 @@ import { RewardsMetrics, RewardsMetricsProps } from '../RewardsMetrics'
 
 const BuildersBanner = () => (
   <Banner
-    imageSrc="/images/cta-banner-builders.png"
+    imageSrc="/images/cta-banner-builders.webp"
     altText="Builders Call to Action Banner"
     DecorativeComponent={BuildersDecorativeSquares}
   />
