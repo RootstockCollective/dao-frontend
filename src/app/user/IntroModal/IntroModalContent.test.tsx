@@ -1,5 +1,5 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
 
 import { currentLinks } from '@/lib/links'
 
@@ -19,6 +19,10 @@ beforeAll(() => {
   vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
 })
 
+afterAll(() => {
+  vi.restoreAllMocks()
+})
+
 describe('IntroModalContent', () => {
   afterEach(cleanup)
 
@@ -31,11 +35,38 @@ describe('IntroModalContent', () => {
     const pair = screen.getByTestId('wallet-info-rif')
     expect(pair).toHaveTextContent('USD')
     expect(pair).toHaveTextContent('RIF')
-    // The token mark sits right after the symbol; it is missing in the old design.
-    expect(screen.getByAltText('RIF Logo')).toBeInTheDocument()
+
+    const mark = pair.querySelector('img')
+    expect(mark).toBeInTheDocument()
+    expect(mark).toHaveAttribute('alt', '')
+    expect(screen.queryByAltText('RIF Logo')).not.toBeInTheDocument()
 
     expect(screen.getByText('You need RIF to stake')).toBeInTheDocument()
     expect(screen.queryByTestId('wallet-info-rbtc')).not.toBeInTheDocument()
+  })
+
+  it('opens under a testid that does not depend on the breakpoint', () => {
+    render(<IntroModalContent tokenStatus="NEED_RIF" {...defaultProps} />)
+
+    expect(screen.getByTestId('intro-modal')).toBeInTheDocument()
+  })
+
+  it('reads the two-line headline as one heading, not two', () => {
+    render(<IntroModalContent tokenStatus="NEED_RIF" {...defaultProps} />)
+
+    // The lines are one sentence. Two sibling headings would announce as two sections.
+    const headings = screen.getAllByRole('heading')
+    expect(headings).toHaveLength(1)
+    expect(headings[0]).toHaveTextContent('Before you stake')
+    expect(headings[0]).toHaveTextContent('add RIF to your wallet')
+  })
+
+  it('keeps the decorative arrow out of the pair it sits in', () => {
+    render(<IntroModalContent tokenStatus="NEED_RIF" {...defaultProps} />)
+
+    // Otherwise a screen reader announces "USD, Arrow Right Icon, RIF".
+    const arrow = screen.getByTestId('wallet-info-rif').querySelector('svg')
+    expect(arrow).toHaveAttribute('aria-hidden', 'true')
   })
 
   it('shows both pairs when neither token is held', () => {
@@ -58,6 +89,19 @@ describe('IntroModalContent', () => {
     expect(screen.getByText(/0\.1234/)).toBeInTheDocument()
     expect(screen.getByText(/543\.21/)).toBeInTheDocument()
     expect(screen.queryByTestId('wallet-info-rif')).not.toBeInTheDocument()
+  })
+
+  // NEED_STRIF carries no wallet info, and a rule with nothing under it reads as a stray line.
+  it('drops the rule and the copy under it when the state has nothing to say', () => {
+    render(<IntroModalContent tokenStatus="NEED_STRIF" rbtcBalance="1" rifBalance="2" {...defaultProps} />)
+
+    expect(screen.queryByTestId('ParagraphWalletInfo')).not.toBeInTheDocument()
+  })
+
+  it('keeps them wherever there is something to say', () => {
+    render(<IntroModalContent tokenStatus="NEED_RIF" {...defaultProps} />)
+
+    expect(screen.getByTestId('ParagraphWalletInfo')).toHaveTextContent('You need RIF to stake')
   })
 
   it('sends the holder off to buy the token they are missing', () => {

@@ -8,7 +8,7 @@ import { DismissButton } from '@/components/DismissButton'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
-import { BANNER_DESKTOP_OVERLAY, BANNER_MOBILE_OVERLAY } from './bannerAssets'
+import { BANNER_DESKTOP_OVERLAY, BANNER_EYEBROW_CLASSES, BANNER_MOBILE_OVERLAY } from './bannerAssets'
 import { BannerDecorativeSquares } from './BannerDecorativeSquares'
 
 export interface PageBannerProps {
@@ -90,7 +90,7 @@ export const PageBanner = ({
             {eyebrow && (
               <div className="flex items-center gap-2">
                 <AccentSquare />
-                <Span caps bold variant="body-s" className="text-[12px] tracking-[0.16em] text-banner-label">
+                <Span caps bold variant="body-s" className={cn(BANNER_EYEBROW_CLASSES, 'text-banner-label')}>
                   {eyebrow}
                 </Span>
               </div>
