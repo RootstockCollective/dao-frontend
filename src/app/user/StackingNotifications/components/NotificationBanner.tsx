@@ -6,6 +6,7 @@ import { ReactNode } from 'react'
 import { Button } from '@/components/Button'
 import { DismissButton } from '@/components/DismissButton'
 import {
+  BANNER_CTA_CLASSES,
   BANNER_DESKTOP_OVERLAY,
   BANNER_MOBILE_OVERLAY,
   BannerDecorativeSquares,
@@ -87,11 +88,7 @@ export const NotificationBanner = ({
       {rightContent}
 
       {buttonText && buttonOnClick && (
-        <Button
-          variant="primary"
-          onClick={buttonOnClick}
-          className="shrink-0 border-banner-ink bg-banner-accent text-banner-on-accent shadow-[0_3px_0_var(--color-banner-ink)]"
-        >
+        <Button variant="primary" onClick={buttonOnClick} className={cn('shrink-0', BANNER_CTA_CLASSES)}>
           {buttonText}
         </Button>
       )}

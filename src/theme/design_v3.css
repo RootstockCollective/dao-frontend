@@ -41,8 +41,6 @@
     --color-molten-ink: #140f0c;
     /* Eyebrow over the artwork, and the hairline around the card. */
     --color-molten-peach: #f9c79e;
-    /* The quiet half of each "USD → RIF" pair. */
-    --color-molten-stone: #a29b90;
     /* The modal itself: warm white rather than the cooler --text-80. */
     --color-surface-warm: #e8e4df;
 

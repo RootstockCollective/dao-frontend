@@ -72,16 +72,21 @@ describe('selectBannerConfigs', () => {
  */
 const DESCRIPTION_LIMIT = 180
 
-describe('BANNER_CONFIGS', () => {
-  const described = Object.entries(BANNER_CONFIGS).filter(
-    ([, { description }]) => typeof description === 'string',
-  )
+const entries = Object.entries(BANNER_CONFIGS)
 
-  it('describes every notification', () => {
-    expect(described.length).toBe(Object.keys(BANNER_CONFIGS).length)
+describe('BANNER_CONFIGS', () => {
+  it.each(entries)('describes %s', (_, { description }) => {
+    expect(description).toBeTruthy()
   })
 
-  it.each(described)('keeps %s short enough that the card does not clip it', (_, { description }) => {
+  /*
+   * `description` is a ReactNode, and a config is free to use JSX the way `title` already
+   * does. Only the plain strings can be measured here, so those are the ones checked —
+   * a JSX description is left to review rather than failing this test for the wrong reason.
+   */
+  const measurable = entries.filter(([, { description }]) => typeof description === 'string')
+
+  it.each(measurable)('keeps %s short enough that the card does not clip it', (_, { description }) => {
     expect(String(description).length).toBeLessThanOrEqual(DESCRIPTION_LIMIT)
   })
 })

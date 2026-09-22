@@ -4,10 +4,6 @@ import { useEffect, useRef } from 'react'
 
 import { cn } from '@/lib/utils'
 
-/**
- * The bands are drawn from two pools. The warm one carries the piece — ember through
- * amber to cream — and a minority of cool stops keeps it from reading as a single hue.
- */
 const WARM_STOPS = [
   '#140f0c',
   '#2a0f05',
@@ -26,16 +22,37 @@ const BAND_COUNT = 10
 const COOL_ODDS = 0.22
 /** The bands are laid out from a fixed seed, so the artwork is identical for everyone. */
 const SEED = 11
+/** The grain gets its own seed, so it is as reproducible as the bands underneath it. */
+const GRAIN_SEED = 7
 /** Drawn small and scaled up: the result is blurred anyway, and this keeps the loop cheap. */
 const CANVAS_SIZE = 320
-/** Side of the repeating noise tile laid over the bands. */
+/** Side of the noise tile that gets repeated across the grain layer. */
 const GRAIN_TILE = 168
+/**
+ * Side of the square layer the tile is repeated into. The panel is never exactly this
+ * wide, so the browser resamples it — which is fine: the panel is square, so the scale
+ * is uniform, and the grain sits at a third opacity in overlay over an already blurred
+ * canvas. Drawn a little larger than the panel ever gets so it is only ever downscaled.
+ */
+const GRAIN_SIZE = 512
 /** Tilt of the whole stack, in radians. */
 const BAND_ANGLE = -0.11
 /** Where the still frame lands when motion is off — far enough in for the bands to have spread. */
 const STILL_AT = 4
+/**
+ * The canvas carries a CSS blur, so every frame repaints a filtered layer — the expensive
+ * half of this component. The artwork is decorative and heavily blurred, so it is capped
+ * well under the display refresh rate; the drift stays smooth at this rate.
+ */
+const FRAME_MS = 1000 / 30
+/**
+ * The bands settle into a still frame after this many seconds. Nobody keeps watching the
+ * wallpaper of a modal they have had open for half a minute, and an unbounded loop costs
+ * battery for nothing.
+ */
+const SETTLE_AFTER = 20
 
-interface Band {
+export interface Band {
   y: number
   thickness: number
   speed: number
@@ -51,7 +68,7 @@ const createRandom = (seed: number) => () => {
   return seed / 2147483648
 }
 
-const createBands = (height: number): Band[] => {
+export const createBands = (height: number): Band[] => {
   const random = createRandom(SEED)
 
   return Array.from({ length: BAND_COUNT }, (_, index) => {
@@ -73,54 +90,70 @@ const createBands = (height: number): Band[] => {
   })
 }
 
-/** A tile of monochrome noise, as a data URL, to lay over the bands. */
-const createGrainTile = () => {
-  const canvas = document.createElement('canvas')
-  canvas.width = GRAIN_TILE
-  canvas.height = GRAIN_TILE
-
+export const drawGrain = (canvas: HTMLCanvasElement) => {
   const context = canvas.getContext('2d')
-  if (!context) return null
+  if (!context) return false
 
-  const image = context.createImageData(GRAIN_TILE, GRAIN_TILE)
+  const tile = document.createElement('canvas')
+  tile.width = GRAIN_TILE
+  tile.height = GRAIN_TILE
+
+  const tileContext = tile.getContext('2d')
+  if (!tileContext) return false
+
+  const random = createRandom(GRAIN_SEED)
+  const image = tileContext.createImageData(GRAIN_TILE, GRAIN_TILE)
   for (let i = 0; i < image.data.length; i += 4) {
-    const value = 110 + Math.random() * 145
+    const value = 110 + random() * 145
     image.data[i] = value
     image.data[i + 1] = value
     image.data[i + 2] = value
     image.data[i + 3] = 255
   }
-  context.putImageData(image, 0, 0)
+  tileContext.putImageData(image, 0, 0)
 
-  return canvas.toDataURL()
+  const pattern = context.createPattern(tile, 'repeat')
+  if (!pattern) return false
+
+  context.fillStyle = pattern
+  context.fillRect(0, 0, canvas.width, canvas.height)
+
+  return true
+}
+
+export const createBandGradient = (
+  context: Pick<CanvasRenderingContext2D, 'createLinearGradient'>,
+  band: Band,
+  width: number,
+  time: number,
+) => {
+  const cycle = width
+  const shift = (time * band.speed * 0.085) % 1
+  // The fill runs from -0.5w to 1.5w; one spare cycle keeps it covered at any shift.
+  const total = width * 3
+  const start = -width * 0.5 - shift * cycle
+
+  const gradient = context.createLinearGradient(start, 0, start + total, 0)
+  const steps = (total / cycle) * band.stops.length
+
+  for (let step = 0; step <= steps; step++) {
+    gradient.addColorStop(step / steps, band.stops[step % band.stops.length])
+  }
+
+  return gradient
 }
 
 export interface MoltenBackgroundProps {
   className?: string
 }
 
-/**
- * The molten texture behind the intro modal: wide horizontal bands drifting across a
- * near-black base, blurred heavily, with fine grain over the top and a vignette that
- * darkens the edges so whatever sits in the middle stays readable.
- *
- * Purely decorative, and it respects `prefers-reduced-motion` by drawing a single
- * still frame instead of animating.
- */
 export const MoltenBackground = ({ className }: MoltenBackgroundProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const grainRef = useRef<HTMLDivElement>(null)
+  const grainRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     const grain = grainRef.current
-    if (!grain) return
-
-    const tile = createGrainTile()
-    if (!tile) return
-
-    grain.style.backgroundImage = `url(${tile})`
-    grain.style.backgroundSize = `${GRAIN_TILE}px ${GRAIN_TILE}px`
-    grain.style.backgroundRepeat = 'repeat'
+    if (grain) drawGrain(grain)
   }, [])
 
   useEffect(() => {
@@ -130,15 +163,17 @@ export const MoltenBackground = ({ className }: MoltenBackgroundProps) => {
 
     const { width, height } = canvas
     const bands = createBands(height)
-    const startedAt = performance.now()
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const motionQuery = window.matchMedia?.('(prefers-reduced-motion: reduce)')
 
     let frame = 0
+    let startedAt = 0
+    /** Null until the first frame, so it draws straight away whatever the clock's origin. */
+    let lastDrawnAt: number | null = null
 
-    const draw = (now: number) => {
-      const time = reduceMotion ? STILL_AT : (now - startedAt) / 1000
-
+    const drawFrame = (time: number) => {
       context.setTransform(1, 0, 0, 1, 0, 0)
+      context.globalCompositeOperation = 'source-over'
+      context.globalAlpha = 1
       context.fillStyle = '#140f0c'
       context.fillRect(0, 0, width, height)
 
@@ -150,47 +185,71 @@ export const MoltenBackground = ({ className }: MoltenBackgroundProps) => {
       context.translate(-width / 2, -height / 2 + Math.sin(time * 0.17) * height * 0.04)
       // Bands add up where they overlap, which is what gives the hot centres.
       context.globalCompositeOperation = 'lighter'
+      context.globalAlpha = 0.46
 
       bands.forEach(band => {
         const y = band.y + Math.sin(time * band.wobble + band.phase) * band.drift
-        const gradient = context.createLinearGradient(-width * 0.5, 0, width * 1.5, 0)
-        // Sliding the stops along the gradient is what makes the colour travel sideways.
-        const shift = (time * band.speed * 0.085) % 1
-
-        for (let stop = 0; stop <= band.stops.length; stop++) {
-          const position = (stop / band.stops.length + shift) % 1
-          gradient.addColorStop(Math.min(1, Math.max(0, position)), band.stops[stop % band.stops.length])
-        }
-
-        context.globalAlpha = 0.46
-        context.fillStyle = gradient
+        context.fillStyle = createBandGradient(context, band, width, time)
         // Overdrawn on both sides so a rotated band never leaves a corner bare.
         context.fillRect(-width * 0.5, y - band.thickness / 2, width * 2, band.thickness)
       })
 
       context.restore()
-      context.globalCompositeOperation = 'source-over'
-      context.globalAlpha = 1
-
-      if (!reduceMotion) frame = requestAnimationFrame(draw)
     }
 
-    frame = requestAnimationFrame(draw)
+    const stop = () => {
+      if (frame) cancelAnimationFrame(frame)
+      frame = 0
+    }
 
-    return () => cancelAnimationFrame(frame)
+    const loop = (now: number) => {
+      frame = requestAnimationFrame(loop)
+
+      if (lastDrawnAt !== null && now - lastDrawnAt < FRAME_MS) return
+      lastDrawnAt = lastDrawnAt === null ? now : now - ((now - lastDrawnAt) % FRAME_MS)
+
+      const elapsed = (now - startedAt) / 1000
+      drawFrame(Math.min(elapsed, SETTLE_AFTER))
+
+      if (elapsed >= SETTLE_AFTER) stop()
+    }
+
+    const start = () => {
+      stop()
+
+      if (motionQuery?.matches) {
+        drawFrame(STILL_AT)
+        return
+      }
+
+      startedAt = performance.now()
+      lastDrawnAt = null
+      frame = requestAnimationFrame(loop)
+    }
+
+    start()
+    motionQuery?.addEventListener?.('change', start)
+
+    return () => {
+      stop()
+      motionQuery?.removeEventListener?.('change', start)
+    }
   }, [])
 
   return (
     <div aria-hidden="true" className={cn('absolute inset-0 overflow-hidden bg-molten-ink', className)}>
-      {/* Oversized so the blur has room to fall off instead of fading at the edges. */}
       <canvas
         ref={canvasRef}
         width={CANVAS_SIZE}
         height={CANVAS_SIZE}
         className="absolute -inset-[7%] block h-[114%] w-[114%] blur-[13px] saturate-[1.06] contrast-[1.06]"
       />
-      <div ref={grainRef} className="absolute inset-0 opacity-[0.34] mix-blend-overlay" />
-      {/* Warm bloom through the middle, then a vignette to hold the edges down. */}
+      <canvas
+        ref={grainRef}
+        width={GRAIN_SIZE}
+        height={GRAIN_SIZE}
+        className="absolute inset-0 block h-full w-full opacity-[0.34] mix-blend-overlay"
+      />
       <div className="absolute inset-0 bg-[radial-gradient(58%_46%_at_50%_50%,rgba(255,214,168,0.18)_0%,rgba(255,214,168,0)_72%)]" />
       <div className="absolute inset-0 shadow-[inset_0_0_110px_44px_rgba(11,9,8,0.62)]" />
     </div>
