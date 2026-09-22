@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { selectBannerConfigs } from './configs'
-import { CYCLE_ENDED, CYCLE_ENDING, KYC_ONLY, NOT_BACKING, STACK_ARTWORK } from './constants'
+import { BANNER_CONFIGS, CYCLE_ENDED, CYCLE_ENDING, KYC_ONLY, NOT_BACKING, STACK_ARTWORK } from './constants'
 import { BannerConfig } from './types'
 
 const banner = (id: string): BannerConfig => ({
@@ -60,5 +60,28 @@ describe('selectBannerConfigs', () => {
     selectBannerConfigs(configs)
 
     expect(ids(configs)).toEqual([KYC_ONLY, CYCLE_ENDED])
+  })
+})
+
+/**
+ * The card is a fixed 132px so a stack of them stays even, which leaves room for a title and
+ * four lines of copy — three if the title itself wraps. The narrowest the copy column gets on
+ * desktop is around 474px, or some 63 characters a line, so three lines is roughly 190
+ * characters. This cap sits under that with room for a translation to run long, and it is
+ * here rather than in review because the card clips silently.
+ */
+const DESCRIPTION_LIMIT = 180
+
+describe('BANNER_CONFIGS', () => {
+  const described = Object.entries(BANNER_CONFIGS).filter(
+    ([, { description }]) => typeof description === 'string',
+  )
+
+  it('describes every notification', () => {
+    expect(described.length).toBe(Object.keys(BANNER_CONFIGS).length)
+  })
+
+  it.each(described)('keeps %s short enough that the card does not clip it', (_, { description }) => {
+    expect(String(description).length).toBeLessThanOrEqual(DESCRIPTION_LIMIT)
   })
 })

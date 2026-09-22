@@ -1,14 +1,16 @@
 import { useRouter } from 'next/navigation'
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 
 import { RBTC, RIF } from '@/lib/constants'
+import { TOKENS } from '@/lib/tokens'
 import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
 import { useModal } from '@/shared/hooks/useModal'
 
 import { useBalancesContext } from '../Balances/context/BalancesContext'
-import { IMAGE_CONFIG } from './config'
 import { useRequiredTokens } from './hooks/useRequiredTokens'
 import { IntroModalContent } from './IntroModalContent'
+
+const TOKEN_MARKS = [TOKENS.rbtc.icon, TOKENS.rif.icon]
 
 export const IntroModal = () => {
   const { isModalOpened, openModal, closeModal } = useModal()
@@ -16,21 +18,7 @@ export const IntroModal = () => {
   const { balances } = useBalancesContext()
   const router = useRouter()
 
-  // Get image paths for current status
-  const imagePaths = useMemo(() => {
-    if (!tokenStatus) return []
-
-    const currentConfig = IMAGE_CONFIG[tokenStatus]
-    return [
-      currentConfig.desktop.bg,
-      currentConfig.desktop.pixels,
-      currentConfig.mobile.bg,
-      currentConfig.mobile.pixels,
-    ]
-  }, [tokenStatus])
-
-  // Preload images using preload hook
-  const { isLoaded } = useImagePreloader(imagePaths)
+  const { isLoaded } = useImagePreloader(TOKEN_MARKS)
 
   const handleContinue = (url: string, external = false) => {
     if (external) {
