@@ -20,8 +20,9 @@
     --color-v3-error: rgb(242, 72, 34);
 
     /*
-      Banners. The palette here is warm on purpose: pure white reads cold against the
-      artwork, so titles and copy step down to bone and warm grey instead.
+      Copy laid over artwork — banners and the intro modal. The palette here is warm on
+      purpose: pure white reads cold against the artwork, so titles and copy step down
+      to bone and warm grey instead.
     */
     --color-banner-title: #f4f1ea;
     --color-banner-body: #c6beb4;
@@ -31,6 +32,19 @@
     --color-banner-ink: #0b0908;
     /* Label sitting on top of the accent fill. */
     --color-banner-on-accent: #25211e;
+
+    /*
+      Molten artwork: the warm texture behind the intro modal. Near-black base with
+      bands drifting from ember through amber to cream, so the surfaces sitting on top
+      of it are drawn from the same set rather than from the neutral greys.
+    */
+    --color-molten-ink: #140f0c;
+    /* Eyebrow over the artwork, and the hairline around the card. */
+    --color-molten-peach: #f9c79e;
+    /* The quiet half of each "USD → RIF" pair. */
+    --color-molten-stone: #a29b90;
+    /* The modal itself: warm white rather than the cooler --text-80. */
+    --color-surface-warm: #e8e4df;
 
     --color-v3-rif-blue: rgb(75, 92, 240);
     --color-v3-rsk-purple: rgb(158, 118, 255);
