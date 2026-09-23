@@ -1,13 +1,5 @@
 import { rootstock, rootstockTestnet } from 'viem/chains'
 
-export function requireBlockscoutUrl(): string {
-  const base = (process.env.NEXT_PUBLIC_BLOCKSCOUT_URL ?? '').trim()
-  if (!base) {
-    throw new Error('NEXT_PUBLIC_BLOCKSCOUT_URL is not configured; cannot fall back for BTC vault history')
-  }
-  return base.replace(/\/$/, '')
-}
-
 export function requireNodeUrl(): string {
   const url = (process.env.NEXT_PUBLIC_NODE_URL ?? '').trim()
   if (!url) {
