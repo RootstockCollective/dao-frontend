@@ -18,14 +18,14 @@ export type BuilderRewardsClaimedByToken = Record<string, string>
  *
  * @remarks The `SUM`/`GROUP BY` is deliberate even though the table is expected to hold a single
  * row per builder and token. Reading the rows and assigning them into a record would take the
- * *last* one instead of the total, so a second row — from a re-keyed entity, a backfill, or a
- * builder reachable through more than one gauge — would silently understate claimed money rather
- * than fail. Summing costs nothing when the expectation holds and is correct when it does not.
+ * *last* one instead of the total, so a second row — from a re-keyed entity or a backfill —
+ * would silently understate claimed money rather than fail. The join cannot multiply rows: `g.id`
+ * is `GaugeToBuilder`'s key and the `WHERE` pins it to one gauge. Summing costs nothing when the expectation holds and is correct when it does not.
  */
 export async function fetchBuilderRewardsClaimedFromStateSync(
   gauge: Address,
 ): Promise<BuilderRewardsClaimedByToken> {
-  const rows: { token: string; total: string | null }[] = await db(`${TABLE_BUILDER_CLAIMED} as b`)
+  const rows: { token: string; total: string | number | null }[] = await db(`${TABLE_BUILDER_CLAIMED} as b`)
     .join(`${TABLE_GAUGE_TO_BUILDER} as g`, 'g.builder', '=', 'b.builder')
     .select({ token: db.raw(`convert_from(b."token", 'utf8')`) })
     .sum({ total: 'b.amount' })
@@ -34,8 +34,9 @@ export async function fetchBuilderRewardsClaimedFromStateSync(
 
   const claimed: BuilderRewardsClaimedByToken = {}
   for (const row of rows) {
-    // sum() returns NUMERIC, which pg hands back as a string; null only if the group were empty.
-    claimed[row.token.toLowerCase()] = row.total ?? '0'
+    // sum() of a NUMERIC column comes back from pg as a string, and is NULL when every amount in the
+    // group is NULL. String() keeps the contract if the column type ever parses to a number.
+    claimed[row.token.toLowerCase()] = String(row.total ?? 0)
   }
 
   return claimed

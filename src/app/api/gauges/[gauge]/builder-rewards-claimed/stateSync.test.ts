@@ -67,7 +67,7 @@ describe('fetchBuilderRewardsClaimedFromStateSync', () => {
     expect(BigInt(claimed[RIF.toLowerCase()])).toBe(10n ** 18n)
   })
 
-  it('totals the rows per token rather than reading whichever one came last', async () => {
+  it('delegates the per-token total to SQL (sum + groupBy) instead of reducing rows', async () => {
     const stub = queryStub([{ token: RIF, total: '30' }])
     mockDb.mockReturnValue(stub.chain)
 
@@ -80,7 +80,7 @@ describe('fetchBuilderRewardsClaimedFromStateSync', () => {
     expect(claimed[RIF.toLowerCase()]).toBe('30')
   })
 
-  it('reads an empty group as zero rather than undefined', async () => {
+  it('reads a NULL sum as zero rather than null', async () => {
     mockDb.mockReturnValue(queryStub([{ token: RIF, total: null }]).chain)
 
     await expect(fetchBuilderRewardsClaimedFromStateSync(GAUGE)).resolves.toEqual({

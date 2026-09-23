@@ -183,8 +183,7 @@ const PAGINATION_KEYS: Record<keyof NextPageParams, true> = {
  * endpoint — the keys are as untrusted as the values. Copying them verbatim put an arbitrary query
  * param on an authenticated upstream call, and because the merge happens *after*
  * `buildBlockscoutRestUrl` sets `apikey`, a body of `{ apikey: '…' }` replaced our own key
- * (CodeQL `js/remote-property-injection`, alert 120). Unbounded names also meant unbounded distinct
- * URLs behind `next: { revalidate: 30 }` — a data cache anyone could grow, against a metered quota.
+ * (CodeQL `js/remote-property-injection`, alert 120).
  */
 function buildPaginationParams(nextParams: NextPageParams | null): Record<string, string> {
   if (!nextParams) return {}

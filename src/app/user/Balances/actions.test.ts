@@ -77,6 +77,19 @@ describe('Blockscout pagination cursors', () => {
     expect(url.searchParams.get('items_count')).toBe('10')
   })
 
+  it('drops a caller apikey on the public instance too, where only the allowlist stands in the way', async () => {
+    // Without a configured key, buildBlockscoutRestUrl sets no apikey of its own, so a caller's
+    // would reach the URL untouched if the allowlist let it through.
+    delete process.env.BLOCKSCOUT_API_KEY
+
+    await fetchTokenHoldersOfAddress(TOKEN, asCursor({ items_count: 50, apikey: 'attacker_supplied' }))
+
+    const url = calledUrl()
+    expect(url.origin).toBe('https://rootstock.blockscout.test')
+    expect(url.searchParams.get('apikey')).toBeNull()
+    expect(url.searchParams.get('items_count')).toBe('50')
+  })
+
   it('sends no cursor at all on the first page', async () => {
     await fetchTokenHoldersOfAddress(TOKEN, null)
 
