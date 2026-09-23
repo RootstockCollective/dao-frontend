@@ -2,7 +2,7 @@
 
 import { AccentSquare } from '@/components/AccentSquare'
 import { Button } from '@/components/Button'
-import { ArrowRightIcon, ArrowUpRightLightIcon } from '@/components/Icons'
+import { ArrowRightIcon, ArrowUpRightLightIcon, CloseIconKoto } from '@/components/Icons'
 import { Modal } from '@/components/Modal'
 import { MoltenBackground } from '@/components/MoltenBackground'
 import { BANNER_CTA_CLASSES, BANNER_EYEBROW_CLASSES } from '@/components/PageBanner'
@@ -31,16 +31,26 @@ export const IntroModalContent = ({ tokenStatus, rbtcBalance, rifBalance, onClos
 
   return (
     <Modal
-      width={920}
+      width={1100}
       onClose={onClose}
-      closeButtonColor="black"
-      className="bg-surface-warm overflow-y-auto"
+      hideCloseButton
+      className="bg-surface-warm overflow-y-auto md:rounded-3xl"
       data-testid="intro-modal"
     >
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Close"
+        className="z-base absolute right-4 top-4 md:right-7.5 md:top-[42px]"
+        data-testid="CloseButton"
+      >
+        <CloseIconKoto size={24} aria-hidden color="black" />
+      </button>
+
       <div className="flex flex-col gap-7 p-5 pt-14 md:flex-row md:pt-5">
         <ArtworkPanel content={content} rbtcBalance={rbtcBalance} rifBalance={rifBalance} />
 
-        <div className="flex flex-1 flex-col md:pt-4" data-testid="stake-description">
+        <div className="flex flex-1 flex-col md:pt-6" data-testid="stake-description">
           <div className="flex items-center gap-3">
             <AccentSquare className="size-[7px] bg-v3-rif-blue" />
             <Span
@@ -53,7 +63,7 @@ export const IntroModalContent = ({ tokenStatus, rbtcBalance, rifBalance, onClos
               Stake
             </Span>
           </div>
-          <Header variant="e2" caps className="mt-8" data-testid="stake-heading">
+          <Header variant="e2" caps className="mt-8 md:mt-10 md:text-[2.5rem]" data-testid="stake-heading">
             <span className="block text-v3-bg-accent-40" data-testid="stake-title">
               {content.title}
             </span>
@@ -61,23 +71,21 @@ export const IntroModalContent = ({ tokenStatus, rbtcBalance, rifBalance, onClos
               {content.subtitle}
             </span>
           </Header>
-
-          {/* Hairline separating the headline from the copy it introduces. */}
           <div className="mt-6 max-w-[430px] border-t border-v3-text-0/15 pt-4">
-            {/* Paragraph prefixes its testid, so this resolves to `ParagraphStakeDescription`. */}
             <Paragraph variant="body-l" className="text-v3-bg-accent-60" data-testid="StakeDescription">
               {content.description}
             </Paragraph>
           </div>
-
-          <div className="mt-10 flex justify-end md:mt-auto md:pt-10">
+          <div className="mt-10 flex justify-center">
             <Button
               variant="primary"
-              className={cn('flex items-center gap-2', BANNER_CTA_CLASSES)}
+              className={cn('flex items-center gap-4 md:px-11 md:py-[18px]', BANNER_CTA_CLASSES)}
               onClick={handleContinue}
               data-testid="intro-modal-continue-button"
             >
-              <Span bold>{content.action.external ? 'Continue' : 'Continue to staking'}</Span>
+              <Span bold className="md:text-xl md:leading-7">
+                {content.action.external ? 'Continue' : 'Continue to staking'}
+              </Span>
               {content.action.external && (
                 <ArrowUpRightLightIcon aria-hidden size={24} color="currentColor" />
               )}
@@ -100,7 +108,7 @@ interface ArtworkPanelProps {
  * corner, and the wallet card floating in the middle.
  */
 const ArtworkPanel = ({ content, rbtcBalance, rifBalance }: ArtworkPanelProps) => (
-  <div className="bg-molten-ink relative aspect-square w-full shrink-0 overflow-hidden rounded md:flex-1 md:self-start">
+  <div className="bg-molten-ink relative aspect-square w-full shrink-0 overflow-hidden rounded-[18px] md:flex-1 md:self-start">
     <MoltenBackground />
 
     <div
@@ -120,7 +128,7 @@ const ArtworkPanel = ({ content, rbtcBalance, rifBalance }: ArtworkPanelProps) =
 
 const WalletCard = ({ content, rbtcBalance, rifBalance }: ArtworkPanelProps) => (
   <div
-    className="border-molten-peach/30 flex w-full max-w-[372px] flex-col gap-[18px] border bg-[rgba(15,11,9,0.76)] px-7 pb-7 pt-6"
+    className="border-molten-peach/30 flex w-full max-w-[430px] flex-col gap-4 rounded-2xl border bg-[rgba(15,11,9,0.76)] px-7 pb-7 pt-6"
     data-testid="wallet-info"
   >
     <Span
@@ -172,15 +180,15 @@ interface TokenPairProps {
 }
 
 const TokenPair = ({ from, to, symbol, 'data-testid': dataTestId }: TokenPairProps) => (
-  <div className="flex items-baseline gap-2 md:gap-3" data-testid={dataTestId}>
-    <Span variant="h3" caps className="text-banner-body w-[38px] shrink-0 leading-none md:w-[46px]">
+  <div className="flex items-baseline gap-2 md:gap-3.5" data-testid={dataTestId}>
+    <Span variant="h3" caps className="text-banner-body w-[38px] shrink-0 leading-none md:w-10 md:text-2xl">
       {from}
     </Span>
-    <ArrowRightIcon aria-hidden size={20} color="var(--color-v3-primary)" className="shrink-0 self-center" />
-    <Span variant="h1" caps className="text-banner-title leading-none">
+    <ArrowRightIcon aria-hidden size={24} color="var(--color-v3-primary)" className="shrink-0 self-center" />
+    <Span variant="h1" caps className="text-banner-title leading-none md:text-[2.5rem]">
       {to}
     </Span>
-    <TokenImage decorative symbol={symbol} size={30} className="shrink-0 self-center" />
+    <TokenImage decorative symbol={symbol} size={34} className="ml-0.5 shrink-0 self-center" />
   </div>
 )
 

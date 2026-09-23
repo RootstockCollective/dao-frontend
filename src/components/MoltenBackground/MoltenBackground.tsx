@@ -4,24 +4,42 @@ import { useEffect, useRef } from 'react'
 
 import { cn } from '@/lib/utils'
 
-const WARM_STOPS = [
-  '#140f0c',
-  '#2a0f05',
-  '#5a1a06',
-  '#8c2a08',
-  '#c4551c',
-  '#f57a2b',
-  '#fba746',
-  '#f9c79e',
-  '#ffefd8',
-]
-const COOL_STOPS = ['#4b5cf0', '#2e39a6', '#7a3b6e', '#8e97f7']
+const INK = '#140f0c'
+const EMBER = '#8c2a08'
+const ORANGE = '#f57a2b'
+const AMBER = '#fba746'
+const CREAM = '#f9c79e'
+const RIF_BLUE = '#4b5cf0'
+const PLUM = '#7a3b6e'
+/** RIF blue lifted towards white: where it overlaps the cream it reads as a lavender glow. */
+const LAVENDER = '#8e97f7'
 
-const BAND_COUNT = 10
-/** Odds that any one stop comes from the cool pool instead of the warm one. */
-const COOL_ODDS = 0.22
-/** The bands are laid out from a fixed seed, so the artwork is identical for everyone. */
-const SEED = 11
+/**
+ * The colours each band cycles through, top to bottom. Chosen rather than drawn at random
+ * so the composition matches the design: warm ember along the top, a lavender band above
+ * the wallet card, ink behind it so the card stays readable, a hot amber band below it,
+ * and the cool blue-violet bands mixed into the lower half.
+ */
+const BAND_STOPS: string[][] = [
+  [EMBER, CREAM, EMBER, INK],
+  [ORANGE, EMBER, INK, EMBER],
+  [CREAM, LAVENDER, CREAM, LAVENDER, RIF_BLUE],
+  [LAVENDER, INK, RIF_BLUE, INK],
+  [EMBER, INK, ORANGE, INK],
+  [INK, EMBER, INK, PLUM],
+  [AMBER, CREAM, AMBER, ORANGE, PLUM],
+  [ORANGE, PLUM, AMBER, EMBER],
+  [EMBER, ORANGE, PLUM, RIF_BLUE],
+  [INK, AMBER, RIF_BLUE, EMBER],
+]
+
+/**
+ * The bands' motion is drawn from a fixed seed, so the artwork is identical for everyone.
+ * This one lands the settled frame closest to the design reference.
+ */
+const SEED = 42
+/** How strongly each band adds onto the ones beneath it. */
+const BAND_ALPHA = 0.5
 /** The grain gets its own seed, so it is as reproducible as the bands underneath it. */
 const GRAIN_SEED = 7
 /** Drawn small and scaled up: the result is blurred anyway, and this keeps the loop cheap. */
@@ -71,23 +89,15 @@ const createRandom = (seed: number) => () => {
 export const createBands = (height: number): Band[] => {
   const random = createRandom(SEED)
 
-  return Array.from({ length: BAND_COUNT }, (_, index) => {
-    const stopCount = 4 + Math.floor(random() * 2)
-    const stops = Array.from({ length: stopCount }, () => {
-      const pool = random() < COOL_ODDS ? COOL_STOPS : WARM_STOPS
-      return pool[Math.floor(random() * pool.length)]
-    })
-
-    return {
-      y: (index / BAND_COUNT) * height + random() * height * 0.03,
-      thickness: height * (0.13 + random() * 0.16),
-      speed: 0.5 + random() * 1.5,
-      drift: (random() - 0.5) * height * 0.16,
-      phase: random() * Math.PI * 2,
-      wobble: 0.3 + random() * 0.55,
-      stops,
-    }
-  })
+  return BAND_STOPS.map((stops, index) => ({
+    y: (index / BAND_STOPS.length) * height + random() * height * 0.03,
+    thickness: height * (0.13 + random() * 0.16),
+    speed: 0.5 + random() * 1.5,
+    drift: (random() - 0.5) * height * 0.16,
+    phase: random() * Math.PI * 2,
+    wobble: 0.3 + random() * 0.55,
+    stops,
+  }))
 }
 
 export const drawGrain = (canvas: HTMLCanvasElement) => {
@@ -174,7 +184,7 @@ export const MoltenBackground = ({ className }: MoltenBackgroundProps) => {
       context.setTransform(1, 0, 0, 1, 0, 0)
       context.globalCompositeOperation = 'source-over'
       context.globalAlpha = 1
-      context.fillStyle = '#140f0c'
+      context.fillStyle = INK
       context.fillRect(0, 0, width, height)
 
       context.save()
@@ -185,7 +195,7 @@ export const MoltenBackground = ({ className }: MoltenBackgroundProps) => {
       context.translate(-width / 2, -height / 2 + Math.sin(time * 0.17) * height * 0.04)
       // Bands add up where they overlap, which is what gives the hot centres.
       context.globalCompositeOperation = 'lighter'
-      context.globalAlpha = 0.46
+      context.globalAlpha = BAND_ALPHA
 
       bands.forEach(band => {
         const y = band.y + Math.sin(time * band.wobble + band.phase) * band.drift
@@ -251,7 +261,8 @@ export const MoltenBackground = ({ className }: MoltenBackgroundProps) => {
         className="absolute inset-0 block h-full w-full opacity-[0.34] mix-blend-overlay"
       />
       <div className="absolute inset-0 bg-[radial-gradient(58%_46%_at_50%_50%,rgba(255,214,168,0.18)_0%,rgba(255,214,168,0)_72%)]" />
-      <div className="absolute inset-0 shadow-[inset_0_0_110px_44px_rgba(11,9,8,0.62)]" />
+      {/* Vignette: dark edges keep the eye, and the wallet card, in the middle. */}
+      <div className="absolute inset-0 shadow-[inset_0_0_90px_26px_rgba(20,15,12,0.62)]" />
     </div>
   )
 }
