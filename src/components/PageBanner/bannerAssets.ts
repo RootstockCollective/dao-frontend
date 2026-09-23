@@ -7,6 +7,6 @@ export const BANNER_MOBILE_OVERLAY =
   'linear-gradient(180deg, rgba(23,20,18,0.95) 0%, rgba(23,20,18,0.9) 55%, rgba(23,20,18,0.6) 100%)'
 
 export const BANNER_CTA_CLASSES =
-  'border-banner-ink bg-banner-accent text-banner-on-accent shadow-[0_3px_0_var(--color-banner-ink)]'
+  'border-banner-ink bg-banner-accent text-banner-on-accent shadow-[0_3px_0_var(--color-banner-ink)] btn-iridescent'
 
 export const BANNER_EYEBROW_CLASSES = 'text-[12px] tracking-[0.16em]'
