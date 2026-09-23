@@ -51,6 +51,83 @@
   z-index: var(--z-index-tooltip);
 }
 
+/*
+  Iridescent hover: on hover/focus the button lifts onto a hard dark shadow and an
+  oil-slick gradient (copper → peach → lavender → ice blue → mint) fades in over
+  the base fill and keeps sliding right-to-left. The gradient is one seamless
+  period drawn 160% as wide as the button, so shifting it by its own width loops
+  without a seam. Needs a positioned host (Button already is).
+*/
+@utility btn-iridescent {
+  isolation: isolate;
+  transition:
+    transform 150ms ease-out,
+    box-shadow 150ms ease-out,
+    border-color 150ms ease-out;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background-image: linear-gradient(
+      90deg,
+      #f47a2b 0%,
+      #cc5b1e 8%,
+      #f47a2b 16%,
+      #ffd79d 26%,
+      #fdfbd7 34%,
+      #f6e3ff 44%,
+      #e0f3ff 54%,
+      #d9fee9 66%,
+      #fdfbd7 78%,
+      #fccc9a 88%,
+      #f47a2b 100%
+    );
+    background-size: 160% 100%;
+    background-repeat: repeat-x;
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+    pointer-events: none;
+  }
+
+  &:hover:not(:disabled),
+  &:focus-visible:not(:disabled) {
+    transform: translateY(-2px);
+    border-color: var(--color-v3-bg-accent-100);
+    box-shadow: 0 3px 0 0 var(--color-v3-bg-accent-100);
+  }
+
+  &:hover:not(:disabled)::before,
+  &:focus-visible:not(:disabled)::before {
+    opacity: 1;
+    animation: iridescent-shift 2.4s linear infinite;
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: 0 1px 0 0 var(--color-v3-bg-accent-100);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:hover:not(:disabled)::before,
+    &:focus-visible:not(:disabled)::before {
+      animation: none;
+    }
+  }
+}
+
+/* Background is 1.6× the button, so 266.667% of the free space equals one full period */
+@keyframes iridescent-shift {
+  from {
+    background-position-x: 0%;
+  }
+  to {
+    background-position-x: 266.667%;
+  }
+}
+
 * {
   box-sizing: border-box;
 }
