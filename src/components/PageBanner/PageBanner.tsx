@@ -8,7 +8,12 @@ import { DismissButton } from '@/components/DismissButton'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
-import { BANNER_DESKTOP_OVERLAY, BANNER_EYEBROW_CLASSES, BANNER_MOBILE_OVERLAY } from './bannerAssets'
+import {
+  BANNER_EYEBROW_CLASSES,
+  BANNER_HEADER_ARTWORK_FILTER,
+  BANNER_HEADER_OVERLAY,
+  BANNER_MOBILE_OVERLAY,
+} from './bannerAssets'
 import { BannerDecorativeSquares } from './BannerDecorativeSquares'
 
 export interface PageBannerProps {
@@ -68,10 +73,11 @@ export const PageBanner = ({
         fill
         priority
         sizes="100vw"
-        className="object-cover object-right"
+        className={cn('object-cover object-right', BANNER_HEADER_ARTWORK_FILTER)}
       />
+      <div className="absolute inset-0 bg-v3-bg-accent-100/25" />
       <div className="absolute inset-0 md:hidden" style={{ background: BANNER_MOBILE_OVERLAY }} />
-      <div className="absolute inset-0 hidden md:block" style={{ background: BANNER_DESKTOP_OVERLAY }} />
+      <div className="absolute inset-0 hidden md:block" style={{ background: BANNER_HEADER_OVERLAY }} />
 
       {!eyebrow && <BannerDecorativeSquares className="absolute left-3 top-3 z-base" />}
 

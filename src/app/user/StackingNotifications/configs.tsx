@@ -1,7 +1,7 @@
 import { DateTime } from 'luxon'
 
 import { Cycle } from '@/app/collective-rewards/metrics'
-import { Header } from '@/components/Typography'
+import { Span } from '@/components/Typography'
 
 import {
   BANNER_CONFIGS,
@@ -30,7 +30,7 @@ const BANNER_FAMILIES = new Map<string, string>([
  *
  * @example
  * // A user whose cycle just ended and who has stRIF left to back sees
- * // CYCLE JUST ENDED with BACK under it, in that order, on every load
+ * // "Cycle just ended" with "Back Builders" under it, in that order, on every load
  */
 export const selectBannerConfigs = (bannerConfigs: BannerConfig[]): BannerConfig[] => {
   if (bannerConfigs.length <= 1) {
@@ -96,9 +96,9 @@ export const getBannerConfigForCycleEnding = (cycle: Cycle): BannerConfig | null
   return {
     ...staticConfig,
     rightContent: (
-      <Header variant="h1" className="text-banner-title">
+      <Span bold variant="body-s" className="text-banner-title mr-2 whitespace-nowrap tabular-nums">
         {`${diff.toFormat("d'd' hh'h' mm'm'")}`}
-      </Header>
+      </Span>
     ),
   }
 }
