@@ -62,7 +62,7 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
           <div className="flex shrink-0 items-center gap-2">
             <ConnectWorkflow
               ConnectComponent={props => (
-                <Button {...props} data-testid="ConnectButton">
+                <Button {...props} className="btn-iridescent" data-testid="ConnectButton">
                   Connect wallet
                 </Button>
               )}
