@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { ComponentProps } from 'react'
 import { Address } from 'viem'
 
-import { IpfsAvatar } from '@/components/IpfsAvatar'
+import { BuilderIcon } from '@/components/BuilderIcon'
 import { Header } from '@/components/Typography'
 import { cn, shortAddress, truncate } from '@/lib/utils'
 
@@ -37,7 +37,14 @@ export const BuilderHeader = ({
       data-testid="builderHeaderContainer"
     >
       <div data-testid="builderAvatar">
-        <IpfsAvatar imageIpfs={imageIpfs} address={address} name={name || shortedAddress} size={88} />
+        <BuilderIcon
+          imageIpfs={imageIpfs}
+          address={address}
+          name={name || shortedAddress}
+          size={88}
+          fallbackClassName="bg-v3-text-100"
+          fallbackValue={address.toLowerCase()}
+        />
       </div>
       <Header
         className="mt-2 text-center text-v3-primary"

@@ -10,8 +10,9 @@ import {
   TokenHoldersResponse,
 } from '@/app/user/Balances/types'
 import { GetPricesResult } from '@/app/user/types'
+import { buildBlockscoutRestUrl } from '@/lib/blockscout/blockscout-api'
 import { fetchLogsByTopic } from '@/lib/blockscout/fetch-logs-by-topic'
-import { BLOCKSCOUT_URL, RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
+import { RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
 import { GovernorAddress, tokenContracts } from '@/lib/contracts'
 
 // CoinMarketCap IDs for tokens that have market prices.
@@ -150,14 +151,19 @@ export const fetchVoteCastEventByAccountAddress = async (address: Address) => {
   })
 }
 
-function buildPaginationParams(nextParams: NextPageParams | null): string {
-  if (!nextParams) return ''
-  const searchParams = new URLSearchParams()
+/**
+ * Blockscout's cursor fields for the next page.
+ *
+ * Returned as a record rather than a query string: these are merged into the URL alongside the
+ * PRO API's own `apikey`, and assigning `url.search` wholesale would drop it.
+ */
+function buildPaginationParams(nextParams: NextPageParams | null): Record<string, string> {
+  if (!nextParams) return {}
+  const params: Record<string, string> = {}
   for (const [key, value] of Object.entries(nextParams)) {
-    if (value != null) searchParams.set(key, String(value))
+    if (value != null) params[key] = String(value)
   }
-  const qs = searchParams.toString()
-  return qs ? `&${qs}` : ''
+  return params
 }
 
 interface BlockscoutNftInstance {
@@ -175,12 +181,11 @@ export const fetchNftHoldersOfAddress = async (
     throw new Error(`Invalid address: ${address}`)
   }
   const normalizedAddress = address.toLowerCase()
-  const pagination = buildPaginationParams(nextParams)
-  const url = new URL(`/api/v2/tokens/${encodeURIComponent(normalizedAddress)}/instances`, BLOCKSCOUT_URL)
-  if (pagination) {
-    url.search = pagination.slice(1)
-  }
-  const res = await fetch(url.toString(), { next: { revalidate: 30 } })
+  const url = buildBlockscoutRestUrl(
+    `tokens/${encodeURIComponent(normalizedAddress)}/instances`,
+    buildPaginationParams(nextParams),
+  )
+  const res = await fetch(url, { next: { revalidate: 30 } })
   if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
   const data = (await res.json()) as {
     items: BlockscoutNftInstance[]
@@ -206,12 +211,11 @@ export const fetchTokenHoldersOfAddress = async (
     throw new Error(`Invalid address: ${address}`)
   }
   const normalizedAddress = address.toLowerCase()
-  const pagination = buildPaginationParams(nextParams)
-  const url = new URL(`/api/v2/tokens/${encodeURIComponent(normalizedAddress)}/holders`, BLOCKSCOUT_URL)
-  if (pagination) {
-    url.search = pagination.slice(1)
-  }
-  const res = await fetch(url.toString(), { next: { revalidate: 30 } })
+  const url = buildBlockscoutRestUrl(
+    `tokens/${encodeURIComponent(normalizedAddress)}/holders`,
+    buildPaginationParams(nextParams),
+  )
+  const res = await fetch(url, { next: { revalidate: 30 } })
   if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
   const data: ServerResponseV2<TokenHoldersResponse> = await res.json()
   return data
