@@ -15,7 +15,7 @@ function queryStub(rows: unknown[]) {
   const chain: Record<string, unknown> = {
     then: (resolve: (value: unknown[]) => unknown) => Promise.resolve(rows).then(resolve),
   }
-  for (const method of ['select', 'sum', 'groupBy']) {
+  for (const method of ['innerJoin', 'select', 'sum', 'groupBy']) {
     chain[method] = (...args: unknown[]) => {
       calls.push({ method, args })
       return chain
@@ -36,9 +36,23 @@ describe('fetchRewardsDistributedFromStateSync', () => {
     const totals = await fetchRewardsDistributedFromStateSync()
 
     expect(mockDb).toHaveBeenCalledWith('CycleRewardPerToken')
-    expect(stub.calls.find(c => c.method === 'sum')?.args).toEqual([{ total: 'amount' }])
-    expect(stub.calls.find(c => c.method === 'groupBy')?.args).toEqual(['token'])
+    expect(stub.calls.find(c => c.method === 'sum')?.args).toEqual([{ total: 'CycleRewardPerToken.amount' }])
+    expect(stub.calls.find(c => c.method === 'groupBy')?.args).toEqual(['CycleRewardPerToken.token'])
     expect(totals).toEqual({ [RIF.toLowerCase()]: '300' })
+  })
+
+  it('counts only rows whose cycle exists, matching /api/cycles', async () => {
+    const stub = queryStub([])
+    mockDb.mockReturnValue(stub.chain)
+
+    await fetchRewardsDistributedFromStateSync()
+
+    expect(stub.calls.find(c => c.method === 'innerJoin')?.args).toEqual([
+      'Cycle',
+      'Cycle.id',
+      '=',
+      'CycleRewardPerToken.cycle',
+    ])
   })
 
   it('lowercases token keys so checksummed lookups from the token config hit', async () => {
