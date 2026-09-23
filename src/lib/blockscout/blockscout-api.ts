@@ -139,11 +139,15 @@ export function buildBlockscoutRestUrl(path: string, searchParams: Record<string
     ? new URL(`${proApiHost()}/${CHAIN_ID}/api/v2/${cleanPath}`)
     : new URL(`${requirePublicInstanceUrl()}/api/v2/${cleanPath}`)
 
+  for (const [param, value] of Object.entries(searchParams)) {
+    url.searchParams.set(param, value)
+  }
+
+  // Authentication goes on last, and last write wins. Some callers relay params that originated at
+  // a remote cursor or a browser, so setting `apikey` first left a caller-supplied `apikey` free to
+  // overwrite it — the key belongs to this function, not to whoever is asking.
   if (key) {
     url.searchParams.set('apikey', key)
-  }
-  for (const [key, value] of Object.entries(searchParams)) {
-    url.searchParams.set(key, value)
   }
 
   return url.toString()

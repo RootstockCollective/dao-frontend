@@ -9,6 +9,14 @@ const ROUTE = '/api/cycles/rewards-distributed'
 export type TotalRewardsDistributed = Record<string, bigint>
 
 /**
+ * Returned while the query has no data. A module-level constant rather than `data ?? {}`, which
+ * minted a new identity every render and re-ran the memo in `useGetBuilderAllTimeShare`. Not
+ * `initialData`: that marks the query as already succeeded, so `isLoading` is never true and the
+ * card paints zero instead of its spinner.
+ */
+const NO_TOTALS: TotalRewardsDistributed = {}
+
+/**
  * All-time rewards distributed per token, read from state-sync.
  *
  * Replaces adding up `builderAmount_ + backersAmount_` across every gauge's NotifyReward history,
@@ -34,7 +42,7 @@ export const useGetTotalRewardsDistributed = () => {
   })
 
   return {
-    data: data ?? {},
+    data: data ?? NO_TOTALS,
     isLoading,
     error,
   }

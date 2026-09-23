@@ -152,15 +152,44 @@ export const fetchVoteCastEventByAccountAddress = async (address: Address) => {
 }
 
 /**
+ * The cursor fields Blockscout is allowed to send back, as a total map of {@link NextPageParams}.
+ *
+ * Spelling the keys out is the point. Adding a field to the interface without adding it here is a
+ * type error, so the allowlist cannot silently fall behind and start dropping a page's cursor.
+ */
+const PAGINATION_KEYS: Record<keyof NextPageParams, true> = {
+  contract_address_hash: true,
+  holder_count: true,
+  is_name_null: true,
+  items_count: true,
+  market_cap: true,
+  name: true,
+  block_number: true,
+  fee: true,
+  hash: true,
+  index: true,
+  inserted_at: true,
+  value: true,
+}
+
+/**
  * Blockscout's cursor fields for the next page.
  *
  * Returned as a record rather than a query string: these are merged into the URL alongside the
  * PRO API's own `apikey`, and assigning `url.search` wholesale would drop it.
+ *
+ * @remarks Only the names in {@link PAGINATION_KEYS} are copied, never the caller's own. This is a
+ * `'use server'` module, so `nextParams` arrives as whatever JSON was POSTed at the action
+ * endpoint — the keys are as untrusted as the values. Copying them verbatim put an arbitrary query
+ * param on an authenticated upstream call, and because the merge happens *after*
+ * `buildBlockscoutRestUrl` sets `apikey`, a body of `{ apikey: '…' }` replaced our own key
+ * (CodeQL `js/remote-property-injection`, alert 120).
  */
 function buildPaginationParams(nextParams: NextPageParams | null): Record<string, string> {
   if (!nextParams) return {}
   const params: Record<string, string> = {}
-  for (const [key, value] of Object.entries(nextParams)) {
+  for (const key of Object.keys(PAGINATION_KEYS) as Array<keyof NextPageParams>) {
+    const value = nextParams[key]
     if (value != null) params[key] = String(value)
   }
   return params

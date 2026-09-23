@@ -6,6 +6,9 @@ import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 /** Claimed-to-date per reward token, keyed by lowercase token address. */
 export type BuilderRewardsClaimed = Record<string, bigint>
 
+/** Returned while the query has no data; stable for the same reason as `NO_TOTALS`. */
+const NO_CLAIMS: BuilderRewardsClaimed = {}
+
 /**
  * What this gauge's builder has claimed, per token, read from state-sync.
  *
@@ -31,11 +34,10 @@ export const useGetBuilderRewardsClaimed = (gauge: Address) => {
     },
     queryKey: ['useGetBuilderRewardsClaimed', gauge],
     refetchInterval: AVERAGE_BLOCKTIME,
-    initialData: {},
   })
 
   return {
-    data,
+    data: data ?? NO_CLAIMS,
     isLoading,
     error,
   }
