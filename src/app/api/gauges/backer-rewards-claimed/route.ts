@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server'
-import { type Address, isAddress } from 'viem'
 
 import { logger } from '@/lib/logger'
 
-import { MAX_GAUGES_PER_REQUEST } from '../_lib/fetch-gauge-events'
+import { parseGaugesParam } from '../_lib/parse-gauges-param'
 import { fetchBackerRewardsClaimedFromStateSync } from './stateSync'
 
 const ROUTE = '/api/gauges/backer-rewards-claimed'
@@ -24,26 +23,9 @@ export const revalidate = 25
  * `ClaimedRewardsHistory` has no block number to filter on.
  */
 export async function GET(req: Request) {
-  const url = new URL(req.url)
-  const gaugesParam = url.searchParams.get('gauges') ?? ''
-
-  const gauges = gaugesParam
-    .split(',')
-    .map(g => g.trim())
-    .filter(Boolean) as Address[]
-
-  if (gauges.length === 0) {
-    return NextResponse.json({ error: 'Missing required `gauges` query param' }, { status: 400 })
-  }
-  if (gauges.length > MAX_GAUGES_PER_REQUEST) {
-    return NextResponse.json(
-      { error: `Too many gauges; max ${MAX_GAUGES_PER_REQUEST} per request` },
-      { status: 400 },
-    )
-  }
-  if (!gauges.every(g => isAddress(g))) {
-    return NextResponse.json({ error: 'Invalid gauge address in `gauges`' }, { status: 400 })
-  }
+  const parsed = parseGaugesParam(req)
+  if ('error' in parsed) return parsed.error
+  const { gauges } = parsed
 
   try {
     return NextResponse.json(await fetchBackerRewardsClaimedFromStateSync(gauges))

@@ -13,8 +13,7 @@ export const revalidate = 25
  * Rewards this gauge's builder has claimed, per token, from state-sync.
  *
  * Replaces the `fetchBuilderRewardsClaimed` server action, which pulled the gauge's whole
- * BuilderRewardsClaimed log history from Blockscout every 60 seconds, outside the shared
- * stale-while-revalidate cache the `/api/gauges` routes use.
+ * BuilderRewardsClaimed log history from Blockscout every 60 seconds.
  */
 export async function GET(_req: Request, { params }: { params: Promise<{ gauge: string }> }) {
   const { gauge } = await params

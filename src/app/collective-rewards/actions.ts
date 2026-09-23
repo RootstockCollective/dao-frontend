@@ -1,13 +1,10 @@
 'use server'
 
-import type { Address, Hex } from 'viem'
+import type { Hex } from 'viem'
 
 import { fetchLogsByTopic } from '@/lib/blockscout/fetch-logs-by-topic'
 import { EVENTS_FROM_BLOCK } from '@/lib/constants'
 import { BackersManagerAddress } from '@/lib/contracts'
-
-// keccak256('NotifyReward(address,uint256,uint256)')
-const GAUGE_NOTIFY_REWARD_EVENT: Hex = '0x3c0f5c48b0ffa2c570c1a0f4fbf7b0f8982213afff9eb42cd258ead865cf3c9d'
 
 // keccak256('RewardDistributionFinished(address)')
 const REWARD_DISTRIBUTION_FINISHED: Hex = '0x2e0a637781c44a621d21ae02c97a62860799594e47e453e0491eb348ebf83bff'
@@ -18,15 +15,6 @@ const REWARD_DISTRIBUTION_REWARDS: Hex = '0xd6a836213168f39ab7f02eb32044ca51969f
 const defaultFromBlock = EVENTS_FROM_BLOCK.toString()
 
 const REVALIDATE_SECONDS = 25
-
-export const fetchGaugeNotifyRewardLogs = async (gaugeAddress: Address, fromBlock = 0) => {
-  return fetchLogsByTopic({
-    address: gaugeAddress,
-    topic0: GAUGE_NOTIFY_REWARD_EVENT,
-    fromBlock: fromBlock > 0 ? fromBlock.toString() : defaultFromBlock,
-    fetchInit: { next: { revalidate: REVALIDATE_SECONDS } },
-  })
-}
 
 export const fetchRewardDistributionFinished = async (fromBlock = 0) => {
   return fetchLogsByTopic({

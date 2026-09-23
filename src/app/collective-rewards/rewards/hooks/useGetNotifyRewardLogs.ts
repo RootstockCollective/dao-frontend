@@ -1,19 +1,25 @@
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import { Address, getAddress, isAddressEqual, parseEventLogs } from 'viem'
+import { Address, getAddress } from 'viem'
 
-import { fetchGaugeNotifyRewardLogs } from '@/app/collective-rewards/actions'
-import { GaugeAbi } from '@/lib/abis/tok/GaugeAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
-// TODO: migrate to GET /api/gauges/notify-reward?gauges=<gauge> so this single-gauge hook
-// shares the cached pipeline with useGetGaugesEvents instead of going through the server action.
+import {
+  fetchGaugesNotifyReward,
+  type GaugeNotifyRewardEventLog,
+  matchesNotifyRewardFilter,
+  type NotifyRewardEvent,
+} from './useGetGaugesNotifyReward'
 
-export type GaugeNotifyRewardEventLog = ReturnType<
-  typeof parseEventLogs<typeof GaugeAbi, true, 'NotifyReward'>
->
 type GaugeNotifyRewardsPerToken = Record<Address, GaugeNotifyRewardEventLog>
 
+/**
+ * Returned while the query has no data. A constant rather than `initialData`, which marks the query
+ * as already succeeded — `isLoading` would never be true and the page would paint zero rewards.
+ */
+const NO_EVENTS: NotifyRewardEvent[] = []
+
+/** One gauge's `NotifyReward` events grouped by reward token, through the same route as the table. */
 export const useGetGaugeNotifyRewardLogs = (
   gauge: Address,
   rewardToken?: Address,
@@ -21,46 +27,27 @@ export const useGetGaugeNotifyRewardLogs = (
   toTimestamp?: number,
 ) => {
   const {
-    data: events,
+    data: eventsByGauge,
     error,
     isLoading,
   } = useQuery({
-    queryFn: async () => {
-      const { data } = await fetchGaugeNotifyRewardLogs(gauge)
-
-      return parseEventLogs({
-        abi: GaugeAbi,
-        logs: data,
-        eventName: 'NotifyReward',
-      })
-    },
-    queryKey: ['notifyRewardLogs', gauge],
+    queryFn: () => fetchGaugesNotifyReward([gauge]),
+    queryKey: ['useGetGaugeNotifyRewardLogs', gauge],
     refetchInterval: AVERAGE_BLOCKTIME,
-    initialData: [],
   })
 
-  type Log = GaugeNotifyRewardEventLog[number]
+  const events = eventsByGauge?.[gauge] ?? NO_EVENTS
+
   const data = useMemo(() => {
-    return events.reduce<GaugeNotifyRewardsPerToken>((acc, log) => {
-      const {
-        timeStamp,
-        args: { rewardToken_ },
-      } = log as Log & { timeStamp: number }
-      const rewardTokenAddress = getAddress(rewardToken_)
+    const rewardTokens = rewardToken ? [rewardToken] : undefined
 
-      if (rewardToken && !isAddressEqual(rewardToken, rewardTokenAddress)) {
+    return events.reduce<GaugeNotifyRewardsPerToken>((acc, event) => {
+      if (!matchesNotifyRewardFilter(event, { rewardTokens, fromTimestamp, toTimestamp })) {
         return acc
       }
 
-      if (fromTimestamp && timeStamp < fromTimestamp) {
-        return acc
-      }
-
-      if (toTimestamp && timeStamp > toTimestamp) {
-        return acc
-      }
-
-      acc[rewardTokenAddress] = [...(acc[rewardTokenAddress] || []), log]
+      const rewardTokenAddress = getAddress(event.args.rewardToken_)
+      acc[rewardTokenAddress] = [...(acc[rewardTokenAddress] || []), event]
       return acc
     }, {})
   }, [events, rewardToken, fromTimestamp, toTimestamp])
