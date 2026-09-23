@@ -250,7 +250,7 @@ const StackingNotificationsContent = () => {
 
   // Render the selected banners
   return (
-    <div className="flex w-full flex-col gap-2" data-testid="StackingNotifications">
+    <div className="mb-3 flex w-full flex-col gap-2" data-testid="StackingNotifications">
       {/* Walking the whole stack rather than what is left of it keeps every card's looks tied
           to the place it was given, so dismissing one never restyles the others. */}
       {bannerConfigsForDisplay.map((config, position) => {
@@ -271,7 +271,6 @@ const StackingNotificationsContent = () => {
             buttonText={config.buttonText}
             buttonOnClick={() => handleActionClick(config, router)}
             rightContent={config.rightContent}
-            showDecorativeSquares={position === 0}
             onDismiss={() => setDismissedIds(ids => [...ids, config.id])}
           />
         )

@@ -5,10 +5,21 @@ export interface DismissButtonProps {
   /** Describes what gets dismissed, e.g. "Dismiss the Builders banner". */
   'aria-label': string
   onClick: () => void
-  /** The surface the button sits on, which decides the icon and border color. */
-  variant?: 'onDark' | 'onLight'
+  /**
+   * The surface the button sits on, which decides the icon and border color. `quiet` is
+   * for compact one-line notifications on dark: a muted X with no frame until hovered.
+   */
+  variant?: 'onDark' | 'onLight' | 'quiet'
   className?: string
   'data-testid'?: string
+}
+
+const VARIANT_CLASSES = {
+  onDark: 'size-6 rounded border border-v3-text-100/20 text-v3-text-100 hover:bg-v3-text-100/10',
+  onLight:
+    'size-6 rounded border border-v3-bg-accent-100/15 text-v3-bg-accent-100 hover:bg-v3-bg-accent-100/5',
+  quiet:
+    'size-7 rounded-md border border-transparent text-[#8a8378] hover:border-[rgba(228,225,218,0.22)] hover:text-banner-title',
 }
 
 /**
@@ -22,28 +33,19 @@ export const DismissButton = ({
   variant = 'onDark',
   className,
   'data-testid': dataTestId,
-}: DismissButtonProps) => {
-  const isOnDark = variant === 'onDark'
-
-  return (
-    <button
-      type="button"
-      aria-label={ariaLabel}
-      onClick={onClick}
-      data-testid={dataTestId}
-      className={cn(
-        'flex size-6 shrink-0 cursor-pointer items-center justify-center rounded transition-colors',
-        "relative before:absolute before:-inset-1.5 before:content-['']",
-        isOnDark
-          ? 'border border-v3-text-100/20 hover:bg-v3-text-100/10'
-          : 'border border-v3-bg-accent-100/15 hover:bg-v3-bg-accent-100/5',
-        className,
-      )}
-    >
-      <CloseIconKoto
-        size={14}
-        color={isOnDark ? 'var(--color-v3-text-100)' : 'var(--color-v3-bg-accent-100)'}
-      />
-    </button>
-  )
-}
+}: DismissButtonProps) => (
+  <button
+    type="button"
+    aria-label={ariaLabel}
+    onClick={onClick}
+    data-testid={dataTestId}
+    className={cn(
+      'flex shrink-0 cursor-pointer items-center justify-center transition-colors',
+      "relative before:absolute before:-inset-1.5 before:content-['']",
+      VARIANT_CLASSES[variant],
+      className,
+    )}
+  >
+    <CloseIconKoto size={14} color="currentColor" strokeWidth={variant === 'quiet' ? '2' : undefined} />
+  </button>
+)

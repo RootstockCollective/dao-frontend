@@ -4,9 +4,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { NotificationBanner } from './NotificationBanner'
 
 const defaultProps = {
-  title: 'CYCLE JUST ENDED',
-  description: 'The cycle has ended.',
-  backgroundSrc: '/images/notification-default.webp',
+  title: 'Cycle just ended',
+  description: 'Claim your rewards and re-stake them to earn more next cycle.',
   onDismiss: vi.fn(),
 }
 
@@ -17,8 +16,10 @@ describe('NotificationBanner', () => {
     const buttonOnClick = vi.fn()
     render(<NotificationBanner {...defaultProps} buttonText="Claim Rewards" buttonOnClick={buttonOnClick} />)
 
-    expect(screen.getByText('CYCLE JUST ENDED')).toBeInTheDocument()
-    expect(screen.getByText('The cycle has ended.')).toBeInTheDocument()
+    expect(screen.getByText('Cycle just ended')).toBeInTheDocument()
+    expect(
+      screen.getByText('Claim your rewards and re-stake them to earn more next cycle.'),
+    ).toBeInTheDocument()
 
     fireEvent.click(screen.getByText('Claim Rewards'))
     expect(buttonOnClick).toHaveBeenCalledOnce()
@@ -32,11 +33,13 @@ describe('NotificationBanner', () => {
     expect(onDismiss).toHaveBeenCalledOnce()
   })
 
-  it('shows the decorative squares only when asked to', () => {
-    const { rerender } = render(<NotificationBanner {...defaultProps} />)
-    expect(screen.queryByLabelText('Decorative Squares')).not.toBeInTheDocument()
+  it('falls back to the ember streaks when it has no artwork', () => {
+    const { container, rerender } = render(<NotificationBanner {...defaultProps} />)
+    expect(screen.getByTestId('NotificationStreaks')).toBeInTheDocument()
+    expect(container.querySelector('img')).not.toBeInTheDocument()
 
-    rerender(<NotificationBanner {...defaultProps} showDecorativeSquares />)
-    expect(screen.getByLabelText('Decorative Squares')).toBeInTheDocument()
+    rerender(<NotificationBanner {...defaultProps} backgroundSrc="/images/notification-back.webp" />)
+    expect(screen.queryByTestId('NotificationStreaks')).not.toBeInTheDocument()
+    expect(container.querySelector('img')).toBeInTheDocument()
   })
 })

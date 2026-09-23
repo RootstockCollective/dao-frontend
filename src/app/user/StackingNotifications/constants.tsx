@@ -1,5 +1,4 @@
 import { NEED_RBTC, NEED_RBTC_RIF, NEED_RIF, NEED_STRIF } from '@/app/user/IntroModal/hooks/useRequiredTokens'
-import { BANNER_DEFAULT_ARTWORK } from '@/components/PageBanner'
 import { TokenImage } from '@/components/TokenImage'
 import { RBTC, RIF } from '@/lib/constants'
 import { currentLinks } from '@/lib/links'
@@ -8,26 +7,23 @@ import { BannerConfigMap } from './types'
 
 const COINS_BANNER = '/images/notification-back.webp'
 
-const COINS_BANNER_SCRIM =
-  'linear-gradient(90deg, #17110E 0%, rgba(23,17,14,0.95) 32%, rgba(23,17,14,0.62) 52%, rgba(23,17,14,0.18) 74%, rgba(23,17,14,0) 100%)'
-
 export const STACK_ARTWORK: ReadonlyArray<{
-  readonly backgroundSrc: string
+  readonly backgroundSrc?: string
   readonly backgroundPosition?: string
   readonly scrim?: string
 }> = [
-  { backgroundSrc: BANNER_DEFAULT_ARTWORK },
+  {},
   {
     backgroundSrc: COINS_BANNER,
     // Keeps the stacked coins in frame rather than the empty table to their right.
-    backgroundPosition: '78% 50%',
-    scrim: COINS_BANNER_SCRIM,
+    backgroundPosition: '70% 50%',
   },
 ]
 
-// Static token images - created once outside component to avoid re-renders
-const rbtcImage = <TokenImage symbol={RBTC} size={26} className="inline-block mt-[-0.2rem]" />
-const rifImage = <TokenImage symbol={RIF} size={24} className="inline-block mt-[-0.2rem]" />
+// Static token images - created once outside component to avoid re-renders.
+// Sized to the 14px notification titles they sit in.
+const rbtcImage = <TokenImage symbol={RBTC} size={16} className="inline-block align-[-3px]" />
+const rifImage = <TokenImage symbol={RIF} size={16} className="inline-block align-[-3px]" />
 
 export const NOT_BACKING = 'NOT_BACKING'
 export const KYC_ONLY = 'KYC_ONLY'
@@ -37,7 +33,7 @@ export const CYCLE_ENDED = 'CYCLE_ENDED'
 
 const NEED_RBTC_AND_RIF = {
   id: 'NEED_RBTC_AND_RIF',
-  title: <span>GET {rbtcImage} rBTC</span>,
+  title: <span>Get {rbtcImage} rBTC</span>,
   buttonText: 'Get rBTC',
   description:
     "RBTC is used to cover transaction fees. You'll need both RBTC and RIF to participate in the DAO.",
@@ -88,7 +84,7 @@ export const BANNER_CONFIGS: BannerConfigMap = {
   [NEED_RBTC_RIF]: NEED_RBTC_AND_RIF,
   [NEED_RIF]: {
     id: NEED_RIF,
-    title: <span>GET {rifImage} RIF</span>,
+    title: <span>Get {rifImage} RIF</span>,
     buttonText: 'Get RIF',
     description:
       "RIF is the token required for staking. You'll need both RBTC and RIF to participate in the DAO.",
@@ -99,7 +95,7 @@ export const BANNER_CONFIGS: BannerConfigMap = {
   },
   [NEED_STRIF]: {
     id: NEED_STRIF,
-    title: <span>STAKE {rifImage} RIF</span>,
+    title: <span>Stake {rifImage} RIF</span>,
     buttonText: 'Stake RIF',
     description: 'Use RIF to stake and RBTC to pay for transactions fees.',
     action: {
@@ -109,9 +105,9 @@ export const BANNER_CONFIGS: BannerConfigMap = {
   },
   [NOT_BACKING]: {
     id: NOT_BACKING,
-    title: <span>BACK</span>,
+    title: <span>Back Builders</span>,
     buttonText: 'See all Builders',
-    description: 'Back Builders to start earning rewards.',
+    description: 'Your backing power is unallocated. Back Builders to start earning rewards.',
     action: {
       url: '/builders',
       external: false,
@@ -119,7 +115,7 @@ export const BANNER_CONFIGS: BannerConfigMap = {
   },
   [KYC_ONLY]: {
     id: KYC_ONLY,
-    title: <span>TAKE THE NEXT STEP</span>,
+    title: <span>Take the next step</span>,
     buttonText: 'Create Proposal',
     description:
       'Your application to join Collective Rewards is nearly there. Create your proposal to complete your activation.',
@@ -130,7 +126,7 @@ export const BANNER_CONFIGS: BannerConfigMap = {
   },
   [START_BUILDING]: {
     id: START_BUILDING,
-    title: <span>START BUILDING</span>,
+    title: <span>Start building</span>,
     buttonText: 'See all Builders',
     description:
       'You’re now a Collective Builder. Keep building and see your presence among the Collective Builders.',
@@ -141,7 +137,7 @@ export const BANNER_CONFIGS: BannerConfigMap = {
   },
   [CYCLE_ENDING]: {
     id: CYCLE_ENDING,
-    title: <span>NEW CYCLE STARTING SOON</span>,
+    title: <span>New cycle starting soon</span>,
     buttonText: 'Back Builders',
     description: 'Adjust your backing to make the most of the upcoming rewards.',
     // rightContent will be managed dynamically as it depends on the cycle data
@@ -153,10 +149,9 @@ export const BANNER_CONFIGS: BannerConfigMap = {
   },
   [CYCLE_ENDED]: {
     id: CYCLE_ENDED,
-    title: <span>CYCLE JUST ENDED</span>,
+    title: <span>Cycle just ended</span>,
     buttonText: 'Claim Rewards',
-    description:
-      'The cycle has ended. Claim your rewards and re-stake them to earn more rewards in the next cycle.',
+    description: 'Claim your rewards and re-stake them to earn more next cycle.',
     action: {
       url: '/my-rewards',
       external: false,
