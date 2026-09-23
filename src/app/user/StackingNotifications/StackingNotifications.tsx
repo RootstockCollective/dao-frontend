@@ -17,7 +17,7 @@ import {
   getBannerConfigForTokenStatus,
   selectBannerConfigs,
 } from './configs'
-import { STACK_ARTWORK } from './constants'
+import { getStackArtwork } from './constants'
 import { useGetBuilderState } from './hooks/useGetBuilderState'
 import { useHasAvailableBacking } from './hooks/useHasAvailableForBacking'
 import { BannerConfig } from './types'
@@ -40,7 +40,8 @@ import { handleActionClick } from './utils'
  * ARCHITECTURE OVERVIEW:
  * - BANNER_CONFIGS: Static configuration mapping banner types to display properties
  * - Detection Functions: Determine when banners should be shown based on user state
- * - Category System: Groups banners to avoid overwhelming users (max 1 per category)
+ * - Priority: STACK_ORDER (configs.tsx) sets the order; add new banner ids there, or they go last
+ * - Families: banners telling the same story (the two cycle ones) show at most one at a time
  * - Action Handling: Unified system for handling banner button clicks
  *
  * =====================================================================================
@@ -88,7 +89,7 @@ import { handleActionClick } from './utils'
  * COMPONENT BEHAVIOR:
  * 1. Loads user state data from various hooks
  * 2. Determines which banners should be shown based on detection functions
- * 3. Keeps the two highest-priority banners, in the order the stack reads in
+ * 3. Shows every active banner in priority order (see STACK_ORDER in configs.tsx)
  * 4. Renders the selected banners with action buttons
  *
  * EXTENDING THIS COMPONENT:
@@ -258,7 +259,7 @@ const StackingNotificationsContent = () => {
           return null
         }
 
-        const { backgroundSrc, backgroundPosition, scrim } = STACK_ARTWORK[position]
+        const { backgroundSrc, backgroundPosition, scrim } = getStackArtwork(position)
 
         return (
           <NotificationBanner

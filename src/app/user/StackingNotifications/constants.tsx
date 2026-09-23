@@ -7,11 +7,13 @@ import { BannerConfigMap } from './types'
 
 const COINS_BANNER = '/images/notification-back.webp'
 
-export const STACK_ARTWORK: ReadonlyArray<{
+export interface StackArtwork {
   readonly backgroundSrc?: string
   readonly backgroundPosition?: string
   readonly scrim?: string
-}> = [
+}
+
+export const STACK_ARTWORK: ReadonlyArray<StackArtwork> = [
   {},
   {
     backgroundSrc: COINS_BANNER,
@@ -19,6 +21,10 @@ export const STACK_ARTWORK: ReadonlyArray<{
     backgroundPosition: '70% 50%',
   },
 ]
+
+/** Artwork for the card at `position` in the stack, cycling through STACK_ARTWORK. */
+export const getStackArtwork = (position: number): StackArtwork =>
+  STACK_ARTWORK[position % STACK_ARTWORK.length]
 
 // Static token images - created once outside component to avoid re-renders.
 // Sized to the 14px notification titles they sit in.
@@ -30,9 +36,10 @@ export const KYC_ONLY = 'KYC_ONLY'
 export const START_BUILDING = 'START_BUILDING'
 export const CYCLE_ENDING = 'CYCLE_ENDING'
 export const CYCLE_ENDED = 'CYCLE_ENDED'
+export const NEED_RBTC_AND_RIF_ID = 'NEED_RBTC_AND_RIF'
 
 const NEED_RBTC_AND_RIF = {
-  id: 'NEED_RBTC_AND_RIF',
+  id: NEED_RBTC_AND_RIF_ID,
   title: <span>Get {rbtcImage} rBTC</span>,
   buttonText: 'Get rBTC',
   description:

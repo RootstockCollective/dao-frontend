@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ProposalsContext } from '@/app/proposals/context'
+import { ProposalCounts } from '@/app/proposals/shared/types'
 
 import { ProposalsBanner } from './ProposalsBanner'
 
@@ -19,7 +20,7 @@ vi.mock('@/shared/walletConnection/connection/ConnectWorkflow', () => ({
   ConnectWorkflow: () => <button type="button">Connect Wallet</button>,
 }))
 
-const renderBanner = (contextOverrides = {}) =>
+const renderBanner = (contextOverrides = {}, fallbackCounts: ProposalCounts | null = null) =>
   render(
     <ProposalsContext.Provider
       value={{
@@ -31,7 +32,7 @@ const renderBanner = (contextOverrides = {}) =>
         ...contextOverrides,
       }}
     >
-      <ProposalsBanner />
+      <ProposalsBanner fallbackCounts={fallbackCounts} />
     </ProposalsContext.Provider>,
   )
 
@@ -67,6 +68,34 @@ describe('ProposalsBanner', () => {
 
     expect(screen.getByTestId('ActiveProposalsCount')).toHaveTextContent('-')
     expect(screen.getByTestId('TotalProposalsCount')).toHaveTextContent('-')
+  })
+
+  it('shows the on-chain counters when The Graph failed', () => {
+    renderBanner({ error: new Error('graph down') }, { total: 912, active: 3 })
+
+    expect(screen.getByTestId('ActiveProposalsCount')).toHaveTextContent('3')
+    expect(screen.getByTestId('TotalProposalsCount')).toHaveTextContent('912')
+  })
+
+  it('keeps the active placeholder until the on-chain states arrive', () => {
+    renderBanner({ error: new Error('graph down') }, { total: 912, active: null })
+
+    expect(screen.getByTestId('ActiveProposalsCount')).toHaveTextContent('-')
+    expect(screen.getByTestId('TotalProposalsCount')).toHaveTextContent('912')
+  })
+
+  it('shows placeholders when The Graph failed and the chain has not answered yet', () => {
+    renderBanner({ error: new Error('graph down') })
+
+    expect(screen.getByTestId('ActiveProposalsCount')).toHaveTextContent('-')
+    expect(screen.getByTestId('TotalProposalsCount')).toHaveTextContent('-')
+  })
+
+  it('prefers The Graph counters over the chain ones while The Graph works', () => {
+    renderBanner({}, { total: 1, active: 1 })
+
+    expect(screen.getByTestId('ActiveProposalsCount')).toHaveTextContent('4')
+    expect(screen.getByTestId('TotalProposalsCount')).toHaveTextContent('910')
   })
 
   it('hides the banner when dismissed, without persisting the choice', () => {

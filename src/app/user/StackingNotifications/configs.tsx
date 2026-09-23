@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
 
 import { Cycle } from '@/app/collective-rewards/metrics'
+import { NEED_RIF, NEED_STRIF } from '@/app/user/IntroModal/hooks/useRequiredTokens'
 import { Span } from '@/components/Typography'
 
 import {
@@ -8,13 +9,22 @@ import {
   CYCLE_ENDED,
   CYCLE_ENDING,
   KYC_ONLY,
+  NEED_RBTC_AND_RIF_ID,
   NOT_BACKING,
-  STACK_ARTWORK,
   START_BUILDING,
 } from './constants'
 import { BannerConfig } from './types'
 
-const STACK_ORDER = [CYCLE_ENDED, CYCLE_ENDING, NOT_BACKING]
+export const STACK_ORDER = [
+  NEED_RBTC_AND_RIF_ID,
+  NEED_RIF,
+  NEED_STRIF,
+  CYCLE_ENDED,
+  CYCLE_ENDING,
+  NOT_BACKING,
+  KYC_ONLY,
+  START_BUILDING,
+]
 
 const BANNER_FAMILIES = new Map<string, string>([
   [CYCLE_ENDED, 'cycle'],
@@ -22,15 +32,18 @@ const BANNER_FAMILIES = new Map<string, string>([
 ])
 
 /**
- * Picks the notifications to show. The stack holds one card per artwork in STACK_ARTWORK, so
- * the page still opens on its own content and every card is guaranteed a look of its own.
+ * Orders the notifications to show. Every active notification is shown, in STACK_ORDER, with
+ * one exception: a cycle boundary fires both cycle notifications, and only the first of them
+ * is kept so the stack does not tell the same news twice.
+ *
+ * Anything not listed in STACK_ORDER goes last, in the order the detection functions produced.
  *
  * @param bannerConfigs - Array of banner configurations to process
- * @returns The highest-priority banner configs, at most one per artwork
+ * @returns Every banner config to display, highest priority first
  *
  * @example
- * // A user whose cycle just ended and who has stRIF left to back sees
- * // "Cycle just ended" with "Back Builders" under it, in that order, on every load
+ * // A user without rBTC whose cycle just ended and who has stRIF left to back sees
+ * // "Get rBTC", then "Cycle just ended", then "Back Builders", in that order, on every load
  */
 export const selectBannerConfigs = (bannerConfigs: BannerConfig[]): BannerConfig[] => {
   if (bannerConfigs.length <= 1) {
@@ -44,6 +57,7 @@ export const selectBannerConfigs = (bannerConfigs: BannerConfig[]): BannerConfig
 
   const seenFamilies = new Set<string>()
 
+  // Array.prototype.sort is stable, so unranked notifications keep their relative order
   return [...bannerConfigs]
     .sort((a, b) => rank(a) - rank(b))
     .filter(({ id }) => {
@@ -54,7 +68,6 @@ export const selectBannerConfigs = (bannerConfigs: BannerConfig[]): BannerConfig
       seenFamilies.add(family)
       return true
     })
-    .slice(0, STACK_ARTWORK.length)
 }
 
 /**

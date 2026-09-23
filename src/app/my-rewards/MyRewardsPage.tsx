@@ -10,10 +10,8 @@ import { useIsBacker } from '@/app/collective-rewards/rewards'
 import { withBuilderSettingsProvider } from '@/app/collective-rewards/settings'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { Paragraph, Span } from '@/components/Typography'
 import { useReadBuilderRegistry } from '@/shared/hooks/contracts'
 
-import { CRWhitepaperLink } from '../collective-rewards/shared/components/CRWhitepaperLinkNew'
 import { BackerRewards } from './backers/components/BackerRewards'
 import { BackerRewardsNotConnected } from './backers/components/BackerRewardsNotConnected'
 import { BuilderRewards } from './builder/components/BuilderRewards'
@@ -55,14 +53,6 @@ const MyRewardsPage = () => {
       >
         <div data-testid="main-container" className="flex flex-col w-full items-start gap-2">
           <MyRewardsBanner />
-          <Section>
-            <Paragraph className="flex flex-col items-start gap-2 flex-1 basis-0">
-              <Span>Learn more about the Collective Rewards in the Whitepaper</Span>
-              <Span>
-                See the <CRWhitepaperLink>Whitepaper</CRWhitepaperLink>
-              </Span>
-            </Paragraph>
-          </Section>
           {gauge && gauge !== zeroAddress && userAddress && (
             <BuilderRewards address={userAddress} gauge={gauge} />
           )}

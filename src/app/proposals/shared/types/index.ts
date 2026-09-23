@@ -98,6 +98,11 @@ export interface ProposalApiResponse {
   }
 }
 
+export interface ProposalCounts {
+  total: number
+  active: number | null
+}
+
 // discriminated union
 export type ProposalRecord =
   | { category: ProposalCategory.Grants; form: GrantProposal }

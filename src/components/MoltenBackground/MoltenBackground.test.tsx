@@ -1,7 +1,14 @@
 import { cleanup, render } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { type Band, createBandGradient, createBands, drawGrain, MoltenBackground } from './MoltenBackground'
+import {
+  type Band,
+  createBandGradient,
+  createBands,
+  createNoiseRandom,
+  drawGrain,
+  MoltenBackground,
+} from './MoltenBackground'
 
 const CANVAS_WIDTH = 320
 
@@ -176,6 +183,18 @@ describe('drawGrain', () => {
     drawGrain(second.canvas)
 
     expect(Array.from(first.written[0])).toEqual(Array.from(second.written[0]))
+  })
+
+  /*
+   * The first generator overflowed 2^53 in floating point and fell into a cycle of 10,466
+   * values, so the 168×168 tile repeated itself about 2.7 times, shifted a little each time.
+   */
+  it('does not repeat itself within the tile', () => {
+    const random = createNoiseRandom(7)
+    const values = Array.from({ length: 168 * 168 }, random)
+
+    expect(new Set(values).size).toBe(values.length)
+    expect(values.every(value => value >= 0 && value < 1)).toBe(true)
   })
 
   /*

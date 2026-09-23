@@ -47,13 +47,13 @@ export function useProposalListData({ proposals }: Props) {
     })),
   }) as { data?: Array<{ result: bigint }> }
 
-  const { data: state } = useReadContracts({
+  const { data: state, isLoading: isStateLoading } = useReadContracts({
     contracts: proposals?.map(proposal => ({
       ...governor,
       functionName: 'state',
       args: [BigInt(proposal.args.proposalId)],
     })),
-  }) as { data?: Array<{ result: bigint }> }
+  }) as { isLoading: boolean; data?: Array<{ result: bigint }> }
 
   return useMemo(() => {
     const proposalsResponse =
@@ -92,6 +92,8 @@ export function useProposalListData({ proposals }: Props) {
       data: proposalsResponse,
       totalProposals: proposalsResponse.length,
       activeProposals: proposalsResponse.filter(p => ProposalState.Active == p.proposalState).length,
+      // Until the states arrive every proposal reads as Pending, so `activeProposals` is not final yet
+      isStateLoading,
     }
-  }, [latestBlockNumber, proposalVotes, proposals, quorum, state])
+  }, [latestBlockNumber, proposalVotes, proposals, quorum, state, isStateLoading])
 }

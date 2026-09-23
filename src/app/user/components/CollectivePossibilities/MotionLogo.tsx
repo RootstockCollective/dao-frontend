@@ -1,37 +1,55 @@
 'use client'
 
-import Image from 'next/image'
+import { useEffect, useRef } from 'react'
 
 import { cn } from '@/lib/utils'
-import { usePrefersReducedMotion } from '@/shared/hooks/usePrefersReducedMotion'
 
 const VIDEO_SRC = '/videos/collective-motion-logo.mp4'
 const POSTER_SRC = '/images/collective-motion-logo-poster.webp'
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
 
 /**
- * Animated Collective logo. Falls back to the poster frame when the viewer asked
- * their system for reduced motion.
+ * Animated Collective logo. Holds on the poster frame when the viewer asked their system for
+ * reduced motion.
  */
 export const MotionLogo = ({ className }: { className?: string }) => {
-  const prefersReducedMotion = usePrefersReducedMotion()
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    const query = window.matchMedia?.(REDUCED_MOTION_QUERY)
+
+    const sync = () => {
+      if (query?.matches) {
+        video.pause()
+        return
+      }
+      // Autoplay can still be refused (data saver, battery saver); the poster stays up then
+      Promise.resolve(video.play()).catch(() => {})
+    }
+
+    sync()
+    query?.addEventListener?.('change', sync)
+
+    return () => query?.removeEventListener?.('change', sync)
+  }, [])
 
   return (
     <div className={cn('relative overflow-hidden', className)} data-testid="MotionLogo">
-      {prefersReducedMotion ? (
-        <Image src={POSTER_SRC} alt="" aria-hidden="true" fill sizes="200px" className="object-cover" />
-      ) : (
-        <video
-          className="size-full object-cover"
-          src={VIDEO_SRC}
-          poster={POSTER_SRC}
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="metadata"
-          aria-hidden="true"
-        />
-      )}
+      <video
+        ref={videoRef}
+        className="size-full object-cover"
+        src={VIDEO_SRC}
+        poster={POSTER_SRC}
+        loop
+        muted
+        playsInline
+        preload="metadata"
+        aria-hidden="true"
+        data-testid="MotionLogoVideo"
+      />
     </div>
   )
 }

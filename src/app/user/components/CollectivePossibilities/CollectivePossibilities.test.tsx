@@ -1,5 +1,5 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { CollectivePossibilities } from './CollectivePossibilities'
 
@@ -8,7 +8,15 @@ vi.mock('@/shared/walletConnection/connection/ConnectWorkflow', () => ({
 }))
 
 describe('CollectivePossibilities', () => {
-  afterEach(cleanup)
+  beforeEach(() => {
+    // jsdom does not implement media playback, and the logo starts its video on mount
+    vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined)
+  })
+
+  afterEach(() => {
+    cleanup()
+    vi.restoreAllMocks()
+  })
 
   it('renders the three possibilities, the animated logo and the connect action', () => {
     render(<CollectivePossibilities />)

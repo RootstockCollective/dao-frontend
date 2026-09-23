@@ -14,12 +14,6 @@ const PLUM = '#7a3b6e'
 /** RIF blue lifted towards white: where it overlaps the cream it reads as a lavender glow. */
 const LAVENDER = '#8e97f7'
 
-/**
- * The colours each band cycles through, top to bottom. Chosen rather than drawn at random
- * so the composition matches the design: warm ember along the top, a lavender band above
- * the wallet card, ink behind it so the card stays readable, a hot amber band below it,
- * and the cool blue-violet bands mixed into the lower half.
- */
 const BAND_STOPS: string[][] = [
   [EMBER, CREAM, EMBER, INK],
   [ORANGE, EMBER, INK, EMBER],
@@ -33,41 +27,15 @@ const BAND_STOPS: string[][] = [
   [INK, AMBER, RIF_BLUE, EMBER],
 ]
 
-/**
- * The bands' motion is drawn from a fixed seed, so the artwork is identical for everyone.
- * This one lands the settled frame closest to the design reference.
- */
 const SEED = 42
-/** How strongly each band adds onto the ones beneath it. */
 const BAND_ALPHA = 0.5
-/** The grain gets its own seed, so it is as reproducible as the bands underneath it. */
 const GRAIN_SEED = 7
-/** Drawn small and scaled up: the result is blurred anyway, and this keeps the loop cheap. */
 const CANVAS_SIZE = 320
-/** Side of the noise tile that gets repeated across the grain layer. */
 const GRAIN_TILE = 168
-/**
- * Side of the square layer the tile is repeated into. The panel is never exactly this
- * wide, so the browser resamples it — which is fine: the panel is square, so the scale
- * is uniform, and the grain sits at a third opacity in overlay over an already blurred
- * canvas. Drawn a little larger than the panel ever gets so it is only ever downscaled.
- */
 const GRAIN_SIZE = 512
-/** Tilt of the whole stack, in radians. */
 const BAND_ANGLE = -0.11
-/** Where the still frame lands when motion is off — far enough in for the bands to have spread. */
 const STILL_AT = 4
-/**
- * The canvas carries a CSS blur, so every frame repaints a filtered layer — the expensive
- * half of this component. The artwork is decorative and heavily blurred, so it is capped
- * well under the display refresh rate; the drift stays smooth at this rate.
- */
 const FRAME_MS = 1000 / 30
-/**
- * The bands settle into a still frame after this many seconds. Nobody keeps watching the
- * wallpaper of a modal they have had open for half a minute, and an unbounded loop costs
- * battery for nothing.
- */
 const SETTLE_AFTER = 20
 
 export interface Band {
@@ -80,10 +48,16 @@ export interface Band {
   stops: string[]
 }
 
-/** Linear congruential generator: same sequence every time, no dependency needed. */
 const createRandom = (seed: number) => () => {
   seed = (seed * 1103515245 + 12345) % 2147483648
   return seed / 2147483648
+}
+
+export const createNoiseRandom = (seed: number) => () => {
+  seed = (seed + 0x6d2b79f5) | 0
+  let t = Math.imul(seed ^ (seed >>> 15), 1 | seed)
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296
 }
 
 export const createBands = (height: number): Band[] => {
@@ -111,7 +85,7 @@ export const drawGrain = (canvas: HTMLCanvasElement) => {
   const tileContext = tile.getContext('2d')
   if (!tileContext) return false
 
-  const random = createRandom(GRAIN_SEED)
+  const random = createNoiseRandom(GRAIN_SEED)
   const image = tileContext.createImageData(GRAIN_TILE, GRAIN_TILE)
   for (let i = 0; i < image.data.length; i += 4) {
     const value = 110 + random() * 145
@@ -261,7 +235,6 @@ export const MoltenBackground = ({ className }: MoltenBackgroundProps) => {
         className="absolute inset-0 block h-full w-full opacity-[0.34] mix-blend-overlay"
       />
       <div className="absolute inset-0 bg-[radial-gradient(58%_46%_at_50%_50%,rgba(255,214,168,0.18)_0%,rgba(255,214,168,0)_72%)]" />
-      {/* Vignette: dark edges keep the eye, and the wallet card, in the middle. */}
       <div className="absolute inset-0 shadow-[inset_0_0_90px_26px_rgba(20,15,12,0.62)]" />
     </div>
   )

@@ -92,19 +92,36 @@
     pointer-events: none;
   }
 
-  &:hover:not(:disabled),
+  /*
+    Hover only where there is a real pointer. Touch browsers apply :hover on tap and keep it
+    until the user taps somewhere else, which left the button lifted and the gradient
+    looping after the tap. Keyboard focus keeps the effect everywhere.
+  */
+  @media (hover: hover) {
+    &:hover:not(:disabled) {
+      transform: translateY(-2px);
+      border-color: var(--color-v3-bg-accent-100);
+      box-shadow: 0 3px 0 0 var(--color-v3-bg-accent-100);
+    }
+
+    &:hover:not(:disabled)::before {
+      opacity: 1;
+      animation: iridescent-shift 2.4s linear infinite;
+    }
+  }
+
   &:focus-visible:not(:disabled) {
     transform: translateY(-2px);
     border-color: var(--color-v3-bg-accent-100);
     box-shadow: 0 3px 0 0 var(--color-v3-bg-accent-100);
   }
 
-  &:hover:not(:disabled)::before,
   &:focus-visible:not(:disabled)::before {
     opacity: 1;
     animation: iridescent-shift 2.4s linear infinite;
   }
 
+  /* The press still reads on touch, where there is no hover to lift from */
   &:active:not(:disabled) {
     transform: translateY(0);
     box-shadow: 0 1px 0 0 var(--color-v3-bg-accent-100);
