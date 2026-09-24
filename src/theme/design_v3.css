@@ -61,6 +61,9 @@
     --color-ember: #b04a1a;
     --color-ember-ash: #1a1210;
     --color-btc-orange: #f7931a;
+    --color-btc-orange-hover: #ffa838;
+    /* Second tone of a two-tone display title on the warm surfaces ("THE COLLECTIVE POSSIBILITIES"). */
+    --color-warm-text-dim: #6e665e;
 
     --color-v3-rif-blue: rgb(75, 92, 240);
     --color-v3-rsk-purple: rgb(158, 118, 255);
