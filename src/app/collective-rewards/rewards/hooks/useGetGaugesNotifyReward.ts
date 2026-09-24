@@ -86,9 +86,17 @@ export const matchesNotifyRewardFilter = (
 export interface UseGetGaugesNotifyRewardParams {
   gauges: Address[]
   rewardTokens?: Address[]
+  /**
+   * Inclusive lower bound in seconds; omitted means the whole history. `0` is the placeholder
+   * `useGetLastCycleDistribution` returns while the cycle loads, so the hooks wait instead of
+   * fetching every gauge's full history only to discard it a moment later.
+   */
   fromTimestamp?: number
   toTimestamp?: number
 }
+
+/** See {@link UseGetGaugesNotifyRewardParams.fromTimestamp}. */
+export const isNotifyRewardWindowReady = (fromTimestamp: number | undefined): boolean => fromTimestamp !== 0
 
 export const useGetGaugesNotifyReward = ({
   gauges,
@@ -104,6 +112,7 @@ export const useGetGaugesNotifyReward = ({
     queryFn: () => fetchGaugesNotifyReward(gauges, fromTimestamp),
     queryKey: ['useGetGaugesNotifyReward', gauges, fromTimestamp],
     refetchInterval: AVERAGE_BLOCKTIME,
+    enabled: isNotifyRewardWindowReady(fromTimestamp),
   })
 
   const data: UseGetGaugesNotifyRewardReturnType = useMemo(() => {

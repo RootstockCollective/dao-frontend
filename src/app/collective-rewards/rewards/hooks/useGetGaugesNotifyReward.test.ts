@@ -1,3 +1,6 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { renderHook, waitFor } from '@testing-library/react'
+import { createElement, type ReactNode } from 'react'
 import { type Address, getAddress } from 'viem'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -5,6 +8,7 @@ import {
   fetchGaugesNotifyReward,
   matchesNotifyRewardFilter,
   type NotifyRewardEvent,
+  useGetGaugesNotifyReward,
 } from './useGetGaugesNotifyReward'
 
 const GAUGE_A = '0x1111111111111111111111111111111111111111' as Address
@@ -109,5 +113,44 @@ describe('matchesNotifyRewardFilter', () => {
     expect(matchesNotifyRewardFilter(event, { fromTimestamp: 100, toTimestamp: 100 })).toBe(true)
     expect(matchesNotifyRewardFilter(event, { fromTimestamp: 101 })).toBe(false)
     expect(matchesNotifyRewardFilter(event, { toTimestamp: 99 })).toBe(false)
+  })
+})
+
+describe('useGetGaugesNotifyReward', () => {
+  const wrapper = () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
+    return ({ children }: { children: ReactNode }) =>
+      createElement(QueryClientProvider, { client: queryClient }, children)
+  }
+
+  beforeEach(() => {
+    mockFetch.mockReset()
+    vi.stubGlobal('fetch', mockFetch)
+  })
+  afterEach(() => vi.unstubAllGlobals())
+
+  it('waits while fromTimestamp is the 0 placeholder instead of fetching the whole history', () => {
+    const { result } = renderHook(
+      () => useGetGaugesNotifyReward({ gauges: [GAUGE_A], fromTimestamp: 0, toTimestamp: 0 }),
+      { wrapper: wrapper() },
+    )
+
+    expect(mockFetch).not.toHaveBeenCalled()
+    expect(result.current.data).toEqual({ [GAUGE_A]: [] })
+  })
+
+  it('fetches with the lower bound once the window is known, and filters by the upper one', async () => {
+    respondWith({
+      [GAUGE_A]: [dtoEvent, { ...dtoEvent, timeStamp: 300 }],
+    })
+
+    const { result } = renderHook(
+      () => useGetGaugesNotifyReward({ gauges: [GAUGE_A], fromTimestamp: 50, toTimestamp: 200 }),
+      { wrapper: wrapper() },
+    )
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false))
+    expect(calledUrl().searchParams.get('fromTimestamp')).toBe('50')
+    expect(result.current.data[GAUGE_A].map(e => e.timeStamp)).toEqual([100])
   })
 })

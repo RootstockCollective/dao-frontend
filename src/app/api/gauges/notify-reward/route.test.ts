@@ -32,7 +32,15 @@ describe('GET /api/gauges/notify-reward', () => {
     expect(mockFetchNotifyReward).toHaveBeenCalledWith([GAUGE], { fromTimestamp: 1750000000 })
   })
 
-  it.each(['-1', '1.5', 'abc', ''])('rejects fromTimestamp=%j without reading state-sync', async value => {
+  it.each([
+    ['-1', '-1'],
+    ['1.5', '1.5'],
+    ['abc', 'abc'],
+    ['empty', ''],
+    ['1e3', '1e3'],
+    // Parses to Infinity, which unstable_cache would key like "no bound at all".
+    ['400 digits', '9'.repeat(400)],
+  ])('rejects fromTimestamp %s without reading state-sync', async (_label, value) => {
     const res = await GET(request(`gauges=${GAUGE}&fromTimestamp=${value}`))
 
     expect(res.status).toBe(400)

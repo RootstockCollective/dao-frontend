@@ -7,6 +7,7 @@ import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import {
   fetchGaugesNotifyReward,
   type GaugeNotifyRewardEventLog,
+  isNotifyRewardWindowReady,
   matchesNotifyRewardFilter,
   type NotifyRewardEvent,
 } from './useGetGaugesNotifyReward'
@@ -34,6 +35,7 @@ export const useGetGaugeNotifyRewardLogs = (
     queryFn: () => fetchGaugesNotifyReward([gauge], fromTimestamp),
     queryKey: ['useGetGaugeNotifyRewardLogs', gauge, fromTimestamp],
     refetchInterval: AVERAGE_BLOCKTIME,
+    enabled: isNotifyRewardWindowReady(fromTimestamp),
   })
 
   const events = eventsByGauge?.[gauge] ?? NO_EVENTS

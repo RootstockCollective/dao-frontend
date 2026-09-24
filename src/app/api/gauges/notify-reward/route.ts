@@ -32,13 +32,19 @@ export async function GET(req: Request) {
   const { gauges } = parsed
 
   const fromTimestampParam = new URL(req.url).searchParams.get('fromTimestamp')
-  if (fromTimestampParam !== null && !/^\d+$/.test(fromTimestampParam)) {
+  const fromTimestamp = fromTimestampParam === null ? undefined : Number(fromTimestampParam)
+  // The regex keeps out signs, decimals and exponents; the safe-integer check keeps out values that
+  // parse to `Infinity`, which `unstable_cache` would serialise to `null` — the same cache key as no
+  // bound at all, so one request could park an empty history under every client's entry.
+  if (
+    fromTimestampParam !== null &&
+    (!/^\d+$/.test(fromTimestampParam) || !Number.isSafeInteger(fromTimestamp))
+  ) {
     return NextResponse.json(
       { error: '`fromTimestamp` must be a non-negative integer of seconds' },
       { status: 400 },
     )
   }
-  const fromTimestamp = fromTimestampParam === null ? undefined : Number(fromTimestampParam)
 
   try {
     return NextResponse.json(await fetchNotifyRewardFromStateSync(gauges, { fromTimestamp }))

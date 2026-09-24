@@ -43,6 +43,15 @@ describe('useGetGaugeNotifyRewardLogs', () => {
     expect(result.current.data).toEqual({})
   })
 
+  it('waits while fromTimestamp is the 0 placeholder instead of fetching the whole history', () => {
+    const { result } = renderHook(() => useGetGaugeNotifyRewardLogs(GAUGE, RIF, 0, 0), {
+      wrapper: createWrapper(),
+    })
+
+    expect(fetch).not.toHaveBeenCalled()
+    expect(result.current.data).toEqual({})
+  })
+
   it('groups the events by checksummed reward token', async () => {
     const { result } = renderHook(() => useGetGaugeNotifyRewardLogs(GAUGE), { wrapper: createWrapper() })
 
