@@ -8,6 +8,8 @@ vi.mock('@/lib/db', () => {
   db.raw = (sql: string) => ({ __raw: sql })
   return { db }
 })
+// Outside a Next request there is no incremental cache; the loader runs straight through.
+vi.mock('next/cache', () => ({ unstable_cache: <T>(fn: T) => fn }))
 
 import { fetchBuilderRewardsClaimedFromStateSync } from './stateSync'
 

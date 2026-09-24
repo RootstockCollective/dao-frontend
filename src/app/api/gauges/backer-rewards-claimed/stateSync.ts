@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache'
 import type { Address } from 'viem'
 
 import { fromDbBytes, toDbBytes } from '@/app/api/db/bytes'
@@ -5,6 +6,13 @@ import { db } from '@/lib/db'
 
 const TABLE_CLAIMED = 'ClaimedRewardsHistory'
 const TABLE_GAUGE_TO_BUILDER = 'GaugeToBuilder'
+
+/**
+ * Seconds a gauge set's claims are served from the Data Cache. Matches the client's poll interval
+ * (`AVERAGE_BLOCKTIME`): the route is dynamic — it reads `req.url` — so a segment `revalidate`
+ * would not cache anything, and without this every poll of every tab would take a pool connection.
+ */
+const BACKER_REWARDS_CLAIMED_CACHE_SECONDS = 60
 
 /** One claim, shaped like the parsed log the client used to build from Blockscout topics. */
 export interface BackerRewardsClaimedEvent {
@@ -28,6 +36,46 @@ interface ClaimedRow {
   blockTimestamp: unknown
 }
 
+/** A row reduced to JSON-safe values, so it survives the Data Cache unchanged. */
+interface ClaimedRecord {
+  gauge: string
+  backer: Address
+  rewardToken: Address
+  amount: string
+  blockTimestamp: number
+}
+
+async function loadBackerRewardsClaimedRecords(lowercaseGauges: string[]): Promise<ClaimedRecord[]> {
+  const rows: ClaimedRow[] = await db(`${TABLE_CLAIMED} as c`)
+    .join(`${TABLE_GAUGE_TO_BUILDER} as g`, 'g.builder', '=', 'c.builder')
+    .select({
+      gauge: 'g.id',
+      backer: 'c.backer',
+      rewardToken: 'c.rewardToken',
+      amount: 'c.amount',
+      blockTimestamp: 'c.blockTimestamp',
+    })
+    .whereIn('g.id', lowercaseGauges.map(toDbBytes))
+    .whereNotNull('c.backer')
+    .orderBy('c.blockTimestamp', 'asc')
+    .orderBy('c.id', 'asc')
+
+  return rows.map(row => ({
+    gauge: fromDbBytes(row.gauge),
+    backer: fromDbBytes(row.backer) as Address,
+    rewardToken: fromDbBytes(row.rewardToken) as Address,
+    amount: String(row.amount),
+    blockTimestamp: Number(row.blockTimestamp),
+  }))
+}
+
+/** Keyed by its argument, which the caller normalises so every spelling of a set shares an entry. */
+const loadBackerRewardsClaimedRecordsCached = unstable_cache(
+  loadBackerRewardsClaimedRecords,
+  ['gauge-backer-rewards-claimed', 'state-sync'],
+  { revalidate: BACKER_REWARDS_CLAIMED_CACHE_SECONDS },
+)
+
 /**
  * Claims per gauge, from state-sync instead of Blockscout `getLogs`.
  *
@@ -39,29 +87,19 @@ interface ClaimedRow {
  *   `whereNotNull` the backers' screens would sum builders' money into their totals.
  * - Keys come back as the caller's own strings, not the lowercased ones from Postgres. The client
  *   looks rows up with the same mixed-case address it sent, so rekeying here breaks every lookup
- *   silently.
+ *   silently. A gauge sent in more than one casing gets its claims under each of them.
  */
 export async function fetchBackerRewardsClaimedFromStateSync(
   gauges: Address[],
 ): Promise<BackerRewardsClaimedByGauge> {
-  const byLowercaseGauge = new Map<string, Address>()
+  const spellingsByLowercase = new Map<string, Set<Address>>()
   for (const gauge of gauges) {
-    byLowercaseGauge.set(gauge.toLowerCase(), gauge)
+    const lowercase = gauge.toLowerCase()
+    const spellings = spellingsByLowercase.get(lowercase) ?? new Set<Address>()
+    spellingsByLowercase.set(lowercase, spellings.add(gauge))
   }
 
-  const rows: ClaimedRow[] = await db(`${TABLE_CLAIMED} as c`)
-    .join(`${TABLE_GAUGE_TO_BUILDER} as g`, 'g.builder', '=', 'c.builder')
-    .select({
-      gauge: 'g.id',
-      backer: 'c.backer',
-      rewardToken: 'c.rewardToken',
-      amount: 'c.amount',
-      blockTimestamp: 'c.blockTimestamp',
-    })
-    .whereIn('g.id', [...byLowercaseGauge.keys()].map(toDbBytes))
-    .whereNotNull('c.backer')
-    .orderBy('c.blockTimestamp', 'asc')
-    .orderBy('c.id', 'asc')
+  const records = await loadBackerRewardsClaimedRecordsCached([...spellingsByLowercase.keys()].sort())
 
   const eventsByGauge: BackerRewardsClaimedByGauge = {}
   // Every requested gauge gets a key, so the client's `?? []` never has to paper over a gap.
@@ -69,18 +107,21 @@ export async function fetchBackerRewardsClaimedFromStateSync(
     eventsByGauge[gauge] = []
   }
 
-  for (const row of rows) {
-    const requestedGauge = byLowercaseGauge.get(fromDbBytes(row.gauge))
-    if (!requestedGauge) continue
+  for (const record of records) {
+    const spellings = spellingsByLowercase.get(record.gauge)
+    if (!spellings) continue
 
-    eventsByGauge[requestedGauge].push({
+    const event: BackerRewardsClaimedEvent = {
       args: {
-        backer_: fromDbBytes(row.backer) as Address,
-        rewardToken_: fromDbBytes(row.rewardToken) as Address,
-        amount_: String(row.amount),
+        backer_: record.backer,
+        rewardToken_: record.rewardToken,
+        amount_: record.amount,
       },
-      timeStamp: Number(row.blockTimestamp),
-    })
+      timeStamp: record.blockTimestamp,
+    }
+    for (const spelling of spellings) {
+      eventsByGauge[spelling].push(event)
+    }
   }
 
   return eventsByGauge
