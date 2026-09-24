@@ -31,8 +31,8 @@ export const useGetGaugeNotifyRewardLogs = (
     error,
     isLoading,
   } = useQuery({
-    queryFn: () => fetchGaugesNotifyReward([gauge]),
-    queryKey: ['useGetGaugeNotifyRewardLogs', gauge],
+    queryFn: () => fetchGaugesNotifyReward([gauge], fromTimestamp),
+    queryKey: ['useGetGaugeNotifyRewardLogs', gauge, fromTimestamp],
     refetchInterval: AVERAGE_BLOCKTIME,
   })
 

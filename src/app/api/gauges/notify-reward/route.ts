@@ -7,7 +7,8 @@ import { fetchNotifyRewardFromStateSync } from './stateSync'
 
 const ROUTE = '/api/gauges/notify-reward'
 
-export const revalidate = 25
+/** Advertised on a 503 so client retries are spaced instead of immediate. */
+const RETRY_AFTER_SECONDS = 5
 
 /**
  * `NotifyReward` events per gauge, read from state-sync Postgres.
@@ -18,21 +19,37 @@ export const revalidate = 25
  *
  * Query params:
  * - `gauges` (required): comma-separated gauge addresses.
+ * - `fromTimestamp` (optional): inclusive lower bound in seconds. Both screens only read the last
+ *   cycle, so without it every poll would carry each gauge's whole history.
  *
  * `fromBlock` is gone. Nothing passed it, and `GaugeNotifyReward` has no block number to filter on.
+ * Caching lives in {@link fetchNotifyRewardFromStateSync}: reading `req.url` makes this route
+ * dynamic, so a segment `revalidate` would have no effect.
  */
 export async function GET(req: Request) {
   const parsed = parseGaugesParam(req)
   if ('error' in parsed) return parsed.error
   const { gauges } = parsed
 
+  const fromTimestampParam = new URL(req.url).searchParams.get('fromTimestamp')
+  if (fromTimestampParam !== null && !/^\d+$/.test(fromTimestampParam)) {
+    return NextResponse.json(
+      { error: '`fromTimestamp` must be a non-negative integer of seconds' },
+      { status: 400 },
+    )
+  }
+  const fromTimestamp = fromTimestampParam === null ? undefined : Number(fromTimestampParam)
+
   try {
-    return NextResponse.json(await fetchNotifyRewardFromStateSync(gauges))
+    return NextResponse.json(await fetchNotifyRewardFromStateSync(gauges, { fromTimestamp }))
   } catch (err) {
     logger.error({ err, route: ROUTE, gaugeCount: gauges.length }, 'Error reading NotifyReward events')
 
     // All-or-nothing: a gauge missing from a partial response would render as "no rewards last
     // cycle", and a retryable error is better than a wrong number.
-    return NextResponse.json({ error: 'Failed to fetch NotifyReward events' }, { status: 503 })
+    return NextResponse.json(
+      { error: 'Failed to fetch NotifyReward events' },
+      { status: 503, headers: { 'Retry-After': String(RETRY_AFTER_SECONDS) } },
+    )
   }
 }

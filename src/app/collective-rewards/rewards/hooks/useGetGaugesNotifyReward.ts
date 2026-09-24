@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { Address, isAddressEqual } from 'viem'
 
+import type { NotifyRewardByGauge } from '@/app/api/gauges/notify-reward/stateSync'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 
 const ROUTE = '/api/gauges/notify-reward'
@@ -10,8 +11,8 @@ const ROUTE = '/api/gauges/notify-reward'
  * A `NotifyReward` event as the client consumes it.
  *
  * Shaped like the `parseEventLogs` output this used to be built from, so the reducers over
- * `args.builderAmount_` / `args.backersAmount_` did not have to change. The amounts arrive as
- * decimal strings — JSON has no bigint — and are converted here, once.
+ * `args.builderAmount_` / `args.backersAmount_` did not have to change. The route sends the amounts
+ * as decimal strings — JSON has no bigint — and they are converted here, once.
  */
 export interface NotifyRewardEvent {
   args: {
@@ -25,25 +26,32 @@ export interface NotifyRewardEvent {
 export type GaugeNotifyRewardEventLog = NotifyRewardEvent[]
 export type UseGetGaugesNotifyRewardReturnType = Record<Address, NotifyRewardEvent[]>
 
-interface NotifyRewardEventDto {
-  args: { rewardToken_: Address; builderAmount_: string; backersAmount_: string }
-  timeStamp: number
-}
-
-/** Fetches every `NotifyReward` per gauge from state-sync, keyed by the gauges as passed. */
+/**
+ * Fetches `NotifyReward` per gauge from state-sync, keyed by the gauges as passed.
+ *
+ * @param fromTimestamp — Inclusive lower bound in seconds, applied by the route so a poll does not
+ *   carry each gauge's whole history. `0` or omitted means no bound, as in {@link matchesNotifyRewardFilter}.
+ */
 export const fetchGaugesNotifyReward = async (
   gauges: Address[],
+  fromTimestamp?: number,
 ): Promise<UseGetGaugesNotifyRewardReturnType> => {
   if (gauges.length === 0) {
     return {}
   }
 
-  const res = await fetch(`${ROUTE}?gauges=${gauges.join(',')}`)
+  const params = new URLSearchParams({ gauges: gauges.join(',') })
+  if (fromTimestamp) {
+    // The route takes whole seconds; flooring can only widen the window, and the filter trims it.
+    params.set('fromTimestamp', String(Math.floor(fromTimestamp)))
+  }
+
+  const res = await fetch(`${ROUTE}?${params}`)
   if (!res.ok) {
     throw new Error(`Failed to fetch NotifyReward events: ${res.status} ${res.statusText}`)
   }
 
-  const dto = (await res.json()) as Record<Address, NotifyRewardEventDto[]>
+  const dto = (await res.json()) as NotifyRewardByGauge
 
   return gauges.reduce<UseGetGaugesNotifyRewardReturnType>((acc, gauge) => {
     acc[gauge] = (dto[gauge] ?? []).map(({ args, timeStamp }) => ({
@@ -93,8 +101,8 @@ export const useGetGaugesNotifyReward = ({
     isLoading,
     error,
   } = useQuery({
-    queryFn: () => fetchGaugesNotifyReward(gauges),
-    queryKey: ['useGetGaugesNotifyReward', gauges],
+    queryFn: () => fetchGaugesNotifyReward(gauges, fromTimestamp),
+    queryKey: ['useGetGaugesNotifyReward', gauges, fromTimestamp],
     refetchInterval: AVERAGE_BLOCKTIME,
   })
 
