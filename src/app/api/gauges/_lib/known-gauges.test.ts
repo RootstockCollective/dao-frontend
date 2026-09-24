@@ -36,6 +36,13 @@ describe('filterKnownGauges', () => {
     await expect(filterKnownGauges([KNOWN, UNKNOWN, other])).resolves.toEqual([KNOWN, other])
   })
 
+  it('matches a gauge sent in any casing and returns it lowercased', async () => {
+    mockDb.mockReturnValue(selectStub([{ id: KNOWN }]).chain)
+    const checksummed = '0xAbCdEf0123456789AbCdEf0123456789AbCdEf01'
+
+    await expect(filterKnownGauges([checksummed, KNOWN.toUpperCase()])).resolves.toEqual([KNOWN, KNOWN])
+  })
+
   it('matches ids decoded from a Buffer, for a connection without the bytea parser', async () => {
     mockDb.mockReturnValue(selectStub([{ id: Buffer.from(KNOWN.toUpperCase(), 'utf8') }]).chain)
 

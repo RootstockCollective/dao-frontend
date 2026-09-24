@@ -33,9 +33,11 @@ const loadKnownGaugesCached = unstable_cache(loadKnownGauges, ['known-gauges', '
  * so a gauge missing from it had no rows to return. `GaugeNotifyReward` comes from the gauge
  * template, which the subgraph spawns in the same handler that writes `GaugeToBuilder`.
  *
- * @param lowercaseGauges — Gauges lowercased, as the `Bytes` columns hold them.
+ * @param gauges — Gauges in any casing.
+ * @returns The known ones, lowercased as the `Bytes` columns hold them, in the order given. Callers
+ *   use them as cache keys and to query, so a checksummed address must not read as unknown.
  */
-export async function filterKnownGauges(lowercaseGauges: string[]): Promise<string[]> {
+export async function filterKnownGauges(gauges: string[]): Promise<string[]> {
   const known = new Set(await loadKnownGaugesCached())
-  return lowercaseGauges.filter(gauge => known.has(gauge))
+  return gauges.map(gauge => gauge.toLowerCase()).filter(gauge => known.has(gauge))
 }
