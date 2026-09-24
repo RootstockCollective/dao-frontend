@@ -8,7 +8,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
  * returned by the real `getFromBlockscoutSource` (it closed over the original function). We mock
  * `getFromBlockscoutSource` to wire `fetchPageAndTotal` to `mockBlockscout` instead.
  */
-const { mockQuery, mockBlockscout, mockEnrichRpc } = vi.hoisted(() => {
+const { mockQuery, mockBlockscout, mockStateSync, mockEnrichRpc } = vi.hoisted(() => {
   const mockEnrichRpcInner = vi.fn(
     async (
       history: {
@@ -38,9 +38,20 @@ const { mockQuery, mockBlockscout, mockEnrichRpc } = vi.hoisted(() => {
   return {
     mockQuery: vi.fn(),
     mockBlockscout: vi.fn(),
+    mockStateSync: vi.fn(),
     mockEnrichRpc: mockEnrichRpcInner,
   }
 })
+
+vi.mock('./sources/get-from-state-sync-source', () => ({
+  getFromStateSyncSource: vi.fn(() => ({
+    name: 'state-sync' as const,
+    fetchPageAndTotal: (params: unknown) => mockStateSync(params),
+    enrichWithStatus: async (items: unknown[]) =>
+      // SAFETY: test double mirrors production `BtcVaultHistoryItem[]` from `action.ts`.
+      mockEnrichRpc(items as never),
+  })),
+}))
 
 vi.mock('@/shared/components/ApolloClient', () => ({
   btcVaultClient: {
@@ -70,6 +81,44 @@ describe('fetchBtcVaultHistoryPageAndTotal (DAO-2106)', () => {
     mockQuery.mockReset()
     mockBlockscout.mockReset()
     mockEnrichRpc.mockClear()
+    // Default: state-sync is out, so the existing cases still exercise the subgraph and Blockscout.
+    mockStateSync.mockReset()
+    mockStateSync.mockRejectedValue(new Error('state-sync unavailable'))
+  })
+
+  const STATE_SYNC_DOWN = { source: 'state-sync', message: 'state-sync unavailable' }
+
+  it('serves the page from state-sync without touching the other sources', async () => {
+    mockStateSync.mockResolvedValue({
+      items: [
+        {
+          id: 'ss',
+          user: '0xabc',
+          action: 'DEPOSIT_CLAIMED',
+          assets: '3',
+          shares: '3',
+          epochId: '4',
+          timestamp: 9,
+          blockNumber: '9',
+          transactionHash: '0xss',
+        },
+      ],
+      total: 7,
+    })
+
+    const result = await fetchBtcVaultHistoryPageAndTotal({
+      limit: 20,
+      page: 1,
+      sort_field: 'timestamp',
+      sort_direction: 'desc',
+    })
+
+    expect(result.items).toHaveLength(1)
+    expect(result.total).toBe(7)
+    expect(result.source).toBe('state-sync')
+    expect(result.errors).toEqual([])
+    expect(mockQuery).not.toHaveBeenCalled()
+    expect(mockBlockscout).not.toHaveBeenCalled()
   })
 
   it('returns subgraph list and count when both succeed', async () => {
@@ -128,7 +177,7 @@ describe('fetchBtcVaultHistoryPageAndTotal (DAO-2106)', () => {
     expect(result.items).toHaveLength(1)
     expect(result.total).toBe(10)
     expect(result.source).toBe('the-graph')
-    expect(result.errors).toEqual([])
+    expect(result.errors).toEqual([STATE_SYNC_DOWN])
     expect(mockBlockscout).not.toHaveBeenCalled()
   })
 
@@ -162,7 +211,7 @@ describe('fetchBtcVaultHistoryPageAndTotal (DAO-2106)', () => {
     expect(result.items).toHaveLength(1)
     expect(result.total).toBe(1)
     expect(result.source).toBe('blockscout')
-    expect(result.errors).toEqual([{ source: 'the-graph', message: 'subgraph down' }])
+    expect(result.errors).toEqual([STATE_SYNC_DOWN, { source: 'the-graph', message: 'subgraph down' }])
   })
 })
 
