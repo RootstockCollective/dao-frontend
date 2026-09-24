@@ -44,6 +44,24 @@
     /* The modal itself: warm white rather than the cooler --text-80. */
     --color-surface-warm: #e8e4df;
 
+    /*
+      Compact warm cards on dark: the home notifications and the "Why delegate" explainer.
+      Hairlines on these cards use --color-v3-text-80 with an opacity modifier.
+    */
+    --color-warm-surface: #141110;
+    --color-warm-surface-raised: #16130f;
+    --color-warm-surface-hover: #1c1815;
+    --color-warm-text-body: #d2ccc3;
+    --color-warm-text-soft: #bbb2a7;
+    --color-warm-text-muted: #a29b90;
+    --color-warm-text-subtle: #938a80;
+    --color-warm-icon: #8a8378;
+    /* Ember streaks behind a notification that has no artwork. */
+    --color-ember-deep: #5a1a06;
+    --color-ember: #b04a1a;
+    --color-ember-ash: #1a1210;
+    --color-btc-orange: #f7931a;
+
     --color-v3-rif-blue: rgb(75, 92, 240);
     --color-v3-rsk-purple: rgb(158, 118, 255);
     --color-v3-rsk-pink: rgb(255, 113, 225);

@@ -1,20 +1,20 @@
 'use client'
 
-import Big from 'big.js'
 import { ReactElement, useMemo } from 'react'
 
 import ClaimRewardsModal from '@/app/collective-rewards/components/ClaimRewardModal/ClaimRewardsModal'
-import { useBackerRewardsContext, useClaimBackerRewards } from '@/app/collective-rewards/rewards'
+import {
+  getUnclaimedRewards,
+  useBackerRewardsContext,
+  useClaimBackerRewards,
+} from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { ConditionalTooltip } from '@/app/components'
 import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
-import { MetricToken } from '@/app/components/Metric/types'
 import { createMetricToken } from '@/app/components/Metric/utils'
 import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/FiatTooltipLabel'
-import { getFiatAmount } from '@/app/shared/formatter'
 import { Button } from '@/components/Button'
 import { Span } from '@/components/Typography'
-import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 import { useModal } from '@/shared/hooks/useModal'
@@ -28,29 +28,13 @@ export const UnclaimedRewardsMetric = (): ReactElement => {
 
   const { isClaimable } = useClaimBackerRewards()
 
-  const { metricTokens, total } = useMemo(
-    () =>
-      REWARD_TOKEN_KEYS.reduce<{ metricTokens: MetricToken[]; total: Big }>(
-        ({ metricTokens, total }, tokenKey) => {
-          const { symbol, address } = TOKENS[tokenKey]
-          const price = prices[symbol]?.price ?? 0
-          const value = Object.values((rewardsPerToken?.[address] ?? { earned: 0n }).earned).reduce(
-            (acc, earned) => acc + earned,
-            0n,
-          )
-
-          return {
-            metricTokens: [...metricTokens, createMetricToken({ symbol, value, price })],
-            total: total.add(getFiatAmount(value, prices[symbol]?.price ?? 0)),
-          }
-        },
-        {
-          metricTokens: [],
-          total: Big(0),
-        },
-      ),
-    [rewardsPerToken, prices],
-  )
+  const { metricTokens, total } = useMemo(() => {
+    const { byToken, total } = getUnclaimedRewards(rewardsPerToken, prices)
+    return {
+      metricTokens: byToken.map(({ symbol, value, price }) => createMetricToken({ symbol, value, price })),
+      total,
+    }
+  }, [rewardsPerToken, prices])
 
   return (
     <div className="flex flex-col w-64 gap-4 items-start ">

@@ -19,7 +19,7 @@ const VARIANT_CLASSES = {
   onLight:
     'size-6 rounded border border-v3-bg-accent-100/15 text-v3-bg-accent-100 hover:bg-v3-bg-accent-100/5',
   quiet:
-    'size-7 rounded-md border border-transparent text-[#8a8378] hover:border-[rgba(228,225,218,0.22)] hover:text-banner-title',
+    'size-7 rounded-md border border-transparent text-warm-icon hover:border-v3-text-80/22 hover:text-banner-title',
 }
 
 /**

@@ -33,6 +33,19 @@ describe('WhyDelegate', () => {
     expect(screen.queryAllByRole('listitem')).toHaveLength(0)
   })
 
+  it('only points aria-controls at the panel while the panel is rendered', () => {
+    render(<WhyDelegate />)
+    const toggle = screen.getByTestId('WhyDelegateToggle')
+
+    expect(toggle).not.toHaveAttribute('aria-controls')
+
+    fireEvent.click(toggle)
+
+    const panelId = toggle.getAttribute('aria-controls')
+    expect(panelId).toBeTruthy()
+    expect(document.getElementById(panelId!)).toBeInTheDocument()
+  })
+
   it('starts collapsed on every visit, whatever was left open before', () => {
     const { unmount } = render(<WhyDelegate />)
     fireEvent.click(screen.getByTestId('WhyDelegateToggle'))

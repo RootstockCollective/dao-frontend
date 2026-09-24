@@ -4,13 +4,10 @@ import Image from 'next/image'
 import { useId, useState } from 'react'
 
 import { CommonComponentProps } from '@/components/commonProps'
+import { currentLinks } from '@/lib/links'
 import { cn } from '@/lib/utils'
 
 const ILLUSTRATION_SRC = '/images/hero/delegation-banner.png'
-
-/** TODO: swap for a delegation-specific article once there is one; the FAQ covers it for now. */
-const HOW_DELEGATION_WORKS_URL =
-  'https://wiki.rootstockcollective.xyz/RootstockCollective-FAQ-1031ca6b0b02808c95d3dcb5a0074f4b'
 
 const REASONS = [
   'You are only delegating your own voting power',
@@ -42,7 +39,7 @@ const Check = () => (
     height="12"
     viewBox="0 0 16 16"
     fill="none"
-    stroke="#f7931a"
+    stroke="var(--color-btc-orange)"
     strokeWidth="2"
     strokeLinecap="round"
     strokeLinejoin="round"
@@ -61,7 +58,7 @@ export const WhyDelegate = ({ className }: CommonComponentProps) => {
     <section
       data-testid="WhyDelegate"
       className={cn(
-        'mt-7 w-full self-stretch overflow-hidden rounded-xl border border-[rgba(228,225,218,0.12)] bg-[#16130f]',
+        'mt-7 w-full self-stretch overflow-hidden rounded-xl border border-v3-text-80/12 bg-warm-surface-raised',
         className,
       )}
     >
@@ -69,8 +66,9 @@ export const WhyDelegate = ({ className }: CommonComponentProps) => {
         type="button"
         onClick={() => setIsOpen(open => !open)}
         aria-expanded={isOpen}
-        aria-controls={contentId}
-        className="flex min-h-[72px] w-full cursor-pointer items-center gap-4 px-5 py-3 text-left outline-none transition-colors duration-150 hover:bg-[#1c1815] focus-visible:shadow-[inset_0_0_0_2px_#4b5cf0] md:h-[72px] md:py-0"
+        // Only point at the panel while it is in the DOM; a dangling id is an a11y error
+        aria-controls={isOpen ? contentId : undefined}
+        className="flex min-h-[72px] w-full cursor-pointer items-center gap-4 px-5 py-3 text-left outline-none transition-colors duration-150 hover:bg-warm-surface-hover focus-visible:shadow-[inset_0_0_0_2px_var(--color-v3-rif-blue)] md:h-[72px] md:py-0"
         data-testid="WhyDelegateToggle"
       >
         <span className="relative h-10 w-14 shrink-0 overflow-hidden rounded-md">
@@ -84,11 +82,12 @@ export const WhyDelegate = ({ className }: CommonComponentProps) => {
           />
         </span>
 
-        <span className="font-kk-topo min-w-0 flex-1 text-lg uppercase leading-[1.15] tracking-[0.005em] text-[#e4e1da]">
-          Delegate your voting power <span className="text-[#938a80]">to influence what gets built</span>
+        <span className="font-kk-topo min-w-0 flex-1 text-lg uppercase leading-[1.15] tracking-[0.005em] text-v3-text-80">
+          Delegate your voting power{' '}
+          <span className="text-warm-text-subtle">to influence what gets built</span>
         </span>
 
-        <span className="flex shrink-0 items-center gap-3 text-[13px] text-[#bbb2a7]">
+        <span className="flex shrink-0 items-center gap-3 text-[13px] text-warm-text-soft">
           <span className="hidden sm:inline">{isOpen ? 'Hide' : 'Why delegate'}</span>
           <ChevronDown className={cn('transition-transform duration-200', isOpen && 'rotate-180')} />
         </span>
@@ -97,7 +96,7 @@ export const WhyDelegate = ({ className }: CommonComponentProps) => {
       {isOpen && (
         <div
           id={contentId}
-          className="flex flex-wrap items-center gap-8 border-t border-[rgba(228,225,218,0.08)] px-5 pb-[22px] pt-6"
+          className="flex flex-wrap items-center gap-8 border-t border-v3-text-80/8 px-5 pb-[22px] pt-6"
         >
           <div className="relative aspect-[380/207] w-[380px] max-w-full shrink-0 overflow-hidden rounded-lg">
             <Image
@@ -115,7 +114,7 @@ export const WhyDelegate = ({ className }: CommonComponentProps) => {
               {REASONS.map(reason => (
                 <li
                   key={reason}
-                  className="font-rootstock-sans flex items-center gap-4 text-[15px] leading-[1.35] text-[#d2ccc3]"
+                  className="font-rootstock-sans flex items-center gap-4 text-[15px] leading-[1.35] text-warm-text-body"
                 >
                   <Check />
                   <span>{reason}</span>
@@ -124,10 +123,10 @@ export const WhyDelegate = ({ className }: CommonComponentProps) => {
             </ul>
 
             <a
-              href={HOW_DELEGATION_WORKS_URL}
+              href={currentLinks.howDelegationWorks}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-rootstock-sans self-start border-b border-[rgba(228,225,218,0.7)] pb-px text-sm text-[#e4e1da] hover:border-v3-primary hover:text-v3-primary"
+              className="font-rootstock-sans self-start border-b border-v3-text-80/70 pb-px text-sm text-v3-text-80 hover:border-v3-primary hover:text-v3-primary"
             >
               How delegation works
             </a>

@@ -19,7 +19,7 @@ describe('WhyBecomeABuilder', () => {
     expect(screen.getByText('Why become a builder?')).toBeInTheDocument()
     expect(screen.getAllByRole('listitem')).toHaveLength(3)
     expect(screen.getByText('Network')).toBeInTheDocument()
-    expect(screen.getByTestId('WhyBecomeABuilderToggle')).toHaveTextContent('Hide')
+    expect(screen.getByTestId('WhyBecomeABuilderToggle')).toHaveAccessibleName('Hide')
   })
 
   it('collapses the perks and persists the choice', () => {
@@ -28,7 +28,7 @@ describe('WhyBecomeABuilder', () => {
     fireEvent.click(screen.getByTestId('WhyBecomeABuilderToggle'))
 
     expect(screen.queryAllByRole('listitem')).toHaveLength(0)
-    expect(screen.getByTestId('WhyBecomeABuilderToggle')).toHaveTextContent('Show')
+    expect(screen.getByTestId('WhyBecomeABuilderToggle')).toHaveAccessibleName('Show')
     expect(localStorage.getItem(WHY_BECOME_A_BUILDER_STORAGE_KEY)).toBe('false')
   })
 

@@ -11,18 +11,25 @@ interface ProposalsFromChainProps {
 }
 
 export function ProposalsFromChain({ onCountsChange }: ProposalsFromChainProps) {
-  const { latestProposals, isLoading } = useFetchAllProposals()
-  const { data, totalProposals, activeProposals, isStateLoading } = useProposalListData({
+  const { latestProposals, isLoading, isError } = useFetchAllProposals()
+  const { data, totalProposals, activeProposals, isStateLoading, isStateError } = useProposalListData({
     proposals: latestProposals,
   })
   const memoizedProposals = useMemo(() => data, [data])
 
   useEffect(() => {
     if (!onCountsChange) return
-    onCountsChange(
-      isLoading ? null : { total: totalProposals, active: isStateLoading ? null : activeProposals },
-    )
-  }, [onCountsChange, isLoading, totalProposals, activeProposals, isStateLoading])
+    // A failed fetch leaves an empty list behind, which would read as "0 proposals". Report
+    // nothing instead, so the banner keeps its placeholders.
+    if (isLoading || isError) {
+      onCountsChange(null)
+      return
+    }
+    onCountsChange({
+      total: totalProposals,
+      active: isStateLoading || isStateError ? null : activeProposals,
+    })
+  }, [onCountsChange, isLoading, isError, totalProposals, activeProposals, isStateLoading, isStateError])
 
   useEffect(() => () => onCountsChange?.(null), [onCountsChange])
 

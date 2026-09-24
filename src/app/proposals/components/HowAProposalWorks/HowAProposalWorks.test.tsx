@@ -18,7 +18,7 @@ describe('HowAProposalWorks', () => {
 
     expect(screen.getByText('How a proposal works')).toBeInTheDocument()
     expect(screen.getAllByRole('listitem')).toHaveLength(6)
-    expect(screen.getByTestId('HowAProposalWorksToggle')).toHaveTextContent('Hide')
+    expect(screen.getByTestId('HowAProposalWorksToggle')).toHaveAccessibleName('Hide')
   })
 
   it('collapses the steps and persists the choice', () => {
@@ -27,7 +27,7 @@ describe('HowAProposalWorks', () => {
     fireEvent.click(screen.getByTestId('HowAProposalWorksToggle'))
 
     expect(screen.queryAllByRole('listitem')).toHaveLength(0)
-    expect(screen.getByTestId('HowAProposalWorksToggle')).toHaveTextContent('Show')
+    expect(screen.getByTestId('HowAProposalWorksToggle')).toHaveAccessibleName('Show')
     expect(localStorage.getItem(HOW_A_PROPOSAL_WORKS_STORAGE_KEY)).toBe('false')
   })
 

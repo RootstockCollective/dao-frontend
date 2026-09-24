@@ -25,6 +25,15 @@ describe('NotificationBanner', () => {
     expect(buttonOnClick).toHaveBeenCalledOnce()
   })
 
+  it('clamps the copy instead of truncating it, and keeps the full text in the title', () => {
+    render(<NotificationBanner {...defaultProps} />)
+
+    const description = screen.getByTestId('NotificationDescription')
+    expect(description).toHaveClass('md:line-clamp-2')
+    expect(description).not.toHaveClass('md:truncate')
+    expect(description).toHaveAttribute('title', defaultProps.description)
+  })
+
   it('calls onDismiss when the close button is clicked', () => {
     const onDismiss = vi.fn()
     render(<NotificationBanner {...defaultProps} onDismiss={onDismiss} />)

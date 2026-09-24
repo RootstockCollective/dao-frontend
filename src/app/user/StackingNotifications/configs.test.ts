@@ -96,13 +96,14 @@ describe('getStackArtwork', () => {
 })
 
 /**
- * The card is a fixed 132px so a stack of them stays even, which leaves room for a title and
- * four lines of copy — three if the title itself wraps. The narrowest the copy column gets on
- * desktop is around 474px, or some 63 characters a line, so three lines is roughly 190
- * characters. This cap sits under that with room for a translation to run long, and it is
- * here rather than in review because the card clips silently.
+ * On desktop the notification is a single row — title, copy, call to action and dismiss — and
+ * the copy is clamped to two lines (NotificationBanner). With the title and the button sharing
+ * the row, the copy column is narrow: an estimated 60 characters a line at 14px, so two lines
+ * hold about 120. Past that the copy is cut with an ellipsis and only the `title` tooltip shows
+ * the rest, so the cap lives here rather than in review. Revisit it with design if the row
+ * layout changes.
  */
-const DESCRIPTION_LIMIT = 180
+const DESCRIPTION_LIMIT = 120
 
 const entries = Object.entries(BANNER_CONFIGS)
 
@@ -118,7 +119,7 @@ describe('BANNER_CONFIGS', () => {
    */
   const measurable = entries.filter(([, { description }]) => typeof description === 'string')
 
-  it.each(measurable)('keeps %s short enough that the card does not clip it', (_, { description }) => {
+  it.each(measurable)('keeps %s within the two clamped lines', (_, { description }) => {
     expect(String(description).length).toBeLessThanOrEqual(DESCRIPTION_LIMIT)
   })
 })

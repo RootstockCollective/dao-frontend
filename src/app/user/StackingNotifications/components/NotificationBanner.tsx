@@ -8,14 +8,30 @@ import { DismissButton } from '@/components/DismissButton'
 import { BANNER_CTA_CLASSES, BANNER_MOBILE_OVERLAY } from '@/components/PageBanner'
 import { cn } from '@/lib/utils'
 
-const EMBER_STREAKS = [
-  'linear-gradient(90deg, #141110 0%, #141110 38%, #5A1A06 56%, #B04A1A 72%, #5A1A06 86%, #1A1210 100%)',
-  'linear-gradient(90deg, #141110 0%, #141110 44%, #5A1A06 61%, #B04A1A 76%, #5A1A06 89%, #1A1210 100%)',
-  'linear-gradient(90deg, #141110 0%, #141110 40%, #5A1A06 58%, #B04A1A 74%, #5A1A06 87%, #1A1210 100%)',
-]
+const SURFACE = 'var(--color-warm-surface)'
+const EMBER_DEEP = 'var(--color-ember-deep)'
+const EMBER = 'var(--color-ember)'
+const EMBER_ASH = 'var(--color-ember-ash)'
 
-export const NOTIFICATION_ARTWORK_SCRIM =
-  'linear-gradient(90deg, #141110 0%, #141110 32%, rgba(20,17,16,0.86) 52%, rgba(20,17,16,0.6) 74%, rgba(20,17,16,0.72) 100%)'
+/** The card surface at `percent` opacity, for the stops of the scrim over the artwork. */
+const surfaceAt = (percent: number) => `color-mix(in srgb, ${SURFACE} ${percent}%, transparent)`
+
+/**
+ * Stops of each streak, as % of the width: where the plain surface ends, the deep ember,
+ * the ember's peak and the fall back to deep ember before the ash at the right edge.
+ */
+const EMBER_STREAKS = (
+  [
+    [38, 56, 72, 86],
+    [44, 61, 76, 89],
+    [40, 58, 74, 87],
+  ] as const
+).map(
+  ([solidUntil, deep, peak, fade]) =>
+    `linear-gradient(90deg, ${SURFACE} 0%, ${SURFACE} ${solidUntil}%, ${EMBER_DEEP} ${deep}%, ${EMBER} ${peak}%, ${EMBER_DEEP} ${fade}%, ${EMBER_ASH} 100%)`,
+)
+
+export const NOTIFICATION_ARTWORK_SCRIM = `linear-gradient(90deg, ${SURFACE} 0%, ${SURFACE} 32%, ${surfaceAt(86)} 52%, ${surfaceAt(60)} 74%, ${surfaceAt(72)} 100%)`
 
 export interface NotificationBannerProps {
   title: ReactNode
@@ -45,7 +61,7 @@ export const NotificationBanner = ({
   <div
     data-testid="NotificationBanner"
     className={cn(
-      'relative flex min-h-14 w-full items-stretch self-stretch overflow-hidden rounded-lg border border-[rgba(228,225,218,0.08)] bg-[#141110]',
+      'relative flex min-h-14 w-full items-stretch self-stretch overflow-hidden rounded-lg border border-v3-text-80/8 bg-warm-surface',
       className,
     )}
   >
@@ -75,7 +91,13 @@ export const NotificationBanner = ({
       <span className="font-rootstock-sans text-banner-title shrink-0 whitespace-nowrap text-sm font-bold">
         {title}
       </span>
-      <span className="font-rootstock-sans min-w-0 basis-full text-sm text-[#a29b90] md:flex-1 md:basis-auto md:truncate">
+      {/* Clamped rather than truncated to one line, so the copy stays readable on desktop; the
+          title carries the full text in case a longer one (or a translation) still overflows */}
+      <span
+        className="font-rootstock-sans min-w-0 basis-full text-sm text-warm-text-muted md:line-clamp-2 md:flex-1 md:basis-auto"
+        title={typeof description === 'string' ? description : undefined}
+        data-testid="NotificationDescription"
+      >
         {description}
       </span>
 
