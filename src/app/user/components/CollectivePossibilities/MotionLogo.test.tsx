@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } from 'vitest'
 
 import { MotionLogo } from './MotionLogo'
@@ -46,17 +46,29 @@ describe('MotionLogo', () => {
     expect(play).toHaveBeenCalledOnce()
   })
 
-  it('holds on the poster frame under prefers-reduced-motion', () => {
+  it('stays transparent under prefers-reduced-motion, leaving the poster underneath', () => {
     mockReducedMotion(true)
 
     render(<MotionLogo />)
 
     expect(play).not.toHaveBeenCalled()
     expect(pause).toHaveBeenCalled()
-    expect(screen.getByTestId('MotionLogoVideo')).toHaveAttribute(
-      'poster',
-      '/images/collective-motion-logo-poster.webp',
-    )
+    expect(screen.getByTestId('MotionLogoVideo')).toHaveClass('opacity-0')
+  })
+
+  it('fades in only once the video is actually playing', () => {
+    mockReducedMotion(false)
+
+    render(<MotionLogo />)
+    const video = screen.getByTestId('MotionLogoVideo')
+
+    expect(video).toHaveClass('opacity-0')
+    expect(video).not.toHaveAttribute('controls')
+
+    fireEvent.playing(video)
+
+    expect(video).toHaveClass('opacity-100')
+    expect(video).not.toHaveClass('opacity-0')
   })
 
   it('keeps the poster when the browser refuses to autoplay', async () => {

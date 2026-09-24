@@ -22,10 +22,16 @@ describe('CollectivePossibilities', () => {
     render(<CollectivePossibilities />)
 
     expect(screen.getByText("Don't miss")).toBeInTheDocument()
-    expect(screen.getByTestId('MotionLogo')).toBeInTheDocument()
+    expect(screen.getByTestId('PossibilitiesTile')).toContainElement(screen.getByTestId('MotionLogoVideo'))
     expect(screen.getAllByRole('listitem')).toHaveLength(3)
     expect(screen.getByText('Build')).toBeInTheDocument()
     expect(screen.getByText('Connect wallet')).toBeInTheDocument()
+  })
+
+  it('names the region after its title', () => {
+    render(<CollectivePossibilities />)
+
+    expect(screen.getByRole('region', { name: 'THE COLLECTIVE POSSIBILITIES' })).toBeInTheDocument()
   })
 
   it('hides the card when dismissed, without persisting the choice', () => {
