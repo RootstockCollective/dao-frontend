@@ -16,12 +16,20 @@
  *
  * This is the trap worth knowing: `chain_id` moves depending on which API you call.
  *
- * | Style   | Per-instance (old)              | PRO (new)                                           |
- * | ------- | ------------------------------- | --------------------------------------------------- |
- * | RPC     | `{host}/api?module=…`           | `api.blockscout.com/v2/api?chain_id=30&apikey=…`     |
- * | REST v2 | `{host}/api/v2/{path}`          | `api.blockscout.com/30/api/v2/{path}?apikey=…`       |
+ * | Style   | Per-instance (old)              | PRO (new)                                  |
+ * | ------- | ------------------------------- | ------------------------------------------ |
+ * | RPC     | `{host}/api?module=…`           | `api.blockscout.com/v2/api?chain_id=30&…`  |
+ * | REST v2 | `{host}/api/v2/{path}`          | `api.blockscout.com/30/api/v2/{path}`      |
  *
  * RPC takes `chain_id` as a **query param**; REST takes it as a **path segment**.
+ *
+ * ## The key travels in a header, not the URL
+ *
+ * The PRO API accepts the key either as an `apikey` query param or as `Authorization: Bearer …`,
+ * for both styles. We send the header: a URL is what gets written down — egress proxy and load
+ * balancer access logs, the `url` Next keeps in each fetch cache entry, any log line that prints a
+ * request — so a key in the query string ends up in all of them. The builders below return the
+ * headers alongside the URL, and callers must pass both to `fetch`.
  *
  * @remarks
  * - **Opt-in.** With no key configured every call keeps going to the public instance, so
@@ -75,62 +83,127 @@ function requirePublicInstanceUrl(): string {
 const stripTrailingSlash = (value: string): string => value.replace(/\/$/, '')
 const stripLeadingSlash = (value: string): string => value.replace(/^\//, '')
 
+/** Query param the PRO API also reads a key from. Stripped from every URL we build. */
+const API_KEY_QUERY_PARAM = 'apikey'
+
+/** A request ready for `fetch(url, { headers })`. */
+export interface BlockscoutRequest {
+  url: string
+  /** `Authorization` on the PRO API; empty on the public instance or a pinned explorer. */
+  headers: Record<string, string>
+}
+
 export interface BlockscoutRpcTarget {
   /** Origin to build request URLs from; callers append `/api` themselves. */
   baseUrl: string
-  /** Query params every request must carry (`chain_id`, `apikey`); empty on the public instance. */
-  authParams: Record<string, string>
+  /** Query params every request must carry (`chain_id`); empty on the public instance. */
+  queryParams: Record<string, string>
+  /** Headers every request must carry (`Authorization`); empty on the public instance. */
+  headers: Record<string, string>
   /** True when requests go to the authenticated PRO API. */
   isPro: boolean
 }
 
+/** The `Authorization` header for one PRO API key. */
+export function blockscoutAuthHeaders(key: string): Record<string, string> {
+  return { Authorization: `Bearer ${key}` }
+}
+
 /**
- * Resolves the target for RPC-style calls (`?module=…&action=…`).
+ * Merges a built request's headers into a caller's `init`. Ours are applied last, so a caller's
+ * `Authorization` cannot replace the key.
+ */
+export function withBlockscoutHeaders(
+  init: RequestInit | undefined,
+  headers: Record<string, string>,
+): RequestInit {
+  const merged = new Headers(init?.headers)
+  for (const [name, value] of Object.entries(headers)) {
+    merged.set(name, value)
+  }
+  return { ...init, headers: merged }
+}
+
+/**
+ * Appends `params` and drops any `apikey` among them. Our key never goes in a URL, and a caller's
+ * must not either: some callers relay params that originated at a remote cursor or a browser.
+ */
+function appendParams(url: URL, params: Record<string, string>): void {
+  for (const [param, value] of Object.entries(params)) {
+    url.searchParams.set(param, value)
+  }
+  url.searchParams.delete(API_KEY_QUERY_PARAM)
+}
+
+/**
+ * Resolves the target for RPC-style calls (`?module=…&action=…`). Prefer
+ * {@link buildBlockscoutRpcRequest}, which also assembles the URL.
  *
  * @param baseUrlOverride — Pins a specific explorer. Honoured verbatim and **never** authenticated,
  *   so a deliberately pinned instance can never receive our key.
- *
- * @example
- * ```ts
- * const { baseUrl, authParams } = resolveBlockscoutRpcTarget()
- * const url = new URL(`${baseUrl}/api`)
- * for (const [k, v] of Object.entries({ ...authParams, ...params })) url.searchParams.append(k, v)
- * ```
  */
 export function resolveBlockscoutRpcTarget(baseUrlOverride?: string): BlockscoutRpcTarget {
   if (baseUrlOverride) {
-    return { baseUrl: stripTrailingSlash(baseUrlOverride), authParams: {}, isPro: false }
+    return { baseUrl: stripTrailingSlash(baseUrlOverride), queryParams: {}, headers: {}, isPro: false }
   }
 
   const key = apiKey()
   if (!key) {
-    return { baseUrl: requirePublicInstanceUrl(), authParams: {}, isPro: false }
+    return { baseUrl: requirePublicInstanceUrl(), queryParams: {}, headers: {}, isPro: false }
   }
 
   return {
     // RPC lives under /v2 and selects the chain with a query param.
     baseUrl: `${proApiHost()}/v2`,
-    authParams: { chain_id: CHAIN_ID, apikey: key },
+    queryParams: { chain_id: CHAIN_ID },
+    headers: blockscoutAuthHeaders(key),
     isPro: true,
   }
 }
 
 /**
- * Builds a full REST v2 URL, authenticated when a key is configured.
+ * Builds an RPC-style request, authenticated when a key is configured.
+ *
+ * Each call takes the next key in rotation, so call it per request rather than once per loop.
+ *
+ * @param params — `module`, `action` and the rest of the call's query.
+ * @param baseUrlOverride — See {@link resolveBlockscoutRpcTarget}.
+ *
+ * @example
+ * ```ts
+ * const { url, headers } = buildBlockscoutRpcRequest({ module: 'logs', action: 'getLogs', … })
+ * const response = await fetch(url, { headers })
+ * ```
+ */
+export function buildBlockscoutRpcRequest(
+  params: Record<string, string>,
+  baseUrlOverride?: string,
+): BlockscoutRequest {
+  const { baseUrl, queryParams, headers } = resolveBlockscoutRpcTarget(baseUrlOverride)
+  const url = new URL(`${baseUrl}/api`)
+  // Target params go last so a caller cannot repoint `chain_id`.
+  appendParams(url, { ...params, ...queryParams })
+  return { url: url.toString(), headers }
+}
+
+/**
+ * Builds a REST v2 request, authenticated when a key is configured.
  *
  * @param path — Endpoint below `api/v2`, with or without a leading slash
  *   (e.g. `addresses/0x…`, `tokens/0x…/holders`).
  * @param searchParams — Extra query params to append.
- * @returns An absolute URL string ready for `fetch`.
  *
  * @example
  * ```ts
- * // PRO:    https://api.blockscout.com/30/api/v2/addresses/0xabc?apikey=proapi_xxx
+ * // PRO:    https://api.blockscout.com/30/api/v2/addresses/0xabc  + Authorization: Bearer proapi_xxx
  * // Public: https://rootstock.blockscout.com/api/v2/addresses/0xabc
- * buildBlockscoutRestUrl(`addresses/${address}`)
+ * const { url, headers } = buildBlockscoutRestRequest(`addresses/${address}`)
  * ```
  */
-export function buildBlockscoutRestUrl(path: string, searchParams: Record<string, string> = {}): string {
+export function buildBlockscoutRestRequest(
+  path: string,
+  searchParams: Record<string, string> = {},
+): BlockscoutRequest {
   const cleanPath = stripLeadingSlash(path)
 
   // REST puts the chain in the path, unlike RPC — see the table above.
@@ -139,18 +212,9 @@ export function buildBlockscoutRestUrl(path: string, searchParams: Record<string
     ? new URL(`${proApiHost()}/${CHAIN_ID}/api/v2/${cleanPath}`)
     : new URL(`${requirePublicInstanceUrl()}/api/v2/${cleanPath}`)
 
-  for (const [param, value] of Object.entries(searchParams)) {
-    url.searchParams.set(param, value)
-  }
+  appendParams(url, searchParams)
 
-  // Authentication goes on last, and last write wins. Some callers relay params that originated at
-  // a remote cursor or a browser, so setting `apikey` first left a caller-supplied `apikey` free to
-  // overwrite it — the key belongs to this function, not to whoever is asking.
-  if (key) {
-    url.searchParams.set('apikey', key)
-  }
-
-  return url.toString()
+  return { url: url.toString(), headers: key ? blockscoutAuthHeaders(key) : {} }
 }
 
 /** Whether the PRO API is configured. Exposed so callers can log or pace differently. */

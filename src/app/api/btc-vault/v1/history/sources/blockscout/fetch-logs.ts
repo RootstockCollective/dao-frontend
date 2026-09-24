@@ -1,7 +1,7 @@
 import { getAbiItem, type Hex, toEventSelector } from 'viem'
 
 import { RBTCAsyncVaultAbi } from '@/lib/abis/btc-vault/RBTCAsyncVaultAbi'
-import { resolveBlockscoutRpcTarget } from '@/lib/blockscout/blockscout-api'
+import { buildBlockscoutRpcRequest } from '@/lib/blockscout/blockscout-api'
 import { throttledBlockscoutFetch } from '@/lib/blockscout/request-throttle'
 
 import {
@@ -70,15 +70,11 @@ export async function fetchVaultLogsAllPagesForTopic(
       topic0: topic0.toLowerCase(),
     }
 
-    const { baseUrl, authParams } = resolveBlockscoutRpcTarget()
-    const url = new URL(`${baseUrl}/api`)
-    for (const [paramKey, value] of Object.entries({ ...authParams, ...params })) {
-      url.searchParams.append(paramKey, value)
-    }
+    const { url, headers } = buildBlockscoutRpcRequest(params)
 
     // Shares the process-wide pacing with every other Blockscout caller: the PRO quota is per key,
     // so an unpaced burst here would 429 the gauge routes too.
-    const response = await throttledBlockscoutFetch(url.toString(), {}, { timeoutMs: 25_000 })
+    const response = await throttledBlockscoutFetch(url, { headers }, { timeoutMs: 25_000 })
     if (!response.ok) {
       throw new Error(`Blockscout getLogs failed: HTTP ${response.status} ${response.statusText}`)
     }

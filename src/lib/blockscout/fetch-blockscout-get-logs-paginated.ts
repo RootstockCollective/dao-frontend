@@ -2,7 +2,7 @@ import type { Address, Hex } from 'viem'
 
 import type { BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
-import { resolveBlockscoutRpcTarget } from './blockscout-api'
+import { buildBlockscoutRpcRequest, withBlockscoutHeaders } from './blockscout-api'
 import { throttledBlockscoutFetch } from './request-throttle'
 
 /**
@@ -67,7 +67,7 @@ export type BlockscoutGetLogsFetchInit = RequestInit & {
  *
  * @property query — Contract + topics (+ optional block range) sent to Blockscout `getLogs`.
  * @property blockscoutBaseUrl — Pins a specific explorer origin (no trailing slash). Omit it to let
- *   {@link resolveBlockscoutRpcTarget} choose: the PRO API when a key is configured, the public
+ *   {@link buildBlockscoutRpcRequest} choose: the PRO API when a key is configured, the public
  *   instance otherwise. An override is never redirected at the PRO API.
  * @property fetchInit — Merged into `fetch` after the default timeout signal (e.g. `next.revalidate` in Route Handlers).
  */
@@ -114,7 +114,7 @@ function buildPageParams(query: BlockscoutGetLogsQuery, fromBlock: string): Reco
  * deduplicating by `transactionHash` + `logIndex`.
  *
  * @param params.query — Typed getLogs filter (address, topics, optional block bounds).
- * @param params.blockscoutBaseUrl — Optional explorer base; see {@link resolveBlockscoutRpcTarget}.
+ * @param params.blockscoutBaseUrl — Optional explorer base; see {@link buildBlockscoutRpcRequest}.
  * @param params.fetchInit — Optional `fetch` options merged after defaults.
  * @returns Raw log rows as returned by Blockscout (includes `timeStamp` for server-side use).
  *
@@ -162,8 +162,6 @@ export async function fetchBlockscoutGetLogsPaginated({
   fetchInit,
   timeoutMs = REQUEST_TIMEOUT_MS,
 }: FetchBlockscoutGetLogsPaginatedParams): Promise<BackendEventByTopic0ResponseValue[]> {
-  const { baseUrl, authParams } = resolveBlockscoutRpcTarget(blockscoutBaseUrl)
-  const base = baseUrl.replace(/\/$/, '')
   const allLogs: BackendEventByTopic0ResponseValue[] = []
   const seenKeys = new Set<string>()
   let fromBlock = query.fromBlock ?? '0'
@@ -172,16 +170,15 @@ export async function fetchBlockscoutGetLogsPaginated({
   while (pages < BLOCKSCOUT_GET_LOGS_MAX_PAGES) {
     pages += 1
 
-    const params = buildPageParams(query, fromBlock)
-    const url = new URL(`${base}/api`)
-    for (const [key, value] of Object.entries({ ...authParams, ...params })) {
-      url.searchParams.append(key, value)
-    }
+    // Built per page so each page takes the next key in rotation.
+    const { url, headers } = buildBlockscoutRpcRequest(buildPageParams(query, fromBlock), blockscoutBaseUrl)
 
     // Paced + retried: Blockscout rate-limits per IP and answers 429 well below our natural fan-out.
     // The timeout is handed over rather than pre-built, so it starts when the request leaves the
     // queue instead of when it joins it — otherwise a paced request aborts before it ever runs.
-    const response = await throttledBlockscoutFetch(url.toString(), fetchInit ?? {}, { timeoutMs })
+    const response = await throttledBlockscoutFetch(url, withBlockscoutHeaders(fetchInit, headers), {
+      timeoutMs,
+    })
 
     if (!response.ok) {
       throw new Error(`Blockscout getLogs failed: HTTP ${response.status} ${response.statusText}`)

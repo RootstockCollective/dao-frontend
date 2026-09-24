@@ -10,7 +10,7 @@ import {
   TokenHoldersResponse,
 } from '@/app/user/Balances/types'
 import { GetPricesResult } from '@/app/user/types'
-import { buildBlockscoutRestUrl } from '@/lib/blockscout/blockscout-api'
+import { buildBlockscoutRestRequest } from '@/lib/blockscout/blockscout-api'
 import { fetchLogsByTopic } from '@/lib/blockscout/fetch-logs-by-topic'
 import { RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
 import { GovernorAddress, tokenContracts } from '@/lib/contracts'
@@ -175,15 +175,13 @@ const PAGINATION_KEYS: Record<keyof NextPageParams, true> = {
 /**
  * Blockscout's cursor fields for the next page.
  *
- * Returned as a record rather than a query string: these are merged into the URL alongside the
- * PRO API's own `apikey`, and assigning `url.search` wholesale would drop it.
+ * Returned as a record rather than a query string, for `buildBlockscoutRestRequest` to merge.
  *
  * @remarks Only the names in {@link PAGINATION_KEYS} are copied, never the caller's own. This is a
  * `'use server'` module, so `nextParams` arrives as whatever JSON was POSTed at the action
  * endpoint — the keys are as untrusted as the values. Copying them verbatim put an arbitrary query
- * param on an authenticated upstream call, and because the merge happens *after*
- * `buildBlockscoutRestUrl` sets `apikey`, a body of `{ apikey: '…' }` replaced our own key
- * (CodeQL `js/remote-property-injection`, alert 120).
+ * param on an authenticated upstream call; when the key still travelled as `apikey`, a body of
+ * `{ apikey: '…' }` replaced our own (CodeQL `js/remote-property-injection`, alert 120).
  */
 function buildPaginationParams(nextParams: NextPageParams | null): Record<string, string> {
   if (!nextParams) return {}
@@ -210,11 +208,11 @@ export const fetchNftHoldersOfAddress = async (
     throw new Error(`Invalid address: ${address}`)
   }
   const normalizedAddress = address.toLowerCase()
-  const url = buildBlockscoutRestUrl(
+  const { url, headers } = buildBlockscoutRestRequest(
     `tokens/${encodeURIComponent(normalizedAddress)}/instances`,
     buildPaginationParams(nextParams),
   )
-  const res = await fetch(url, { next: { revalidate: 30 } })
+  const res = await fetch(url, { headers, next: { revalidate: 30 } })
   if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
   const data = (await res.json()) as {
     items: BlockscoutNftInstance[]
@@ -240,11 +238,11 @@ export const fetchTokenHoldersOfAddress = async (
     throw new Error(`Invalid address: ${address}`)
   }
   const normalizedAddress = address.toLowerCase()
-  const url = buildBlockscoutRestUrl(
+  const { url, headers } = buildBlockscoutRestRequest(
     `tokens/${encodeURIComponent(normalizedAddress)}/holders`,
     buildPaginationParams(nextParams),
   )
-  const res = await fetch(url, { next: { revalidate: 30 } })
+  const res = await fetch(url, { headers, next: { revalidate: 30 } })
   if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
   const data: ServerResponseV2<TokenHoldersResponse> = await res.json()
   return data

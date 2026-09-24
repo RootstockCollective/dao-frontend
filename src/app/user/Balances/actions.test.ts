@@ -25,6 +25,8 @@ const API_KEY = 'proapi_configured_key'
 const asCursor = (params: Record<string, unknown>) => params as unknown as NextPageParams
 
 const calledUrl = () => new URL((global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][0])
+const calledAuthorization = () =>
+  new Headers((global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][1]?.headers).get('authorization')
 
 describe('Blockscout pagination cursors', () => {
   const originalFetch = global.fetch
@@ -63,23 +65,25 @@ describe('Blockscout pagination cursors', () => {
     expect(url.searchParams.get('items_count')).toBe('50')
   })
 
-  it('never lets a caller replace the PRO API key', async () => {
+  it('never lets a caller replace the PRO API key or put one in the URL', async () => {
     await fetchTokenHoldersOfAddress(TOKEN, asCursor({ apikey: 'attacker_supplied' }))
 
-    expect(calledUrl().searchParams.get('apikey')).toBe(API_KEY)
+    expect(calledUrl().searchParams.get('apikey')).toBeNull()
+    expect(calledAuthorization()).toBe(`Bearer ${API_KEY}`)
   })
 
   it('applies the same allowlist to the NFT holders action', async () => {
     await fetchNftHoldersOfAddress(TOKEN, asCursor({ items_count: 10, apikey: 'attacker_supplied' }))
 
     const url = calledUrl()
-    expect(url.searchParams.get('apikey')).toBe(API_KEY)
+    expect(url.searchParams.get('apikey')).toBeNull()
+    expect(calledAuthorization()).toBe(`Bearer ${API_KEY}`)
     expect(url.searchParams.get('items_count')).toBe('10')
   })
 
   it('drops a caller apikey on the public instance too, where only the allowlist stands in the way', async () => {
-    // Without a configured key, buildBlockscoutRestUrl sets no apikey of its own, so a caller's
-    // would reach the URL untouched if the allowlist let it through.
+    // Without a configured key nothing authenticates the call, so a caller's apikey would reach
+    // the public instance if both the allowlist and the builder let it through.
     delete process.env.BLOCKSCOUT_API_KEY
 
     await fetchTokenHoldersOfAddress(TOKEN, asCursor({ items_count: 50, apikey: 'attacker_supplied' }))
@@ -87,12 +91,14 @@ describe('Blockscout pagination cursors', () => {
     const url = calledUrl()
     expect(url.origin).toBe('https://rootstock.blockscout.test')
     expect(url.searchParams.get('apikey')).toBeNull()
+    expect(calledAuthorization()).toBeNull()
     expect(url.searchParams.get('items_count')).toBe('50')
   })
 
   it('sends no cursor at all on the first page', async () => {
     await fetchTokenHoldersOfAddress(TOKEN, null)
 
-    expect([...calledUrl().searchParams.keys()]).toEqual(['apikey'])
+    // The key travels in Authorization, so the first page carries no query at all.
+    expect([...calledUrl().searchParams.keys()]).toEqual([])
   })
 })

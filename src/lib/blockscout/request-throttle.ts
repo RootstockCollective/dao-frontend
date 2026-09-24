@@ -27,13 +27,13 @@ function defaultMinIntervalMs(): number {
   return DEFAULT_PRO_MIN_INTERVAL_MS / Math.max(1, getBlockscoutKeyCount())
 }
 
-/** Recovers the key a request was authenticated with, so a 429 parks that key and not the others. */
-function apiKeyFromUrl(url: string): string | undefined {
-  try {
-    return new URL(url).searchParams.get('apikey') ?? undefined
-  } catch {
-    return undefined
-  }
+/**
+ * Recovers the key a request was authenticated with, so a 429 parks that key and not the others.
+ * Read from the `Authorization` header the builders in `blockscout-api.ts` attach.
+ */
+function apiKeyFromHeaders(headers: HeadersInit | undefined): string | undefined {
+  const authorization = new Headers(headers).get('authorization')
+  return authorization?.match(/^Bearer\s+(\S+)$/i)?.[1]
 }
 
 /** The budget is per IP, so parallelism buys nothing and only wastes it in bursts. */
@@ -196,7 +196,9 @@ function attemptSignal(callerSignal: AbortSignal | null | undefined, timeoutMs: 
  * Performs a Blockscout request through the shared paced queue, retrying on 429 and transient 5xx.
  *
  * @param url — Absolute Blockscout API URL.
- * @param init — Passed straight to `fetch` (including Next.js `next.revalidate`). Any `signal` here
+ * @param init — Passed straight to `fetch` (including Next.js `next.revalidate`). Must carry the
+ *   `headers` the request was built with: the `Authorization` key in them is how a 429 finds the key
+ *   to cool down. Any `signal` here
  *   is treated as caller-driven cancellation and composed with each attempt's deadline; pass the
  *   deadline itself via {@link ThrottledFetchOptions.timeoutMs}, never as a pre-built timeout signal.
  * @param options — Throttle-aware knobs; see {@link ThrottledFetchOptions}.
@@ -234,7 +236,7 @@ export async function throttledBlockscoutFetch(
 
       if (response.status === 429) {
         const backoffMs = retryDelayMs(response, attempt)
-        const limitedKey = apiKeyFromUrl(url)
+        const limitedKey = apiKeyFromHeaders(init?.headers)
 
         if (getBlockscoutKeyCount() > 1) {
           // Several keys in rotation: only the one that was limited steps aside. Stopping the whole

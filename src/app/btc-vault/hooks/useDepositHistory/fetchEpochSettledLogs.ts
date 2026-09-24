@@ -1,7 +1,7 @@
 import { type Address, getAddress, type Hash, type Hex, type Log, parseEventLogs } from 'viem'
 
 import { RBTCAsyncVaultAbi } from '@/lib/abis/btc-vault/RBTCAsyncVaultAbi'
-import { resolveBlockscoutRpcTarget } from '@/lib/blockscout/blockscout-api'
+import { buildBlockscoutRpcRequest } from '@/lib/blockscout/blockscout-api'
 import { RBTC_VAULT_ADDRESS } from '@/lib/constants'
 import { type BackendEventByTopic0ResponseValue } from '@/shared/utils'
 
@@ -67,13 +67,9 @@ export async function fetchEpochSettledLogs(): Promise<EpochSettledEvent[]> {
       fromBlock,
     }
 
-    const { baseUrl, authParams } = resolveBlockscoutRpcTarget()
-    const url = new URL(`${baseUrl}/api`)
-    for (const [key, value] of Object.entries({ ...authParams, ...params })) {
-      url.searchParams.append(key, value)
-    }
+    const { url, headers } = buildBlockscoutRpcRequest(params)
 
-    const response = await fetch(url.toString())
+    const response = await fetch(url, { headers })
     if (!response.ok) {
       throw new Error(`Blockscout API error: ${response.status} ${response.statusText}`)
     }
