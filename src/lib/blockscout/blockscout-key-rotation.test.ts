@@ -79,6 +79,48 @@ describe('API key rotation', () => {
     )
   })
 
+  it('rotates keys page by page within a single paginated call', async () => {
+    process.env.BLOCKSCOUT_API_KEY = 'key_a,key_b,key_c'
+    configureBlockscoutThrottle({ minIntervalMs: 0 })
+
+    const page = (blockNumber: string, tx: string) =>
+      new Response(
+        JSON.stringify({
+          status: '1',
+          message: 'OK',
+          result: [{ blockNumber, logIndex: '0x0', transactionHash: tx, topics: [], data: '0x' }],
+        }),
+        { status: 200 },
+      )
+    global.fetch = vi
+      .fn()
+      .mockResolvedValueOnce(page('0x10', '0x1'))
+      .mockResolvedValueOnce(page('0x20', '0x2'))
+      .mockResolvedValueOnce(emptyPage())
+
+    await fetchLogs()
+
+    // Building the request once outside the loop would pin every page to key_a.
+    expect(keysUsed()).toEqual(['key_a', 'key_b', 'key_c'])
+  })
+
+  it('parks the limited key on the real paginated path, where headers arrive as a Headers instance', async () => {
+    process.env.BLOCKSCOUT_API_KEY = 'key_a,key_b'
+    configureBlockscoutThrottle({ maxAttempts: 1, minIntervalMs: 0 })
+
+    global.fetch = vi
+      .fn()
+      .mockImplementation(async (_url: string, init?: RequestInit) =>
+        keyOf(init) === 'key_a' ? new Response('{}', { status: 429 }) : emptyPage(),
+      )
+
+    await expect(fetchLogs()).rejects.toThrow('HTTP 429')
+
+    const [, init] = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0]
+    expect((init as RequestInit).headers).toBeInstanceOf(Headers)
+    expect(getCoolingDownKeys()).toEqual(['key_a'])
+  })
+
   it('parks only the key that was rate-limited, leaving the others in rotation', async () => {
     process.env.BLOCKSCOUT_API_KEY = 'key_a,key_b,key_c'
     configureBlockscoutThrottle({ maxAttempts: 1, minIntervalMs: 0 })
