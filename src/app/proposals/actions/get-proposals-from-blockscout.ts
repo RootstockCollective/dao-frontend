@@ -10,7 +10,7 @@ import {
 } from '@/app/proposals/shared/utils'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import Big from '@/lib/big'
-import { resolveBlockscoutRpcTarget } from '@/lib/blockscout/blockscout-api'
+import { buildBlockscoutRpcRequest } from '@/lib/blockscout/blockscout-api'
 import { GOVERNOR_ADDRESS } from '@/lib/constants'
 import { PROPOSAL_CREATED_EVENT } from '@/lib/endpoints'
 import { logger } from '@/lib/logger'
@@ -115,13 +115,9 @@ async function fetchProposalLogsFromBlockscout(): Promise<BackendEventByTopic0Re
         fromBlock,
       }
 
-      const { baseUrl, authParams } = resolveBlockscoutRpcTarget()
-      const url = new URL(`${baseUrl}/api`)
-      Object.entries({ ...authParams, ...params }).forEach(([key, value]) => {
-        url.searchParams.append(key, value)
-      })
+      const { url, headers } = buildBlockscoutRpcRequest(params)
 
-      const response = await fetch(url.toString())
+      const response = await fetch(url, { headers })
       if (!response.ok) {
         throw new Error(`Blockscout API error: ${response.status} ${response.statusText}`)
       }

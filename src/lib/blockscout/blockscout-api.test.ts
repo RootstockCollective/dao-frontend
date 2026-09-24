@@ -41,12 +41,13 @@ describe('resolveBlockscoutRpcTarget', () => {
     const target = resolveBlockscoutRpcTarget()
 
     expect(target.baseUrl).toBe(PUBLIC_INSTANCE)
-    expect(target.authParams).toEqual({})
+    expect(target.queryParams).toEqual({})
+    expect(target.headers).toEqual({})
     expect(target.isPro).toBe(false)
     expect(isBlockscoutProApiEnabled()).toBe(false)
   })
 
-  it('switches to the PRO API and carries chain_id plus apikey once a key is set', async () => {
+  it('switches to the PRO API with chain_id in the query and the key in a header', async () => {
     const { resolveBlockscoutRpcTarget, isBlockscoutProApiEnabled } = await loadWithEnv({
       BLOCKSCOUT_API_KEY: 'proapi_secret',
     })
@@ -55,8 +56,9 @@ describe('resolveBlockscoutRpcTarget', () => {
 
     // `/api` is appended by callers, so this must produce https://api.blockscout.com/v2/api.
     expect(target.baseUrl).toBe('https://api.blockscout.com/v2')
-    // chain_id is required: one host serves every chain.
-    expect(target.authParams).toEqual({ chain_id: '30', apikey: 'proapi_secret' })
+    // chain_id is required: one host serves every chain. The key stays out of the URL.
+    expect(target.queryParams).toEqual({ chain_id: '30' })
+    expect(target.headers).toEqual({ Authorization: 'Bearer proapi_secret' })
     expect(target.isPro).toBe(true)
     expect(isBlockscoutProApiEnabled()).toBe(true)
   })
@@ -74,7 +76,8 @@ describe('resolveBlockscoutRpcTarget', () => {
 
     expect(target.baseUrl).toBe('https://custom.explorer')
     // Crucially, the key is not leaked onto an instance the caller pinned on purpose.
-    expect(target.authParams).toEqual({})
+    expect(target.queryParams).toEqual({})
+    expect(target.headers).toEqual({})
   })
 
   it('allows the PRO base url to be repointed by env', async () => {
@@ -87,7 +90,7 @@ describe('resolveBlockscoutRpcTarget', () => {
   })
 })
 
-describe('buildBlockscoutRestUrl', () => {
+describe('buildBlockscoutRpcRequest', () => {
   const original = { ...process.env }
 
   beforeEach(() => {
@@ -101,21 +104,103 @@ describe('buildBlockscoutRestUrl', () => {
     vi.resetModules()
   })
 
-  it('appends caller params alongside the key', async () => {
-    const { buildBlockscoutRestUrl } = await loadWithEnv({ BLOCKSCOUT_API_KEY: 'proapi_key' })
+  it('builds the PRO RPC url with chain_id and no key, and puts the key in Authorization', async () => {
+    const { buildBlockscoutRpcRequest } = await loadWithEnv({ BLOCKSCOUT_API_KEY: 'proapi_key' })
 
-    const url = new URL(buildBlockscoutRestUrl('tokens/0xabc/holders', { items_count: '50' }))
+    const { url, headers } = buildBlockscoutRpcRequest({ module: 'logs', action: 'getLogs' })
+    const parsed = new URL(url)
 
-    expect(url.pathname).toBe('/30/api/v2/tokens/0xabc/holders')
-    expect(url.searchParams.get('items_count')).toBe('50')
-    expect(url.searchParams.get('apikey')).toBe('proapi_key')
+    expect(parsed.origin + parsed.pathname).toBe('https://api.blockscout.com/v2/api')
+    expect(Object.fromEntries(parsed.searchParams)).toEqual({
+      module: 'logs',
+      action: 'getLogs',
+      chain_id: '30',
+    })
+    expect(headers).toEqual({ Authorization: 'Bearer proapi_key' })
   })
 
-  it('keeps the configured key when a caller passes an apikey of its own', async () => {
-    const { buildBlockscoutRestUrl } = await loadWithEnv({ BLOCKSCOUT_API_KEY: 'proapi_key' })
+  it('drops a caller apikey and keeps chain_id our own', async () => {
+    const { buildBlockscoutRpcRequest } = await loadWithEnv({ BLOCKSCOUT_API_KEY: 'proapi_key' })
 
-    const url = new URL(buildBlockscoutRestUrl('tokens/0xabc/holders', { apikey: 'caller_supplied' }))
+    const { url } = buildBlockscoutRpcRequest({ module: 'logs', apikey: 'caller_supplied', chain_id: '1' })
+    const parsed = new URL(url)
 
-    expect(url.searchParams.getAll('apikey')).toEqual(['proapi_key'])
+    expect(parsed.searchParams.has('apikey')).toBe(false)
+    expect(parsed.searchParams.getAll('chain_id')).toEqual(['30'])
+  })
+
+  it('sends no headers to the public instance or a pinned explorer', async () => {
+    const unkeyed = await loadWithEnv({ BLOCKSCOUT_API_KEY: undefined })
+    expect(unkeyed.buildBlockscoutRpcRequest({ module: 'logs' })).toEqual({
+      url: `${PUBLIC_INSTANCE}/api?module=logs`,
+      headers: {},
+    })
+
+    const keyed = await loadWithEnv({ BLOCKSCOUT_API_KEY: 'proapi_key' })
+    expect(keyed.buildBlockscoutRpcRequest({ module: 'logs' }, 'https://custom.explorer')).toEqual({
+      url: 'https://custom.explorer/api?module=logs',
+      headers: {},
+    })
+  })
+})
+
+describe('buildBlockscoutRestRequest', () => {
+  const original = { ...process.env }
+
+  beforeEach(() => {
+    delete process.env.BLOCKSCOUT_API_KEY
+    delete process.env.BLOCKSCOUT_PRO_API_HOST
+    process.env.NEXT_PUBLIC_BLOCKSCOUT_URL = PUBLIC_INSTANCE
+  })
+
+  afterEach(() => {
+    process.env = { ...original }
+    vi.resetModules()
+  })
+
+  it('appends caller params and carries the key in Authorization, not the url', async () => {
+    const { buildBlockscoutRestRequest } = await loadWithEnv({ BLOCKSCOUT_API_KEY: 'proapi_key' })
+
+    const { url, headers } = buildBlockscoutRestRequest('tokens/0xabc/holders', { items_count: '50' })
+    const parsed = new URL(url)
+
+    expect(parsed.pathname).toBe('/30/api/v2/tokens/0xabc/holders')
+    expect(Object.fromEntries(parsed.searchParams)).toEqual({ items_count: '50' })
+    expect(url).not.toContain('proapi_key')
+    expect(headers).toEqual({ Authorization: 'Bearer proapi_key' })
+  })
+
+  it('drops a caller apikey instead of forwarding it', async () => {
+    const { buildBlockscoutRestRequest } = await loadWithEnv({ BLOCKSCOUT_API_KEY: 'proapi_key' })
+
+    const { url, headers } = buildBlockscoutRestRequest('tokens/0xabc/holders', { apikey: 'caller_supplied' })
+
+    expect(new URL(url).searchParams.has('apikey')).toBe(false)
+    expect(headers).toEqual({ Authorization: 'Bearer proapi_key' })
+  })
+
+  it('sends no headers to the public instance', async () => {
+    const { buildBlockscoutRestRequest } = await loadWithEnv({ BLOCKSCOUT_API_KEY: undefined })
+
+    expect(buildBlockscoutRestRequest('addresses/0xabc')).toEqual({
+      url: `${PUBLIC_INSTANCE}/api/v2/addresses/0xabc`,
+      headers: {},
+    })
+  })
+})
+
+describe('withBlockscoutHeaders', () => {
+  it("keeps the caller's init and lets our Authorization win over theirs", async () => {
+    const { withBlockscoutHeaders } = await import('./blockscout-api')
+
+    const init = withBlockscoutHeaders(
+      { next: { revalidate: 25 }, headers: { Accept: 'application/json', authorization: 'Bearer theirs' } },
+      { Authorization: 'Bearer ours' },
+    )
+
+    expect(init.next).toEqual({ revalidate: 25 })
+    const headers = new Headers(init.headers)
+    expect(headers.get('authorization')).toBe('Bearer ours')
+    expect(headers.get('accept')).toBe('application/json')
   })
 })
