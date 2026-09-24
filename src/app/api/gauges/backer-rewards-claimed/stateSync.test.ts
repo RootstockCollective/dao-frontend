@@ -1,11 +1,15 @@
 import type { Address } from 'viem'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { mockDb } = vi.hoisted(() => ({ mockDb: vi.fn() }))
+const { mockDb, mockFilterKnownGauges } = vi.hoisted(() => ({
+  mockDb: vi.fn(),
+  mockFilterKnownGauges: vi.fn(),
+}))
 
 vi.mock('@/lib/db', () => ({ db: (table: string) => mockDb(table) }))
 // Outside a Next request there is no incremental cache; the loader runs straight through.
 vi.mock('next/cache', () => ({ unstable_cache: <T>(fn: T) => fn }))
+vi.mock('../_lib/known-gauges', () => ({ filterKnownGauges: mockFilterKnownGauges }))
 
 import { fetchBackerRewardsClaimedFromStateSync } from './stateSync'
 
@@ -15,7 +19,7 @@ function queryStub(rows: unknown[]) {
   const chain: Record<string, unknown> = {
     then: (resolve: (value: unknown[]) => unknown) => Promise.resolve(rows).then(resolve),
   }
-  for (const method of ['join', 'select', 'whereIn', 'whereNotNull', 'orderBy']) {
+  for (const method of ['join', 'select', 'where', 'whereNotNull', 'orderBy']) {
     chain[method] = (...args: unknown[]) => {
       calls.push({ method, args })
       return chain
@@ -36,7 +40,6 @@ const TOKEN = '0x2222222222222222222222222222222222222222'
  */
 function row(overrides: Record<string, unknown> = {}) {
   return {
-    gauge: GAUGE_MIXED.toLowerCase(),
     backer: BACKER,
     rewardToken: TOKEN,
     amount: '1000000000000000000',
@@ -46,7 +49,11 @@ function row(overrides: Record<string, unknown> = {}) {
 }
 
 describe('fetchBackerRewardsClaimedFromStateSync', () => {
-  beforeEach(() => mockDb.mockReset())
+  beforeEach(() => {
+    mockDb.mockReset()
+    mockFilterKnownGauges.mockReset()
+    mockFilterKnownGauges.mockImplementation(async (gauges: string[]) => gauges)
+  })
 
   it('excludes builder claims, which share the table and have a null backer', async () => {
     const stub = queryStub([row()])
@@ -80,12 +87,11 @@ describe('fetchBackerRewardsClaimedFromStateSync', () => {
 
   it('returns an entry for every requested gauge, even with no claims', async () => {
     const other = '0x9999999999999999999999999999999999999999' as Address
-    const stub = queryStub([row()])
-    mockDb.mockReturnValue(stub.chain)
+    mockDb.mockImplementation(() => queryStub([]).chain)
 
     const result = await fetchBackerRewardsClaimedFromStateSync([GAUGE_MIXED, other])
 
-    expect(result[other]).toEqual([])
+    expect(result).toEqual({ [GAUGE_MIXED]: [], [other]: [] })
   })
 
   it('decodes Bytes columns as text and keeps the amount as a decimal string', async () => {
@@ -101,17 +107,34 @@ describe('fetchBackerRewardsClaimedFromStateSync', () => {
     expect(event.timeStamp).toBe(1750000000)
   })
 
-  it('matches gauges by their encoded bytes, lowercased, deduplicated and sorted', async () => {
-    const stub = queryStub([])
-    mockDb.mockReturnValue(stub.chain)
+  it('queries each gauge on its own, by its encoded bytes, lowercased and deduplicated', async () => {
+    const stubs: ReturnType<typeof queryStub>[] = []
+    mockDb.mockImplementation(() => {
+      const stub = queryStub([])
+      stubs.push(stub)
+      return stub.chain
+    })
     const other = '0x1111111111111111111111111111111111111111' as Address
 
     await fetchBackerRewardsClaimedFromStateSync([GAUGE_MIXED, other, GAUGE_MIXED.toLowerCase() as Address])
 
-    // One spelling per gauge, in a stable order, so every spelling of a set shares a cache entry.
-    const whereIn = stub.calls.find(c => c.method === 'whereIn')
-    expect(whereIn?.args[0]).toBe('g.id')
-    expect(whereIn?.args[1]).toEqual([utf8(other), utf8(GAUGE_MIXED.toLowerCase())])
+    // One cache entry per gauge, whatever set it was requested in.
+    expect(stubs.map(stub => stub.calls.find(c => c.method === 'where')?.args)).toEqual([
+      ['g.id', utf8(GAUGE_MIXED.toLowerCase())],
+      ['g.id', utf8(other)],
+    ])
+  })
+
+  it('skips gauges state-sync does not know, without querying them', async () => {
+    const unknown = '0x9999999999999999999999999999999999999999' as Address
+    mockFilterKnownGauges.mockResolvedValue([GAUGE_MIXED.toLowerCase()])
+    mockDb.mockReturnValue(queryStub([row()]).chain)
+
+    const result = await fetchBackerRewardsClaimedFromStateSync([GAUGE_MIXED, unknown])
+
+    expect(mockFilterKnownGauges).toHaveBeenCalledWith([GAUGE_MIXED.toLowerCase(), unknown])
+    expect(mockDb).toHaveBeenCalledTimes(1)
+    expect(result).toEqual({ [GAUGE_MIXED]: [expect.anything()], [unknown]: [] })
   })
 
   it('gives every casing of the same gauge its claims, instead of only the last one sent', async () => {
@@ -125,24 +148,11 @@ describe('fetchBackerRewardsClaimedFromStateSync', () => {
   })
 
   it('still decodes a Buffer, for a connection without the bytea parser', async () => {
-    mockDb.mockReturnValue(
-      queryStub([
-        row({ gauge: utf8(GAUGE_MIXED.toLowerCase()), backer: utf8(BACKER), rewardToken: utf8(TOKEN) }),
-      ]).chain,
-    )
+    mockDb.mockReturnValue(queryStub([row({ backer: utf8(BACKER), rewardToken: utf8(TOKEN) })]).chain)
 
     const [event] = (await fetchBackerRewardsClaimedFromStateSync([GAUGE_MIXED]))[GAUGE_MIXED]
 
     expect(event.args.backer_).toBe(BACKER)
     expect(event.args.rewardToken_).toBe(TOKEN)
-  })
-
-  it('drops rows whose gauge was not requested instead of inventing a key', async () => {
-    const stub = queryStub([row({ gauge: '0xdeadbeef' })])
-    mockDb.mockReturnValue(stub.chain)
-
-    const result = await fetchBackerRewardsClaimedFromStateSync([GAUGE_MIXED])
-
-    expect(result).toEqual({ [GAUGE_MIXED]: [] })
   })
 })

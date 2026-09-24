@@ -34,8 +34,7 @@ export async function GET(req: Request) {
   const fromTimestampParam = new URL(req.url).searchParams.get('fromTimestamp')
   const fromTimestamp = fromTimestampParam === null ? undefined : Number(fromTimestampParam)
   // The regex keeps out signs, decimals and exponents; the safe-integer check keeps out values that
-  // parse to `Infinity`, which `unstable_cache` would serialise to `null` — the same cache key as no
-  // bound at all, so one request could park an empty history under every client's entry.
+  // parse to `Infinity`, which would silently empty every history instead of failing the request.
   if (
     fromTimestampParam !== null &&
     (!/^\d+$/.test(fromTimestampParam) || !Number.isSafeInteger(fromTimestamp))

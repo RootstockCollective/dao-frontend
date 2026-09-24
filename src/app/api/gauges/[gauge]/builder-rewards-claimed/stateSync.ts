@@ -4,6 +4,8 @@ import type { Address } from 'viem'
 import { toDbBytes } from '@/app/api/db/bytes'
 import { db } from '@/lib/db'
 
+import { filterKnownGauges } from '../../_lib/known-gauges'
+
 const TABLE_BUILDER_CLAIMED = 'BuilderRewardsClaimed'
 const TABLE_GAUGE_TO_BUILDER = 'GaugeToBuilder'
 
@@ -35,7 +37,10 @@ async function loadBuilderRewardsClaimed(lowercaseGauge: string): Promise<Builde
   return claimed
 }
 
-/** Keyed by the lowercased gauge, so every spelling of an address shares one entry. */
+/**
+ * Keyed by the lowercased gauge, so every spelling of an address shares one entry — and only for
+ * known gauges, so the path segment cannot mint entries of its own.
+ */
 const loadBuilderRewardsClaimedCached = unstable_cache(
   loadBuilderRewardsClaimed,
   ['gauge-builder-rewards-claimed', 'state-sync'],
@@ -58,5 +63,8 @@ const loadBuilderRewardsClaimedCached = unstable_cache(
 export async function fetchBuilderRewardsClaimedFromStateSync(
   gauge: Address,
 ): Promise<BuilderRewardsClaimedByToken> {
-  return loadBuilderRewardsClaimedCached(gauge.toLowerCase())
+  const [knownGauge] = await filterKnownGauges([gauge.toLowerCase()])
+  // Not a gauge: the join would have matched nothing, so this is the same answer without the query.
+  if (!knownGauge) return {}
+  return loadBuilderRewardsClaimedCached(knownGauge)
 }

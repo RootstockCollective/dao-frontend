@@ -38,7 +38,7 @@ describe('GET /api/gauges/notify-reward', () => {
     ['abc', 'abc'],
     ['empty', ''],
     ['1e3', '1e3'],
-    // Parses to Infinity, which unstable_cache would key like "no bound at all".
+    // Parses to Infinity, which would silently empty every history.
     ['400 digits', '9'.repeat(400)],
   ])('rejects fromTimestamp %s without reading state-sync', async (_label, value) => {
     const res = await GET(request(`gauges=${GAUGE}&fromTimestamp=${value}`))

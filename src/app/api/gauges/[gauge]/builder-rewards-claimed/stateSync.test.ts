@@ -1,7 +1,10 @@
 import type { Address } from 'viem'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { mockDb } = vi.hoisted(() => ({ mockDb: vi.fn() }))
+const { mockDb, mockFilterKnownGauges } = vi.hoisted(() => ({
+  mockDb: vi.fn(),
+  mockFilterKnownGauges: vi.fn(),
+}))
 
 vi.mock('@/lib/db', () => {
   const db = (table: string) => mockDb(table)
@@ -10,6 +13,7 @@ vi.mock('@/lib/db', () => {
 })
 // Outside a Next request there is no incremental cache; the loader runs straight through.
 vi.mock('next/cache', () => ({ unstable_cache: <T>(fn: T) => fn }))
+vi.mock('../../_lib/known-gauges', () => ({ filterKnownGauges: mockFilterKnownGauges }))
 
 import { fetchBuilderRewardsClaimedFromStateSync } from './stateSync'
 
@@ -31,7 +35,11 @@ const GAUGE = '0xAbCdEf0123456789AbCdEf0123456789AbCdEf01' as Address
 const RIF = '0xAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'
 
 describe('fetchBuilderRewardsClaimedFromStateSync', () => {
-  beforeEach(() => mockDb.mockReset())
+  beforeEach(() => {
+    mockDb.mockReset()
+    mockFilterKnownGauges.mockReset()
+    mockFilterKnownGauges.mockImplementation(async (gauges: string[]) => gauges)
+  })
 
   it('bridges gauge to builder, since the claims are keyed by builder', async () => {
     const stub = queryStub([{ token: RIF, total: '5' }])
@@ -94,5 +102,14 @@ describe('fetchBuilderRewardsClaimedFromStateSync', () => {
     mockDb.mockReturnValue(queryStub([]).chain)
 
     await expect(fetchBuilderRewardsClaimedFromStateSync(GAUGE)).resolves.toEqual({})
+  })
+
+  it('answers an unknown gauge with nothing, without querying it', async () => {
+    mockFilterKnownGauges.mockResolvedValue([])
+
+    await expect(fetchBuilderRewardsClaimedFromStateSync(GAUGE)).resolves.toEqual({})
+
+    expect(mockFilterKnownGauges).toHaveBeenCalledWith([GAUGE.toLowerCase()])
+    expect(mockDb).not.toHaveBeenCalled()
   })
 })
