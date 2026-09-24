@@ -66,6 +66,22 @@ describe('useGetLastCycleRewardsTimestamps', () => {
     })
   })
 
+  it('returns the 0 placeholder while the distribution logs load, instead of "no distribution"', () => {
+    vi.mocked(useGetRewardDistributionFinishedLogs).mockImplementation(() => {
+      return {
+        data: [],
+        isLoading: true,
+        error: null,
+      }
+    })
+
+    const { data, isLoading } = useGetLastCycleDistribution(cycle)
+
+    // Not (cycleNext, cycleNext): that window is empty, and would render zero rewards as loaded.
+    expect(data).toEqual({ fromTimestamp: 0, toTimestamp: 0 })
+    expect(isLoading).toBe(true)
+  })
+
   it('should return (from = current cycle start, to = last event) if there were distributions in the current cycle', () => {
     const endDistributionTime = cycleStart.plus({ seconds: 100 })
     vi.mocked(useGetRewardDistributionFinishedLogs).mockImplementation(() => {

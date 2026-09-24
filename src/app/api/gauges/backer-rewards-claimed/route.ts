@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server'
-import { type Address, isAddress } from 'viem'
 
 import { logger } from '@/lib/logger'
 
-import { MAX_GAUGES_PER_REQUEST } from '../_lib/fetch-gauge-events'
+import { parseGaugesParam } from '../_lib/parse-gauges-param'
 import { fetchBackerRewardsClaimedFromStateSync } from './stateSync'
 
 const ROUTE = '/api/gauges/backer-rewards-claimed'
 
-export const revalidate = 25
+/** Advertised on a 503 so client retries are spaced instead of immediate. */
+const RETRY_AFTER_SECONDS = 5
 
 /**
  * Backer reward claims per gauge, read from state-sync Postgres.
@@ -22,28 +22,14 @@ export const revalidate = 25
  *
  * `fromBlock` is gone. It scoped the explorer's pagination, nothing passed it, and
  * `ClaimedRewardsHistory` has no block number to filter on.
+ *
+ * Caching lives in {@link fetchBackerRewardsClaimedFromStateSync}: reading `req.url` makes this
+ * route dynamic, so a segment `revalidate` would have no effect.
  */
 export async function GET(req: Request) {
-  const url = new URL(req.url)
-  const gaugesParam = url.searchParams.get('gauges') ?? ''
-
-  const gauges = gaugesParam
-    .split(',')
-    .map(g => g.trim())
-    .filter(Boolean) as Address[]
-
-  if (gauges.length === 0) {
-    return NextResponse.json({ error: 'Missing required `gauges` query param' }, { status: 400 })
-  }
-  if (gauges.length > MAX_GAUGES_PER_REQUEST) {
-    return NextResponse.json(
-      { error: `Too many gauges; max ${MAX_GAUGES_PER_REQUEST} per request` },
-      { status: 400 },
-    )
-  }
-  if (!gauges.every(g => isAddress(g))) {
-    return NextResponse.json({ error: 'Invalid gauge address in `gauges`' }, { status: 400 })
-  }
+  const parsed = parseGaugesParam(req)
+  if ('error' in parsed) return parsed.error
+  const { gauges } = parsed
 
   try {
     return NextResponse.json(await fetchBackerRewardsClaimedFromStateSync(gauges))
@@ -52,6 +38,9 @@ export async function GET(req: Request) {
 
     // All-or-nothing, as before: the client does `eventsByGauge[gauge] ?? []`, so a partial
     // response would render a failure as "nothing claimed" — wrong numbers beat no numbers here.
-    return NextResponse.json({ error: 'Failed to fetch backer reward claims' }, { status: 503 })
+    return NextResponse.json(
+      { error: 'Failed to fetch backer reward claims' },
+      { status: 503, headers: { 'Retry-After': String(RETRY_AFTER_SECONDS) } },
+    )
   }
 }

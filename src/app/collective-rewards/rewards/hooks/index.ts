@@ -1,4 +1,3 @@
-export * from './useGetGaugesEvents'
 export * from './useGetGaugesNotifyReward'
 export * from './useGetLastCycleDistribution'
 export * from './useGetNotifyRewardLogs'
