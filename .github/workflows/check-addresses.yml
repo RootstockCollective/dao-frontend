@@ -1,0 +1,74 @@
+name: Check Ethereum addresses
+
+on:
+  pull_request:
+
+# Declare default permissions as read only.
+permissions: read-all
+
+jobs:
+  check-mixed-case-addresses:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Scan for mixed-case Ethereum addresses
+        run: |
+          set -euo pipefail
+
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+
+          DIFF=$(git diff "$BASE_SHA"...HEAD --diff-filter=ACMR --unified=0 \
+            -- '*.ts' '*.tsx' '*.json' '*.yaml' '*.yml' '.env*' \
+            || true)
+
+          if [ -z "$DIFF" ]; then
+            echo "No relevant file changes found."
+            exit 0
+          fi
+
+          FOUND=0
+          CURRENT_FILE=""
+          LINE_NUM=0
+
+          while IFS= read -r line; do
+            if [[ "$line" =~ ^\+\+\+\ b/(.*) ]]; then
+              CURRENT_FILE="${BASH_REMATCH[1]}"
+              continue
+            fi
+
+            if [[ "$line" =~ ^@@.*\+([0-9]+) ]]; then
+              LINE_NUM="${BASH_REMATCH[1]}"
+              continue
+            fi
+
+            if [[ "$line" =~ ^\+[^+] || "$line" == "+" ]]; then
+              CONTENT="${line:1}"
+              ADDRESSES=$(echo "$CONTENT" | grep -oE '0x[0-9a-fA-F]+' | awk 'length == 42' || true)
+
+              for addr in $ADDRESSES; do
+                if echo "$addr" | grep -q '[A-F]'; then
+                  echo "::warning file=${CURRENT_FILE},line=${LINE_NUM}::Mixed-case Ethereum address: ${addr}"
+                  FOUND=$((FOUND + 1))
+                fi
+              done
+
+              LINE_NUM=$((LINE_NUM + 1))
+            elif [[ ! "$line" =~ ^- ]]; then
+              LINE_NUM=$((LINE_NUM + 1))
+            fi
+          done <<< "$DIFF"
+
+          if [ "$FOUND" -gt 0 ]; then
+            echo ""
+            echo "::notice::Found ${FOUND} mixed-case Ethereum address(es). Consider using lowercase for consistency."
+          else
+            echo "No mixed-case Ethereum addresses found in changed files."
+          fi
+
+          exit 0
