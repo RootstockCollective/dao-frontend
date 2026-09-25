@@ -74,7 +74,10 @@ export const useScrollDock = ({ bannerRef, tileRef, anchor, isEnabled }: UseScro
       const rect = banner.getBoundingClientRect()
       if (rect.height < MIN_SETTLED_HEIGHT) return
 
-      const progress = getScrollProgress(rect.top, rect.height, anchor.getBoundingClientRect().top)
+      // At the very top the banner is in place by definition, even where it sits close enough to
+      // the top bar for the formula to start above 0 (the mobile header is taller)
+      const progress =
+        window.scrollY <= 0 ? 0 : getScrollProgress(rect.top, rect.height, anchor.getBoundingClientRect().top)
 
       if (reducedMotion?.matches) {
         clearProgress(banner, tile)

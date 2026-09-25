@@ -39,8 +39,11 @@ const mockReducedMotion = (matches: boolean) =>
 
 let bannerTop = 136
 
+const setScrollY = (y: number) => Object.defineProperty(window, 'scrollY', { value: y, configurable: true })
+
 const scrollBannerTo = async (top: number) => {
   bannerTop = top
+  setScrollY(136 - top)
   await act(async () => {
     fireEvent.scroll(window)
     await new Promise(resolve => setTimeout(resolve, 120))
@@ -58,6 +61,7 @@ describe('CollectivePossibilities', () => {
 
     // jsdom has no layout: place the banner and the top bar by hand
     bannerTop = 136
+    setScrollY(0)
     vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
       if (this.getAttribute('data-testid') === 'TopBarSlot') {
         return DOMRect.fromRect({ y: TOP_BAR_BOTTOM, height: 0 })
@@ -105,6 +109,17 @@ describe('CollectivePossibilities', () => {
     const banner = screen.getByRole('region', { name: 'THE COLLECTIVE POSSIBILITIES' })
     expect(banner.style.transform).toMatch(/^scale\(1(\.0+)?\)$/)
     expect(Number(banner.style.opacity)).toBe(1)
+  })
+
+  it('never fades at the top of the page, even when the banner starts right under the top bar', () => {
+    // Mobile: a taller header and no gap would put the progress above 0 before any scroll
+    bannerTop = TOP_BAR_BOTTOM
+    renderOnPage()
+
+    const banner = screen.getByRole('region', { name: 'THE COLLECTIVE POSSIBILITIES' })
+    expect(banner.style.transform).toMatch(/^scale\(1(\.0+)?\)$/)
+    expect(Number(banner.style.opacity)).toBe(1)
+    expect(screen.getByTestId('PossibilitiesDock')).toHaveAttribute('data-docked', 'false')
   })
 
   it('shrinks and fades the banner as it scrolls under the top bar', async () => {

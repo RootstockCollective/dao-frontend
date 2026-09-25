@@ -85,7 +85,7 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
   }
 
   return (
-    <div data-testid="CollectivePossibilities" className={cn('mb-4', className)}>
+    <div data-testid="CollectivePossibilities" className={cn('mb-4 max-md:mt-4', className)}>
       <section
         ref={bannerRef}
         aria-labelledby={titleId}
