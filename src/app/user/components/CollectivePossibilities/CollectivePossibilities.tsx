@@ -1,15 +1,19 @@
 'use client'
 
-import { useId, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 import { CommonComponentProps } from '@/components/commonProps'
 import { DismissButton } from '@/components/DismissButton'
+import { useTopBarDock } from '@/components/MainContainer/TopBarDockProvider'
 import { cn } from '@/lib/utils'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 
 import { MotionLogo } from './MotionLogo'
+import { PossibilitiesDock } from './PossibilitiesDock'
 import { PosterArt } from './PosterArt'
 import { CONNECT_CTA_CLASSES, EYEBROW_CLASSES } from './styles'
+import { useScrollDock } from './useScrollDock'
 
 const POSSIBILITIES = [
   {
@@ -36,11 +40,37 @@ const POSSIBILITIES = [
  * - 900 to 1179px: tile on the right, one pillar per row with the label beside the text
  * - below 900px: the tile becomes a strip across the top showing only the poster, anchored on
  *   its bright edge with the molecule on the right, and the actions wrap under the title
+ *
+ * Scrolling it away shrinks and fades it and docks a compact bar under the top bar
+ * (PossibilitiesDock), which stands in for the top bar's own Connect button until the banner
+ * comes back. Dismissing either one removes both.
  */
 export const CollectivePossibilities = ({ className }: CommonComponentProps) => {
   const titleId = useId()
   // Dismissal lasts for the session only: a reload brings the card back
   const [isDismissed, setIsDismissed] = useState(false)
+  const bannerRef = useRef<HTMLElement>(null)
+  const tileRef = useRef<HTMLDivElement>(null)
+
+  const { slot, setActive, setDocked } = useTopBarDock()
+  const { isDocked, shouldAnimate } = useScrollDock({
+    bannerRef,
+    tileRef,
+    anchor: slot,
+    isEnabled: !isDismissed,
+  })
+
+  useEffect(() => {
+    setActive(!isDismissed)
+    return () => setActive(false)
+  }, [isDismissed, setActive])
+
+  useEffect(() => {
+    setDocked(isDocked)
+    return () => setDocked(false)
+  }, [isDocked, setDocked])
+
+  const dismiss = () => setIsDismissed(true)
 
   if (isDismissed) {
     return null
@@ -49,9 +79,10 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
   return (
     <div data-testid="CollectivePossibilities" className={cn('@container mb-4', className)}>
       <section
+        ref={bannerRef}
         aria-labelledby={titleId}
         className={cn(
-          'relative grid origin-top grid-cols-1 overflow-hidden rounded-[16px] bg-warm-surface-raised',
+          'relative grid origin-top will-change-[transform,opacity] grid-cols-1 overflow-hidden rounded-[16px] bg-warm-surface-raised',
           '@min-[900px]:grid-cols-[minmax(0,1fr)_minmax(260px,30%)]',
         )}
       >
@@ -83,7 +114,7 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
               <DismissButton
                 variant="round"
                 aria-label="Dismiss"
-                onClick={() => setIsDismissed(true)}
+                onClick={dismiss}
                 data-testid="DismissPossibilitiesButton"
               />
             </div>
@@ -110,7 +141,7 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
           className="relative -order-1 min-h-[180px] overflow-hidden bg-banner-ink @min-[900px]:order-none @min-[900px]:min-h-[300px]"
           data-testid="PossibilitiesTile"
         >
-          <div className="absolute inset-0">
+          <div ref={tileRef} className="absolute inset-0 will-change-transform">
             <PosterArt
               moleculeSize={120}
               imageClassName="object-[100%_50%] @min-[900px]:object-[70%_50%]"
@@ -121,6 +152,12 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
           </div>
         </div>
       </section>
+
+      {slot &&
+        createPortal(
+          <PossibilitiesDock isDocked={isDocked} shouldAnimate={shouldAnimate} onDismiss={dismiss} />,
+          slot,
+        )}
     </div>
   )
 }
