@@ -20,8 +20,9 @@ export function ContainerDesktop({ children, className, ...props }: HTMLAttribut
       style={{ maxWidth: MAIN_CONTAINER_MAX_WIDTH }}
     >
       <SidebarDesktop />
-      {/* Central section */}
-      <div className="grow flex flex-col overflow-x-hidden">
+      {/* Central section. overflow-x-clip rather than hidden: hidden would make this column a
+          scroll container and stop the header from sticking to the viewport */}
+      <div className="grow flex flex-col overflow-x-clip">
         <HeaderDesktop />
         <div className="grow flex flex-col pb-24">
           <div className="flex flex-1 flex-col mt-10" id={MAIN_CONTAINER_ID}>

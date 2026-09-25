@@ -8,11 +8,16 @@ export interface DismissButtonProps {
   /**
    * The surface the button sits on, which decides the icon and border color. `quiet` is
    * for compact one-line notifications on dark: a muted X with no frame until hovered.
+   * `round` and `roundQuiet` are the 44px circles of the Holdings Don't Miss prompt, with
+   * and without a hairline frame.
    */
-  variant?: 'onDark' | 'onLight' | 'quiet'
+  variant?: 'onDark' | 'onLight' | 'quiet' | 'round' | 'roundQuiet'
   className?: string
   'data-testid'?: string
 }
+
+const ROUND_CLASSES =
+  'size-11 rounded-full border text-warm-text-soft hover:bg-v3-text-80/10 hover:text-v3-text-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-v3-rif-blue'
 
 const VARIANT_CLASSES = {
   onDark: 'size-6 rounded border border-v3-text-100/20 text-v3-text-100 hover:bg-v3-text-100/10',
@@ -20,6 +25,14 @@ const VARIANT_CLASSES = {
     'size-6 rounded border border-v3-bg-accent-100/15 text-v3-bg-accent-100 hover:bg-v3-bg-accent-100/5',
   quiet:
     'size-7 rounded-md border border-transparent text-warm-icon hover:border-v3-text-80/22 hover:text-banner-title',
+  round: `${ROUND_CLASSES} border-v3-text-80/22`,
+  roundQuiet: `${ROUND_CLASSES} border-transparent`,
+}
+
+const STROKE_WIDTHS: Partial<Record<NonNullable<DismissButtonProps['variant']>, string>> = {
+  quiet: '2',
+  round: '2.2',
+  roundQuiet: '2.2',
 }
 
 /**
@@ -46,6 +59,6 @@ export const DismissButton = ({
       className,
     )}
   >
-    <CloseIconKoto size={14} color="currentColor" strokeWidth={variant === 'quiet' ? '2' : undefined} />
+    <CloseIconKoto size={14} color="currentColor" strokeWidth={STROKE_WIDTHS[variant]} />
   </button>
 )

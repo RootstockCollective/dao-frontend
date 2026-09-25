@@ -1,19 +1,22 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { cn } from '@/lib/utils'
 
 const VIDEO_SRC = '/videos/collective-motion-logo.mp4'
-const POSTER_SRC = '/images/collective-motion-logo-poster.webp'
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
 
 /**
- * Animated Collective logo. Holds on the poster frame when the viewer asked their system for
- * reduced motion.
+ * Animated Collective logo, laid over the art underneath it (see PosterArt).
+ *
+ * The video stays transparent until it is actually playing and then fades in, so a slow
+ * connection never shows a grey frame or native controls, and a refused autoplay or a
+ * reduced-motion preference simply leaves the poster in place.
  */
 export const MotionLogo = ({ className }: { className?: string }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const [isPlaying, setIsPlaying] = useState(false)
 
   useEffect(() => {
     const video = videoRef.current
@@ -37,19 +40,23 @@ export const MotionLogo = ({ className }: { className?: string }) => {
   }, [])
 
   return (
-    <div className={cn('relative overflow-hidden', className)} data-testid="MotionLogo">
-      <video
-        ref={videoRef}
-        className="size-full object-cover"
-        src={VIDEO_SRC}
-        poster={POSTER_SRC}
-        loop
-        muted
-        playsInline
-        preload="metadata"
-        aria-hidden="true"
-        data-testid="MotionLogoVideo"
-      />
-    </div>
+    <video
+      ref={videoRef}
+      className={cn(
+        'absolute inset-0 block size-full bg-transparent object-cover opacity-0',
+        'transition-opacity duration-400 ease-[cubic-bezier(0.22,0.61,0.36,1)]',
+        isPlaying && 'opacity-100',
+        className,
+      )}
+      src={VIDEO_SRC}
+      loop
+      muted
+      playsInline
+      preload="metadata"
+      tabIndex={-1}
+      aria-hidden="true"
+      onPlaying={() => setIsPlaying(true)}
+      data-testid="MotionLogoVideo"
+    />
   )
 }
