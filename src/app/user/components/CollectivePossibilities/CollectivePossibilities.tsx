@@ -43,7 +43,8 @@ const POSSIBILITIES = [
  * do and the connect call to action, next to the animated Collective logo.
  *
  * The layout follows the width of the content column rather than the viewport, since the
- * sidebar can be open or collapsed, so the breakpoints are container queries:
+ * sidebar can be open or collapsed, so the breakpoints are container queries on the width of the
+ * layout's `<main>`, padding included (the `content` container), as in the design reference:
  * - 1180px and up: logo tile on the right, the three pillars side by side
  * - 900 to 1179px: tile on the right, one pillar per row with the label beside the text
  * - below 900px: the tile becomes a strip across the top showing only the poster, anchored on
@@ -84,13 +85,13 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
   }
 
   return (
-    <div data-testid="CollectivePossibilities" className={cn('@container mb-4', className)}>
+    <div data-testid="CollectivePossibilities" className={cn('mb-4', className)}>
       <section
         ref={bannerRef}
         aria-labelledby={titleId}
         className={cn(
           'relative grid origin-top will-change-[transform,opacity] grid-cols-1 overflow-hidden rounded-[16px] bg-warm-surface-raised',
-          '@min-[900px]:grid-cols-[minmax(0,1fr)_minmax(260px,30%)]',
+          '@min-[900px]/content:grid-cols-[minmax(0,1fr)_minmax(260px,30%)]',
         )}
       >
         <div className="flex min-w-0 flex-col justify-between gap-9 p-[clamp(28px,3.2vw,48px)]">
@@ -127,11 +128,11 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
             </div>
           </div>
 
-          <ul className="m-0 grid list-none grid-cols-1 gap-x-10 gap-y-5 p-0 @min-[1180px]:grid-cols-3">
+          <ul className="m-0 grid list-none grid-cols-1 gap-x-10 gap-y-5 p-0 @min-[1180px]/content:grid-cols-3">
             {POSSIBILITIES.map(({ title, description }) => (
               <li
                 key={title}
-                className="grid min-w-0 grid-cols-[minmax(110px,140px)_1fr] items-baseline gap-x-5 gap-y-2 @min-[1180px]:grid-cols-1"
+                className="grid min-w-0 grid-cols-[minmax(110px,140px)_1fr] items-baseline gap-x-5 gap-y-2 @min-[1180px]/content:grid-cols-1"
               >
                 <span className="font-rootstock-sans text-[13px] font-medium uppercase tracking-[0.14em] text-v3-text-80">
                   {title}
@@ -145,17 +146,17 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
         </div>
 
         <div
-          className="relative -order-1 min-h-[180px] overflow-hidden bg-banner-ink @min-[900px]:order-none @min-[900px]:min-h-[300px]"
+          className="relative -order-1 min-h-[180px] overflow-hidden bg-banner-ink @min-[900px]/content:order-none @min-[900px]/content:min-h-[300px]"
           data-testid="PossibilitiesTile"
         >
           <div ref={tileRef} className="absolute inset-0 will-change-transform">
             <PosterArt
               moleculeSize={120}
-              imageClassName="object-[100%_50%] @min-[900px]:object-[70%_50%]"
-              moleculeClassName="justify-end pr-14 @min-[900px]:justify-center @min-[900px]:pr-0"
+              imageClassName="object-[100%_50%] @min-[900px]/content:object-[70%_50%]"
+              moleculeClassName="justify-end pr-14 @min-[900px]/content:justify-center @min-[900px]/content:pr-0"
             />
             {/* The video centres the molecule, which a 180px strip would crop; the strip keeps the poster */}
-            <MotionLogo className="hidden @min-[900px]:block" />
+            <MotionLogo className="hidden @min-[900px]/content:block" />
           </div>
         </div>
       </section>
