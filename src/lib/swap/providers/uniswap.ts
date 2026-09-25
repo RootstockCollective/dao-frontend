@@ -11,6 +11,7 @@ import {
   UNISWAP_FEE_TIERS,
   type UniswapFeeTier,
 } from '../constants'
+import { multicallWithGasEnvelopeRetry } from '../multicallWithGasEnvelopeRetry'
 import type { PermitSingle } from '../permit2'
 import { isMultihopRoute, resolveSwapRoute } from '../routes'
 import type { QuoteExactOutputParams, QuoteMode, QuoteParams, SwapProvider, SwapQuote } from './'
@@ -315,7 +316,7 @@ function buildMultihopExactOutputContractsAllFeePairs(tokens: readonly Address[]
 }
 
 /**
- * Batch-quote all fee tiers for exactIn via a single multicall RPC request.
+ * Batch-quote all fee tiers for exactIn via a single Multicall3 `aggregate3` RPC (viem `multicall`).
  * Returns the best quote (highest amountOut) or null if all tiers failed.
  */
 async function getBestQuoteFromAllTiers(
@@ -324,7 +325,7 @@ async function getBestQuoteFromAllTiers(
 ): Promise<SwapQuote | null> {
   const { tokenIn, tokenOut, amountIn, tokenOutDecimals } = params
 
-  const results = await publicClient.multicall({
+  const results = await multicallWithGasEnvelopeRetry(publicClient, {
     contracts: buildExactInputContracts(tokenIn, tokenOut, amountIn),
   })
 
@@ -350,7 +351,7 @@ async function getBestQuoteFromAllTiers(
 }
 
 /**
- * Batch-quote all fee tiers for exactOut via a single multicall RPC request.
+ * Batch-quote all fee tiers for exactOut via Multicall3 (same pattern as exact-in).
  * Returns the best quote (lowest amountIn) or null if all tiers failed.
  */
 async function getBestExactOutputFromAllTiers(
@@ -359,7 +360,7 @@ async function getBestExactOutputFromAllTiers(
 ): Promise<SwapQuote | null> {
   const { tokenIn, tokenOut, amountOut, tokenOutDecimals } = params
 
-  const results = await publicClient.multicall({
+  const results = await multicallWithGasEnvelopeRetry(publicClient, {
     contracts: buildExactOutputContracts(tokenIn, tokenOut, amountOut),
   })
 
@@ -464,7 +465,7 @@ async function getBestMultihopQuoteExactIn(
   providerName: SwapProvider['name'],
 ): Promise<SwapQuote | null> {
   const combos = cartesianFeeCombinations(tokens.length - 1)
-  const results = await publicClient.multicall({
+  const results = await multicallWithGasEnvelopeRetry(publicClient, {
     contracts: buildMultihopExactInputContractsAllFeePairs(tokens, params.amountIn),
   })
   const validQuotes: SwapQuote[] = []
@@ -494,7 +495,7 @@ async function getBestMultihopQuoteExactOut(
   providerName: SwapProvider['name'],
 ): Promise<SwapQuote | null> {
   const combos = cartesianFeeCombinations(tokens.length - 1)
-  const results = await publicClient.multicall({
+  const results = await multicallWithGasEnvelopeRetry(publicClient, {
     contracts: buildMultihopExactOutputContractsAllFeePairs(tokens, params.amountOut),
   })
   const validQuotes: SwapQuote[] = []
@@ -822,7 +823,7 @@ export async function getAvailableFeeTiers(
   const testAmount = oneFullTokenRaw > maxProbeRaw ? maxProbeRaw : oneFullTokenRaw
 
   if (isMultihopRoute(route)) {
-    const results = await publicClient.multicall({
+    const results = await multicallWithGasEnvelopeRetry(publicClient, {
       contracts: buildMultihopUniformFeeExactInputContracts(route.tokens, testAmount),
     })
 
@@ -836,7 +837,7 @@ export async function getAvailableFeeTiers(
       .filter((fee): fee is UniswapFeeTier => fee !== null)
   }
 
-  const results = await publicClient.multicall({
+  const results = await multicallWithGasEnvelopeRetry(publicClient, {
     contracts: buildExactInputContracts(tokenIn, tokenOut, testAmount),
   })
 
