@@ -16,14 +16,14 @@ import { useReadBackersManager } from '@/shared/hooks/contracts'
 
 const PORTFOLIO_TOKENS = [RIF, STRIF, USDRIF, RBTC] as const
 
-export type HoldingsMetricStatus = 'loading' | 'error' | 'ready'
+export type HoldingsMetricStatus = 'loading' | 'error' | 'empty' | 'ready'
 
 export interface HoldingsMetric<T> {
   value: T
   status: HoldingsMetricStatus
 }
 
-const toStatus = (isLoading: boolean, error: unknown): HoldingsMetricStatus => {
+const toStatus = (isLoading: boolean, error: unknown): Exclude<HoldingsMetricStatus, 'empty'> => {
   if (error) return 'error'
   if (isLoading) return 'loading'
   return 'ready'
@@ -44,7 +44,7 @@ export const useHoldingsMetrics = () => {
   const { prices } = usePricesContext()
   // Same query the prices context reads from, used here only for its loading and error state
   const { isLoading: isPricesLoading, error: pricesError } = useFetchPrices()
-  const { balances, isBalancesLoading } = useGetAddressBalances()
+  const { balances, isBalancesLoading, balancesError } = useGetAddressBalances()
   const {
     data: rewardsPerToken,
     isLoading: isRewardsLoading,
@@ -80,17 +80,21 @@ export const useHoldingsMetrics = () => {
         const price = prices[symbol]?.price ?? 0
         return total.add(BigNumber(balances[symbol]?.balance ?? 0).mul(price))
       }, BigNumber(0)),
-      status: toStatus(isBalancesLoading || isPricesLoading, pricesError),
+      status: toStatus(isBalancesLoading || isPricesLoading, balancesError ?? pricesError),
     }),
-    [balances, prices, isBalancesLoading, isPricesLoading, pricesError],
+    [balances, prices, isBalancesLoading, isPricesLoading, balancesError, pricesError],
   )
 
   // stRIF that is not allocated to any builder yet, as a share of the backer's stRIF
   const availableBackingPercentage = useMemo<HoldingsMetric<number>>(() => {
     const status = toStatus(isVotingPowerLoading || isAllocationLoading, votingPowerError ?? allocationError)
 
-    if (status !== 'ready' || !votingPower || votingPower === 0n) {
+    if (status !== 'ready') {
       return { value: 0, status }
+    }
+
+    if (!votingPower) {
+      return { value: 0, status: 'empty' }
     }
 
     const available = votingPower - (totalAllocation ?? 0n)
@@ -108,7 +112,7 @@ export const useHoldingsMetrics = () => {
     allocationError,
   ])
 
-  const error = rewardsError ?? pricesError ?? votingPowerError ?? allocationError ?? null
+  const error = pricesError ?? balancesError ?? votingPowerError ?? allocationError ?? null
 
   return { unclaimedRewards, portfolioValue, availableBackingPercentage, error }
 }

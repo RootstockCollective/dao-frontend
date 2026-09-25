@@ -15,9 +15,6 @@ const mocks = vi.hoisted(() => ({
 vi.mock('wagmi', () => ({ useAccount: () => mocks.account() }))
 vi.mock('./useHoldingsMetrics', () => ({ useHoldingsMetrics: () => mocks.metrics() }))
 vi.mock('@/app/collective-rewards/utils', () => ({ useHandleErrors: mocks.handleErrors }))
-vi.mock('@/app/collective-rewards/rewards', () => ({
-  BackerRewardsContextProvider: ({ children }: { children: React.ReactNode }) => children,
-}))
 
 const metrics = (status: HoldingsMetricStatus, error: Error | null = null) => ({
   unclaimedRewards: { value: Big(1234.5), status },
@@ -29,7 +26,10 @@ const metrics = (status: HoldingsMetricStatus, error: Error | null = null) => ({
 describe('HoldingsBanner', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    mocks.account.mockReturnValue({ address: '0x00000000000000000000000000000000000000ab', isConnected: true })
+    mocks.account.mockReturnValue({
+      address: '0x00000000000000000000000000000000000000ab',
+      isConnected: true,
+    })
   })
 
   afterEach(cleanup)
@@ -58,7 +58,10 @@ describe('HoldingsBanner', () => {
 
   it('shows a dash for a metric that failed and reports the error', () => {
     const error = new Error('rewards down')
-    mocks.metrics.mockReturnValue({ ...metrics('ready', error), unclaimedRewards: { value: Big(0), status: 'error' } })
+    mocks.metrics.mockReturnValue({
+      ...metrics('ready', error),
+      unclaimedRewards: { value: Big(0), status: 'error' },
+    })
 
     render(<HoldingsBanner />)
 
@@ -67,6 +70,31 @@ describe('HoldingsBanner', () => {
     expect(within(unclaimed).getByText('Unavailable')).toBeInTheDocument()
     expect(unclaimed).not.toHaveTextContent('$0')
     expect(mocks.handleErrors).toHaveBeenCalledWith({ error, title: 'Error loading your holdings' })
+  })
+
+  it('shows a dash for a failed portfolio value, never $0.00', () => {
+    mocks.metrics.mockReturnValue({ ...metrics('ready'), portfolioValue: { value: Big(0), status: 'error' } })
+
+    render(<HoldingsBanner />)
+
+    const portfolio = screen.getByTestId('HoldingsPortfolioValue')
+    expect(portfolio).toHaveTextContent('—')
+    expect(within(portfolio).getByText('Unavailable')).toBeInTheDocument()
+    expect(portfolio).not.toHaveTextContent('$0')
+  })
+
+  it('shows a dash with its reason when there is no stRIF to back with, never 0%', () => {
+    mocks.metrics.mockReturnValue({
+      ...metrics('ready'),
+      availableBackingPercentage: { value: 0, status: 'empty' },
+    })
+
+    render(<HoldingsBanner />)
+
+    const backing = screen.getByTestId('HoldingsAvailableBacking')
+    expect(backing).toHaveTextContent('—')
+    expect(within(backing).getByText('No stRIF to back builders with')).toBeInTheDocument()
+    expect(backing).not.toHaveTextContent('%')
   })
 
   it('shows no metrics without a connected wallet', () => {

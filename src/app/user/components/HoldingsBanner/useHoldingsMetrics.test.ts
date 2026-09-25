@@ -40,7 +40,7 @@ describe('useHoldingsMetrics', () => {
   beforeEach(() => {
     mocks.prices.mockReturnValue({ prices: {} })
     mocks.fetchPrices.mockReturnValue(loaded)
-    mocks.balances.mockReturnValue({ balances: {}, isBalancesLoading: false })
+    mocks.balances.mockReturnValue({ balances: {}, isBalancesLoading: false, balancesError: null })
     mocks.rewards.mockReturnValue({ data: {}, ...loaded })
     mocks.votingPower.mockReturnValue({ data: parseEther('100'), ...loaded })
     mocks.allocation.mockReturnValue({ data: parseEther('40'), ...loaded })
@@ -75,7 +75,43 @@ describe('useHoldingsMetrics', () => {
     expect(result.current.unclaimedRewards.status).toBe('error')
     expect(result.current.availableBackingPercentage.status).toBe('ready')
     expect(result.current.portfolioValue.status).toBe('ready')
+  })
+
+  it('leaves rewards errors to MyBacking, which reports them from the same shared context', () => {
+    mocks.rewards.mockReturnValue({ data: {}, isLoading: false, error: new Error('rewards down') })
+
+    const { result } = renderHook(() => useHoldingsMetrics())
+
+    expect(result.current.error).toBeNull()
+  })
+
+  it('marks the portfolio as errored when the balances fail, instead of valuing zeros', () => {
+    const error = new Error('balances down')
+    mocks.balances.mockReturnValue({ balances: {}, isBalancesLoading: false, balancesError: error })
+
+    const { result } = renderHook(() => useHoldingsMetrics())
+
+    expect(result.current.portfolioValue.status).toBe('error')
+    expect(result.current.unclaimedRewards.status).toBe('ready')
+    expect(result.current.availableBackingPercentage.status).toBe('ready')
     expect(result.current.error).toBe(error)
+  })
+
+  it('reports available backing as empty without stRIF, instead of 0%', () => {
+    mocks.votingPower.mockReturnValue({ data: 0n, ...loaded })
+    mocks.allocation.mockReturnValue({ data: 0n, ...loaded })
+
+    const { result } = renderHook(() => useHoldingsMetrics())
+
+    expect(result.current.availableBackingPercentage).toEqual({ value: 0, status: 'empty' })
+  })
+
+  it('keeps available backing errored, not empty, when the stRIF balance fails', () => {
+    mocks.votingPower.mockReturnValue({ data: undefined, isLoading: false, error: new Error('rpc down') })
+
+    const { result } = renderHook(() => useHoldingsMetrics())
+
+    expect(result.current.availableBackingPercentage.status).toBe('error')
   })
 
   it('waits for prices before valuing the portfolio or the rewards', () => {

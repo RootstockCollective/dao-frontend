@@ -1,15 +1,12 @@
 'use client'
 
 import { ReactNode } from 'react'
-import { zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 
-import { BackerRewardsContextProvider } from '@/app/collective-rewards/rewards'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { CommonComponentProps } from '@/components/commonProps'
 import { PageBanner } from '@/components/PageBanner'
 import { Header, Span } from '@/components/Typography'
-import { TOKENS } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
 
 import { type HoldingsMetricStatus, useHoldingsMetrics } from './useHoldingsMetrics'
@@ -23,19 +20,33 @@ const CONNECTED_DESCRIPTION =
 
 const UNAVAILABLE_VALUE = '—'
 
+interface DashValueProps {
+  reason: string
+  label: string
+}
+
+const DashValue = ({ reason, label }: DashValueProps) => (
+  <Header variant="h3" title={reason}>
+    <span aria-hidden="true">{UNAVAILABLE_VALUE}</span>
+    <span className="sr-only">{label}</span>
+  </Header>
+)
+
 interface BannerMetricProps {
   title: string
   status: HoldingsMetricStatus
   children: ReactNode
+  emptyReason?: string
   'data-testid'?: string
 }
 
-/**
- * One headline number. While it loads it holds a skeleton of the value's height, so the
- * banner does not jump when it resolves; if its source failed it shows a dash rather than
- * a zero the holder could mistake for their balance.
- */
-const BannerMetric = ({ title, status, children, 'data-testid': dataTestId }: BannerMetricProps) => (
+const BannerMetric = ({
+  title,
+  status,
+  emptyReason = 'Nothing to show yet',
+  children,
+  'data-testid': dataTestId,
+}: BannerMetricProps) => (
   <div className="flex flex-col gap-1" aria-busy={status === 'loading'} data-testid={dataTestId}>
     <Span caps variant="tag" className="text-v3-text-60">
       {title}
@@ -51,12 +62,8 @@ const BannerMetric = ({ title, status, children, 'data-testid': dataTestId }: Ba
           <span className="sr-only">Loading</span>
         </>
       )}
-      {status === 'error' && (
-        <Header variant="h3" title="This value could not be loaded">
-          <span aria-hidden="true">{UNAVAILABLE_VALUE}</span>
-          <span className="sr-only">Unavailable</span>
-        </Header>
-      )}
+      {status === 'error' && <DashValue reason="This value could not be loaded" label="Unavailable" />}
+      {status === 'empty' && <DashValue reason={emptyReason} label={emptyReason} />}
       {status === 'ready' && <Header variant="h3">{children}</Header>}
     </div>
   </div>
@@ -85,6 +92,7 @@ const HoldingsMetrics = () => {
         <BannerMetric
           title="Available backing"
           status={availableBackingPercentage.status}
+          emptyReason="No stRIF to back builders with"
           data-testid="HoldingsAvailableBacking"
         >
           {`${Math.round(availableBackingPercentage.value)}%`}
@@ -103,9 +111,8 @@ const HoldingsMetrics = () => {
   )
 }
 
-/** Permanent banner: it introduces the page rather than announcing something dismissible. */
 export const HoldingsBanner = ({ className }: CommonComponentProps) => {
-  const { address, isConnected } = useAccount()
+  const { isConnected } = useAccount()
 
   return (
     <PageBanner
@@ -116,11 +123,7 @@ export const HoldingsBanner = ({ className }: CommonComponentProps) => {
       description={isConnected ? CONNECTED_DESCRIPTION : DISCONNECTED_DESCRIPTION}
       className={className}
     >
-      {isConnected && (
-        <BackerRewardsContextProvider backer={address ?? zeroAddress} tokens={TOKENS}>
-          <HoldingsMetrics />
-        </BackerRewardsContextProvider>
-      )}
+      {isConnected && <HoldingsMetrics />}
     </PageBanner>
   )
 }
