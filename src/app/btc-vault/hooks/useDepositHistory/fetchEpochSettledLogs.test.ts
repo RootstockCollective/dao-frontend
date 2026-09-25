@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { encodeAbiParameters, encodeEventTopics } from 'viem'
 
 import { RBTCAsyncVaultAbi } from '@/lib/abis/btc-vault/RBTCAsyncVaultAbi'
@@ -269,5 +269,33 @@ describe('fetchEpochSettledLogs', () => {
 
     // Descending by epochId despite ascending block order from Blockscout
     expect(result.map(e => e.epochId)).toEqual([2n, 1n, 0n])
+  })
+})
+
+describe('fetchEpochSettledLogs against the PRO API', () => {
+  const originalKey = process.env.BLOCKSCOUT_API_KEY
+
+  afterEach(() => {
+    if (originalKey === undefined) delete process.env.BLOCKSCOUT_API_KEY
+    else process.env.BLOCKSCOUT_API_KEY = originalKey
+    vi.unstubAllGlobals()
+  })
+
+  it('sends the key in Authorization and keeps it out of the URL', async () => {
+    process.env.BLOCKSCOUT_API_KEY = 'proapi_secret'
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ status: '0', message: 'No logs found', result: [] }),
+    })
+    vi.stubGlobal('fetch', mockFetch)
+
+    await fetchEpochSettledLogs()
+
+    const [calledUrl, init] = mockFetch.mock.calls[0] as [string, RequestInit]
+    const url = new URL(calledUrl)
+    expect(url.origin + url.pathname).toBe('https://api.blockscout.com/v2/api')
+    expect(url.searchParams.get('chain_id')).toBe('30')
+    expect(url.searchParams.has('apikey')).toBe(false)
+    expect(new Headers(init.headers).get('authorization')).toBe('Bearer proapi_secret')
   })
 })

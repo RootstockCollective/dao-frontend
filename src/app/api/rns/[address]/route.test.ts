@@ -86,6 +86,11 @@ describe('GET /api/rns/[address]', () => {
     // REST v2 on the PRO API puts the chain in the path, unlike the RPC style.
     expect(url.origin).toBe('https://api.blockscout.com')
     expect(url.pathname).toBe(`/30/api/v2/addresses/${ADDRESS}`)
-    expect(url.searchParams.get('apikey')).toBe('proapi_secret')
+    expect(url.searchParams.get('apikey')).toBeNull()
+    const init = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][1] as RequestInit
+    expect(new Headers(init.headers).get('authorization')).toBe('Bearer proapi_secret')
+    // The per-address cache survives the header: Next only drops caching for auth'd fetches
+    // without an explicit revalidate.
+    expect(init.next).toEqual({ revalidate: expect.any(Number) })
   })
 })

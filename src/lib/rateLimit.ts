@@ -10,20 +10,28 @@ interface RateLimitResult {
   resetMs: number
 }
 
-const store = new Map<string, number[]>()
+interface Bucket {
+  /** The window this bucket was last checked with, so cleanup can prune it by its own window. */
+  windowMs: number
+  timestamps: number[]
+}
+
+const store = new Map<string, Bucket>()
 
 let callsSinceCleanup = 0
 
 const CLEANUP_INTERVAL = 50
 const MAX_KEYS = 50_000
 
-function cleanup(now: number, windowMs: number): void {
-  for (const [key, timestamps] of store) {
-    const valid = timestamps.filter(t => now - t < windowMs)
+// Each bucket is pruned by its own window. Pruning all of them by the caller's would let a busy
+// short-window prefix erase the history of a long-window one, and with it that prefix's limit.
+function cleanup(now: number): void {
+  for (const [key, bucket] of store) {
+    const valid = bucket.timestamps.filter(t => now - t < bucket.windowMs)
     if (valid.length === 0) {
       store.delete(key)
     } else {
-      store.set(key, valid)
+      bucket.timestamps = valid
     }
   }
 }
@@ -55,12 +63,12 @@ export function checkRateLimit(key: string, prefix: string, config: RateLimitCon
   callsSinceCleanup++
 
   if (callsSinceCleanup >= CLEANUP_INTERVAL) {
-    cleanup(now, config.windowMs)
+    cleanup(now)
     callsSinceCleanup = 0
   }
   enforceMaxKeys()
 
-  const timestamps = store.get(bucketKey) ?? []
+  const timestamps = store.get(bucketKey)?.timestamps ?? []
   const windowStart = now - config.windowMs
   const valid = timestamps.filter(t => t > windowStart)
 
@@ -72,7 +80,7 @@ export function checkRateLimit(key: string, prefix: string, config: RateLimitCon
   }
 
   valid.push(now)
-  store.set(bucketKey, valid)
+  store.set(bucketKey, { windowMs: config.windowMs, timestamps: valid })
 
   return {
     success: true,

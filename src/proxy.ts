@@ -15,6 +15,24 @@ const RATE_LIMIT_CONFIGS: Record<string, RouteRateLimitConfig> = {
   '/api/support/ticket': { prefix: 'support_ticket', limit: 5, windowMs: 600_000 },
 }
 
+/**
+ * Routes matched by prefix, for dynamic segments such as `/api/gauges/[gauge]/…`.
+ *
+ * The gauge routes are public and read state-sync Postgres, whose pool is shared with every other
+ * route. A tab polls them a few times a minute (`AVERAGE_BLOCKTIME`), so the limit leaves room for
+ * several users behind one NAT while capping how fast a single client can drain the pool.
+ */
+const PREFIX_RATE_LIMIT_CONFIGS: { pathPrefix: string; config: RouteRateLimitConfig }[] = [
+  { pathPrefix: '/api/gauges/', config: { prefix: 'gauges', limit: 120, windowMs: 60_000 } },
+]
+
+function resolveRateLimitConfig(pathname: string): RouteRateLimitConfig | undefined {
+  return (
+    RATE_LIMIT_CONFIGS[pathname] ??
+    PREFIX_RATE_LIMIT_CONFIGS.find(({ pathPrefix }) => pathname.startsWith(pathPrefix))?.config
+  )
+}
+
 // Falls back to 127.0.0.1 when no proxy headers are present (local dev, tests).
 // In production the reverse proxy always sets x-forwarded-for / x-real-ip.
 function getClientIp(request: NextRequest): string {
@@ -27,7 +45,7 @@ function getClientIp(request: NextRequest): string {
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const config = RATE_LIMIT_CONFIGS[pathname]
+  const config = resolveRateLimitConfig(pathname)
 
   if (!config) {
     return NextResponse.next()
@@ -63,5 +81,5 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/api/auth/:path*', '/api/support/:path*'],
+  matcher: ['/api/auth/:path*', '/api/support/:path*', '/api/gauges/:path*'],
 }

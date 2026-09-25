@@ -25,6 +25,7 @@ const loadWithKey = async (apiKey?: string) => {
 }
 
 const calledUrl = () => new URL((global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][0])
+const calledHeaders = () => new Headers((global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][1]?.headers)
 
 describe('fetchBlockscoutGetLogsPaginated against the PRO API', () => {
   const originalFetch = global.fetch
@@ -40,7 +41,7 @@ describe('fetchBlockscoutGetLogsPaginated against the PRO API', () => {
     vi.resetModules()
   })
 
-  it('sends chain_id and apikey to the PRO host when a key is configured', async () => {
+  it('sends chain_id to the PRO host, with the key in Authorization rather than the url', async () => {
     const { fetchBlockscoutGetLogsPaginated } = await loadWithKey('proapi_secret')
 
     await fetchBlockscoutGetLogsPaginated({ query: { address: ADDRESS, topic0: TOPIC } })
@@ -50,7 +51,8 @@ describe('fetchBlockscoutGetLogsPaginated against the PRO API', () => {
     // The PRO API serves the RPC endpoints under /v2/api, not /api.
     expect(url.pathname).toBe('/v2/api')
     expect(url.searchParams.get('chain_id')).toBe('30')
-    expect(url.searchParams.get('apikey')).toBe('proapi_secret')
+    expect(url.searchParams.get('apikey')).toBeNull()
+    expect(calledHeaders().get('authorization')).toBe('Bearer proapi_secret')
     // The query itself must survive alongside the auth params.
     expect(url.searchParams.get('module')).toBe('logs')
     expect(url.searchParams.get('action')).toBe('getLogs')
@@ -67,6 +69,7 @@ describe('fetchBlockscoutGetLogsPaginated against the PRO API', () => {
     expect(url.pathname).toBe('/api')
     expect(url.searchParams.get('apikey')).toBeNull()
     expect(url.searchParams.get('chain_id')).toBeNull()
+    expect(calledHeaders().get('authorization')).toBeNull()
   })
 
   it('never leaks the key onto an explicitly pinned explorer', async () => {
@@ -80,5 +83,6 @@ describe('fetchBlockscoutGetLogsPaginated against the PRO API', () => {
     const url = calledUrl()
     expect(url.origin).toBe('https://custom.explorer')
     expect(url.searchParams.get('apikey')).toBeNull()
+    expect(calledHeaders().get('authorization')).toBeNull()
   })
 })

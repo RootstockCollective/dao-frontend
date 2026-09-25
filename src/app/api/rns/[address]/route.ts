@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 import { handleApiError } from '@/app/api/utils/helpers'
 import { AddressSchema } from '@/app/api/utils/validators'
-import { buildBlockscoutRestUrl } from '@/lib/blockscout/blockscout-api'
+import { buildBlockscoutRestRequest } from '@/lib/blockscout/blockscout-api'
 
 /**
  * Domain lookups are close to immutable and shared by every visitor, so a long window costs one
@@ -41,8 +41,8 @@ export async function GET(
   }
 
   try {
-    const url = buildBlockscoutRestUrl(`addresses/${parsed.data}`)
-    const response = await fetch(url, { next: { revalidate } })
+    const { url, headers } = buildBlockscoutRestRequest(`addresses/${parsed.data}`)
+    const response = await fetch(url, { headers, next: { revalidate } })
 
     // Blockscout answers 404 for an address it has never seen, which is not an error for us.
     if (response.status === 404) {
