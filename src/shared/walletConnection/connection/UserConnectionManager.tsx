@@ -10,6 +10,8 @@ import { DisconnectWorkflowContainer } from './DisconnectWorkflowContainer'
 interface UserConnectionManagerProps {
   className?: string
   showContent?: boolean
+  /** Takes the control out of the tab order and the accessibility tree, e.g. while it is hidden. */
+  inert?: boolean
 }
 
 /**
@@ -32,7 +34,7 @@ interface UserConnectionManagerProps {
  * "Text content does not match server-rendered HTML" or
  * "Hydration failed because the initial UI does not match what was rendered on the server"
  */
-export function UserConnectionManager({ className, showContent = true }: UserConnectionManagerProps) {
+export function UserConnectionManager({ className, showContent = true, inert }: UserConnectionManagerProps) {
   const { isConnected } = useAccount()
   const [mounted, setMounted] = useState(false)
 
@@ -48,5 +50,9 @@ export function UserConnectionManager({ className, showContent = true }: UserCon
     content = isConnected ? <DisconnectWorkflowContainer /> : <ConnectWorkflow />
   }
 
-  return <div className={cn('flex items-center', className)}>{content}</div>
+  return (
+    <div className={cn('flex items-center', className)} inert={inert}>
+      {content}
+    </div>
+  )
 }
