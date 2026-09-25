@@ -1,2 +1,3 @@
 export * from './collective-balances-section'
-export * from './top-hero'
+export * from './CollectivePossibilities'
+export * from './HoldingsBanner'

@@ -1,3 +1,4 @@
+import { AccentSquare } from '@/components/AccentSquare'
 import { FilterIcon } from '@/components/Icons'
 import { Header } from '@/components/Typography'
 import { useTableContext } from '@/shared/context'
@@ -35,9 +36,12 @@ export const BuildersTableTitle = ({
 
   return (
     <div className="flex items-center justify-between px-4 md:px-0">
-      <Header variant="h3" caps className="text-nowrap">
-        The Collective Builders
-      </Header>
+      <div className="flex items-center gap-3">
+        <AccentSquare />
+        <Header variant="h3" caps className="text-nowrap">
+          All Builders
+        </Header>
+      </div>
       {isDesktop ? (
         <BuilderFilterDropdown
           onSelected={onFilterSelected}

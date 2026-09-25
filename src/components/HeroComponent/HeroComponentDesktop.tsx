@@ -29,7 +29,7 @@ export const HeroComponentDesktop = ({
   const { isLoaded } = useImagePreloader(imageSources)
 
   return (
-    <div className={cn('flex flex-row bg-text-80 rounded-sm p-4 gap-0', className)} data-testid={dataTestId}>
+    <div className={cn('flex flex-row bg-text-80 rounded-sm p-4 gap-6', className)} data-testid={dataTestId}>
       <div className="relative w-1/2 min-h-0">
         {isLoaded ? (
           <Image

@@ -24,6 +24,12 @@ import { BannerContentProps } from '@/components/StackableBanner/BannerContent'
  */
 export interface BannerConfig extends Omit<BannerContentProps, 'buttonOnClick'> {
   /**
+   * Stable identifier for this notification. Used to remember that the user dismissed it,
+   * so it must not change between renders.
+   */
+  id: string
+
+  /**
    * Action configuration that defines what happens when the user clicks the banner button.
    */
   action: {

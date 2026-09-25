@@ -16,6 +16,7 @@ export interface ModalProps {
   width?: number
   height?: number | 'auto'
   closeButtonColor?: 'white' | 'black'
+  hideCloseButton?: boolean
   'data-testid'?: string
 }
 
@@ -30,6 +31,7 @@ export const Modal = ({
   width,
   height = 'auto',
   closeButtonColor = 'white',
+  hideCloseButton = false,
   'data-testid': dataTestId,
 }: ModalProps) => {
   const portalContainerRef = useRef<HTMLDivElement>(null)
@@ -62,15 +64,20 @@ export const Modal = ({
         className={cn(
           'relative overflow-x-hidden bg-bg-80 rounded overflow-y-auto min-w-0 touch-pan-y',
           'shadow-[0px_0px_40px_0px_rgba(255,255,255,0.10)]',
+          // Never grow past the viewport, otherwise content taller than the screen gets
+          // clipped by the wrapper and overflow-y-auto has nothing to scroll
+          'max-h-full',
           fullscreen ? 'w-screen h-dvh' : 'w-[95vw] max-w-[380px] md:w-[688px] md:max-w-[97vw]',
           height === 'auto' && !fullscreen ? 'h-full md:h-auto' : '',
           className,
         )}
         style={containerStyle}
       >
-        <button onClick={onClose} className="absolute top-4 right-4 z-base" data-testid="CloseButton">
-          <CloseIconKoto size={24} aria-label="Close" color={closeButtonColor} />
-        </button>
+        {!hideCloseButton && (
+          <button onClick={onClose} className="absolute top-4 right-4 z-base" data-testid="CloseButton">
+            <CloseIconKoto size={24} aria-label="Close" color={closeButtonColor} />
+          </button>
+        )}
 
         <PortalContainerContext.Provider value={portalContainerRef}>
           {children}

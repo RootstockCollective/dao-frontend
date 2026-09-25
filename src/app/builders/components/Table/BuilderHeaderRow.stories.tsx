@@ -41,12 +41,10 @@ export default meta
 type Story = StoryObj<typeof meta>
 
 // Custom TableProvider that accepts initial state
-const CustomTableProvider = (
-  {
-    children,
-    initialState: customInitialState
-  }: PropsWithChildren<{ initialState: TableState<ColumnId> }>
-) => {
+const CustomTableProvider = ({
+  children,
+  initialState: customInitialState,
+}: PropsWithChildren<{ initialState: TableState<ColumnId> }>) => {
   const [state, dispatch] = useReducer(tableReducer, customInitialState)
 
   return (

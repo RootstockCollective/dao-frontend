@@ -27,7 +27,7 @@ import { Tooltip } from '@/components/Tooltip'
 import { Header, Label, Span } from '@/components/Typography'
 import { RIF, STRIF } from '@/lib/constants'
 import { currentLinks } from '@/lib/links'
-import { formatCurrency } from '@/lib/utils'
+import { cn, formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
@@ -129,6 +129,8 @@ export const BackingPage = () => {
   const { randomBuilders } = useBuilderContext()
   const { prices } = usePricesContext()
   const [isExpanded, setIsExpanded] = useState(false)
+  // Drives the metrics layout: stacked while the info banner is open, in a row once collapsed
+  const [isBackingInfoOpen, setIsBackingInfoOpen] = useState(true)
 
   const availableToAllocate = balance - totalOnchainAllocation
   const availableForBacking = balance - cumulativeAllocation
@@ -203,10 +205,20 @@ export const BackingPage = () => {
           className="flex flex-col-reverse md:flex-row w-full items-stretch gap-2"
         >
           <BackingInfoContainer title={<BackingInfoTitleControl />}>
-            <BackingBanner />
+            <BackingBanner isOpen={isBackingInfoOpen} onOpenChange={setIsBackingInfoOpen} />
           </BackingInfoContainer>
-          <MetricsContainer className="grow-[3] h-full bg-v3-bg-accent-80">
-            <GlobalAnnualBackersIncentives />
+          {/* Stacked while the info banner is open so it fills the taller card; once collapsed
+              it goes compact and side by side, so both cards shrink together */}
+          <MetricsContainer
+            className={cn(
+              'grow-[3] h-full bg-v3-bg-accent-80',
+              !isBackingInfoOpen &&
+                'p-4 md:p-4 gap-2 md:gap-4 md:flex-row md:items-start md:divide-y-0 md:divide-x',
+            )}
+          >
+            <GlobalAnnualBackersIncentives
+              className={isBackingInfoOpen ? undefined : 'pb-3 md:pb-0 md:pr-4'}
+            />
             <EstimatedRewardsMetric />
           </MetricsContainer>
         </div>

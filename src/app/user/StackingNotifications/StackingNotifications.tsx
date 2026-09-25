@@ -6,9 +6,8 @@ import { useAccount } from 'wagmi'
 import { CycleContextProvider, useCycleContext } from '@/app/collective-rewards/metrics'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { useRequiredTokens } from '@/app/user/IntroModal/hooks/useRequiredTokens'
-import { BannerContent } from '@/components/StackableBanner/BannerContent'
-import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
 
+import { NotificationBanner } from './components'
 import {
   getBannerConfigForBacking,
   getBannerConfigForCycleEnded,
@@ -16,8 +15,9 @@ import {
   getBannerConfigForKycOnly,
   getBannerConfigForStartBuilding,
   getBannerConfigForTokenStatus,
-  selectRandomBannerConfigs,
+  selectBannerConfigs,
 } from './configs'
+import { getStackArtwork } from './constants'
 import { useGetBuilderState } from './hooks/useGetBuilderState'
 import { useHasAvailableBacking } from './hooks/useHasAvailableForBacking'
 import { BannerConfig } from './types'
@@ -40,7 +40,8 @@ import { handleActionClick } from './utils'
  * ARCHITECTURE OVERVIEW:
  * - BANNER_CONFIGS: Static configuration mapping banner types to display properties
  * - Detection Functions: Determine when banners should be shown based on user state
- * - Category System: Groups banners to avoid overwhelming users (max 1 per category)
+ * - Priority: STACK_ORDER (configs.tsx) sets the order; add new banner ids there, or they go last
+ * - Families: banners telling the same story (the two cycle ones) show at most one at a time
  * - Action Handling: Unified system for handling banner button clicks
  *
  * =====================================================================================
@@ -88,7 +89,7 @@ import { handleActionClick } from './utils'
  * COMPONENT BEHAVIOR:
  * 1. Loads user state data from various hooks
  * 2. Determines which banners should be shown based on detection functions
- * 3. Groups banners by category and randomly selects one per category
+ * 3. Shows every active banner in priority order (see STACK_ORDER in configs.tsx)
  * 4. Renders the selected banners with action buttons
  *
  * EXTENDING THIS COMPONENT:
@@ -97,7 +98,8 @@ import { handleActionClick } from './utils'
  * 3. Add your detection function to the activeBannerConfigs array below
  * 4. If your detection depends on async data, add loading state to dependencies array
  *
- * Check BannerContent.stories.tsx to see banners config
+ * Each selected banner renders as its own NotificationBanner card. Dismissing one hides it
+ * for the session; a reload brings it back.
  *
  * @returns JSX.Element with banner notifications or null if no banners should be shown
  */
@@ -209,7 +211,7 @@ const StackingNotificationsContent = () => {
   // ===============================
 
   const bannerConfigsForDisplay = useMemo(
-    () => selectRandomBannerConfigs(activeBannerConfigs),
+    () => selectBannerConfigs(activeBannerConfigs),
     [activeBannerConfigs],
   )
 
@@ -218,6 +220,9 @@ const StackingNotificationsContent = () => {
 
   // Only block rendering on FIRST load, not on subsequent polling updates
   const [hasLoadedOnce, setHasLoadedOnce] = useState(false)
+
+  // Dismissals last for the session only: a reload brings every notification back
+  const [dismissedIds, setDismissedIds] = useState<string[]>([])
 
   useEffect(() => {
     if (areDependenciesLoaded && !hasLoadedOnce) {
@@ -238,20 +243,40 @@ const StackingNotificationsContent = () => {
     return null
   }
 
+  const visibleBannerConfigs = bannerConfigsForDisplay.filter(config => !dismissedIds.includes(config.id))
+
+  if (visibleBannerConfigs.length === 0) {
+    return null
+  }
+
   // Render the selected banners
   return (
-    <StackableBanner>
-      {bannerConfigsForDisplay.map((config, index) => (
-        <BannerContent
-          key={`banner-${index}`}
-          title={config.title}
-          description={config.description}
-          buttonText={config.buttonText}
-          buttonOnClick={() => handleActionClick(config, router)}
-          rightContent={config.rightContent}
-        />
-      ))}
-    </StackableBanner>
+    <div className="mb-3 flex w-full flex-col gap-2" data-testid="StackingNotifications">
+      {/* Walking the whole stack rather than what is left of it keeps every card's looks tied
+          to the place it was given, so dismissing one never restyles the others. */}
+      {bannerConfigsForDisplay.map((config, position) => {
+        if (dismissedIds.includes(config.id)) {
+          return null
+        }
+
+        const { backgroundSrc, backgroundPosition, scrim } = getStackArtwork(position)
+
+        return (
+          <NotificationBanner
+            key={config.id}
+            title={config.title}
+            description={config.description}
+            backgroundSrc={backgroundSrc}
+            backgroundPosition={backgroundPosition}
+            scrim={scrim}
+            buttonText={config.buttonText}
+            buttonOnClick={() => handleActionClick(config, router)}
+            rightContent={config.rightContent}
+            onDismiss={() => setDismissedIds(ids => [...ids, config.id])}
+          />
+        )
+      })}
+    </div>
   )
 }
 

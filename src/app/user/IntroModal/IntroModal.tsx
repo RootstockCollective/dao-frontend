@@ -1,12 +1,10 @@
 import { useRouter } from 'next/navigation'
-import { useEffect, useMemo } from 'react'
+import { useEffect } from 'react'
 
 import { RBTC, RIF } from '@/lib/constants'
-import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
 import { useModal } from '@/shared/hooks/useModal'
 
 import { useBalancesContext } from '../Balances/context/BalancesContext'
-import { IMAGE_CONFIG } from './config'
 import { useRequiredTokens } from './hooks/useRequiredTokens'
 import { IntroModalContent } from './IntroModalContent'
 
@@ -15,22 +13,6 @@ export const IntroModal = () => {
   const tokenStatus = useRequiredTokens()
   const { balances } = useBalancesContext()
   const router = useRouter()
-
-  // Get image paths for current status
-  const imagePaths = useMemo(() => {
-    if (!tokenStatus) return []
-
-    const currentConfig = IMAGE_CONFIG[tokenStatus]
-    return [
-      currentConfig.desktop.bg,
-      currentConfig.desktop.pixels,
-      currentConfig.mobile.bg,
-      currentConfig.mobile.pixels,
-    ]
-  }, [tokenStatus])
-
-  // Preload images using preload hook
-  const { isLoaded } = useImagePreloader(imagePaths)
 
   const handleContinue = (url: string, external = false) => {
     if (external) {
@@ -42,15 +24,14 @@ export const IntroModal = () => {
   }
 
   useEffect(() => {
-    if (isLoaded && tokenStatus !== null) {
+    if (tokenStatus !== null) {
       openModal()
-    } else if (tokenStatus === null) {
+    } else {
       closeModal()
     }
-  }, [isLoaded, tokenStatus, openModal, closeModal])
+  }, [tokenStatus, openModal, closeModal])
 
-  // Don't render if no required tokens or loading is not complete
-  if (!tokenStatus || !isLoaded || !isModalOpened) {
+  if (!tokenStatus || !isModalOpened) {
     return null
   }
 

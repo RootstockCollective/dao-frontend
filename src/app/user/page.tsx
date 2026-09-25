@@ -1,21 +1,25 @@
 'use client'
 
 import { useSearchParams } from 'next/navigation'
+import { zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 
+import { BackerRewardsContextProvider } from '@/app/collective-rewards/rewards'
 import { CommunitiesSection } from '@/app/user/Communities/CommunitiesSection'
 import { StackingNotifications } from '@/app/user/StackingNotifications/StackingNotifications'
+import { TOKENS } from '@/lib/tokens'
 
 import { useGetProposalsWithGraph } from '../proposals/hooks/useGetProposalsWithGraph'
 import { TreasuryContextProviderWithPrices } from '../treasury/contexts/TreasuryContext'
 import { CollectiveBalancesSection } from './components/collective-balances-section'
-import { TopHeroComponentNotConnected } from './components/top-hero'
+import { CollectivePossibilities } from './components/CollectivePossibilities'
+import { HoldingsBanner } from './components/HoldingsBanner'
 import { IntroModal } from './IntroModal'
 import { LatestCollectiveSection } from './latest-collective'
 import { MyActivityAndBalances } from './my-holdings/MyActivityAndBalances'
 
 export default function User() {
-  const { isConnected } = useAccount()
+  const { address, isConnected } = useAccount()
   const searchParams = useSearchParams()
   const { activeProposals, data: proposals } = useGetProposalsWithGraph()
 
@@ -26,11 +30,15 @@ export default function User() {
       {isConnected ? (
         <>
           <StackingNotifications />
-          <MyActivityAndBalances />
+          <BackerRewardsContextProvider backer={address ?? zeroAddress} tokens={TOKENS}>
+            <HoldingsBanner />
+            <MyActivityAndBalances />
+          </BackerRewardsContextProvider>
         </>
       ) : (
         <>
-          <TopHeroComponentNotConnected />
+          <CollectivePossibilities />
+          <HoldingsBanner />
           <TreasuryContextProviderWithPrices>
             <CollectiveBalancesSection />
           </TreasuryContextProviderWithPrices>

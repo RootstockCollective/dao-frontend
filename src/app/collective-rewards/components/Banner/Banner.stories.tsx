@@ -38,7 +38,7 @@ type Story = StoryObj<typeof meta>
 
 export const BuildersBanner: Story = {
   args: {
-    imageSrc: '/images/cta-banner-builders.png',
+    imageSrc: '/images/cta-banner-builders.webp',
     altText: 'Builders Call to Action Banner',
     DecorativeComponent: BuildersDecorativeSquares,
   },
@@ -46,7 +46,7 @@ export const BuildersBanner: Story = {
 
 export const BackersBanner: Story = {
   args: {
-    imageSrc: '/images/cta-banner-backers.png',
+    imageSrc: '/images/cta-banner-backers.webp',
     altText: 'Backers Call to Action Banner',
     DecorativeComponent: BackersDecorativeSquares,
   },

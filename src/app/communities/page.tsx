@@ -10,9 +10,10 @@ import {
   rootstockHacktivator,
   vanguardCommunity,
 } from '@/app/communities/communityUtils'
-import { HeroCommunitiesComponent } from '@/app/communities/components'
 import { getEnvFlag } from '@/shared/context/FeatureFlag/flags.utils'
 
+import { CommunitiesBanner } from './components/CommunitiesBanner'
+import { CommunitiesIntro } from './components/CommunitiesIntro'
 import { ResponsiveCommunityItemHOC } from './components/ResponsiveCommunityItemHOC'
 import { SectionContainer } from './components/SectionContainer'
 
@@ -30,7 +31,8 @@ export default function Communities() {
   return (
     <div>
       <div className="flex flex-col gap-2">
-        <HeroCommunitiesComponent />
+        <CommunitiesBanner />
+        <CommunitiesIntro />
         <SectionContainer
           title="BADGES"
           rightContent="These are earned for specific tasks - they are NFTs that come with functionality, some just medals of honour. Badges can unlock voting capabilities and help you earn BTC-based rewards through RootstockCollective."
