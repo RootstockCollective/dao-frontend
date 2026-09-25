@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef } from 'react'
 import { createPortal } from 'react-dom'
+import useLocalStorageState from 'use-local-storage-state'
 
 import { CommonComponentProps } from '@/components/commonProps'
 import { DismissButton } from '@/components/DismissButton'
@@ -14,6 +15,13 @@ import { PossibilitiesDock } from './PossibilitiesDock'
 import { PosterArt } from './PosterArt'
 import { CONNECT_CTA_CLASSES, EYEBROW_CLASSES } from './styles'
 import { useScrollDock } from './useScrollDock'
+
+/**
+ * Remembers the dismissal per browser, across reloads. The layout only renders on the client
+ * (DelayedRender), so the stored value is read on the first render and a dismissed banner
+ * never flashes in.
+ */
+export const DISMISSED_STORAGE_KEY = 'rc.holdings.dontMiss.dismissed'
 
 const POSSIBILITIES = [
   {
@@ -43,12 +51,11 @@ const POSSIBILITIES = [
  *
  * Scrolling it away shrinks and fades it and docks a compact bar under the top bar
  * (PossibilitiesDock), which stands in for the top bar's own Connect button until the banner
- * comes back. Dismissing either one removes both.
+ * comes back. Dismissing either one removes both, for good in this browser.
  */
 export const CollectivePossibilities = ({ className }: CommonComponentProps) => {
   const titleId = useId()
-  // Dismissal lasts for the session only: a reload brings the card back
-  const [isDismissed, setIsDismissed] = useState(false)
+  const [isDismissed, setIsDismissed] = useLocalStorageState(DISMISSED_STORAGE_KEY, { defaultValue: false })
   const bannerRef = useRef<HTMLElement>(null)
   const tileRef = useRef<HTMLDivElement>(null)
 

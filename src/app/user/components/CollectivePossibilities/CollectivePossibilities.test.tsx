@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { TopBarDockProvider, useTopBarDock } from '@/components/MainContainer/TopBarDockProvider'
 
-import { CollectivePossibilities } from './CollectivePossibilities'
+import { CollectivePossibilities, DISMISSED_STORAGE_KEY } from './CollectivePossibilities'
 
 vi.mock('@/shared/walletConnection/connection/ConnectWorkflow', () => ({
   ConnectWorkflow: () => <button type="button">Connect wallet</button>,
@@ -53,6 +53,8 @@ describe('CollectivePossibilities', () => {
     vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined)
     vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {})
     mockReducedMotion(false)
+
+    localStorage.clear()
 
     // jsdom has no layout: place the banner and the top bar by hand
     bannerTop = 136
@@ -147,7 +149,9 @@ describe('CollectivePossibilities', () => {
     const banner = screen.getByRole('region', { name: 'THE COLLECTIVE POSSIBILITIES' })
     expect(banner.style.transform).toBe('')
     expect(banner.style.opacity).toBe('')
-    await waitFor(() => expect(screen.getByTestId('PossibilitiesDock')).toHaveAttribute('data-docked', 'true'))
+    await waitFor(() =>
+      expect(screen.getByTestId('PossibilitiesDock')).toHaveAttribute('data-docked', 'true'),
+    )
   })
 
   it('removes the banner and the dock from the banner X', () => {
@@ -169,5 +173,18 @@ describe('CollectivePossibilities', () => {
     expect(screen.queryByTestId('CollectivePossibilities')).not.toBeInTheDocument()
     expect(screen.queryByTestId('PossibilitiesDock')).not.toBeInTheDocument()
     expect(screen.getByTestId('TopBar')).toHaveAttribute('data-docked', 'false')
+  })
+
+  it('remembers the dismissal across reloads', () => {
+    const { unmount } = renderOnPage()
+    fireEvent.click(screen.getByTestId('DismissPossibilitiesButton'))
+    unmount()
+
+    expect(localStorage.getItem(DISMISSED_STORAGE_KEY)).toBe('true')
+
+    renderOnPage()
+    expect(screen.queryByTestId('CollectivePossibilities')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('PossibilitiesDock')).not.toBeInTheDocument()
+    expect(screen.getByTestId('TopBar')).toHaveAttribute('data-active', 'false')
   })
 })
