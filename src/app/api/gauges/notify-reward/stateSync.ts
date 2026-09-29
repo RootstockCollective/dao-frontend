@@ -2,12 +2,11 @@ import { unstable_cache } from 'next/cache'
 import { type Address, isAddress } from 'viem'
 
 import { fromDbBytes, toDbBytes } from '@/app/api/db/bytes'
+import { TABLE_GAUGE_NOTIFY_REWARD } from '@/app/api/db/constants'
 import { db } from '@/lib/db'
 import { logger } from '@/lib/logger'
 
 import { filterKnownGauges } from '../_lib/known-gauges'
-
-const TABLE_NOTIFY_REWARD = 'GaugeNotifyReward'
 
 /**
  * Seconds a gauge's rows are served from the Data Cache. Matches the client's poll interval
@@ -52,7 +51,7 @@ export interface FetchNotifyRewardOptions {
 
 /** One gauge's whole history. The time bound is applied after the cache, so it is not part of the key. */
 async function loadNotifyRewardRecords(lowercaseGauge: string): Promise<NotifyRewardRecord[]> {
-  const rows: NotifyRewardRow[] = await db(TABLE_NOTIFY_REWARD)
+  const rows: NotifyRewardRow[] = await db(TABLE_GAUGE_NOTIFY_REWARD)
     .select('rewardToken', 'builderAmount', 'backersAmount', 'blockTimestamp')
     .where('gauge', toDbBytes(lowercaseGauge))
     .orderBy('blockTimestamp', 'asc')
@@ -66,7 +65,7 @@ async function loadNotifyRewardRecords(lowercaseGauge: string): Promise<NotifyRe
     // match any token the screens sum, so dropping it changes no total.
     if (!isAddress(rewardToken, { strict: false })) {
       logger.warn(
-        { table: TABLE_NOTIFY_REWARD, rewardToken },
+        { table: TABLE_GAUGE_NOTIFY_REWARD, rewardToken },
         'Skipping NotifyReward row with an invalid reward token',
       )
       continue
