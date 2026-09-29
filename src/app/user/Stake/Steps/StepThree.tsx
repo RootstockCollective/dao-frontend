@@ -1,6 +1,11 @@
 import posthog from 'posthog-js'
 import { useEffect } from 'react'
 
+import {
+  StakeBoostEligibilityRow,
+  useIsAbiBoostEnabled,
+  useStakeBoostOutlook,
+} from '@/app/collective-rewards/abi-boost'
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
@@ -11,7 +16,7 @@ import { StakeTokenAmountDisplay } from '../components/StakeTokenAmountDisplay'
 import { TransactionStatus } from '../components/TransactionStatus'
 import { useStakeRIF } from '../hooks/useStakeRIF'
 
-export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
+export const StepThree = ({ onGoToStep, onCloseModal, onBoostEligible }: StepProps) => {
   const {
     amount,
     tokenToSend,
@@ -25,6 +30,10 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
     tokenToReceive.contract,
   )
   const { refetchBalances } = useGetAddressBalances()
+  const isAbiBoostEnabled = useIsAbiBoostEnabled()
+  // Read before the stake lands, so the outcome compares against the balance it started from
+  const boostOutlook = useStakeBoostOutlook(amount)
+  const becomesBoostEligible = isAbiBoostEnabled && boostOutlook.kind === 'eligible' && !!onBoostEligible
 
   // Set button actions directly
   useEffect(() => {
@@ -36,6 +45,10 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
             onRequestTx: onRequestStake,
             onSuccess: () => {
               refetchBalances()
+              if (becomesBoostEligible && onBoostEligible) {
+                onBoostEligible(amount)
+                return
+              }
               onCloseModal()
             },
             onError: (txHash, err) => {
@@ -68,6 +81,8 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
     onRequestStake,
     onCloseModal,
     onGoToStep,
+    becomesBoostEligible,
+    onBoostEligible,
     setButtonActions,
     refetchBalances,
     tokenToSend.symbol,
@@ -91,6 +106,8 @@ export const StepThree = ({ onGoToStep, onCloseModal }: StepProps) => {
           isFlexEnd
         />
       </div>
+
+      {isAbiBoostEnabled && <StakeBoostEligibilityRow amount={amount} />}
 
       <TransactionStatus txHash={stakeTxHash} isTxFailed={isTxFailed} failureMessage="Stake TX failed." />
     </>

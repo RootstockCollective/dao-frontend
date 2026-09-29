@@ -2,6 +2,7 @@
 import { ChevronDown } from 'lucide-react'
 import { Address } from 'viem'
 
+import { AbiBoostBadge } from '@/app/collective-rewards/abi-boost'
 import { BuilderStatus } from '@/components/Header'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 
@@ -45,6 +46,7 @@ export const AccountAddress = ({ address, shortAddress, onLogoutClick, withCopy 
         ) : (
           <span className="underline underline-offset-1 select-none whitespace-nowrap">{shortAddress}</span>
         )}
+        <AbiBoostBadge />
         <BuilderStatus address={address as Address} />
         <div className="bg-bg-60 p-1 rounded">
           <ChevronDown size={16} onClick={onLogoutClick} id="logOut" data-testid="Logout_Icon" />

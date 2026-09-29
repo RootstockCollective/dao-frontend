@@ -13,6 +13,7 @@ const features = {
   sentry_error_tracking: 'Enable Sentry error tracking',
   sentry_replay: 'Enable Sentry session replay',
   cultivator: 'Cultivator badge in Clubs section',
+  abi_boost: 'ABI boost for backers above the minimum backing (preliminary UI)',
 } as const
 
 type Feature = keyof typeof features

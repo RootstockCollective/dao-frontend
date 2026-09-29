@@ -18,9 +18,10 @@ import { stepConfig } from '../Steps/stepConfig'
 
 interface StepWrapperProps {
   onCloseModal: () => void
+  onBoostEligible?: (stakedAmount: string) => void
 }
 
-export const StepWrapper = ({ onCloseModal }: StepWrapperProps) => {
+export const StepWrapper = ({ onCloseModal, onBoostEligible }: StepWrapperProps) => {
   const isDesktop = useIsDesktop()
   const [helpPopoverOpen, setHelpPopoverOpen] = useState(false)
   const { buttonActions } = useStakingContext()
@@ -52,7 +53,7 @@ export const StepWrapper = ({ onCloseModal }: StepWrapperProps) => {
 
         {/* Content area */}
         <div className="flex-1">
-          <StepComponent {...stepFunctions} onCloseModal={onCloseModal} />
+          <StepComponent {...stepFunctions} onCloseModal={onCloseModal} onBoostEligible={onBoostEligible} />
         </div>
 
         {/* Footer with buttons */}

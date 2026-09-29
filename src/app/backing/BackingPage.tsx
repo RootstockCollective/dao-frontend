@@ -13,6 +13,14 @@ import { EstimatedRewardsMetric } from '@/app/backing/components/Metrics/Estimat
 import { GlobalAnnualBackersIncentives } from '@/app/backing/components/Metrics/GlobalAnnualBackersIncentives'
 import { TotalBackingDisplay } from '@/app/backing/components/TotalBackingDisplay'
 import {
+  AbiBoostBanner,
+  BoostActivatedModal,
+  BoostedRateCard,
+  DeactivationVoteBanners,
+  useAbiBoostActivation,
+  useIsAbiBoostEnabled,
+} from '@/app/collective-rewards/abi-boost'
+import {
   Allocations,
   AllocationsContext,
 } from '@/app/collective-rewards/allocations/context/AllocationsContext'
@@ -128,6 +136,8 @@ export const BackingPage = () => {
 
   const { randomBuilders } = useBuilderContext()
   const { prices } = usePricesContext()
+  const isAbiBoostEnabled = useIsAbiBoostEnabled()
+  const abiBoostActivation = useAbiBoostActivation()
   const [isExpanded, setIsExpanded] = useState(false)
   // Drives the metrics layout: stacked while the info banner is open, in a row once collapsed
   const [isBackingInfoOpen, setIsBackingInfoOpen] = useState(true)
@@ -199,6 +209,12 @@ export const BackingPage = () => {
       <Header caps variant="h1" className="text-3xl leading-10 pb-[2.5rem]">
         {NAME}
       </Header>
+      {isConnected && (
+        <div className="flex w-full flex-col">
+          <AbiBoostBanner />
+          {hasAllocations && <DeactivationVoteBanners />}
+        </div>
+      )}
       {!hasAllocations && (
         <div
           data-testid="CenterContainer"
@@ -223,6 +239,8 @@ export const BackingPage = () => {
           </MetricsContainer>
         </div>
       )}
+
+      {isConnected && <BoostedRateCard />}
 
       {/* FIXME: we need to change the conditions to show the BuilderAllocationBar */}
       {isConnected && <BuilderAllocationBar />}
@@ -307,6 +325,10 @@ export const BackingPage = () => {
           </Header>
           <Spotlight isInteractive={isConnected} />
         </ActionsContainer>
+      )}
+
+      {isAbiBoostEnabled && abiBoostActivation.hasActivated && (
+        <BoostActivatedModal allocations={initialAllocations} onClose={abiBoostActivation.dismiss} />
       )}
     </div>
   )
