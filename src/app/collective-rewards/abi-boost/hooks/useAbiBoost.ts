@@ -1,4 +1,5 @@
-import { useMemo } from 'react'
+import { useRouter } from 'next/navigation'
+import { useCallback, useMemo } from 'react'
 import { zeroAddress } from 'viem'
 import { useAccount } from 'wagmi'
 
@@ -13,13 +14,25 @@ export const useIsAbiBoostEnabled = (): boolean => {
   return !!flags.abi_boost
 }
 
+/** Where the app lets a backer pick Builders to back. */
+export const BACK_BUILDERS_PATH = '/builders'
+
+export const useGoToBackBuilders = (): (() => void) => {
+  const router = useRouter()
+  return useCallback(() => router.push(BACK_BUILDERS_PATH), [router])
+}
+
 export interface AbiBoostPositionState {
   status: AbiBoostStatus
   /** stRIF balance, in wei. */
   stRifBalance: bigint
   /** On-chain stRIF backing Builders, in wei. */
   backing: bigint
-  isLoading: boolean
+  /**
+   * Both reads have landed without error. Until then the figures are placeholders, and showing a
+   * status from them would tell an active wallet it isn't boosted.
+   */
+  isReady: boolean
 }
 
 /**
@@ -28,16 +41,14 @@ export interface AbiBoostPositionState {
  */
 export const useAbiBoostPosition = (): AbiBoostPositionState => {
   const { address } = useAccount()
-  const { data: stRifBalance, isLoading: isBalanceLoading } = useGetVotingPower()
-  const { data: backing, isLoading: isBackingLoading } = useReadBackersManager(
+  const { data: stRifBalance, error: balanceError } = useGetVotingPower()
+  // No placeholder here: a 0n stand-in reads as a real "not backing" answer while the query loads
+  const { data: backing, error: backingError } = useReadBackersManager(
     {
       functionName: 'backerTotalAllocation',
       args: [address ?? zeroAddress],
     },
-    {
-      placeholderData: 0n,
-      enabled: !!address,
-    },
+    { enabled: !!address },
   )
 
   return useMemo(() => {
@@ -45,7 +56,8 @@ export const useAbiBoostPosition = (): AbiBoostPositionState => {
     return {
       ...position,
       status: getAbiBoostStatus(position),
-      isLoading: !!address && (isBalanceLoading || isBackingLoading),
+      isReady:
+        !!address && stRifBalance !== undefined && backing !== undefined && !balanceError && !backingError,
     }
-  }, [address, stRifBalance, backing, isBalanceLoading, isBackingLoading])
+  }, [address, stRifBalance, backing, balanceError, backingError])
 }

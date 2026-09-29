@@ -314,6 +314,19 @@ export const parseProposalDescription = (description: string): ParsedDescription
 }
 
 /**
+ * Category of each Governor action that changes a Builder's standing. Shared with every place that
+ * needs to tell an activation or a deactivation apart, so the list lives in one spot.
+ */
+export const BUILDER_ACTION_CATEGORIES: ReadonlyMap<string, ProposalCategory> = new Map([
+  ['communityApproveBuilder', ProposalCategory.Activation],
+  ['whitelistBuilder', ProposalCategory.Activation],
+  ['communityBanBuilder', ProposalCategory.Deactivation],
+  ['removeWhitelistedBuilder', ProposalCategory.Deactivation],
+  ['dewhitelistBuilder', ProposalCategory.Deactivation],
+  ['revokeBuilderKYC', ProposalCategory.Deactivation],
+])
+
+/**
  * Extracts proposal category from parsed calldata and description
  * @param calldatasParsed - Array of decoded calldata
  * @param description - Original proposal description for milestone detection
@@ -328,19 +341,9 @@ export function getProposalCategoryFromParsedData(
     .filter(data => data.type === 'decoded')
     .map(data => data.functionName)
 
-  // Map function names to their categories
-  const functionCategoryMap = new Map<string, ProposalCategory>([
-    ['communityApproveBuilder', ProposalCategory.Activation],
-    ['whitelistBuilder', ProposalCategory.Activation],
-    ['communityBanBuilder', ProposalCategory.Deactivation],
-    ['removeWhitelistedBuilder', ProposalCategory.Deactivation],
-    ['dewhitelistBuilder', ProposalCategory.Deactivation],
-    ['revokeBuilderKYC', ProposalCategory.Deactivation],
-  ])
-
   // Check for builder functions first
   for (const functionName of decodedFunctionNames) {
-    const category = functionCategoryMap.get(functionName)
+    const category = BUILDER_ACTION_CATEGORIES.get(functionName)
     if (category) {
       return category
     }

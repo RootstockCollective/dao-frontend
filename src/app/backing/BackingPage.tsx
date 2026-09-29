@@ -18,7 +18,6 @@ import {
   BoostedRateCard,
   DeactivationVoteBanners,
   useAbiBoostActivation,
-  useIsAbiBoostEnabled,
 } from '@/app/collective-rewards/abi-boost'
 import {
   Allocations,
@@ -136,7 +135,6 @@ export const BackingPage = () => {
 
   const { randomBuilders } = useBuilderContext()
   const { prices } = usePricesContext()
-  const isAbiBoostEnabled = useIsAbiBoostEnabled()
   const abiBoostActivation = useAbiBoostActivation()
   const [isExpanded, setIsExpanded] = useState(false)
   // Drives the metrics layout: stacked while the info banner is open, in a row once collapsed
@@ -209,12 +207,8 @@ export const BackingPage = () => {
       <Header caps variant="h1" className="text-3xl leading-10 pb-[2.5rem]">
         {NAME}
       </Header>
-      {isConnected && (
-        <div className="flex w-full flex-col">
-          <AbiBoostBanner />
-          {hasAllocations && <DeactivationVoteBanners />}
-        </div>
-      )}
+      {isConnected && <AbiBoostBanner />}
+      {hasAllocations && <DeactivationVoteBanners />}
       {!hasAllocations && (
         <div
           data-testid="CenterContainer"
@@ -327,7 +321,7 @@ export const BackingPage = () => {
         </ActionsContainer>
       )}
 
-      {isAbiBoostEnabled && abiBoostActivation.hasActivated && (
+      {abiBoostActivation.hasActivated && (
         <BoostActivatedModal allocations={initialAllocations} onClose={abiBoostActivation.dismiss} />
       )}
     </div>

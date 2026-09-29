@@ -9,8 +9,9 @@ import { BoostActivatedModal, BoostEligibleModal } from './AbiBoostModals'
 
 const mockPush = vi.fn()
 
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: mockPush }),
+vi.mock('../hooks/useAbiBoost', () => ({
+  useIsAbiBoostEnabled: () => true,
+  useGoToBackBuilders: () => () => mockPush('/builders'),
 }))
 
 const BUILDERS: Record<string, string> = {

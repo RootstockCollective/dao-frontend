@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import { BoostEligibleModal } from '@/app/collective-rewards/abi-boost'
+import { BoostEligibleModal } from '@/app/collective-rewards/abi-boost/components/AbiBoostModals'
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { StakingProvider } from '@/app/user/Stake/StakingContext'
 import { StakingToken } from '@/app/user/Stake/types'

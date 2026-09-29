@@ -142,6 +142,7 @@ export const AllocationsContextProvider = ({ children }: { children: ReactNode }
 
   const {
     data: totalOnchainAllocation,
+    refetch: refetchTotalOnchainAllocation,
     isLoading: isTotalAllocationLoading,
     error: totalAllocationError,
   } = useReadBackersManager(
@@ -154,6 +155,13 @@ export const AllocationsContextProvider = ({ children }: { children: ReactNode }
       enabled: !!backerAddress,
     },
   )
+
+  // The on-chain total is a separate read: refresh it with the per-gauge allocations, so nothing
+  // keeps reading the pre-save figure until the next polling tick
+  const refetchAllocations = useCallback(() => {
+    refetchRawAllocations()
+    refetchTotalOnchainAllocation()
+  }, [refetchRawAllocations, refetchTotalOnchainAllocation])
 
   /**
    * Reactive state updates
@@ -260,7 +268,7 @@ export const AllocationsContextProvider = ({ children }: { children: ReactNode }
       isAllocationTxPending,
       getBuilder,
       isValidState,
-      refetchRawAllocations,
+      refetchRawAllocations: refetchAllocations,
     }
   }, [
     selections,
@@ -272,7 +280,7 @@ export const AllocationsContextProvider = ({ children }: { children: ReactNode }
     getBuilder,
     isValidState,
     resetVersion,
-    refetchRawAllocations,
+    refetchAllocations,
   ])
 
   const actions: AllocationsActions = useMemo(

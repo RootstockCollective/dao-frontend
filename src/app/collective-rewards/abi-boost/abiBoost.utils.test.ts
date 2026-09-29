@@ -8,8 +8,8 @@ import {
   formatAbiBoostAmount,
   formatAbiBoostPercentage,
   formatAbiBoostTerm,
+  formatMissingAmount,
   formatRate,
-  formatVotingCountdown,
   getAbiBoostGuidance,
   getAbiBoostStatus,
   getBackingBoostHint,
@@ -17,6 +17,7 @@ import {
   getMissingForAbiBoost,
   getStakeBoostOutlook,
   isBelowAbiBoostThreshold,
+  toWeiAmount,
 } from './abiBoost.utils'
 
 const MIN = parseEther('100000')
@@ -96,15 +97,23 @@ describe('formatters', () => {
     expect(formatAbiBoostTerm(1)).toBe('1 month')
   })
 
-  it('formats amounts with thousands separators, rounding up what is still missing', () => {
+  it('shows amounts as they are, and rounds up only what is still missing', () => {
     expect(formatAbiBoostAmount(100_000, 'stRIF')).toBe('100,000 stRIF')
-    expect(formatAbiBoostAmount('39999.2', 'RIF')).toBe('40,000 RIF')
+    expect(formatAbiBoostAmount('100000.5', 'RIF')).toBe('100,000.5 RIF')
+    expect(formatAbiBoostAmount('39999.2', 'RIF', 'up')).toBe('40,000 RIF')
+    expect(formatMissingAmount(parseEther('497.3'), 'stRIF')).toBe('498 stRIF')
+  })
+})
+
+describe('toWeiAmount', () => {
+  it('converts whole tokens to wei', () => {
+    expect(toWeiAmount(100_000)).toBe(parseEther('100000'))
+    expect(toWeiAmount(10)).toBe(parseEther('10'))
   })
 
-  it('formats the voting countdown like the cycle countdown', () => {
-    expect(formatVotingCountdown(3 * 86_400 + 4 * 3_600 + 59)).toBe('3d 04h')
-    expect(formatVotingCountdown(4 * 3_600 + 12 * 60)).toBe('04h 12m')
-    expect(formatVotingCountdown(-10)).toBe('00h 00m')
+  it('handles values Number#toString writes with an exponent', () => {
+    expect(toWeiAmount(1e21)).toBe(parseEther('1000000000000000000000'))
+    expect(toWeiAmount(1e-7)).toBe(parseEther('0.0000001'))
   })
 })
 

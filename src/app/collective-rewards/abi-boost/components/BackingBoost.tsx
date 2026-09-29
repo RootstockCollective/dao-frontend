@@ -1,6 +1,4 @@
-import { useRouter } from 'next/navigation'
 import { ReactNode, useState } from 'react'
-import { formatEther } from 'viem'
 
 import { formatSymbol } from '@/app/shared/formatter'
 import { NotificationBanner } from '@/app/user/StackingNotifications/components/NotificationBanner'
@@ -8,27 +6,25 @@ import { Button } from '@/components/Button'
 import { InfoIconButton } from '@/components/IconButton/InfoIconButton'
 import { Header, Label, Paragraph, Span } from '@/components/Typography'
 import { STRIF } from '@/lib/constants'
-import { cn } from '@/lib/utils'
+import { formatDuration } from '@/lib/utils/formatDuration'
 
-import { ABI_BOOST_LABELS } from '../abiBoost.labels'
+import { ABI_BOOST_LABELS, BOOST_WILL_STOP_LABEL, missingToBoostLabel } from '../abiBoost.labels'
 import {
   AbiBoostStatus,
   BackingBoostHintState,
-  formatAbiBoostAmount,
-  formatVotingCountdown,
+  formatMissingAmount,
   getAbiBoostGuidance,
   getBackingBoostHint,
   isBelowAbiBoostThreshold,
 } from '../abiBoost.utils'
-import { useAbiBoostPosition, useIsAbiBoostEnabled } from '../hooks/useAbiBoost'
+import { useAbiBoostPosition, useGoToBackBuilders } from '../hooks/useAbiBoost'
 import { useBackedBuildersUnderDeactivationVote } from '../hooks/useBackedBuildersUnderDeactivationVote'
-import { BACK_BUILDERS_PATH } from './AbiBoostModals'
+import { BackingBoostChange, useBackingBoostChange } from '../hooks/useBackingBoostChange'
 import { BoostedRate, CurrentAbiRate } from './AbiBoostRates'
-import { BelowThresholdTag, BoostPill } from './AbiBoostTags'
+import { AbiBoostRow, AbiBoostStatusChip, BelowThresholdTag, BoostPill } from './AbiBoostTags'
+import { withAbiBoostFlag } from './withAbiBoostFlag'
 
 const { boost, boostDelta, minBacking, term } = ABI_BOOST_LABELS
-
-const formatMissing = (missing: bigint) => formatAbiBoostAmount(formatEther(missing), STRIF)
 
 const BANNER_COPY: Record<AbiBoostStatus, { title: string; description: string }> = {
   notEligible: {
@@ -47,33 +43,32 @@ const BANNER_COPY: Record<AbiBoostStatus, { title: string; description: string }
 
 /** Top of the Backing page: where the wallet stands in the boost programme. */
 const AbiBoostBannerContent = () => {
-  const router = useRouter()
-  const { status, isLoading } = useAbiBoostPosition()
+  const goToBackBuilders = useGoToBackBuilders()
+  const { status, isReady } = useAbiBoostPosition()
   // Session-only, like every other banner: it comes back on the next visit
   const [isDismissed, setIsDismissed] = useState(false)
 
-  if (isLoading || isDismissed) return null
+  if (!isReady || isDismissed) return null
   const { title, description } = BANNER_COPY[status]
   return (
     <NotificationBanner
       title={title}
       description={description}
       buttonText="Choose a Builder"
-      buttonOnClick={() => router.push(BACK_BUILDERS_PATH)}
+      buttonOnClick={goToBackBuilders}
       onDismiss={() => setIsDismissed(true)}
-      className="mb-2"
     />
   )
 }
 
-export const AbiBoostBanner = () => (useIsAbiBoostEnabled() ? <AbiBoostBannerContent /> : null)
+export const AbiBoostBanner = withAbiBoostFlag(AbiBoostBannerContent)
 
 /**
  * One warning per backed Builder facing an open deactivation vote. It disappears on its own once
  * the backing moves elsewhere or the vote closes; dismissing it only lasts for the session.
  */
 const DeactivationVoteBannersContent = () => {
-  const router = useRouter()
+  const goToBackBuilders = useGoToBackBuilders()
   const buildersUnderVote = useBackedBuildersUnderDeactivationVote()
   const [dismissed, setDismissed] = useState<string[]>([])
 
@@ -83,45 +78,32 @@ const DeactivationVoteBannersContent = () => {
       <NotificationBanner
         key={`${proposalId}:${builder}`}
         title={`${builderName} is under a deactivation vote`}
-        description={`Voting ends in ${formatVotingCountdown(secondsLeft)}. If it passes, backing this Builder stops earning. Reallocate before then to keep your rewards active.`}
+        // Same countdown format as the vote itself shows on the proposals screens
+        description={`Voting ends in ${formatDuration(secondsLeft)}. If it passes, backing this Builder stops earning. Reallocate before then to keep your rewards active.`}
         buttonText="Reallocate now"
-        buttonOnClick={() => router.push(BACK_BUILDERS_PATH)}
+        buttonOnClick={goToBackBuilders}
         onDismiss={() => setDismissed(ids => [...ids, `${proposalId}:${builder}`])}
-        className="mb-2"
       />
     ))
 }
 
-export const DeactivationVoteBanners = () =>
-  useIsAbiBoostEnabled() ? <DeactivationVoteBannersContent /> : null
+export const DeactivationVoteBanners = withAbiBoostFlag(DeactivationVoteBannersContent)
 
-const STATUS_CHIP: Record<AbiBoostStatus, { label: string; className: string }> = {
-  notEligible: { label: 'Not eligible', className: 'border-v3-text-100/20 text-v3-text-60' },
-  eligible: { label: 'Eligible, not active', className: 'border-v3-text-100/25 text-v3-text-80' },
-  active: { label: 'Active', className: 'border-v3-primary/60 text-v3-primary' },
+const STATUS_LABELS: Record<AbiBoostStatus, string> = {
+  notEligible: 'Not eligible',
+  eligible: 'Eligible, not active',
+  active: 'Active',
 }
-
-const TermRow = ({ label, children }: { label: string; children: ReactNode }) => (
-  <div className="flex items-center justify-between gap-6 border-b border-bg-40 py-3 last:border-b-0">
-    <Span variant="body-s" className="text-text-60">
-      {label}
-    </Span>
-    <Span variant="body-s" className="text-right">
-      {children}
-    </Span>
-  </div>
-)
 
 /** Backing page card: the boost's terms and what the wallet still needs to earn it. */
 const BoostedRateCardContent = () => {
-  const router = useRouter()
+  const goToBackBuilders = useGoToBackBuilders()
   const position = useAbiBoostPosition()
-  const { status, backing, isLoading } = position
-  if (isLoading) return null
+  const { status, backing, isReady } = position
+  if (!isReady) return null
 
   const guidance = getAbiBoostGuidance(position)
   const isBelowThreshold = isBelowAbiBoostThreshold(backing)
-  const chip = STATUS_CHIP[status]
 
   const message = (() => {
     switch (guidance.kind) {
@@ -129,10 +111,10 @@ const BoostedRateCardContent = () => {
         return `Your backing of ${formatSymbol(backing, STRIF)} ${STRIF} earns ${boostDelta} on top of the current ABI. Keep ${minBacking} or more backing Builders to keep the rate.`
       case 'backMore':
         return isBelowThreshold
-          ? `Back ${formatMissing(guidance.missing)} more to reach the ${minBacking} minimum and switch the boost on.`
+          ? `Back ${formatMissingAmount(guidance.missing, STRIF)} more to reach the ${minBacking} minimum and switch the boost on.`
           : `Your stRIF is staked but not backing. Back Builders with ${minBacking} or more and you'd earn ${boostDelta} on top of the current ABI.`
       case 'stakeMore':
-        return `Stake ${formatMissing(guidance.missing)} more and back Builders with ${minBacking} or more to earn ${boostDelta} on top of the current ABI.`
+        return `Stake ${formatMissingAmount(guidance.missing, STRIF)} more and back Builders with ${minBacking} or more to earn ${boostDelta} on top of the current ABI.`
     }
   })()
 
@@ -146,15 +128,9 @@ const BoostedRateCardContent = () => {
           <Header variant="h3" caps>
             Boosted rate
           </Header>
-          <span
-            className={cn(
-              'rounded-full border px-3 py-1 font-rootstock-sans text-xs leading-none',
-              chip.className,
-            )}
-            data-testid="BoostedRateStatus"
-          >
-            {chip.label}
-          </span>
+          <AbiBoostStatusChip status={status} data-testid="BoostedRateStatus">
+            {STATUS_LABELS[status]}
+          </AbiBoostStatusChip>
         </div>
         <div className="flex items-end gap-3">
           <Header variant="h1" className={status === 'active' ? 'text-v3-primary' : 'text-text-60'}>
@@ -172,34 +148,46 @@ const BoostedRateCardContent = () => {
           <Button
             variant="primary"
             className="w-fit"
-            onClick={() => router.push(BACK_BUILDERS_PATH)}
+            onClick={goToBackBuilders}
             data-testid="BoostedRateBackBuilder"
           >
             Back a Builder
           </Button>
         )}
       </div>
-      <div className="flex flex-col md:min-w-[320px]">
-        <TermRow label="Current ABI">
+      <div className="flex flex-col md:min-w-[320px] *:last:border-b-0">
+        <AbiBoostRow size="body-s" label="Current ABI">
           <CurrentAbiRate />
-        </TermRow>
-        <TermRow label="Rate with boost">
+        </AbiBoostRow>
+        <AbiBoostRow size="body-s" label="Rate with boost">
           <BoostedRate className="text-v3-primary" />
-        </TermRow>
-        <TermRow label="Term">{term}</TermRow>
-        <TermRow label="Minimum">{minBacking}</TermRow>
-        <TermRow label="Requirement">The stRIF must back Builders</TermRow>
+        </AbiBoostRow>
+        <AbiBoostRow size="body-s" label="Term">
+          {term}
+        </AbiBoostRow>
+        <AbiBoostRow size="body-s" label="Minimum">
+          {minBacking}
+        </AbiBoostRow>
+        <AbiBoostRow size="body-s" label="Requirement">
+          The stRIF must back Builders
+        </AbiBoostRow>
       </div>
     </section>
   )
 }
 
-export const BoostedRateCard = () => (useIsAbiBoostEnabled() ? <BoostedRateCardContent /> : null)
+export const BoostedRateCard = withAbiBoostFlag(BoostedRateCardContent)
 
 const RATE_INFO = (
   <Label variant="body-s">
     Rate on this backing: <CurrentAbiRate /> current ABI + {boost} boost = <BoostedRate />, for {term}.
   </Label>
+)
+
+const hintText = (text: string) => (
+  <Span variant="body-xs" className="text-text-60" data-testid="BackingBoostHintText">
+    {text}
+  </Span>
 )
 
 const hintContent = (hint: NonNullable<BackingBoostHintState>): ReactNode => {
@@ -214,46 +202,31 @@ const hintContent = (hint: NonNullable<BackingBoostHintState>): ReactNode => {
         </span>
       )
     case 'willDeactivate':
-      return (
-        <Span variant="body-xs" className="text-text-60" data-testid="BackingBoostHintText">
-          Under {minBacking}, this backing stops earning the boost
-        </Span>
-      )
+      return hintText(BOOST_WILL_STOP_LABEL)
     case 'missing':
-      return (
-        <Span variant="body-xs" className="text-text-60" data-testid="BackingBoostHintText">
-          {formatMissing(hint.missing)} to boost this backing
-        </Span>
-      )
+      return hintText(missingToBoostLabel(hint.missing))
     case 'belowThreshold':
       return <BelowThresholdTag />
   }
 }
 
-interface BackingBoostHintProps {
-  /** On-chain backing, in wei. */
-  current: bigint
-  /** Backing with the unsaved edits, in wei. */
-  next: bigint
-  className?: string
-}
-
 /** One line under a backing total: whether it earns the boost, or what it lacks to. */
-export const BackingBoostHintView = ({ current, next, className }: BackingBoostHintProps) => {
+export const BackingBoostHintView = ({ current, next }: BackingBoostChange) => {
   const hint = getBackingBoostHint(current, next)
   if (!hint) return null
   return (
-    <div className={cn('flex', className)} data-testid="BackingBoostHint">
+    <div className="flex" data-testid="BackingBoostHint">
       {hintContent(hint)}
     </div>
   )
 }
 
-export const BackingBoostHint = (props: BackingBoostHintProps) =>
-  useIsAbiBoostEnabled() ? <BackingBoostHintView {...props} /> : null
+const BackingBoostHintContent = () => <BackingBoostHintView {...useBackingBoostChange()} />
+
+export const BackingBoostHint = withAbiBoostFlag(BackingBoostHintContent)
 
 /** Left side of the save drawer: what saving does to the boost, with the rate it would earn. */
-const DrawerBoostSummaryContent = ({ current, next }: Omit<BackingBoostHintProps, 'className'>) => {
+export const DrawerBoostSummaryView = ({ current, next }: BackingBoostChange) => {
   const hint = getBackingBoostHint(current, next)
   if (!hint || hint.kind === 'belowThreshold') return null
 
@@ -272,9 +245,9 @@ const DrawerBoostSummaryContent = ({ current, next }: Omit<BackingBoostHintProps
           </>
         )
       case 'willDeactivate':
-        return <span className="text-text-60">Under {minBacking}, this backing stops earning the boost</span>
+        return <span className="text-text-60">{BOOST_WILL_STOP_LABEL}</span>
       case 'missing':
-        return <span className="text-text-60">{formatMissing(hint.missing)} to boost this backing</span>
+        return <span className="text-text-60">{missingToBoostLabel(hint.missing)}</span>
     }
   })()
 
@@ -285,5 +258,6 @@ const DrawerBoostSummaryContent = ({ current, next }: Omit<BackingBoostHintProps
   )
 }
 
-export const DrawerBoostSummary = (props: Omit<BackingBoostHintProps, 'className'>) =>
-  useIsAbiBoostEnabled() ? <DrawerBoostSummaryContent {...props} /> : null
+const DrawerBoostSummaryContent = () => <DrawerBoostSummaryView {...useBackingBoostChange()} />
+
+export const DrawerBoostSummary = withAbiBoostFlag(DrawerBoostSummaryContent)

@@ -2,7 +2,7 @@
 import { ChevronDown } from 'lucide-react'
 import { Address } from 'viem'
 
-import { AbiBoostBadge } from '@/app/collective-rewards/abi-boost'
+import { AbiBoostBadge } from '@/app/collective-rewards/abi-boost/components/AbiBoostTags'
 import { BuilderStatus } from '@/components/Header'
 import { Jdenticon } from '@/components/Header/Jdenticon'
 

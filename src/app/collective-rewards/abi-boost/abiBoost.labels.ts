@@ -5,6 +5,7 @@ import {
   formatAbiBoostAmount,
   formatAbiBoostPercentage,
   formatAbiBoostTerm,
+  formatMissingAmount,
 } from './abiBoost.utils'
 
 /**
@@ -23,3 +24,10 @@ export const ABI_BOOST_LABELS = {
 } as const
 
 export const BELOW_THRESHOLD_LABEL = 'Below eligibility threshold, not earning boost'
+
+/** An edit that takes a boosted backing under the minimum. */
+export const BOOST_WILL_STOP_LABEL = `Under ${ABI_BOOST_LABELS.minBacking}, this backing stops earning the boost`
+
+/** An edit still short of the minimum. */
+export const missingToBoostLabel = (missingWei: bigint): string =>
+  `${formatMissingAmount(missingWei, STRIF)} to boost this backing`

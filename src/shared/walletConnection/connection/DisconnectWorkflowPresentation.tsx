@@ -1,7 +1,7 @@
 import { useAppKit } from '@reown/appkit/react'
 import { useState } from 'react'
 
-import { useIsAbiBoostEnabled } from '@/app/collective-rewards/abi-boost'
+import { withAbiBoostFlag } from '@/app/collective-rewards/abi-boost/components/withAbiBoostFlag'
 import { StakingFlow } from '@/app/user/Stake'
 import { Button } from '@/components/Button'
 import { CopyButton } from '@/components/CopyButton'
@@ -134,12 +134,9 @@ const PopoverDisconnectContentContainer = ({
   </div>
 )
 
-/** Opens the stake flow from any page, so the boost is one click away wherever the user is. */
-const HeaderStakeButton = () => {
-  const isAbiBoostEnabled = useIsAbiBoostEnabled()
+const HeaderStakeButtonContent = () => {
   const stakeModal = useModal()
 
-  if (!isAbiBoostEnabled) return null
   return (
     <>
       <Button
@@ -154,6 +151,9 @@ const HeaderStakeButton = () => {
     </>
   )
 }
+
+/** Opens the stake flow from any page, so the boost is one click away wherever the user is. */
+const HeaderStakeButton = withAbiBoostFlag(HeaderStakeButtonContent)
 
 const WalletDetailsButton = () => {
   const { open } = useAppKit()

@@ -1,6 +1,7 @@
 import { type Address } from 'viem'
 
 import { Feature } from '@/config/features.conf'
+import { positiveNumberOr } from '@/lib/utils/env'
 
 export const GITHUB_ORG = 'RootstockCollective'
 
@@ -191,11 +192,6 @@ export const ABI_CYCLES_LIMIT = 12
 const DEFAULT_ABI_BOOST_MIN_BACKING = 100_000
 const DEFAULT_ABI_BOOST_PERCENTAGE = 7.5
 const DEFAULT_ABI_BOOST_TERM_MONTHS = 12
-
-const positiveNumberOr = (value: string | undefined, fallback: number): number => {
-  const parsed = Number(value)
-  return value !== undefined && value !== '' && Number.isFinite(parsed) && parsed > 0 ? parsed : fallback
-}
 
 /** Minimum stRIF a wallet has to keep backing Builders with for the boost to apply. */
 export const ABI_BOOST_MIN_BACKING = positiveNumberOr(

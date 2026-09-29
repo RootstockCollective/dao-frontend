@@ -3,7 +3,7 @@ import { useContext, useEffect } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 
-import { DrawerBoostSummary } from '@/app/collective-rewards/abi-boost'
+import { DrawerBoostSummary } from '@/app/collective-rewards/abi-boost/components/BackingBoost'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { useAllocateVotes } from '@/app/collective-rewards/allocations/hooks/useAllocateVotes'
 import { TokenRewards } from '@/app/collective-rewards/rewards'
@@ -29,13 +29,7 @@ const AllocationDrawerContent = () => {
 
   const { closeDrawer } = useLayoutContext()
   const {
-    state: {
-      isAllocationTxPending,
-      backer: { cumulativeAllocation: nextBacking },
-    },
-    initialState: {
-      backer: { cumulativeAllocation: currentBacking },
-    },
+    state: { isAllocationTxPending },
     actions: { resetAllocations },
   } = useContext(AllocationsContext)
 
@@ -52,7 +46,7 @@ const AllocationDrawerContent = () => {
 
   return (
     <ActionsContainer className="bg-v3-bg-accent-60" containerClassName="flex flex-col gap-3 md:flex-row">
-      <DrawerBoostSummary current={currentBacking} next={nextBacking} />
+      <DrawerBoostSummary />
       <div className="flex justify-center gap-2 w-full">
         <Button variant="secondary-outline" onClick={onCancelAllocations} className="flex-1 md:flex-none">
           Cancel

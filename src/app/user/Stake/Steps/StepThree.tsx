@@ -3,9 +3,9 @@ import { useEffect } from 'react'
 
 import {
   StakeBoostEligibilityRow,
-  useIsAbiBoostEnabled,
   useStakeBoostOutlook,
-} from '@/app/collective-rewards/abi-boost'
+} from '@/app/collective-rewards/abi-boost/components/StakeBoost'
+import { useIsAbiBoostEnabled } from '@/app/collective-rewards/abi-boost/hooks/useAbiBoost'
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
@@ -33,7 +33,7 @@ export const StepThree = ({ onGoToStep, onCloseModal, onBoostEligible }: StepPro
   const isAbiBoostEnabled = useIsAbiBoostEnabled()
   // Read before the stake lands, so the outcome compares against the balance it started from
   const boostOutlook = useStakeBoostOutlook(amount)
-  const becomesBoostEligible = isAbiBoostEnabled && boostOutlook.kind === 'eligible' && !!onBoostEligible
+  const becomesBoostEligible = isAbiBoostEnabled && boostOutlook?.kind === 'eligible' && !!onBoostEligible
 
   // Set button actions directly
   useEffect(() => {
@@ -107,7 +107,7 @@ export const StepThree = ({ onGoToStep, onCloseModal, onBoostEligible }: StepPro
         />
       </div>
 
-      {isAbiBoostEnabled && <StakeBoostEligibilityRow amount={amount} />}
+      <StakeBoostEligibilityRow amount={amount} />
 
       <TransactionStatus txHash={stakeTxHash} isTxFailed={isTxFailed} failureMessage="Stake TX failed." />
     </>

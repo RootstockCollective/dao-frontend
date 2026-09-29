@@ -1,6 +1,6 @@
 import { Sparkles } from 'lucide-react'
 import { useMemo } from 'react'
-import { formatEther, parseEther } from 'viem'
+import { parseEther } from 'viem'
 
 import { InfoIconButton } from '@/components/IconButton/InfoIconButton'
 import { ExternalLinkIcon } from '@/components/Icons'
@@ -10,10 +10,11 @@ import { currentLinks } from '@/lib/links'
 import { cn } from '@/lib/utils'
 
 import { ABI_BOOST_LABELS } from '../abiBoost.labels'
-import { formatAbiBoostAmount, getStakeBoostOutlook, StakeBoostOutlook } from '../abiBoost.utils'
+import { formatMissingAmount, getStakeBoostOutlook, StakeBoostOutlook } from '../abiBoost.utils'
 import { useAbiBoostPosition } from '../hooks/useAbiBoost'
 import { CurrentAbiRate } from './AbiBoostRates'
 import { BelowThresholdTag } from './AbiBoostTags'
+import { withAbiBoostFlag } from './withAbiBoostFlag'
 
 const { boostDelta, minBacking, term } = ABI_BOOST_LABELS
 
@@ -40,12 +41,15 @@ const toWei = (amount: string): bigint => {
   }
 }
 
-/** How the stake being prepared would leave the wallet regarding the boost. */
-export const useStakeBoostOutlook = (amount: string): StakeBoostOutlook => {
-  const { stRifBalance, backing } = useAbiBoostPosition()
+/**
+ * How the stake being prepared would leave the wallet regarding the boost, or `null` until the
+ * wallet's position is known: a guess would tell an active backer they still have to qualify.
+ */
+export const useStakeBoostOutlook = (amount: string): StakeBoostOutlook | null => {
+  const { stRifBalance, backing, isReady } = useAbiBoostPosition()
   return useMemo(
-    () => getStakeBoostOutlook({ stRifBalance, backing }, toWei(amount)),
-    [stRifBalance, backing, amount],
+    () => (isReady ? getStakeBoostOutlook({ stRifBalance, backing }, toWei(amount)) : null),
+    [isReady, stRifBalance, backing, amount],
   )
 }
 
@@ -56,14 +60,13 @@ const outlookMessage = (outlook: StakeBoostOutlook): string => {
     case 'eligible':
       return `You'll be eligible for a ${boostDelta} boost. Back a Builder after staking to switch it on.`
     case 'short':
-      return `Stake ${formatAbiBoostAmount(formatEther(outlook.missing), RIF)} or more to unlock a ${boostDelta} boost when you back Builders.`
+      return `Stake ${formatMissingAmount(outlook.missing, RIF)} or more to unlock a ${boostDelta} boost when you back Builders.`
   }
 }
 
-/** Step one of the stake flow: the current ABI and what the amount typed means for the boost. */
-export const StakeBoostNotice = ({ amount }: { amount: string }) => {
+const StakeBoostNoticeContent = ({ amount }: { amount: string }) => {
   const outlook = useStakeBoostOutlook(amount)
-  const isHighlighted = outlook.kind !== 'short'
+  const isHighlighted = !!outlook && outlook.kind !== 'short'
 
   return (
     <div className="mt-6 border-t border-bg-40 pt-6" data-testid="StakeBoostNotice">
@@ -81,15 +84,19 @@ export const StakeBoostNotice = ({ amount }: { amount: string }) => {
 
       <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1">
         {isHighlighted && <Sparkles size={16} className="shrink-0 text-v3-primary" aria-hidden="true" />}
-        <Span
-          variant="body-s"
-          bold={isHighlighted}
-          className={cn(isHighlighted ? 'text-v3-primary' : 'text-text-60')}
-          data-testid="StakeBoostMessage"
-        >
-          {outlookMessage(outlook)}
-        </Span>
-        <InfoIconButton info={HOW_THE_BOOST_WORKS} tooltipClassName="max-w-xs" />
+        {outlook && (
+          <>
+            <Span
+              variant="body-s"
+              bold={isHighlighted}
+              className={cn(isHighlighted ? 'text-v3-primary' : 'text-text-60')}
+              data-testid="StakeBoostMessage"
+            >
+              {outlookMessage(outlook)}
+            </Span>
+            <InfoIconButton info={HOW_THE_BOOST_WORKS} tooltipClassName="max-w-xs" />
+          </>
+        )}
         <a
           href={currentLinks.getRif}
           target="_blank"
@@ -104,9 +111,12 @@ export const StakeBoostNotice = ({ amount }: { amount: string }) => {
   )
 }
 
-/** Confirm step of the stake flow: whether the stake qualifies for the boost. */
-export const StakeBoostEligibilityRow = ({ amount }: { amount: string }) => {
+/** Step one of the stake flow: the current ABI and what the amount typed means for the boost. */
+export const StakeBoostNotice = withAbiBoostFlag(StakeBoostNoticeContent)
+
+const StakeBoostEligibilityRowContent = ({ amount }: { amount: string }) => {
   const outlook = useStakeBoostOutlook(amount)
+  if (!outlook) return null
 
   return (
     <div
@@ -131,3 +141,6 @@ export const StakeBoostEligibilityRow = ({ amount }: { amount: string }) => {
     </div>
   )
 }
+
+/** Confirm step of the stake flow: whether the stake qualifies for the boost. */
+export const StakeBoostEligibilityRow = withAbiBoostFlag(StakeBoostEligibilityRowContent)

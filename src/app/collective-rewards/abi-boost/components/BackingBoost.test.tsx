@@ -12,20 +12,17 @@ import {
   BackingBoostHintView,
   BoostedRateCard,
   DeactivationVoteBanners,
-  DrawerBoostSummary,
+  DrawerBoostSummaryView,
 } from './BackingBoost'
 
 const mockPush = vi.fn()
 const mockPosition = vi.fn<() => AbiBoostPositionState>()
 const mockBuildersUnderVote = vi.fn<() => BackedBuilderUnderVote[]>()
 
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: mockPush }),
-}))
-
 vi.mock('../hooks/useAbiBoost', () => ({
   useIsAbiBoostEnabled: () => true,
   useAbiBoostPosition: () => mockPosition(),
+  useGoToBackBuilders: () => () => mockPush('/builders'),
 }))
 
 vi.mock('../hooks/useBackedBuildersUnderDeactivationVote', () => ({
@@ -54,7 +51,7 @@ const position = (stRif: string, backing: string): AbiBoostPositionState => {
       : stRifBalance >= parseEther('100000')
         ? 'eligible'
         : 'notEligible'
-  return { stRifBalance, backing: backingWei, status, isLoading: false }
+  return { stRifBalance, backing: backingWei, status, isReady: true }
 }
 
 beforeEach(() => {
@@ -102,6 +99,19 @@ describe('AbiBoostBanner', () => {
   })
 })
 
+describe('before the position is known', () => {
+  it('renders neither the banner nor the card, instead of guessing a status', () => {
+    mockPosition.mockReturnValue({ ...position('255000', '150000'), isReady: false })
+    const { container } = render(
+      <>
+        <AbiBoostBanner />
+        <BoostedRateCard />
+      </>,
+    )
+    expect(container.innerHTML).toBe('')
+  })
+})
+
 describe('DeactivationVoteBanners', () => {
   const underVote: BackedBuilderUnderVote[] = [
     {
@@ -125,7 +135,7 @@ describe('DeactivationVoteBanners', () => {
     expect(screen.getByText('Beexo is under a deactivation vote')).toBeDefined()
     expect(screen.getByText('Steer is under a deactivation vote')).toBeDefined()
     expect(screen.getAllByTestId('NotificationDescription')[0].textContent).toBe(
-      'Voting ends in 3d 04h. If it passes, backing this Builder stops earning. Reallocate before then to keep your rewards active.',
+      'Voting ends in 3d 4h 0m. If it passes, backing this Builder stops earning. Reallocate before then to keep your rewards active.',
     )
   })
 
@@ -208,14 +218,14 @@ describe('BackingBoostHintView', () => {
 
 describe('DrawerBoostSummary', () => {
   it('shows the boost and the rate the save would earn', () => {
-    render(<DrawerBoostSummary current={parseEther('50000')} next={parseEther('101800')} />)
+    render(<DrawerBoostSummaryView current={parseEther('50000')} next={parseEther('101800')} />)
     const summary = screen.getByTestId('DrawerBoostSummary').textContent
     expect(summary).toContain('Boost on this backing +7.5% for 12 months')
     expect(summary).toContain('Rate on this backing 12.5%')
   })
 
   it('warns when the save takes the backing under the minimum', () => {
-    render(<DrawerBoostSummary current={parseEther('150000')} next={parseEther('90000')} />)
+    render(<DrawerBoostSummaryView current={parseEther('150000')} next={parseEther('90000')} />)
     expect(screen.getByTestId('DrawerBoostSummary').textContent).toBe(
       'Under 100,000 stRIF, this backing stops earning the boost',
     )
@@ -223,7 +233,7 @@ describe('DrawerBoostSummary', () => {
 
   it('stays out of the way for a saved backing that does not change', () => {
     const { container } = render(
-      <DrawerBoostSummary current={parseEther('2951')} next={parseEther('2951')} />,
+      <DrawerBoostSummaryView current={parseEther('2951')} next={parseEther('2951')} />,
     )
     expect(container.innerHTML).toBe('')
   })

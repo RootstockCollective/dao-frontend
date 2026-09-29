@@ -42,7 +42,10 @@ function proposalStateToRawState(proposalState: string): number {
   return toProposalState(proposalState)
 }
 
-async function fetchProposalsFromAPI(): Promise<ProposalApiResponse[]> {
+/** Shared by every reader of the proposals list, so they all hit the same cache entry. */
+export const PROPOSALS_QUERY_KEY = ['proposals'] as const
+
+export async function fetchProposalsFromAPI(): Promise<ProposalApiResponse[]> {
   const response = await fetch('/api/proposals/v1')
   if (!response.ok) {
     throw new Error(`Failed to fetch proposals: ${response.statusText}`)
@@ -194,7 +197,7 @@ export function useGetProposalsWithGraph() {
     error: proposalsDataError,
   } = useQuery({
     queryFn: fetchProposalsFromAPI,
-    queryKey: ['proposals'],
+    queryKey: PROPOSALS_QUERY_KEY,
     refetchInterval: AVERAGE_BLOCKTIME,
   })
 

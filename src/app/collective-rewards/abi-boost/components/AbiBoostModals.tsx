@@ -1,4 +1,3 @@
-import { useRouter } from 'next/navigation'
 import { ReactNode } from 'react'
 import { Address } from 'viem'
 
@@ -7,18 +6,17 @@ import { formatSymbol } from '@/app/shared/formatter'
 import { Button } from '@/components/Button'
 import { Divider } from '@/components/Divider'
 import { Modal } from '@/components/Modal'
-import { Header, Paragraph, Span } from '@/components/Typography'
+import { Header, Paragraph } from '@/components/Typography'
 import { RIF, STRIF } from '@/lib/constants'
 
 import { ABI_BOOST_LABELS } from '../abiBoost.labels'
 import { formatAbiBoostAmount } from '../abiBoost.utils'
+import { useGoToBackBuilders } from '../hooks/useAbiBoost'
 import { BoostedRate, CurrentAbiRate } from './AbiBoostRates'
-import { BoostPill } from './AbiBoostTags'
+import { AbiBoostRow, BoostPill } from './AbiBoostTags'
+import { withAbiBoostFlag } from './withAbiBoostFlag'
 
 const { boost, boostDelta, minBacking, term } = ABI_BOOST_LABELS
-
-/** Where the app lets a backer pick Builders to back. */
-export const BACK_BUILDERS_PATH = '/builders'
 
 interface ShellProps {
   eyebrow: string
@@ -48,24 +46,13 @@ const AbiBoostModalShell = ({
       <Paragraph variant="body" className="mt-3 text-text-60">
         {description}
       </Paragraph>
-      {children && <div className="mt-6 flex flex-col">{children}</div>}
+      {children && <div className="mt-6 flex flex-col border-t border-bg-40">{children}</div>}
       <div className="mt-8">
         <Divider />
         <div className="mt-4 flex flex-wrap justify-end gap-3">{actions}</div>
       </div>
     </div>
   </Modal>
-)
-
-const SummaryRow = ({ label, children }: { label: ReactNode; children: ReactNode }) => (
-  <div className="flex items-center justify-between gap-4 border-b border-bg-40 py-3 first:border-t">
-    <Span variant="body" className="text-text-60">
-      {label}
-    </Span>
-    <Span variant="body" className="text-right">
-      {children}
-    </Span>
-  </div>
 )
 
 interface BoostEligibleModalProps {
@@ -76,7 +63,7 @@ interface BoostEligibleModalProps {
 
 /** Shown once a stake leaves the wallet holding enough stRIF for the boost. */
 export const BoostEligibleModal = ({ stakedAmount, onClose }: BoostEligibleModalProps) => {
-  const router = useRouter()
+  const goToBackBuilders = useGoToBackBuilders()
   return (
     <AbiBoostModalShell
       data-testid="BoostEligibleModal"
@@ -98,7 +85,7 @@ export const BoostEligibleModal = ({ stakedAmount, onClose }: BoostEligibleModal
             variant="primary"
             onClick={() => {
               onClose()
-              router.push(BACK_BUILDERS_PATH)
+              goToBackBuilders()
             }}
             data-testid="BoostEligibleBackBuilder"
           >
@@ -116,8 +103,7 @@ interface BoostActivatedModalProps {
   onClose: () => void
 }
 
-/** Shown when saving a backing takes it over the minimum and switches the boost on. */
-export const BoostActivatedModal = ({ allocations, onClose }: BoostActivatedModalProps) => {
+const BoostActivatedModalContent = ({ allocations, onClose }: BoostActivatedModalProps) => {
   const { getBuilderByAddress } = useBuilderContext()
   const backed = Object.entries(allocations).filter(([, amount]) => amount > 0n) as [Address, bigint][]
   const total = backed.reduce((sum, [, amount]) => sum + amount, 0n)
@@ -142,17 +128,20 @@ export const BoostActivatedModal = ({ allocations, onClose }: BoostActivatedModa
       }
     >
       {backed.map(([address, amount]) => (
-        <SummaryRow key={address} label={getBuilderByAddress(address)?.builderName || address}>
+        <AbiBoostRow key={address} label={getBuilderByAddress(address)?.builderName || address}>
           {formatSymbol(amount, STRIF)} {STRIF}
-        </SummaryRow>
+        </AbiBoostRow>
       ))}
-      <SummaryRow label="Annual Backers Incentives">
+      <AbiBoostRow label="Annual Backers Incentives">
         <CurrentAbiRate />
-      </SummaryRow>
-      <SummaryRow label="Boost">{boostDelta}</SummaryRow>
-      <SummaryRow label="Rate on this backing">
+      </AbiBoostRow>
+      <AbiBoostRow label="Boost">{boostDelta}</AbiBoostRow>
+      <AbiBoostRow label="Rate on this backing">
         <BoostedRate className="text-v3-primary" />
-      </SummaryRow>
+      </AbiBoostRow>
     </AbiBoostModalShell>
   )
 }
+
+/** Shown when saving a backing takes it over the minimum and switches the boost on. */
+export const BoostActivatedModal = withAbiBoostFlag(BoostActivatedModalContent)

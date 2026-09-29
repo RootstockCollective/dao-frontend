@@ -1,18 +1,26 @@
 import { Address, getAddress, isAddress } from 'viem'
 
-import { Proposal } from '@/app/proposals/shared/types'
-import { DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK } from '@/lib/constants'
-import { ProposalState } from '@/shared/types'
-
-/** Governor actions that take a Builder out of the Collective, as decoded from the calldata. */
-const DEACTIVATION_FUNCTIONS = new Set([
-  'communityBanBuilder',
-  'removeWhitelistedBuilder',
-  'dewhitelistBuilder',
-])
+import { ProposalApiResponse } from '@/app/proposals/shared/types'
+import { BUILDER_ACTION_CATEGORIES, SerializedDecodedData } from '@/app/proposals/shared/utils'
+import Big from '@/lib/big'
+import { ProposalCategory, ProposalState } from '@/shared/types'
 
 /** A vote only counts as a warning while it can still pass. */
-const OPEN_STATES = new Set([ProposalState.Pending, ProposalState.Active])
+const OPEN_STATES: ReadonlySet<ProposalState> = new Set([ProposalState.Pending, ProposalState.Active])
+
+/** Builders a proposal would take out of the Collective, read from its decoded actions. */
+export const getDeactivatedBuilders = (calldatasParsed: SerializedDecodedData[]): Address[] =>
+  calldatasParsed.flatMap(action => {
+    if (
+      action.type !== 'decoded' ||
+      BUILDER_ACTION_CATEGORIES.get(action.functionName) !== ProposalCategory.Deactivation
+    ) {
+      return []
+    }
+    const [target] = action.args as unknown as readonly unknown[]
+    // Not strict: calldata can carry RSK (EIP-1191) checksums, which fail Ethereum's checksum check
+    return typeof target === 'string' && isAddress(target, { strict: false }) ? [getAddress(target)] : []
+  })
 
 export interface DeactivationVote {
   builder: Address
@@ -22,37 +30,44 @@ export interface DeactivationVote {
 }
 
 type DeactivationProposalInput = Pick<
-  Proposal,
-  'proposalId' | 'proposalState' | 'calldatasParsed' | 'proposalDeadline'
+  ProposalApiResponse,
+  'proposalId' | 'calldatasParsed' | 'proposalDeadline'
 >
 
 /**
- * Builders targeted by a deactivation proposal whose vote is still open, keyed by checksummed
- * address. When several proposals target the same Builder, the one closing first wins, since
- * that is the deadline the backer has to beat.
+ * Deactivation proposals against one of `backedBuilders` whose voting window hasn't closed yet.
+ * This part only needs the proposals list; whether each one is still open (not canceled, not
+ * already decided) is then read on-chain, and only for these.
  */
-export const getOpenDeactivationVotes = (
+export const getDeactivationVoteCandidates = (
   proposals: DeactivationProposalInput[],
-): Map<Address, DeactivationVote> =>
-  proposals.reduce((votes, { proposalId, proposalState, calldatasParsed, proposalDeadline }) => {
-    if (!OPEN_STATES.has(proposalState)) return votes
+  backedBuilders: ReadonlySet<Address>,
+  currentBlock: bigint,
+): DeactivationVote[] =>
+  proposals.flatMap(({ proposalId, calldatasParsed, proposalDeadline }) => {
+    const voteEndBlock = BigInt(Big(proposalDeadline || 0).toFixed(0))
+    if (voteEndBlock <= currentBlock) return []
+    return getDeactivatedBuilders(calldatasParsed)
+      .filter(builder => backedBuilders.has(builder))
+      .map(builder => ({ builder, proposalId, voteEndBlock }))
+  })
 
-    const voteEndBlock = BigInt(proposalDeadline.toFixed(0))
-    calldatasParsed.forEach(action => {
-      if (action.type !== 'decoded' || !DEACTIVATION_FUNCTIONS.has(action.functionName)) return
-      const [target] = action.args as unknown as readonly unknown[]
-      // Not strict: calldata can carry RSK (EIP-1191) checksums, which fail Ethereum's checksum check
-      if (typeof target !== 'string' || !isAddress(target, { strict: false })) return
-
-      const builder = getAddress(target)
-      const current = votes.get(builder)
-      if (!current || voteEndBlock < current.voteEndBlock) {
-        votes.set(builder, { builder, proposalId, voteEndBlock })
-      }
-    })
-    return votes
-  }, new Map<Address, DeactivationVote>())
-
-/** Seconds left until the vote closes, estimated from the average block time. */
-export const getSecondsUntilVoteEnds = (voteEndBlock: bigint, currentBlock: bigint): number =>
-  voteEndBlock > currentBlock ? Number(voteEndBlock - currentBlock) * DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK : 0
+/**
+ * The candidates whose vote is still open, given their on-chain states in the same order. When
+ * several target the same Builder, the one closing first wins: that's the deadline to beat.
+ */
+export const pickOpenDeactivationVotes = (
+  candidates: DeactivationVote[],
+  states: readonly (ProposalState | undefined)[],
+): DeactivationVote[] => {
+  const earliest = new Map<Address, DeactivationVote>()
+  candidates.forEach((candidate, index) => {
+    const state = states[index]
+    if (state === undefined || !OPEN_STATES.has(state)) return
+    const current = earliest.get(candidate.builder)
+    if (!current || candidate.voteEndBlock < current.voteEndBlock) {
+      earliest.set(candidate.builder, candidate)
+    }
+  })
+  return [...earliest.values()]
+}

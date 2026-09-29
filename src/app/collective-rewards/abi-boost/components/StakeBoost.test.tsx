@@ -31,7 +31,7 @@ const holding = (stRif: string, backing = '0'): AbiBoostPositionState => ({
   stRifBalance: parseEther(stRif),
   backing: parseEther(backing),
   status: 'notEligible',
-  isLoading: false,
+  isReady: true,
 })
 
 afterEach(cleanup)
@@ -71,6 +71,13 @@ describe('StakeBoostNotice', () => {
     mockPosition.mockReturnValue(holding('0'))
     render(<StakeBoostNotice amount="." />)
     expect(screen.getByTestId('StakeBoostMessage').textContent).toContain('Stake 100,000 RIF or more')
+  })
+
+  it('waits for the position before saying anything about the boost', () => {
+    mockPosition.mockReturnValue({ ...holding('150000', '150000'), isReady: false })
+    render(<StakeBoostNotice amount="10000" />)
+    expect(screen.getByTestId('CurrentAbiRate').textContent).toBe('5.0%')
+    expect(screen.queryByTestId('StakeBoostMessage')).toBeNull()
   })
 })
 

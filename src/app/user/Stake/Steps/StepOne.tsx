@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 
-import { StakeBoostNotice, useIsAbiBoostEnabled } from '@/app/collective-rewards/abi-boost'
+import { StakeBoostNotice } from '@/app/collective-rewards/abi-boost/components/StakeBoost'
 import { StakeInput } from '@/app/user/Stake/StakeInput'
 import { Button } from '@/components/Button'
 import { TokenImage } from '@/components/TokenImage'
@@ -15,7 +15,6 @@ import { StepProps } from '../types'
 export const StepOne = ({ onGoNext }: StepProps) => {
   const { amount, onAmountChange, tokenToSend, setButtonActions } = useStakingContext()
   const inputRef = useRef<HTMLInputElement>(null)
-  const isAbiBoostEnabled = useIsAbiBoostEnabled()
 
   useEffect(() => {
     // Focus the input when component mounts
@@ -89,7 +88,7 @@ export const StepOne = ({ onGoNext }: StepProps) => {
         </Button>
       </div>
 
-      {isAbiBoostEnabled && <StakeBoostNotice amount={amount} />}
+      <StakeBoostNotice amount={amount} />
     </>
   )
 }

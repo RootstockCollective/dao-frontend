@@ -1,9 +1,14 @@
-import { Duration } from 'luxon'
-import { parseEther } from 'viem'
+import { formatEther, parseEther } from 'viem'
 
 import Big from '@/lib/big'
 import { ABI_BOOST_MIN_BACKING, ABI_BOOST_PERCENTAGE, ABI_BOOST_TERM_MONTHS } from '@/lib/constants'
 import { formatNumberWithCommas } from '@/lib/utils'
+
+/**
+ * Whole-token amount to wei. Goes through Big's plain notation, since `Number#toString` switches
+ * to exponents (`1e+21`, `1e-7`) that `parseEther` rejects.
+ */
+export const toWeiAmount = (amount: number): bigint => parseEther(Big(amount).toFixed())
 
 /**
  * Terms of the ABI boost, read from a single place. Every label below derives from them, so no
@@ -13,7 +18,7 @@ export const ABI_BOOST = {
   /** Minimum backing, in whole stRIF. */
   minBacking: ABI_BOOST_MIN_BACKING,
   /** Minimum backing, in wei. */
-  minBackingWei: parseEther(ABI_BOOST_MIN_BACKING.toString()),
+  minBackingWei: toWeiAmount(ABI_BOOST_MIN_BACKING),
   /** Percentage points added on top of the current ABI. */
   percentage: ABI_BOOST_PERCENTAGE,
   termMonths: ABI_BOOST_TERM_MONTHS,
@@ -71,22 +76,23 @@ export const formatAbiBoostPercentage = (boost: number = ABI_BOOST.percentage): 
 export const formatAbiBoostTerm = (months: number = ABI_BOOST.termMonths): string =>
   `${months} ${months === 1 ? 'month' : 'months'}`
 
-/** `100,000 stRIF` */
-export const formatAbiBoostAmount = (amount: number | string, symbol: string): string =>
-  `${formatNumberWithCommas(Big(amount).round(0, Big.roundUp))} ${symbol}`
-
 /**
- * Remaining voting time, in the shape the app already uses for cycle countdowns: `3d 04h`, and
- * `04h 12m` once less than a day is left.
+ * `100,000 stRIF`. `exact` shows the amount as it is (up to two decimals, truncated); `up` rounds
+ * to the next whole token, which is what a figure still missing to reach the minimum needs.
  */
-export const formatVotingCountdown = (seconds: number): string => {
-  const duration = Duration.fromObject({ seconds: Math.max(0, Math.floor(seconds)) }).shiftTo(
-    'days',
-    'hours',
-    'minutes',
-  )
-  return duration.days >= 1 ? duration.toFormat("d'd' hh'h'") : duration.toFormat("hh'h' mm'm'")
+export const formatAbiBoostAmount = (
+  amount: number | string,
+  symbol: string,
+  rounding: 'exact' | 'up' = 'exact',
+): string => {
+  const value =
+    rounding === 'up' ? Big(amount).round(0, Big.roundUp).toFixed() : Big(amount).toFixedNoTrailing(2, 0)
+  return `${formatNumberWithCommas(value)} ${symbol}`
 }
+
+/** What is still missing to reach the minimum, from wei, rounded up to the next whole token. */
+export const formatMissingAmount = (missingWei: bigint, symbol: string): string =>
+  formatAbiBoostAmount(formatEther(missingWei), symbol, 'up')
 
 /**
  * What staking `amount` more stRIF would do for the boost:

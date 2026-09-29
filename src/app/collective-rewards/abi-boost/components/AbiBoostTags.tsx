@@ -1,11 +1,13 @@
 import { Sparkles } from 'lucide-react'
 import { ReactNode } from 'react'
 
+import { Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
 import { BELOW_THRESHOLD_LABEL } from '../abiBoost.labels'
 import { AbiBoostStatus } from '../abiBoost.utils'
-import { useAbiBoostPosition, useIsAbiBoostEnabled } from '../hooks/useAbiBoost'
+import { useAbiBoostPosition } from '../hooks/useAbiBoost'
+import { withAbiBoostFlag } from './withAbiBoostFlag'
 
 const TAG_BASE =
   'inline-flex w-fit items-center gap-1.5 rounded-full border font-rootstock-sans leading-none whitespace-nowrap'
@@ -41,29 +43,57 @@ export const BelowThresholdTag = ({ className }: { className?: string }) => (
   </span>
 )
 
+const STATUS_TONES: Record<AbiBoostStatus, string> = {
+  notEligible: 'border-v3-text-100/20 text-v3-text-60',
+  eligible: 'border-v3-text-100/25 text-v3-text-80',
+  active: 'border-v3-primary/60 text-v3-primary',
+}
+
+/** Small outlined chip coloured by the wallet's boost status: the header badge and the card's chip. */
+export const AbiBoostStatusChip = ({
+  status,
+  children,
+  'data-testid': dataTestId,
+}: TagProps & { status: AbiBoostStatus }) => (
+  <span className={cn(TAG_BASE, 'px-2.5 py-1 text-xs', STATUS_TONES[status])} data-testid={dataTestId}>
+    {children}
+  </span>
+)
+
 const BADGE_LABELS: Record<Exclude<AbiBoostStatus, 'notEligible'>, string> = {
   eligible: 'Boost eligible',
   active: 'Boost active',
 }
 
-export const AbiBoostBadgeView = ({ status }: { status: Exclude<AbiBoostStatus, 'notEligible'> }) => (
-  <span
-    className={cn(
-      TAG_BASE,
-      'px-2 py-1 text-xs',
-      status === 'active' ? 'border-v3-primary/60 text-v3-primary' : 'border-v3-text-100/25 text-v3-text-60',
-    )}
-    data-testid="AbiBoostBadge"
-  >
-    {BADGE_LABELS[status]}
-  </span>
-)
-
 const AbiBoostBadgeContent = () => {
-  const { status, isLoading } = useAbiBoostPosition()
-  if (isLoading || status === 'notEligible') return null
-  return <AbiBoostBadgeView status={status} />
+  const { status, isReady } = useAbiBoostPosition()
+  if (!isReady || status === 'notEligible') return null
+  return (
+    <AbiBoostStatusChip status={status} data-testid="AbiBoostBadge">
+      {BADGE_LABELS[status]}
+    </AbiBoostStatusChip>
+  )
 }
 
 /** Boost standing next to the account address in the header. */
-export const AbiBoostBadge = () => (useIsAbiBoostEnabled() ? <AbiBoostBadgeContent /> : null)
+export const AbiBoostBadge = withAbiBoostFlag(AbiBoostBadgeContent)
+
+interface AbiBoostRowProps {
+  label: ReactNode
+  children: ReactNode
+  /** `body` in modals, `body-s` in the denser card. */
+  size?: 'body' | 'body-s'
+  className?: string
+}
+
+/** Label on the left, value on the right, a hairline under: the rows of the boost card and modals. */
+export const AbiBoostRow = ({ label, children, size = 'body', className }: AbiBoostRowProps) => (
+  <div className={cn('flex items-center justify-between gap-6 border-b border-bg-40 py-3', className)}>
+    <Span variant={size} className="text-text-60">
+      {label}
+    </Span>
+    <Span variant={size} className="text-right">
+      {children}
+    </Span>
+  </div>
+)
