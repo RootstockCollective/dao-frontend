@@ -59,7 +59,7 @@ const forkProject = {
       '**/providers/uniswap.test.ts',
       '**/api/swap/**/*.test.ts',
     ],
-    exclude: ['**/node_modules/**', '**/.worktree*/**'],
+    exclude: ['**/node_modules/**', '**/*worktree*/**'],
     env: forkPublicEnv,
   },
 }
@@ -77,7 +77,7 @@ export default defineConfig({
           setupFiles: path.join(__dirname, 'vitest.setup.ts'),
           exclude: [
             '**/node_modules/**',
-            '**/.worktree*/**',
+            '**/*worktree*/**',
             'src/lib/swap/utils.test.ts',
             'src/lib/swap/permit2.test.ts',
             'src/lib/swap/providers/**/*.test.ts',
@@ -100,7 +100,7 @@ export default defineConfig({
           environment: 'node',
           setupFiles: path.join(__dirname, 'vitest.setup.ts'),
           include: ['**/api/**/*.test.ts', '**/api/**/*.test.tsx'],
-          exclude: ['**/node_modules/**', '**/api/swap/**/*.test.ts', '**/.worktree*/**'],
+          exclude: ['**/node_modules/**', '**/api/swap/**/*.test.ts', '**/*worktree*/**'],
           env: unitTestnetEnv,
         },
       },
