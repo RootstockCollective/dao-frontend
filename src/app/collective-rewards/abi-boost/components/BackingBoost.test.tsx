@@ -12,7 +12,6 @@ import {
   BackingBoostHintView,
   BoostedRateCard,
   DeactivationVoteBanners,
-  BoostedAbiView,
   DrawerBoostSummaryView,
 } from './BackingBoost'
 
@@ -172,13 +171,26 @@ describe('BoostedRateCard', () => {
     expect(mockPush).toHaveBeenCalledWith('/builders')
   })
 
-  it('computes the boosted rate from the current ABI', () => {
+  it('tells a staked wallet that is not backing how to switch the boost on', () => {
+    mockPosition.mockReturnValue(position('255000', '0'))
+    render(<BoostedRateCard />)
+
+    expect(screen.getByTestId('BoostedRateStatus').textContent).toBe('Eligible, not active')
+    expect(screen.getByTestId('ParagraphBoostedRateMessage').textContent).toBe(
+      "Your 255,000 RIF is staked but not backing. Back Builders with 100,000 stRIF or more and you'd earn 7.5% on this deposit.",
+    )
+    expect(screen.getByTestId('BoostedRateBackBuilder')).toBeDefined()
+  })
+
+  it('shows the terms as the design lists them', () => {
     mockPosition.mockReturnValue(position('255000', '150000'))
     render(<BoostedRateCard />)
 
+    const card = screen.getByTestId('BoostedRateCard').textContent
     expect(screen.getByTestId('BoostedRateStatus').textContent).toBe('Active')
-    expect(screen.getByTestId('CurrentAbiRate').textContent).toBe('5.0%')
-    expect(screen.getByTestId('BoostedRate').textContent).toBe('12.5%')
+    expect(card).toContain('Term12 months')
+    expect(card).toContain('Minimum100,000 RIF')
+    expect(card).toContain('RequirementThe deposit must back a Builder')
     expect(screen.queryByTestId('BelowThresholdTag')).toBeNull()
   })
 
@@ -237,26 +249,5 @@ describe('DrawerBoostSummary', () => {
       <DrawerBoostSummaryView current={parseEther('2951')} next={parseEther('2951')} />,
     )
     expect(container.innerHTML).toBe('')
-  })
-})
-
-describe('BoostedAbiView', () => {
-  it('shows the rate with boost, from the current ABI, once an edit crosses the minimum', () => {
-    render(<BoostedAbiView current={parseEther('50000')} next={parseEther('101800')} />)
-    expect(screen.getByTestId('BoostedAbi').textContent).toBe('12.5% with boost')
-  })
-
-  it('keeps showing it while the saved backing stays boosted', () => {
-    render(<BoostedAbiView current={parseEther('150000')} next={parseEther('150000')} />)
-    expect(screen.getByTestId('BoostedAbi').textContent).toBe('12.5% with boost')
-  })
-
-  it.each([
-    ['short of the minimum', '50000', '97300'],
-    ['dropping under the minimum', '150000', '90000'],
-    ['with no backing', '0', '0'],
-  ])('stays hidden %s', (_, current, next) => {
-    render(<BoostedAbiView current={parseEther(current)} next={parseEther(next)} />)
-    expect(screen.queryByTestId('BoostedAbi')).toBeNull()
   })
 })

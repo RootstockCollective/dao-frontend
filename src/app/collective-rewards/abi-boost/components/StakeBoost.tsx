@@ -5,25 +5,18 @@ import { parseEther } from 'viem'
 import { InfoIconButton } from '@/components/IconButton/InfoIconButton'
 import { ExternalLinkIcon } from '@/components/Icons'
 import { Header, Label, Span } from '@/components/Typography'
-import { RIF } from '@/lib/constants'
+import Big from '@/lib/big'
 import { currentLinks } from '@/lib/links'
-import { cn } from '@/lib/utils'
+import { cn, formatNumberWithCommas } from '@/lib/utils'
 
 import { ABI_BOOST_LABELS } from '../abiBoost.labels'
-import { formatMissingAmount, getStakeBoostOutlook, StakeBoostOutlook } from '../abiBoost.utils'
-import { useAbiBoostPosition } from '../hooks/useAbiBoost'
+import { getStakeBoostOutlook, StakeBoostOutlook } from '../abiBoost.utils'
 import { CurrentAbiRate } from './AbiBoostRates'
-import { BelowThresholdTag } from './AbiBoostTags'
+import { AbiBoostRow, BelowThresholdTag } from './AbiBoostTags'
+import { HOW_THE_BOOST_WORKS_INFO } from './HowTheBoostWorks'
 import { withAbiBoostFlag } from './withAbiBoostFlag'
 
-const { boostDelta, minBacking, term } = ABI_BOOST_LABELS
-
-const HOW_THE_BOOST_WORKS = (
-  <Label variant="body-s">
-    Back Builders with {minBacking} or more and your backing earns {boostDelta} on top of the current ABI for{' '}
-    {term}. It keeps the rate for as long as the backing stays at or above the minimum.
-  </Label>
-)
+const { boostDelta, minStake } = ABI_BOOST_LABELS
 
 const CURRENT_ABI_INFO = (
   <Label variant="body-s">
@@ -41,32 +34,18 @@ const toWei = (amount: string): bigint => {
   }
 }
 
-/**
- * How the stake being prepared would leave the wallet regarding the boost, or `null` until the
- * wallet's position is known: a guess would tell an active backer they still have to qualify.
- */
-export const useStakeBoostOutlook = (amount: string): StakeBoostOutlook | null => {
-  const { stRifBalance, backing, isReady } = useAbiBoostPosition()
-  return useMemo(
-    () => (isReady ? getStakeBoostOutlook({ stRifBalance, backing }, toWei(amount)) : null),
-    [isReady, stRifBalance, backing, amount],
-  )
-}
+/** What the amount being typed means for the boost. */
+export const useStakeBoostOutlook = (amount: string): StakeBoostOutlook =>
+  useMemo(() => getStakeBoostOutlook(toWei(amount)), [amount])
 
-const outlookMessage = (outlook: StakeBoostOutlook): string => {
-  switch (outlook.kind) {
-    case 'active':
-      return `Your ${boostDelta} boost is active while your backing stays at ${minBacking} or more.`
-    case 'eligible':
-      return `You'll be eligible for a ${boostDelta} boost. Back a Builder after staking to switch it on.`
-    case 'short':
-      return `Stake ${formatMissingAmount(outlook.missing, RIF)} or more to unlock a ${boostDelta} boost when you back Builders.`
-  }
+const OUTLOOK_MESSAGES: Record<StakeBoostOutlook, string> = {
+  eligible: `You'll be eligible for a ${boostDelta} boost. Back a Builder after staking to switch it on.`,
+  belowMinimum: `Stake ${minStake} or more to unlock a ${boostDelta} boost when you back Builders.`,
 }
 
 const StakeBoostNoticeContent = ({ amount }: { amount: string }) => {
   const outlook = useStakeBoostOutlook(amount)
-  const isHighlighted = !!outlook && outlook.kind !== 'short'
+  const isHighlighted = outlook === 'eligible'
 
   return (
     <div className="mt-6 border-t border-bg-40 pt-6" data-testid="StakeBoostNotice">
@@ -85,18 +64,14 @@ const StakeBoostNoticeContent = ({ amount }: { amount: string }) => {
       {/* One line on desktop, as in the design: message, info and Buy RIF side by side */}
       <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 md:flex-nowrap">
         {isHighlighted && <Sparkles size={16} className="shrink-0 text-v3-primary" aria-hidden="true" />}
-        {outlook && (
-          <>
-            <Span
-              variant="body-s"
-              className={cn('md:whitespace-nowrap', isHighlighted ? 'text-v3-primary' : 'text-text-60')}
-              data-testid="StakeBoostMessage"
-            >
-              {outlookMessage(outlook)}
-            </Span>
-            <InfoIconButton info={HOW_THE_BOOST_WORKS} tooltipClassName="max-w-xs" />
-          </>
-        )}
+        <Span
+          variant="body-s"
+          className={cn('md:whitespace-nowrap', isHighlighted ? 'text-v3-primary' : 'text-text-60')}
+          data-testid="StakeBoostMessage"
+        >
+          {OUTLOOK_MESSAGES[outlook]}
+        </Span>
+        <InfoIconButton info={HOW_THE_BOOST_WORKS_INFO} tooltipClassName="max-w-xs" />
         <a
           href={currentLinks.getRif}
           target="_blank"
@@ -114,33 +89,38 @@ const StakeBoostNoticeContent = ({ amount }: { amount: string }) => {
 /** Step one of the stake flow: the current ABI and what the amount typed means for the boost. */
 export const StakeBoostNotice = withAbiBoostFlag(StakeBoostNoticeContent)
 
-const StakeBoostEligibilityRowContent = ({ amount }: { amount: string }) => {
+/** The amount as typed, with thousands separators: the stake flow keeps up to 8 decimals. */
+const formatStakeAmount = (amount: string, symbol: string): string =>
+  `${formatNumberWithCommas(Big(amount || 0).toFixedNoTrailing(8))} ${symbol}`
+
+interface StakeBoostSummaryProps {
+  amount: string
+  fromSymbol: string
+  toSymbol: string
+}
+
+const StakeBoostSummaryContent = ({ amount, fromSymbol, toSymbol }: StakeBoostSummaryProps) => {
   const outlook = useStakeBoostOutlook(amount)
-  if (!outlook) return null
 
   return (
-    <div
-      className="mb-8 flex flex-wrap items-center justify-between gap-2 border-y border-bg-40 py-4"
-      data-testid="StakeBoostEligibilityRow"
-    >
-      <div className="flex items-center gap-2">
-        <Span variant="body" className="text-text-60">
-          Boost eligibility
-        </Span>
-        <InfoIconButton info={HOW_THE_BOOST_WORKS} tooltipClassName="max-w-xs" />
-      </div>
-      {outlook.kind === 'short' ? (
-        <BelowThresholdTag />
-      ) : (
-        <Span variant="body" className="text-v3-primary">
-          {outlook.kind === 'active'
-            ? `Active, ${boostDelta} on your backing`
-            : `Eligible for ${boostDelta}, once backing a Builder`}
-        </Span>
-      )}
+    <div className="mb-8 flex flex-col border-t border-bg-40" data-testid="StakeBoostSummary">
+      <AbiBoostRow label="Amount">{formatStakeAmount(amount, fromSymbol)}</AbiBoostRow>
+      <AbiBoostRow label="Becomes">{formatStakeAmount(amount, toSymbol)}</AbiBoostRow>
+      <AbiBoostRow
+        label="Boost eligibility"
+        info={<InfoIconButton info={HOW_THE_BOOST_WORKS_INFO} tooltipClassName="max-w-xs" />}
+      >
+        {outlook === 'eligible' ? (
+          <span className="text-v3-primary" data-testid="StakeBoostEligibility">
+            Eligible for {boostDelta}, once backing a Builder
+          </span>
+        ) : (
+          <BelowThresholdTag />
+        )}
+      </AbiBoostRow>
     </div>
   )
 }
 
-/** Confirm step of the stake flow: whether the stake qualifies for the boost. */
-export const StakeBoostEligibilityRow = withAbiBoostFlag(StakeBoostEligibilityRowContent)
+/** Confirm step of the stake flow: what is staked, what it becomes, and whether it qualifies. */
+export const StakeBoostSummary = withAbiBoostFlag(StakeBoostSummaryContent)

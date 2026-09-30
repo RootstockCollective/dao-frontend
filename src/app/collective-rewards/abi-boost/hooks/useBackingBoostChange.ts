@@ -2,6 +2,9 @@ import { useContext, useMemo } from 'react'
 
 import { Allocations, AllocationsContext } from '@/app/collective-rewards/allocations/context'
 
+import { getBackingBoostHint } from '../abiBoost.utils'
+import { useIsAbiBoostEnabled } from './useAbiBoost'
+
 const sumAllocations = (allocations: Allocations): bigint =>
   Object.values(allocations).reduce((total, allocation) => total + allocation, 0n)
 
@@ -35,4 +38,15 @@ export const useBackingBoostChange = (): BackingBoostChange => {
     }),
     [onchainBacking, allocations, initialAllocations],
   )
+}
+
+/**
+ * Whether the backing earns the boost: saved at or above the minimum, or about to be once the edit
+ * in progress is saved. ABI figures then show the boosted rate instead of the plain one.
+ */
+export const useIsBackingBoosted = (): boolean => {
+  const isAbiBoostEnabled = useIsAbiBoostEnabled()
+  const { current, next } = useBackingBoostChange()
+  const hint = getBackingBoostHint(current, next)
+  return isAbiBoostEnabled && (hint?.kind === 'active' || hint?.kind === 'willActivate')
 }

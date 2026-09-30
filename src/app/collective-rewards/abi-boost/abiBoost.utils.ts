@@ -95,22 +95,15 @@ export const formatMissingAmount = (missingWei: bigint, symbol: string): string 
   formatAbiBoostAmount(formatEther(missingWei), symbol, 'up')
 
 /**
- * What staking `amount` more stRIF would do for the boost:
- * - `active`: the backing already earns it, staking changes nothing
- * - `eligible`: the resulting balance can cover the minimum backing
- * - `short`: it still can't, and `missing` is what the wallet needs on top of its current balance
+ * What the stake being typed means for the boost, judged on that amount alone, as the design has
+ * it: at or above the minimum it qualifies once it backs a Builder, under it it doesn't.
  */
-export type StakeBoostOutlook = { kind: 'active' } | { kind: 'eligible' } | { kind: 'short'; missing: bigint }
+export type StakeBoostOutlook = 'eligible' | 'belowMinimum'
 
 export const getStakeBoostOutlook = (
-  { stRifBalance, backing }: AbiBoostPosition,
   amount: bigint,
   minBacking: bigint = ABI_BOOST.minBackingWei,
-): StakeBoostOutlook => {
-  if (backing >= minBacking) return { kind: 'active' }
-  if (stRifBalance + amount >= minBacking) return { kind: 'eligible' }
-  return { kind: 'short', missing: getMissingForAbiBoost(stRifBalance, minBacking) }
-}
+): StakeBoostOutlook => (amount >= minBacking ? 'eligible' : 'belowMinimum')
 
 /**
  * What stands between the wallet and the boost:

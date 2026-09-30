@@ -4,8 +4,8 @@ import { formatSymbol } from '@/app/shared/formatter'
 import { NotificationBanner } from '@/app/user/StackingNotifications/components/NotificationBanner'
 import { Button } from '@/components/Button'
 import { InfoIconButton } from '@/components/IconButton/InfoIconButton'
-import { Header, Label, Paragraph, Span } from '@/components/Typography'
-import { STRIF } from '@/lib/constants'
+import { Header, Paragraph, Span } from '@/components/Typography'
+import { RIF, STRIF } from '@/lib/constants'
 import { formatCountdownFromSeconds } from '@/lib/utils/formatCountdown'
 
 import { ABI_BOOST_LABELS, BOOST_WILL_STOP_LABEL, missingToBoostLabel } from '../abiBoost.labels'
@@ -20,11 +20,12 @@ import {
 import { useAbiBoostPosition, useGoToBackBuilders } from '../hooks/useAbiBoost'
 import { useBackedBuildersUnderDeactivationVote } from '../hooks/useBackedBuildersUnderDeactivationVote'
 import { BackingBoostChange, useBackingBoostChange } from '../hooks/useBackingBoostChange'
-import { BoostedRate, CurrentAbiRate } from './AbiBoostRates'
+import { BoostedRate } from './AbiBoostRates'
 import { AbiBoostRow, AbiBoostStatusChip, BelowThresholdTag, BoostPill } from './AbiBoostTags'
+import { BOOSTED_RATE_INFO, HOW_THE_BOOST_WORKS_INFO } from './HowTheBoostWorks'
 import { withAbiBoostFlag } from './withAbiBoostFlag'
 
-const { boost, boostDelta, minBacking, term } = ABI_BOOST_LABELS
+const { boost, boostDelta, minBacking, minStake, term } = ABI_BOOST_LABELS
 
 const BANNER_COPY: Record<AbiBoostStatus, { title: string; description: string }> = {
   notEligible: {
@@ -99,7 +100,7 @@ const STATUS_LABELS: Record<AbiBoostStatus, string> = {
 const BoostedRateCardContent = () => {
   const goToBackBuilders = useGoToBackBuilders()
   const position = useAbiBoostPosition()
-  const { status, backing, isReady } = position
+  const { status, stRifBalance, backing, isReady } = position
   if (!isReady) return null
 
   const guidance = getAbiBoostGuidance(position)
@@ -112,7 +113,7 @@ const BoostedRateCardContent = () => {
       case 'backMore':
         return isBelowThreshold
           ? `Back ${formatMissingAmount(guidance.missing, STRIF)} more to reach the ${minBacking} minimum and switch the boost on.`
-          : `Your stRIF is staked but not backing. Back Builders with ${minBacking} or more and you'd earn ${boostDelta} on top of the current ABI.`
+          : `Your ${formatSymbol(stRifBalance, STRIF)} ${RIF} is staked but not backing. Back Builders with ${minBacking} or more and you'd earn ${boost} on this deposit.`
       case 'stakeMore':
         return `Stake ${formatMissingAmount(guidance.missing, STRIF)} more and back Builders with ${minBacking} or more to earn ${boostDelta} on top of the current ABI.`
     }
@@ -124,52 +125,47 @@ const BoostedRateCardContent = () => {
       data-testid="BoostedRateCard"
     >
       <div className="flex flex-1 flex-col gap-4">
-        <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center justify-between gap-3">
           <Header variant="h3" caps>
             Boosted rate
           </Header>
+          <InfoIconButton info={HOW_THE_BOOST_WORKS_INFO} tooltipClassName="max-w-xs" />
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Header variant="h1" className={status === 'active' ? 'text-v3-primary' : 'text-text-60'}>
+            {boost}
+          </Header>
           <AbiBoostStatusChip status={status} data-testid="BoostedRateStatus">
+            <span aria-hidden="true" className="size-1.5 rounded-full bg-current" />
             {STATUS_LABELS[status]}
           </AbiBoostStatusChip>
         </div>
-        <div className="flex items-end gap-3">
-          <Header variant="h1" className={status === 'active' ? 'text-v3-primary' : 'text-text-60'}>
-            {boostDelta}
-          </Header>
-          <Label variant="body-s" className="pb-2 text-text-60">
-            on top of the current ABI
-          </Label>
+        <div className="flex flex-col gap-3 rounded-sm border border-bg-40 p-4">
+          {isBelowThreshold && <BelowThresholdTag />}
+          <Paragraph variant="body-s" className="text-text-60" data-testid="BoostedRateMessage">
+            {message}
+          </Paragraph>
+          {guidance.kind === 'backMore' && (
+            <Button
+              variant="primary"
+              className="w-fit"
+              onClick={goToBackBuilders}
+              data-testid="BoostedRateBackBuilder"
+            >
+              Back a Builder
+            </Button>
+          )}
         </div>
-        {isBelowThreshold && <BelowThresholdTag />}
-        <Paragraph variant="body-s" className="text-text-60" data-testid="BoostedRateMessage">
-          {message}
-        </Paragraph>
-        {guidance.kind === 'backMore' && (
-          <Button
-            variant="primary"
-            className="w-fit"
-            onClick={goToBackBuilders}
-            data-testid="BoostedRateBackBuilder"
-          >
-            Back a Builder
-          </Button>
-        )}
       </div>
       <div className="flex flex-col md:min-w-[320px] *:last:border-b-0">
-        <AbiBoostRow size="body-s" label="Current ABI">
-          <CurrentAbiRate />
-        </AbiBoostRow>
-        <AbiBoostRow size="body-s" label="Rate with boost">
-          <BoostedRate className="text-v3-primary" />
-        </AbiBoostRow>
         <AbiBoostRow size="body-s" label="Term">
           {term}
         </AbiBoostRow>
         <AbiBoostRow size="body-s" label="Minimum">
-          {minBacking}
+          {minStake}
         </AbiBoostRow>
         <AbiBoostRow size="body-s" label="Requirement">
-          The stRIF must back Builders
+          The deposit must back a Builder
         </AbiBoostRow>
       </div>
     </section>
@@ -177,12 +173,6 @@ const BoostedRateCardContent = () => {
 }
 
 export const BoostedRateCard = withAbiBoostFlag(BoostedRateCardContent)
-
-const RATE_INFO = (
-  <Label variant="body-s">
-    Rate on this backing: <CurrentAbiRate /> current ABI + {boost} boost = <BoostedRate />, for {term}.
-  </Label>
-)
 
 const hintText = (text: string) => (
   <Span variant="body-xs" className="text-text-60" data-testid="BackingBoostHintText">
@@ -198,7 +188,7 @@ const hintContent = (hint: NonNullable<BackingBoostHintState>): ReactNode => {
       return (
         <span className="flex items-center gap-2">
           <BoostPill>This backing is eligible for a boost · {boostDelta}</BoostPill>
-          <InfoIconButton info={RATE_INFO} tooltipClassName="max-w-xs" />
+          <InfoIconButton info={BOOSTED_RATE_INFO} tooltipClassName="max-w-xs" />
         </span>
       )
     case 'willDeactivate':
@@ -259,23 +249,5 @@ export const DrawerBoostSummaryView = ({ current, next }: BackingBoostChange) =>
 }
 
 const DrawerBoostSummaryContent = () => <DrawerBoostSummaryView {...useBackingBoostChange()} />
-
-/**
- * Under an ABI figure: the rate the backing earns once it reaches the minimum, current ABI plus the
- * boost, computed on render. Shows as soon as an edit crosses the minimum, before it is saved.
- */
-export const BoostedAbiView = ({ current, next }: BackingBoostChange) => {
-  const hint = getBackingBoostHint(current, next)
-  if (hint?.kind !== 'active' && hint?.kind !== 'willActivate') return null
-  return (
-    <Span variant="body-s" className="whitespace-nowrap text-v3-primary" data-testid="BoostedAbi">
-      <BoostedRate /> with boost
-    </Span>
-  )
-}
-
-const BoostedAbiContent = () => <BoostedAbiView {...useBackingBoostChange()} />
-
-export const BoostedAbi = withAbiBoostFlag(BoostedAbiContent)
 
 export const DrawerBoostSummary = withAbiBoostFlag(DrawerBoostSummaryContent)

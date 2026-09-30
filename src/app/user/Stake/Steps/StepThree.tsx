@@ -2,13 +2,10 @@ import posthog from 'posthog-js'
 import { useEffect } from 'react'
 
 import {
-  StakeBoostEligibilityRow,
+  StakeBoostSummary,
   useStakeBoostOutlook,
 } from '@/app/collective-rewards/abi-boost/components/StakeBoost'
-import {
-  useIsAbiBoostEnabled,
-  useShowsFiatAmounts,
-} from '@/app/collective-rewards/abi-boost/hooks/useAbiBoost'
+import { useIsAbiBoostEnabled } from '@/app/collective-rewards/abi-boost/hooks/useAbiBoost'
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
@@ -34,10 +31,8 @@ export const StepThree = ({ onGoToStep, onCloseModal, onBoostEligible }: StepPro
   )
   const { refetchBalances } = useGetAddressBalances()
   const isAbiBoostEnabled = useIsAbiBoostEnabled()
-  const showsFiatAmounts = useShowsFiatAmounts()
-  // Read before the stake lands, so the outcome compares against the balance it started from
   const boostOutlook = useStakeBoostOutlook(amount)
-  const becomesBoostEligible = isAbiBoostEnabled && boostOutlook?.kind === 'eligible' && !!onBoostEligible
+  const becomesBoostEligible = isAbiBoostEnabled && boostOutlook === 'eligible' && !!onBoostEligible
 
   // Set button actions directly
   useEffect(() => {
@@ -94,24 +89,27 @@ export const StepThree = ({ onGoToStep, onCloseModal, onBoostEligible }: StepPro
 
   return (
     <>
-      <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-8">
-        <StakeTokenAmountDisplay
-          label="From"
-          amount={amount}
-          tokenSymbol={from.tokenSymbol}
-          amountInCurrency={showsFiatAmounts ? from.amountConvertedToCurrency : undefined}
-          balance={from.balance}
-        />
-        <StakeTokenAmountDisplay
-          label="To"
-          amount={amount}
-          tokenSymbol={to.tokenSymbol}
-          balance={to.balance}
-          isFlexEnd
-        />
-      </div>
-
-      <StakeBoostEligibilityRow amount={amount} />
+      {/* The boost design reviews the stake as rows, in RIF only; otherwise the From / To preview */}
+      {isAbiBoostEnabled ? (
+        <StakeBoostSummary amount={amount} fromSymbol={from.tokenSymbol} toSymbol={to.tokenSymbol} />
+      ) : (
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between mb-8">
+          <StakeTokenAmountDisplay
+            label="From"
+            amount={amount}
+            tokenSymbol={from.tokenSymbol}
+            amountInCurrency={from.amountConvertedToCurrency}
+            balance={from.balance}
+          />
+          <StakeTokenAmountDisplay
+            label="To"
+            amount={amount}
+            tokenSymbol={to.tokenSymbol}
+            balance={to.balance}
+            isFlexEnd
+          />
+        </div>
+      )}
 
       <TransactionStatus txHash={stakeTxHash} isTxFailed={isTxFailed} failureMessage="Stake TX failed." />
     </>

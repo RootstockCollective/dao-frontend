@@ -118,31 +118,15 @@ describe('toWeiAmount', () => {
 })
 
 describe('getStakeBoostOutlook', () => {
-  const k = (thousands: string) => parseEther(`${thousands}000`)
-
-  it('reports the approved copy case: nothing staked, a small amount typed', () => {
-    expect(getStakeBoostOutlook({ stRifBalance: 0n, backing: 0n }, k('10'), MIN)).toEqual({
-      kind: 'short',
-      missing: MIN,
-    })
+  it('judges the typed amount against the minimum, as the design does', () => {
+    expect(getStakeBoostOutlook(parseEther('10000'), MIN)).toBe('belowMinimum')
+    expect(getStakeBoostOutlook(MIN - 1n, MIN)).toBe('belowMinimum')
+    expect(getStakeBoostOutlook(MIN, MIN)).toBe('eligible')
+    expect(getStakeBoostOutlook(parseEther('150000'), MIN)).toBe('eligible')
   })
 
-  it('counts the stRIF already held, so topping up can make the wallet eligible', () => {
-    expect(getStakeBoostOutlook({ stRifBalance: k('60'), backing: 0n }, k('40'), MIN)).toEqual({
-      kind: 'eligible',
-    })
-    expect(getStakeBoostOutlook({ stRifBalance: k('60'), backing: 0n }, k('10'), MIN)).toEqual({
-      kind: 'short',
-      missing: k('40'),
-    })
-  })
-
-  it('is eligible when the amount alone reaches the minimum', () => {
-    expect(getStakeBoostOutlook({ stRifBalance: 0n, backing: 0n }, MIN, MIN)).toEqual({ kind: 'eligible' })
-  })
-
-  it('is active whatever the amount once the backing reaches the minimum', () => {
-    expect(getStakeBoostOutlook({ stRifBalance: MIN, backing: MIN }, 0n, MIN)).toEqual({ kind: 'active' })
+  it('treats an empty amount as below the minimum', () => {
+    expect(getStakeBoostOutlook(0n, MIN)).toBe('belowMinimum')
   })
 })
 

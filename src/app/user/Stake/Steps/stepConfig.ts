@@ -7,6 +7,8 @@ interface StepConfig {
   component: React.ComponentType<StepProps>
   description: string
   progress: number
+  /** Replaces `description` while the ABI boost flag is on, as in the boost design. */
+  boostDescription?: string
 }
 
 export const stepConfig: StepConfig[] = [
@@ -23,6 +25,7 @@ export const stepConfig: StepConfig[] = [
   {
     component: StepThree,
     description: 'Make sure that everything is correct before continuing:',
+    boostDescription: 'Review and confirm. Your RIF becomes stRIF and can back Builders right away.',
     progress: 100,
   },
 ]
