@@ -8,7 +8,6 @@ interface RateProps {
   'data-testid'?: string
 }
 
-/** The Collective's current ABI, as the base the boost is added to. */
 export const CurrentAbiRate = ({ className, 'data-testid': dataTestId = 'CurrentAbiRate' }: RateProps) => (
   <AnnualBackerIncentivesLoader
     render={({ data, isLoading }) =>
@@ -23,7 +22,6 @@ export const CurrentAbiRate = ({ className, 'data-testid': dataTestId = 'Current
   />
 )
 
-/** The rate a boosted backing earns, computed from the current ABI every time it renders. */
 export const BoostedRate = ({ className, 'data-testid': dataTestId = 'BoostedRate' }: RateProps) => (
   <AnnualBackerIncentivesLoader
     render={({ data, isLoading }) =>

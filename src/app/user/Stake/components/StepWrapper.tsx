@@ -37,7 +37,6 @@ export const StepWrapper = ({ onCloseModal, onBoostEligible }: StepWrapperProps)
 
   const { progress } = stepConfigItem
   const description = (isAbiBoostEnabled && stepConfigItem.boostDescription) || stepConfigItem.description
-  // The boost design offers help on every step; otherwise it only shows while requesting the allowance
   const showsHelp = isAbiBoostEnabled || step === 1
 
   return (

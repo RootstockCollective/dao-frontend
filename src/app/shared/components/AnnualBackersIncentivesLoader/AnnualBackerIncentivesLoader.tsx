@@ -28,7 +28,6 @@ export const AnnualBackerIncentivesLoader = ({ render }: AnnualBackerIncentivesL
   // TODO: remove conditional hooks
   const usePrimary = use_state_sync ? useGetMetricsAbiWithStateSync : useGetMetricsAbiWithGraph
 
-  // Built once per data source: rebuilding it on every render would remount the loader each time
   const Loader = useMemo(() => withDataFallback<Big>(usePrimary, useFallbackWithErrors), [usePrimary])
 
   return <Loader render={render} />

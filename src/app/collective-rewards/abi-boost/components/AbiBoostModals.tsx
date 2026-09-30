@@ -33,7 +33,6 @@ interface ShellProps {
   children?: ReactNode
 }
 
-/** Boost modal layout: pill, title, copy, body, and "How the boost works" beside the actions. */
 const AbiBoostModalShell = ({
   eyebrow,
   title,
@@ -71,7 +70,6 @@ interface NextStepProps {
   onClick: () => void
 }
 
-/** A real link, so it can be opened in a new tab and gets prefetched like any other route. */
 const NextStep = ({ title, description, href, onClick }: NextStepProps) => (
   <NextLink
     href={href}
@@ -91,12 +89,10 @@ const NextStep = ({ title, description, href, onClick }: NextStepProps) => (
 )
 
 interface BoostEligibleModalProps {
-  /** RIF just staked, as typed in the stake flow. */
   stakedAmount: string
   onClose: () => void
 }
 
-/** Shown once a stake reaches the minimum: how to switch the boost on, and what else to do. */
 export const BoostEligibleModal = ({ stakedAmount, onClose }: BoostEligibleModalProps) => {
   const goToBackBuilders = useGoToBackBuilders()
   const closeAnd = (navigate: () => void) => () => {
@@ -153,14 +149,12 @@ export const BoostEligibleModal = ({ stakedAmount, onClose }: BoostEligibleModal
 }
 
 interface BoostActivatedModalProps {
-  /** On-chain backing per Builder right after the save, in wei. */
   allocations: Record<Address, bigint>
   onClose: () => void
 }
 
 const BoostActivatedModalContent = ({ allocations, onClose }: BoostActivatedModalProps) => {
   const { getBuilderByAddress } = useBuilderContext()
-  // The on-chain total, the figure that crossed the minimum: it also counts Builders the page doesn't list
   const { current: total } = useBackingBoostChange()
   const backed = Object.entries(allocations).filter(([, amount]) => amount > 0n) as [Address, bigint][]
   const builders = backed.length === 1 ? '1 Builder' : `${backed.length} Builders`
@@ -200,5 +194,4 @@ const BoostActivatedModalContent = ({ allocations, onClose }: BoostActivatedModa
   )
 }
 
-/** Shown when saving a backing takes it over the minimum and switches the boost on. */
 export const BoostActivatedModal = withAbiBoostFlag(BoostActivatedModalContent)

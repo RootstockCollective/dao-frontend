@@ -5,10 +5,8 @@ import { BUILDER_ACTION_CATEGORIES, SerializedDecodedData } from '@/app/proposal
 import Big from '@/lib/big'
 import { ProposalCategory, ProposalState } from '@/shared/types'
 
-/** A vote only counts as a warning while it can still pass. */
 const OPEN_STATES: ReadonlySet<ProposalState> = new Set([ProposalState.Pending, ProposalState.Active])
 
-/** Builders a proposal would take out of the Collective, read from its decoded actions. */
 export const getDeactivatedBuilders = (calldatasParsed: SerializedDecodedData[]): Address[] =>
   calldatasParsed.flatMap(action => {
     if (
@@ -25,7 +23,6 @@ export const getDeactivatedBuilders = (calldatasParsed: SerializedDecodedData[])
 export interface DeactivationVote {
   builder: Address
   proposalId: string
-  /** Block at which voting closes. */
   voteEndBlock: bigint
 }
 
@@ -34,11 +31,6 @@ type DeactivationProposalInput = Pick<
   'proposalId' | 'calldatasParsed' | 'proposalDeadline'
 >
 
-/**
- * Deactivation proposals against one of `backedBuilders` whose voting window hasn't closed yet.
- * This part only needs the proposals list; whether each one is still open (not canceled, not
- * already decided) is then read on-chain, and only for these.
- */
 export const getDeactivationVoteCandidates = (
   proposals: DeactivationProposalInput[],
   backedBuilders: ReadonlySet<Address>,
@@ -52,10 +44,6 @@ export const getDeactivationVoteCandidates = (
       .map(builder => ({ builder, proposalId, voteEndBlock }))
   })
 
-/**
- * The candidates whose vote is still open, given their on-chain states in the same order. When
- * several target the same Builder, the one closing first wins: that's the deadline to beat.
- */
 export const pickOpenDeactivationVotes = (
   candidates: DeactivationVote[],
   states: readonly (ProposalState | undefined)[],

@@ -42,7 +42,6 @@ function proposalStateToRawState(proposalState: string): number {
   return toProposalState(proposalState)
 }
 
-/** Shared by every reader of the proposals list, so they all hit the same cache entry. */
 export const PROPOSALS_QUERY_KEY = ['proposals'] as const
 
 export async function fetchProposalsFromAPI(): Promise<ProposalApiResponse[]> {

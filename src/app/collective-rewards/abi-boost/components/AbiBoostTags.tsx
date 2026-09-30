@@ -18,7 +18,6 @@ interface TagProps {
   'data-testid'?: string
 }
 
-/** Orange pill for everything the boost is doing, or is about to do, for the wallet. */
 export const BoostPill = ({ children, className, 'data-testid': dataTestId = 'BoostPill' }: TagProps) => (
   <span
     className={cn(
@@ -33,7 +32,6 @@ export const BoostPill = ({ children, className, 'data-testid': dataTestId = 'Bo
   </span>
 )
 
-/** Discreet tag for a backing that exists but earns no boost because it is under the minimum. */
 export const BelowThresholdTag = ({ className }: { className?: string }) => (
   <span
     className={cn(TAG_BASE, 'border-v3-text-100/20 px-2 py-1 text-xs text-v3-text-60', className)}
@@ -49,7 +47,6 @@ const STATUS_TONES: Record<AbiBoostStatus, string> = {
   active: 'border-v3-primary/60 text-v3-primary',
 }
 
-/** Small outlined chip coloured by the wallet's boost status: the header badge and the card's chip. */
 export const AbiBoostStatusChip = ({
   status,
   children,
@@ -75,20 +72,16 @@ const AbiBoostBadgeContent = () => {
   )
 }
 
-/** Boost standing next to the account address in the header. */
 export const AbiBoostBadge = withAbiBoostFlag(AbiBoostBadgeContent)
 
 interface AbiBoostRowProps {
   label: ReactNode
   children: ReactNode
-  /** Optional info icon next to the label. */
   info?: ReactNode
-  /** `body` in modals, `body-s` in the denser card. */
   size?: 'body' | 'body-s'
   className?: string
 }
 
-/** Label on the left, value on the right, a hairline under: the rows of the boost card and modals. */
 export const AbiBoostRow = ({ label, children, info, size = 'body', className }: AbiBoostRowProps) => (
   <div className={cn('flex items-center justify-between gap-6 border-b border-bg-40 py-3', className)}>
     <div className="flex items-center gap-2">

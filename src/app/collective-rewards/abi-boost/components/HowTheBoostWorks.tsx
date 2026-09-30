@@ -9,7 +9,6 @@ const { boost, boostDelta, minBacking, term } = ABI_BOOST_LABELS
 
 const TOOLTIP_CLASSES = 'max-w-xs rounded-sm bg-v3-text-80 p-4 text-v3-bg-accent-60'
 
-/** The boost's rules in one paragraph, for every "how does this work" tooltip. */
 export const HOW_THE_BOOST_WORKS_INFO = (
   <Label variant="body-s">
     Back Builders with {minBacking} or more and your backing earns {boostDelta} on top of the current ABI for{' '}
@@ -17,17 +16,14 @@ export const HOW_THE_BOOST_WORKS_INFO = (
   </Label>
 )
 
-/** How a boosted rate is made up, computed from the current ABI. */
 export const BOOSTED_RATE_INFO = (
   <Label variant="body-s">
     Rate on this backing: <CurrentAbiRate /> current ABI + {boost} boost = <BoostedRate />, for {term}.
   </Label>
 )
 
-/** Footer link of the boost modals, the same shape as the stake flow's "Help, I don't understand". */
 export const HowTheBoostWorksLink = () => (
   <Tooltip text={HOW_THE_BOOST_WORKS_INFO} side="top" className={TOOLTIP_CLASSES}>
-    {/* A button, so keyboard and screen-reader users can open it too */}
     <button type="button" className="flex cursor-pointer items-center gap-1" data-testid="HowTheBoostWorks">
       <InfoLabel>How the boost works</InfoLabel>
     </button>

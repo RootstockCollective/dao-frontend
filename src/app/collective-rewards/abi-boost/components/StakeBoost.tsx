@@ -25,7 +25,6 @@ const CURRENT_ABI_INFO = (
   </Label>
 )
 
-/** The stake amount as wei, or zero while the input is empty or mid-edit. */
 const toWei = (amount: string): bigint => {
   try {
     return amount ? parseEther(amount) : 0n
@@ -34,7 +33,6 @@ const toWei = (amount: string): bigint => {
   }
 }
 
-/** What the amount being typed means for the boost. */
 export const useStakeBoostOutlook = (amount: string): StakeBoostOutlook =>
   useMemo(() => getStakeBoostOutlook(toWei(amount)), [amount])
 
@@ -61,7 +59,6 @@ const StakeBoostNoticeContent = ({ amount }: { amount: string }) => {
         </Header>
       </div>
 
-      {/* One line on desktop, as in the design: message, info and Buy RIF side by side */}
       <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 md:flex-nowrap">
         {isHighlighted && <Sparkles size={16} className="shrink-0 text-v3-primary" aria-hidden="true" />}
         <Span
@@ -86,10 +83,8 @@ const StakeBoostNoticeContent = ({ amount }: { amount: string }) => {
   )
 }
 
-/** Step one of the stake flow: the current ABI and what the amount typed means for the boost. */
 export const StakeBoostNotice = withAbiBoostFlag(StakeBoostNoticeContent)
 
-/** The amount as typed, with thousands separators: the stake flow keeps up to 8 decimals. */
 const formatStakeAmount = (amount: string, symbol: string): string =>
   `${formatNumberWithCommas(Big(amount || 0).toFixedNoTrailing(8))} ${symbol}`
 
@@ -122,5 +117,4 @@ const StakeBoostSummaryContent = ({ amount, fromSymbol, toSymbol }: StakeBoostSu
   )
 }
 
-/** Confirm step of the stake flow: what is staked, what it becomes, and whether it qualifies. */
 export const StakeBoostSummary = withAbiBoostFlag(StakeBoostSummaryContent)

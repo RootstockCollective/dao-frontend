@@ -185,25 +185,18 @@ export const PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD = Number(
 
 export const ABI_CYCLES_LIMIT = 12
 
-/**
- * ABI boost programme terms. Every screen reads them from here, so a change to the minimum, the
- * boost or the term is a single edit (or an env override) instead of a hunt through the copy.
- */
 const DEFAULT_ABI_BOOST_MIN_BACKING = 100_000
 const DEFAULT_ABI_BOOST_PERCENTAGE = 7.5
 const DEFAULT_ABI_BOOST_TERM_MONTHS = 12
 
-/** Minimum stRIF a wallet has to keep backing Builders with for the boost to apply. */
 export const ABI_BOOST_MIN_BACKING = positiveNumberOr(
   process.env.NEXT_PUBLIC_ABI_BOOST_MIN_BACKING,
   DEFAULT_ABI_BOOST_MIN_BACKING,
 )
-/** Percentage points added on top of the current ABI while the boost is active. */
 export const ABI_BOOST_PERCENTAGE = positiveNumberOr(
   process.env.NEXT_PUBLIC_ABI_BOOST_PERCENTAGE,
   DEFAULT_ABI_BOOST_PERCENTAGE,
 )
-/** How long the boost runs once it switches on. */
 export const ABI_BOOST_TERM_MONTHS = positiveNumberOr(
   process.env.NEXT_PUBLIC_ABI_BOOST_TERM_MONTHS,
   DEFAULT_ABI_BOOST_TERM_MONTHS,

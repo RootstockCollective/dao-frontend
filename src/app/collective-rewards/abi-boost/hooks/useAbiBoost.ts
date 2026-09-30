@@ -14,10 +14,8 @@ export const useIsAbiBoostEnabled = (): boolean => {
   return !!flags.abi_boost
 }
 
-/** The boost flow shows amounts in RIF only, so fiat figures stay hidden while the flag is on. */
 export const useShowsFiatAmounts = (): boolean => !useIsAbiBoostEnabled()
 
-/** Where the app lets a backer pick Builders to back. */
 export const BACK_BUILDERS_PATH = '/builders'
 
 export const useGoToBackBuilders = (): (() => void) => {
@@ -27,21 +25,11 @@ export const useGoToBackBuilders = (): (() => void) => {
 
 export interface AbiBoostPositionState {
   status: AbiBoostStatus
-  /** stRIF balance, in wei. */
   stRifBalance: bigint
-  /** On-chain stRIF backing Builders, in wei. */
   backing: bigint
-  /**
-   * Both reads have landed without error. Until then the figures are placeholders, and showing a
-   * status from them would tell an active wallet it isn't boosted.
-   */
   isReady: boolean
 }
 
-/**
- * The connected wallet's standing in the boost programme, from its stRIF balance and its on-chain
- * backing. Both reads share their query with the allocations context, so this adds no requests.
- */
 export const useAbiBoostPosition = (): AbiBoostPositionState => {
   const { address } = useAccount()
   const { data: stRifBalance, error: balanceError } = useGetVotingPower()

@@ -152,7 +152,6 @@ const HeaderStakeButtonContent = () => {
   )
 }
 
-/** Opens the stake flow from any page, so the boost is one click away wherever the user is. */
 const HeaderStakeButton = withAbiBoostFlag(HeaderStakeButtonContent)
 
 const WalletDetailsButton = () => {

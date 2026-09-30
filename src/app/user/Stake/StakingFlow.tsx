@@ -14,7 +14,6 @@ interface Props {
 
 export const StakingFlow = ({ onCloseModal }: Props) => {
   const { balances, prices } = useBalancesContext()
-  // Set once a stake qualifies for the ABI boost: the flow then gives way to the eligibility modal
   const [boostEligibleStake, setBoostEligibleStake] = useState<string | null>(null)
 
   const tokenToSend: StakingToken = useMemo(

@@ -11,8 +11,7 @@ export function withDataFallback<T>(
   usePrimary: () => { data: T; isLoading: boolean; error?: unknown },
   useFallback: () => { data: T; isLoading: boolean; error?: unknown },
 ) {
-  // Declared once per loader rather than inside DataLoader: a component defined during render is a
-  // new type every time, which remounts it (and restarts its queries) on each parent render
+  // Outside DataLoader: a component declared during render is a new type each time and remounts
   const PrimaryLoader = ({ render }: DataLoaderProps<T>) => {
     const { data, isLoading, error } = usePrimary()
     if (error) throw error

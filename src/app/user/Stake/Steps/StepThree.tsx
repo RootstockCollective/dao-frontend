@@ -89,7 +89,6 @@ export const StepThree = ({ onGoToStep, onCloseModal, onBoostEligible }: StepPro
 
   return (
     <>
-      {/* The boost design reviews the stake as rows, in RIF only; otherwise the From / To preview */}
       {isAbiBoostEnabled ? (
         <StakeBoostSummary amount={amount} fromSymbol={from.tokenSymbol} toSymbol={to.tokenSymbol} />
       ) : (

@@ -42,11 +42,9 @@ const BANNER_COPY: Record<AbiBoostStatus, { title: string; description: string }
   },
 }
 
-/** Top of the Backing page: where the wallet stands in the boost programme. */
 const AbiBoostBannerContent = () => {
   const goToBackBuilders = useGoToBackBuilders()
   const { status, isReady } = useAbiBoostPosition()
-  // Session-only, like every other banner: it comes back on the next visit
   const [isDismissed, setIsDismissed] = useState(false)
 
   if (!isReady || isDismissed) return null
@@ -64,10 +62,6 @@ const AbiBoostBannerContent = () => {
 
 export const AbiBoostBanner = withAbiBoostFlag(AbiBoostBannerContent)
 
-/**
- * One warning per backed Builder facing an open deactivation vote. It disappears on its own once
- * the backing moves elsewhere or the vote closes; dismissing it only lasts for the session.
- */
 const DeactivationVoteBannersContent = () => {
   const goToBackBuilders = useGoToBackBuilders()
   const buildersUnderVote = useBackedBuildersUnderDeactivationVote()
@@ -79,7 +73,6 @@ const DeactivationVoteBannersContent = () => {
       <NotificationBanner
         key={`${proposalId}:${builder}`}
         title={`${builderName} is under a deactivation vote`}
-        // Same countdown as the cycle banner: `3d 04h 12m`
         description={`Voting ends in ${formatCountdownFromSeconds(secondsLeft)}. If it passes, backing this Builder stops earning. Reallocate before then to keep your rewards active.`}
         buttonText="Reallocate now"
         buttonOnClick={goToBackBuilders}
@@ -96,7 +89,6 @@ const STATUS_LABELS: Record<AbiBoostStatus, string> = {
   active: 'Active',
 }
 
-/** Backing page card: the boost's terms and what the wallet still needs to earn it. */
 const BoostedRateCardContent = () => {
   const goToBackBuilders = useGoToBackBuilders()
   const position = useAbiBoostPosition()
@@ -200,7 +192,6 @@ const hintContent = (hint: NonNullable<BackingBoostHintState>): ReactNode => {
   }
 }
 
-/** One line under a backing total: whether it earns the boost, or what it lacks to. */
 export const BackingBoostHintView = ({ current, next }: BackingBoostChange) => {
   const hint = getBackingBoostHint(current, next)
   if (!hint) return null
@@ -215,7 +206,6 @@ const BackingBoostHintContent = () => <BackingBoostHintView {...useBackingBoostC
 
 export const BackingBoostHint = withAbiBoostFlag(BackingBoostHintContent)
 
-/** Left side of the save drawer: what saving does to the boost, with the rate it would earn. */
 export const DrawerBoostSummaryView = ({ current, next }: BackingBoostChange) => {
   const hint = getBackingBoostHint(current, next)
   if (!hint || hint.kind === 'belowThreshold') return null

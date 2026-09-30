@@ -18,18 +18,9 @@ export interface BackedBuilderUnderVote {
   builder: Address
   builderName: string
   proposalId: string
-  /** Estimated seconds until the vote closes. */
   secondsLeft: number
 }
 
-/**
- * Builders the connected wallet backs on-chain that are the target of an open deactivation vote.
- *
- * The proposals list comes from the cache every proposals screen shares; the on-chain state is read
- * only for deactivation proposals against these Builders whose window is still open, which is
- * usually none. Recomputed from live data, so a Builder drops out as soon as the backing moves
- * elsewhere or the vote closes.
- */
 export const useBackedBuildersUnderDeactivationVote = (): BackedBuilderUnderVote[] => {
   const {
     initialState: { allocations },
@@ -45,7 +36,6 @@ export const useBackedBuildersUnderDeactivationVote = (): BackedBuilderUnderVote
   })
 
   const candidates = useMemo(() => {
-    // Without the current block the time left can't be told, and a wrong countdown is worse than none
     if (currentBlock === undefined || !proposals?.length) return []
     const backedBuilders = new Set(
       Object.entries(allocations)

@@ -7,7 +7,6 @@ interface StepConfig {
   component: React.ComponentType<StepProps>
   description: string
   progress: number
-  /** Replaces `description` while the ABI boost flag is on, as in the boost design. */
   boostDescription?: string
 }
 

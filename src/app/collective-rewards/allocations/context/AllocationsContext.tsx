@@ -156,8 +156,7 @@ export const AllocationsContextProvider = ({ children }: { children: ReactNode }
     },
   )
 
-  // The on-chain total is a separate read: refresh it with the per-gauge allocations, so nothing
-  // keeps reading the pre-save figure until the next polling tick
+  // The on-chain total is a separate read; without this it keeps the pre-save figure until the next poll
   const refetchAllocations = useCallback(() => {
     refetchRawAllocations()
     refetchTotalOnchainAllocation()

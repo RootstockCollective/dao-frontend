@@ -313,10 +313,6 @@ export const parseProposalDescription = (description: string): ParsedDescription
   }
 }
 
-/**
- * Category of each Governor action that changes a Builder's standing. Shared with every place that
- * needs to tell an activation or a deactivation apart, so the list lives in one spot.
- */
 export const BUILDER_ACTION_CATEGORIES: ReadonlyMap<string, ProposalCategory> = new Map([
   ['communityApproveBuilder', ProposalCategory.Activation],
   ['whitelistBuilder', ProposalCategory.Activation],
