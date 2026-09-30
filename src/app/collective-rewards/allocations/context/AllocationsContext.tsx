@@ -34,7 +34,7 @@ interface State {
   isAllocationTxPending: boolean
   getBuilder: (address: Address) => Builder | null
   isValidState: () => boolean
-  refetchRawAllocations: () => void
+  refetchAllocations: () => void
 }
 
 export interface AllocationsActions {
@@ -79,7 +79,7 @@ const DEFAULT_CONTEXT: AllocationsContext = {
     isAllocationTxPending: false,
     getBuilder: () => null,
     isValidState: () => false,
-    refetchRawAllocations: () => {},
+    refetchAllocations: () => {},
   },
   actions: {
     toggleSelectedBuilder: () => {},
@@ -267,7 +267,7 @@ export const AllocationsContextProvider = ({ children }: { children: ReactNode }
       isAllocationTxPending,
       getBuilder,
       isValidState,
-      refetchRawAllocations: refetchAllocations,
+      refetchAllocations,
     }
   }, [
     selections,

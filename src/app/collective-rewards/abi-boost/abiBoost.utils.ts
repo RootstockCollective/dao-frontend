@@ -64,12 +64,25 @@ export const formatAbiBoostAmount = (
 export const formatMissingAmount = (missingWei: bigint, symbol: string): string =>
   formatAbiBoostAmount(formatEther(missingWei), symbol, 'up')
 
-export type StakeBoostOutlook = 'eligible' | 'belowMinimum'
+export type StakeBoostOutlook =
+  | { kind: 'active' }
+  | { kind: 'eligible'; becomesEligible: boolean }
+  | { kind: 'belowMinimum'; missing: bigint }
 
+// Judged on the position the stake leaves behind: backing can only come from stRIF, so what counts is
+// the stRIF held after staking, not the amount typed
 export const getStakeBoostOutlook = (
+  position: AbiBoostPosition,
   amount: bigint,
   minBacking: bigint = ABI_BOOST.minBackingWei,
-): StakeBoostOutlook => (amount >= minBacking ? 'eligible' : 'belowMinimum')
+): StakeBoostOutlook => {
+  const status = getAbiBoostStatus(position, minBacking)
+  if (status === 'active') return { kind: 'active' }
+  if (position.stRifBalance + amount >= minBacking) {
+    return { kind: 'eligible', becomesEligible: status === 'notEligible' }
+  }
+  return { kind: 'belowMinimum', missing: getMissingForAbiBoost(position.stRifBalance, minBacking) }
+}
 
 export type AbiBoostGuidance =
   | { kind: 'active' }

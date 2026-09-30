@@ -118,15 +118,41 @@ describe('toWeiAmount', () => {
 })
 
 describe('getStakeBoostOutlook', () => {
-  it('judges the typed amount against the minimum, as the design does', () => {
-    expect(getStakeBoostOutlook(parseEther('10000'), MIN)).toBe('belowMinimum')
-    expect(getStakeBoostOutlook(MIN - 1n, MIN)).toBe('belowMinimum')
-    expect(getStakeBoostOutlook(MIN, MIN)).toBe('eligible')
-    expect(getStakeBoostOutlook(parseEther('150000'), MIN)).toBe('eligible')
+  const empty = { stRifBalance: 0n, backing: 0n }
+
+  it('judges the stRIF the stake leaves, not the amount typed', () => {
+    const holding60k = { stRifBalance: parseEther('60000'), backing: 0n }
+    expect(getStakeBoostOutlook(holding60k, parseEther('40000'), MIN)).toEqual({
+      kind: 'eligible',
+      becomesEligible: true,
+    })
+    expect(getStakeBoostOutlook(holding60k, parseEther('39999'), MIN)).toEqual({
+      kind: 'belowMinimum',
+      missing: parseEther('40000'),
+    })
   })
 
-  it('treats an empty amount as below the minimum', () => {
-    expect(getStakeBoostOutlook(0n, MIN)).toBe('belowMinimum')
+  it('asks a wallet with no stRIF for the whole minimum', () => {
+    expect(getStakeBoostOutlook(empty, parseEther('10000'), MIN)).toEqual({
+      kind: 'belowMinimum',
+      missing: MIN,
+    })
+    expect(getStakeBoostOutlook(empty, 0n, MIN)).toEqual({ kind: 'belowMinimum', missing: MIN })
+    expect(getStakeBoostOutlook(empty, MIN, MIN)).toEqual({ kind: 'eligible', becomesEligible: true })
+  })
+
+  it('does not treat a wallet that was already eligible as newly eligible', () => {
+    const eligible = { stRifBalance: MIN, backing: 0n }
+    expect(getStakeBoostOutlook(eligible, parseEther('10'), MIN)).toEqual({
+      kind: 'eligible',
+      becomesEligible: false,
+    })
+  })
+
+  it('reports a boost that is already running, whatever the amount', () => {
+    const active = { stRifBalance: MIN * 2n, backing: MIN }
+    expect(getStakeBoostOutlook(active, parseEther('10'), MIN)).toEqual({ kind: 'active' })
+    expect(getStakeBoostOutlook(active, MIN, MIN)).toEqual({ kind: 'active' })
   })
 })
 

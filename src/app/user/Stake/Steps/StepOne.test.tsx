@@ -5,12 +5,6 @@ import { StakingProvider } from '../StakingContext'
 import { StakingToken } from '../types'
 import { StepOne } from './StepOne'
 
-const mockShowsFiatAmounts = vi.fn<() => boolean>()
-
-vi.mock('@/app/collective-rewards/abi-boost/hooks/useAbiBoost', () => ({
-  useShowsFiatAmounts: () => mockShowsFiatAmounts(),
-}))
-
 vi.mock('@/app/collective-rewards/abi-boost/components/StakeBoost', () => ({
   StakeBoostNotice: () => null,
 }))
@@ -27,15 +21,9 @@ const renderStep = () =>
 afterEach(cleanup)
 
 describe('StepOne', () => {
-  it('shows the amount in USD without the boost flag', () => {
-    mockShowsFiatAmounts.mockReturnValue(true)
+  // The boost notice sits below the input; the USD figure stays whether or not the flag is on
+  it('shows the amount in USD', () => {
     renderStep()
     expect(screen.getByText('$0.00')).toBeDefined()
-  })
-
-  it('reads in RIF only with the boost flag', () => {
-    mockShowsFiatAmounts.mockReturnValue(false)
-    renderStep()
-    expect(screen.queryByText('$0.00')).toBeNull()
   })
 })

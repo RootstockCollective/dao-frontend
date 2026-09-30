@@ -58,7 +58,7 @@ describe('BoostEligibleModal', () => {
 
     expect(screen.getByText("You're eligible for the boost")).toBeDefined()
     expect(document.body.textContent).toContain(
-      "100,000 RIF is now stRIF. Back Builders with 100,000 stRIF or more and the +7.5% boost switches on for 12 months. It's tied to this deposit, so keep it backing to keep the rate.",
+      '100,000 RIF is now stRIF. Back Builders with 100,000 stRIF or more and the +7.5% boost switches on for 12 months. It keeps running for as long as your backing stays at or above the minimum.',
     )
     expect(screen.getByTestId('HowTheBoostWorks')).toBeDefined()
 
@@ -90,7 +90,7 @@ describe('BoostActivatedModal', () => {
 
     expect(screen.getByText('Congrats, this backing has a 7.5% boost')).toBeDefined()
     expect(document.body.textContent).toContain(
-      '101,800 stRIF is now split across 1 Builder. The boost runs for 12 months on this deposit, for as long as it keeps backing Builders.',
+      '101,800 stRIF is now backing Builders. The boost runs for 12 months, for as long as your backing stays at or above 100,000 stRIF.',
     )
     expect(screen.getByText('Money On Chain')).toBeDefined()
     expect(screen.queryByText('Boltz')).toBeNull()

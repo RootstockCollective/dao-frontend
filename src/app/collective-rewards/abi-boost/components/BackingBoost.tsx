@@ -1,11 +1,11 @@
-import { ReactNode, useState } from 'react'
+import { ReactNode } from 'react'
 
 import { formatSymbol } from '@/app/shared/formatter'
 import { NotificationBanner } from '@/app/user/StackingNotifications/components/NotificationBanner'
 import { Button } from '@/components/Button'
 import { InfoIconButton } from '@/components/IconButton/InfoIconButton'
 import { Header, Paragraph, Span } from '@/components/Typography'
-import { RIF, STRIF } from '@/lib/constants'
+import { STRIF } from '@/lib/constants'
 import { formatCountdownFromSeconds } from '@/lib/utils/formatCountdown'
 
 import { ABI_BOOST_LABELS, BOOST_WILL_STOP_LABEL, missingToBoostLabel } from '../abiBoost.labels'
@@ -20,12 +20,13 @@ import {
 import { useAbiBoostPosition, useGoToBackBuilders } from '../hooks/useAbiBoost'
 import { useBackedBuildersUnderDeactivationVote } from '../hooks/useBackedBuildersUnderDeactivationVote'
 import { BackingBoostChange, useBackingBoostChange } from '../hooks/useBackingBoostChange'
+import { useSessionDismissals } from '../hooks/useSessionDismissals'
 import { BoostedRate } from './AbiBoostRates'
 import { AbiBoostRow, AbiBoostStatusChip, BelowThresholdTag, BoostPill } from './AbiBoostTags'
 import { BOOSTED_RATE_INFO, HOW_THE_BOOST_WORKS_INFO } from './HowTheBoostWorks'
 import { withAbiBoostFlag } from './withAbiBoostFlag'
 
-const { boost, boostDelta, minBacking, minStake, term } = ABI_BOOST_LABELS
+const { boost, boostDelta, minBacking, term } = ABI_BOOST_LABELS
 
 const BANNER_COPY: Record<AbiBoostStatus, { title: string; description: string }> = {
   notEligible: {
@@ -45,9 +46,10 @@ const BANNER_COPY: Record<AbiBoostStatus, { title: string; description: string }
 const AbiBoostBannerContent = () => {
   const goToBackBuilders = useGoToBackBuilders()
   const { status, isReady } = useAbiBoostPosition()
-  const [isDismissed, setIsDismissed] = useState(false)
+  // Per status, so dismissing the eligible banner still lets the one announcing the boost through
+  const { isDismissed, dismiss } = useSessionDismissals('abi-boost-banner-dismissed')
 
-  if (!isReady || isDismissed) return null
+  if (!isReady || isDismissed(status)) return null
   const { title, description } = BANNER_COPY[status]
   return (
     <NotificationBanner
@@ -55,7 +57,7 @@ const AbiBoostBannerContent = () => {
       description={description}
       buttonText="Choose a Builder"
       buttonOnClick={goToBackBuilders}
-      onDismiss={() => setIsDismissed(true)}
+      onDismiss={() => dismiss(status)}
     />
   )
 }
@@ -65,10 +67,10 @@ export const AbiBoostBanner = withAbiBoostFlag(AbiBoostBannerContent)
 const DeactivationVoteBannersContent = () => {
   const goToBackBuilders = useGoToBackBuilders()
   const buildersUnderVote = useBackedBuildersUnderDeactivationVote()
-  const [dismissed, setDismissed] = useState<string[]>([])
+  const { isDismissed, dismiss } = useSessionDismissals('deactivation-vote-banners-dismissed')
 
   return buildersUnderVote
-    .filter(({ builder, proposalId }) => !dismissed.includes(`${proposalId}:${builder}`))
+    .filter(({ builder, proposalId }) => !isDismissed(`${proposalId}:${builder}`))
     .map(({ builder, builderName, proposalId, secondsLeft }) => (
       <NotificationBanner
         key={`${proposalId}:${builder}`}
@@ -76,7 +78,7 @@ const DeactivationVoteBannersContent = () => {
         description={`Voting ends in ${formatCountdownFromSeconds(secondsLeft)}. If it passes, backing this Builder stops earning. Reallocate before then to keep your rewards active.`}
         buttonText="Reallocate now"
         buttonOnClick={goToBackBuilders}
-        onDismiss={() => setDismissed(ids => [...ids, `${proposalId}:${builder}`])}
+        onDismiss={() => dismiss(`${proposalId}:${builder}`)}
       />
     ))
 }
@@ -105,7 +107,7 @@ const BoostedRateCardContent = () => {
       case 'backMore':
         return isBelowThreshold
           ? `Back ${formatMissingAmount(guidance.missing, STRIF)} more to reach the ${minBacking} minimum and switch the boost on.`
-          : `Your ${formatSymbol(stRifBalance, STRIF)} ${RIF} is staked but not backing. Back Builders with ${minBacking} or more and you'd earn ${boost} on this deposit.`
+          : `Your ${formatSymbol(stRifBalance, STRIF)} ${STRIF} is staked but not backing. Back Builders with ${minBacking} or more and you'd earn ${boostDelta} on top of the current ABI.`
       case 'stakeMore':
         return `Stake ${formatMissingAmount(guidance.missing, STRIF)} more and back Builders with ${minBacking} or more to earn ${boostDelta} on top of the current ABI.`
     }
@@ -154,10 +156,10 @@ const BoostedRateCardContent = () => {
           {term}
         </AbiBoostRow>
         <AbiBoostRow size="body-s" label="Minimum">
-          {minStake}
+          {minBacking}
         </AbiBoostRow>
         <AbiBoostRow size="body-s" label="Requirement">
-          The deposit must back a Builder
+          The minimum must be backing Builders
         </AbiBoostRow>
       </div>
     </section>

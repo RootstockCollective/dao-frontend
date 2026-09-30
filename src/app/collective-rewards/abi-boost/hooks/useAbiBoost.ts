@@ -14,8 +14,6 @@ export const useIsAbiBoostEnabled = (): boolean => {
   return !!flags.abi_boost
 }
 
-export const useShowsFiatAmounts = (): boolean => !useIsAbiBoostEnabled()
-
 export const BACK_BUILDERS_PATH = '/builders'
 
 export const useGoToBackBuilders = (): (() => void) => {

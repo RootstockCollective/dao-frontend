@@ -18,8 +18,11 @@ const k = (thousands: string) => parseEther(`${thousands}000`)
 
 const wrap = (onchainTotal: bigint, listedOnchain: bigint, listedEdited: bigint) => {
   const value = {
-    state: { allocations: { [LISTED]: listedEdited } },
-    initialState: { backer: { amountToAllocate: onchainTotal }, allocations: { [LISTED]: listedOnchain } },
+    state: { allocations: { [LISTED]: listedEdited }, backer: { cumulativeAllocation: listedEdited } },
+    initialState: {
+      backer: { amountToAllocate: onchainTotal, cumulativeAllocation: listedOnchain },
+      allocations: { [LISTED]: listedOnchain },
+    },
   } as unknown as ContextType<typeof AllocationsContext>
   const wrapper = ({ children }: { children: ReactNode }) => (
     <AllocationsContext.Provider value={value}>{children}</AllocationsContext.Provider>
@@ -52,13 +55,16 @@ describe('useIsBackingBoosted', () => {
     expect(isBoosted(k('150'), k('150'), k('150'))).toBe(true)
   })
 
-  it('is on as soon as an edit takes the backing over the minimum', () => {
-    expect(isBoosted(k('50'), k('50'), parseEther('101800'))).toBe(true)
+  it('ignores an unsaved edit that takes the backing over the minimum', () => {
+    expect(isBoosted(k('50'), k('50'), parseEther('101800'))).toBe(false)
   })
 
-  it('is off under the minimum, or when an edit drops the backing under it', () => {
+  it('stays on while an unsaved edit drops the backing under the minimum', () => {
+    expect(isBoosted(k('150'), k('150'), k('90'))).toBe(true)
+  })
+
+  it('is off under the minimum', () => {
     expect(isBoosted(k('50'), k('50'), k('50'))).toBe(false)
-    expect(isBoosted(k('150'), k('150'), k('90'))).toBe(false)
   })
 
   it('is off while the flag is off', () => {

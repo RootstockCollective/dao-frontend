@@ -1,4 +1,3 @@
-import { AbiWithBoost } from '@/app/collective-rewards/abi-boost/components/AbiWithBoost'
 import { AnnualBackerIncentivesLoader } from '@/app/shared/components/AnnualBackersIncentivesLoader'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
@@ -42,13 +41,7 @@ export const GlobalAnnualBackersIncentives = ({ className = 'pb-3 md:pb-6' }: { 
         >
           {/* Same line height as the value, so nothing jumps when it resolves */}
           <div className="flex min-h-10 items-center">
-            {isLoading ? (
-              <LoadingSpinner size="small" />
-            ) : (
-              <Header variant="h1">
-                <AbiWithBoost abi={abiPct}>{abiPct.toFixed(0)}%</AbiWithBoost>
-              </Header>
-            )}
+            {isLoading ? <LoadingSpinner size="small" /> : <Header variant="h1">{abiPct.toFixed(0)}%</Header>}
           </div>
         </Metric>
       )}

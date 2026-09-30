@@ -57,6 +57,7 @@ const position = (stRif: string, backing: string): AbiBoostPositionState => {
 beforeEach(() => {
   mockPush.mockReset()
   mockBuildersUnderVote.mockReturnValue([])
+  sessionStorage.clear()
 })
 
 afterEach(cleanup)
@@ -96,6 +97,20 @@ describe('AbiBoostBanner', () => {
 
     fireEvent.click(screen.getByTestId('DismissNotificationButton'))
     expect(screen.queryByTestId('NotificationBanner')).toBeNull()
+  })
+
+  it('stays dismissed when the page remounts, but still announces a boost that switches on', () => {
+    mockPosition.mockReturnValue(position('255000', '0'))
+    const { unmount } = render(<AbiBoostBanner />)
+    fireEvent.click(screen.getByTestId('DismissNotificationButton'))
+    unmount()
+
+    const { rerender } = render(<AbiBoostBanner />)
+    expect(screen.queryByTestId('NotificationBanner')).toBeNull()
+
+    mockPosition.mockReturnValue(position('255000', '150000'))
+    rerender(<AbiBoostBanner />)
+    expect(screen.getByText('Congrats, your 7.5% boost is active')).toBeDefined()
   })
 })
 
@@ -151,6 +166,17 @@ describe('DeactivationVoteBanners', () => {
     expect(screen.getByText('Steer is under a deactivation vote')).toBeDefined()
   })
 
+  it('keeps a dismissed warning away when the page remounts', () => {
+    mockBuildersUnderVote.mockReturnValue(underVote)
+    const { unmount } = render(<DeactivationVoteBanners />)
+    fireEvent.click(screen.getAllByTestId('DismissNotificationButton')[0])
+    unmount()
+
+    render(<DeactivationVoteBanners />)
+    expect(screen.queryByText('Beexo is under a deactivation vote')).toBeNull()
+    expect(screen.getByText('Steer is under a deactivation vote')).toBeDefined()
+  })
+
   it('renders nothing when no backed Builder is under a vote', () => {
     render(<DeactivationVoteBanners />)
     expect(screen.queryByTestId('NotificationBanner')).toBeNull()
@@ -177,7 +203,7 @@ describe('BoostedRateCard', () => {
 
     expect(screen.getByTestId('BoostedRateStatus').textContent).toBe('Eligible, not active')
     expect(screen.getByTestId('ParagraphBoostedRateMessage').textContent).toBe(
-      "Your 255,000 RIF is staked but not backing. Back Builders with 100,000 stRIF or more and you'd earn 7.5% on this deposit.",
+      "Your 255,000 stRIF is staked but not backing. Back Builders with 100,000 stRIF or more and you'd earn +7.5% on top of the current ABI.",
     )
     expect(screen.getByTestId('BoostedRateBackBuilder')).toBeDefined()
   })
@@ -189,8 +215,8 @@ describe('BoostedRateCard', () => {
     const card = screen.getByTestId('BoostedRateCard').textContent
     expect(screen.getByTestId('BoostedRateStatus').textContent).toBe('Active')
     expect(card).toContain('Term12 months')
-    expect(card).toContain('Minimum100,000 RIF')
-    expect(card).toContain('RequirementThe deposit must back a Builder')
+    expect(card).toContain('Minimum100,000 stRIF')
+    expect(card).toContain('RequirementThe minimum must be backing Builders')
     expect(screen.queryByTestId('BelowThresholdTag')).toBeNull()
   })
 

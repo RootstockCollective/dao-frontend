@@ -13,18 +13,21 @@ vi.mock('../hooks/useBackingBoostChange', () => ({
 
 afterEach(cleanup)
 
+const SUFFIX = <span> % (estimated)</span>
+
 describe('AbiWithBoost', () => {
-  it('adds the boost to the ABI the figure shows once the backing is boosted', () => {
+  it('adds the boost to the ABI the figure shows once the backing is boosted, keeping its suffix', () => {
     mockIsBoosted.mockReturnValue(true)
-    render(<AbiWithBoost abi={Big(9)}>9 % (estimated)</AbiWithBoost>)
+    const { container } = render(<AbiWithBoost abi={Big(9)} suffix={SUFFIX} />)
     // The backer's own 9% plus 7.5%, not the Collective's ABI plus 7.5%
-    expect(screen.getByTestId('AbiWithBoost').textContent).toBe('16.5%')
+    expect(screen.getByTestId('AbiWithBoost').textContent).toBe('16.5')
+    expect(container.textContent).toBe('16.5 % (estimated)')
   })
 
   it('shows the figure unchanged otherwise', () => {
     mockIsBoosted.mockReturnValue(false)
-    render(<AbiWithBoost abi={Big(9)}>9 % (estimated)</AbiWithBoost>)
-    expect(screen.getByText('9 % (estimated)')).toBeDefined()
+    const { container } = render(<AbiWithBoost abi={Big(9)} suffix={SUFFIX} />)
+    expect(container.textContent).toBe('9 % (estimated)')
     expect(screen.queryByTestId('AbiWithBoost')).toBeNull()
   })
 })

@@ -27,9 +27,13 @@ const k = (thousands: string) => parseEther(`${thousands}000`)
  */
 const contextValue = (onchain: bigint, edited: bigint, isAllocationTxPending = false) =>
   ({
-    state: { isAllocationTxPending, allocations: { [BUILDER]: edited } },
+    state: {
+      isAllocationTxPending,
+      allocations: { [BUILDER]: edited },
+      backer: { cumulativeAllocation: edited },
+    },
     initialState: {
-      backer: { amountToAllocate: onchain },
+      backer: { amountToAllocate: onchain, cumulativeAllocation: onchain },
       allocations: { [BUILDER]: onchain },
     },
   }) as unknown as AllocationsValue

@@ -108,8 +108,8 @@ export const BoostEligibleModal = ({ stakedAmount, onClose }: BoostEligibleModal
       description={
         <>
           {formatAbiBoostAmount(stakedAmount, RIF)} is now {STRIF}. Back Builders with {minBacking} or more
-          and the {boostDelta} boost switches on for {term}. It&apos;s tied to this deposit, so keep it
-          backing to keep the rate.
+          and the {boostDelta} boost switches on for {term}. It keeps running for as long as your backing
+          stays at or above the minimum.
         </>
       }
       onClose={onClose}
@@ -155,9 +155,9 @@ interface BoostActivatedModalProps {
 
 const BoostActivatedModalContent = ({ allocations, onClose }: BoostActivatedModalProps) => {
   const { getBuilderByAddress } = useBuilderContext()
+  // What the boost is measured on: the on-chain total, which can include Builders the rows no longer list
   const { current: total } = useBackingBoostChange()
   const backed = Object.entries(allocations).filter(([, amount]) => amount > 0n) as [Address, bigint][]
-  const builders = backed.length === 1 ? '1 Builder' : `${backed.length} Builders`
 
   return (
     <AbiBoostModalShell
@@ -166,8 +166,8 @@ const BoostActivatedModalContent = ({ allocations, onClose }: BoostActivatedModa
       title={`Congrats, this backing has a ${boost} boost`}
       description={
         <>
-          {formatSymbol(total, STRIF)} {STRIF} is now split across {builders}. The boost runs for {term} on
-          this deposit, for as long as it keeps backing Builders.
+          {formatSymbol(total, STRIF)} {STRIF} is now backing Builders. The boost runs for {term}, for as long
+          as your backing stays at or above {minBacking}.
         </>
       }
       onClose={onClose}

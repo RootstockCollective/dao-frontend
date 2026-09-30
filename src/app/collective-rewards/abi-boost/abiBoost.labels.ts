@@ -1,4 +1,4 @@
-import { RIF, STRIF } from '@/lib/constants'
+import { STRIF } from '@/lib/constants'
 
 import {
   ABI_BOOST,
@@ -13,7 +13,6 @@ export const ABI_BOOST_LABELS = {
   boostDelta: `+${formatAbiBoostPercentage()}`,
   term: formatAbiBoostTerm(),
   minBacking: formatAbiBoostAmount(ABI_BOOST.minBacking, STRIF),
-  minStake: formatAbiBoostAmount(ABI_BOOST.minBacking, RIF),
 } as const
 
 export const BELOW_THRESHOLD_LABEL = 'Below eligibility threshold, not earning boost'

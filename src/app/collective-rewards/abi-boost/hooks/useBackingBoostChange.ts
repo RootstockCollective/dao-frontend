@@ -1,12 +1,9 @@
 import { useContext, useMemo } from 'react'
 
-import { Allocations, AllocationsContext } from '@/app/collective-rewards/allocations/context'
+import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 
-import { getBackingBoostHint } from '../abiBoost.utils'
+import { ABI_BOOST } from '../abiBoost.utils'
 import { useIsAbiBoostEnabled } from './useAbiBoost'
-
-const sumAllocations = (allocations: Allocations): bigint =>
-  Object.values(allocations).reduce((total, allocation) => total + allocation, 0n)
 
 export interface BackingBoostChange {
   current: bigint
@@ -15,26 +12,24 @@ export interface BackingBoostChange {
 
 export const useBackingBoostChange = (): BackingBoostChange => {
   const {
-    state: { allocations },
+    state: {
+      backer: { cumulativeAllocation: editedTotal },
+    },
     initialState: {
-      allocations: initialAllocations,
-      backer: { amountToAllocate: onchainBacking },
+      backer: { amountToAllocate: onchainBacking, cumulativeAllocation: savedTotal },
     },
   } = useContext(AllocationsContext)
 
   // Edits only touch listed Builders, so they apply as a delta on the on-chain total, which counts all of them
   return useMemo(
-    () => ({
-      current: onchainBacking,
-      next: onchainBacking + sumAllocations(allocations) - sumAllocations(initialAllocations),
-    }),
-    [onchainBacking, allocations, initialAllocations],
+    () => ({ current: onchainBacking, next: onchainBacking + editedTotal - savedTotal }),
+    [onchainBacking, editedTotal, savedTotal],
   )
 }
 
-export const useIsBackingBoosted = (): boolean => {
+// Saved backing only: an edit changes nothing until it is saved, so the rate shown must not move with it
+export const useIsBackingBoosted = (minBacking: bigint = ABI_BOOST.minBackingWei): boolean => {
   const isAbiBoostEnabled = useIsAbiBoostEnabled()
-  const { current, next } = useBackingBoostChange()
-  const hint = getBackingBoostHint(current, next)
-  return isAbiBoostEnabled && (hint?.kind === 'active' || hint?.kind === 'willActivate')
+  const { current } = useBackingBoostChange()
+  return isAbiBoostEnabled && current >= minBacking
 }
