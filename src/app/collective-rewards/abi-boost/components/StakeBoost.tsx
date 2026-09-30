@@ -82,14 +82,14 @@ const StakeBoostNoticeContent = ({ amount }: { amount: string }) => {
         </Header>
       </div>
 
-      <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1">
+      {/* One line on desktop, as in the design: message, info and Buy RIF side by side */}
+      <div className="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 md:flex-nowrap">
         {isHighlighted && <Sparkles size={16} className="shrink-0 text-v3-primary" aria-hidden="true" />}
         {outlook && (
           <>
             <Span
               variant="body-s"
-              bold={isHighlighted}
-              className={cn(isHighlighted ? 'text-v3-primary' : 'text-text-60')}
+              className={cn('md:whitespace-nowrap', isHighlighted ? 'text-v3-primary' : 'text-text-60')}
               data-testid="StakeBoostMessage"
             >
               {outlookMessage(outlook)}
@@ -101,7 +101,7 @@ const StakeBoostNoticeContent = ({ amount }: { amount: string }) => {
           href={currentLinks.getRif}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 font-rootstock-sans text-sm underline underline-offset-4"
+          className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap font-rootstock-sans text-sm underline underline-offset-4"
         >
           Buy RIF
           <ExternalLinkIcon size={14} />

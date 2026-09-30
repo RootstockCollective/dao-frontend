@@ -6,7 +6,7 @@ import { Button } from '@/components/Button'
 import { InfoIconButton } from '@/components/IconButton/InfoIconButton'
 import { Header, Label, Paragraph, Span } from '@/components/Typography'
 import { STRIF } from '@/lib/constants'
-import { formatDuration } from '@/lib/utils/formatDuration'
+import { formatCountdownFromSeconds } from '@/lib/utils/formatCountdown'
 
 import { ABI_BOOST_LABELS, BOOST_WILL_STOP_LABEL, missingToBoostLabel } from '../abiBoost.labels'
 import {
@@ -78,8 +78,8 @@ const DeactivationVoteBannersContent = () => {
       <NotificationBanner
         key={`${proposalId}:${builder}`}
         title={`${builderName} is under a deactivation vote`}
-        // Same countdown format as the vote itself shows on the proposals screens
-        description={`Voting ends in ${formatDuration(secondsLeft)}. If it passes, backing this Builder stops earning. Reallocate before then to keep your rewards active.`}
+        // Same countdown as the cycle banner: `3d 04h 12m`
+        description={`Voting ends in ${formatCountdownFromSeconds(secondsLeft)}. If it passes, backing this Builder stops earning. Reallocate before then to keep your rewards active.`}
         buttonText="Reallocate now"
         buttonOnClick={goToBackBuilders}
         onDismiss={() => setDismissed(ids => [...ids, `${proposalId}:${builder}`])}
@@ -259,5 +259,23 @@ export const DrawerBoostSummaryView = ({ current, next }: BackingBoostChange) =>
 }
 
 const DrawerBoostSummaryContent = () => <DrawerBoostSummaryView {...useBackingBoostChange()} />
+
+/**
+ * Under an ABI figure: the rate the backing earns once it reaches the minimum, current ABI plus the
+ * boost, computed on render. Shows as soon as an edit crosses the minimum, before it is saved.
+ */
+export const BoostedAbiView = ({ current, next }: BackingBoostChange) => {
+  const hint = getBackingBoostHint(current, next)
+  if (hint?.kind !== 'active' && hint?.kind !== 'willActivate') return null
+  return (
+    <Span variant="body-s" className="whitespace-nowrap text-v3-primary" data-testid="BoostedAbi">
+      <BoostedRate /> with boost
+    </Span>
+  )
+}
+
+const BoostedAbiContent = () => <BoostedAbiView {...useBackingBoostChange()} />
+
+export const BoostedAbi = withAbiBoostFlag(BoostedAbiContent)
 
 export const DrawerBoostSummary = withAbiBoostFlag(DrawerBoostSummaryContent)

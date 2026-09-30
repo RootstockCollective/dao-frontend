@@ -14,6 +14,9 @@ export const useIsAbiBoostEnabled = (): boolean => {
   return !!flags.abi_boost
 }
 
+/** The boost flow shows amounts in RIF only, so fiat figures stay hidden while the flag is on. */
+export const useShowsFiatAmounts = (): boolean => !useIsAbiBoostEnabled()
+
 /** Where the app lets a backer pick Builders to back. */
 export const BACK_BUILDERS_PATH = '/builders'
 

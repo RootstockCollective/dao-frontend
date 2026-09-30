@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 
 import { StakeBoostNotice } from '@/app/collective-rewards/abi-boost/components/StakeBoost'
+import { useShowsFiatAmounts } from '@/app/collective-rewards/abi-boost/hooks/useAbiBoost'
 import { StakeInput } from '@/app/user/Stake/StakeInput'
 import { Button } from '@/components/Button'
 import { TokenImage } from '@/components/TokenImage'
@@ -15,6 +16,7 @@ import { StepProps } from '../types'
 export const StepOne = ({ onGoNext }: StepProps) => {
   const { amount, onAmountChange, tokenToSend, setButtonActions } = useStakingContext()
   const inputRef = useRef<HTMLInputElement>(null)
+  const showsFiatAmounts = useShowsFiatAmounts()
 
   useEffect(() => {
     // Focus the input when component mounts
@@ -65,7 +67,7 @@ export const StepOne = ({ onGoNext }: StepProps) => {
         value={amount}
         symbol={tokenToSend.symbol}
         labelText="Amount to stake"
-        currencyValue={balanceToCurrency}
+        currencyValue={showsFiatAmounts ? balanceToCurrency : undefined}
         errorText={
           isAmountOverBalance ? 'This is more than the available RIF balance. Please update the amount.' : ''
         }

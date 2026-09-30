@@ -12,6 +12,7 @@ import {
   BackingBoostHintView,
   BoostedRateCard,
   DeactivationVoteBanners,
+  BoostedAbiView,
   DrawerBoostSummaryView,
 } from './BackingBoost'
 
@@ -135,7 +136,7 @@ describe('DeactivationVoteBanners', () => {
     expect(screen.getByText('Beexo is under a deactivation vote')).toBeDefined()
     expect(screen.getByText('Steer is under a deactivation vote')).toBeDefined()
     expect(screen.getAllByTestId('NotificationDescription')[0].textContent).toBe(
-      'Voting ends in 3d 4h 0m. If it passes, backing this Builder stops earning. Reallocate before then to keep your rewards active.',
+      'Voting ends in 3d 04h 00m. If it passes, backing this Builder stops earning. Reallocate before then to keep your rewards active.',
     )
   })
 
@@ -236,5 +237,26 @@ describe('DrawerBoostSummary', () => {
       <DrawerBoostSummaryView current={parseEther('2951')} next={parseEther('2951')} />,
     )
     expect(container.innerHTML).toBe('')
+  })
+})
+
+describe('BoostedAbiView', () => {
+  it('shows the rate with boost, from the current ABI, once an edit crosses the minimum', () => {
+    render(<BoostedAbiView current={parseEther('50000')} next={parseEther('101800')} />)
+    expect(screen.getByTestId('BoostedAbi').textContent).toBe('12.5% with boost')
+  })
+
+  it('keeps showing it while the saved backing stays boosted', () => {
+    render(<BoostedAbiView current={parseEther('150000')} next={parseEther('150000')} />)
+    expect(screen.getByTestId('BoostedAbi').textContent).toBe('12.5% with boost')
+  })
+
+  it.each([
+    ['short of the minimum', '50000', '97300'],
+    ['dropping under the minimum', '150000', '90000'],
+    ['with no backing', '0', '0'],
+  ])('stays hidden %s', (_, current, next) => {
+    render(<BoostedAbiView current={parseEther(current)} next={parseEther(next)} />)
+    expect(screen.queryByTestId('BoostedAbi')).toBeNull()
   })
 })

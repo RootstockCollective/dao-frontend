@@ -5,7 +5,10 @@ import {
   StakeBoostEligibilityRow,
   useStakeBoostOutlook,
 } from '@/app/collective-rewards/abi-boost/components/StakeBoost'
-import { useIsAbiBoostEnabled } from '@/app/collective-rewards/abi-boost/hooks/useAbiBoost'
+import {
+  useIsAbiBoostEnabled,
+  useShowsFiatAmounts,
+} from '@/app/collective-rewards/abi-boost/hooks/useAbiBoost'
 import { useGetAddressBalances } from '@/app/user/Balances/hooks/useGetAddressBalances'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
@@ -31,6 +34,7 @@ export const StepThree = ({ onGoToStep, onCloseModal, onBoostEligible }: StepPro
   )
   const { refetchBalances } = useGetAddressBalances()
   const isAbiBoostEnabled = useIsAbiBoostEnabled()
+  const showsFiatAmounts = useShowsFiatAmounts()
   // Read before the stake lands, so the outcome compares against the balance it started from
   const boostOutlook = useStakeBoostOutlook(amount)
   const becomesBoostEligible = isAbiBoostEnabled && boostOutlook?.kind === 'eligible' && !!onBoostEligible
@@ -95,7 +99,7 @@ export const StepThree = ({ onGoToStep, onCloseModal, onBoostEligible }: StepPro
           label="From"
           amount={amount}
           tokenSymbol={from.tokenSymbol}
-          amountInCurrency={from.amountConvertedToCurrency}
+          amountInCurrency={showsFiatAmounts ? from.amountConvertedToCurrency : undefined}
           balance={from.balance}
         />
         <StakeTokenAmountDisplay

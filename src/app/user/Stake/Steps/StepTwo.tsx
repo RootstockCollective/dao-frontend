@@ -1,6 +1,7 @@
 import posthog from 'posthog-js'
 import { useCallback, useEffect, useRef } from 'react'
 
+import { useShowsFiatAmounts } from '@/app/collective-rewards/abi-boost/hooks/useAbiBoost'
 import { useStakingContext } from '@/app/user/Stake/StakingContext'
 import { StepProps } from '@/app/user/Stake/types'
 import { isUserRejectedTxError, txFailureProps } from '@/components/ErrorPage/commonErrors'
@@ -19,6 +20,7 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
     stakePreviewFrom: from,
     setButtonActions,
   } = useStakingContext()
+  const showsFiatAmounts = useShowsFiatAmounts()
   const {
     isAllowanceEnough,
     isAllowanceReadLoading,
@@ -98,7 +100,7 @@ export const StepTwo = ({ onGoNext, onGoBack }: StepProps) => {
           label="Allowance amount"
           amount={amount}
           tokenSymbol={tokenToSend.symbol}
-          amountInCurrency={from.amountConvertedToCurrency}
+          amountInCurrency={showsFiatAmounts ? from.amountConvertedToCurrency : undefined}
           isFlexEnd
         />
       </div>
