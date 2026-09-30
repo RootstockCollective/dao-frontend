@@ -1,7 +1,8 @@
-import Image from 'next/image'
 import { useMemo, useState } from 'react'
 
+import { useIsAbiBoostEnabled } from '@/app/collective-rewards/abi-boost/hooks/useAbiBoost'
 import { Divider } from '@/components/Divider'
+import { InfoLabel } from '@/components/InfoLabel'
 import { Modal } from '@/components/Modal'
 import { NewPopover } from '@/components/NewPopover'
 import { ProgressBar } from '@/components/ProgressBarNew'
@@ -18,12 +19,14 @@ import { stepConfig } from '../Steps/stepConfig'
 
 interface StepWrapperProps {
   onCloseModal: () => void
+  onBoostEligible?: (stakedAmount: string) => void
 }
 
-export const StepWrapper = ({ onCloseModal }: StepWrapperProps) => {
+export const StepWrapper = ({ onCloseModal, onBoostEligible }: StepWrapperProps) => {
   const isDesktop = useIsDesktop()
   const [helpPopoverOpen, setHelpPopoverOpen] = useState(false)
   const { buttonActions } = useStakingContext()
+  const isAbiBoostEnabled = useIsAbiBoostEnabled()
 
   // UI Logic: Handle step management internally
   const { step, ...stepFunctions } = useSteps(stepConfig.length)
@@ -32,7 +35,9 @@ export const StepWrapper = ({ onCloseModal }: StepWrapperProps) => {
   const stepConfigItem = useMemo(() => stepConfig[step], [step])
   const StepComponent = useMemo(() => stepConfigItem.component, [stepConfigItem.component])
 
-  const { progress, description } = stepConfigItem
+  const { progress } = stepConfigItem
+  const description = (isAbiBoostEnabled && stepConfigItem.boostDescription) || stepConfigItem.description
+  const showsHelp = isAbiBoostEnabled || step === 1
 
   return (
     <Modal onClose={onCloseModal} data-testid="StakeModal">
@@ -52,13 +57,13 @@ export const StepWrapper = ({ onCloseModal }: StepWrapperProps) => {
 
         {/* Content area */}
         <div className="flex-1">
-          <StepComponent {...stepFunctions} onCloseModal={onCloseModal} />
+          <StepComponent {...stepFunctions} onCloseModal={onCloseModal} onBoostEligible={onBoostEligible} />
         </div>
 
         {/* Footer with buttons */}
         <div className="mt-8">
           {/* Help Popover - above divider on mobile, left of buttons on desktop */}
-          {!isDesktop && step === 1 && (
+          {!isDesktop && showsHelp && (
             <HelpPopover open={helpPopoverOpen} onOpenChange={setHelpPopoverOpen} />
           )}
           <Divider />
@@ -66,7 +71,7 @@ export const StepWrapper = ({ onCloseModal }: StepWrapperProps) => {
             buttonActions={buttonActions}
             leftContent={
               isDesktop &&
-              step === 1 && <HelpPopover open={helpPopoverOpen} onOpenChange={setHelpPopoverOpen} />
+              showsHelp && <HelpPopover open={helpPopoverOpen} onOpenChange={setHelpPopoverOpen} />
             }
           />
         </div>
@@ -96,8 +101,7 @@ const HelpPopover = ({ open, onOpenChange }: HelpPopoverProps) => {
             onOpenChange(!open)
           }}
         >
-          <Image src="/images/info-icon-sm.svg" alt="info" width={20} height={20} />
-          <Span variant="tag-s">Help, I don&apos;t understand</Span>
+          <InfoLabel>Help, I don&apos;t understand</InfoLabel>
         </a>
       }
       content={<HelpPopoverContent />}

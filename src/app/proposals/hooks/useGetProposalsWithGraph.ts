@@ -42,7 +42,9 @@ function proposalStateToRawState(proposalState: string): number {
   return toProposalState(proposalState)
 }
 
-async function fetchProposalsFromAPI(): Promise<ProposalApiResponse[]> {
+export const PROPOSALS_QUERY_KEY = ['proposals'] as const
+
+export async function fetchProposalsFromAPI(): Promise<ProposalApiResponse[]> {
   const response = await fetch('/api/proposals/v1')
   if (!response.ok) {
     throw new Error(`Failed to fetch proposals: ${response.statusText}`)
@@ -194,7 +196,7 @@ export function useGetProposalsWithGraph() {
     error: proposalsDataError,
   } = useQuery({
     queryFn: fetchProposalsFromAPI,
-    queryKey: ['proposals'],
+    queryKey: PROPOSALS_QUERY_KEY,
     refetchInterval: AVERAGE_BLOCKTIME,
   })
 

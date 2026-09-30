@@ -1,5 +1,6 @@
 import { useContext, useMemo } from 'react'
 
+import { BackingBoostHint } from '@/app/collective-rewards/abi-boost/components/BackingBoost'
 import { AllocationsContext } from '@/app/collective-rewards/allocations/context'
 import { formatSymbol } from '@/app/shared/formatter'
 import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
@@ -61,14 +62,18 @@ export const TotalBackingDisplay = ({
 
   return (
     <div className="flex flex-col md:flex-row items-start basis-1/2 gap-6">
-      <TokenAmountDisplay
-        label={label}
-        amount={formatSymbol(cumulativeAllocation, STRIF)}
-        tokenSymbol={STRIF}
-        status={status}
-        amountInCurrency={amountInCurrency}
-        isFlexEnd
-      />
+      {/* flex-1 keeps the growth TokenAmountDisplay has when it sits directly in the row */}
+      <div className="flex flex-1 flex-col gap-2">
+        <TokenAmountDisplay
+          label={label}
+          amount={formatSymbol(cumulativeAllocation, STRIF)}
+          tokenSymbol={STRIF}
+          status={status}
+          amountInCurrency={amountInCurrency}
+          isFlexEnd
+        />
+        <BackingBoostHint />
+      </div>
       {hasAllocations && (
         <div className="basis-1/2">
           <BackerAnnualBackersIncentives />

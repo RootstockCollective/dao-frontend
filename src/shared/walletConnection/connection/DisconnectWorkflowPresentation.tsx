@@ -1,6 +1,8 @@
 import { useAppKit } from '@reown/appkit/react'
 import { useState } from 'react'
 
+import { withAbiBoostFlag } from '@/app/collective-rewards/abi-boost/components/withAbiBoostFlag'
+import { StakingFlow } from '@/app/user/Stake'
 import { Button } from '@/components/Button'
 import { CopyButton } from '@/components/CopyButton'
 import { AccountAddress } from '@/components/Header'
@@ -10,6 +12,7 @@ import { NewPopover } from '@/components/NewPopover'
 import { Tooltip } from '@/components/Tooltip'
 import { Span } from '@/components/Typography'
 import { useIsSocialLogin } from '@/shared/hooks/useIsSocialLogin'
+import { useModal } from '@/shared/hooks/useModal'
 import { DisconnectButton } from '@/shared/walletConnection'
 import { onRampDisclaimerText } from '@/shared/walletConnection/constants'
 
@@ -43,6 +46,7 @@ export const DisconnectWorkflowPresentation = ({
         <div className="hidden md:inline">
           <WalletDetailsButton />
         </div>
+        <HeaderStakeButton />
         <Tooltip
           text={onRampDisclaimerText}
           sideOffset={8}
@@ -129,6 +133,26 @@ const PopoverDisconnectContentContainer = ({
     <DisconnectButton onClick={onDisconnectClick} />
   </div>
 )
+
+const HeaderStakeButtonContent = () => {
+  const stakeModal = useModal()
+
+  return (
+    <>
+      <Button
+        variant="secondary-outline"
+        onClick={stakeModal.openModal}
+        className="hidden md:inline-flex md:mr-4 py-1.5 px-2 whitespace-nowrap shrink-0 border-v3-primary/70"
+        data-testid="HeaderStakeButton"
+      >
+        <Span>Stake RIF</Span>
+      </Button>
+      {stakeModal.isModalOpened && <StakingFlow onCloseModal={stakeModal.closeModal} />}
+    </>
+  )
+}
+
+const HeaderStakeButton = withAbiBoostFlag(HeaderStakeButtonContent)
 
 const WalletDetailsButton = () => {
   const { open } = useAppKit()

@@ -15,7 +15,7 @@ export const useAllocateVotes = () => {
 
   const {
     initialState: { allocations: initialAllocations },
-    state: { allocations, getBuilder, isValidState, refetchRawAllocations },
+    state: { allocations, getBuilder, isValidState, refetchAllocations },
     actions: { setIsAllocationTxPending },
   } = useContext(AllocationsContext)
 
@@ -33,9 +33,9 @@ export const useAllocateVotes = () => {
   // Trigger data refresh after successful transaction
   useEffect(() => {
     if (isSuccess) {
-      refetchRawAllocations()
+      refetchAllocations()
     }
-  }, [isSuccess, refetchRawAllocations])
+  }, [isSuccess, refetchAllocations])
 
   const lastCapturedErrorRef = useRef<unknown>(null)
   useEffect(() => {

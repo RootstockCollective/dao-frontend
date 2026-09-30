@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 
+import { StakeBoostNotice } from '@/app/collective-rewards/abi-boost/components/StakeBoost'
 import { StakeInput } from '@/app/user/Stake/StakeInput'
 import { Button } from '@/components/Button'
 import { TokenImage } from '@/components/TokenImage'
@@ -86,6 +87,8 @@ export const StepOne = ({ onGoNext }: StepProps) => {
           <Span variant="body-s">Max</Span>
         </Button>
       </div>
+
+      <StakeBoostNotice amount={amount} />
     </>
   )
 }

@@ -1,6 +1,7 @@
 import { type Address } from 'viem'
 
 import { Feature } from '@/config/features.conf'
+import { positiveNumberOr } from '@/lib/utils/env'
 
 export const GITHUB_ORG = 'RootstockCollective'
 
@@ -143,6 +144,7 @@ const FEATURE_FLAGS: Record<Feature, string> = {
   sentry_error_tracking: process.env.NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_ERROR_TRACKING ?? '',
   sentry_replay: process.env.NEXT_PUBLIC_ENABLE_FEATURE_SENTRY_REPLAY ?? '',
   cultivator: process.env.NEXT_PUBLIC_ENABLE_FEATURE_CULTIVATOR ?? '',
+  abi_boost: process.env.NEXT_PUBLIC_ENABLE_FEATURE_ABI_BOOST ?? '',
 }
 
 export const getFeatureEnvFlags = (): Record<Feature, string> => FEATURE_FLAGS
@@ -182,3 +184,20 @@ export const PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD = Number(
 )
 
 export const ABI_CYCLES_LIMIT = 12
+
+const DEFAULT_ABI_BOOST_MIN_BACKING = 100_000
+const DEFAULT_ABI_BOOST_PERCENTAGE = 7.5
+const DEFAULT_ABI_BOOST_TERM_MONTHS = 12
+
+export const ABI_BOOST_MIN_BACKING = positiveNumberOr(
+  process.env.NEXT_PUBLIC_ABI_BOOST_MIN_BACKING,
+  DEFAULT_ABI_BOOST_MIN_BACKING,
+)
+export const ABI_BOOST_PERCENTAGE = positiveNumberOr(
+  process.env.NEXT_PUBLIC_ABI_BOOST_PERCENTAGE,
+  DEFAULT_ABI_BOOST_PERCENTAGE,
+)
+export const ABI_BOOST_TERM_MONTHS = positiveNumberOr(
+  process.env.NEXT_PUBLIC_ABI_BOOST_TERM_MONTHS,
+  DEFAULT_ABI_BOOST_TERM_MONTHS,
+)

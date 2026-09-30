@@ -313,6 +313,15 @@ export const parseProposalDescription = (description: string): ParsedDescription
   }
 }
 
+export const BUILDER_ACTION_CATEGORIES: ReadonlyMap<string, ProposalCategory> = new Map([
+  ['communityApproveBuilder', ProposalCategory.Activation],
+  ['whitelistBuilder', ProposalCategory.Activation],
+  ['communityBanBuilder', ProposalCategory.Deactivation],
+  ['removeWhitelistedBuilder', ProposalCategory.Deactivation],
+  ['dewhitelistBuilder', ProposalCategory.Deactivation],
+  ['revokeBuilderKYC', ProposalCategory.Deactivation],
+])
+
 /**
  * Extracts proposal category from parsed calldata and description
  * @param calldatasParsed - Array of decoded calldata
@@ -328,19 +337,9 @@ export function getProposalCategoryFromParsedData(
     .filter(data => data.type === 'decoded')
     .map(data => data.functionName)
 
-  // Map function names to their categories
-  const functionCategoryMap = new Map<string, ProposalCategory>([
-    ['communityApproveBuilder', ProposalCategory.Activation],
-    ['whitelistBuilder', ProposalCategory.Activation],
-    ['communityBanBuilder', ProposalCategory.Deactivation],
-    ['removeWhitelistedBuilder', ProposalCategory.Deactivation],
-    ['dewhitelistBuilder', ProposalCategory.Deactivation],
-    ['revokeBuilderKYC', ProposalCategory.Deactivation],
-  ])
-
   // Check for builder functions first
   for (const functionName of decodedFunctionNames) {
-    const category = functionCategoryMap.get(functionName)
+    const category = BUILDER_ACTION_CATEGORIES.get(functionName)
     if (category) {
       return category
     }

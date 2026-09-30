@@ -34,7 +34,7 @@ interface State {
   isAllocationTxPending: boolean
   getBuilder: (address: Address) => Builder | null
   isValidState: () => boolean
-  refetchRawAllocations: () => void
+  refetchAllocations: () => void
 }
 
 export interface AllocationsActions {
@@ -79,7 +79,7 @@ const DEFAULT_CONTEXT: AllocationsContext = {
     isAllocationTxPending: false,
     getBuilder: () => null,
     isValidState: () => false,
-    refetchRawAllocations: () => {},
+    refetchAllocations: () => {},
   },
   actions: {
     toggleSelectedBuilder: () => {},
@@ -142,6 +142,7 @@ export const AllocationsContextProvider = ({ children }: { children: ReactNode }
 
   const {
     data: totalOnchainAllocation,
+    refetch: refetchTotalOnchainAllocation,
     isLoading: isTotalAllocationLoading,
     error: totalAllocationError,
   } = useReadBackersManager(
@@ -154,6 +155,12 @@ export const AllocationsContextProvider = ({ children }: { children: ReactNode }
       enabled: !!backerAddress,
     },
   )
+
+  // The on-chain total is a separate read; without this it keeps the pre-save figure until the next poll
+  const refetchAllocations = useCallback(() => {
+    refetchRawAllocations()
+    refetchTotalOnchainAllocation()
+  }, [refetchRawAllocations, refetchTotalOnchainAllocation])
 
   /**
    * Reactive state updates
@@ -260,7 +267,7 @@ export const AllocationsContextProvider = ({ children }: { children: ReactNode }
       isAllocationTxPending,
       getBuilder,
       isValidState,
-      refetchRawAllocations,
+      refetchAllocations,
     }
   }, [
     selections,
@@ -272,7 +279,7 @@ export const AllocationsContextProvider = ({ children }: { children: ReactNode }
     getBuilder,
     isValidState,
     resetVersion,
-    refetchRawAllocations,
+    refetchAllocations,
   ])
 
   const actions: AllocationsActions = useMemo(
