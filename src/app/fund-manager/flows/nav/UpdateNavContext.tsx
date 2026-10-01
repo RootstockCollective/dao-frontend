@@ -54,7 +54,7 @@ export const UpdateNavProvider = ({ children }: Props) => {
     totalPendingDepositAssets,
     totalRedeemRequiredAssets,
     totalRedeemPaidAssets,
-    reportedOffchainAssets: currentReportedOffchainAssets,
+    reportedOffchainAssets,
     isLoading: isVaultLoading,
     refetchVault,
   } = useRbtcVault()
@@ -76,10 +76,12 @@ export const UpdateNavProvider = ({ children }: Props) => {
 
   const currentNav = useMemo(() => formatMetrics(totalAssets, rbtcPrice, RBTC), [totalAssets, rbtcPrice])
 
-  const currentReportedOffchain = useMemo(
-    () => formatMetrics(currentReportedOffchainAssets, rbtcPrice, RBTC),
-    [currentReportedOffchainAssets, rbtcPrice],
-  )
+  const currentReportedOffchain = useMemo((): ReturnType<typeof formatMetrics> => {
+    if (reportedOffchainAssets === null) {
+      return { amount: '—', fiatAmount: '' }
+    }
+    return formatMetrics(reportedOffchainAssets, rbtcPrice, RBTC)
+  }, [reportedOffchainAssets, rbtcPrice])
 
   const liabilities = useMemo(
     () => outstandingRedeems + totalPendingDepositAssets + bufferDebt,
@@ -95,6 +97,18 @@ export const UpdateNavProvider = ({ children }: Props) => {
         navUpdateReview: null,
       }
     }
+
+    if (reportedOffchainAssets === null) {
+      return {
+        isValidAmount: false,
+        errorMessage:
+          'Could not load current reported off-chain assets. Please try again or refresh the page.',
+        reportedOffchainWei: null,
+        navUpdateReview: null,
+      }
+    }
+
+    const currentReportedOffchainAssets = reportedOffchainAssets
 
     try {
       const reportedWei = parseEther(reportedOffchainAmount)
@@ -151,22 +165,17 @@ export const UpdateNavProvider = ({ children }: Props) => {
         navUpdateReview: null,
       }
     }
-  }, [
-    reportedOffchainAmount,
-    rbtcPrice,
-    vaultAssetBalance,
-    liabilities,
-    totalAssets,
-    currentReportedOffchainAssets,
-  ])
+  }, [reportedOffchainAmount, rbtcPrice, vaultAssetBalance, liabilities, totalAssets, reportedOffchainAssets])
 
   const reportedOffchainWarnings = useMemo(() => {
-    if (reportedOffchainWei === null || navUpdateReview === null) return []
+    if (reportedOffchainWei === null || navUpdateReview === null || reportedOffchainAssets === null) {
+      return []
+    }
     return reportedOffchainWarningMessages({
       reportedWei: reportedOffchainWei,
-      currentReportedWei: currentReportedOffchainAssets,
+      currentReportedWei: reportedOffchainAssets,
       currentTotalAssetsWei: totalAssets,
-      isFirstNonZeroReport: currentReportedOffchainAssets === 0n && reportedOffchainWei > 0n,
+      isFirstNonZeroReport: reportedOffchainAssets === 0n && reportedOffchainWei > 0n,
       fmt: {
         navBefore: navUpdateReview.navBeforeDisplay,
         navAfter: navUpdateReview.navAfterDisplay,
@@ -178,7 +187,7 @@ export const UpdateNavProvider = ({ children }: Props) => {
         pctNewReportedOfNavBefore: navUpdateReview.reportedPctOfNavBeforeDisplay,
       },
     })
-  }, [reportedOffchainWei, navUpdateReview, currentReportedOffchainAssets, totalAssets])
+  }, [reportedOffchainWei, navUpdateReview, reportedOffchainAssets, totalAssets])
 
   const vaultReadsLoading = isVaultLoading || isBufferLoading
 

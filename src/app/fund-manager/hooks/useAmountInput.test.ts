@@ -1,5 +1,6 @@
 import { act, renderHook } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { parseUnits } from 'viem'
 
 import { useAmountInput } from './useAmountInput'
 
@@ -125,6 +126,18 @@ describe('useAmountInput', () => {
         result.current.handlePercentageClick(1)
       })
       expect(result.current.amount).toBe('2')
+    })
+
+    it('handlePercentageClick does not produce >18 decimal places (tiny balance × %)', () => {
+      // 11 wei × 10% yields a value that needs truncation to fit parseUnits(..., 18)
+      const { result } = renderHook(() => useAmountInput({ balance: 11n, isNative: false }))
+      act(() => {
+        result.current.handlePercentageClick(0.1)
+      })
+      const { amount } = result.current
+      const fractional = amount.split('.')[1] ?? ''
+      expect(fractional.length).toBeLessThanOrEqual(18)
+      expect(() => parseUnits(amount, 18)).not.toThrow()
     })
   })
 

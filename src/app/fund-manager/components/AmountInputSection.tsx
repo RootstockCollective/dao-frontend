@@ -18,6 +18,8 @@ interface Props {
   tokenSymbol: string
   onAmountChange: (value: string) => void
   onPercentageClick: (percentage: number) => void
+  /** Formatted token amount; shown in the title row as "Max: …" when set. */
+  maxDepositableFormatted?: string
   usdEquivalent?: string
   errorMessage?: string
   tokenSelector?: ReactNode
@@ -34,6 +36,7 @@ export const AmountInputSection = ({
   tokenSymbol,
   onAmountChange,
   onPercentageClick,
+  maxDepositableFormatted,
   usdEquivalent,
   errorMessage,
   tokenSelector,
@@ -48,7 +51,18 @@ export const AmountInputSection = ({
   return (
     <div data-testid="AmountInputSection">
       <div className="flex flex-col py-3 px-4 rounded w-full bg-bg-60">
-        <Label className="mb-3">{title}</Label>
+        <div className="flex justify-between items-start gap-2 mb-3">
+          <Label>{title}</Label>
+          {maxDepositableFormatted !== undefined && maxDepositableFormatted !== '' && (
+            <Label
+              variant="body-s"
+              className="text-text-60 shrink-0 text-right"
+              data-testid="MaxDepositableLabel"
+            >
+              Max: {maxDepositableFormatted} {tokenSymbol}
+            </Label>
+          )}
+        </div>
         <div className="flex gap-2">
           <Input
             ref={inputRef}
