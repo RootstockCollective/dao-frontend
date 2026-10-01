@@ -5,27 +5,6 @@ import { currentLinks } from '@/lib/links'
 
 import { BannerConfigMap } from './types'
 
-const COINS_BANNER = '/images/notification-back.webp'
-
-export interface StackArtwork {
-  readonly backgroundSrc?: string
-  readonly backgroundPosition?: string
-  readonly scrim?: string
-}
-
-export const STACK_ARTWORK: ReadonlyArray<StackArtwork> = [
-  {},
-  {
-    backgroundSrc: COINS_BANNER,
-    // Keeps the stacked coins in frame rather than the empty table to their right.
-    backgroundPosition: '70% 50%',
-  },
-]
-
-/** Artwork for the card at `position` in the stack, cycling through STACK_ARTWORK. */
-export const getStackArtwork = (position: number): StackArtwork =>
-  STACK_ARTWORK[position % STACK_ARTWORK.length]
-
 // Static token images - created once outside component to avoid re-renders.
 // Sized to the 14px notification titles they sit in.
 const rbtcImage = <TokenImage symbol={RBTC} size={16} className="inline-block align-[-3px]" />

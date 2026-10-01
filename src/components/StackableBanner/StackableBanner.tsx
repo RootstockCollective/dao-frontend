@@ -1,6 +1,5 @@
 import { type ReactElement, type ReactNode } from 'react'
 
-import { DecorativeSquares } from '@/app/backing/components/DecorativeSquares'
 import { CommonComponentProps } from '@/components/commonProps'
 import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
@@ -12,10 +11,6 @@ interface StackableBannerProps extends CommonComponentProps {
   mobileBackground?: string
   /** Gap between sections (e.g. "gap-2" for 8px). When set, section wrappers use no vertical padding. */
   contentGap?: string
-  /** Main debris color (e.g. cream for BTC Vault card). */
-  decorativeImageColor?: string
-  /** Secondary debris color for the dark square (e.g. #171412 to match dark background). */
-  decorativeSecondaryColor?: string
   testId?: string
 }
 
@@ -25,8 +20,6 @@ export const StackableBanner = ({
   background = 'linear-gradient(270deg, #442351 0%, #C0F7FF 49.49%, #E3FFEB 139.64%)',
   mobileBackground,
   contentGap,
-  decorativeImageColor = '#d2fbf6',
-  decorativeSecondaryColor,
   testId = 'StackableBanner',
 }: StackableBannerProps) => {
   // Flatten to array and filter out null/undefined so we don't render empty slots or extra dividers
@@ -47,12 +40,6 @@ export const StackableBanner = ({
       }}
       data-testid={testId}
     >
-      <DecorativeSquares
-        className="absolute left-0 top-[-30px] z-base"
-        color={decorativeImageColor}
-        {...(decorativeSecondaryColor != null && { secondaryColor: decorativeSecondaryColor })}
-      />
-
       <div
         className={cn(
           'relative flex flex-col items-start text-v3-text-0',

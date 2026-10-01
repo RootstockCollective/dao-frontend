@@ -6,8 +6,6 @@ import { Button } from '@/components/Button'
 import { CommonComponentProps } from '@/components/commonProps'
 import { PageBanner } from '@/components/PageBanner'
 
-const BANNER_IMAGE_SRC = '/images/builders-banner-bg.webp'
-
 export const BuildersBanner = ({ className }: CommonComponentProps) => {
   const router = useRouter()
 
@@ -15,7 +13,6 @@ export const BuildersBanner = ({ className }: CommonComponentProps) => {
     <PageBanner
       dataTestId="BuildersBanner"
       dismissible
-      imageSrc={BANNER_IMAGE_SRC}
       eyebrow="Build on Rootstock"
       title="Builders"
       description="Join a growing network of innovators building the future of decentralised infrastructure."

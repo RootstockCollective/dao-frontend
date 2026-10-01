@@ -1,15 +1,12 @@
 'use client'
 
-import Image from 'next/image'
-
 import { AccentSquare } from '@/components/AccentSquare'
 import { CommonComponentProps } from '@/components/commonProps'
+import { MoltenBackground } from '@/components/MoltenBackground'
 import { PersistedCollapsible } from '@/components/PersistedCollapsible'
 import { Header, Paragraph } from '@/components/Typography'
 
 export const WHY_BECOME_A_BUILDER_STORAGE_KEY = 'builders-why-become-open'
-
-const ILLUSTRATION_SRC = '/images/why-become-a-builder.webp'
 
 const PERKS = [
   {
@@ -43,14 +40,7 @@ export const WhyBecomeABuilder = ({ className }: CommonComponentProps) => (
     }
   >
     <div className="relative h-[200px] w-full shrink-0 overflow-hidden rounded-sm lg:h-[260px] lg:w-[300px]">
-      <Image
-        src={ILLUSTRATION_SRC}
-        alt=""
-        aria-hidden="true"
-        fill
-        sizes="(min-width: 1024px) 300px, 100vw"
-        className="object-cover"
-      />
+      <MoltenBackground tone="dark" animated={false} />
     </div>
 
     <ul className="grid flex-1 list-none grid-cols-1 gap-x-10 gap-y-6 md:grid-cols-3">

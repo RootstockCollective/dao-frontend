@@ -6,6 +6,7 @@ import { TotalBackingLoader } from '@/app/collective-rewards/components/TotalBac
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { AnnualBackersIncentives } from '@/app/shared/components/AnnualBackersIncentives'
 import { ActionMetricsContainer, ActionsContainer } from '@/components/containers'
+import { PageBanner } from '@/components/PageBanner'
 import { Header } from '@/components/Typography'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
@@ -17,10 +18,8 @@ const NAME = 'Collective Rewards'
 export const CollectiveRewardsPage = () => {
   const isDesktop = useIsDesktop()
   return (
-    <div className="flex flex-col">
-      <Header caps variant="h1" className="text-3xl leading-10 pb-[2.5rem]">
-        {NAME}
-      </Header>
+    <div className="flex flex-col gap-2">
+      <PageBanner dataTestId="CollectiveRewardsBanner" dismissible title={NAME} />
 
       <div className="flex flex-col gap-2">
         <ActionMetricsContainer className="flex flex-row gap-2 bg-v3-bg-accent-80">

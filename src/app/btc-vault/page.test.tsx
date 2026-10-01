@@ -66,10 +66,6 @@ vi.mock('@/shared/hooks/useIsDesktop', () => ({
   useIsDesktop: () => true,
 }))
 
-vi.mock('@/app/backing/components/DecorativeSquares', () => ({
-  DecorativeSquares: () => null,
-}))
-
 vi.mock('./components/capital-allocation/CapitalAllocationSection', () => ({
   CapitalAllocationSection: () => null,
 }))
@@ -103,7 +99,7 @@ describe('BtcVault page', () => {
         redirectTo: '/',
       }),
     )
-  },10000)
+  }, 10000)
 
   it('renders BtcVaultPage when feature flag is enabled', async () => {
     const Page = (await import('./page')).default

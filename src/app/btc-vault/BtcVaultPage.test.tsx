@@ -70,10 +70,6 @@ vi.mock('@/shared/context', () => ({
   usePricesContext: () => ({ prices: {} }),
 }))
 
-vi.mock('@/app/backing/components/DecorativeSquares', () => ({
-  DecorativeSquares: () => null,
-}))
-
 vi.mock('@/components/Countdown/Countdown', () => ({
   Countdown: () => <span data-testid="countdown">5d 23h 59m</span>,
 }))
@@ -144,9 +140,7 @@ vi.mock('./hooks/useEpochState', () => ({
 }))
 
 vi.mock('./components/BtcVaultEligibilityAndDepositCard', () => ({
-  BtcVaultEligibilityAndDepositCard: () => (
-    <div data-testid="btc-vault-eligibility-and-deposit-card" />
-  ),
+  BtcVaultEligibilityAndDepositCard: () => <div data-testid="btc-vault-eligibility-and-deposit-card" />,
 }))
 
 function Wrapper({ children }: { children: ReactNode }) {

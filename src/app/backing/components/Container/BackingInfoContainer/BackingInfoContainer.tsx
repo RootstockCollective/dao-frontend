@@ -12,7 +12,7 @@ export const BackingInfoContainer = ({ className = '', title, children }: Backin
     <div className={cn('relative flex w-full flex-col bg-v3-bg-accent-80 rounded p-4 md:p-6', className)}>
       <div className="flex flex-1 flex-col gap-6">
         {title}
-        {/* Grows so the banner artwork fills the card instead of leaving a gap when collapsed */}
+        {/* Grows so the banner artwork fills the card instead of leaving a gap under it */}
         <div className="flex flex-1 flex-col">{children}</div>
       </div>
     </div>

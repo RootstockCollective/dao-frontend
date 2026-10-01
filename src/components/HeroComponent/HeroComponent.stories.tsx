@@ -20,7 +20,7 @@ type Story = StoryObj<typeof HeroComponent>
 
 export const Delegation: Story = {
   args: {
-    imageSrc: '/images/hero/delegation-banner.png',
+    imageSrc: '/images/hero/delegation-banner.webp',
     title: 'Delegate your voting power',
     subtitle: 'to influence what gets built',
     items: [
@@ -36,7 +36,7 @@ export const Delegation: Story = {
 /* eslint-disable quotes */
 export const Proposal: Story = {
   args: {
-    imageSrc: '/images/hero/proposals-banner.png',
+    imageSrc: '/images/hero/proposals-banner.webp',
     title: 'Propose a Project,',
     subtitle: 'Get support to build it',
     items: [

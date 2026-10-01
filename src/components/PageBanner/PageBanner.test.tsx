@@ -3,8 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 
 import { PageBanner } from './PageBanner'
 
-const renderBanner = (props = {}) =>
-  render(<PageBanner dismissible title="Treasury" imageSrc="/images/test.webp" {...props} />)
+const renderBanner = (props = {}) => render(<PageBanner dismissible title="Treasury" {...props} />)
 
 describe('PageBanner', () => {
   afterEach(cleanup)
@@ -47,7 +46,7 @@ describe('PageBanner', () => {
   })
 
   it('renders no dismiss button when it is not dismissible', () => {
-    render(<PageBanner title="Holdings" imageSrc="/images/test.webp" />)
+    render(<PageBanner title="Holdings" />)
 
     expect(screen.getByText('Holdings')).toBeInTheDocument()
     expect(screen.queryByTestId('DismissBannerButton')).not.toBeInTheDocument()

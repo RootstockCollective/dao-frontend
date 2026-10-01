@@ -1,5 +1,7 @@
 'use client'
 
+import { PageBanner } from '@/components/PageBanner'
+
 import { StrategiesInfo } from './components/StrategiesInfo'
 import { VaultDisclaimer } from './components/VaultDisclaimer'
 import { VaultMetricsContainer } from './components/VaultMetricsContainer'
@@ -14,6 +16,7 @@ export const VaultPage = () => {
         data-testid={NAME}
         className="flex flex-col items-start w-full h-full pt-[0.13rem] md:gap-6 rounded-sm"
       >
+        <PageBanner dataTestId="VaultBanner" dismissible title={NAME} className="mb-6 md:mb-0" />
         <div data-testid="vault-content" className="flex flex-col w-full items-start gap-6">
           <VaultDisclaimer />
 

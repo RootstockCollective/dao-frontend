@@ -3,11 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 
 import { BtcVaultBanners } from './BtcVaultBanners'
-import {
-  BOTH_PAUSED_REASON,
-  DEPOSIT_PAUSED_REASON,
-  WITHDRAWAL_PAUSED_REASON,
-} from './services/constants'
+import { BOTH_PAUSED_REASON, DEPOSIT_PAUSED_REASON, WITHDRAWAL_PAUSED_REASON } from './services/constants'
 
 const mockUseAccount = vi.fn()
 const mockUseEpochState = vi.fn()
@@ -38,10 +34,6 @@ vi.mock('@/shared/hooks/useIsDesktop', () => ({
   useIsDesktop: () => true,
 }))
 
-vi.mock('@/app/backing/components/DecorativeSquares', () => ({
-  DecorativeSquares: () => null,
-}))
-
 vi.mock('@/components/Countdown/Countdown', () => ({
   Countdown: () => <span data-testid="countdown">5d 23h 59m</span>,
 }))
@@ -70,7 +62,6 @@ describe('BtcVaultBanners', () => {
     mockUseEpochState.mockReturnValue({ data: closedEpoch })
     mockUseKybStatus.mockReturnValue({
       status: 'passed' as const,
-
     })
     mockUseActionEligibility.mockReturnValue({
       data: { pauseState: { deposits: 'active', withdrawals: 'active' } },
@@ -112,7 +103,6 @@ describe('BtcVaultBanners', () => {
     mockUseEpochState.mockReturnValue({ data: closedEpoch })
     mockUseKybStatus.mockReturnValue({
       status: 'passed' as const,
-
     })
     render(<BtcVaultBanners />)
 
@@ -127,7 +117,6 @@ describe('BtcVaultBanners', () => {
     mockUseEpochState.mockReturnValue({ data: openEpoch })
     mockUseKybStatus.mockReturnValue({
       status: 'passed' as const,
-
     })
     render(<BtcVaultBanners />)
 
@@ -142,7 +131,6 @@ describe('BtcVaultBanners', () => {
     mockUseAccount.mockReturnValue({ address: '0x123', isConnected: true })
     mockUseKybStatus.mockReturnValue({
       status: 'none' as const,
-
     })
     render(<BtcVaultBanners />)
 
@@ -157,7 +145,6 @@ describe('BtcVaultBanners', () => {
     mockUseKybStatus.mockReturnValue({
       status: 'rejected' as const,
       rejectionReason: 'Document verification could not be completed.',
-
     })
     render(<BtcVaultBanners />)
 
@@ -172,7 +159,6 @@ describe('BtcVaultBanners', () => {
     mockUseEpochState.mockReturnValue({ data: openEpoch })
     mockUseKybStatus.mockReturnValue({
       status: 'none' as const,
-
     })
     render(<BtcVaultBanners />)
 
