@@ -9,9 +9,10 @@ import { Header, Paragraph } from '@/components/Typography'
 
 import { DiscourseLink } from '../DiscourseLink'
 
-export const HOW_A_PROPOSAL_WORKS_STORAGE_KEY = 'proposals-how-it-works-open'
+/** The page's original hero artwork, from before the banners redesign. */
+const ILLUSTRATION_SRC = '/images/hero/proposals-banner.webp'
 
-const ILLUSTRATION_SRC = '/images/hero/proposals-banner.png'
+export const HOW_A_PROPOSAL_WORKS_STORAGE_KEY = 'proposals-how-it-works-open'
 
 const STEPS: ReactNode[] = [
   <>

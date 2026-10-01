@@ -1,5 +1,5 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { currentLinks } from '@/lib/links'
 
@@ -9,19 +9,6 @@ const defaultProps = {
   onClose: vi.fn(),
   onContinue: vi.fn(),
 }
-
-/**
- * The artwork draws itself on a canvas, which jsdom does not implement. The component
- * already copes with a missing context; this only keeps the "not implemented" noise out
- * of the test output.
- */
-beforeAll(() => {
-  vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
-})
-
-afterAll(() => {
-  vi.restoreAllMocks()
-})
 
 describe('IntroModalContent', () => {
   afterEach(cleanup)

@@ -7,7 +7,8 @@ import { CommonComponentProps } from '@/components/commonProps'
 import { currentLinks } from '@/lib/links'
 import { cn } from '@/lib/utils'
 
-const ILLUSTRATION_SRC = '/images/hero/delegation-banner.png'
+/** The page's original hero artwork, from before the banners redesign. */
+const ILLUSTRATION_SRC = '/images/hero/delegation-banner.webp'
 
 const REASONS = [
   'You are only delegating your own voting power',
@@ -71,17 +72,6 @@ export const WhyDelegate = ({ className }: CommonComponentProps) => {
         className="flex min-h-[72px] w-full cursor-pointer items-center gap-4 px-5 py-3 text-left outline-none transition-colors duration-150 hover:bg-warm-surface-hover focus-visible:shadow-[inset_0_0_0_2px_var(--color-v3-rif-blue)] md:h-[72px] md:py-0"
         data-testid="WhyDelegateToggle"
       >
-        <span className="relative h-10 w-14 shrink-0 overflow-hidden rounded-md">
-          <Image
-            src={ILLUSTRATION_SRC}
-            alt=""
-            aria-hidden="true"
-            fill
-            sizes="56px"
-            className="object-cover object-[60%_40%]"
-          />
-        </span>
-
         <span className="font-kk-topo min-w-0 flex-1 text-lg uppercase leading-[1.15] tracking-[0.005em] text-v3-text-80">
           Delegate your voting power{' '}
           <span className="text-warm-text-subtle">to influence what gets built</span>
@@ -105,7 +95,7 @@ export const WhyDelegate = ({ className }: CommonComponentProps) => {
               aria-hidden="true"
               fill
               sizes="380px"
-              className="object-cover object-center"
+              className="object-cover"
             />
           </div>
 

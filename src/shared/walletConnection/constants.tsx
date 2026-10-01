@@ -1,4 +1,4 @@
-import { HeaderTitle, Paragraph } from '@/components/Typography'
+import { Paragraph } from '@/components/Typography'
 
 export const disclaimerModalText = {
   modalTitle: 'DISCLAIMER',
@@ -52,7 +52,7 @@ export const routePatterns = [
   { pattern: /^\/proposals$/, component: null },
   { pattern: /^\/delegate$/, component: null },
   { pattern: /^\/treasury$/, component: null },
-  { pattern: /^\/vault$/, component: <HeaderTitle variant="h1">USD VAULT</HeaderTitle> },
-  { pattern: /^\/btc-vault$/, component: <HeaderTitle variant="h1">BTC VAULT</HeaderTitle> },
+  { pattern: /^\/vault$/, component: null },
+  { pattern: /^\/btc-vault$/, component: null },
   // Add more patterns as needed
 ]

@@ -23,4 +23,15 @@ if (jsdomWindow) {
       get: () => jsdomWindow[key],
     })
   }
+
+  /**
+   * Banners and collapsibles draw the molten artwork on a canvas, which jsdom does not
+   * implement. The component already copes with a missing context; this only keeps the
+   * "not implemented" noise out of the test output. Tests that need a context spy on it.
+   */
+  Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+    configurable: true,
+    writable: true,
+    value: () => null,
+  })
 }

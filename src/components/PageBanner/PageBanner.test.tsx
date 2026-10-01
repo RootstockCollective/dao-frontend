@@ -3,8 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 
 import { PageBanner } from './PageBanner'
 
-const renderBanner = (props = {}) =>
-  render(<PageBanner dismissible title="Treasury" imageSrc="/images/test.webp" {...props} />)
+const renderBanner = (props = {}) => render(<PageBanner dismissible title="Treasury" {...props} />)
 
 describe('PageBanner', () => {
   afterEach(cleanup)
@@ -46,8 +45,22 @@ describe('PageBanner', () => {
     expect(screen.getByTestId('PageBanner')).toBeInTheDocument()
   })
 
+  it('keeps the title as a visually hidden heading once dismissed', () => {
+    renderBanner()
+
+    fireEvent.click(screen.getByTestId('DismissBannerButton'))
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Treasury' })).toHaveClass('sr-only')
+  })
+
+  it('shows the decorative squares on every banner, with or without an eyebrow', () => {
+    const { container } = render(<PageBanner title="Holdings" eyebrow="My Collective" />)
+
+    expect(container.querySelector('svg[viewBox="0 0 36 36"]')).toBeInTheDocument()
+  })
+
   it('renders no dismiss button when it is not dismissible', () => {
-    render(<PageBanner title="Holdings" imageSrc="/images/test.webp" />)
+    render(<PageBanner title="Holdings" />)
 
     expect(screen.getByText('Holdings')).toBeInTheDocument()
     expect(screen.queryByTestId('DismissBannerButton')).not.toBeInTheDocument()

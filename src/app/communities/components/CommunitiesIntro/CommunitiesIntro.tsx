@@ -7,9 +7,10 @@ import { CommonComponentProps } from '@/components/commonProps'
 import { PersistedCollapsible } from '@/components/PersistedCollapsible'
 import { Header, Paragraph } from '@/components/Typography'
 
-export const COMMUNITIES_INTRO_STORAGE_KEY = 'communities-intro-open'
+/** The page's original hero artwork, from before the banners redesign. */
+const ILLUSTRATION_SRC = '/images/hero/community-banner.webp'
 
-const ILLUSTRATION_SRC = '/images/hero/community-banner.png'
+export const COMMUNITIES_INTRO_STORAGE_KEY = 'communities-intro-open'
 
 /** Same copy the Communities hero carried before the page moved to a banner. */
 const POINTS = [

@@ -5,8 +5,7 @@ import { Header, Paragraph } from '@/components/Typography'
 
 import { ABIFormula } from '../ABIFormula'
 
-/** `className` lets the page swap the divider spacing when the metrics are laid out in a row. */
-export const GlobalAnnualBackersIncentives = ({ className = 'pb-3 md:pb-6' }: { className?: string }) => {
+export const GlobalAnnualBackersIncentives = () => {
   return (
     <AnnualBackerIncentivesLoader
       render={({ data: abiPct, isLoading }) => (
@@ -37,7 +36,7 @@ export const GlobalAnnualBackersIncentives = ({ className = 'pb-3 md:pb-6' }: { 
               }
             />
           }
-          className={className}
+          className="pb-3 md:pb-6"
         >
           {/* Same line height as the value, so nothing jumps when it resolves */}
           <div className="flex min-h-10 items-center">

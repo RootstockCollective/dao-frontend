@@ -1,11 +1,9 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
 
 import { CRWhitepaperLink } from '@/app/collective-rewards/shared/components/CRWhitepaperLinkNew'
 import { CommonComponentProps } from '@/components/commonProps'
-import { ChevronDownIcon, ChevronUpIcon } from '@/components/Icons'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
@@ -30,23 +28,7 @@ const PerkBullet = () => (
   />
 )
 
-interface BackingBannerProps extends CommonComponentProps {
-  /** Controls the collapse from the page, so the layout around it can react to the state. */
-  isOpen?: boolean
-  onOpenChange?: (isOpen: boolean) => void
-}
-
-export const BackingBanner = ({ className = '', isOpen: openProp, onOpenChange }: BackingBannerProps) => {
-  // The collapse lasts for the session only: a reload brings the card back expanded
-  const [uncontrolledOpen, setUncontrolledOpen] = useState(true)
-  const isOpen = openProp ?? uncontrolledOpen
-
-  const toggle = () => {
-    const next = !isOpen
-    setUncontrolledOpen(next)
-    onOpenChange?.(next)
-  }
-
+export const BackingBanner = ({ className = '' }: CommonComponentProps) => {
   return (
     <div
       className={cn(
@@ -66,46 +48,22 @@ export const BackingBanner = ({ className = '', isOpen: openProp, onOpenChange }
       <div className="absolute inset-0 md:hidden" style={{ background: MOBILE_OVERLAY }} />
       <div className="absolute inset-0 hidden md:block" style={{ background: DESKTOP_OVERLAY }} />
 
-      <div
-        className={cn(
-          'relative flex flex-1 flex-col items-start gap-4 px-4 md:px-6',
-          // Collapsed it is just a title row, so centre it in whatever height is left
-          isOpen ? 'py-6' : 'justify-center py-4',
-        )}
-      >
-        {/* The title row stays put, so collapsing leaves a slim strip instead of a gap */}
-        <div className="flex w-full items-center justify-between gap-4">
-          <Header caps variant="h3">{`What's in it for me?`}</Header>
+      <div className="relative flex flex-1 flex-col items-start gap-4 px-4 py-6 md:px-6">
+        <Header caps variant="h3">{`What's in it for me?`}</Header>
 
-          <button
-            type="button"
-            onClick={toggle}
-            aria-expanded={isOpen}
-            className="flex shrink-0 cursor-pointer items-center gap-1 text-v3-text-60 hover:text-v3-text-100"
-            data-testid="BackingBannerToggle"
-          >
-            <Span variant="body-s">{isOpen ? 'Hide' : 'Show'}</Span>
-            {isOpen ? <ChevronUpIcon size={20} /> : <ChevronDownIcon size={20} />}
-          </button>
-        </div>
+        <ul className="flex list-none flex-col gap-2">
+          {PERKS.map(perk => (
+            <li key={perk} className="flex items-start gap-3">
+              <PerkBullet />
+              <Paragraph>{perk}</Paragraph>
+            </li>
+          ))}
+        </ul>
 
-        {isOpen && (
-          <>
-            <ul className="flex list-none flex-col gap-2">
-              {PERKS.map(perk => (
-                <li key={perk} className="flex items-start gap-3">
-                  <PerkBullet />
-                  <Paragraph>{perk}</Paragraph>
-                </li>
-              ))}
-            </ul>
-
-            <Span className="mt-2 text-v3-primary">
-              {/* CRWhitepaperLink spreads props last, so className replaces its own defaults */}
-              See the <CRWhitepaperLink className="gap-1 underline">Whitepaper</CRWhitepaperLink>
-            </Span>
-          </>
-        )}
+        <Span className="mt-2 text-v3-primary">
+          {/* CRWhitepaperLink spreads props last, so className replaces its own defaults */}
+          See the <CRWhitepaperLink className="gap-1 underline">Whitepaper</CRWhitepaperLink>
+        </Span>
       </div>
     </div>
   )

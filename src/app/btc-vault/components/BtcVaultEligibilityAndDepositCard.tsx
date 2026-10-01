@@ -7,11 +7,7 @@ import { Label } from '@/components/Typography'
 
 import { useEpochState } from '../hooks/useEpochState'
 import { useKybStatus } from '../hooks/useKybStatus'
-import {
-  ELIGIBILITY_DEPOSIT_CARD_DEBRIS_CREAM,
-  ELIGIBILITY_DEPOSIT_CARD_DEBRIS_DARK,
-  ELIGIBILITY_DEPOSIT_CARD_GRADIENT,
-} from './btcVaultBannerGradients'
+import { ELIGIBILITY_DEPOSIT_CARD_GRADIENT } from './btcVaultBannerGradients'
 import { BtcVaultPrototypeBannerContent } from './BtcVaultPrototypeBannerContent'
 import { DepositWindowSection } from './DepositWindowSection'
 import { EligibilityBannerContent } from './EligibilityBannerContent'
@@ -58,8 +54,6 @@ export function BtcVaultEligibilityAndDepositCard() {
       background={ELIGIBILITY_DEPOSIT_CARD_GRADIENT}
       className="isolate py-6 px-10"
       mobileBackground={ELIGIBILITY_DEPOSIT_CARD_GRADIENT}
-      decorativeImageColor={ELIGIBILITY_DEPOSIT_CARD_DEBRIS_CREAM}
-      decorativeSecondaryColor={ELIGIBILITY_DEPOSIT_CARD_DEBRIS_DARK}
     >
       {sections}
     </StackableBanner>
