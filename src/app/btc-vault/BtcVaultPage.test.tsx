@@ -140,7 +140,9 @@ vi.mock('./hooks/useEpochState', () => ({
 }))
 
 vi.mock('./components/BtcVaultEligibilityAndDepositCard', () => ({
-  BtcVaultEligibilityAndDepositCard: () => <div data-testid="btc-vault-eligibility-and-deposit-card" />,
+  BtcVaultEligibilityAndDepositCard: () => (
+    <div data-testid="btc-vault-eligibility-and-deposit-card" />
+  ),
 }))
 
 function Wrapper({ children }: { children: ReactNode }) {

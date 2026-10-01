@@ -99,7 +99,7 @@ describe('BtcVault page', () => {
         redirectTo: '/',
       }),
     )
-  }, 10000)
+  },10000)
 
   it('renders BtcVaultPage when feature flag is enabled', async () => {
     const Page = (await import('./page')).default

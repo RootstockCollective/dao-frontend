@@ -14,9 +14,9 @@ export const VaultPage = () => {
     <VaultDepositValidationProvider>
       <div
         data-testid={NAME}
-        className="flex flex-col items-start w-full h-full pt-[0.13rem] md:gap-6 rounded-sm"
+        className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-6 rounded-sm"
       >
-        <PageBanner dataTestId="VaultBanner" dismissible title={NAME} className="mb-6 md:mb-0" />
+        <PageBanner dataTestId="VaultBanner" dismissible title={NAME} />
         <div data-testid="vault-content" className="flex flex-col w-full items-start gap-6">
           <VaultDisclaimer />
 

@@ -32,7 +32,7 @@ export interface PageBannerProps {
 /**
  * Page hero: the still molten background shared by every page, title, intro copy and
  * optional call to action. When dismissible, closing it hides the banner until the next
- * page load.
+ * page load; the title stays in the page as a visually hidden heading.
  */
 export const PageBanner = ({
   dismissible = false,
@@ -47,7 +47,12 @@ export const PageBanner = ({
   const [isDismissed, setIsDismissed] = useState(false)
 
   if (dismissible && isDismissed) {
-    return null
+    // The banner carries the page's only heading: keep it for assistive technology
+    return (
+      <Header caps variant="h1" className="sr-only">
+        {title}
+      </Header>
+    )
   }
 
   return (
