@@ -30,7 +30,7 @@ const NOW = new Date('2026-10-01T12:00:00Z').getTime()
 
 const queryModal = () => screen.queryByTestId('intro-modal')
 
-/** A remount is what a reload or a new visit to Holdings looks like to the modal. */
+/** Remounting simulates a reload */
 const reload = () => {
   cleanup()
   render(<IntroModal />)
@@ -38,7 +38,7 @@ const reload = () => {
 
 describe('IntroModal', () => {
   beforeEach(() => {
-    // The artwork draws itself on a canvas, which jsdom does not implement
+    // jsdom has no canvas
     vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null)
     vi.useFakeTimers({ toFake: ['Date'] })
     vi.setSystemTime(NOW)
@@ -83,7 +83,7 @@ describe('IntroModal', () => {
     const { rerender } = render(<IntroModal />)
     fireEvent.click(screen.getByTestId('CloseButton'))
 
-    // Balances are polled, so the step can change while Holdings is open
+    // Balances are polled, so the step can change live
     mocks.tokenStatus = 'NEED_RIF'
     rerender(<IntroModal />)
 

@@ -25,10 +25,10 @@ export const IntroModal = () => {
 
   const handleContinue = (url: string, external = false) => {
     if (external) {
-      // The holder leaves for a provider and comes back, so the modal stays open for them
+      // Stays open: the holder comes back from the provider
       window.open(url, '_blank', 'noopener,noreferrer')
     } else {
-      // Heading to the staking flow answers the modal too: backing out of it must not bring the modal back
+      // Counts as closing it, so backing out of staking doesn't reopen it
       handleClose()
       router.push(url)
     }

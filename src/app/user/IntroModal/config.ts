@@ -58,10 +58,7 @@ export const CONTENT_CONFIG = {
   },
 } as const
 
-/**
- * How long a closed intro modal stays closed while the holder remains on the same step.
- * Reaching a different step shows it again right away, whatever this is set to.
- */
+/** Days a closed step stays hidden before the modal shows it again */
 export const INTRO_MODAL_REMIND_AFTER_DAYS = 7
 
 export type IntroModalStatus = keyof typeof CONTENT_CONFIG

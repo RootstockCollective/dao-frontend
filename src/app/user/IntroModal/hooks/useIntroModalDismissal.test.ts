@@ -38,7 +38,7 @@ describe('useIntroModalDismissal', () => {
   it('keeps a closed step closed after a reload', () => {
     renderDismissal().dismiss('NEED_RIF')
 
-    // A fresh render reads storage again, the way a reload or a new visit to Holdings would
+    // A fresh render reads storage again, like a reload
     expect(renderDismissal().isDismissed('NEED_RIF')).toBe(true)
   })
 
@@ -49,7 +49,7 @@ describe('useIntroModalDismissal', () => {
   })
 
   it('keeps each step closed on its own when the holder closes another one', () => {
-    // A failed balance read can show the wrong step for a moment. Closing it must not reopen the real one.
+    // e.g. a failed balance read briefly shows the wrong step
     renderDismissal().dismiss('NEED_STRIF')
     renderDismissal().dismiss('NEED_RIF')
 
