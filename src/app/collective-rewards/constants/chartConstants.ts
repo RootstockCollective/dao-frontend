@@ -1,12 +1,15 @@
-export const ONE_DAY_IN_SECONDS = 24 * 60 * 60
-export { ONE_DAY_IN_MS } from '@/lib/constants'
+import { ONE_DAY_IN_MS } from '@/lib/constants'
 
-export const FOUR_MONTHS_IN_MS = 4 * 30 * 24 * 60 * 60 * 1000
-export const FIVE_MONTHS_IN_MS = 5 * 30 * 24 * 60 * 60 * 1000
+export { ONE_DAY_IN_MS }
+
+export const ONE_DAY_IN_SECONDS = 24 * 60 * 60
+
+export const FOUR_MONTHS_IN_MS = 4 * 30 * ONE_DAY_IN_MS
+export const FIVE_MONTHS_IN_MS = 5 * 30 * ONE_DAY_IN_MS
 
 export const CHART_BUFFER_PERCENTAGE = 1.1
 export const REWARDS_DOMAIN_BUFFER = 3
-export const X_DOMAIN_BUFFER = 10 * 24 * 60 * 60 * 1000 // 10 days in milliseconds
+export const X_DOMAIN_BUFFER = 10 * ONE_DAY_IN_MS
 
 export const DEFAULT_CHART_HEIGHT = 420
 

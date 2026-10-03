@@ -2,36 +2,30 @@ import { useCallback } from 'react'
 import { useAccount } from 'wagmi'
 
 import { CHAIN_ID, ONE_DAY_IN_MS } from '@/lib/constants'
+import { getWalletStorageKey, safeStorage } from '@/lib/utils'
 
 import { INTRO_MODAL_REMIND_AFTER_DAYS, IntroModalStatus } from '../config'
 
-const INTRO_MODAL_DISMISSALS_KEY = 'intro-modal-dismissals'
+const INTRO_MODAL_DISMISSALS_KEY = `intro-modal-dismissals-${CHAIN_ID}`
 
 /** Last close timestamp (ms) per step */
 type Dismissals = Partial<Record<IntroModalStatus, number>>
 
-const getStorageKey = (walletAddress: string) =>
-  `${INTRO_MODAL_DISMISSALS_KEY}-${CHAIN_ID}-${walletAddress.toLowerCase()}`
-
 const readDismissals = (key: string): Dismissals => {
-  try {
-    const stored = localStorage.getItem(key)
-    const parsed = stored ? JSON.parse(stored) : null
-
-    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {}
-  } catch {
-    // Unreadable or malformed: treat as never closed
-    return {}
-  }
+  const stored = safeStorage.get(key)
+  return stored && typeof stored === 'object' && !Array.isArray(stored) ? (stored as Dismissals) : {}
 }
 
 /**
  * Remembers, per wallet and step, when the holder closed the intro modal.
  * A closed step stays hidden for INTRO_MODAL_REMIND_AFTER_DAYS; other steps still show.
+ *
+ * Not built on use-local-storage-state: the key needs an address that can be undefined, and
+ * storage is only read from the modal's effect.
  */
 export const useIntroModalDismissal = () => {
   const { address } = useAccount()
-  const key = address ? getStorageKey(address) : null
+  const key = address ? getWalletStorageKey(INTRO_MODAL_DISMISSALS_KEY, address) : null
 
   const isDismissed = useCallback(
     (status: IntroModalStatus) => {
@@ -50,13 +44,7 @@ export const useIntroModalDismissal = () => {
   const dismiss = useCallback(
     (status: IntroModalStatus) => {
       if (!key) return
-
-      try {
-        const dismissals: Dismissals = { ...readDismissals(key), [status]: Date.now() }
-        localStorage.setItem(key, JSON.stringify(dismissals))
-      } catch {
-        // Ignore storage errors: the dismissal just won't persist
-      }
+      safeStorage.set(key, { ...readDismissals(key), [status]: Date.now() })
     },
     [key],
   )
