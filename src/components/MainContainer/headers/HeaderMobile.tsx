@@ -44,7 +44,7 @@ export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElem
 
         <UserConnectionManager
           className={cn(
-            'flex-1 flex justify-end transition-opacity duration-240 ease-[cubic-bezier(0.22,0.61,0.36,1)]',
+            'flex-1 flex justify-end transition-opacity duration-240 ease-out-cubic',
             isDocked && 'pointer-events-none opacity-0',
           )}
           inert={isDocked}

@@ -4,11 +4,13 @@ import { useEffect, useId, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import useLocalStorageState from 'use-local-storage-state'
 
+import { Button } from '@/components/Button'
 import { CommonComponentProps } from '@/components/commonProps'
 import { DismissButton } from '@/components/DismissButton'
 import { useTopBarDock } from '@/components/MainContainer/TopBarDockProvider'
 import { cn } from '@/lib/utils'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
+import type { ConnectButtonComponentProps } from '@/shared/walletConnection/types'
 
 import { MotionLogo } from './MotionLogo'
 import { PossibilitiesDock } from './PossibilitiesDock'
@@ -39,6 +41,39 @@ const POSSIBILITIES = [
 ]
 
 /**
+ * Declared once, not inline, so a re-render (the dock flipping on scroll) keeps the same button
+ * and the focus on it.
+ */
+const BannerConnectButton = ({ onClick }: ConnectButtonComponentProps) => (
+  <Button onClick={onClick} className={cn(CONNECT_CTA_CLASSES, 'h-12 px-[26px]')} data-testid="ConnectButton">
+    Connect wallet
+  </Button>
+)
+
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',')
+
+/**
+ * Focuses the first control that follows `element` in the document. Candidates that cannot take
+ * focus (hidden, inert) are skipped by trying them in turn.
+ */
+const focusFirstAfter = (element: HTMLElement) => {
+  for (const candidate of document.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)) {
+    const isAfter = element.compareDocumentPosition(candidate) & Node.DOCUMENT_POSITION_FOLLOWING
+    if (!isAfter || element.contains(candidate)) continue
+
+    candidate.focus({ preventScroll: true })
+    if (document.activeElement === candidate) return
+  }
+}
+
+/**
  * Dark hero shown to visitors without a connected wallet: the three things the DAO lets them
  * do and the connect call to action, next to the animated Collective logo.
  *
@@ -57,6 +92,7 @@ const POSSIBILITIES = [
 export const CollectivePossibilities = ({ className }: CommonComponentProps) => {
   const titleId = useId()
   const [isDismissed, setIsDismissed] = useLocalStorageState(DISMISSED_STORAGE_KEY, { defaultValue: false })
+  const wrapperRef = useRef<HTMLDivElement>(null)
   const bannerRef = useRef<HTMLElement>(null)
   const tileRef = useRef<HTMLDivElement>(null)
 
@@ -78,19 +114,28 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
     return () => setDocked(false)
   }, [isDocked, setDocked])
 
-  const dismiss = () => setIsDismissed(true)
+  const dismiss = () => {
+    // The X that has focus is about to go. Hand focus to whatever follows the banner rather than
+    // let it drop to the body, so the next Tab carries on from where the banner was.
+    const wrapper = wrapperRef.current
+    const focused = document.activeElement
+    if (wrapper && focused && (wrapper.contains(focused) || slot?.contains(focused))) {
+      focusFirstAfter(wrapper)
+    }
+    setIsDismissed(true)
+  }
 
   if (isDismissed) {
     return null
   }
 
   return (
-    <div data-testid="CollectivePossibilities" className={cn('mb-4 max-md:mt-4', className)}>
+    <div ref={wrapperRef} data-testid="CollectivePossibilities" className={cn('mb-4 max-md:mt-4', className)}>
       <section
         ref={bannerRef}
         aria-labelledby={titleId}
         className={cn(
-          'relative grid origin-top will-change-[transform,opacity] grid-cols-1 overflow-hidden rounded-[16px] bg-warm-surface-raised',
+          'relative grid origin-top grid-cols-1 overflow-hidden rounded-[16px] bg-warm-surface-raised',
           '@min-[900px]/content:grid-cols-[minmax(0,1fr)_minmax(260px,30%)]',
         )}
       >
@@ -102,26 +147,15 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
                 id={titleId}
                 className="m-0 font-kk-topo text-[clamp(30px,2.8vw,40px)] leading-none tracking-[0.005em] text-v3-text-80"
               >
-                THE COLLECTIVE <span className="text-warm-text-dim">POSSIBILITIES</span>
+                THE COLLECTIVE <span className="text-warm-text-subtle">POSSIBILITIES</span>
               </h2>
             </div>
 
             <div className="flex flex-none items-center gap-3">
-              <ConnectWorkflow
-                ConnectComponent={props => (
-                  <button
-                    type="button"
-                    {...props}
-                    className={cn(CONNECT_CTA_CLASSES, 'h-12 px-[26px] text-base')}
-                    data-testid="ConnectButton"
-                  >
-                    Connect wallet
-                  </button>
-                )}
-              />
+              <ConnectWorkflow ConnectComponent={BannerConnectButton} />
               <DismissButton
                 variant="round"
-                aria-label="Dismiss"
+                aria-label="Dismiss the Don't Miss banner"
                 onClick={dismiss}
                 data-testid="DismissPossibilitiesButton"
               />
@@ -149,7 +183,7 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
           className="relative -order-1 min-h-[180px] overflow-hidden bg-banner-ink @min-[900px]/content:order-none @min-[900px]/content:min-h-[300px]"
           data-testid="PossibilitiesTile"
         >
-          <div ref={tileRef} className="absolute inset-0 will-change-transform">
+          <div ref={tileRef} className="absolute inset-0">
             <PosterArt
               moleculeSize={120}
               imageClassName="object-[100%_50%] @min-[900px]/content:object-[70%_50%]"

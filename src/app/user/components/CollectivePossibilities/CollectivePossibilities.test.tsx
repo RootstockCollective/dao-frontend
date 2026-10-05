@@ -1,16 +1,31 @@
-import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { TopBarDockProvider, useTopBarDock } from '@/components/MainContainer/TopBarDockProvider'
+import type { ConnectWorkflowProps } from '@/shared/walletConnection/types'
 
 import { CollectivePossibilities, DISMISSED_STORAGE_KEY } from './CollectivePossibilities'
+import { FRAME_FALLBACK_MS } from './useScrollDock'
 
+// Renders the page's own button, so the tests see the element the banner and the dock pass in
 vi.mock('@/shared/walletConnection/connection/ConnectWorkflow', () => ({
-  ConnectWorkflow: () => <button type="button">Connect wallet</button>,
+  ConnectWorkflow: ({ ConnectComponent }: ConnectWorkflowProps) =>
+    ConnectComponent ? <ConnectComponent onClick={() => {}} /> : null,
 }))
 
 const BANNER_HEIGHT = 300
 const TOP_BAR_BOTTOM = 64
+
+/** jsdom has no ResizeObserver: report every observed element as laid out. */
+class LaidOutResizeObserver {
+  constructor(private readonly callback: ResizeObserverCallback) {}
+  observe(target: Element) {
+    const entry = { target, contentRect: DOMRect.fromRect({ width: 260, height: 300 }) }
+    this.callback([entry as ResizeObserverEntry], this as unknown as ResizeObserver)
+  }
+  unobserve() {}
+  disconnect() {}
+}
 
 /** Stands in for the layout header: exposes the dock state and hosts the slot. */
 const TopBar = () => {
@@ -27,6 +42,7 @@ const renderOnPage = () =>
     <TopBarDockProvider>
       <TopBar />
       <CollectivePossibilities />
+      <a href="#latest">Latest from the Collective</a>
     </TopBarDockProvider>,
   )
 
@@ -41,21 +57,24 @@ let bannerTop = 136
 
 const setScrollY = (y: number) => Object.defineProperty(window, 'scrollY', { value: y, configurable: true })
 
-const scrollBannerTo = async (top: number) => {
+/** Scrolls and runs the frame (or its timeout fallback) the banner measures itself in. */
+const scrollBannerTo = (top: number) => {
   bannerTop = top
   setScrollY(136 - top)
-  await act(async () => {
+  act(() => {
     fireEvent.scroll(window)
-    await new Promise(resolve => setTimeout(resolve, 120))
+    vi.advanceTimersByTime(FRAME_FALLBACK_MS)
   })
 }
 
 describe('CollectivePossibilities', () => {
   beforeEach(() => {
+    vi.useFakeTimers()
     // jsdom does not implement media playback, and the logo starts its video on mount
     vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined)
     vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {})
     mockReducedMotion(false)
+    vi.stubGlobal('ResizeObserver', LaidOutResizeObserver)
 
     localStorage.clear()
 
@@ -67,15 +86,23 @@ describe('CollectivePossibilities', () => {
         return DOMRect.fromRect({ y: TOP_BAR_BOTTOM, height: 0 })
       }
       if (this.tagName === 'SECTION') {
-        return DOMRect.fromRect({ y: bannerTop, height: BANNER_HEIGHT })
+        // As in a browser, the box on screen shrinks with the scale written on the banner
+        const scale = Number((this as HTMLElement).style.transform.match(/scale\(([\d.]+)\)/)?.[1] ?? 1)
+        return DOMRect.fromRect({ y: bannerTop, height: BANNER_HEIGHT * scale })
       }
       return DOMRect.fromRect()
+    })
+    // ...while its layout height does not
+    vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(function (this: HTMLElement) {
+      return this.tagName === 'SECTION' ? BANNER_HEIGHT : 0
     })
   })
 
   afterEach(() => {
     cleanup()
+    vi.useRealTimers()
     vi.restoreAllMocks()
+    vi.unstubAllGlobals()
   })
 
   it('renders the three possibilities, the animated logo and the connect action', () => {
@@ -93,6 +120,15 @@ describe('CollectivePossibilities', () => {
     expect(screen.getByRole('region', { name: 'THE COLLECTIVE POSSIBILITIES' })).toBeInTheDocument()
   })
 
+  it('labels both X buttons after what they dismiss', () => {
+    renderOnPage()
+
+    expect(screen.getByTestId('DismissPossibilitiesButton')).toHaveAccessibleName(
+      "Dismiss the Don't Miss banner",
+    )
+    expect(screen.getByTestId('DismissDockButton')).toHaveAccessibleName('Dismiss the connect prompt')
+  })
+
   it('makes the top bar sticky and parks a closed, inert dock in its slot', () => {
     renderOnPage()
 
@@ -103,12 +139,13 @@ describe('CollectivePossibilities', () => {
     expect(dock).toHaveAttribute('inert')
   })
 
-  it('starts in place at the top of the page', () => {
+  it('starts in place at the top of the page, without inline styles or promoted layers', () => {
     renderOnPage()
 
     const banner = screen.getByRole('region', { name: 'THE COLLECTIVE POSSIBILITIES' })
-    expect(banner.style.transform).toMatch(/^scale\(1(\.0+)?\)$/)
-    expect(Number(banner.style.opacity)).toBe(1)
+    expect(banner.style.transform).toBe('')
+    expect(banner.style.opacity).toBe('')
+    expect(banner.style.willChange).toBe('')
   })
 
   it('never fades at the top of the page, even when the banner starts right under the top bar', () => {
@@ -117,41 +154,72 @@ describe('CollectivePossibilities', () => {
     renderOnPage()
 
     const banner = screen.getByRole('region', { name: 'THE COLLECTIVE POSSIBILITIES' })
-    expect(banner.style.transform).toMatch(/^scale\(1(\.0+)?\)$/)
-    expect(Number(banner.style.opacity)).toBe(1)
+    expect(banner.style.transform).toBe('')
+    expect(banner.style.opacity).toBe('')
     expect(screen.getByTestId('PossibilitiesDock')).toHaveAttribute('data-docked', 'false')
   })
 
-  it('shrinks and fades the banner as it scrolls under the top bar', async () => {
+  it('shrinks and fades the banner as it scrolls under the top bar', () => {
     renderOnPage()
 
     // Halfway under: 64 + 16 - (-70) = 150 of 300
-    await scrollBannerTo(-70)
+    scrollBannerTo(-70)
 
     const banner = screen.getByRole('region', { name: 'THE COLLECTIVE POSSIBILITIES' })
     expect(banner.style.transform).toMatch(/^scale\(0\.975/)
     expect(Number(banner.style.opacity)).toBeCloseTo(0.7)
+    expect(banner.style.willChange).toBe('transform, opacity')
     expect(screen.getByTestId('PossibilitiesDock')).toHaveAttribute('data-docked', 'false')
   })
 
-  it('docks past 75% and undocks below 60%', async () => {
+  it('measures the progress against the unscaled banner, so it does not feed on its own shrink', () => {
+    renderOnPage()
+
+    scrollBannerTo(-125) // 68%, the banner is now scaled to ~96.6%
+    scrollBannerTo(-139) // 73%: against the scaled height it would read 75.6% and dock
+
+    expect(screen.getByTestId('PossibilitiesDock')).toHaveAttribute('data-docked', 'false')
+  })
+
+  it('docks past 75% and undocks below 60%', () => {
     renderOnPage()
     const dock = screen.getByTestId('PossibilitiesDock')
 
-    await scrollBannerTo(-160) // 80%
-    await waitFor(() => expect(dock).toHaveAttribute('data-docked', 'true'))
+    scrollBannerTo(-160) // 80%
+    expect(dock).toHaveAttribute('data-docked', 'true')
     expect(dock).not.toHaveAttribute('inert')
     expect(screen.getByTestId('TopBar')).toHaveAttribute('data-docked', 'true')
 
-    await scrollBannerTo(-110) // 63%: inside the gap, stays docked
+    scrollBannerTo(-110) // 63%: inside the gap, stays docked
     expect(dock).toHaveAttribute('data-docked', 'true')
 
-    await scrollBannerTo(-90) // 57%
-    await waitFor(() => expect(dock).toHaveAttribute('data-docked', 'false'))
+    scrollBannerTo(-90) // 57%
+    expect(dock).toHaveAttribute('data-docked', 'false')
     expect(screen.getByTestId('TopBar')).toHaveAttribute('data-docked', 'false')
   })
 
-  it('keeps the banner still under prefers-reduced-motion but still docks', async () => {
+  it('still measures when the browser skips animation frames, as in a background tab', () => {
+    vi.stubGlobal('requestAnimationFrame', () => 0)
+    renderOnPage()
+
+    scrollBannerTo(-160)
+
+    expect(screen.getByTestId('PossibilitiesDock')).toHaveAttribute('data-docked', 'true')
+  })
+
+  it('keeps the focus on the banner Connect button when the dock comes in', () => {
+    renderOnPage()
+    const connect = screen.getByTestId('ConnectButton')
+    connect.focus()
+
+    scrollBannerTo(-160)
+    expect(screen.getByTestId('PossibilitiesDock')).toHaveAttribute('data-docked', 'true')
+
+    expect(screen.getByTestId('ConnectButton')).toBe(connect)
+    expect(connect).toHaveFocus()
+  })
+
+  it('keeps the banner still under prefers-reduced-motion but still docks', () => {
     vi.mocked(window.matchMedia).mockReturnValue({
       matches: true,
       addEventListener: vi.fn(),
@@ -159,14 +227,12 @@ describe('CollectivePossibilities', () => {
     } as unknown as MediaQueryList)
     renderOnPage()
 
-    await scrollBannerTo(-160)
+    scrollBannerTo(-160)
 
     const banner = screen.getByRole('region', { name: 'THE COLLECTIVE POSSIBILITIES' })
     expect(banner.style.transform).toBe('')
     expect(banner.style.opacity).toBe('')
-    await waitFor(() =>
-      expect(screen.getByTestId('PossibilitiesDock')).toHaveAttribute('data-docked', 'true'),
-    )
+    expect(screen.getByTestId('PossibilitiesDock')).toHaveAttribute('data-docked', 'true')
   })
 
   it('removes the banner and the dock from the banner X', () => {
@@ -179,15 +245,36 @@ describe('CollectivePossibilities', () => {
     expect(screen.getByTestId('TopBar')).toHaveAttribute('data-active', 'false')
   })
 
-  it('removes the banner and the dock from the dock X', async () => {
+  it('removes the banner and the dock from the dock X', () => {
     renderOnPage()
-    await scrollBannerTo(-160)
+    scrollBannerTo(-160)
 
     fireEvent.click(screen.getByTestId('DismissDockButton'))
 
     expect(screen.queryByTestId('CollectivePossibilities')).not.toBeInTheDocument()
     expect(screen.queryByTestId('PossibilitiesDock')).not.toBeInTheDocument()
     expect(screen.getByTestId('TopBar')).toHaveAttribute('data-docked', 'false')
+  })
+
+  it('hands the focus to what follows the banner when its X goes', () => {
+    renderOnPage()
+    const dismiss = screen.getByTestId('DismissPossibilitiesButton')
+    dismiss.focus()
+
+    fireEvent.click(dismiss)
+
+    expect(screen.getByRole('link', { name: 'Latest from the Collective' })).toHaveFocus()
+  })
+
+  it('hands the focus to what follows the banner when the dock X goes', () => {
+    renderOnPage()
+    scrollBannerTo(-160)
+    const dismiss = screen.getByTestId('DismissDockButton')
+    dismiss.focus()
+
+    fireEvent.click(dismiss)
+
+    expect(screen.getByRole('link', { name: 'Latest from the Collective' })).toHaveFocus()
   })
 
   it('remembers the dismissal across reloads', () => {

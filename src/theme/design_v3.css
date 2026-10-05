@@ -61,13 +61,12 @@
     --color-ember: #b04a1a;
     --color-ember-ash: #1a1210;
     --color-btc-orange: #f7931a;
-    --color-btc-orange-hover: #ffa838;
-    /* Second tone of a two-tone display title on the warm surfaces ("THE COLLECTIVE POSSIBILITIES"). */
-    --color-warm-text-dim: #6e665e;
 
     --color-v3-rif-blue: rgb(75, 92, 240);
     --color-v3-rsk-purple: rgb(158, 118, 255);
     --color-v3-rsk-pink: rgb(255, 113, 225);
     --color-v3-rsk-green: rgb(121, 198, 0);
 
+    /* Quick start, soft landing: the curve of the Holdings Don't Miss motion (`ease-out-cubic`). */
+    --ease-out-cubic: cubic-bezier(0.22, 0.61, 0.36, 1);
 }

@@ -2,7 +2,7 @@
 
 import { type RefObject, useEffect, useRef, useState } from 'react'
 
-const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
+import { usePrefersReducedMotion } from '@/shared/hooks/usePrefersReducedMotion'
 
 /** The banner counts as gone once its top edge is this far under the top bar. */
 const TOP_BAR_OFFSET = 16
@@ -12,7 +12,7 @@ const MIN_SETTLED_HEIGHT = 40
 const DOCK_ENTER = 0.75
 const DOCK_EXIT = 0.6
 /** Fallback for the frame callback, which browsers skip in background tabs. */
-const FRAME_FALLBACK_MS = 100
+export const FRAME_FALLBACK_MS = 100
 
 /** How far the banner has scrolled under the top bar, from 0 (in place) to 1 (gone). */
 export const getScrollProgress = (bannerTop: number, bannerHeight: number, topBarBottom: number) =>
@@ -21,18 +21,30 @@ export const getScrollProgress = (bannerTop: number, bannerHeight: number, topBa
 export const getNextDocked = (isDocked: boolean, progress: number) =>
   isDocked ? progress > DOCK_EXIT : progress > DOCK_ENTER
 
-const applyProgress = (banner: HTMLElement, tile: HTMLElement | null, progress: number) => {
-  banner.style.transform = `scale(${(1 - 0.05 * progress).toFixed(4)})`
-  banner.style.opacity = (1 - 0.6 * progress).toFixed(3)
-  if (tile) {
-    tile.style.transform = `translateY(${(48 * progress).toFixed(1)}px) scale(${(1 + 0.1 * progress).toFixed(4)})`
-  }
-}
-
 const clearProgress = (banner: HTMLElement, tile: HTMLElement | null) => {
   banner.style.removeProperty('transform')
   banner.style.removeProperty('opacity')
+  banner.style.removeProperty('will-change')
   tile?.style.removeProperty('transform')
+  tile?.style.removeProperty('will-change')
+}
+
+const applyProgress = (banner: HTMLElement, tile: HTMLElement | null, progress: number) => {
+  // In place it looks as it would without any of this, so no inline styles and no layers
+  if (progress <= 0) {
+    clearProgress(banner, tile)
+    return
+  }
+
+  // Layers are only promoted while the banner is on its way out, not once it is gone
+  const isMoving = progress < 1
+  banner.style.willChange = isMoving ? 'transform, opacity' : ''
+  banner.style.transform = `scale(${(1 - 0.05 * progress).toFixed(4)})`
+  banner.style.opacity = (1 - 0.6 * progress).toFixed(3)
+  if (tile) {
+    tile.style.willChange = isMoving ? 'transform' : ''
+    tile.style.transform = `translateY(${(48 * progress).toFixed(1)}px) scale(${(1 + 0.1 * progress).toFixed(4)})`
+  }
 }
 
 interface UseScrollDockOptions {
@@ -59,27 +71,32 @@ export const useScrollDock = ({ bannerRef, tileRef, anchor, isEnabled }: UseScro
   const [isDocked, setIsDocked] = useState(false)
   const [shouldAnimate, setShouldAnimate] = useState(false)
   const isDockedRef = useRef(false)
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   useEffect(() => {
     const banner = bannerRef.current
     const tile = tileRef.current
     if (!isEnabled || !anchor || !banner) return
 
-    const reducedMotion = window.matchMedia?.(REDUCED_MOTION_QUERY)
     let frame = 0
     let fallback: ReturnType<typeof setTimeout> | undefined
     let settleFrame = 0
 
     const update = () => {
-      const rect = banner.getBoundingClientRect()
-      if (rect.height < MIN_SETTLED_HEIGHT) return
+      // offsetHeight ignores the scale written below. The on-screen height would shrink with it
+      // and feed each frame's progress into the next measurement.
+      const height = banner.offsetHeight
+      if (height < MIN_SETTLED_HEIGHT) return
 
       // At the very top the banner is in place by definition, even where it sits close enough to
-      // the top bar for the formula to start above 0 (the mobile header is taller)
+      // the top bar for the formula to start above 0 (the mobile header is taller). Its top edge
+      // is not moved by the scale, which grows from it.
       const progress =
-        window.scrollY <= 0 ? 0 : getScrollProgress(rect.top, rect.height, anchor.getBoundingClientRect().top)
+        window.scrollY <= 0
+          ? 0
+          : getScrollProgress(banner.getBoundingClientRect().top, height, anchor.getBoundingClientRect().top)
 
-      if (reducedMotion?.matches) {
+      if (prefersReducedMotion) {
         clearProgress(banner, tile)
       } else {
         applyProgress(banner, tile, progress)
@@ -108,7 +125,6 @@ export const useScrollDock = ({ bannerRef, tileRef, anchor, isEnabled }: UseScro
 
     window.addEventListener('scroll', schedule, { passive: true })
     window.addEventListener('resize', schedule)
-    reducedMotion?.addEventListener?.('change', schedule)
 
     // The sidebar or the fonts can still move things around right after mount
     const resizeObserver = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(schedule)
@@ -125,7 +141,6 @@ export const useScrollDock = ({ bannerRef, tileRef, anchor, isEnabled }: UseScro
     return () => {
       window.removeEventListener('scroll', schedule)
       window.removeEventListener('resize', schedule)
-      reducedMotion?.removeEventListener?.('change', schedule)
       resizeObserver?.disconnect()
       cancelAnimationFrame(frame)
       cancelAnimationFrame(settleFrame)
@@ -135,7 +150,7 @@ export const useScrollDock = ({ bannerRef, tileRef, anchor, isEnabled }: UseScro
       setIsDocked(false)
       setShouldAnimate(false)
     }
-  }, [anchor, bannerRef, tileRef, isEnabled])
+  }, [anchor, bannerRef, tileRef, isEnabled, prefersReducedMotion])
 
   return { isDocked, shouldAnimate }
 }

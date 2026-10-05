@@ -1,7 +1,7 @@
 'use client'
 
 import type { PropsWithChildren } from 'react'
-import { createContext, useContext, useMemo, useState } from 'react'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 
 import { NoContextProviderError } from '@/lib/errors/ContextError'
 
@@ -25,11 +25,34 @@ const TopBarDockContext = createContext<TopBarDockState | null>(null)
  * The header renders the slot and reacts to the state (sticky while a prompt is active, Connect
  * button hidden while it is docked); the page owns the prompt and portals it into the slot.
  * Used by the Holdings Don't Miss banner.
+ *
+ * While the top bar sticks, the page's scroll padding follows the bar and whatever is docked
+ * under it, so focus moves, anchors and `scrollIntoView` never land a target underneath them.
  */
 export function TopBarDockProvider({ children }: PropsWithChildren) {
   const [isActive, setActive] = useState(false)
   const [isDocked, setDocked] = useState(false)
   const [slot, setSlot] = useState<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (!isActive || !slot) return
+
+    const root = document.documentElement
+    // The slot hangs from the bottom of the top bar: its offset is the bar's height and its own
+    // height is the docked prompt's, which grows and shrinks as it docks and undocks
+    const update = () =>
+      root.style.setProperty('scroll-padding-top', `${slot.offsetTop + slot.offsetHeight}px`)
+
+    update()
+    const resizeObserver = typeof ResizeObserver === 'undefined' ? undefined : new ResizeObserver(update)
+    resizeObserver?.observe(slot)
+    if (slot.parentElement) resizeObserver?.observe(slot.parentElement)
+
+    return () => {
+      resizeObserver?.disconnect()
+      root.style.removeProperty('scroll-padding-top')
+    }
+  }, [isActive, slot])
 
   const value = useMemo(
     () => ({ isActive, isDocked: isActive && isDocked, slot, setActive, setDocked, setSlot }),
