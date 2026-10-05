@@ -7,7 +7,9 @@ import { UsersIcon } from '@/components/Icons'
 interface Props {
   isDelegatingToSelf: boolean
   onDelegateToSelf: () => void
-  onChooseDelegate: () => void
+  /** The delegates list is unfolded to pick someone else */
+  isChoosingDelegate: boolean
+  onToggleDelegates: () => void
 }
 
 /**
@@ -15,7 +17,12 @@ interface Props {
  * stRIF was sent to it rather than staked (staking self-delegates), so it carries no votes until the
  * account delegates it to itself or to someone else.
  */
-export const NotDelegatedSection = ({ isDelegatingToSelf, onDelegateToSelf, onChooseDelegate }: Props) => (
+export const NotDelegatedSection = ({
+  isDelegatingToSelf,
+  onDelegateToSelf,
+  isChoosingDelegate,
+  onToggleDelegates,
+}: Props) => (
   <EmptyState
     icon={<UsersIcon size={88} color="#37322F" strokeWidth={1.25} aria-hidden="true" />}
     title="You haven't delegated your voting power yet."
@@ -32,11 +39,12 @@ export const NotDelegatedSection = ({ isDelegatingToSelf, onDelegateToSelf, onCh
         </Button>
         <Button
           variant="secondary-outline"
-          onClick={onChooseDelegate}
+          onClick={onToggleDelegates}
           disabled={isDelegatingToSelf}
+          aria-expanded={isChoosingDelegate}
           data-testid="ChooseDelegateButton"
         >
-          Choose a delegate
+          {isChoosingDelegate ? 'Hide delegates' : 'Choose a delegate'}
         </Button>
       </div>
     }

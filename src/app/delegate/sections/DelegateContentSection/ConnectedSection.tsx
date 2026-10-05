@@ -156,6 +156,7 @@ export const ConnectedSection = () => {
   // A self-delegated holder picks a delegate from the list. An account that never delegated gets the
   // list behind "Choose a delegate", so delegating to itself stays the one main action.
   const isDelegatesListOpen = delegationStatus === 'self' && hasStRif
+  const isDelegatesListShown = shouldShowDelegates || isDelegatesListOpen
 
   return (
     <>
@@ -166,7 +167,8 @@ export const ConnectedSection = () => {
           // Only a delegation to myself: one to someone else always has a next delegatee
           isDelegatingToSelf={isPendingDelegate && !nextDelegatee}
           onDelegateToSelf={() => handleDelegate(ownAddress as Address)}
-          onChooseDelegate={onShowDelegates}
+          isChoosingDelegate={shouldShowDelegates}
+          onToggleDelegates={shouldShowDelegates ? onHideDelegates : onShowDelegates}
         />
       )}
       {!isPendingTx && (
@@ -174,8 +176,10 @@ export const ConnectedSection = () => {
           ref={delegatesContainerRef}
           className={cn(
             'transition-all duration-300 overflow-hidden',
-            shouldShowDelegates || isDelegatesListOpen ? 'max-h-[100%] opacity-100' : 'max-h-0 opacity-0',
+            isDelegatesListShown ? 'max-h-[100%] opacity-100' : 'max-h-0 opacity-0',
           )}
+          // Folded only by height: keep its input and buttons out of reach of keyboards and screen readers
+          inert={!isDelegatesListShown}
           data-testid="DelegatesContainer"
         >
           <DelegatesContainer

@@ -94,6 +94,8 @@ describe('ConnectedSection', () => {
 
         expect(banner()).toBe(expected)
         expect(isListShown()).toBe(list)
+        // A folded list must not be reachable by keyboard or screen readers
+        expect(screen.getByTestId('DelegatesContainer').hasAttribute('inert')).toBe(!list)
       },
     )
 
@@ -104,8 +106,23 @@ describe('ConnectedSection', () => {
       fireEvent.click(screen.getByTestId('ChooseDelegateButton'))
 
       expect(isListShown()).toBe(true)
+      expect(screen.getByTestId('DelegatesContainer')).not.toHaveAttribute('inert')
       expect(screen.getByTestId('DelegatesList')).toHaveAttribute('data-has-other-delegatee', 'false')
       expect(screen.getByTestId('DelegatesList')).toHaveAttribute('data-is-closable', 'true')
+    })
+
+    it('folds the list again from the same banner button', () => {
+      setContext({ delegationStatus: 'none', ownStRif: STRIF_20 })
+      render(<ConnectedSection />)
+      const chooseDelegateButton = screen.getByTestId('ChooseDelegateButton')
+
+      fireEvent.click(chooseDelegateButton)
+      expect(chooseDelegateButton).toHaveTextContent('Hide delegates')
+
+      fireEvent.click(chooseDelegateButton)
+
+      expect(isListShown()).toBe(false)
+      expect(chooseDelegateButton).toHaveTextContent('Choose a delegate')
     })
 
     it('keeps the list of a self-delegated holder open, without a way to close it', () => {
