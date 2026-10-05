@@ -46,7 +46,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
     delegated,
     own,
     available,
-    didIDelegateToMyself,
+    delegationStatus,
     delegateeAddress,
     isLoading,
     delegateeVotingPower,
@@ -146,8 +146,9 @@ export const DelegateContextProvider = ({ children }: Props) => {
   )
 
   const refetch = useCallback(() => {
-    refetchExternalDelegatedAmount()
-    refetchAllDelegates()
+    // Not awaited: the delegates list comes from an API that can fail, which must not turn a confirmed tx into an error
+    refetchAllDelegates().catch(err => console.error('Failed to refresh the delegates list', err))
+    return refetchExternalDelegatedAmount()
   }, [refetchExternalDelegatedAmount, refetchAllDelegates])
 
   // Update data when delegation data changes
@@ -158,8 +159,9 @@ export const DelegateContextProvider = ({ children }: Props) => {
         draft.cards.own.contentValue = Number(formatEther(own)).toFixed(0)
         draft.cards.delegated.contentValue = Number(formatEther(delegated)).toFixed(0)
         draft.cards.available.contentValue = Number(formatEther(available)).toFixed(0)
-        draft.didIDelegateToMyself = didIDelegateToMyself
-        if (delegateeAddress && !didIDelegateToMyself) {
+        draft.delegationStatus = delegationStatus
+        draft.ownStRif = own
+        if (delegationStatus === 'other' && delegateeAddress) {
           draft.currentDelegatee = {
             address: delegateeAddress,
             rns: delegateeRns,
@@ -180,7 +182,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
     delegated,
     own,
     available,
-    didIDelegateToMyself,
+    delegationStatus,
     delegateeAddress,
     delegateeRns,
     delegateeImageIpfs,
@@ -191,42 +193,30 @@ export const DelegateContextProvider = ({ children }: Props) => {
     delegateeVotingPower,
   ])
 
-  // Update displayed delegatee
+  // Update displayed delegatee. A delegate being picked only replaces the current one once its delegation
+  // is pending: until then it is shown by the confirmation modal, not as if it had been chosen already.
   useEffect(() => {
     setDataState(
       produce(draft => {
-        if (uiState.isDelegationPending) {
-          draft.displayedDelegatee = dataState.nextDelegatee
-        } else if (uiState.isReclaimPending) {
-          draft.displayedDelegatee = dataState.currentDelegatee
-        } else if (dataState.nextDelegatee) {
-          const knownDelegatee = getDelegateeData(dataState.nextDelegatee.address)
-          draft.displayedDelegatee = {
-            ...dataState.nextDelegatee,
-            ...knownDelegatee,
-          }
-        } else {
-          draft.displayedDelegatee = dataState.currentDelegatee
-        }
+        draft.displayedDelegatee = uiState.isDelegationPending
+          ? dataState.nextDelegatee
+          : dataState.currentDelegatee
       }),
     )
-  }, [
-    dataState.nextDelegatee,
-    dataState.currentDelegatee,
-    uiState.isDelegationPending,
-    uiState.isReclaimPending,
-    getDelegateeData,
-  ])
+  }, [dataState.nextDelegatee, dataState.currentDelegatee, uiState.isDelegationPending])
 
   // Update loading state when UI state changes
   useEffect(() => {
     setDataState(
       produce(draft => {
-        if (uiState.isReclaimPending || didIDelegateToMyself) {
-          // loading states
-          draft.cards.delegated.isLoading = uiState.isDelegationPending || uiState.isReclaimPending
-          draft.cards.available.isLoading = uiState.isDelegationPending || uiState.isReclaimPending
-        }
+        // A pending tx only changes these cards when it moves my own voting power: reclaiming it, or
+        // delegating it away from myself or for the first time. Derived on every run, so they also stop
+        // loading when the delegatee is re-read before the tx flow completes.
+        const isMovingMyVotes =
+          uiState.isReclaimPending ||
+          (uiState.isDelegationPending && (delegationStatus === 'self' || delegationStatus === 'none'))
+        draft.cards.delegated.isLoading = isLoading || isMovingMyVotes
+        draft.cards.available.isLoading = isLoading || isMovingMyVotes
 
         const ownValue = Number(formatEther(own))
         const delegatedValue = Number(formatEther(delegated))
@@ -235,7 +225,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
         // content values
         if (uiState.isDelegationPending) {
           // skip updating values if updating delegate
-          if (didIDelegateToMyself) {
+          if (delegationStatus === 'self') {
             draft.cards.delegated.contentValue = ownValue.toFixed(0)
             draft.cards.available.contentValue = (availableValue - ownValue).toFixed(0)
           }
@@ -255,17 +245,17 @@ export const DelegateContextProvider = ({ children }: Props) => {
     delegated,
     own,
     available,
-    didIDelegateToMyself,
+    delegationStatus,
+    isLoading,
   ])
 
-  // Update loading state when refetching
+  // Update loading state when refetching. Delegated and available also depend on pending txs, so the
+  // effect above owns them.
   useEffect(() => {
     setDataState(
       produce(draft => {
-        draft.cards.available.isLoading = isLoading
         draft.cards.own.isLoading = isLoading
         draft.cards.received.isLoading = isLoading
-        draft.cards.delegated.isLoading = isLoading
       }),
     )
   }, [isLoading])

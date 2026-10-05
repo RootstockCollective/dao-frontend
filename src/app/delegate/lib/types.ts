@@ -2,6 +2,8 @@
 import { ReactNode } from 'react'
 import { Address } from 'viem'
 
+import type { DelegationStatus } from '@/app/user/Delegation/hooks/useGetDelegates'
+
 interface CardState {
   contentValue?: ReactNode | string | undefined
   isLoading?: boolean
@@ -18,7 +20,9 @@ export interface CardsState {
 // Data state interface
 export interface DelegateDataState {
   cards: CardsState
-  didIDelegateToMyself: boolean
+  ownStRif: bigint
+  /** Undefined until the account's delegatee has been read */
+  delegationStatus?: DelegationStatus
   currentDelegatee?: DelegateeState
   nextDelegatee?: DelegateeState
   displayedDelegatee?: DelegateeState
@@ -46,7 +50,8 @@ export interface DelegateActions {
   setNextDelegatee: (nextDelegatee: DelegateeState | undefined) => void
   setIsDelegationPending: (isPending: boolean) => void
   setIsReclaimPending: (isPending: boolean) => void
-  refetch: () => void
+  /** Resolves once the account's on-chain delegation has been read again */
+  refetch: () => Promise<void>
 }
 
 // Combined context state interface

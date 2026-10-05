@@ -22,7 +22,8 @@ const defaultCardsState = {
 // Initial state
 export const initialDataState: DelegateDataState = {
   cards: defaultCardsState,
-  didIDelegateToMyself: false,
+  delegationStatus: undefined,
+  ownStRif: 0n,
   currentDelegatee: undefined,
   nextDelegatee: undefined,
   displayedDelegatee: undefined,
@@ -37,7 +38,7 @@ const initialActions: DelegateActions = {
   setIsDelegationPending: () => {},
   setIsReclaimPending: () => {},
   setNextDelegatee: () => {},
-  refetch: () => {},
+  refetch: () => Promise.resolve(),
 }
 
 export const initialContextState: DelegateContextState = {
@@ -51,7 +52,8 @@ export const VOTING_POWER_CARDS_INFO = {
     title: 'Available',
     tooltipTitle: (
       <>
-        This represents: <br /> Voting power delegated to you + (your tokens - tokens you delegated to others)
+        This represents: <br /> Voting power delegated to you + your tokens, once you delegate them to
+        yourself
       </>
     ),
   },

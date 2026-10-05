@@ -31,6 +31,7 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
   const { address: ownAddress } = useAccount()
   const {
     delegateeAddress,
+    delegationStatus,
     isLoading: isDelegateLoading,
     refetch: refetchDelegate,
   } = useGetDelegates(address)
@@ -88,16 +89,12 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
 
   const isLoading = isDelegateLoading || isVotingPowerLoading || isBalanceLoading
 
-  const didIDelegateToMyself = ownAddress === delegateeAddress
+  const didIDelegateToMyself = delegationStatus === 'self'
   const doIHaveVotingPower = (votingPower || 0n) > 0n
 
   let amountDelegatedToMe = 0n
-  let delegated = 0n
-  let own = balance || 0n
-
-  if (!didIDelegateToMyself) {
-    delegated = own || 0n
-  }
+  const own = balance || 0n
+  const delegated = delegationStatus === 'other' ? own : 0n
 
   if (!didIDelegateToMyself && doIHaveVotingPower) {
     amountDelegatedToMe = votingPower || 0n
@@ -107,19 +104,19 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
     amountDelegatedToMe = votingPower - balance
   }
 
-  const refetch = () => {
-    refetchVotingPower()
-    refetchBalance()
-    refetchDelegate()
+  const refetch = async () => {
+    await Promise.all([refetchVotingPower(), refetchBalance(), refetchDelegate()])
   }
 
   return {
     amount: amountDelegatedToMe,
     isLoading,
-    didIDelegateToMyself,
+    delegationStatus,
     delegated,
     own,
-    available: amountDelegatedToMe + (own - delegated),
+    // What the account can vote with. Only stRIF delegated to it counts, its own included once self-delegated.
+    // If the votes could not be read, fall back to the own stRIF that a self-delegation is known to count.
+    available: votingPower ?? (didIDelegateToMyself ? own : 0n),
     delegateeAddress,
     refetch,
     delegateeVotingPower,

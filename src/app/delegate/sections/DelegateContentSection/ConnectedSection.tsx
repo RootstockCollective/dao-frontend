@@ -8,9 +8,12 @@ import { DelegateModal } from '@/app/delegate/components/DelegateModal'
 import { useDelegateContext } from '@/app/delegate/contexts/DelegateContext'
 import { DelegatesContainer } from '@/app/delegate/sections/DelegateContentSection/DelegatesContainer'
 import { DelegationDetailsSection } from '@/app/delegate/sections/DelegateContentSection/DelegationDetailsSection'
+import { NotDelegatedSection } from '@/app/delegate/sections/DelegateContentSection/NotDelegatedSection'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
+import { formatSymbol } from '@/app/shared/formatter'
 import { isUserRejectedTxError, txFailureProps } from '@/components/ErrorPage/commonErrors'
-import { cn, formatNumberWithCommas } from '@/lib/utils'
+import { STRIF } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 import { executeTxFlow } from '@/shared/notification/executeTxFlow'
 
@@ -18,11 +21,13 @@ import { DelegateeState } from '../../lib/types'
 
 export const ConnectedSection = () => {
   const {
-    didIDelegateToMyself,
+    delegationStatus,
+    ownStRif,
     cards,
     isDelegationPending,
     isReclaimPending,
     displayedDelegatee,
+    nextDelegatee,
     setIsDelegationPending,
     setIsReclaimPending,
     setNextDelegatee,
@@ -49,8 +54,9 @@ export const ConnectedSection = () => {
           setIsDelegationPending(true)
           setIsDelegateModalOpened(false)
         },
-        onSuccess: () => {
-          refetch()
+        // Awaited so the tx stays pending until the page shows the new delegate, and cannot be sent twice
+        onSuccess: async () => {
+          await refetch()
           onHideDelegates()
         },
         onError: (txHash, err) => {
@@ -131,7 +137,9 @@ export const ConnectedSection = () => {
     setIsReclaimModalOpened(true)
   }
 
-  const votingPower = formatNumberWithCommas(Number(cards.own.contentValue))
+  const hasStRif = ownStRif > 0n
+  // Shows "<1" for less than 1 stRIF, where the cards' rounded value would read 0
+  const votingPower = formatSymbol(ownStRif, STRIF)
 
   const isPendingTx = isDelegationPending || isReclaimPending
 
@@ -139,34 +147,52 @@ export const ConnectedSection = () => {
   const isPendingDelegate = isDelegationPending || isRequestingDelegate
   const isPendingReclaim = isReclaimPending || isRequestingReclaim
 
+  // With no one else to replace, the delegates list is how a delegate is picked, so it stays open
+  const isPickingFirstDelegate = delegationStatus === 'self' || delegationStatus === 'none'
+
   return (
     <>
       <DelegationDetailsSection onShowReclaim={onShowReclaim} onShowDelegates={onShowDelegates} />
+      {/* Waits for the stRIF balance, which decides the banner's action */}
+      {delegationStatus === 'none' && !displayedDelegatee && !cards.own.isLoading && (
+        <NotDelegatedSection
+          hasStRif={hasStRif}
+          // Only an activation: a delegation to someone else always has a next delegatee
+          isActivating={isPendingDelegate && !nextDelegatee}
+          // Voting power is activated by delegating it to yourself
+          onActivate={() => handleDelegate(ownAddress as Address)}
+        />
+      )}
       {!isPendingTx && (
         <div
           ref={delegatesContainerRef}
           className={cn(
             'transition-all duration-300 overflow-hidden',
-            shouldShowDelegates || didIDelegateToMyself ? 'max-h-[100%] opacity-100' : 'max-h-0 opacity-0',
+            shouldShowDelegates || isPickingFirstDelegate ? 'max-h-[100%] opacity-100' : 'max-h-0 opacity-0',
           )}
           data-testid="DelegatesContainer"
         >
           <DelegatesContainer
-            didIDelegateToMyself={didIDelegateToMyself}
+            hasOtherDelegatee={delegationStatus === 'other'}
             onDelegate={onNextDelegate}
             onCloseClick={onHideDelegates}
           />
         </div>
       )}
-      {isDelegateModalOpened && displayedDelegatee && (
+      {isDelegateModalOpened && nextDelegatee && (
         <DelegateModal
           onDelegate={handleDelegate}
           onClose={onCloseDelegateModal}
           isLoading={isPendingDelegate}
-          title={`You are about to delegate your own voting power of ${votingPower} to`}
-          address={displayedDelegatee.address}
-          name={displayedDelegatee.rns}
-          imageIpfs={displayedDelegatee.imageIpfs}
+          title={
+            hasStRif
+              ? `You are about to delegate your own voting power of ${votingPower} to`
+              : // The delegate is kept when staking, so it can be chosen before having stRIF
+                'You have no stRIF yet. The stRIF you stake will be delegated to'
+          }
+          address={nextDelegatee.address}
+          name={nextDelegatee.rns}
+          imageIpfs={nextDelegatee.imageIpfs}
           actionButtonText={isPendingDelegate ? 'Delegating...' : 'Delegate'}
           data-testid="delegateModal"
         />

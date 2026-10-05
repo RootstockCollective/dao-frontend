@@ -1,8 +1,7 @@
 'use client'
 
+import { EmptyState } from '@/components/EmptyState'
 import { DisconnectIcon } from '@/components/Icons'
-import { Paragraph } from '@/components/Typography'
-import { cn } from '@/lib/utils'
 import { ConnectButtonOrangeComponent } from '@/shared/walletConnection'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 
@@ -29,21 +28,16 @@ export const WalletNotConnectedSection = ({
   className,
   'data-testid': dataTestId,
 }: WalletNotConnectedSectionProps) => (
-  <div
-    className={cn('flex flex-col justify-center items-center py-20 px-6 bg-bg-80', className)}
-    data-testid={dataTestId}
-  >
-    <div className="mb-6">
-      <DisconnectIcon size={88} fill="#37322F" />
-    </div>
-    <div className="flex flex-col items-center justify-center">
-      <Paragraph bold className="text-text-100 mt-1">
-        {title}
-      </Paragraph>
-      <Paragraph className="text-text-60 text-center mb-6">{subtitle}</Paragraph>
+  <EmptyState
+    icon={<DisconnectIcon size={88} fill="#37322F" />}
+    title={title}
+    subtitle={subtitle}
+    action={
       <ConnectWorkflow
         ConnectComponent={props => <ConnectButtonOrangeComponent className="py-3 px-4" {...props} />}
       />
-    </div>
-  </div>
+    }
+    className={className}
+    data-testid={dataTestId}
+  />
 )

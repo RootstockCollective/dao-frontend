@@ -1,0 +1,95 @@
+import { cleanup, renderHook } from '@testing-library/react'
+import { parseEther } from 'viem'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { useGetExternalDelegatedAmount } from './useGetExternalDelegatedAmount'
+
+const ACCOUNT = '0x00000000000000000000000000000000000000Ab'
+const DELEGATEE = '0x00000000000000000000000000000000000000cd'
+
+const mocks = vi.hoisted(() => ({
+  delegates: {
+    delegateeAddress: undefined as string | undefined,
+    delegationStatus: undefined as string | undefined,
+  },
+  reads: {} as Record<string, bigint | undefined>,
+}))
+
+vi.mock('wagmi', () => ({
+  useAccount: () => ({ address: ACCOUNT }),
+  useReadContract: (config?: { functionName: string; args: [string] }) => ({
+    data: config && mocks.reads[`${config.functionName}:${config.args[0]}`],
+    isLoading: false,
+    refetch: vi.fn(),
+  }),
+}))
+vi.mock('@/app/user/Delegation/hooks/useGetDelegates', () => ({
+  useGetDelegates: () => ({ ...mocks.delegates, isLoading: false, refetch: vi.fn() }),
+}))
+vi.mock('@/lib/rns', () => ({ getEnsDomainName: () => Promise.resolve(undefined) }))
+
+const BALANCE = parseEther('20')
+const RECEIVED = parseEther('5')
+
+describe('useGetExternalDelegatedAmount', () => {
+  beforeEach(() => {
+    mocks.reads = { [`balanceOf:${ACCOUNT}`]: BALANCE }
+  })
+
+  afterEach(cleanup)
+
+  it('counts nothing as delegated, and only received votes as available, when the account never delegated', () => {
+    mocks.delegates = { delegateeAddress: undefined, delegationStatus: 'none' }
+    // Undelegated stRIF adds no votes: getVotes only holds what others delegated
+    mocks.reads[`getVotes:${ACCOUNT}`] = RECEIVED
+
+    const { result } = renderHook(() => useGetExternalDelegatedAmount(ACCOUNT))
+
+    expect(result.current).toMatchObject({
+      delegationStatus: 'none',
+      own: BALANCE,
+      delegated: 0n,
+      amount: RECEIVED,
+      available: RECEIVED,
+    })
+  })
+
+  it('counts the whole balance as delegated when it went to someone else', () => {
+    mocks.delegates = { delegateeAddress: DELEGATEE, delegationStatus: 'other' }
+    mocks.reads[`getVotes:${ACCOUNT}`] = RECEIVED
+
+    const { result } = renderHook(() => useGetExternalDelegatedAmount(ACCOUNT))
+
+    expect(result.current).toMatchObject({ delegated: BALANCE, amount: RECEIVED, available: RECEIVED })
+  })
+
+  it('makes the balance plus what was received available when delegated to myself', () => {
+    mocks.delegates = { delegateeAddress: ACCOUNT, delegationStatus: 'self' }
+    mocks.reads[`getVotes:${ACCOUNT}`] = BALANCE + RECEIVED
+
+    const { result } = renderHook(() => useGetExternalDelegatedAmount(ACCOUNT))
+
+    expect(result.current).toMatchObject({
+      delegationStatus: 'self',
+      delegated: 0n,
+      amount: RECEIVED,
+      available: BALANCE + RECEIVED,
+    })
+  })
+
+  it('falls back to the own stRIF of a self-delegated account when its votes cannot be read', () => {
+    mocks.delegates = { delegateeAddress: ACCOUNT, delegationStatus: 'self' }
+
+    const { result } = renderHook(() => useGetExternalDelegatedAmount(ACCOUNT))
+
+    expect(result.current.available).toBe(BALANCE)
+  })
+
+  it('makes nothing available when the votes of an account delegated elsewhere cannot be read', () => {
+    mocks.delegates = { delegateeAddress: DELEGATEE, delegationStatus: 'other' }
+
+    const { result } = renderHook(() => useGetExternalDelegatedAmount(ACCOUNT))
+
+    expect(result.current.available).toBe(0n)
+  })
+})
