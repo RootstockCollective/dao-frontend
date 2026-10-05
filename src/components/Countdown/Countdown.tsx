@@ -3,24 +3,10 @@ import { useBlockNumber } from 'wagmi'
 
 import { Paragraph } from '@/components/Typography'
 import Big from '@/lib/big'
-import { DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
-import { CountdownProps, TimeSource } from './types'
-
-/**
- * Calculates the time remaining in seconds
- */
-const calculateTimeRemaining = (end: Big, currentTime: Big, timeSource: TimeSource): number => {
-  const remaining = end.minus(currentTime)
-  if (remaining.lte(0)) return 0
-
-  if (timeSource === 'blocks') {
-    return remaining.mul(DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK).toNumber()
-  } else {
-    return remaining.toNumber()
-  }
-}
+import { calculateTimeRemaining } from './timeRemaining'
+import { CountdownProps } from './types'
 
 /**
  * Calculates the ratio for color coding (0 = no time left, 1 = full time remaining)

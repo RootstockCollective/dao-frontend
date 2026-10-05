@@ -3,6 +3,7 @@ import { DateTime } from 'luxon'
 import { Cycle } from '@/app/collective-rewards/metrics'
 import { NEED_RIF, NEED_STRIF } from '@/app/user/IntroModal/hooks/useRequiredTokens'
 import { Span } from '@/components/Typography'
+import { formatCountdown } from '@/lib/utils/formatCountdown'
 
 import {
   BANNER_CONFIGS,
@@ -110,7 +111,7 @@ export const getBannerConfigForCycleEnding = (cycle: Cycle): BannerConfig | null
     ...staticConfig,
     rightContent: (
       <Span bold variant="body-s" className="text-banner-title mr-2 whitespace-nowrap tabular-nums">
-        {`${diff.toFormat("d'd' hh'h' mm'm'")}`}
+        {formatCountdown(diff)}
       </Span>
     ),
   }

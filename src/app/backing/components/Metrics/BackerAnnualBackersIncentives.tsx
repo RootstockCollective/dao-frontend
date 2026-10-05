@@ -1,6 +1,7 @@
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 
+import { AbiWithBoost } from '@/app/collective-rewards/abi-boost/components/AbiWithBoost'
 import { useGetBackerABI } from '@/app/collective-rewards/shared'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
@@ -46,8 +47,10 @@ export const BackerAnnualBackersIncentives = () => {
       }
     >
       <Header variant={isDesktop ? 'h1' : 'h3'}>
-        {abiPct.toFixed(0)}
-        <Label variant={isDesktop ? 'body-l' : 'body-s'}> % (estimated)</Label>
+        <AbiWithBoost
+          abi={abiPct}
+          suffix={<Label variant={isDesktop ? 'body-l' : 'body-s'}> % (estimated)</Label>}
+        />
       </Header>
     </Metric>
   )
