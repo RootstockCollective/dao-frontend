@@ -32,12 +32,18 @@ vi.mock('@/app/delegate/sections/DelegateContentSection/DelegationDetailsSection
 vi.mock('@/app/delegate/sections/DelegateContentSection/DelegatesContainer', () => ({
   DelegatesContainer: ({
     hasOtherDelegatee,
+    isClosable,
     onDelegate,
   }: {
     hasOtherDelegatee: boolean
+    isClosable: boolean
     onDelegate: (address: string) => void
   }) => (
-    <div data-testid="DelegatesList" data-has-other-delegatee={String(hasOtherDelegatee)}>
+    <div
+      data-testid="DelegatesList"
+      data-has-other-delegatee={String(hasOtherDelegatee)}
+      data-is-closable={String(isClosable)}
+    >
       <button onClick={() => onDelegate(DELEGATEE)}>pick delegate</button>
     </div>
   ),
@@ -70,7 +76,8 @@ describe('ConnectedSection', () => {
       // Never delegated
       { status: 'none', own: 0n, votes: 0n, expected: 'no voting power', list: false },
       { status: 'none', own: 0n, votes: STRIF_20, expected: 'none', list: false },
-      { status: 'none', own: STRIF_20, votes: 0n, expected: 'not delegated', list: true },
+      // The list waits behind "Choose a delegate", so delegating to itself is the one main action
+      { status: 'none', own: STRIF_20, votes: 0n, expected: 'not delegated', list: false },
       // Delegated to itself, e.g. after staking
       { status: 'self', own: 0n, votes: 0n, expected: 'no voting power', list: false },
       { status: 'self', own: 0n, votes: STRIF_20, expected: 'none', list: false },
@@ -90,12 +97,23 @@ describe('ConnectedSection', () => {
       },
     )
 
-    it('tells a stRIF holder that never delegated to pick a first delegate, not to replace one', () => {
+    it('opens the list from "Choose a delegate", as a first delegate that can be closed again', () => {
       setContext({ delegationStatus: 'none', ownStRif: STRIF_20 })
+      render(<ConnectedSection />)
+
+      fireEvent.click(screen.getByTestId('ChooseDelegateButton'))
+
+      expect(isListShown()).toBe(true)
+      expect(screen.getByTestId('DelegatesList')).toHaveAttribute('data-has-other-delegatee', 'false')
+      expect(screen.getByTestId('DelegatesList')).toHaveAttribute('data-is-closable', 'true')
+    })
+
+    it('keeps the list of a self-delegated holder open, without a way to close it', () => {
+      setContext({ delegationStatus: 'self', ownStRif: STRIF_20, availableVotes: STRIF_20 })
 
       render(<ConnectedSection />)
 
-      expect(screen.getByTestId('DelegatesList')).toHaveAttribute('data-has-other-delegatee', 'false')
+      expect(screen.getByTestId('DelegatesList')).toHaveAttribute('data-is-closable', 'false')
     })
 
     it('shows no banner while the account is still being read', () => {

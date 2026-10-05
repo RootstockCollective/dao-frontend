@@ -153,8 +153,9 @@ export const ConnectedSection = () => {
   const isOwnVotingPower = hasNoOtherDelegatee(delegationStatus)
   // The banners wait for the balances and votes, which decide which one applies
   const isAccountRead = !cards.own.isLoading
-  // Only own stRIF can be delegated: votes others delegated to the account cannot be passed on
-  const isDelegatesListOpen = isOwnVotingPower && hasStRif
+  // A self-delegated holder picks a delegate from the list. An account that never delegated gets the
+  // list behind "Choose a delegate", so delegating to itself stays the one main action.
+  const isDelegatesListOpen = delegationStatus === 'self' && hasStRif
 
   return (
     <>
@@ -165,6 +166,7 @@ export const ConnectedSection = () => {
           // Only a delegation to myself: one to someone else always has a next delegatee
           isDelegatingToSelf={isPendingDelegate && !nextDelegatee}
           onDelegateToSelf={() => handleDelegate(ownAddress as Address)}
+          onChooseDelegate={onShowDelegates}
         />
       )}
       {!isPendingTx && (
@@ -178,6 +180,7 @@ export const ConnectedSection = () => {
         >
           <DelegatesContainer
             hasOtherDelegatee={delegationStatus === 'other'}
+            isClosable={!isDelegatesListOpen}
             onDelegate={onNextDelegate}
             onCloseClick={onHideDelegates}
           />

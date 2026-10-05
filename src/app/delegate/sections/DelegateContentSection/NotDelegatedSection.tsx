@@ -7,6 +7,7 @@ import { UsersIcon } from '@/components/Icons'
 interface Props {
   isDelegatingToSelf: boolean
   onDelegateToSelf: () => void
+  onChooseDelegate: () => void
 }
 
 /**
@@ -14,20 +15,30 @@ interface Props {
  * stRIF was sent to it rather than staked (staking self-delegates), so it carries no votes until the
  * account delegates it to itself or to someone else.
  */
-export const NotDelegatedSection = ({ isDelegatingToSelf, onDelegateToSelf }: Props) => (
+export const NotDelegatedSection = ({ isDelegatingToSelf, onDelegateToSelf, onChooseDelegate }: Props) => (
   <EmptyState
     icon={<UsersIcon size={88} color="#37322F" strokeWidth={1.25} aria-hidden="true" />}
     title="You haven't delegated your voting power yet."
-    subtitle="Your stRIF only counts once it's delegated. Delegate it to yourself to vote, or choose a delegate below."
+    subtitle="Your stRIF only counts once it's delegated. Delegate it to yourself to vote, or choose someone to vote for you."
     action={
-      <Button
-        variant="primary"
-        onClick={onDelegateToSelf}
-        disabled={isDelegatingToSelf}
-        data-testid="NotDelegatedButton"
-      >
-        {isDelegatingToSelf ? 'Delegating...' : 'Delegate to myself'}
-      </Button>
+      <div className="flex w-full flex-col gap-3 md:w-auto md:flex-row">
+        <Button
+          variant="primary"
+          onClick={onDelegateToSelf}
+          disabled={isDelegatingToSelf}
+          data-testid="NotDelegatedButton"
+        >
+          {isDelegatingToSelf ? 'Delegating...' : 'Delegate to myself'}
+        </Button>
+        <Button
+          variant="secondary-outline"
+          onClick={onChooseDelegate}
+          disabled={isDelegatingToSelf}
+          data-testid="ChooseDelegateButton"
+        >
+          Choose a delegate
+        </Button>
+      </div>
     }
     data-testid="NotDelegatedSection"
   />
