@@ -91,7 +91,7 @@ describe('DelegateContextProvider on the delegation page', () => {
 
     renderPage()
 
-    expect(await screen.findByTestId('NotDelegatedSection')).toHaveTextContent('Activate voting power')
+    expect(await screen.findByTestId('NotDelegatedSection')).toHaveTextContent('Delegate to myself')
     expect(screen.queryByTestId(`delegateCardContainer-${zeroAddress}`)).not.toBeInTheDocument()
     expect(screen.queryByText(/You have chosen/)).not.toBeInTheDocument()
     // Its stRIF is neither delegated nor counted as voting power
@@ -106,6 +106,30 @@ describe('DelegateContextProvider on the delegation page', () => {
     renderPage()
 
     expect(screen.queryByTestId('NotDelegatedSection')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('NoVotingPowerSection')).not.toBeInTheDocument()
+  })
+
+  it('does not tell an account that others delegated to that it has no voting power', async () => {
+    mocks.reads[`delegates:${ACCOUNT}`] = zeroAddress
+    mocks.reads[`balanceOf:${ACCOUNT}`] = 0n
+    mocks.reads[`getVotes:${ACCOUNT}`] = parseEther('500000')
+
+    renderPage()
+
+    expect(await screen.findByTestId('AvailableCard')).toHaveTextContent('500000')
+    expect(screen.queryByTestId('NoVotingPowerSection')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('NotDelegatedSection')).not.toBeInTheDocument()
+  })
+
+  it('tells a self-delegated account that unstaked everything that it has no voting power', async () => {
+    mocks.reads[`delegates:${ACCOUNT}`] = ACCOUNT
+    mocks.reads[`balanceOf:${ACCOUNT}`] = 0n
+
+    renderPage()
+
+    expect(await screen.findByTestId('NoVotingPowerSection')).toHaveTextContent(
+      "You don't have voting power yet.",
+    )
   })
 
   it('still shows the delegate card of an account delegated to someone else', async () => {
@@ -143,7 +167,7 @@ describe('DelegateContextProvider on the delegation page', () => {
     expect(screen.getByTestId('DelegatedCard')).toHaveTextContent('20')
   })
 
-  it('shows the cards loading while voting power is activated', async () => {
+  it('shows the cards loading while an account that never delegated delegates to itself', async () => {
     mocks.reads[`delegates:${ACCOUNT}`] = zeroAddress
     renderPage()
     await screen.findByTestId('NotDelegatedSection')

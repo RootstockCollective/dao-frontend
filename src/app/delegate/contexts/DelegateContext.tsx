@@ -11,6 +11,7 @@ import {
   DelegateeState,
   DelegateUIState,
 } from '@/app/delegate/lib/types'
+import { hasNoOtherDelegatee } from '@/app/user/Delegation/hooks/useGetDelegates'
 import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import Big from '@/lib/big'
@@ -161,6 +162,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
         draft.cards.available.contentValue = Number(formatEther(available)).toFixed(0)
         draft.delegationStatus = delegationStatus
         draft.ownStRif = own
+        draft.availableVotes = available
         if (delegationStatus === 'other' && delegateeAddress) {
           draft.currentDelegatee = {
             address: delegateeAddress,
@@ -213,8 +215,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
         // delegating it away from myself or for the first time. Derived on every run, so they also stop
         // loading when the delegatee is re-read before the tx flow completes.
         const isMovingMyVotes =
-          uiState.isReclaimPending ||
-          (uiState.isDelegationPending && (delegationStatus === 'self' || delegationStatus === 'none'))
+          uiState.isReclaimPending || (uiState.isDelegationPending && hasNoOtherDelegatee(delegationStatus))
         draft.cards.delegated.isLoading = isLoading || isMovingMyVotes
         draft.cards.available.isLoading = isLoading || isMovingMyVotes
 

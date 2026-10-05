@@ -9,8 +9,10 @@ import { useDelegateContext } from '@/app/delegate/contexts/DelegateContext'
 import { DelegatesContainer } from '@/app/delegate/sections/DelegateContentSection/DelegatesContainer'
 import { DelegationDetailsSection } from '@/app/delegate/sections/DelegateContentSection/DelegationDetailsSection'
 import { NotDelegatedSection } from '@/app/delegate/sections/DelegateContentSection/NotDelegatedSection'
+import { NoVotingPowerSection } from '@/app/delegate/sections/DelegateContentSection/NoVotingPowerSection'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
 import { formatSymbol } from '@/app/shared/formatter'
+import { hasNoOtherDelegatee } from '@/app/user/Delegation/hooks/useGetDelegates'
 import { isUserRejectedTxError, txFailureProps } from '@/components/ErrorPage/commonErrors'
 import { STRIF } from '@/lib/constants'
 import { cn } from '@/lib/utils'
@@ -23,6 +25,7 @@ export const ConnectedSection = () => {
   const {
     delegationStatus,
     ownStRif,
+    availableVotes,
     cards,
     isDelegationPending,
     isReclaimPending,
@@ -147,20 +150,21 @@ export const ConnectedSection = () => {
   const isPendingDelegate = isDelegationPending || isRequestingDelegate
   const isPendingReclaim = isReclaimPending || isRequestingReclaim
 
-  // With no one else to replace, the delegates list is how a delegate is picked, so it stays open
-  const isPickingFirstDelegate = delegationStatus === 'self' || delegationStatus === 'none'
+  const isOwnVotingPower = hasNoOtherDelegatee(delegationStatus)
+  // The banners wait for the balances and votes, which decide which one applies
+  const isAccountRead = !cards.own.isLoading
+  // Only own stRIF can be delegated: votes others delegated to the account cannot be passed on
+  const isDelegatesListOpen = isOwnVotingPower && hasStRif
 
   return (
     <>
       <DelegationDetailsSection onShowReclaim={onShowReclaim} onShowDelegates={onShowDelegates} />
-      {/* Waits for the stRIF balance, which decides the banner's action */}
-      {delegationStatus === 'none' && !displayedDelegatee && !cards.own.isLoading && (
+      {isAccountRead && isOwnVotingPower && !hasStRif && availableVotes === 0n && <NoVotingPowerSection />}
+      {isAccountRead && delegationStatus === 'none' && hasStRif && !displayedDelegatee && (
         <NotDelegatedSection
-          hasStRif={hasStRif}
-          // Only an activation: a delegation to someone else always has a next delegatee
-          isActivating={isPendingDelegate && !nextDelegatee}
-          // Voting power is activated by delegating it to yourself
-          onActivate={() => handleDelegate(ownAddress as Address)}
+          // Only a delegation to myself: one to someone else always has a next delegatee
+          isDelegatingToSelf={isPendingDelegate && !nextDelegatee}
+          onDelegateToSelf={() => handleDelegate(ownAddress as Address)}
         />
       )}
       {!isPendingTx && (
@@ -168,7 +172,7 @@ export const ConnectedSection = () => {
           ref={delegatesContainerRef}
           className={cn(
             'transition-all duration-300 overflow-hidden',
-            shouldShowDelegates || isPickingFirstDelegate ? 'max-h-[100%] opacity-100' : 'max-h-0 opacity-0',
+            shouldShowDelegates || isDelegatesListOpen ? 'max-h-[100%] opacity-100' : 'max-h-0 opacity-0',
           )}
           data-testid="DelegatesContainer"
         >

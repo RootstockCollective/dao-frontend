@@ -24,6 +24,7 @@ export const initialDataState: DelegateDataState = {
   cards: defaultCardsState,
   delegationStatus: undefined,
   ownStRif: 0n,
+  availableVotes: 0n,
   currentDelegatee: undefined,
   nextDelegatee: undefined,
   displayedDelegatee: undefined,

@@ -13,6 +13,10 @@ const stRifContract = {
 /** Where an account's voting power goes: to itself, to someone else, or nowhere because it never delegated */
 export type DelegationStatus = 'self' | 'other' | 'none'
 
+/** The account's voting power is not delegated to someone else: it stays with the account, or goes nowhere */
+export const hasNoOtherDelegatee = (status: DelegationStatus | undefined) =>
+  status === 'self' || status === 'none'
+
 const getDelegationStatus = (account: Address, delegatee: Address): DelegationStatus => {
   // stRIF reports the zero address for an account that has never delegated
   if (delegatee === zeroAddress) return 'none'
