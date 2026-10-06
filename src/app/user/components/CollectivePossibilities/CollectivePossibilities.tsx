@@ -1,15 +1,29 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
+import useLocalStorageState from 'use-local-storage-state'
 
 import { Button } from '@/components/Button'
 import { CommonComponentProps } from '@/components/commonProps'
 import { DismissButton } from '@/components/DismissButton'
-import { Header, Paragraph, Span } from '@/components/Typography'
+import { useTopBarDock } from '@/components/MainContainer/TopBarDockProvider'
 import { cn } from '@/lib/utils'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
+import type { ConnectButtonComponentProps } from '@/shared/walletConnection/types'
 
 import { MotionLogo } from './MotionLogo'
+import { PossibilitiesDock } from './PossibilitiesDock'
+import { PosterArt } from './PosterArt'
+import { CONNECT_CTA_CLASSES, EYEBROW_CLASSES } from './styles'
+import { useScrollDock } from './useScrollDock'
+
+/**
+ * Remembers the dismissal per browser, across reloads. The layout only renders on the client
+ * (DelayedRender), so the stored value is read on the first render and a dismissed banner
+ * never flashes in.
+ */
+export const DISMISSED_STORAGE_KEY = 'rc.holdings.dontMiss.dismissed'
 
 const POSSIBILITIES = [
   {
@@ -27,66 +41,187 @@ const POSSIBILITIES = [
 ]
 
 /**
- * Light hero shown to visitors without a connected wallet: the animated Collective logo
- * next to the three things the DAO lets them do, plus the connect call to action.
+ * Declared once, not inline, so a re-render (the dock flipping on scroll) keeps the same button
+ * and the focus on it.
+ */
+const BannerConnectButton = ({ onClick }: ConnectButtonComponentProps) => (
+  <Button onClick={onClick} className={cn(CONNECT_CTA_CLASSES, 'h-12 px-[26px]')} data-testid="ConnectButton">
+    Connect wallet
+  </Button>
+)
+
+const FOCUSABLE_SELECTOR = [
+  'a[href]',
+  'button:not([disabled])',
+  'input:not([disabled])',
+  'select:not([disabled])',
+  'textarea:not([disabled])',
+  '[tabindex]:not([tabindex="-1"])',
+].join(',')
+
+/**
+ * The controls that follow `element` in the document, leaving out those above the viewport: that
+ * is where the page was, not where the user is (the dock X is pressed far down the page).
+ */
+const getFocusablesAfter = (element: HTMLElement) =>
+  [...document.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)].filter(
+    candidate =>
+      Boolean(element.compareDocumentPosition(candidate) & Node.DOCUMENT_POSITION_FOLLOWING) &&
+      !element.contains(candidate) &&
+      candidate.getBoundingClientRect().bottom > 0,
+  )
+
+/** Focuses the first candidate that takes it; hidden or inert ones do not. */
+const focusFirst = (candidates: HTMLElement[]) => {
+  for (const candidate of candidates) {
+    candidate.focus()
+    if (document.activeElement === candidate) return
+  }
+}
+
+/**
+ * Dark hero shown to visitors without a connected wallet: the three things the DAO lets them
+ * do and the connect call to action, next to the animated Collective logo.
+ *
+ * The layout follows the width of the content column rather than the viewport, since the
+ * sidebar can be open or collapsed, so the breakpoints are container queries on the width of the
+ * layout's `<main>`, padding included (the `content` container), as in the design reference:
+ * - 1180px and up: logo tile on the right, the three pillars side by side
+ * - 900 to 1179px: tile on the right, one pillar per row with the label beside the text
+ * - below 900px: the tile becomes a strip across the top showing only the poster, anchored on
+ *   its bright edge with the molecule on the right, and the actions wrap under the title
+ *
+ * Scrolling it away shrinks and fades it and docks a compact bar under the top bar
+ * (PossibilitiesDock), which stands in for the top bar's own Connect button until the banner
+ * comes back. Dismissing either one removes both, for good in this browser.
  */
 export const CollectivePossibilities = ({ className }: CommonComponentProps) => {
-  // Dismissal lasts for the session only: a reload brings the card back
-  const [isDismissed, setIsDismissed] = useState(false)
+  const titleId = useId()
+  const [isDismissed, setIsDismissed] = useLocalStorageState(DISMISSED_STORAGE_KEY, { defaultValue: false })
+  const wrapperRef = useRef<HTMLDivElement>(null)
+  const bannerRef = useRef<HTMLElement>(null)
+  const tileRef = useRef<HTMLDivElement>(null)
+  const actionsRef = useRef<HTMLDivElement>(null)
+  const nextFocusRef = useRef<HTMLElement[]>([])
+
+  const { slot, setActive, setDocked } = useTopBarDock()
+  const { isDocked, shouldAnimate } = useScrollDock({
+    bannerRef,
+    tileRef,
+    anchor: slot,
+    isEnabled: !isDismissed,
+  })
+
+  useEffect(() => {
+    setActive(!isDismissed)
+    return () => setActive(false)
+  }, [isDismissed, setActive])
+
+  useEffect(() => {
+    setDocked(isDocked)
+    return () => setDocked(false)
+  }, [isDocked, setDocked])
+
+  const dismiss = () => {
+    // The X that has focus is about to go. Rather than let the focus drop to the body, pick what
+    // follows the banner on screen while the banner can still anchor the search...
+    const wrapper = wrapperRef.current
+    const focused = document.activeElement
+    if (wrapper && focused && (wrapper.contains(focused) || slot?.contains(focused))) {
+      nextFocusRef.current = getFocusablesAfter(wrapper)
+    }
+    setIsDismissed(true)
+  }
+
+  // ...and move it there once the banner is gone, so the browser can bring it back into view if
+  // removing the banner pushed it out
+  useLayoutEffect(() => {
+    if (!isDismissed) return
+    focusFirst(nextFocusRef.current)
+    nextFocusRef.current = []
+  }, [isDismissed])
 
   if (isDismissed) {
     return null
   }
 
   return (
-    <div
-      data-testid="CollectivePossibilities"
-      className={cn(
-        'flex w-full flex-col overflow-hidden rounded-sm bg-v3-text-80 text-v3-bg-accent-100 lg:flex-row',
-        className,
-      )}
-    >
-      <MotionLogo className="h-[160px] w-full shrink-0 lg:h-auto lg:w-[200px]" />
+    <div ref={wrapperRef} data-testid="CollectivePossibilities" className={cn('mb-4 max-md:mt-4', className)}>
+      <section
+        ref={bannerRef}
+        aria-labelledby={titleId}
+        className={cn(
+          'relative grid origin-top grid-cols-1 overflow-hidden rounded-[16px] bg-warm-surface-raised',
+          '@min-[900px]/content:grid-cols-[minmax(0,1fr)_minmax(260px,30%)]',
+        )}
+      >
+        <div className="flex min-w-0 flex-col justify-between gap-9 p-[clamp(28px,3.2vw,48px)]">
+          <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
+            <div className="flex min-w-0 flex-[1_1_300px] flex-col gap-2.5">
+              <span className={cn(EYEBROW_CLASSES, 'text-[13px]')}>Don&apos;t miss</span>
+              <h2
+                id={titleId}
+                className="m-0 font-kk-topo text-[clamp(30px,2.8vw,40px)] leading-none tracking-[0.005em] text-v3-text-80"
+              >
+                THE COLLECTIVE <span className="text-warm-text-subtle">POSSIBILITIES</span>
+              </h2>
+            </div>
 
-      <div className="flex min-w-0 flex-1 flex-col gap-6 px-4 py-6 md:px-6">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex flex-col gap-1">
-            <Span caps bold variant="body-s" className="tracking-widest text-v3-bg-accent-60">
-              Don&apos;t miss
-            </Span>
-            <Header caps variant="h2">
-              The Collective <Span variant="h2" className="text-v3-bg-accent-40">{`Possibilities`}</Span>
-            </Header>
+            <div ref={actionsRef} className="flex flex-none items-center gap-3">
+              <ConnectWorkflow ConnectComponent={BannerConnectButton} />
+              <DismissButton
+                variant="round"
+                aria-label="Dismiss the Don't Miss banner"
+                onClick={dismiss}
+                data-testid="DismissPossibilitiesButton"
+              />
+            </div>
           </div>
 
-          <div className="flex shrink-0 items-center gap-2">
-            <ConnectWorkflow
-              ConnectComponent={props => (
-                <Button {...props} className="btn-iridescent" data-testid="ConnectButton">
-                  Connect wallet
-                </Button>
-              )}
-            />
-            <DismissButton
-              variant="onLight"
-              aria-label="Dismiss the Collective Possibilities banner"
-              onClick={() => setIsDismissed(true)}
-              data-testid="DismissPossibilitiesButton"
-            />
-          </div>
+          <ul className="m-0 grid list-none grid-cols-1 gap-x-10 gap-y-5 p-0 @min-[1180px]/content:grid-cols-3">
+            {POSSIBILITIES.map(({ title, description }) => (
+              <li
+                key={title}
+                className="grid min-w-0 grid-cols-[minmax(110px,140px)_1fr] items-baseline gap-x-5 gap-y-2 @min-[1180px]/content:grid-cols-1"
+              >
+                <span className="font-rootstock-sans text-[13px] font-medium uppercase tracking-[0.14em] text-v3-text-80">
+                  {title}
+                </span>
+                <p className="m-0 font-rootstock-sans text-base leading-[1.55] text-pretty text-warm-text-soft">
+                  {description}
+                </p>
+              </li>
+            ))}
+          </ul>
         </div>
 
-        <ul className="grid list-none grid-cols-1 gap-x-10 gap-y-6 md:grid-cols-3">
-          {POSSIBILITIES.map(({ title, description }) => (
-            <li key={title} className="flex flex-col gap-2 border-t border-v3-bg-accent-100/15 pt-4 md:pt-6">
-              <Header caps variant="h5">
-                {title}
-              </Header>
-              <Paragraph>{description}</Paragraph>
-            </li>
-          ))}
-        </ul>
-      </div>
+        <div
+          className="relative -order-1 min-h-[180px] overflow-hidden bg-banner-ink @min-[900px]/content:order-none @min-[900px]/content:min-h-[300px]"
+          data-testid="PossibilitiesTile"
+        >
+          <div ref={tileRef} className="absolute inset-0">
+            <PosterArt
+              moleculeSize={120}
+              imageClassName="object-[100%_50%] @min-[900px]/content:object-[70%_50%]"
+              moleculeClassName="justify-end pr-14 @min-[900px]/content:justify-center @min-[900px]/content:pr-0"
+            />
+            {/* The video centres the molecule, which a 180px strip would crop; the strip keeps the poster */}
+            {/* Under the docked bar the tile is out of sight, so the loop rests until it comes back */}
+            <MotionLogo className="hidden @min-[900px]/content:block" paused={isDocked} />
+          </div>
+        </div>
+      </section>
+
+      {slot &&
+        createPortal(
+          <PossibilitiesDock
+            isDocked={isDocked}
+            shouldAnimate={shouldAnimate}
+            onDismiss={dismiss}
+            bannerActionsRef={actionsRef}
+          />,
+          slot,
+        )}
     </div>
   )
 }
