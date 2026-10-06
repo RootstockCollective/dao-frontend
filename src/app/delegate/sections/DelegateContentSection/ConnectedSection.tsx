@@ -57,7 +57,7 @@ export const ConnectedSection = () => {
           setIsDelegationPending(true)
           setIsDelegateModalOpened(false)
         },
-        // Awaited so the tx stays pending until the page shows the new delegate, and cannot be sent twice
+        // Awaited so the button can't be pressed again before the new delegate is read
         onSuccess: async () => {
           await refetch()
           onHideDelegates()
@@ -141,7 +141,6 @@ export const ConnectedSection = () => {
   }
 
   const hasStRif = ownStRif > 0n
-  // Shows "<1" for less than 1 stRIF, where the cards' rounded value would read 0
   const votingPower = formatSymbol(ownStRif, STRIF)
 
   const isPendingTx = isDelegationPending || isReclaimPending
@@ -151,10 +150,7 @@ export const ConnectedSection = () => {
   const isPendingReclaim = isReclaimPending || isRequestingReclaim
 
   const isOwnVotingPower = hasNoOtherDelegatee(delegationStatus)
-  // The banners wait for the balances and votes, which decide which one applies
   const isAccountRead = !cards.own.isLoading
-  // A self-delegated holder picks a delegate from the list. An account that never delegated gets the
-  // list behind "Choose a delegate", so delegating to itself stays the one main action.
   const isDelegatesListOpen = delegationStatus === 'self' && hasStRif
   const isDelegatesListShown = shouldShowDelegates || isDelegatesListOpen
 
@@ -164,7 +160,6 @@ export const ConnectedSection = () => {
       {isAccountRead && isOwnVotingPower && !hasStRif && availableVotes === 0n && <NoVotingPowerSection />}
       {isAccountRead && delegationStatus === 'none' && hasStRif && !displayedDelegatee && (
         <NotDelegatedSection
-          // Only a delegation to myself: one to someone else always has a next delegatee
           isDelegatingToSelf={isPendingDelegate && !nextDelegatee}
           onDelegateToSelf={() => handleDelegate(ownAddress as Address)}
           isChoosingDelegate={shouldShowDelegates}
@@ -178,7 +173,6 @@ export const ConnectedSection = () => {
             'transition-all duration-300 overflow-hidden',
             isDelegatesListShown ? 'max-h-[100%] opacity-100' : 'max-h-0 opacity-0',
           )}
-          // Folded only by height: keep its input and buttons out of reach of keyboards and screen readers
           inert={!isDelegatesListShown}
           data-testid="DelegatesContainer"
         >

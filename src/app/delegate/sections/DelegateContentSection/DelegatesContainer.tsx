@@ -19,9 +19,7 @@ import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface Props {
-  /** Voting power is delegated to someone else, so picking a delegate here replaces them */
   hasOtherDelegatee: boolean
-  /** The list was opened on demand, so it can be closed again */
   isClosable: boolean
   onDelegate: (address: Address, rns?: string, imageIpfs?: string | null) => void
   onCloseClick?: () => void

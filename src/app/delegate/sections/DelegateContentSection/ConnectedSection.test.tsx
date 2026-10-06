@@ -73,16 +73,12 @@ describe('ConnectedSection', () => {
 
   describe('banner and delegates list for each kind of account', () => {
     it.each([
-      // Never delegated
       { status: 'none', own: 0n, votes: 0n, expected: 'no voting power', list: false },
       { status: 'none', own: 0n, votes: STRIF_20, expected: 'none', list: false },
-      // The list waits behind "Choose a delegate", so delegating to itself is the one main action
       { status: 'none', own: STRIF_20, votes: 0n, expected: 'not delegated', list: false },
-      // Delegated to itself, e.g. after staking
       { status: 'self', own: 0n, votes: 0n, expected: 'no voting power', list: false },
       { status: 'self', own: 0n, votes: STRIF_20, expected: 'none', list: false },
       { status: 'self', own: STRIF_20, votes: STRIF_20, expected: 'none', list: true },
-      // Delegated to someone else: the delegate card, with the list behind "Update delegate"
       { status: 'other', own: STRIF_20, votes: 0n, expected: 'none', list: false },
       { status: 'other', own: 0n, votes: 0n, expected: 'none', list: false },
     ] as const)(
@@ -94,7 +90,6 @@ describe('ConnectedSection', () => {
 
         expect(banner()).toBe(expected)
         expect(isListShown()).toBe(list)
-        // A folded list must not be reachable by keyboard or screen readers
         expect(screen.getByTestId('DelegatesContainer').hasAttribute('inert')).toBe(!list)
       },
     )
@@ -177,7 +172,6 @@ describe('ConnectedSection', () => {
       const success = mocks.executeTxFlow.mock.calls[0][0].onSuccess().then(() => (isSuccessDone = true))
       await Promise.resolve()
 
-      // executeTxFlow only calls onComplete, which re-enables the button, after onSuccess settles
       expect(refetch).toHaveBeenCalled()
       expect(isSuccessDone).toBe(false)
 
@@ -201,7 +195,6 @@ describe('ConnectedSection', () => {
     })
 
     it('tells an account without stRIF that the delegate will get the stRIF it stakes', () => {
-      // An account delegated to someone else that unstaked everything can still update its delegate
       setContext({ delegationStatus: 'other', ownStRif: 0n, nextDelegatee: { address: DELEGATEE } })
       render(<ConnectedSection />)
 
@@ -231,7 +224,6 @@ describe('ConnectedSection', () => {
       render(<ConnectedSection />)
       fireEvent.click(screen.getByText('pick delegate'))
 
-      // The wallet is now open for the delegation to DELEGATEE
       fireEvent.click(screen.getByRole('button', { name: 'Delegate' }))
 
       expect(mocks.executeTxFlow).toHaveBeenCalled()

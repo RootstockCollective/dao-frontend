@@ -9,10 +9,6 @@ export interface StakeRifAction {
   onClick: () => void
 }
 
-/**
- * The step that gets an account stRIF: stake the RIF it holds, or get some RIF first.
- * `action` is undefined when there is no RIF to stake and no place to get it from (regtest).
- */
 export const useStakeRifAction = () => {
   const router = useRouter()
   const { balances, isBalancesLoading } = useBalancesContext()

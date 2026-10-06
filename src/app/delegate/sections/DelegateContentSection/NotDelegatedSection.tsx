@@ -7,16 +7,10 @@ import { UsersIcon } from '@/components/Icons'
 interface Props {
   isDelegatingToSelf: boolean
   onDelegateToSelf: () => void
-  /** The delegates list is unfolded to pick someone else */
   isChoosingDelegate: boolean
   onToggleDelegates: () => void
 }
 
-/**
- * Takes the place of the delegate card for an account that holds stRIF but has never delegated. Its
- * stRIF was sent to it rather than staked (staking self-delegates), so it carries no votes until the
- * account delegates it to itself or to someone else.
- */
 export const NotDelegatedSection = ({
   isDelegatingToSelf,
   onDelegateToSelf,

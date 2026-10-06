@@ -94,7 +94,6 @@ describe('DelegateContextProvider on the delegation page', () => {
     expect(await screen.findByTestId('NotDelegatedSection')).toHaveTextContent('Delegate to myself')
     expect(screen.queryByTestId(`delegateCardContainer-${zeroAddress}`)).not.toBeInTheDocument()
     expect(screen.queryByText(/You have chosen/)).not.toBeInTheDocument()
-    // Its stRIF is neither delegated nor counted as voting power
     expect(screen.getByTestId('DelegatedCard')).toHaveTextContent('0')
     expect(screen.getByTestId('AvailableCard')).toHaveTextContent('0')
   })
@@ -151,7 +150,6 @@ describe('DelegateContextProvider on the delegation page', () => {
     fireEvent.click(screen.getByText('start delegation'))
     expect(screen.getByTestId('DelegatedCard')).toHaveAttribute('data-loading', 'true')
 
-    // The tx flow awaits the refetch, so the new delegatee lands while the delegation is still pending
     mocks.reads[`delegates:${ACCOUNT}`] = DELEGATEE
     mocks.reads[`getVotes:${ACCOUNT}`] = 0n
     rerender(
@@ -185,7 +183,6 @@ describe('DelegateContextProvider on the delegation page', () => {
 
     fireEvent.click(screen.getByText('pick delegate'))
 
-    // The picked delegate is only in the confirmation modal
     expect(screen.getByTestId(`delegateCardContainer-${DELEGATEE}`)).toBeInTheDocument()
     expect(screen.getByTestId('delegateModal')).toBeInTheDocument()
   })

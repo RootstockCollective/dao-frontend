@@ -21,9 +21,7 @@ export interface CardsState {
 export interface DelegateDataState {
   cards: CardsState
   ownStRif: bigint
-  /** The votes the account can use: delegated to it by others, plus its own stRIF once self-delegated */
   availableVotes: bigint
-  /** Undefined until the account's delegatee has been read */
   delegationStatus?: DelegationStatus
   currentDelegatee?: DelegateeState
   nextDelegatee?: DelegateeState
@@ -52,7 +50,6 @@ export interface DelegateActions {
   setNextDelegatee: (nextDelegatee: DelegateeState | undefined) => void
   setIsDelegationPending: (isPending: boolean) => void
   setIsReclaimPending: (isPending: boolean) => void
-  /** Resolves once the account's on-chain delegation has been read again */
   refetch: () => Promise<void>
 }
 

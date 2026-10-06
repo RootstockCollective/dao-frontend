@@ -114,8 +114,6 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
     delegationStatus,
     delegated,
     own,
-    // What the account can vote with. Only stRIF delegated to it counts, its own included once self-delegated.
-    // If the votes could not be read, fall back to the own stRIF that a self-delegation is known to count.
     available: votingPower ?? (didIDelegateToMyself ? own : 0n),
     delegateeAddress,
     refetch,

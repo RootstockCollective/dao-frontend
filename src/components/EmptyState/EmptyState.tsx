@@ -3,10 +3,6 @@ import { ReactNode } from 'react'
 import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
-/**
- * Block shown in place of a section's content when there is nothing to show yet: an icon, a title,
- * a subtitle explaining why, and the action that gets the user past it.
- */
 export interface EmptyStateProps {
   icon: ReactNode
   title: string

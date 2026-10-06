@@ -5,14 +5,9 @@ import { EmptyState } from '@/components/EmptyState'
 import { UsersIcon } from '@/components/Icons'
 import { useStakeRifAction } from '@/shared/hooks/useStakeRifAction'
 
-/**
- * Shown to an account with no stRIF of its own and no votes delegated to it: it has nothing to vote
- * or delegate with until it stakes.
- */
 export const NoVotingPowerSection = () => {
   const { action, isLoading } = useStakeRifAction()
 
-  // The action depends on the RIF balance: wait for it rather than offer the wrong one
   if (isLoading) return null
 
   return (

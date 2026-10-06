@@ -40,7 +40,6 @@ describe('useGetExternalDelegatedAmount', () => {
 
   it('counts nothing as delegated, and only received votes as available, when the account never delegated', () => {
     mocks.delegates = { delegateeAddress: undefined, delegationStatus: 'none' }
-    // Undelegated stRIF adds no votes: getVotes only holds what others delegated
     mocks.reads[`getVotes:${ACCOUNT}`] = RECEIVED
 
     const { result } = renderHook(() => useGetExternalDelegatedAmount(ACCOUNT))

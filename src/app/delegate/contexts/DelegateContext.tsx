@@ -147,7 +147,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
   )
 
   const refetch = useCallback(() => {
-    // Not awaited: the delegates list comes from an API that can fail, which must not turn a confirmed tx into an error
+    // Not awaited: a failing delegates API must not turn a confirmed tx into an error
     refetchAllDelegates().catch(err => console.error('Failed to refresh the delegates list', err))
     return refetchExternalDelegatedAmount()
   }, [refetchExternalDelegatedAmount, refetchAllDelegates])
@@ -195,8 +195,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
     delegateeVotingPower,
   ])
 
-  // Update displayed delegatee. A delegate being picked only replaces the current one once its delegation
-  // is pending: until then it is shown by the confirmation modal, not as if it had been chosen already.
+  // Update displayed delegatee
   useEffect(() => {
     setDataState(
       produce(draft => {
@@ -211,9 +210,6 @@ export const DelegateContextProvider = ({ children }: Props) => {
   useEffect(() => {
     setDataState(
       produce(draft => {
-        // A pending tx only changes these cards when it moves my own voting power: reclaiming it, or
-        // delegating it away from myself or for the first time. Derived on every run, so they also stop
-        // loading when the delegatee is re-read before the tx flow completes.
         const isMovingMyVotes =
           uiState.isReclaimPending || (uiState.isDelegationPending && hasNoOtherDelegatee(delegationStatus))
         draft.cards.delegated.isLoading = isLoading || isMovingMyVotes
@@ -250,8 +246,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
     isLoading,
   ])
 
-  // Update loading state when refetching. Delegated and available also depend on pending txs, so the
-  // effect above owns them.
+  // Update loading state when refetching
   useEffect(() => {
     setDataState(
       produce(draft => {

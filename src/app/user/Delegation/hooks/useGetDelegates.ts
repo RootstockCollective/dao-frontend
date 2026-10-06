@@ -10,10 +10,8 @@ const stRifContract = {
   address: tokenContracts.stRIF,
 }
 
-/** Where an account's voting power goes: to itself, to someone else, or nowhere because it never delegated */
 export type DelegationStatus = 'self' | 'other' | 'none'
 
-/** The account's voting power is not delegated to someone else: it stays with the account, or goes nowhere */
 export const hasNoOtherDelegatee = (status: DelegationStatus | undefined) =>
   status === 'self' || status === 'none'
 
@@ -35,7 +33,6 @@ export const useGetDelegates = (address: Address | undefined) => {
     },
   )
 
-  // Undefined until the delegatee has been read
   const delegationStatus = address && data ? getDelegationStatus(address, data) : undefined
 
   return {
