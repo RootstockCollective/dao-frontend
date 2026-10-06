@@ -65,6 +65,10 @@ jobs:
         env:
           NEXT_TELEMETRY_DISABLED: '1'
           NEXT_PUBLIC_BUILD_ID: ${{ github.sha }}
+          # Prerendering /proposals/api reads Blockscout getLogs. Without a key it hits the public
+          # instance, rate limited to ~10 requests per 16 minutes per IP, and the build times out.
+          # No PROFILE is set, so next.config.mjs does not override it with the empty .env.dev value.
+          BLOCKSCOUT_API_KEY: ${{ secrets.BLOCKSCOUT_API_KEY }}
         run: |
           cp .env.dev .env.local
           npm run build:turbo
