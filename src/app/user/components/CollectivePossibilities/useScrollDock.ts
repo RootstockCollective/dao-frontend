@@ -64,8 +64,10 @@ interface UseScrollDockOptions {
  * re-renders; state changes only when the docked flag flips. Under prefers-reduced-motion the
  * banner stays still and only the docked flag is tracked.
  *
- * `shouldAnimate` stays false until the first measurement is in, so a page that loads already
- * scrolled (back navigation) shows the bar in place instead of sliding it in.
+ * `shouldAnimate` is false whenever the bar has to appear in place rather than slide in: until
+ * the layout has settled, and when it docks straight from a banner in place. That is a jump, not
+ * a scroll: a page that loads already scrolled, with the browser restoring the position once the
+ * content is in (reload, back navigation), an anchor, or the End key.
  */
 export const useScrollDock = ({ bannerRef, tileRef, anchor, isEnabled }: UseScrollDockOptions) => {
   const [isDocked, setIsDocked] = useState(false)
@@ -81,6 +83,17 @@ export const useScrollDock = ({ bannerRef, tileRef, anchor, isEnabled }: UseScro
     let frame = 0
     let fallback: ReturnType<typeof setTimeout> | undefined
     let settleFrame = 0
+    let animateFrame = 0
+    // Progress at the last measurement. The banner counts as in place until it has one
+    let lastProgress = 0
+
+    // Lets the bar slide again only once the state just set has been painted without transitions
+    const animateAfterNextPaint = () => {
+      cancelAnimationFrame(animateFrame)
+      animateFrame = requestAnimationFrame(() => {
+        animateFrame = requestAnimationFrame(() => setShouldAnimate(true))
+      })
+    }
 
     const update = () => {
       // offsetHeight ignores the scale written below. The on-screen height would shrink with it
@@ -104,9 +117,14 @@ export const useScrollDock = ({ bannerRef, tileRef, anchor, isEnabled }: UseScro
 
       const nextDocked = getNextDocked(isDockedRef.current, progress)
       if (nextDocked !== isDockedRef.current) {
+        if (lastProgress <= 0) {
+          setShouldAnimate(false)
+          animateAfterNextPaint()
+        }
         isDockedRef.current = nextDocked
         setIsDocked(nextDocked)
       }
+      lastProgress = progress
     }
 
     const run = () => {
@@ -134,7 +152,7 @@ export const useScrollDock = ({ bannerRef, tileRef, anchor, isEnabled }: UseScro
     settleFrame = requestAnimationFrame(() => {
       settleFrame = requestAnimationFrame(() => {
         update()
-        setShouldAnimate(true)
+        animateAfterNextPaint()
       })
     })
 
@@ -144,6 +162,7 @@ export const useScrollDock = ({ bannerRef, tileRef, anchor, isEnabled }: UseScro
       resizeObserver?.disconnect()
       cancelAnimationFrame(frame)
       cancelAnimationFrame(settleFrame)
+      cancelAnimationFrame(animateFrame)
       clearTimeout(fallback)
       clearProgress(banner, tile)
       isDockedRef.current = false

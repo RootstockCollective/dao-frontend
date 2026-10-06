@@ -16,15 +16,16 @@ const VIDEO_SRC = '/videos/collective-motion-logo.mp4'
  *
  * It only loads and plays while it is on screen. A layout that hides it (display: none, as the
  * narrow Don't Miss strip does) never intersects, so it downloads nothing, and the loop stops
- * once the page scrolls it away.
+ * once the page scrolls it away. `paused` holds it while it is still on screen but covered, as
+ * when the Don't Miss banner is tucked under the docked bar.
  */
-export const MotionLogo = ({ className }: { className?: string }) => {
+export const MotionLogo = ({ className, paused = false }: { className?: string; paused?: boolean }) => {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   // Without an observer there is no telling, so the video plays as it always did
   const [isInView, setIsInView] = useState(() => typeof IntersectionObserver === 'undefined')
   const prefersReducedMotion = usePrefersReducedMotion()
-  const shouldPlay = isInView && !prefersReducedMotion
+  const shouldPlay = isInView && !paused && !prefersReducedMotion
 
   useEffect(() => {
     const video = videoRef.current

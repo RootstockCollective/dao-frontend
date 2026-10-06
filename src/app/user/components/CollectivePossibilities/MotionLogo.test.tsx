@@ -126,6 +126,16 @@ describe('MotionLogo', () => {
     expect(play).toHaveBeenCalledTimes(2)
   })
 
+  it('holds the loop while paused, on screen or not', () => {
+    mockReducedMotion(false)
+    const { rerender } = render(<MotionLogo paused />)
+    expect(play).not.toHaveBeenCalled()
+
+    rerender(<MotionLogo />)
+
+    expect(play).toHaveBeenCalledOnce()
+  })
+
   it('fades back to the poster when the video stops', () => {
     mockReducedMotion(false)
 

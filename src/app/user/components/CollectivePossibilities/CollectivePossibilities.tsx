@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useId, useRef } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import useLocalStorageState from 'use-local-storage-state'
 
@@ -60,15 +60,21 @@ const FOCUSABLE_SELECTOR = [
 ].join(',')
 
 /**
- * Focuses the first control that follows `element` in the document. Candidates that cannot take
- * focus (hidden, inert) are skipped by trying them in turn.
+ * The controls that follow `element` in the document, leaving out those above the viewport: that
+ * is where the page was, not where the user is (the dock X is pressed far down the page).
  */
-const focusFirstAfter = (element: HTMLElement) => {
-  for (const candidate of document.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)) {
-    const isAfter = element.compareDocumentPosition(candidate) & Node.DOCUMENT_POSITION_FOLLOWING
-    if (!isAfter || element.contains(candidate)) continue
+const getFocusablesAfter = (element: HTMLElement) =>
+  [...document.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)].filter(
+    candidate =>
+      Boolean(element.compareDocumentPosition(candidate) & Node.DOCUMENT_POSITION_FOLLOWING) &&
+      !element.contains(candidate) &&
+      candidate.getBoundingClientRect().bottom > 0,
+  )
 
-    candidate.focus({ preventScroll: true })
+/** Focuses the first candidate that takes it; hidden or inert ones do not. */
+const focusFirst = (candidates: HTMLElement[]) => {
+  for (const candidate of candidates) {
+    candidate.focus()
     if (document.activeElement === candidate) return
   }
 }
@@ -95,6 +101,8 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
   const wrapperRef = useRef<HTMLDivElement>(null)
   const bannerRef = useRef<HTMLElement>(null)
   const tileRef = useRef<HTMLDivElement>(null)
+  const actionsRef = useRef<HTMLDivElement>(null)
+  const nextFocusRef = useRef<HTMLElement[]>([])
 
   const { slot, setActive, setDocked } = useTopBarDock()
   const { isDocked, shouldAnimate } = useScrollDock({
@@ -115,15 +123,23 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
   }, [isDocked, setDocked])
 
   const dismiss = () => {
-    // The X that has focus is about to go. Hand focus to whatever follows the banner rather than
-    // let it drop to the body, so the next Tab carries on from where the banner was.
+    // The X that has focus is about to go. Rather than let the focus drop to the body, pick what
+    // follows the banner on screen while the banner can still anchor the search...
     const wrapper = wrapperRef.current
     const focused = document.activeElement
     if (wrapper && focused && (wrapper.contains(focused) || slot?.contains(focused))) {
-      focusFirstAfter(wrapper)
+      nextFocusRef.current = getFocusablesAfter(wrapper)
     }
     setIsDismissed(true)
   }
+
+  // ...and move it there once the banner is gone, so the browser can bring it back into view if
+  // removing the banner pushed it out
+  useLayoutEffect(() => {
+    if (!isDismissed) return
+    focusFirst(nextFocusRef.current)
+    nextFocusRef.current = []
+  }, [isDismissed])
 
   if (isDismissed) {
     return null
@@ -151,7 +167,7 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
               </h2>
             </div>
 
-            <div className="flex flex-none items-center gap-3">
+            <div ref={actionsRef} className="flex flex-none items-center gap-3">
               <ConnectWorkflow ConnectComponent={BannerConnectButton} />
               <DismissButton
                 variant="round"
@@ -190,14 +206,20 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
               moleculeClassName="justify-end pr-14 @min-[900px]/content:justify-center @min-[900px]/content:pr-0"
             />
             {/* The video centres the molecule, which a 180px strip would crop; the strip keeps the poster */}
-            <MotionLogo className="hidden @min-[900px]/content:block" />
+            {/* Under the docked bar the tile is out of sight, so the loop rests until it comes back */}
+            <MotionLogo className="hidden @min-[900px]/content:block" paused={isDocked} />
           </div>
         </div>
       </section>
 
       {slot &&
         createPortal(
-          <PossibilitiesDock isDocked={isDocked} shouldAnimate={shouldAnimate} onDismiss={dismiss} />,
+          <PossibilitiesDock
+            isDocked={isDocked}
+            shouldAnimate={shouldAnimate}
+            onDismiss={dismiss}
+            bannerActionsRef={actionsRef}
+          />,
           slot,
         )}
     </div>

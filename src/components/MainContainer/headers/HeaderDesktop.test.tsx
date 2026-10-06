@@ -1,5 +1,5 @@
 import { cleanup, render, screen } from '@testing-library/react'
-import { type PropsWithChildren, useEffect } from 'react'
+import { type PropsWithChildren, type Ref, useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
@@ -9,8 +9,16 @@ import { HeaderDesktop } from './HeaderDesktop'
 vi.mock('@/components/Breadcrumbs', () => ({ Breadcrumbs: () => null }))
 vi.mock('@/components/Tooltip', () => ({ Tooltip: ({ children }: PropsWithChildren) => <>{children}</> }))
 vi.mock('@/shared/walletConnection', () => ({
-  UserConnectionManager: ({ className, inert }: { className?: string; inert?: boolean }) => (
-    <div className={className} inert={inert} data-testid="TopBarConnect">
+  UserConnectionManager: ({
+    className,
+    inert,
+    ref,
+  }: {
+    className?: string
+    inert?: boolean
+    ref?: Ref<HTMLDivElement>
+  }) => (
+    <div ref={ref} className={className} inert={inert} data-testid="TopBarConnect">
       <button type="button">Connect wallet</button>
     </div>
   ),
@@ -33,7 +41,14 @@ const Page = ({ isActive = false, isDocked = false }: PageProps) => {
   useEffect(() => {
     setDocked(isDocked)
   }, [isDocked, setDocked])
-  return slot && isActive ? createPortal(<p>Docked prompt</p>, slot) : null
+  return slot && isActive
+    ? createPortal(
+        <p>
+          Docked prompt <button type="button">Docked connect</button>
+        </p>,
+        slot,
+      )
+    : null
 }
 
 const renderHeader = (props: PageProps = {}) => {
@@ -94,5 +109,15 @@ describe('HeaderDesktop', () => {
 
     expect(topBarConnect()).not.toHaveAttribute('inert')
     expect(topBarConnect()).not.toHaveClass('opacity-0')
+  })
+
+  it('hands the focus to the docked prompt when its Connect steps aside with it', () => {
+    const { rerenderPage } = renderHeader({ isActive: true })
+    screen.getByRole('button', { name: 'Connect wallet' }).focus()
+
+    rerenderPage({ isActive: true, isDocked: true })
+
+    expect(topBarConnect()).toHaveAttribute('inert')
+    expect(screen.getByRole('button', { name: 'Docked connect' })).toHaveFocus()
   })
 })

@@ -1,5 +1,5 @@
 'use client'
-import { type ReactNode, useEffect, useState } from 'react'
+import { type ReactNode, type Ref, useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 
 import { cn } from '@/lib/utils'
@@ -12,6 +12,7 @@ interface UserConnectionManagerProps {
   showContent?: boolean
   /** Takes the control out of the tab order and the accessibility tree, e.g. while it is hidden. */
   inert?: boolean
+  ref?: Ref<HTMLDivElement>
 }
 
 /**
@@ -34,7 +35,12 @@ interface UserConnectionManagerProps {
  * "Text content does not match server-rendered HTML" or
  * "Hydration failed because the initial UI does not match what was rendered on the server"
  */
-export function UserConnectionManager({ className, showContent = true, inert }: UserConnectionManagerProps) {
+export function UserConnectionManager({
+  className,
+  showContent = true,
+  inert,
+  ref,
+}: UserConnectionManagerProps) {
   const { isConnected } = useAccount()
   const [mounted, setMounted] = useState(false)
 
@@ -51,7 +57,7 @@ export function UserConnectionManager({ className, showContent = true, inert }: 
   }
 
   return (
-    <div className={cn('flex items-center', className)} inert={inert}>
+    <div ref={ref} className={cn('flex items-center', className)} inert={inert}>
       {content}
     </div>
   )

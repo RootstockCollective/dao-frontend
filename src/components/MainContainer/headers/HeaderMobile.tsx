@@ -1,9 +1,10 @@
-import type { HTMLAttributes } from 'react'
+import { type HTMLAttributes, useRef } from 'react'
 
 import { Hamburger } from '@/components/Hamburger'
 import { NetworkLogo } from '@/components/NetworkLogo'
 import { cn } from '@/lib/utils'
 import { useStickyHeader } from '@/shared/hooks'
+import { useInertHandoff } from '@/shared/hooks/useInertHandoff'
 import { UserConnectionManager } from '@/shared/walletConnection'
 
 import { useLayoutContext } from '../LayoutProvider'
@@ -11,7 +12,10 @@ import { useTopBarDock } from '../TopBarDockProvider'
 
 export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { isSidebarOpen, toggleSidebar } = useLayoutContext()
-  const { isActive: hasDock, isDocked, setSlot } = useTopBarDock()
+  const { isActive: hasDock, isDocked, slot, setSlot } = useTopBarDock()
+  const connectRef = useRef<HTMLDivElement>(null)
+  // The docked prompt leads with its own Connect button, which takes the focus over
+  const isConnectInert = useInertHandoff(isDocked, connectRef, () => slot?.querySelector('button'))
   const { headerRef, isVisible } = useStickyHeader({
     // A docked prompt has to stay on screen, so the header stops hiding on scroll while one is active
     isEnabled: !hasDock,
@@ -47,7 +51,8 @@ export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElem
             'flex-1 flex justify-end transition-opacity duration-240 ease-out-cubic',
             isDocked && 'pointer-events-none opacity-0',
           )}
-          inert={isDocked}
+          ref={connectRef}
+          inert={isConnectInert}
           showContent={!isSidebarOpen}
         />
       </div>

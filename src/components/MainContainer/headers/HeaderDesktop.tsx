@@ -1,8 +1,9 @@
-import type { HTMLAttributes } from 'react'
+import { type HTMLAttributes, useRef } from 'react'
 
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { Tooltip } from '@/components/Tooltip'
 import { cn } from '@/lib/utils'
+import { useInertHandoff } from '@/shared/hooks/useInertHandoff'
 import { UserConnectionManager } from '@/shared/walletConnection'
 
 import { SideBarClosedIcon, SideBarOpenedIcon } from '../icons'
@@ -11,7 +12,10 @@ import { useTopBarDock } from '../TopBarDockProvider'
 
 export function HeaderDesktop({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { isSidebarOpen, toggleSidebar } = useLayoutContext()
-  const { isActive: hasDock, isDocked, setSlot } = useTopBarDock()
+  const { isActive: hasDock, isDocked, slot, setSlot } = useTopBarDock()
+  const connectRef = useRef<HTMLDivElement>(null)
+  // The docked prompt leads with its own Connect button, which takes the focus over
+  const isConnectInert = useInertHandoff(isDocked, connectRef, () => slot?.querySelector('button'))
   return (
     <header
       {...props}
@@ -39,7 +43,8 @@ export function HeaderDesktop({ className, ...props }: HTMLAttributes<HTMLDivEle
             'transition-opacity duration-240 ease-out-cubic',
             isDocked && 'pointer-events-none opacity-0',
           )}
-          inert={isDocked}
+          ref={connectRef}
+          inert={isConnectInert}
         />
       </div>
       {/* Docked prompts hang below the top bar instead of growing it: a sticky header that grew
