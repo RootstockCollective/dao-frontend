@@ -11,7 +11,7 @@ export default function BtcVaultRequestHistoryPage() {
       data-testid="btc-vault-history-page"
       className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm"
     >
-      <PageTitle className="pb-4 md:pb-[2.5rem]" data-testid="btc-vault-history-header">
+      <PageTitle className="pb-4 md:pb-10" dataTestId="btc-vault-history-header">
         {PAGE_NAME}
       </PageTitle>
       <Section>

@@ -7,10 +7,10 @@ describe('PageTitle', () => {
   afterEach(cleanup)
 
   it('renders the page heading under the decorative squares', () => {
-    const { container } = render(<PageTitle data-testid="StakingHistoryHeader">Staking History</PageTitle>)
+    render(<PageTitle dataTestId="StakingHistoryHeader">Staking History</PageTitle>)
 
     const heading = screen.getByRole('heading', { level: 1, name: 'Staking History' })
     expect(heading).toHaveAttribute('data-testid', 'StakingHistoryHeader')
-    expect(container.querySelector('svg[viewBox="0 0 36 36"]')).toHaveAttribute('aria-hidden', 'true')
+    expect(screen.getByTestId('BannerDecorativeSquares')).toHaveAttribute('aria-hidden', 'true')
   })
 })

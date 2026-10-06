@@ -29,6 +29,8 @@ export const HeroComponentDesktop = ({
   const { isLoaded } = useImagePreloader(imageSources)
 
   return (
+    // gap-0 on purpose: the artwork ends in a transparent strip (holding its pixel mark) that
+    // spaces it from the copy. An image without that strip needs a gap here.
     <div className={cn('flex flex-row bg-text-80 rounded-sm p-4 gap-0', className)} data-testid={dataTestId}>
       <div className="relative w-1/2 min-h-0">
         {isLoaded ? (

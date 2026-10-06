@@ -63,8 +63,8 @@ export const DelegationDetailsSection = ({ onShowReclaim, onShowDelegates }: Pro
         isReclaimPending={isReclaimPending}
       />
       <div className="flex w-full flex-col-reverse md:flex-col gap-6">
-        {/* Banner here with delegation perks: same artwork and overlays as the rest of the
-            banners across the app. The page banner already carries the decorative squares. */}
+        {/* Banner here with delegation perks, on the ember artwork rather than the molten
+            background of the page banner, which already carries the decorative squares. */}
         <div className="relative mt-10 w-full overflow-hidden rounded bg-v3-bg-accent-100 text-v3-text-100 md:mb-10 md:mt-0">
           <Image
             src={BANNER_DEFAULT_ARTWORK}

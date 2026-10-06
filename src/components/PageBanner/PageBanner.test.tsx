@@ -54,9 +54,9 @@ describe('PageBanner', () => {
   })
 
   it('shows the decorative squares on every banner, with or without an eyebrow', () => {
-    const { container } = render(<PageBanner title="Holdings" eyebrow="My Collective" />)
+    render(<PageBanner title="Holdings" eyebrow="My Collective" />)
 
-    expect(container.querySelector('svg[viewBox="0 0 36 36"]')).toBeInTheDocument()
+    expect(screen.getByTestId('BannerDecorativeSquares')).toBeInTheDocument()
   })
 
   it('renders no dismiss button when it is not dismissible', () => {

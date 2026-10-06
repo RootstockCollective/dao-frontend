@@ -14,3 +14,6 @@ export const BANNER_CTA_CLASSES =
   'border-banner-ink bg-banner-accent text-banner-on-accent shadow-[0_3px_0_var(--color-banner-ink)] btn-iridescent'
 
 export const BANNER_EYEBROW_CLASSES = 'text-[12px] tracking-[0.16em]'
+
+/** Type of every page's h1, with or without a banner. */
+export const PAGE_TITLE_CLASSES = 'text-3xl leading-10'

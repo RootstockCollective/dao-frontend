@@ -32,7 +32,7 @@ export const StackableBanner = ({
 
   return (
     <div
-      className={cn('relative self-stretch py-6 px-10 text-v3-text-0 mt-7 md:mt-0', className)}
+      className={cn('relative self-stretch py-6 px-10 text-v3-text-0', className)}
       style={{
         background: isDesktop
           ? background

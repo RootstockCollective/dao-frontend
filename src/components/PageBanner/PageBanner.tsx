@@ -7,7 +7,12 @@ import { MoltenBackground } from '@/components/MoltenBackground'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
-import { BANNER_EYEBROW_CLASSES, BANNER_HEADER_OVERLAY, BANNER_MOBILE_OVERLAY } from './bannerAssets'
+import {
+  BANNER_EYEBROW_CLASSES,
+  BANNER_HEADER_OVERLAY,
+  BANNER_MOBILE_OVERLAY,
+  PAGE_TITLE_CLASSES,
+} from './bannerAssets'
 import { BannerDecorativeSquares } from './BannerDecorativeSquares'
 
 export interface PageBannerProps {
@@ -87,7 +92,7 @@ export const PageBanner = ({
                 {eyebrow}
               </Span>
             )}
-            <Header caps variant="h1" className="text-3xl leading-10 text-banner-title">
+            <Header caps variant="h1" className={cn(PAGE_TITLE_CLASSES, 'text-banner-title')}>
               {title}
             </Header>
             {typeof description === 'string' ? (

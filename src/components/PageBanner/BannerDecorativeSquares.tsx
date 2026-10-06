@@ -19,6 +19,7 @@ export function BannerDecorativeSquares({
       height={height}
       viewBox="0 0 36 36"
       fill="none"
+      data-testid="BannerDecorativeSquares"
       {...props}
       aria-hidden="true"
     >
