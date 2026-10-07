@@ -1,6 +1,6 @@
 'use client'
 import posthog from 'posthog-js'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useId, useRef, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 
@@ -47,6 +47,7 @@ export const ConnectedSection = () => {
   const [isRequestingDelegate, setIsRequestingDelegate] = useState(false) // opening metamask
   const [isRequestingReclaim, setIsRequestingReclaim] = useState(false) // opening metamask
   const delegatesContainerRef = useRef<HTMLDivElement>(null)
+  const delegatesListId = useId()
 
   const handleDelegate = useCallback(
     (address: Address) => {
@@ -163,12 +164,14 @@ export const ConnectedSection = () => {
           isDelegatingToSelf={isPendingDelegate && !nextDelegatee}
           onDelegateToSelf={() => handleDelegate(ownAddress as Address)}
           isChoosingDelegate={shouldShowDelegates}
+          delegatesListId={delegatesListId}
           onToggleDelegates={shouldShowDelegates ? onHideDelegates : onShowDelegates}
         />
       )}
       {!isPendingTx && (
         <div
           ref={delegatesContainerRef}
+          id={delegatesListId}
           className={cn(
             'transition-all duration-300 overflow-hidden',
             isDelegatesListShown ? 'max-h-[100%] opacity-100' : 'max-h-0 opacity-0',

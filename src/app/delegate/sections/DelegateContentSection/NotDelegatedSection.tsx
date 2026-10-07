@@ -8,6 +8,7 @@ interface Props {
   isDelegatingToSelf: boolean
   onDelegateToSelf: () => void
   isChoosingDelegate: boolean
+  delegatesListId: string
   onToggleDelegates: () => void
 }
 
@@ -15,6 +16,7 @@ export const NotDelegatedSection = ({
   isDelegatingToSelf,
   onDelegateToSelf,
   isChoosingDelegate,
+  delegatesListId,
   onToggleDelegates,
 }: Props) => (
   <EmptyState
@@ -36,6 +38,7 @@ export const NotDelegatedSection = ({
           onClick={onToggleDelegates}
           disabled={isDelegatingToSelf}
           aria-expanded={isChoosingDelegate}
+          aria-controls={delegatesListId}
           data-testid="ChooseDelegateButton"
         >
           {isChoosingDelegate ? 'Hide delegates' : 'Choose a delegate'}

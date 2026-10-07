@@ -106,6 +106,15 @@ describe('ConnectedSection', () => {
       expect(screen.getByTestId('DelegatesList')).toHaveAttribute('data-is-closable', 'true')
     })
 
+    it('points "Choose a delegate" at the list it unfolds', () => {
+      setContext({ delegationStatus: 'none', ownStRif: STRIF_20 })
+      render(<ConnectedSection />)
+
+      const listId = screen.getByTestId('DelegatesContainer').id
+      expect(listId).not.toBe('')
+      expect(screen.getByTestId('ChooseDelegateButton')).toHaveAttribute('aria-controls', listId)
+    })
+
     it('folds the list again from the same banner button', () => {
       setContext({ delegationStatus: 'none', ownStRif: STRIF_20 })
       render(<ConnectedSection />)

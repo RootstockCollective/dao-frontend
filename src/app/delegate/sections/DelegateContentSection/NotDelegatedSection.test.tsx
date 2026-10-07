@@ -11,6 +11,7 @@ const renderSection = ({ isDelegatingToSelf = false, isChoosingDelegate = false 
       isDelegatingToSelf={isDelegatingToSelf}
       onDelegateToSelf={onDelegateToSelf}
       isChoosingDelegate={isChoosingDelegate}
+      delegatesListId="delegates-list"
       onToggleDelegates={onToggleDelegates}
     />,
   )
