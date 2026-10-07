@@ -33,15 +33,13 @@ COPY . .
 # Disable telemetry
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# Set the build arguments. Secrets are not build arguments: build args end up in the provenance
-# attestation, so secrets come in as BuildKit secret mounts on the build step below.
+# Set the build arguments
 ARG PROFILE
 ARG NEXT_PUBLIC_BUILD_ID
 ARG BUILD_SCRIPT=build
 
 # Inject build args into the profile env file BEFORE copying
-# This is critical because next.config.mjs loads from .env.${PROFILE} with override: true.
-# For the same reason the empty BLOCKSCOUT_API_KEY placeholder is dropped: it would blank the mounted secret.
+# This is critical because next.config.mjs loads from .env.${PROFILE} with override: true
 RUN sed -i -e "s/^NEXT_PUBLIC_BUILD_ID=.*/NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}/" -e '/^BLOCKSCOUT_API_KEY=/d' .env.${PROFILE}
 
 # Rename environment files based on PROFILE
