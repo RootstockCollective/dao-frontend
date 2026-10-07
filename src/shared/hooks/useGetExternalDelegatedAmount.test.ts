@@ -16,7 +16,6 @@ const mocks = vi.hoisted(() => ({
 }))
 
 vi.mock('wagmi', () => ({
-  useAccount: () => ({ address: ACCOUNT }),
   useReadContract: (config?: { functionName: string; args: [string] }) => ({
     data: config && mocks.reads[`${config.functionName}:${config.args[0]}`],
     isLoading: false,
@@ -74,6 +73,16 @@ describe('useGetExternalDelegatedAmount', () => {
       amount: RECEIVED,
       available: BALANCE + RECEIVED,
     })
+  })
+
+  it('reads the balance and votes of the address it is given', () => {
+    const OTHER_ACCOUNT = '0x00000000000000000000000000000000000000Ef'
+    mocks.delegates = { delegateeAddress: OTHER_ACCOUNT, delegationStatus: 'self' }
+    mocks.reads = { [`balanceOf:${OTHER_ACCOUNT}`]: BALANCE, [`getVotes:${OTHER_ACCOUNT}`]: BALANCE }
+
+    const { result } = renderHook(() => useGetExternalDelegatedAmount(OTHER_ACCOUNT))
+
+    expect(result.current).toMatchObject({ own: BALANCE, available: BALANCE, isAccountRead: true })
   })
 
   it.each(['getVotes', 'balanceOf'])('is not read while %s has no value', functionName => {

@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Address } from 'viem'
-import { useAccount, useReadContract } from 'wagmi'
+import { useReadContract } from 'wagmi'
 
 import { useGetDelegates } from '@/app/user/Delegation/hooks/useGetDelegates'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
@@ -28,7 +28,6 @@ import { getEnsDomainName } from '@/lib/rns'
  * - 0n if no external delegations exist
  */
 export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
-  const { address: ownAddress } = useAccount()
   const {
     delegateeAddress,
     delegationStatus,
@@ -48,11 +47,11 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
     isLoading: isVotingPowerLoading,
     refetch: refetchVotingPower,
   } = useReadContract(
-    ownAddress && {
+    address && {
       abi: StRIFTokenAbi,
       address: STRIF_ADDRESS,
       functionName: 'getVotes',
-      args: [ownAddress],
+      args: [address],
       query: {
         refetchInterval: AVERAGE_BLOCKTIME,
       },
@@ -76,11 +75,11 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
     isLoading: isBalanceLoading,
     refetch: refetchBalance,
   } = useReadContract(
-    ownAddress && {
+    address && {
       abi: StRIFTokenAbi,
       address: STRIF_ADDRESS,
       functionName: 'balanceOf',
-      args: [ownAddress],
+      args: [address],
       query: {
         refetchInterval: AVERAGE_BLOCKTIME,
       },
@@ -105,9 +104,9 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
     amountDelegatedToMe = votingPower - balance
   }
 
-  const refetch = async () => {
+  const refetch = useCallback(async () => {
     await Promise.all([refetchVotingPower(), refetchBalance(), refetchDelegate()])
-  }
+  }, [refetchVotingPower, refetchBalance, refetchDelegate])
 
   return {
     amount: amountDelegatedToMe,
