@@ -34,7 +34,8 @@ interface Props {
 }
 
 export default async function RootLayout({ children }: Readonly<Props>) {
-  const initialState = cookieToInitialState(wagmiAdapterConfig, (await headers()).get('cookie'))
+  const requestHeaders = await headers()
+  const initialState = cookieToInitialState(wagmiAdapterConfig, requestHeaders.get('cookie'))
   return (
     <html lang="en" data-theme="default">
       {process.env.NODE_ENV === 'development' && (
@@ -42,6 +43,7 @@ export default async function RootLayout({ children }: Readonly<Props>) {
           src="//unpkg.com/react-grab/dist/index.global.js"
           crossOrigin="anonymous"
           strategy="beforeInteractive"
+          nonce={requestHeaders.get('x-nonce') ?? undefined}
         />
       )}
       <GoogleTagManager gtmId={`${GOOGLE_TAG_ID}`} />

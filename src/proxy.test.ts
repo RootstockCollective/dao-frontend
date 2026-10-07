@@ -1,11 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { unstable_doesMiddlewareMatch } from 'next/experimental/testing/server'
 import { NextRequest } from 'next/server'
 
 vi.mock('@/lib/rateLimit', () => ({
   checkRateLimit: vi.fn(),
 }))
 
-import { proxy } from './proxy'
+import { config, proxy } from './proxy'
 import { checkRateLimit } from '@/lib/rateLimit'
 
 const mockedCheckRateLimit = vi.mocked(checkRateLimit)
@@ -153,6 +154,97 @@ describe('proxy', () => {
 
       expect(response.status).toBe(200)
       expect(mockedCheckRateLimit).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('content security policy', () => {
+    const scriptSrcOf = (policy: string | null) =>
+      policy
+        ?.split('; ')
+        .find(directive => directive.startsWith('script-src '))
+        ?.split(' ')
+        .slice(1)
+
+    it('sends a nonce-based policy on page requests', () => {
+      const response = proxy(createRequest('/proposals'))
+      const policy = response.headers.get('Content-Security-Policy')
+      const nonce = response.headers.get('x-middleware-request-x-nonce')
+
+      expect(nonce).toBeTruthy()
+      expect(scriptSrcOf(policy)).toEqual(["'self'", `'nonce-${nonce}'`, "'strict-dynamic'"])
+      expect(policy).toContain("object-src 'none'")
+      expect(policy).toContain("base-uri 'self'")
+      expect(policy).toContain("frame-ancestors 'none'")
+      expect(policy).not.toContain('unsafe-inline')
+      expect(policy).not.toContain('googletagmanager')
+    })
+
+    it('passes the same policy to the render so Next.js can nonce its scripts', () => {
+      const response = proxy(createRequest('/'))
+
+      expect(response.headers.get('x-middleware-request-content-security-policy')).toBe(
+        response.headers.get('Content-Security-Policy'),
+      )
+    })
+
+    it('uses a fresh nonce for every request', () => {
+      const first = proxy(createRequest('/')).headers.get('x-middleware-request-x-nonce')
+      const second = proxy(createRequest('/')).headers.get('x-middleware-request-x-nonce')
+
+      expect(first).not.toBe(second)
+    })
+
+    it("allows 'unsafe-eval' only in development", () => {
+      vi.stubEnv('NODE_ENV', 'development')
+      try {
+        const policy = proxy(createRequest('/')).headers.get('Content-Security-Policy')
+
+        expect(scriptSrcOf(policy)).toContain("'unsafe-eval'")
+      } finally {
+        vi.unstubAllEnvs()
+      }
+    })
+
+    it('does not rate limit page requests', () => {
+      proxy(createRequest('/proposals'))
+
+      expect(mockedCheckRateLimit).not.toHaveBeenCalled()
+    })
+
+    it('leaves API responses without a policy', () => {
+      mockedCheckRateLimit.mockReturnValue(allowedResult())
+
+      const response = proxy(createRequest('/api/auth/login'))
+
+      expect(response.headers.get('Content-Security-Policy')).toBeNull()
+    })
+  })
+
+  describe('matcher', () => {
+    it.each(['/', '/proposals/123', '/communities', '/api/auth/login', '/api/gauges/notify-reward'])(
+      'runs on %s',
+      url => {
+        expect(unstable_doesMiddlewareMatch({ config, url })).toBe(true)
+      },
+    )
+
+    it.each([
+      '/api/like',
+      '/_next/static/chunks/main.js',
+      '/_next/image',
+      '/images/logo.png',
+      '/fonts/font.woff2',
+      '/ingest/e',
+      '/monitoring',
+      '/favicon.ico',
+    ])('skips %s', url => {
+      expect(unstable_doesMiddlewareMatch({ config, url })).toBe(false)
+    })
+
+    it('skips router prefetches', () => {
+      expect(
+        unstable_doesMiddlewareMatch({ config, url: '/proposals', headers: { 'next-router-prefetch': '1' } }),
+      ).toBe(false)
     })
   })
 
