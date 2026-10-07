@@ -33,29 +33,29 @@ COPY . .
 # Disable telemetry
 ENV NEXT_TELEMETRY_DISABLED 1
 
-# Set the build arguments
+# Set the build arguments. Secrets are not build arguments: build args end up in the provenance
+# attestation, so secrets come in as BuildKit secret mounts on the build step below.
 ARG PROFILE
 ARG NEXT_PUBLIC_BUILD_ID
-ARG SENTRY_AUTH_TOKEN
-ARG ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL
-ARG BLOCKSCOUT_API_KEY
 ARG BUILD_SCRIPT=build
 
 # Inject build args into the profile env file BEFORE copying
-# This is critical because next.config.mjs loads from .env.${PROFILE} with override: true
-RUN sed -i "s/^NEXT_PUBLIC_BUILD_ID=.*/NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}/" .env.${PROFILE} && \
-    if [ -n "$ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL" ]; then sed -i "s|^ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL=.*|ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL=${ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL}|" .env.${PROFILE}; fi && \
-    if [ -n "$BLOCKSCOUT_API_KEY" ]; then sed -i "s|^BLOCKSCOUT_API_KEY=.*|BLOCKSCOUT_API_KEY=${BLOCKSCOUT_API_KEY}|" .env.${PROFILE}; fi
+# This is critical because next.config.mjs loads from .env.${PROFILE} with override: true.
+# For the same reason the empty BLOCKSCOUT_API_KEY placeholder is dropped: it would blank the mounted secret.
+RUN sed -i -e "s/^NEXT_PUBLIC_BUILD_ID=.*/NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}/" -e '/^BLOCKSCOUT_API_KEY=/d' .env.${PROFILE}
 
 # Rename environment files based on PROFILE
 RUN cp .env.${PROFILE} .env.local
 
 # Also export as environment variable for the build step
 ENV NEXT_PUBLIC_BUILD_ID=${NEXT_PUBLIC_BUILD_ID}
-ENV SENTRY_AUTH_TOKEN=${SENTRY_AUTH_TOKEN}
 
-# Build the Next.js application
-RUN --mount=type=cache,target=/app/.next/cache npm run ${BUILD_SCRIPT}
+# Build the Next.js application. The mounted secrets only exist while this step runs; at runtime the
+# container gets its secrets from the ECS task definition, like DAO_DATA_DB_CONNECTION_STRING.
+RUN --mount=type=cache,target=/app/.next/cache \
+    --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN \
+    --mount=type=secret,id=BLOCKSCOUT_API_KEY,env=BLOCKSCOUT_API_KEY \
+    npm run ${BUILD_SCRIPT}
 
 # ---------- stage 2: production-only deps (runs in parallel with build) ----------
 FROM base AS prod-deps

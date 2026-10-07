@@ -162,7 +162,7 @@ The indexer returned fewer than 10 proposals. This typically means the indexer i
 | `ENVIO_GRAPHQL_URL` | Yes | Envio GraphQL endpoint. |
 | `ENVIO_SYNC_CHECK_SYNC_PROGRESS_ID` | No | SyncProgress entity id. Default `chain-31`. Leave empty for mainnet. |
 | `ENVIO_SYNC_CHECK_INSTANCE_NAME` | No | Label shown in Slack alerts (e.g. `dev`, `rc-testnet`). Default `unknown`. |
-| `ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL` | No | Slack Incoming Webhook URL. Injected via GitHub Secrets at build time. |
+| `ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL` | No | Slack Incoming Webhook URL. Set at runtime in the ECS task definition; never baked into the image. |
 | `ENVIO_SYNC_CHECK_LAG_THRESHOLD_BLOCKS` | No | Alert threshold in blocks. Default 1000. Must be > 500 (SyncProgress writes every 500 blocks). |
 | `ENVIO_SYNC_CHECK_SECRET` | No | Bearer token for auth. |
 

@@ -96,7 +96,7 @@ For local development builds with source map upload:
 For GitHub Actions or other CI:
 
 1. Add `SENTRY_AUTH_TOKEN` as a repository secret
-2. Pass it to the build as a build-arg or environment variable
+2. Pass it to the Docker build as a BuildKit secret (`--secret id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN`), never as a build-arg: build args are exposed in the image provenance
 3. Ensure `SENTRY_ORG` and `SENTRY_PROJECT` are available during build
 
 Example (GitHub Actions):
