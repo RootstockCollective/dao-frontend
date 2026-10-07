@@ -53,7 +53,7 @@ const setContext = (state: Partial<DelegateContextState>) => {
   mocks.context = { ...initialContextState, isAccountRead: true, ...state }
 }
 
-const isListShown = () => !screen.getByTestId('DelegatesContainer').className.includes('max-h-0')
+const isListShown = () => !screen.getByTestId('DelegatesContainer').hasAttribute('inert')
 
 const STRIF_20 = parseEther('20')
 
@@ -90,7 +90,6 @@ describe('ConnectedSection', () => {
 
         expect(banner()).toBe(expected)
         expect(isListShown()).toBe(list)
-        expect(screen.getByTestId('DelegatesContainer').hasAttribute('inert')).toBe(!list)
       },
     )
 
@@ -101,7 +100,6 @@ describe('ConnectedSection', () => {
       fireEvent.click(screen.getByTestId('ChooseDelegateButton'))
 
       expect(isListShown()).toBe(true)
-      expect(screen.getByTestId('DelegatesContainer')).not.toHaveAttribute('inert')
       expect(screen.getByTestId('DelegatesList')).toHaveAttribute('data-has-other-delegatee', 'false')
       expect(screen.getByTestId('DelegatesList')).toHaveAttribute('data-is-closable', 'true')
     })

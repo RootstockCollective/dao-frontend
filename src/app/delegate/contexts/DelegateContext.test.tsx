@@ -61,13 +61,16 @@ const Cards = () => {
   )
 }
 
-const renderPage = () =>
-  render(
+const renderPage = () => {
+  const page = () => (
     <DelegateContextProvider>
       <Cards />
       <ConnectedSection />
-    </DelegateContextProvider>,
+    </DelegateContextProvider>
   )
+  const result = render(page())
+  return { ...result, rerenderPage: () => result.rerender(page()) }
+}
 
 describe('DelegateContextProvider on the delegation page', () => {
   beforeEach(() => {
@@ -159,19 +162,14 @@ describe('DelegateContextProvider on the delegation page', () => {
   it('stops loading the cards when the new delegate is read before the delegation tx flow completes', () => {
     mocks.reads[`delegates:${ACCOUNT}`] = ACCOUNT
     mocks.reads[`getVotes:${ACCOUNT}`] = parseEther('20')
-    const { rerender } = renderPage()
+    const { rerenderPage } = renderPage()
 
     fireEvent.click(screen.getByText('start delegation'))
     expect(screen.getByTestId('DelegatedCard')).toHaveAttribute('data-loading', 'true')
 
     mocks.reads[`delegates:${ACCOUNT}`] = DELEGATEE
     mocks.reads[`getVotes:${ACCOUNT}`] = 0n
-    rerender(
-      <DelegateContextProvider>
-        <Cards />
-        <ConnectedSection />
-      </DelegateContextProvider>,
-    )
+    rerenderPage()
     fireEvent.click(screen.getByText('finish delegation'))
 
     expect(screen.getByTestId('DelegatedCard')).toHaveAttribute('data-loading', 'false')
@@ -204,18 +202,13 @@ describe('DelegateContextProvider on the delegation page', () => {
   it('shows the delegated and available cards loading until the first read lands', () => {
     mocks.reads[`delegates:${ACCOUNT}`] = ACCOUNT
     mocks.loading.add('getVotes')
-    const { rerender } = renderPage()
+    const { rerenderPage } = renderPage()
 
     expect(screen.getByTestId('DelegatedCard')).toHaveAttribute('data-loading', 'true')
     expect(screen.getByTestId('AvailableCard')).toHaveAttribute('data-loading', 'true')
 
     mocks.loading.clear()
-    rerender(
-      <DelegateContextProvider>
-        <Cards />
-        <ConnectedSection />
-      </DelegateContextProvider>,
-    )
+    rerenderPage()
 
     expect(screen.getByTestId('DelegatedCard')).toHaveAttribute('data-loading', 'false')
     expect(screen.getByTestId('AvailableCard')).toHaveAttribute('data-loading', 'false')
