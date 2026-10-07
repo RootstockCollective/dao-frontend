@@ -26,7 +26,7 @@ export const ConnectedSection = () => {
     delegationStatus,
     ownStRif,
     availableVotes,
-    cards,
+    isAccountRead,
     isDelegationPending,
     isReclaimPending,
     displayedDelegatee,
@@ -150,7 +150,6 @@ export const ConnectedSection = () => {
   const isPendingReclaim = isReclaimPending || isRequestingReclaim
 
   const isOwnVotingPower = keepsOwnVotes(delegationStatus)
-  const isAccountRead = !cards.own.isLoading
   const isDelegatesListOpen = delegationStatus === 'self' && hasStRif
   const isDelegatesListShown = shouldShowDelegates || isDelegatesListOpen
 

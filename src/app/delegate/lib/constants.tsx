@@ -25,6 +25,7 @@ export const initialDataState: DelegateDataState = {
   delegationStatus: undefined,
   ownStRif: 0n,
   availableVotes: 0n,
+  isAccountRead: false,
   currentDelegatee: undefined,
   nextDelegatee: undefined,
   displayedDelegatee: undefined,

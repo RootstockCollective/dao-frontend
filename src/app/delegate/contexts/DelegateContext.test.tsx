@@ -108,6 +108,20 @@ describe('DelegateContextProvider on the delegation page', () => {
     expect(screen.queryByTestId('NoVotingPowerSection')).not.toBeInTheDocument()
   })
 
+  it.each([
+    { failing: 'balanceOf', other: 'getVotes' },
+    { failing: 'getVotes', other: 'balanceOf' },
+  ])('does not tell an account it has no voting power when $failing cannot be read', ({ failing, other }) => {
+    mocks.reads[`delegates:${ACCOUNT}`] = zeroAddress
+    mocks.reads[`${other}:${ACCOUNT}`] = 0n
+    delete mocks.reads[`${failing}:${ACCOUNT}`]
+
+    renderPage()
+
+    expect(screen.queryByTestId('NoVotingPowerSection')).not.toBeInTheDocument()
+    expect(screen.queryByTestId('NotDelegatedSection')).not.toBeInTheDocument()
+  })
+
   it('does not tell an account that others delegated to that it has no voting power', async () => {
     mocks.reads[`delegates:${ACCOUNT}`] = zeroAddress
     mocks.reads[`balanceOf:${ACCOUNT}`] = 0n

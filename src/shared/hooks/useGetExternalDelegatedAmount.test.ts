@@ -76,6 +76,16 @@ describe('useGetExternalDelegatedAmount', () => {
     })
   })
 
+  it.each(['getVotes', 'balanceOf'])('is not read while %s has no value', functionName => {
+    mocks.delegates = { delegateeAddress: undefined, delegationStatus: 'none' }
+    mocks.reads[`getVotes:${ACCOUNT}`] = RECEIVED
+    delete mocks.reads[`${functionName}:${ACCOUNT}`]
+
+    const { result } = renderHook(() => useGetExternalDelegatedAmount(ACCOUNT))
+
+    expect(result.current.isAccountRead).toBe(false)
+  })
+
   it('falls back to the own stRIF of a self-delegated account when its votes cannot be read', () => {
     mocks.delegates = { delegateeAddress: ACCOUNT, delegationStatus: 'self' }
 

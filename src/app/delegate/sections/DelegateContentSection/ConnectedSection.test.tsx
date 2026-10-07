@@ -50,7 +50,7 @@ vi.mock('@/app/delegate/sections/DelegateContentSection/DelegatesContainer', () 
 }))
 
 const setContext = (state: Partial<DelegateContextState>) => {
-  mocks.context = { ...initialContextState, ...state }
+  mocks.context = { ...initialContextState, isAccountRead: true, ...state }
 }
 
 const isListShown = () => !screen.getByTestId('DelegatesContainer').className.includes('max-h-0')
@@ -128,11 +128,8 @@ describe('ConnectedSection', () => {
       expect(screen.getByTestId('DelegatesList')).toHaveAttribute('data-is-closable', 'false')
     })
 
-    it('shows no banner while the account is still being read', () => {
-      setContext({
-        delegationStatus: 'none',
-        cards: { ...initialContextState.cards, own: { isLoading: true } },
-      })
+    it('shows no banner until the balance and votes of the account are read', () => {
+      setContext({ delegationStatus: 'none', isAccountRead: false })
 
       render(<ConnectedSection />)
 

@@ -88,6 +88,7 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
   )
 
   const isLoading = isDelegateLoading || isVotingPowerLoading || isBalanceLoading
+  const isAccountRead = delegationStatus !== undefined && votingPower !== undefined && balance !== undefined
 
   const didIDelegateToMyself = delegationStatus === 'self'
   const doIHaveVotingPower = (votingPower || 0n) > 0n
@@ -111,6 +112,7 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
   return {
     amount: amountDelegatedToMe,
     isLoading,
+    isAccountRead,
     delegationStatus,
     delegated,
     own,

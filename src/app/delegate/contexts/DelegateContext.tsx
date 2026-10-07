@@ -50,6 +50,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
     delegationStatus,
     delegateeAddress,
     isLoading,
+    isAccountRead,
     delegateeVotingPower,
     delegateeRns,
     refetch: refetchExternalDelegatedAmount,
@@ -163,6 +164,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
         draft.delegationStatus = delegationStatus
         draft.ownStRif = own
         draft.availableVotes = available
+        draft.isAccountRead = isAccountRead
         if (delegationStatus === 'other' && delegateeAddress) {
           draft.currentDelegatee = {
             address: delegateeAddress,
@@ -184,6 +186,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
     delegated,
     own,
     available,
+    isAccountRead,
     delegationStatus,
     delegateeAddress,
     delegateeRns,

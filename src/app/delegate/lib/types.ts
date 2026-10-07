@@ -22,6 +22,7 @@ export interface DelegateDataState {
   cards: CardsState
   ownStRif: bigint
   availableVotes: bigint
+  isAccountRead: boolean
   delegationStatus?: DelegationStatus
   currentDelegatee?: DelegateeState
   nextDelegatee?: DelegateeState
