@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { verifySignature } from '@/lib/auth/actions'
+import type { SiweSession } from '@/lib/auth/jwt'
 import { verifyJWT } from '@/lib/auth/jwt.server'
 import { sanitizeError } from '@/lib/auth/utils'
 import { logger } from '@/lib/logger'
@@ -11,7 +12,9 @@ const isProduction = process.env.NODE_ENV === 'production'
 /**
  * POST /api/auth/login
  *
- * Verify a signature against a stored challenge and issue a JWT.
+ * Verify a signature against a stored challenge and issue a JWT in the
+ * HTTP-only `auth-token` cookie. The body carries only the session's address
+ * and expiry, so page scripts never see the token.
  *
  * Request body:
  * {
@@ -21,7 +24,8 @@ const isProduction = process.env.NODE_ENV === 'production'
  *
  * Response:
  * {
- *   token: string         // JWT token to use for authenticated requests
+ *   userAddress: string,  // Lowercase address the session belongs to
+ *   expiresAt: number     // Session expiry, in milliseconds since the epoch
  * }
  */
 export async function POST(request: NextRequest) {
@@ -55,8 +59,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Return token in response body and as HTTP-only cookie
-    const response = NextResponse.json({ token })
+    if (!payload?.exp) {
+      throw new Error('Authentication failed')
+    }
+    const session: SiweSession = { userAddress: payload.userAddress, expiresAt: payload.exp * 1000 }
+    const response = NextResponse.json(session)
 
     response.cookies.set('auth-token', token, {
       httpOnly: true,

@@ -5,16 +5,17 @@ import { immer } from 'zustand/middleware/immer'
 
 import { POSTHOG_ENVIRONMENT } from '@/lib/posthog-environment'
 
-import { extractUserAddressFromToken, isTokenExpired } from './jwt'
+import type { SiweSession } from './jwt'
 
 interface SiweState {
   // Authentication state
-  jwtToken: string | null // JWT token containing userAddress in payload
+  session: SiweSession | null
   isLoading: boolean
   error: Error | null
 
   // Actions
-  setToken: (jwtToken: string) => void
+  setSession: (session: SiweSession) => void
+  clearSession: () => void
   setLoading: (isLoading: boolean) => void
   setError: (error: Error | null) => void
   signOut: () => void
@@ -24,19 +25,19 @@ interface SiweState {
  * Zustand store for SIWE (Sign-In With Ethereum) authentication state
  *
  * This store manages the global authentication state for the dApp, including:
- * - JWT token storage (synced with localStorage)
+ * - The session's address and expiry (synced with localStorage)
  * - Loading and error states
  *
- * The JWT token contains the userAddress in its payload. Authentication status
- * is derived from the token existence and validity - use `selectIsAuthenticated`
- * selector or `useAuth` hook to access it.
+ * The JWT never reaches this store: /api/auth/login keeps it in the HTTP-only
+ * `auth-token` cookie, which the browser sends on same-origin requests.
+ * Authentication status is derived from the session's expiry - use
+ * `selectIsAuthenticated` selector or `useSignIn` hook to access it.
  *
  * @example
  * ```tsx
  * import { useSiweStore, selectUserAddress, selectIsAuthenticated } from '@/lib/auth/siweStore'
  *
  * function MyComponent() {
- *   const jwtToken = useSiweStore(state => state.jwtToken)
  *   const isAuthenticated = useSiweStore(selectIsAuthenticated)
  *   const userAddress = useSiweStore(selectUserAddress)
  *   const signOut = useSiweStore(state => state.signOut)
@@ -58,20 +59,27 @@ export const useSiweStore = create<SiweState>()(
   persist(
     immer(set => ({
       // Initial state
-      jwtToken: null,
+      session: null,
       isLoading: false,
       error: null,
 
       /**
-       * Sets the JWT token and updates state
-       * The JWT token contains userAddress in its payload (see jwt.ts)
-       * Authentication status should be derived using selectIsAuthenticated selector
+       * Stores the session returned by /api/auth/login
        * Note: Zustand persist middleware handles localStorage automatically
        */
-      setToken: (jwtToken: string) => {
+      setSession: (session: SiweSession) => {
         set(state => {
-          state.jwtToken = jwtToken
+          state.session = session
           state.error = null
+        })
+      },
+
+      /**
+       * Forgets the session locally, e.g. after the server rejected the cookie
+       */
+      clearSession: () => {
+        set(state => {
+          state.session = null
         })
       },
 
@@ -97,17 +105,17 @@ export const useSiweStore = create<SiweState>()(
        * Signs out the user by clearing all authentication state
        * Note: Zustand persist middleware handles localStorage cleanup automatically
        *
-       * The JWT is also mirrored in an HTTP-only `auth-token` cookie set by
+       * The JWT lives in an HTTP-only `auth-token` cookie set by
        * /api/auth/login. That cookie cannot be cleared from client JS, so we
        * call /api/auth/logout to have the server expire it — otherwise a stale
        * credential lingers after disconnect and keeps authenticating requests
-       * (e.g. likes) via the cookie fallback.
+       * (e.g. likes).
        */
       signOut: () => {
         posthog.reset()
         posthog.register({ environment: POSTHOG_ENVIRONMENT })
         set(state => {
-          state.jwtToken = null
+          state.session = null
           state.error = null
           state.isLoading = false
         })
@@ -118,33 +126,40 @@ export const useSiweStore = create<SiweState>()(
     })),
     {
       name: 'siwe-auth-storage',
-      // Only persist jwtToken, not loading/error (isAuthenticated is derived)
+      // Version 0 persisted the JWT itself; migrating overwrites it.
+      version: 1,
+      migrate: () => ({ session: null }),
+      // Only persist the session, not loading/error (isAuthenticated is derived)
       partialize: state => ({
-        jwtToken: state.jwtToken,
+        session: state.session,
       }),
-      // Clear expired tokens on rehydration
+      // Clear expired sessions on rehydration
       onRehydrateStorage: () => state => {
-        if (state?.jwtToken && isTokenExpired(state.jwtToken)) {
-          state.jwtToken = null
+        if (state?.session && isSessionExpired(state.session)) {
+          state.clearSession()
         }
       },
     },
   ),
 )
 
-/**
- * Selector to check if user is authenticated
- * Returns true if jwtToken exists and is not expired
- * Use this with useSiweStore to get authentication status
- */
-export const selectIsAuthenticated = (state: SiweState): boolean => {
-  return state.jwtToken !== null && !isTokenExpired(state.jwtToken)
+function isSessionExpired(session: SiweSession): boolean {
+  return session.expiresAt <= Date.now()
 }
 
 /**
- * Selector to get userAddress from the JWT token
+ * Selector to check if user is authenticated
+ * Returns true if a session exists and has not expired
+ * Use this with useSiweStore to get authentication status
+ */
+export const selectIsAuthenticated = (state: SiweState): boolean => {
+  return state.session !== null && !isSessionExpired(state.session)
+}
+
+/**
+ * Selector to get the signed-in address
  * Use this with useSiweStore to get the user address
  */
 export const selectUserAddress = (state: SiweState): string | null => {
-  return extractUserAddressFromToken(state.jwtToken)
+  return state.session?.userAddress ?? null
 }

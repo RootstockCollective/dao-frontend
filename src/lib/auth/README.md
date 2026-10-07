@@ -29,9 +29,10 @@ This distinction matters for features tied to user identity, such as proposal li
    → Server verifies the signature against the challenge
 
 6. Server issues a JWT containing the user's address
-   → Stored client-side in Zustand (persisted to localStorage)
+   → Set as the HTTP-only `auth-token` cookie; the response body carries
+     only the address and expiry, which Zustand persists to localStorage
 
-7. JWT is sent as a Bearer token on authenticated API requests
+7. The browser sends the cookie on same-origin API requests
    → Server validates the JWT on each request
 ```
 
@@ -41,9 +42,10 @@ This distinction matters for features tied to user identity, such as proposal li
 
 Users can like (heart) proposals on the proposal detail page. SIWE authentication is required because:
 
-- **Liking** sends a POST to `/api/like` with the JWT as a Bearer token — the server uses the address in the JWT to record who liked what.
-- **Viewing your own likes** queries `/api/like/user` with the JWT to check if the current user has already reacted to a proposal. Without a valid JWT, the heart icon defaults to the unselected (grey) state.
-- **On disconnect**, the JWT is cleared and all heart icons reset to grey. On reconnect, the user must re-authenticate via SIWE before their like state is restored from the server.
+- **Liking** sends a POST to `/api/like` with the `auth-token` cookie — the server uses the address in the JWT to record who liked what.
+- **Viewing your own likes** queries `/api/like/user` to check if the current user has already reacted to a proposal. Without a valid session, the heart icon defaults to the unselected (grey) state.
+- **On disconnect**, the session and cookie are cleared and all heart icons reset to grey. On reconnect, the user must re-authenticate via SIWE before their like state is restored from the server.
+- **A 401** from either route clears the local session, so the next like asks the user to sign in again.
 
 Key components: `LikeButton.tsx`, `useLike.ts`, `SiweTooltipContent.tsx`
 
@@ -51,11 +53,11 @@ Key components: `LikeButton.tsx`, `useLike.ts`, `SiweTooltipContent.tsx`
 
 | File                          | Purpose                                                       |
 | ----------------------------- | ------------------------------------------------------------- |
-| `siweStore.ts`                | Zustand store for JWT token, auth state, and `signOut`        |
+| `siweStore.ts`                | Zustand store for the session, auth state, and `signOut`      |
 | `actions.ts`                  | Server-side auth logic: `requestChallenge`, `verifySignature` |
 | `challengeStore.ts`           | Server-side challenge storage and validation                  |
 | `domain.ts`                   | Trusted domain allowlist for EIP-4361 domain binding          |
-| `jwt.ts`                      | Client-side JWT utilities (decode, check expiry)              |
+| `jwt.ts`                      | JWT payload and client session types                          |
 | `jwt.server.ts`               | Server-side JWT signing and verification                      |
 | `session.ts`                  | Session management utilities                                  |
 | `withAuth.ts`                 | API route middleware for JWT validation                       |
@@ -88,6 +90,7 @@ Note that the `uri` scheme is derived from `NODE_ENV` rather than the request, s
 ### Known deviation
 
 The SIWE `domain` field carries the hostname without the port, while EIP-4361 defines it as the RFC 4501 dns authority (port included when non-default). This only differs from the page origin during local development on a non-default port. Pre-existing behaviour, kept unchanged here to avoid altering what wallets display in production.
-- **JWT on disconnect**: When the user disconnects their wallet, the JWT is destroyed and all authenticated UI state (e.g. like icons) is reset. On reconnect, the user must re-authenticate via SIWE to restore their session.
-- **Token expiry**: Expired JWTs are cleared automatically on store rehydration.
+- **JWT out of page scripts' reach**: The JWT exists only in the HTTP-only `auth-token` cookie. It is not returned in the login response and not stored in localStorage, so a script running on the page cannot copy it. It can still call this site's APIs while it runs, since the browser attaches the cookie.
+- **JWT on disconnect**: When the user disconnects their wallet, the session is cleared, `/api/auth/logout` expires the cookie, and all authenticated UI state (e.g. like icons) is reset. On reconnect, the user must re-authenticate via SIWE to restore their session.
+- **Session expiry**: Expired sessions are cleared automatically on store rehydration. Sessions persisted before this change held the JWT itself; the store migration drops them.
 - **Rate limiting**: All auth endpoints are rate-limited via middleware (5 req/min for challenge and login, 20 req/min for verify) to prevent brute-force and DoS attacks.

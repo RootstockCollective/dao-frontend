@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useAccount } from 'wagmi'
 
 import { Button } from '@/components/Button'
+import { useSiweStore } from '@/lib/auth/siweStore'
 import { useSignIn } from '@/shared/hooks/useSignIn'
 
 type VerifyResult = { valid: true; userAddress: string } | { valid: false; error: string } | null
@@ -11,29 +12,21 @@ type VerifyResult = { valid: true; userAddress: string } | { valid: false; error
 export default function SiweTestPage() {
   const { isConnected } = useAccount()
   const { signIn, isLoading, error } = useSignIn()
-  const [jwt, setJwt] = useState<string | null>(null)
+  const session = useSiweStore(state => state.session)
   const [verifyResult, setVerifyResult] = useState<VerifyResult>(null)
   const [isVerifying, setIsVerifying] = useState(false)
 
   const handleSignIn = async () => {
-    setJwt(null)
     setVerifyResult(null)
-    const token = await signIn()
-    if (token) {
-      setJwt(token)
-    }
+    await signIn()
   }
 
+  // The JWT stays in the HTTP-only auth-token cookie, which the browser sends with this request.
   const handleVerifyJwt = async () => {
-    if (!jwt) return
     setIsVerifying(true)
     setVerifyResult(null)
     try {
-      const res = await fetch('/api/auth/verify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: jwt }),
-      })
+      const res = await fetch('/api/auth/verify', { method: 'POST' })
       const data = await res.json()
       if (res.ok && data.valid) {
         setVerifyResult({ valid: true, userAddress: data.userAddress })
@@ -54,7 +47,8 @@ export default function SiweTestPage() {
     <div className="mx-auto max-w-2xl space-y-6 p-8">
       <h1 className="text-2xl font-bold">SIWE Test</h1>
       <p className="text-text-100">
-        Connect your wallet, then click the button to sign in with Ethereum and receive a JWT.
+        Connect your wallet, then click the button to sign in with Ethereum. The JWT is set as an HTTP-only
+        cookie and never reaches the page.
       </p>
 
       <Button onClick={handleSignIn} disabled={!isConnected || isLoading} data-testid="siwe-sign-in-button">
@@ -69,11 +63,11 @@ export default function SiweTestPage() {
         </div>
       )}
 
-      {jwt && (
+      {session && (
         <div className="space-y-4">
-          <p className="text-sm font-medium text-green-400">JWT received:</p>
+          <p className="text-sm font-medium text-green-400">Session:</p>
           <pre className="max-h-48 overflow-auto rounded-sm border border-bg-0 bg-bg-200 p-4 text-xs break-all">
-            {jwt}
+            {session.userAddress} until {new Date(session.expiresAt).toISOString()}
           </pre>
           <Button
             onClick={handleVerifyJwt}
