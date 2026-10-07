@@ -6,13 +6,13 @@ import { useAccount } from 'wagmi'
 
 import { DelegateModal } from '@/app/delegate/components/DelegateModal'
 import { useDelegateContext } from '@/app/delegate/contexts/DelegateContext'
+import { keepsOwnVotes } from '@/app/delegate/lib/delegationStatus'
 import { DelegatesContainer } from '@/app/delegate/sections/DelegateContentSection/DelegatesContainer'
 import { DelegationDetailsSection } from '@/app/delegate/sections/DelegateContentSection/DelegationDetailsSection'
 import { NotDelegatedSection } from '@/app/delegate/sections/DelegateContentSection/NotDelegatedSection'
 import { NoVotingPowerSection } from '@/app/delegate/sections/DelegateContentSection/NoVotingPowerSection'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
 import { formatSymbol } from '@/app/shared/formatter'
-import { hasNoOtherDelegatee } from '@/app/user/Delegation/hooks/useGetDelegates'
 import { isUserRejectedTxError, txFailureProps } from '@/components/ErrorPage/commonErrors'
 import { STRIF } from '@/lib/constants'
 import { cn } from '@/lib/utils'
@@ -149,7 +149,7 @@ export const ConnectedSection = () => {
   const isPendingDelegate = isDelegationPending || isRequestingDelegate
   const isPendingReclaim = isReclaimPending || isRequestingReclaim
 
-  const isOwnVotingPower = hasNoOtherDelegatee(delegationStatus)
+  const isOwnVotingPower = keepsOwnVotes(delegationStatus)
   const isAccountRead = !cards.own.isLoading
   const isDelegatesListOpen = delegationStatus === 'self' && hasStRif
   const isDelegatesListShown = shouldShowDelegates || isDelegatesListOpen

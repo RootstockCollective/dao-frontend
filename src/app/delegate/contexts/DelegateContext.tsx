@@ -5,13 +5,13 @@ import { formatEther } from 'viem'
 import { useAccount, useReadContract } from 'wagmi'
 
 import { initialContextState, initialDataState, initialUIState } from '@/app/delegate/lib/constants'
+import { keepsOwnVotes } from '@/app/delegate/lib/delegationStatus'
 import {
   DelegateContextState,
   DelegateDataState,
   DelegateeState,
   DelegateUIState,
 } from '@/app/delegate/lib/types'
-import { hasNoOtherDelegatee } from '@/app/user/Delegation/hooks/useGetDelegates'
 import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import Big from '@/lib/big'
@@ -211,7 +211,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
     setDataState(
       produce(draft => {
         const isMovingMyVotes =
-          uiState.isReclaimPending || (uiState.isDelegationPending && hasNoOtherDelegatee(delegationStatus))
+          uiState.isReclaimPending || (uiState.isDelegationPending && keepsOwnVotes(delegationStatus))
         draft.cards.delegated.isLoading = isLoading || isMovingMyVotes
         draft.cards.available.isLoading = isLoading || isMovingMyVotes
 

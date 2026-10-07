@@ -1,6 +1,7 @@
 import { Address, isAddressEqual, zeroAddress } from 'viem'
 import { useReadContract } from 'wagmi'
 
+import type { DelegationStatus } from '@/app/delegate/lib/delegationStatus'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
@@ -10,14 +11,9 @@ const stRifContract = {
   address: tokenContracts.stRIF,
 }
 
-export type DelegationStatus = 'self' | 'other' | 'none'
-
-export const hasNoOtherDelegatee = (status: DelegationStatus | undefined) =>
-  status === 'self' || status === 'none'
-
 const getDelegationStatus = (account: Address, delegatee: Address): DelegationStatus => {
   // stRIF reports the zero address for an account that has never delegated
-  if (delegatee === zeroAddress) return 'none'
+  if (isAddressEqual(delegatee, zeroAddress)) return 'none'
   return isAddressEqual(delegatee, account) ? 'self' : 'other'
 }
 

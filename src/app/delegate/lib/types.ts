@@ -2,7 +2,7 @@
 import { ReactNode } from 'react'
 import { Address } from 'viem'
 
-import type { DelegationStatus } from '@/app/user/Delegation/hooks/useGetDelegates'
+import type { DelegationStatus } from './delegationStatus'
 
 interface CardState {
   contentValue?: ReactNode | string | undefined
