@@ -19,12 +19,13 @@ import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface Props {
-  didIDelegateToMyself: boolean
+  hasOtherDelegatee: boolean
+  isClosable: boolean
   onDelegate: (address: Address, rns?: string, imageIpfs?: string | null) => void
   onCloseClick?: () => void
 }
 
-export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseClick }: Props) => {
+export const DelegatesContainer = ({ hasOtherDelegatee, isClosable, onDelegate, onCloseClick }: Props) => {
   const isDesktop = useIsDesktop()
   const [popoverOpen, setPopoverOpen] = useState(false)
   const [addressToDelegate, setAddressToDelegate] = useState({
@@ -142,7 +143,7 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
   return (
     <div className="bg-bg-80 mt-2 p-6 md:p-6">
       <div className="flex flex-col items-center">
-        {!didIDelegateToMyself && (
+        {isClosable && (
           <CloseIconKoto
             className="self-end cursor-pointer"
             onClick={onCloseClick}
@@ -151,9 +152,9 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
         )}
         <div className="flex flex-col items-center gap-3 w-full">
           <Span>
-            {didIDelegateToMyself
-              ? 'Input delegate to make governance decisions on your behalf'
-              : 'Input a new delegate for your voting power'}
+            {hasOtherDelegatee
+              ? 'Input a new delegate for your voting power'
+              : 'Input delegate to make governance decisions on your behalf'}
           </Span>
           <input
             type="text"
@@ -176,7 +177,7 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
                 className="max-w-md"
                 data-testid="delegateButton"
               >
-                {didIDelegateToMyself ? 'Delegate' : 'Update delegate'}
+                {hasOtherDelegatee ? 'Update delegate' : 'Delegate'}
               </Button>
             }
             className="bg-text-80 rounded-[4px] border border-text-80 p-6 shadow-lg w-72"

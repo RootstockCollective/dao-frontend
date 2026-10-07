@@ -1,6 +1,6 @@
 import { NEED_RBTC, NEED_RBTC_RIF, NEED_RIF, NEED_STRIF } from '@/app/user/IntroModal/hooks/useRequiredTokens'
 import { TokenImage } from '@/components/TokenImage'
-import { RBTC, RIF } from '@/lib/constants'
+import { RBTC, RIF, STAKE_RIF_ROUTE } from '@/lib/constants'
 import { currentLinks } from '@/lib/links'
 
 import { BannerConfigMap } from './types'
@@ -106,7 +106,7 @@ export const BANNER_CONFIGS: BannerConfigMap = {
     buttonText: 'Stake RIF',
     description: 'Use RIF to stake and RBTC to pay for transactions fees.',
     action: {
-      url: router => router?.push(`/user?action=stake&reopen=${Date.now()}`),
+      url: router => router?.push(`${STAKE_RIF_ROUTE}&reopen=${Date.now()}`),
       external: false,
     },
   },

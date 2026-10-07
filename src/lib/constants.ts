@@ -103,6 +103,8 @@ export const USDRIF = 'USDRIF'
 export const USDT0 = 'USDT0'
 export const TRIF = 'tRIF'
 
+export const STAKE_RIF_ROUTE = '/user?action=stake'
+
 export const GRANT_TOKEN_LIMITS = {
   minAmount: 0.000001,
   maxAmount: 999_999_999,
