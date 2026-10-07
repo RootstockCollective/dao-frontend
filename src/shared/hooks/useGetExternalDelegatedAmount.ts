@@ -100,8 +100,8 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
     amountDelegatedToMe = votingPower || 0n
   }
 
-  if (didIDelegateToMyself && votingPower && balance && votingPower > balance) {
-    amountDelegatedToMe = votingPower - balance
+  if (didIDelegateToMyself && votingPower && votingPower > own) {
+    amountDelegatedToMe = votingPower - own
   }
 
   const refetch = useCallback(async () => {

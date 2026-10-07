@@ -75,6 +75,16 @@ describe('useGetExternalDelegatedAmount', () => {
     })
   })
 
+  it('counts the votes of a self-delegated account that unstaked everything as received', () => {
+    mocks.delegates = { delegateeAddress: ACCOUNT, delegationStatus: 'self' }
+    mocks.reads[`balanceOf:${ACCOUNT}`] = 0n
+    mocks.reads[`getVotes:${ACCOUNT}`] = RECEIVED
+
+    const { result } = renderHook(() => useGetExternalDelegatedAmount(ACCOUNT))
+
+    expect(result.current).toMatchObject({ own: 0n, amount: RECEIVED, available: RECEIVED })
+  })
+
   it('reads the balance and votes of the address it is given', () => {
     const OTHER_ACCOUNT = '0x00000000000000000000000000000000000000Ef'
     mocks.delegates = { delegateeAddress: OTHER_ACCOUNT, delegationStatus: 'self' }
