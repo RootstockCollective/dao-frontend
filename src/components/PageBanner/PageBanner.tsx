@@ -4,15 +4,10 @@ import { ReactNode, useState } from 'react'
 
 import { DismissButton } from '@/components/DismissButton'
 import { MoltenBackground } from '@/components/MoltenBackground'
-import { Header, Paragraph, Span } from '@/components/Typography'
+import { Header, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
-import {
-  BANNER_EYEBROW_CLASSES,
-  BANNER_HEADER_OVERLAY,
-  BANNER_MOBILE_OVERLAY,
-  PAGE_TITLE_CLASSES,
-} from './bannerAssets'
+import { BANNER_HEADER_OVERLAY, BANNER_MOBILE_OVERLAY, PAGE_TITLE_CLASSES } from './bannerAssets'
 import { BannerDecorativeSquares } from './BannerDecorativeSquares'
 
 export interface PageBannerProps {
@@ -24,8 +19,6 @@ export interface PageBannerProps {
   dismissible?: boolean
   /** Optional intro copy. Omit it for banners that only carry the page title. */
   description?: ReactNode
-  /** Short kicker shown above the title. */
-  eyebrow?: string
   /** Rendered at the bottom right of the banner, typically an external link. */
   bottomRight?: ReactNode
   /** Rendered under the description, typically a call to action and/or metrics. */
@@ -43,7 +36,6 @@ export const PageBanner = ({
   dismissible = false,
   title,
   description,
-  eyebrow,
   bottomRight,
   children,
   className,
@@ -72,7 +64,6 @@ export const PageBanner = ({
       <div className="absolute inset-0 md:hidden" style={{ background: BANNER_MOBILE_OVERLAY }} />
       <div className="absolute inset-0 hidden md:block" style={{ background: BANNER_HEADER_OVERLAY }} />
 
-      {/* On the content's left edge, so it lines up with the eyebrow and the title */}
       <BannerDecorativeSquares className="absolute left-4 top-4 z-base md:left-6 md:top-5" />
 
       {dismissible && (
@@ -87,11 +78,6 @@ export const PageBanner = ({
       <div className="relative flex min-h-[180px] flex-col justify-between gap-6 px-4 pb-6 pt-12 md:min-h-[200px] md:px-6 md:pb-6 md:pt-14">
         <div className="flex flex-col gap-6">
           <div className="flex max-w-[30rem] flex-col gap-2">
-            {eyebrow && (
-              <Span caps bold variant="body-s" className={cn(BANNER_EYEBROW_CLASSES, 'text-banner-label')}>
-                {eyebrow}
-              </Span>
-            )}
             <Header caps variant="h1" className={cn(PAGE_TITLE_CLASSES, 'text-banner-title')}>
               {title}
             </Header>

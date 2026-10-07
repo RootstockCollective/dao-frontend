@@ -13,7 +13,6 @@ export const BuildersBanner = ({ className }: CommonComponentProps) => {
     <PageBanner
       dataTestId="BuildersBanner"
       dismissible
-      eyebrow="Build on Rootstock"
       title="Builders"
       description="Join a growing network of innovators building the future of decentralised infrastructure."
       className={className}

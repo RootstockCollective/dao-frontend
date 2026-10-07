@@ -6,7 +6,7 @@ const NAME = 'Staking History'
 
 export default function StakingPage() {
   return (
-    <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">
+    <div data-testid={NAME} className="flex flex-col items-start w-full h-full gap-2 rounded-sm">
       <PageTitle className="pb-4 md:pb-10" dataTestId="StakingHistoryHeader">
         {NAME}
       </PageTitle>

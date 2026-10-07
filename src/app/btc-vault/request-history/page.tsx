@@ -9,7 +9,7 @@ export default function BtcVaultRequestHistoryPage() {
   return (
     <div
       data-testid="btc-vault-history-page"
-      className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm"
+      className="flex flex-col items-start w-full h-full gap-2 rounded-sm"
     >
       <PageTitle className="pb-4 md:pb-10" dataTestId="btc-vault-history-header">
         {PAGE_NAME}

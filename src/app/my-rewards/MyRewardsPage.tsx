@@ -47,10 +47,7 @@ const MyRewardsPage = () => {
 
   return (
     <CycleContextProvider>
-      <div
-        data-testid={NAME}
-        className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm"
-      >
+      <div data-testid={NAME} className="flex flex-col items-start w-full h-full gap-2 rounded-sm">
         <div data-testid="main-container" className="flex flex-col w-full items-start gap-2">
           <MyRewardsBanner />
           {gauge && gauge !== zeroAddress && userAddress && (

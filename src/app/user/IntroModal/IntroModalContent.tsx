@@ -5,7 +5,7 @@ import { Button } from '@/components/Button'
 import { ArrowRightIcon, ArrowUpRightLightIcon, CloseIconKoto } from '@/components/Icons'
 import { Modal } from '@/components/Modal'
 import { MoltenBackground } from '@/components/MoltenBackground'
-import { BANNER_CTA_CLASSES, BANNER_EYEBROW_CLASSES } from '@/components/PageBanner'
+import { BANNER_CTA_CLASSES } from '@/components/PageBanner'
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Paragraph, Span } from '@/components/Typography'
 import Big from '@/lib/big'
@@ -13,6 +13,8 @@ import { RBTC, RIF } from '@/lib/constants'
 import { cn, formatNumberWithCommas } from '@/lib/utils'
 
 import { CONTENT_CONFIG, type IntroModalContentProps, type IntroModalStatus } from './config'
+
+const EYEBROW_CLASSES = 'text-[12px] tracking-[0.16em]'
 
 const PIXEL_FILLS = ['', '', 'bg-v3-rif-blue', '', 'bg-v3-primary', '', 'bg-molten-ink', '', '']
 
@@ -57,7 +59,7 @@ export const IntroModalContent = ({ tokenStatus, rbtcBalance, rifBalance, onClos
               caps
               bold
               variant="body-s"
-              className={cn(BANNER_EYEBROW_CLASSES, 'text-v3-text-0')}
+              className={cn(EYEBROW_CLASSES, 'text-v3-text-0')}
               data-testid="stake-label"
             >
               Stake
@@ -135,7 +137,7 @@ const WalletCard = ({ content, rbtcBalance, rifBalance }: ArtworkPanelProps) => 
       caps
       bold
       variant="body-s"
-      className={cn('text-molten-peach', BANNER_EYEBROW_CLASSES)}
+      className={cn('text-molten-peach', EYEBROW_CLASSES)}
       data-testid="wallet-info-title"
     >
       Your wallet

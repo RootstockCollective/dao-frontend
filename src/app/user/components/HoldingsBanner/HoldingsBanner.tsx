@@ -115,7 +115,6 @@ export const HoldingsBanner = ({ className }: CommonComponentProps) => {
   return (
     <PageBanner
       dataTestId="HoldingsBanner"
-      eyebrow="My Collective"
       title="Holdings"
       description={isConnected ? CONNECTED_DESCRIPTION : DISCONNECTED_DESCRIPTION}
       className={className}

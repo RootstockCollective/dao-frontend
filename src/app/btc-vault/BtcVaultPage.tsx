@@ -28,7 +28,7 @@ export const BtcVaultPage = () => {
   return (
     <div
       data-testid={NAME} // TODO: DAO-2029 Standardize data-test-ids to using kebab-case only
-      className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-6 rounded-sm"
+      className="flex flex-col items-start w-full h-full gap-6 rounded-sm"
     >
       <PageBanner dataTestId="BtcVaultBanner" dismissible title={NAME} />
       <BtcVaultBanners />

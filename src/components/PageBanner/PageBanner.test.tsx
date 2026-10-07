@@ -15,14 +15,12 @@ describe('PageBanner', () => {
     expect(screen.getByTestId('PageBanner')).toBeInTheDocument()
   })
 
-  it('renders the description, the eyebrow and the bottom right slot when given', () => {
+  it('renders the description and the bottom right slot when given', () => {
     renderBanner({
-      eyebrow: 'Build on Rootstock',
       description: 'Some intro copy.',
       bottomRight: <span>See the Whitepaper</span>,
     })
 
-    expect(screen.getByText('Build on Rootstock')).toBeInTheDocument()
     expect(screen.getByText('Some intro copy.')).toBeInTheDocument()
     expect(screen.getByText('See the Whitepaper')).toBeInTheDocument()
   })
@@ -53,8 +51,8 @@ describe('PageBanner', () => {
     expect(screen.getByRole('heading', { level: 1, name: 'Treasury' })).toHaveClass('sr-only')
   })
 
-  it('shows the decorative squares on every banner, with or without an eyebrow', () => {
-    render(<PageBanner title="Holdings" eyebrow="My Collective" />)
+  it('shows the decorative squares on every banner', () => {
+    render(<PageBanner title="Holdings" />)
 
     expect(screen.getByTestId('BannerDecorativeSquares')).toBeInTheDocument()
   })

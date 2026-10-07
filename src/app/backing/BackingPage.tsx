@@ -194,7 +194,7 @@ export const BackingPage = () => {
   }, [availableForBacking, availableToAllocate, isAllocationTxPending, hasUnsavedChanges])
 
   return (
-    <div data-testid={NAME} className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm">
+    <div data-testid={NAME} className="flex flex-col items-start w-full h-full gap-2 rounded-sm">
       <PageBanner dataTestId="BackingPageBanner" dismissible title={NAME} />
       {!hasAllocations && (
         <div

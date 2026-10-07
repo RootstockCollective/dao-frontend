@@ -52,14 +52,14 @@ const Check = () => (
 )
 
 export const WhyDelegate = ({ className }: CommonComponentProps) => {
-  const [isOpen, setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(true)
   const contentId = useId()
 
   return (
     <section
       data-testid="WhyDelegate"
       className={cn(
-        'mt-7 w-full self-stretch overflow-hidden rounded-xl border border-v3-text-80/12 bg-warm-surface-raised',
+        'w-full self-stretch overflow-hidden rounded-xl border border-v3-text-80/12 bg-warm-surface-raised',
         className,
       )}
     >
@@ -95,6 +95,7 @@ export const WhyDelegate = ({ className }: CommonComponentProps) => {
               aria-hidden="true"
               fill
               sizes="380px"
+              loading="eager"
               className="object-cover"
             />
           </div>
