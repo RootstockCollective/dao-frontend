@@ -73,6 +73,7 @@ export const ConnectedSection = () => {
         onComplete: () => {
           setIsDelegationPending(false)
           setIsRequestingDelegate(false)
+          setIsDelegateModalOpened(false)
           setNextDelegatee(undefined)
         },
         action: 'delegation',
