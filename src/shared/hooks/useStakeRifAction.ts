@@ -1,7 +1,7 @@
 import { useRouter } from 'next/navigation'
 
 import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
-import { RIF } from '@/lib/constants'
+import { RIF, STAKE_RIF_ROUTE } from '@/lib/constants'
 import { currentLinks } from '@/lib/links'
 
 export interface StakeRifAction {
@@ -17,7 +17,7 @@ export const useStakeRifAction = () => {
 
   let action: StakeRifAction | undefined
   if (hasRifBalance) {
-    action = { text: 'Stake RIF', onClick: () => router.push('/user?action=stake') }
+    action = { text: 'Stake RIF', onClick: () => router.push(STAKE_RIF_ROUTE) }
   } else if (currentLinks.getRif) {
     action = {
       text: 'Get RIF',

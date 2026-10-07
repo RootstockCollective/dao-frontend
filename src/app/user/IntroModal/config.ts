@@ -1,3 +1,4 @@
+import { STAKE_RIF_ROUTE } from '@/lib/constants'
 import { currentLinks } from '@/lib/links'
 
 export const CONTENT_CONFIG = {
@@ -52,7 +53,7 @@ export const CONTENT_CONFIG = {
     showRif: false,
     showBalance: true,
     action: {
-      url: '/user?action=stake',
+      url: STAKE_RIF_ROUTE,
       external: false,
     },
   },
