@@ -1,8 +1,8 @@
 'use client'
 
+import { DelegationBannerIcon } from '@/app/delegate/sections/DelegateContentSection/DelegationBannerIcon'
 import { Button } from '@/components/Button'
 import { EmptyState } from '@/components/EmptyState'
-import { UsersIcon } from '@/components/Icons'
 
 interface Props {
   isDelegatingToSelf: boolean
@@ -20,7 +20,7 @@ export const NotDelegatedSection = ({
   onToggleDelegates,
 }: Props) => (
   <EmptyState
-    icon={<UsersIcon size={88} color="#37322F" strokeWidth={1.25} aria-hidden="true" />}
+    icon={<DelegationBannerIcon />}
     title="You haven't delegated your voting power yet."
     subtitle="Your stRIF only counts once it's delegated. Delegate it to yourself to vote, or choose someone to vote for you."
     action={

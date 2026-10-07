@@ -3,6 +3,9 @@ import { ReactNode } from 'react'
 import { Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
+export const EMPTY_STATE_ICON_COLOR = '#37322F'
+export const EMPTY_STATE_ICON_SIZE = 88
+
 export interface EmptyStateProps {
   icon: ReactNode
   title: string

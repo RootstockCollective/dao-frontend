@@ -1,8 +1,8 @@
 'use client'
 
+import { DelegationBannerIcon } from '@/app/delegate/sections/DelegateContentSection/DelegationBannerIcon'
 import { Button } from '@/components/Button'
 import { EmptyState } from '@/components/EmptyState'
-import { UsersIcon } from '@/components/Icons'
 import { useStakeRifAction } from '@/shared/hooks/useStakeRifAction'
 
 export const NoVotingPowerSection = () => {
@@ -12,7 +12,7 @@ export const NoVotingPowerSection = () => {
 
   return (
     <EmptyState
-      icon={<UsersIcon size={88} color="#37322F" strokeWidth={1.25} aria-hidden="true" />}
+      icon={<DelegationBannerIcon />}
       title="You don't have voting power yet."
       subtitle="Stake RIF to get voting power and take part in governance."
       action={

@@ -1,6 +1,6 @@
 'use client'
 
-import { EmptyState } from '@/components/EmptyState'
+import { EMPTY_STATE_ICON_COLOR, EMPTY_STATE_ICON_SIZE, EmptyState } from '@/components/EmptyState'
 import { DisconnectIcon } from '@/components/Icons'
 import { ConnectButtonOrangeComponent } from '@/shared/walletConnection'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
@@ -29,7 +29,7 @@ export const WalletNotConnectedSection = ({
   'data-testid': dataTestId,
 }: WalletNotConnectedSectionProps) => (
   <EmptyState
-    icon={<DisconnectIcon size={88} fill="#37322F" />}
+    icon={<DisconnectIcon size={EMPTY_STATE_ICON_SIZE} fill={EMPTY_STATE_ICON_COLOR} />}
     title={title}
     subtitle={subtitle}
     action={
