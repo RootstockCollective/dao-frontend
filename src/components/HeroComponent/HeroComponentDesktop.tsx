@@ -5,8 +5,8 @@ import { ReactNode, useMemo } from 'react'
 import { cn } from '@/lib/utils'
 import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
 
+import { ListBullet } from '../ListBullet'
 import { Header, Paragraph, Span } from '../Typography'
-import { BulletPoint } from './BulletPoint'
 import { HeroComponentProps } from './types'
 
 /**
@@ -67,7 +67,7 @@ export const HeroComponentDesktop = ({
             <ul className="list-none">
               {items.map((item: ReactNode, idx: number) => (
                 <li key={idx} className="flex items-start gap-2 text-base text-bg-100">
-                  <BulletPoint />
+                  <ListBullet className="border-bg-80" />
                   {typeof item === 'string' ? <Paragraph className="text-bg-100">{item}</Paragraph> : item}
                 </li>
               ))}

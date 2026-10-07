@@ -1,13 +1,12 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
 
 import { CommonComponentProps } from '@/components/commonProps'
-import { ArrowUpRightLightIcon } from '@/components/Icons'
 import { ListBullet } from '@/components/ListBullet'
+import { BannerLink } from '@/components/PageBanner'
 import { PersistedCollapsible } from '@/components/PersistedCollapsible'
-import { Header, Paragraph } from '@/components/Typography'
+import { Paragraph } from '@/components/Typography'
 import { currentLinks } from '@/lib/links'
 
 /** The page's original hero artwork, from before the banners redesign. */
@@ -29,10 +28,10 @@ export const WhyDelegate = ({ className }: CommonComponentProps) => (
     toggleTestId="WhyDelegateToggle"
     className={className}
     bodyClassName="flex flex-col gap-6 lg:flex-row lg:gap-8"
-    heading={
-      <Header caps variant="h3">
+    title={
+      <>
         Delegate your voting power <span className="text-v3-bg-accent-40">to influence what gets built</span>
-      </Header>
+      </>
     }
   >
     <div className="relative h-[180px] w-full shrink-0 overflow-hidden rounded-sm lg:w-[300px]">
@@ -42,7 +41,6 @@ export const WhyDelegate = ({ className }: CommonComponentProps) => (
         aria-hidden="true"
         fill
         sizes="(min-width: 1024px) 300px, 100vw"
-        loading="eager"
         className="object-cover"
       />
     </div>
@@ -58,15 +56,7 @@ export const WhyDelegate = ({ className }: CommonComponentProps) => (
       </ul>
 
       <Paragraph>
-        <Link
-          href={currentLinks.howDelegationWorks}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 no-underline hover:underline"
-        >
-          How delegation works
-          <ArrowUpRightLightIcon aria-hidden size={20} />
-        </Link>
+        <BannerLink href={currentLinks.howDelegationWorks}>How delegation works</BannerLink>
       </Paragraph>
     </div>
   </PersistedCollapsible>

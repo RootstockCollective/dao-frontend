@@ -29,11 +29,7 @@ export const WhyBecomeABuilder = ({ className }: CommonComponentProps) => (
     toggleTestId="WhyBecomeABuilderToggle"
     className={className}
     bodyClassName="flex flex-col gap-6 lg:flex-row lg:gap-10"
-    heading={
-      <Header caps variant="h3">
-        Why become a builder?
-      </Header>
-    }
+    title="Why become a builder?"
   >
     <div className="relative h-[200px] w-full shrink-0 overflow-hidden rounded-sm lg:h-[260px] lg:w-[300px]">
       <MoltenBackground tone="dark" animated={false} />

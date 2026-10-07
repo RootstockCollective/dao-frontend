@@ -6,7 +6,7 @@ import { ReactNode } from 'react'
 import { CommonComponentProps } from '@/components/commonProps'
 import { ListBullet } from '@/components/ListBullet'
 import { PersistedCollapsible } from '@/components/PersistedCollapsible'
-import { Header, Paragraph } from '@/components/Typography'
+import { Paragraph } from '@/components/Typography'
 
 import { DiscourseLink } from '../DiscourseLink'
 
@@ -33,11 +33,7 @@ export const HowAProposalWorks = ({ className }: CommonComponentProps) => (
     toggleTestId="HowAProposalWorksToggle"
     className={className}
     bodyClassName="flex flex-col gap-6 lg:flex-row lg:gap-8"
-    heading={
-      <Header caps variant="h3">
-        How a proposal works
-      </Header>
-    }
+    title="How a proposal works"
   >
     <div className="relative h-[180px] w-full shrink-0 overflow-hidden rounded-sm lg:h-[180px] lg:w-[230px]">
       <Image

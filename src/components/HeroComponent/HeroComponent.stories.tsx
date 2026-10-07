@@ -20,7 +20,7 @@ type Story = StoryObj<typeof HeroComponent>
 
 export const Delegation: Story = {
   args: {
-    imageSrc: '/images/hero/home-hero-bottom.png',
+    imageSrc: '/images/hero/home-hero-bottom.webp',
     title: 'Delegate your voting power',
     subtitle: 'to influence what gets built',
     items: [
@@ -36,7 +36,7 @@ export const Delegation: Story = {
 /* eslint-disable quotes */
 export const Proposal: Story = {
   args: {
-    imageSrc: '/images/hero/home-hero-bottom.png',
+    imageSrc: '/images/hero/home-hero-bottom.webp',
     title: 'Propose a Project,',
     subtitle: 'Get support to build it',
     items: [
@@ -103,7 +103,7 @@ export const TopHeroNotConnected: Story = {
 export const CommunitiesSection: Story = {
   args: {
     className: 'mt-2',
-    imageSrc: '/images/hero/home-hero-bottom.png',
+    imageSrc: '/images/hero/home-hero-bottom.webp',
     title: 'BE PART OF THE COMMUNITIES',
     subtitle: 'CURATED BY THE COLLECTIVE',
     items: [

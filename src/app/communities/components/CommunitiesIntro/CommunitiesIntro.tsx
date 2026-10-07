@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { CommonComponentProps } from '@/components/commonProps'
 import { ListBullet } from '@/components/ListBullet'
 import { PersistedCollapsible } from '@/components/PersistedCollapsible'
-import { Header, Paragraph } from '@/components/Typography'
+import { Paragraph } from '@/components/Typography'
 
 /** The page's original hero artwork, from before the banners redesign. */
 const ILLUSTRATION_SRC = '/images/hero/community-banner.webp'
@@ -31,10 +31,10 @@ export const CommunitiesIntro = ({ className }: CommonComponentProps) => (
     toggleTestId="CommunitiesIntroToggle"
     className={className}
     bodyClassName="flex flex-col gap-6 lg:flex-row lg:gap-8"
-    heading={
-      <Header caps variant="h3">
+    title={
+      <>
         Show your true colors <span className="text-v3-bg-accent-40">curated by the Collective</span>
-      </Header>
+      </>
     }
   >
     <div className="relative h-[180px] w-full shrink-0 overflow-hidden rounded-sm lg:w-[300px]">
