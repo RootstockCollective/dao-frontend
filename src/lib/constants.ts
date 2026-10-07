@@ -112,8 +112,6 @@ export const RNS_REGISTRY_ADDRESS = process.env.NEXT_PUBLIC_RNS_REGISTRY_ADDRESS
 export const NODE_URL = process.env.NEXT_PUBLIC_NODE_URL
 export const DEFAULT_NUMBER_OF_SECONDS_PER_BLOCK = 25
 
-export const GOOGLE_TAG_ID = 'GTM-PTL6VZMT'
-
 export const MAX_NAME_LENGTH_FOR_PROPOSAL = 100
 export const TALLY_DESCRIPTION_SEPARATOR = '  ' // Tally uses double spaces to separate name and description
 export const WeiPerEther = 10n ** 18n
