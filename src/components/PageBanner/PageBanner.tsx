@@ -1,25 +1,17 @@
 'use client'
 
-import Image from 'next/image'
 import { ReactNode, useState } from 'react'
 
-import { AccentSquare } from '@/components/AccentSquare'
 import { DismissButton } from '@/components/DismissButton'
-import { Header, Paragraph, Span } from '@/components/Typography'
+import { MoltenBackground } from '@/components/MoltenBackground'
+import { Header, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
-import {
-  BANNER_EYEBROW_CLASSES,
-  BANNER_HEADER_ARTWORK_FILTER,
-  BANNER_HEADER_OVERLAY,
-  BANNER_MOBILE_OVERLAY,
-} from './bannerAssets'
+import { BANNER_HEADER_OVERLAY, BANNER_MOBILE_OVERLAY, PAGE_TITLE_CLASSES } from './bannerAssets'
 import { BannerDecorativeSquares } from './BannerDecorativeSquares'
 
 export interface PageBannerProps {
   title: string
-  /** Path of the background artwork, anchored to the right edge. */
-  imageSrc: string
   /**
    * Renders the dismiss button. The dismissal lasts for the session only: a reload
    * brings the banner back. Omit it for a permanent banner.
@@ -27,8 +19,6 @@ export interface PageBannerProps {
   dismissible?: boolean
   /** Optional intro copy. Omit it for banners that only carry the page title. */
   description?: ReactNode
-  /** Short kicker shown above the title. Replaces the decorative squares when set. */
-  eyebrow?: string
   /** Rendered at the bottom right of the banner, typically an external link. */
   bottomRight?: ReactNode
   /** Rendered under the description, typically a call to action and/or metrics. */
@@ -38,15 +28,14 @@ export interface PageBannerProps {
 }
 
 /**
- * Page hero: background artwork anchored right, title, intro copy and optional call
- * to action. When dismissible, closing it hides the banner until the next page load.
+ * Page hero: the still molten background shared by every page, title, intro copy and
+ * optional call to action. When dismissible, closing it hides the banner until the next
+ * page load; the title stays in the page as a visually hidden heading.
  */
 export const PageBanner = ({
   dismissible = false,
   title,
   description,
-  imageSrc,
-  eyebrow,
   bottomRight,
   children,
   className,
@@ -55,7 +44,12 @@ export const PageBanner = ({
   const [isDismissed, setIsDismissed] = useState(false)
 
   if (dismissible && isDismissed) {
-    return null
+    // The banner carries the page's only heading: keep it for assistive technology
+    return (
+      <Header caps variant="h1" className="sr-only">
+        {title}
+      </Header>
+    )
   }
 
   return (
@@ -66,20 +60,11 @@ export const PageBanner = ({
         className,
       )}
     >
-      <Image
-        src={imageSrc}
-        alt=""
-        aria-hidden="true"
-        fill
-        priority
-        sizes="100vw"
-        className={cn('object-cover object-right', BANNER_HEADER_ARTWORK_FILTER)}
-      />
-      <div className="absolute inset-0 bg-v3-bg-accent-100/25" />
+      <MoltenBackground tone="dark" animated={false} />
       <div className="absolute inset-0 md:hidden" style={{ background: BANNER_MOBILE_OVERLAY }} />
       <div className="absolute inset-0 hidden md:block" style={{ background: BANNER_HEADER_OVERLAY }} />
 
-      {!eyebrow && <BannerDecorativeSquares className="absolute left-3 top-3 z-base" />}
+      <BannerDecorativeSquares className="absolute left-4 top-4 z-base md:left-6 md:top-5" />
 
       {dismissible && (
         <DismissButton
@@ -93,15 +78,7 @@ export const PageBanner = ({
       <div className="relative flex min-h-[180px] flex-col justify-between gap-6 px-4 pb-6 pt-12 md:min-h-[200px] md:px-6 md:pb-6 md:pt-14">
         <div className="flex flex-col gap-6">
           <div className="flex max-w-[30rem] flex-col gap-2">
-            {eyebrow && (
-              <div className="flex items-center gap-2">
-                <AccentSquare />
-                <Span caps bold variant="body-s" className={cn(BANNER_EYEBROW_CLASSES, 'text-banner-label')}>
-                  {eyebrow}
-                </Span>
-              </div>
-            )}
-            <Header caps variant="h1" className="text-3xl leading-10 text-banner-title">
+            <Header caps variant="h1" className={cn(PAGE_TITLE_CLASSES, 'text-banner-title')}>
               {title}
             </Header>
             {typeof description === 'string' ? (

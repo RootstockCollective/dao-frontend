@@ -42,13 +42,9 @@ describe('NotificationBanner', () => {
     expect(onDismiss).toHaveBeenCalledOnce()
   })
 
-  it('falls back to the ember streaks when it has no artwork', () => {
-    const { container, rerender } = render(<NotificationBanner {...defaultProps} />)
+  it('draws the ember streaks behind the copy, with no artwork', () => {
+    const { container } = render(<NotificationBanner {...defaultProps} />)
     expect(screen.getByTestId('NotificationStreaks')).toBeInTheDocument()
     expect(container.querySelector('img')).not.toBeInTheDocument()
-
-    rerender(<NotificationBanner {...defaultProps} backgroundSrc="/images/notification-back.webp" />)
-    expect(screen.queryByTestId('NotificationStreaks')).not.toBeInTheDocument()
-    expect(container.querySelector('img')).toBeInTheDocument()
   })
 })

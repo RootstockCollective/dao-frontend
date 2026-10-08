@@ -9,12 +9,7 @@ import { NotConnectedVotingPowerContainer } from './NotConnectedVotingPowerConta
 export const VotingPowerSection = () => {
   const { isConnected } = useAccount()
 
-  return (
-    <div className="my-[8px]">
-      {!isConnected && <NotConnectedVotingPowerContainer />}
-      {isConnected && <ConnectedVotingPowerContainer />}
-    </div>
-  )
+  return isConnected ? <ConnectedVotingPowerContainer /> : <NotConnectedVotingPowerContainer />
 }
 
 const ConnectedVotingPowerContainer = () => {

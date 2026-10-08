@@ -11,7 +11,7 @@ const Section = ({ defaultOpen }: { defaultOpen?: boolean }) => (
   <PersistedCollapsible
     storageKey={KEY}
     defaultOpen={defaultOpen}
-    heading={<h3>Heading</h3>}
+    title="Heading"
     data-testid="Section"
     toggleTestId="Toggle"
   >
@@ -42,6 +42,20 @@ describe('PersistedCollapsible', () => {
     expect(toggle).toHaveAccessibleName('Hide')
     expect(screen.getAllByRole('listitem')).toHaveLength(2)
     expect(screen.getByTestId('Section')).toHaveAttribute('data-open', 'true')
+  })
+
+  it('renders the title as an h3 behind the accent square', () => {
+    render(<Section />)
+
+    const heading = screen.getByRole('heading', { level: 3, name: 'Heading' })
+    expect(heading.previousElementSibling).toBe(screen.getByTestId('AccentSquare'))
+  })
+
+  it('points the toggle at the body it shows and hides', () => {
+    render(<Section />)
+
+    const body = document.getElementById(screen.getByTestId('Toggle').getAttribute('aria-controls')!)
+    expect(body).toContainElement(screen.getByText('One'))
   })
 
   it('collapses, hides the body from the accessibility tree and remembers it', () => {

@@ -1,17 +1,18 @@
 'use client'
 
-import { ReactNode, useSyncExternalStore } from 'react'
+import { ReactNode, useId, useSyncExternalStore } from 'react'
 import useLocalStorageState from 'use-local-storage-state'
 
+import { AccentSquare } from '@/components/AccentSquare'
 import { ChevronDownIcon } from '@/components/Icons'
-import { Span } from '@/components/Typography'
+import { Header, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
 export interface PersistedCollapsibleProps {
   /** localStorage key that remembers whether the section is open. Unique per section. */
   storageKey: string
-  /** Shown on the left of the header row, next to the Show/Hide toggle. */
-  heading: ReactNode
+  /** Rendered as the section's h3, after the accent square. */
+  title: ReactNode
   children: ReactNode
   defaultOpen?: boolean
   className?: string
@@ -74,7 +75,7 @@ const useIsServerOrHydrating = () =>
 export const PersistedCollapsible = ({
   storageKey,
   defaultOpen = true,
-  heading,
+  title,
   children,
   className,
   bodyClassName,
@@ -83,6 +84,7 @@ export const PersistedCollapsible = ({
 }: PersistedCollapsibleProps) => {
   const [isOpen, setIsOpen] = useLocalStorageState<boolean>(storageKey, { defaultValue: defaultOpen })
   const isServerOrHydrating = useIsServerOrHydrating()
+  const bodyId = useId()
 
   return (
     <section
@@ -97,11 +99,18 @@ export const PersistedCollapsible = ({
       )}
     >
       <div className="flex items-start justify-between gap-4">
-        {heading}
+        <div className="flex items-start gap-3">
+          {/* Centred on the first line of the h3 below, so it stays there when the title wraps */}
+          <AccentSquare className="mt-[9px]" />
+          <Header caps variant="h3">
+            {title}
+          </Header>
+        </div>
         <button
           type="button"
           onClick={() => setIsOpen(open => !open)}
           aria-expanded={isOpen}
+          aria-controls={bodyId}
           className="flex shrink-0 cursor-pointer items-center gap-1 text-v3-text-60 hover:text-v3-text-100"
           data-testid={toggleTestId}
         >
@@ -129,7 +138,13 @@ export const PersistedCollapsible = ({
         </button>
       </div>
 
-      <div data-collapsible-body hidden={!isOpen} suppressHydrationWarning className={bodyClassName}>
+      <div
+        id={bodyId}
+        data-collapsible-body
+        hidden={!isOpen}
+        suppressHydrationWarning
+        className={bodyClassName}
+      >
         {children}
       </div>
 

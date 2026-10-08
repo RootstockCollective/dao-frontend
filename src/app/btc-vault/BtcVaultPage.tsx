@@ -3,6 +3,7 @@
 import { useAccount } from 'wagmi'
 
 import { SectionContainer } from '@/app/communities/components/SectionContainer'
+import { PageBanner } from '@/components/PageBanner'
 
 import { ActiveRequestSection } from './ActiveRequestSection'
 import { BtcVaultBanners } from './BtcVaultBanners'
@@ -27,8 +28,9 @@ export const BtcVaultPage = () => {
   return (
     <div
       data-testid={NAME} // TODO: DAO-2029 Standardize data-test-ids to using kebab-case only
-      className="flex flex-col items-start w-full h-full pt-[0.13rem] md:gap-6 rounded-sm"
+      className="flex flex-col items-start w-full h-full gap-6 rounded-sm"
     >
+      <PageBanner dataTestId="BtcVaultBanner" dismissible title={NAME} />
       <BtcVaultBanners />
       {/* Active Request Zone - F7 (STORY-EPIC-7-001) */}
       <ActiveRequestSection data={activeRequests} />

@@ -16,10 +16,9 @@ describe('BuildersBanner', () => {
 
   afterEach(cleanup)
 
-  it('renders the eyebrow, the title and both calls to action', () => {
+  it('renders the title and both calls to action', () => {
     render(<BuildersBanner />)
 
-    expect(screen.getByText('Build on Rootstock')).toBeInTheDocument()
     expect(screen.getByText('Builders')).toBeInTheDocument()
     expect(screen.getByTestId('JoinBuilderRewardsButton')).toBeInTheDocument()
     expect(screen.getByTestId('ApplyForGrantButton')).toBeInTheDocument()

@@ -11,8 +11,6 @@ import { formatCurrency } from '@/lib/utils'
 
 import { type HoldingsMetricStatus, useHoldingsMetrics } from './useHoldingsMetrics'
 
-const BANNER_IMAGE_SRC = '/images/holdings-banner-bg.webp'
-
 const DISCONNECTED_DESCRIPTION =
   'Connect your wallet to see your RIF, stRIF, USDRIF and rBTC, claim rewards and start backing builders.'
 const CONNECTED_DESCRIPTION =
@@ -117,8 +115,6 @@ export const HoldingsBanner = ({ className }: CommonComponentProps) => {
   return (
     <PageBanner
       dataTestId="HoldingsBanner"
-      imageSrc={BANNER_IMAGE_SRC}
-      eyebrow="My Collective"
       title="Holdings"
       description={isConnected ? CONNECTED_DESCRIPTION : DISCONNECTED_DESCRIPTION}
       className={className}

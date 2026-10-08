@@ -106,8 +106,6 @@ export const DepositsPaused: Story = {
   args: {
     background: PAUSE_BANNER_GRADIENT,
     mobileBackground: PAUSE_BANNER_GRADIENT,
-    decorativeImageColor: '#FFF5E1',
-    decorativeSecondaryColor: '#171412',
     testId: 'PauseBanner',
     children: <PauseBannerContent pauseState={{ deposits: 'paused', withdrawals: 'active' }} />,
   },
@@ -119,8 +117,6 @@ export const WithdrawalsPaused: Story = {
   args: {
     background: PAUSE_BANNER_GRADIENT,
     mobileBackground: PAUSE_BANNER_GRADIENT,
-    decorativeImageColor: '#FFF5E1',
-    decorativeSecondaryColor: '#171412',
     testId: 'PauseBanner',
     children: <PauseBannerContent pauseState={{ deposits: 'active', withdrawals: 'paused' }} />,
   },
@@ -132,8 +128,6 @@ export const BothPaused: Story = {
   args: {
     background: PAUSE_BANNER_GRADIENT,
     mobileBackground: PAUSE_BANNER_GRADIENT,
-    decorativeImageColor: '#FFF5E1',
-    decorativeSecondaryColor: '#171412',
     testId: 'PauseBanner',
     children: <PauseBannerContent pauseState={{ deposits: 'paused', withdrawals: 'paused' }} />,
   },
@@ -149,8 +143,6 @@ export const PausedWithEligibility: Story = {
         testId="PauseBanner"
         background={PAUSE_BANNER_GRADIENT}
         mobileBackground={PAUSE_BANNER_GRADIENT}
-        decorativeImageColor="#FFF5E1"
-        decorativeSecondaryColor="#171412"
       >
         <PauseBannerContent pauseState={{ deposits: 'paused', withdrawals: 'paused' }} />
       </StackableBanner>
@@ -178,8 +170,6 @@ export const PausedWithDepositWindow: Story = {
         testId="PauseBanner"
         background={PAUSE_BANNER_GRADIENT}
         mobileBackground={PAUSE_BANNER_GRADIENT}
-        decorativeImageColor="#FFF5E1"
-        decorativeSecondaryColor="#171412"
       >
         <PauseBannerContent pauseState={{ deposits: 'paused', withdrawals: 'active' }} />
       </StackableBanner>

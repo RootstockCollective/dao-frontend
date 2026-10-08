@@ -4,8 +4,8 @@ import { ReactNode } from 'react'
 import { Expandable, ExpandableContent, ExpandableFooter, ExpandableHeader } from '@/components/Expandable'
 import { cn } from '@/lib/utils'
 
+import { ListBullet } from '../ListBullet'
 import { Header, Paragraph, Span } from '../Typography'
-import { BulletPoint } from './BulletPoint'
 
 export interface HeroComponentMobileProps {
   title: string
@@ -58,7 +58,7 @@ export const HeroComponentMobile = ({
             <ul className="flex flex-col gap-1 list-none mb-4">
               {items.map((item: ReactNode, idx: number) => (
                 <li key={idx} className="flex items-start gap-2 text-sm text-bg-100">
-                  <BulletPoint />
+                  <ListBullet className="border-bg-80" />
                   {typeof item === 'string' ? <Paragraph className="text-bg-100">{item}</Paragraph> : item}
                 </li>
               ))}

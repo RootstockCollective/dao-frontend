@@ -372,4 +372,48 @@ describe('MoltenBackground', () => {
 
     expect(query.removeEventListener).toHaveBeenCalled()
   })
+
+  it('draws one still frame, with no loop and no motion listener, when it is not animated', () => {
+    const context = stubContext()
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(
+      context as unknown as CanvasRenderingContext2D,
+    )
+    const addEventListener = vi.fn()
+    vi.spyOn(window, 'matchMedia').mockReturnValue({
+      matches: false,
+      addEventListener,
+      removeEventListener: vi.fn(),
+    } as unknown as MediaQueryList)
+    const requestAnimationFrame = vi.spyOn(window, 'requestAnimationFrame')
+
+    render(<MoltenBackground animated={false} />)
+
+    expect(requestAnimationFrame).not.toHaveBeenCalled()
+    expect(addEventListener).not.toHaveBeenCalled()
+    // One setTransform per frame drawn.
+    expect(context.setTransform).toHaveBeenCalledTimes(1)
+  })
+
+  it('lays an ink veil over the bands in the dark tone only', () => {
+    const lastFill = (tone: 'default' | 'dark') => {
+      const context = stubContext()
+      const fills: Array<{ alpha: number; style: unknown }> = []
+      context.fillRect = vi.fn(() => {
+        fills.push({ alpha: context.globalAlpha, style: context.fillStyle })
+      })
+      vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(
+        context as unknown as CanvasRenderingContext2D,
+      )
+
+      render(<MoltenBackground tone={tone} animated={false} />)
+      cleanup()
+      vi.restoreAllMocks()
+
+      return fills[fills.length - 1]
+    }
+
+    expect(lastFill('dark')).toEqual({ alpha: 0.35, style: '#140f0c' })
+    // Without the veil the last thing painted is a band, at the default band alpha.
+    expect(lastFill('default').alpha).toBe(0.5)
+  })
 })

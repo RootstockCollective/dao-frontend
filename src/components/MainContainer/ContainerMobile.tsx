@@ -5,7 +5,6 @@ import type { HTMLAttributes } from 'react'
 import { BottomDrawer } from '@/components/MainContainer/drawers/BottomDrawer'
 import { MAIN_CONTAINER_ID } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import { TopPageHeader } from '@/shared/walletConnection/components/topPageHeader/TopPageHeader'
 
 import { FooterMobile } from './footers/FooterMobile'
 import { HeaderMobile } from './headers/HeaderMobile'
@@ -26,10 +25,7 @@ export default function ContainerMobile({ children, className, ...props }: HTMLA
       <HeaderMobile />
       <div className="relative px-4 grow flex flex-col pb-24" id={MAIN_CONTAINER_ID}>
         <SidebarMobile />
-        <main className="grow mb-8">
-          <TopPageHeader />
-          {children}
-        </main>
+        <main className="grow mb-8">{children}</main>
         {!isSidebarOpen && <BottomDrawer />}
         <FooterMobile />
       </div>

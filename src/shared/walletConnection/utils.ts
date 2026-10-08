@@ -1,5 +1,3 @@
-import { routePatterns } from './constants'
-
 /**
  * Parses the error object when attempting to connect to extract the error message.
  * @param error
@@ -27,13 +25,4 @@ export function parseWalletConnectionError(error: unknown): string {
     default:
       return errorParsed
   }
-}
-
-/**
- * Function that finds the component that should be used in the Page that the user is currently in
- * @param pathname
- */
-export function getLeftComponentForRoute(pathname: string) {
-  const match = routePatterns.find(route => route.pattern.test(pathname))
-  return match ? match.component : null
 }
