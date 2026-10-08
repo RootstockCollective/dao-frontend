@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'motion/react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useContext, useMemo, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
@@ -17,7 +17,6 @@ import {
   AllocationsContext,
 } from '@/app/collective-rewards/allocations/context/AllocationsContext'
 import { formatSymbol, getFiatAmount } from '@/app/shared/formatter'
-import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { Button, ButtonProps } from '@/components/Button'
 import { ActionMetricsContainer, ActionsContainer, MetricsContainer } from '@/components/containers'
 import { Expandable, ExpandableTrigger } from '@/components/Expandable'
@@ -27,10 +26,10 @@ import { TokenAmountDisplay } from '@/components/TokenAmountDisplay'
 import { Tooltip } from '@/components/Tooltip'
 import { Header, Label, Span } from '@/components/Typography'
 import { RIF, STRIF } from '@/lib/constants'
-import { currentLinks } from '@/lib/links'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
+import { useStakeRifAction } from '@/shared/hooks/useStakeRifAction'
 
 import { useBuilderContext } from '../collective-rewards/user'
 import { BuilderAllocationBar } from './components/BuilderAllocationBar'
@@ -39,37 +38,18 @@ import { Spotlight } from './components/Spotlight'
 const NAME = 'Backing'
 
 const StakeButton = () => {
-  const router = useRouter()
-  const { balances } = useBalancesContext()
+  const { action } = useStakeRifAction()
 
-  const { hasRifBalance, getRifLink } = useMemo(() => {
-    const rifBalance = Number(balances[RIF]?.balance ?? 0)
-    const getRifLink = new URL(currentLinks.getRif)
-
-    return {
-      hasRifBalance: rifBalance > 0,
-      getRifLink: getRifLink.toString(),
-    }
-  }, [balances])
-
-  const { onClick, text } = hasRifBalance
-    ? {
-        onClick: () => router.push('/user?action=stake'),
-        text: 'Stake RIF',
-      }
-    : {
-        onClick: () => window.open(getRifLink.toString(), '_blank'),
-        text: 'Get RIF',
-      }
+  if (!action) return null
 
   return (
     <Button
       variant="primary"
       className="md:h-1 px-2 py-1.5 md:px-4 md:py-3 w-auto md:w-fit border-4 md:border-auto"
-      onClick={onClick}
+      onClick={action.onClick}
     >
       <Span variant="body-s" bold>
-        {text}
+        {action.text}
       </Span>
     </Button>
   )

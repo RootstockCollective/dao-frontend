@@ -2,6 +2,8 @@
 import { ReactNode } from 'react'
 import { Address } from 'viem'
 
+import type { DelegationStatus } from './delegationStatus'
+
 interface CardState {
   contentValue?: ReactNode | string | undefined
   isLoading?: boolean
@@ -18,7 +20,10 @@ export interface CardsState {
 // Data state interface
 export interface DelegateDataState {
   cards: CardsState
-  didIDelegateToMyself: boolean
+  ownStRif: bigint
+  availableVotes: bigint
+  isAccountRead: boolean
+  delegationStatus?: DelegationStatus
   currentDelegatee?: DelegateeState
   nextDelegatee?: DelegateeState
   displayedDelegatee?: DelegateeState
@@ -46,7 +51,7 @@ export interface DelegateActions {
   setNextDelegatee: (nextDelegatee: DelegateeState | undefined) => void
   setIsDelegationPending: (isPending: boolean) => void
   setIsReclaimPending: (isPending: boolean) => void
-  refetch: () => void
+  refetch: () => Promise<void>
 }
 
 // Combined context state interface

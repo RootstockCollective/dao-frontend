@@ -1,3 +1,4 @@
+import { STAKE_RIF_ROUTE } from '@/lib/constants'
 import { currentLinks } from '@/lib/links'
 
 export const CONTENT_CONFIG = {
@@ -52,11 +53,14 @@ export const CONTENT_CONFIG = {
     showRif: false,
     showBalance: true,
     action: {
-      url: '/user?action=stake',
+      url: STAKE_RIF_ROUTE,
       external: false,
     },
   },
 } as const
+
+/** Days a closed step stays hidden before the modal shows it again */
+export const INTRO_MODAL_REMIND_AFTER_DAYS = 7
 
 export type IntroModalStatus = keyof typeof CONTENT_CONFIG
 export type IntroModalContentProps = (typeof CONTENT_CONFIG)[IntroModalStatus]

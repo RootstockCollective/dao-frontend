@@ -90,6 +90,7 @@ export const WHITELISTED_USER_ROLE = '0x013e1f410e70025de956b8838ba99c3a9a9f7eb3
 
 export const AVERAGE_BLOCKTIME = 60_000
 export const CACHE_REVALIDATE_SECONDS = 20
+export const ONE_DAY_IN_MS = 1000 * 60 * 60 * 24
 
 export const RIF = 'RIF'
 export const USD = 'USD'
@@ -101,6 +102,8 @@ export const STRIF = 'stRIF'
 export const USDRIF = 'USDRIF'
 export const USDT0 = 'USDT0'
 export const TRIF = 'tRIF'
+
+export const STAKE_RIF_ROUTE = '/user?action=stake'
 
 export const GRANT_TOKEN_LIMITS = {
   minAmount: 0.000001,

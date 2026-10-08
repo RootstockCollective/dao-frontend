@@ -1,6 +1,7 @@
-import { Address } from 'viem'
+import { Address, isAddressEqual, zeroAddress } from 'viem'
 import { useReadContract } from 'wagmi'
 
+import type { DelegationStatus } from '@/app/delegate/lib/delegationStatus'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
 import { AVERAGE_BLOCKTIME } from '@/lib/constants'
 import { tokenContracts } from '@/lib/contracts'
@@ -10,12 +11,14 @@ const stRifContract = {
   address: tokenContracts.stRIF,
 }
 
+const getDelegationStatus = (account: Address, delegatee: Address): DelegationStatus => {
+  // stRIF reports the zero address for an account that has never delegated
+  if (isAddressEqual(delegatee, zeroAddress)) return 'none'
+  return isAddressEqual(delegatee, account) ? 'self' : 'other'
+}
+
 export const useGetDelegates = (address: Address | undefined) => {
-  const {
-    data: delegateeAddress,
-    isLoading,
-    refetch,
-  } = useReadContract(
+  const { data, isLoading, refetch } = useReadContract(
     address && {
       ...stRifContract,
       functionName: 'delegates',
@@ -26,5 +29,12 @@ export const useGetDelegates = (address: Address | undefined) => {
     },
   )
 
-  return { delegateeAddress, isLoading, refetch }
+  const delegationStatus = address && data ? getDelegationStatus(address, data) : undefined
+
+  return {
+    delegateeAddress: delegationStatus === 'none' ? undefined : data,
+    delegationStatus,
+    isLoading,
+    refetch,
+  }
 }
