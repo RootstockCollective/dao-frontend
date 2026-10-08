@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react'
 import { Countdown } from '@/components/Countdown/Countdown'
 import { Header, Label } from '@/components/Typography'
 import Big from '@/lib/big'
+import { formatDateFullMonthPadded } from '@/lib/utils'
 
-import { formatDateFullMonthPaddedDayUtc } from '../services/ui/formatters'
 import type { EpochDisplay } from '../services/ui/types'
 
 const DEPOSIT_WINDOW_SUBTITLE = 'For the current cycle, deposits can be made until'
@@ -41,7 +41,7 @@ export function DepositWindowSection({ epoch }: DepositWindowSectionProps) {
           DEPOSIT WINDOW {epoch.epochId}
         </Header>
         <Label variant="body-l" className="text-[#171412] leading-[133%]">
-          {DEPOSIT_WINDOW_SUBTITLE} {formatDateFullMonthPaddedDayUtc(epoch.endTime)}.
+          {DEPOSIT_WINDOW_SUBTITLE} {formatDateFullMonthPadded(epoch.endTime, { utc: true })}.
         </Label>
       </div>
       <Countdown
