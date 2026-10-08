@@ -1,58 +1,40 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
-import { WhyDelegate } from './WhyDelegate'
+import { WHY_DELEGATE_STORAGE_KEY, WhyDelegate } from './WhyDelegate'
 
 describe('WhyDelegate', () => {
-  afterEach(cleanup)
+  beforeEach(() => localStorage.clear())
 
-  it('starts open, showing the four reasons', () => {
+  afterEach(() => {
+    cleanup()
+    localStorage.clear()
+  })
+
+  it('renders the four reasons expanded by default', () => {
     render(<WhyDelegate />)
 
-    const toggle = screen.getByTestId('WhyDelegateToggle')
-    expect(toggle).toHaveTextContent('Delegate your voting power')
-    expect(toggle).toHaveTextContent('Hide')
-    expect(toggle).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByText(/Delegate your voting power/)).toBeInTheDocument()
     expect(screen.getAllByRole('listitem')).toHaveLength(4)
     expect(screen.getByRole('link', { name: 'How delegation works' })).toHaveAttribute('target', '_blank')
+    expect(screen.getByTestId('WhyDelegateToggle')).toHaveAccessibleName('Hide')
   })
 
-  it('collapses on click to the heading row, and opens again', () => {
+  it('collapses the reasons and persists the choice', () => {
     render(<WhyDelegate />)
-    const toggle = screen.getByTestId('WhyDelegateToggle')
 
-    fireEvent.click(toggle)
-
-    expect(toggle).toHaveAttribute('aria-expanded', 'false')
-    expect(toggle).toHaveTextContent('Why delegate')
-    expect(screen.queryAllByRole('listitem')).toHaveLength(0)
-
-    fireEvent.click(toggle)
-
-    expect(toggle).toHaveAttribute('aria-expanded', 'true')
-    expect(screen.getAllByRole('listitem')).toHaveLength(4)
-  })
-
-  it('only points aria-controls at the panel while the panel is rendered', () => {
-    render(<WhyDelegate />)
-    const toggle = screen.getByTestId('WhyDelegateToggle')
-
-    const panelId = toggle.getAttribute('aria-controls')
-    expect(panelId).toBeTruthy()
-    expect(document.getElementById(panelId!)).toBeInTheDocument()
-
-    fireEvent.click(toggle)
-
-    expect(toggle).not.toHaveAttribute('aria-controls')
-  })
-
-  it('starts open on every visit, whatever was collapsed before', () => {
-    const { unmount } = render(<WhyDelegate />)
     fireEvent.click(screen.getByTestId('WhyDelegateToggle'))
-    unmount()
+
+    expect(screen.queryAllByRole('listitem')).toHaveLength(0)
+    expect(screen.getByTestId('WhyDelegateToggle')).toHaveAccessibleName('Show')
+    expect(localStorage.getItem(WHY_DELEGATE_STORAGE_KEY)).toBe('false')
+  })
+
+  it('starts collapsed when it was collapsed before', () => {
+    localStorage.setItem(WHY_DELEGATE_STORAGE_KEY, 'false')
 
     render(<WhyDelegate />)
 
-    expect(screen.getByTestId('WhyDelegateToggle')).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.queryAllByRole('listitem')).toHaveLength(0)
   })
 })

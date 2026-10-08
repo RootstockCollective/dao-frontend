@@ -2,8 +2,8 @@
 
 import Image from 'next/image'
 
-import { AccentSquare } from '@/components/AccentSquare'
 import { CommonComponentProps } from '@/components/commonProps'
+import { ListBullet } from '@/components/ListBullet'
 import { PersistedCollapsible } from '@/components/PersistedCollapsible'
 import { Header, Paragraph } from '@/components/Typography'
 
@@ -20,13 +20,6 @@ const POINTS = [
   'These aren’t just collectibles. They are your passport to participation.',
 ]
 
-const Bullet = () => (
-  <span
-    aria-hidden="true"
-    className="mt-2 inline-block h-[6px] w-[6px] shrink-0 rounded-full border border-v3-text-60"
-  />
-)
-
 /**
  * What Collective Badges are, as a collapsible section under the Communities banner, the same
  * way Proposals, Builders and Delegation explain themselves.
@@ -39,12 +32,9 @@ export const CommunitiesIntro = ({ className }: CommonComponentProps) => (
     className={className}
     bodyClassName="flex flex-col gap-6 lg:flex-row lg:gap-8"
     heading={
-      <div className="flex items-center gap-3">
-        <AccentSquare />
-        <Header caps variant="h3">
-          Show your true colors <span className="text-v3-bg-accent-40">curated by the Collective</span>
-        </Header>
-      </div>
+      <Header caps variant="h3">
+        Show your true colors <span className="text-v3-bg-accent-40">curated by the Collective</span>
+      </Header>
     }
   >
     <div className="relative h-[180px] w-full shrink-0 overflow-hidden rounded-sm lg:w-[300px]">
@@ -61,7 +51,7 @@ export const CommunitiesIntro = ({ className }: CommonComponentProps) => (
     <ul className="grid flex-1 list-none grid-cols-1 gap-x-8 gap-y-4 md:grid-cols-2">
       {POINTS.map(point => (
         <li key={point} className="flex items-start gap-2">
-          <Bullet />
+          <ListBullet />
           <Paragraph>{point}</Paragraph>
         </li>
       ))}

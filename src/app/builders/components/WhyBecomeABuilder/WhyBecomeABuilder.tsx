@@ -1,6 +1,5 @@
 'use client'
 
-import { AccentSquare } from '@/components/AccentSquare'
 import { CommonComponentProps } from '@/components/commonProps'
 import { MoltenBackground } from '@/components/MoltenBackground'
 import { PersistedCollapsible } from '@/components/PersistedCollapsible'
@@ -31,12 +30,9 @@ export const WhyBecomeABuilder = ({ className }: CommonComponentProps) => (
     className={className}
     bodyClassName="flex flex-col gap-6 lg:flex-row lg:gap-10"
     heading={
-      <div className="flex items-center gap-3">
-        <AccentSquare />
-        <Header caps variant="h3">
-          Why become a builder?
-        </Header>
-      </div>
+      <Header caps variant="h3">
+        Why become a builder?
+      </Header>
     }
   >
     <div className="relative h-[200px] w-full shrink-0 overflow-hidden rounded-sm lg:h-[260px] lg:w-[300px]">

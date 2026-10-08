@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { ReactNode } from 'react'
 
 import { CommonComponentProps } from '@/components/commonProps'
+import { ListBullet } from '@/components/ListBullet'
 import { PersistedCollapsible } from '@/components/PersistedCollapsible'
 import { Header, Paragraph } from '@/components/Typography'
 
@@ -24,10 +25,6 @@ const STEPS: ReactNode[] = [
   'If your proposal passes quorum, it will be approved',
   'Complete your KYC to ensure eligibility (apply for Grants)',
 ]
-
-const Bullet = () => (
-  <span className="mt-2 inline-block h-[6px] w-[6px] shrink-0 rounded-full border border-v3-text-60" />
-)
 
 export const HowAProposalWorks = ({ className }: CommonComponentProps) => (
   <PersistedCollapsible
@@ -56,7 +53,7 @@ export const HowAProposalWorks = ({ className }: CommonComponentProps) => (
     <ul className="grid flex-1 list-none grid-cols-1 gap-x-8 gap-y-4 md:grid-cols-2 lg:grid-cols-3">
       {STEPS.map((step, index) => (
         <li key={index} className="flex items-start gap-2">
-          <Bullet />
+          <ListBullet />
           <Paragraph>{step}</Paragraph>
         </li>
       ))}
