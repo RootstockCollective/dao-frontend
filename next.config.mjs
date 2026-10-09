@@ -52,6 +52,8 @@ const nextConfig = {
   },
   experimental: {
     serverSourceMaps: true,
+    // Otherwise /INGEST and /MONITORING are still rewritten to PostHog and Sentry, but src/proxy.ts never sees them.
+    caseSensitiveRoutes: true,
   },
   webpack: config => {
     config.optimization.splitChunks = {

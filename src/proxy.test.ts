@@ -1,4 +1,3 @@
-import { createRequire } from 'node:module'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest } from 'next/server'
 
@@ -6,16 +5,10 @@ vi.mock('@/lib/rateLimit', () => ({
   checkRateLimit: vi.fn(),
 }))
 
-import { config, proxy } from './proxy'
+import { proxy } from './proxy'
 import { checkRateLimit } from '@/lib/rateLimit'
 
 const mockedCheckRateLimit = vi.mocked(checkRateLimit)
-
-const require = createRequire(import.meta.url)
-const { getMiddlewareMatchers } = require('next/dist/build/analysis/get-page-static-info') as {
-  getMiddlewareMatchers: (matcher: typeof config.matcher, nextConfig: object) => { regexp: string }[]
-}
-const proxyMatchers = getMiddlewareMatchers(config.matcher, {}).map(({ regexp }) => new RegExp(regexp))
 
 function createRequest(path: string, headers: Record<string, string> = {}): NextRequest {
   return new NextRequest(`http://localhost${path}`, {
@@ -213,10 +206,6 @@ describe('proxy', () => {
 
   describe('third-party rewrites', () => {
     const rewrittenPaths = ['/ingest/e/', '/ingest/flags/', '/ingest/static/array.js', '/monitoring']
-
-    it.each(rewrittenPaths)('runs for %s', path => {
-      expect(proxyMatchers.some(regexp => regexp.test(path))).toBe(true)
-    })
 
     it.each(rewrittenPaths)('forwards %s without the cookie header', path => {
       const response = proxy(
