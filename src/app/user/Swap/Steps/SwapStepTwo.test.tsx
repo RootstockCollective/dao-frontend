@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { act, cleanup, render } from '@testing-library/react'
+import { act, cleanup, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { RIF } from '@/lib/constants'
@@ -18,24 +18,39 @@ vi.mock('@/app/user/Balances/context/BalancesContext', () => ({
   useBalancesContext: () => ({ prices: { [RIF]: { price: 0.1 } } }),
 }))
 
+const TWO_RIF = 2n * 10n ** 18n
 const signPermit = vi.fn()
-const refetchAllowance = vi.fn()
+
+function mockAllowance(allowance: bigint | null) {
+  vi.mocked(useTokenAllowance).mockReturnValue({
+    allowance,
+    isCheckingAllowance: false,
+  } as unknown as ReturnType<typeof useTokenAllowance>)
+}
+
+function mockPermit(amount: bigint | null) {
+  vi.mocked(usePermitSigning).mockReturnValue({
+    signPermit,
+    isSigning: false,
+    permit: amount === null ? null : { details: { amount } },
+    permitSignature: amount === null ? null : '0xsig',
+  } as unknown as ReturnType<typeof usePermitSigning>)
+}
 
 function renderStepTwo() {
   const onGoNext = vi.fn()
-  const onGoBack = vi.fn()
   const setButtonActions = vi.fn()
   render(
     <SwapStepTwo
       onGoNext={onGoNext}
-      onGoBack={onGoBack}
+      onGoBack={vi.fn()}
       onCloseModal={vi.fn()}
       onGoToStep={vi.fn()}
       setButtonActions={setButtonActions}
     />,
   )
-  const clickSign = () => act(() => setButtonActions.mock.lastCall![0].primary.onClick())
-  return { onGoNext, onGoBack, clickSign }
+  const primary = () => setButtonActions.mock.lastCall![0].primary
+  return { onGoNext, primary }
 }
 
 describe('SwapStepTwo', () => {
@@ -50,36 +65,42 @@ describe('SwapStepTwo', () => {
     vi.mocked(useTokenSelection).mockReturnValue({
       tokenInData: { symbol: RIF, decimals: 18 },
     } as ReturnType<typeof useTokenSelection>)
-    vi.mocked(usePermitSigning).mockReturnValue({
-      signPermit,
-      isSigning: false,
-      permit: null,
-      permitSignature: null,
-    } as unknown as ReturnType<typeof usePermitSigning>)
-    vi.mocked(useTokenAllowance).mockReturnValue({ refetchAllowance } as unknown as ReturnType<
-      typeof useTokenAllowance
-    >)
+    mockPermit(null)
   })
 
   it('signs the permit when the token allowance covers the amount', async () => {
-    refetchAllowance.mockResolvedValue({ data: 2n * 10n ** 18n })
-    const { onGoNext, onGoBack, clickSign } = renderStepTwo()
+    mockAllowance(TWO_RIF)
+    const { onGoNext, primary } = renderStepTwo()
 
-    await clickSign()
+    expect(primary().disabled).toBe(false)
+    await act(() => primary().onClick())
 
     expect(signPermit).toHaveBeenCalledTimes(1)
     expect(onGoNext).toHaveBeenCalledTimes(1)
-    expect(onGoBack).not.toHaveBeenCalled()
+    expect(screen.queryByTestId('swap-allowance-short-warning')).not.toBeInTheDocument()
   })
 
-  it('returns to step 1 when the amount grew past the token allowance', async () => {
-    refetchAllowance.mockResolvedValue({ data: 1n * 10n ** 18n })
-    const { onGoNext, onGoBack, clickSign } = renderStepTwo()
+  it('blocks signing and asks to go back when the amount grew past the token allowance', () => {
+    mockAllowance(TWO_RIF - 1n)
+    const { primary } = renderStepTwo()
 
-    await clickSign()
+    expect(primary().disabled).toBe(true)
+    expect(screen.getByTestId('swap-allowance-short-warning')).toBeInTheDocument()
+  })
 
-    expect(onGoBack).toHaveBeenCalledTimes(1)
-    expect(signPermit).not.toHaveBeenCalled()
+  it('does not auto-advance on an existing permit when the token allowance falls short', () => {
+    mockPermit(TWO_RIF)
+    mockAllowance(TWO_RIF - 1n)
+    const { onGoNext } = renderStepTwo()
+
     expect(onGoNext).not.toHaveBeenCalled()
+  })
+
+  it('auto-advances on an existing permit when the token allowance covers the amount', () => {
+    mockPermit(TWO_RIF)
+    mockAllowance(TWO_RIF)
+    const { onGoNext } = renderStepTwo()
+
+    expect(onGoNext).toHaveBeenCalledTimes(1)
   })
 })

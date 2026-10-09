@@ -1,3 +1,4 @@
+// @vitest-environment jsdom
 import { cleanup, renderHook } from '@testing-library/react'
 import { parseUnits } from 'viem'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -7,12 +8,14 @@ import { RIF, RIF_ADDRESS } from '@/lib/constants'
 import { useTokenAllowance } from './hooks'
 import { useSwapStore } from './useSwapStore'
 
-const PERMIT2 = '0x000000000022D473030F116dDEE9F6B43aC78BA3'
-const mockWriteContractAsync = vi.fn()
+const { PERMIT2, mockWriteContractAsync } = vi.hoisted(() => ({
+  PERMIT2: '0x000000000022D473030F116dDEE9F6B43aC78BA3',
+  mockWriteContractAsync: vi.fn(),
+}))
 
 vi.mock('@/lib/constants', async importOriginal => ({
   ...(await importOriginal<typeof import('@/lib/constants')>()),
-  PERMIT2_ADDRESS: '0x000000000022D473030F116dDEE9F6B43aC78BA3',
+  PERMIT2_ADDRESS: PERMIT2,
 }))
 
 vi.mock('wagmi', async importOriginal => ({
@@ -54,7 +57,7 @@ describe('useTokenAllowance.approve', () => {
   it('does not send an approval for a zero amount', async () => {
     const { result } = renderHook(() => useTokenAllowance())
 
-    await expect(result.current.approve(0n)).rejects.toThrow()
+    await expect(result.current.approve(0n)).rejects.toThrow('Enter an amount to swap')
     expect(mockWriteContractAsync).not.toHaveBeenCalled()
   })
 })
