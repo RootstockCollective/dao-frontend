@@ -5,7 +5,7 @@ import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { StakeTokenAmountDisplay } from '@/app/user/Stake/components/StakeTokenAmountDisplay'
 import { Header, Label } from '@/components/Typography'
 import Big from '@/lib/big'
-import { usePermitSigning, useSwapInput, useTokenSelection } from '@/shared/stores/swap'
+import { usePermitSigning, useSwapInput, useTokenAllowance, useTokenSelection } from '@/shared/stores/swap'
 
 import { SwapStepProps } from '../types'
 
@@ -14,6 +14,7 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
   const { tokenInData } = useTokenSelection()
   const { prices } = useBalancesContext()
   const { signPermit, isSigning, permitSignature, permit } = usePermitSigning()
+  const { refetchAllowance } = useTokenAllowance()
 
   // Calculate amount in currency using price from context
   const amountInCurrency = useMemo(() => {
@@ -43,13 +44,19 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
   // Handle signing permit
   const handleSignPermit = useCallback(async () => {
     try {
+      // In exactOut mode a newer quote can ask for more than step 1 approved
+      const { data: tokenAllowance } = await refetchAllowance()
+      if (typeof tokenAllowance !== 'bigint' || tokenAllowance < requiredAmount) {
+        onGoBack()
+        return
+      }
       await signPermit()
       onGoNext()
     } catch (error) {
       // Error is handled by the hook, user likely rejected
       console.error('Permit signing failed:', error)
     }
-  }, [signPermit, onGoNext])
+  }, [refetchAllowance, requiredAmount, signPermit, onGoNext, onGoBack])
 
   // Auto-advance if existing permit signature covers the current amount
   useEffect(() => {

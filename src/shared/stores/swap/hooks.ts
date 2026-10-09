@@ -358,7 +358,7 @@ export const useTokenSelection = () => {
  * Hook for checking and managing ERC-20 allowance to Permit2 contract
  *
  * With the new Permit2 signature flow:
- * - We only need ERC-20 → Permit2 approval (one-time per token)
+ * - ERC-20 → Permit2 approval covers the amount of the swap being made
  * - Permit2 → Universal Router is handled via signatures at swap time
  */
 export const useTokenAllowance = () => {
@@ -402,7 +402,7 @@ export const useTokenAllowance = () => {
 
   // Approve ERC-20 token for Permit2 contract
   const approve = useCallback(
-    async (_amount: bigint) => {
+    async (amount: bigint) => {
       if (!address || !writeContractAsync || !UNISWAP_UNIVERSAL_ROUTER_ADDRESS) {
         throw new Error('Wallet not connected. Please connect your wallet and try again.')
       }
@@ -411,16 +411,16 @@ export const useTokenAllowance = () => {
         throw new Error(`Token address not found for ${tokenIn}`)
       }
 
-      try {
-        // Request ERC-20 approval to Permit2
-        // Use max uint256 for unlimited approval (common pattern for Permit2)
-        const MAX_UINT256 = BigInt(2) ** BigInt(256) - BigInt(1)
+      if (amount <= 0n) {
+        throw new Error('Enter an amount to swap before approving.')
+      }
 
+      try {
         const txHash = await writeContractAsync({
           address: tokens[tokenIn].address,
           abi: RIFTokenAbi,
           functionName: 'approve',
-          args: [PERMIT2_ADDRESS, MAX_UINT256],
+          args: [PERMIT2_ADDRESS, amount],
         })
 
         if (!txHash) {
