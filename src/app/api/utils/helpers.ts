@@ -29,14 +29,14 @@ export const applyActionTypeFilter = <
 }
 
 /** Returns the id the error was logged under, for the client to quote. */
-export const logApiError = (err: unknown, context?: string): string => {
+export const logApiError = (err: unknown, context?: string, fields?: Record<string, unknown>): string => {
   const errorId = randomUUID()
-  log.error({ err, context, errorId }, context ? `Error in ${context}` : 'API error')
+  log.error({ ...fields, err, context, errorId }, context ? `Error in ${context}` : 'API error')
   return errorId
 }
 
-export const handleApiError = (err: unknown, context?: string): Response =>
+export const handleApiError = (err: unknown, context?: string, fields?: Record<string, unknown>): Response =>
   Response.json(
-    { success: false, error: 'Internal server error', errorId: logApiError(err, context) },
+    { success: false, error: 'Internal server error', errorId: logApiError(err, context, fields) },
     { status: 500 },
   )

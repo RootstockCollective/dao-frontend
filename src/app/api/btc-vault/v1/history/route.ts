@@ -45,7 +45,7 @@ export async function GET(req: NextRequest) {
 
     const address = parsed.address?.toLowerCase()
 
-    const { data, total, source } = await fetchBtcVaultHistoryPageAndEnrich({
+    const { data, total, source, errors } = await fetchBtcVaultHistoryPageAndEnrich({
       limit: parsed.limit,
       page: parsed.page,
       sort_field: parsed.sort_field,
@@ -55,7 +55,13 @@ export async function GET(req: NextRequest) {
     })
 
     if (source === null) {
-      return NextResponse.json({ error: 'Cannot fetch BTC vault history from any source' }, { status: 500 })
+      return handleApiError(
+        new Error('Cannot fetch BTC vault history from any source'),
+        'btc vault global history route',
+        {
+          sourceErrors: errors,
+        },
+      )
     }
     const totalPages = Math.ceil(total / parsed.limit)
     const offset = (parsed.page - 1) * parsed.limit

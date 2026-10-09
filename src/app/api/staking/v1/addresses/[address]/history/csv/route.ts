@@ -14,6 +14,8 @@ import { RIF, STRIF } from '@/lib/constants'
 
 import type { StakingHistoryByPeriodAndAction } from '../types'
 
+const ROUTE = '/api/staking/v1/addresses/[address]/history/csv'
+
 const SortFieldEnum = z.enum(['period', 'amount', 'action'])
 const QuerySchema = z.object({
   sort_field: SortFieldEnum.default('period'),
@@ -164,6 +166,7 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
     const plan = await resolveStakingHistoryCsvPlan(address, sortParams, pageSize)
     const sourceHeaders = stakingHistoryCsvSourceHeaders(plan)
 
+    let failure: { error: unknown } | undefined
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
         try {
@@ -221,15 +224,19 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
 
           controller.close()
         } catch (streamError) {
-          const errorId = logApiError(streamError, 'staking history CSV stream')
+          const errorId = logApiError(streamError, 'CSV stream', { route: ROUTE })
           const encoder = new TextEncoder()
           try {
             controller.enqueue(encoder.encode(`\nERROR: Internal server error (${errorId})`))
           } catch {
             // If we can't enqueue, just close
           }
-          controller.error(streamError)
+          failure = { error: streamError }
         }
+      },
+      // Erroring inside start() would discard the queued error line; pull() runs once the reader has taken it.
+      pull(controller) {
+        if (failure) controller.error(failure.error)
       },
     })
 
@@ -245,6 +252,6 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
     if (err instanceof z.ZodError) {
       return Response.json({ error: 'Validation failed', details: err.flatten() }, { status: 400 })
     }
-    return handleApiError(err, 'staking history CSV route')
+    return handleApiError(err, 'staking history CSV route', { route: ROUTE })
   }
 }

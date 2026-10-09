@@ -45,6 +45,21 @@ describe('handleApiError', () => {
     expect(Object.keys(body).sort()).toEqual(['error', 'errorId', 'success'])
   })
 
+  it('logs the extra fields without letting them override the error or its id', async () => {
+    const err = new Error('boom')
+
+    const { errorId } = await handleApiError(err, 'test route', {
+      route: '/api/test',
+      errorId: 'spoofed',
+    }).json()
+
+    expect(logError).toHaveBeenCalledWith(
+      { route: '/api/test', err, context: 'test route', errorId },
+      'Error in test route',
+    )
+    expect(errorId).not.toBe('spoofed')
+  })
+
   it('logs a different id for each error', async () => {
     const first = await handleApiError(new Error('a')).json()
     const second = await handleApiError(new Error('b')).json()

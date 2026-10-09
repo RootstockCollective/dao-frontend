@@ -8,10 +8,16 @@ export const revalidate = 20
 
 export async function GET() {
   try {
-    const { epochs, source } = await getCachedEpochHistory()
+    const { epochs, source, errors } = await getCachedEpochHistory()
 
     if (epochs.length === 0) {
-      return NextResponse.json({ error: 'Cannot fetch epoch history from any source' }, { status: 500 })
+      return handleApiError(
+        new Error('Cannot fetch epoch history from any source'),
+        'btc vault epoch history route',
+        {
+          sourceErrors: errors,
+        },
+      )
     }
 
     return NextResponse.json(epochs, { headers: { 'X-Source': source! } })

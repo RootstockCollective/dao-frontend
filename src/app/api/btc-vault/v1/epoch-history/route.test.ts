@@ -43,7 +43,11 @@ describe('GET /api/btc-vault/v1/epoch-history', () => {
     const res = await GET()
 
     expect(res.status).toBe(500)
-    expect(await res.json()).toEqual({ error: 'Cannot fetch epoch history from any source' })
+    expect(await res.json()).toEqual({
+      success: false,
+      error: 'Internal server error',
+      errorId: expect.any(String),
+    })
     expect(res.headers.get('X-Source-Errors')).toBeNull()
   })
 

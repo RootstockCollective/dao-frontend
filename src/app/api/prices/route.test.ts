@@ -32,10 +32,13 @@ describe('GET /api/prices', () => {
     mockFetchPrices.mockRejectedValue(new Error('CMC unavailable'))
 
     const response = await GET(makeRequest())
-    const data = await response.json()
 
     expect(response.status).toBe(500)
-    expect(data.error).toBe('CMC unavailable')
+    expect(await response.json()).toEqual({
+      success: false,
+      error: 'Internal server error',
+      errorId: expect.any(String),
+    })
   })
 
   it('should return 508 when X-Prices-Source: fallback header is present', async () => {

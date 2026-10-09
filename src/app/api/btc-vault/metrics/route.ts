@@ -1,5 +1,6 @@
 import { parseEther } from 'viem'
 
+import { handleApiError } from '@/app/api/utils/helpers'
 import { rbtcVault, syntheticYield } from '@/lib/contracts'
 import { publicClient } from '@/lib/viemPublicClient'
 
@@ -46,8 +47,6 @@ export async function GET() {
       timestamp: Math.floor(Date.now() / 1000),
     })
   } catch (error) {
-    console.error('[btc-vault/metrics]', error)
-    const message = error instanceof Error ? error.message : 'Unknown error'
-    return Response.json({ error: `Cannot fetch vault metrics: ${message}` }, { status: 500 })
+    return handleApiError(error, 'btc vault metrics route', { route: '/api/btc-vault/metrics' })
   }
 }

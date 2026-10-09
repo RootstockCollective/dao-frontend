@@ -213,8 +213,11 @@ describe('GET /api/btc-vault/v1/history', () => {
     const response = await GET(req as never)
 
     expect(response.status).toBe(500)
-    const body = await response.json()
-    expect(body.error).toBe('Cannot fetch BTC vault history from any source')
+    expect(await response.json()).toEqual({
+      success: false,
+      error: 'Internal server error',
+      errorId: expect.any(String),
+    })
     expect(response.headers.get('X-Source-Errors')).toBeNull()
   })
 })

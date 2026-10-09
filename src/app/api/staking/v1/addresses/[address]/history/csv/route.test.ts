@@ -51,6 +51,7 @@ const mockGroups: StakingHistoryByPeriodAndAction[] = [
 beforeEach(() => {
   mockFetchPrices.mockResolvedValue({ [RIF]: { price: 0.05 } } as never)
   mockResolvePlan.mockReset()
+  mockGetStakingHistoryFromDB.mockReset()
 })
 
 describe('GET /api/staking/v1/addresses/[address]/history/csv', () => {
@@ -87,11 +88,8 @@ describe('GET /api/staking/v1/addresses/[address]/history/csv', () => {
       address,
       sortParams: { sort_field: 'period', sort_direction: 'desc' },
     })
-    mockGetStakingHistoryFromDB.mockImplementation(
-      () =>
-        new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('select * from "StakingHistory" - Connection terminated'))),
-        ),
+    mockGetStakingHistoryFromDB.mockRejectedValue(
+      new Error('select * from "StakingHistory" - Connection terminated'),
     )
 
     const res = await GET(new Request(`http://localhost/csv`) as never, {
