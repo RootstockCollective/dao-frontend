@@ -1,3 +1,4 @@
+import { createRequire } from 'node:module'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest } from 'next/server'
 
@@ -5,10 +6,16 @@ vi.mock('@/lib/rateLimit', () => ({
   checkRateLimit: vi.fn(),
 }))
 
-import { proxy } from './proxy'
+import { config, proxy } from './proxy'
 import { checkRateLimit } from '@/lib/rateLimit'
 
 const mockedCheckRateLimit = vi.mocked(checkRateLimit)
+
+const require = createRequire(import.meta.url)
+const { getMiddlewareMatchers } = require('next/dist/build/analysis/get-page-static-info') as {
+  getMiddlewareMatchers: (matcher: typeof config.matcher, nextConfig: object) => { regexp: string }[]
+}
+const proxyMatchers = getMiddlewareMatchers(config.matcher, {}).map(({ regexp }) => new RegExp(regexp))
 
 function createRequest(path: string, headers: Record<string, string> = {}): NextRequest {
   return new NextRequest(`http://localhost${path}`, {
@@ -201,6 +208,36 @@ describe('proxy', () => {
       proxy(createRequest('/api/auth/login'))
 
       expect(mockedCheckRateLimit).toHaveBeenCalledWith('127.0.0.1', expect.any(String), expect.any(Object))
+    })
+  })
+
+  describe('third-party rewrites', () => {
+    const rewrittenPaths = ['/ingest/e/', '/ingest/flags/', '/ingest/static/array.js', '/monitoring']
+
+    it.each(rewrittenPaths)('runs for %s', path => {
+      expect(proxyMatchers.some(regexp => regexp.test(path))).toBe(true)
+    })
+
+    it.each(rewrittenPaths)('forwards %s without the cookie header', path => {
+      const response = proxy(
+        createRequest(path, {
+          cookie: 'auth-token=session-jwt; ph_phc_test_posthog=1',
+          'user-agent': 'vitest',
+        }),
+      )
+
+      expect(response.headers.get('x-middleware-override-headers')?.split(',')).not.toContain('cookie')
+      expect(response.headers.get('x-middleware-request-cookie')).toBeNull()
+      expect(response.headers.get('x-middleware-request-user-agent')).toBe('vitest')
+      expect(mockedCheckRateLimit).not.toHaveBeenCalled()
+    })
+
+    it('leaves the cookie on routes the app serves', () => {
+      mockedCheckRateLimit.mockReturnValue(allowedResult())
+
+      const response = proxy(createRequest('/api/auth/verify', { cookie: 'auth-token=session-jwt' }))
+
+      expect(response.headers.get('x-middleware-override-headers')).toBeNull()
     })
   })
 })
