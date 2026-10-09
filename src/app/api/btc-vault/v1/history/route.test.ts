@@ -182,7 +182,7 @@ describe('GET /api/btc-vault/v1/history', () => {
     })
   })
 
-  it('should set X-Source blockscout and X-Source-Errors when subgraph failed and Blockscout succeeds', async () => {
+  it('should set X-Source blockscout without the subgraph error when Blockscout succeeds', async () => {
     mockFetchEnrich.mockResolvedValue({
       data: mockHistory,
       total: 1,
@@ -195,7 +195,7 @@ describe('GET /api/btc-vault/v1/history', () => {
 
     expect(response.status).toBe(200)
     expect(response.headers.get('X-Source')).toBe('blockscout')
-    expect(response.headers.get('X-Source-Errors')).toContain('the-graph: subgraph down')
+    expect(response.headers.get('X-Source-Errors')).toBeNull()
   })
 
   it('should return 500 when no data source succeeds', async () => {
@@ -215,6 +215,6 @@ describe('GET /api/btc-vault/v1/history', () => {
     expect(response.status).toBe(500)
     const body = await response.json()
     expect(body.error).toBe('Cannot fetch BTC vault history from any source')
-    expect(response.headers.get('X-Source-Errors')).toContain('the-graph: down')
+    expect(response.headers.get('X-Source-Errors')).toBeNull()
   })
 })

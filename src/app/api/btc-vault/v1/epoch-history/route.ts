@@ -1,39 +1,21 @@
 import { NextResponse } from 'next/server'
 
+import { handleApiError } from '@/app/api/utils/helpers'
+
 import { getCachedEpochHistory } from './action'
 
 export const revalidate = 20
 
 export async function GET() {
   try {
-    const { epochs, source, errors } = await getCachedEpochHistory()
-
-    const headers: Record<string, string> = {}
-
-    if (errors.length > 0) {
-      headers['X-Source-Errors'] = errors.map(e => `${e.source}: ${e.message}`).join('; ')
-    }
+    const { epochs, source } = await getCachedEpochHistory()
 
     if (epochs.length === 0) {
-      return NextResponse.json(
-        { error: 'Cannot fetch epoch history from any source' },
-        {
-          status: 500,
-          headers,
-        },
-      )
+      return NextResponse.json({ error: 'Cannot fetch epoch history from any source' }, { status: 500 })
     }
 
-    headers['X-Source'] = source!
-    return NextResponse.json(epochs, { headers })
+    return NextResponse.json(epochs, { headers: { 'X-Source': source! } })
   } catch (error) {
-    const message = error instanceof Error ? error.message : String(error)
-    return NextResponse.json(
-      { error: 'Failed to fetch epoch history' },
-      {
-        status: 500,
-        headers: { 'X-Source-Errors': `unexpected: ${message}` },
-      },
-    )
+    return handleApiError(error, 'btc vault epoch history route')
   }
 }

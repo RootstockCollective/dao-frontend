@@ -6,12 +6,11 @@ import {
   resolveStakingHistoryCsvPlan,
   stakingHistoryCsvSourceHeaders,
 } from '@/app/api/staking/v1/addresses/[address]/history/sources/resolve-staking-history-csv-plan'
-import { queryParam } from '@/app/api/utils/helpers'
+import { handleApiError, logApiError, queryParam } from '@/app/api/utils/helpers'
 import { AddressSchema, SortDirectionEnum } from '@/app/api/utils/validators'
 import { getFiatAmount } from '@/app/shared/formatter'
 import Big from '@/lib/big'
 import { RIF, STRIF } from '@/lib/constants'
-import { logger } from '@/lib/logger'
 
 import type { StakingHistoryByPeriodAndAction } from '../types'
 
@@ -222,14 +221,10 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
 
           controller.close()
         } catch (streamError) {
-          logger.error(
-            { err: streamError, route: '/api/staking/v1/addresses/[address]/history/csv' },
-            'Error in CSV stream',
-          )
-          const errorMessage = streamError instanceof Error ? streamError.message : String(streamError)
+          const errorId = logApiError(streamError, 'staking history CSV stream')
           const encoder = new TextEncoder()
           try {
-            controller.enqueue(encoder.encode(`\nERROR: ${errorMessage}`))
+            controller.enqueue(encoder.encode(`\nERROR: Internal server error (${errorId})`))
           } catch {
             // If we can't enqueue, just close
           }
@@ -250,23 +245,6 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
     if (err instanceof z.ZodError) {
       return Response.json({ error: 'Validation failed', details: err.flatten() }, { status: 400 })
     }
-    logger.error(
-      { err, route: '/api/staking/v1/addresses/[address]/history/csv' },
-      'Error in staking history CSV route',
-    )
-
-    const errorMessage = err instanceof Error ? err.message : String(err)
-    const errorStack = err instanceof Error ? err.stack : undefined
-    const errorName = err instanceof Error ? err.name : 'UnknownError'
-
-    return Response.json(
-      {
-        error: 'Internal server error',
-        message: errorMessage,
-        name: errorName,
-        ...(process.env.NODE_ENV === 'development' && { stack: errorStack }),
-      },
-      { status: 500 },
-    )
+    return handleApiError(err, 'staking history CSV route')
   }
 }

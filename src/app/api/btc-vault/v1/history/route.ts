@@ -25,7 +25,6 @@ export const revalidate = 20
  *
  * Response headers (same pattern as GET /api/btc-vault/v1/epoch-history):
  * - `X-Source`: `the-graph` | `blockscout` when data was loaded successfully
- * - `X-Source-Errors`: semicolon-separated prior failures when fallback occurred (or unexpected errors)
  * 400 on validation error (body includes error, details); 500 when no source could return data.
  */
 export async function GET(req: NextRequest) {
@@ -46,7 +45,7 @@ export async function GET(req: NextRequest) {
 
     const address = parsed.address?.toLowerCase()
 
-    const { data, total, source, errors } = await fetchBtcVaultHistoryPageAndEnrich({
+    const { data, total, source } = await fetchBtcVaultHistoryPageAndEnrich({
       limit: parsed.limit,
       page: parsed.page,
       sort_field: parsed.sort_field,
@@ -55,16 +54,8 @@ export async function GET(req: NextRequest) {
       address,
     })
 
-    const headers: Record<string, string> = {}
-    if (errors.length > 0) {
-      headers['X-Source-Errors'] = errors.map(e => `${e.source}: ${e.message}`).join('; ')
-    }
-
     if (source === null) {
-      return NextResponse.json(
-        { error: 'Cannot fetch BTC vault history from any source' },
-        { status: 500, headers },
-      )
+      return NextResponse.json({ error: 'Cannot fetch BTC vault history from any source' }, { status: 500 })
     }
     const totalPages = Math.ceil(total / parsed.limit)
     const offset = (parsed.page - 1) * parsed.limit
@@ -78,8 +69,7 @@ export async function GET(req: NextRequest) {
       sort_direction: parsed.sort_direction,
     }
 
-    headers['X-Source'] = source
-    return NextResponse.json({ data, pagination }, { headers })
+    return NextResponse.json({ data, pagination }, { headers: { 'X-Source': source } })
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
