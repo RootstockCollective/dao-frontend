@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 import { GET } from './route'
 import { SWAP_TOKEN_ADDRESSES } from '@/lib/swap/constants'
 
@@ -16,9 +16,7 @@ describe('GET /api/swap/quote - integration tests', () => {
 
   const realRif = SWAP_TOKEN_ADDRESSES.RIF
   const hasRifMultihop =
-    hasRealAddresses &&
-    realRif &&
-    realRif !== '0x0000000000000000000000000000000000000000'
+    hasRealAddresses && realRif && realRif !== '0x0000000000000000000000000000000000000000'
 
   /**
    * Helper function to create a request and call the GET handler
@@ -28,7 +26,7 @@ describe('GET /api/swap/quote - integration tests', () => {
     tokenIn?: string
     tokenOut?: string
     feeTier?: string
-  }): Promise<{ response: NextResponse; data: any }> {
+  }): Promise<{ response: Response; data: any }> {
     const url = new URL('http://localhost/api/swap/quote')
     if (params.tokenIn) url.searchParams.set('tokenIn', params.tokenIn)
     if (params.tokenOut) url.searchParams.set('tokenOut', params.tokenOut)

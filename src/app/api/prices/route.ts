@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+import { handleApiError } from '@/app/api/utils/helpers'
 import { fetchPrices } from '@/app/user/Balances/actions'
 import { logger } from '@/lib/logger'
 
@@ -33,10 +34,6 @@ export async function GET(request: NextRequest) {
     const prices = await fetchPrices()
     return NextResponse.json(prices)
   } catch (error) {
-    logger.error({ err: error, route: '/api/prices' }, 'Error fetching prices')
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch prices' },
-      { status: 500 },
-    )
+    return handleApiError(error, 'prices route', { route: '/api/prices' })
   }
 }

@@ -1,3 +1,5 @@
+import { randomUUID } from 'crypto'
+
 import { logger } from '@/lib/logger'
 
 const log = logger.child({ module: 'api' })
@@ -26,28 +28,15 @@ export const applyActionTypeFilter = <
   return query
 }
 
-/**
- * Handles API errors with detailed information in development mode
- */
-export const handleApiError = (err: unknown, context?: string): Response => {
-  if (context) {
-    log.error({ err, context }, `Error in ${context}`)
-  } else {
-    log.error({ err }, 'API error')
-  }
+/** Returns the id the error was logged under, for the client to quote. */
+export const logApiError = (err: unknown, context?: string, fields?: Record<string, unknown>): string => {
+  const errorId = randomUUID()
+  log.error({ ...fields, err, context, errorId }, context ? `Error in ${context}` : 'API error')
+  return errorId
+}
 
-  const errorMessage = err instanceof Error ? err.message : String(err)
-  const errorStack = err instanceof Error ? err.stack : undefined
-  const errorName = err instanceof Error ? err.name : 'UnknownError'
-
-  return Response.json(
-    {
-      success: false,
-      error: 'Internal server error',
-      message: errorMessage,
-      name: errorName,
-      ...(process.env.NODE_ENV === 'development' && { stack: errorStack }),
-    },
+export const handleApiError = (err: unknown, context?: string, fields?: Record<string, unknown>): Response =>
+  Response.json(
+    { success: false, error: 'Internal server error', errorId: logApiError(err, context, fields) },
     { status: 500 },
   )
-}

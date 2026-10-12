@@ -119,7 +119,10 @@ describe('GET /api/staking/v1/addresses/[address]/history', () => {
     const res = await GET(req as never, { params: Promise.resolve({ address }) })
 
     expect(res.status).toBe(500)
-    const body = await res.json()
-    expect(body.message).toContain('Can not fetch staking history from any source')
+    expect(await res.json()).toEqual({
+      success: false,
+      error: 'Internal server error',
+      errorId: expect.any(String),
+    })
   })
 })
