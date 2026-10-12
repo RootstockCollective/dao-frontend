@@ -11,11 +11,11 @@ const isProduction = process.env.NODE_ENV === 'production'
 /**
  * POST /api/auth/login
  *
- * Verify a signature against a stored challenge and issue a JWT.
+ * Verify a signature against a sealed challenge and issue a JWT.
  *
  * Request body:
  * {
- *   challengeId: string,  // The challenge ID from /api/auth/challenge
+ *   challengeId: string,  // The sealed challenge from /api/auth/challenge
  *   signature: string     // The signature of the SIWE message
  * }
  *
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     const { challengeId, signature } = body
 
     // Input validation is handled by verifySignature() which validates:
-    // - challengeId format and existence
+    // - challengeId integrity (HMAC), expiry and single use
     // - signature format (0x hex string)
     // - cryptographic signature verification via SIWE
     const { token } = await verifySignature(challengeId, signature)

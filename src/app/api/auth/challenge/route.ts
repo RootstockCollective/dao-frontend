@@ -15,7 +15,7 @@ import { sanitizeError } from '@/lib/auth/utils'
  *
  * Response:
  * {
- *   challengeId: string  // ID to reference this challenge during login
+ *   challengeId: string  // Sealed challenge, sent back as-is during login
  *   message: string      // SIWE message to be signed by the wallet
  * }
  */

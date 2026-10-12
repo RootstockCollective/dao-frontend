@@ -4,7 +4,8 @@ import { isAddress, isHex } from 'viem'
 
 import { currentEnvChain } from '@/config/config'
 
-import { CHALLENGE_TTL_MS, getAndConsumeChallenge, storeChallenge } from './challengeStore'
+import { redeemChallenge } from './challengeStore'
+import { CHALLENGE_TTL_MS, openChallenge, sealChallenge } from './challengeToken'
 import { assertTrustedHost, isAllowedDomain } from './domain'
 import { signJWT } from './jwt.server'
 
@@ -58,23 +59,18 @@ export async function requestChallenge(address: string, host: string): Promise<R
 
   const message = siweMessage.prepareMessage()
 
-  // Single-use challenge with 4-minute expiration, stored in server memory
-  const challengeId = storeChallenge({
-    message,
-    address: address.toLowerCase(),
-    domain,
-  })
+  const challengeId = sealChallenge(message)
 
   return { challengeId, message }
 }
 
 /**
- * Verify a signature against a stored challenge and issue a JWT.
+ * Verify a signature against a sealed challenge and issue a JWT.
  *
- * Retrieves the server-controlled SIWE message from storage,
+ * Recovers the server-controlled SIWE message from the challenge,
  * verifies the signature, and issues a JWT token on success.
  *
- * @param challengeId - The ID of the challenge that was signed
+ * @param challengeId - The sealed challenge that was signed
  * @param signature   - The signature of the SIWE message
  */
 export async function verifySignature(
@@ -89,30 +85,40 @@ export async function verifySignature(
     throw new Error('Invalid signature format')
   }
 
-  // Retrieve and consume challenge (single-use: prevents signature replay)
-  const challenge = getAndConsumeChallenge(challengeId)
+  const message = openChallenge(challengeId)
 
-  if (!challenge) {
+  if (!message) {
+    throw new Error('Invalid or expired challenge')
+  }
+
+  const siweMessage = new SiweMessage(message)
+  const expiresAt = Date.parse(siweMessage.expirationTime ?? '')
+  const now = Date.now()
+
+  // The redeemed store relies on no challenge outliving CHALLENGE_TTL_MS
+  if (Number.isNaN(expiresAt) || expiresAt <= now || expiresAt > now + CHALLENGE_TTL_MS) {
+    throw new Error('Invalid or expired challenge')
+  }
+
+  if (siweMessage.chainId !== currentEnvChain.id) {
     throw new Error('Invalid or expired challenge')
   }
 
   // This is the check that carries weight at redemption: the domain the
   // challenge was issued for must still be one this deployment serves, so a
   // challenge cannot be redeemed against an origin we have stopped serving.
-  if (!isAllowedDomain(challenge.domain)) {
-    throw new Error(`Untrusted domain: ${challenge.domain}`)
+  if (!isAllowedDomain(siweMessage.domain)) {
+    throw new Error(`Untrusted domain: ${siweMessage.domain}`)
   }
-
-  const siweMessage = new SiweMessage(challenge.message)
 
   let verifyResult: Awaited<ReturnType<typeof siweMessage.verify>>
   try {
     // EIP-4361 (Relying Party Implementer Steps) requires the signed `domain`
     // to be checked against the expected origin. Note that while the message
-    // comes from our own store this comparison cannot fail — the guarantee
+    // is sealed by this server this comparison cannot fail — the guarantee
     // rests on the allowlist at issuance, not here. It is kept so the check
     // still holds if the message ever arrives from somewhere less trusted.
-    verifyResult = await siweMessage.verify({ signature, domain: challenge.domain })
+    verifyResult = await siweMessage.verify({ signature, domain: siweMessage.domain })
   } catch {
     throw new Error('Signature verification failed')
   }
@@ -121,12 +127,12 @@ export async function verifySignature(
     throw new Error(`Signature verification failed: ${verifyResult.error?.type || 'Unknown error'}`)
   }
 
-  // Extra security check: ensure signer matches the challenge requester
-  if (verifyResult.data.address.toLowerCase() !== challenge.address) {
-    throw new Error('Address mismatch')
+  // Redeemed only after a valid signature, so a failed attempt cannot burn someone else's challenge
+  if (!redeemChallenge(siweMessage.nonce, expiresAt)) {
+    throw new Error('Invalid or expired challenge')
   }
 
-  const token = await signJWT(challenge.address)
+  const token = await signJWT(siweMessage.address)
 
   return { token }
 }
