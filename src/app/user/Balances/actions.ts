@@ -10,8 +10,9 @@ import {
   TokenHoldersResponse,
 } from '@/app/user/Balances/types'
 import { GetPricesResult } from '@/app/user/types'
+import { buildBlockscoutRestRequest } from '@/lib/blockscout/blockscout-api'
 import { fetchLogsByTopic } from '@/lib/blockscout/fetch-logs-by-topic'
-import { BLOCKSCOUT_URL, RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
+import { RBTC, RIF, STRIF, USDRIF, USDT0 } from '@/lib/constants'
 import { GovernorAddress, tokenContracts } from '@/lib/contracts'
 
 // CoinMarketCap IDs for tokens that have market prices.
@@ -150,14 +151,46 @@ export const fetchVoteCastEventByAccountAddress = async (address: Address) => {
   })
 }
 
-function buildPaginationParams(nextParams: NextPageParams | null): string {
-  if (!nextParams) return ''
-  const searchParams = new URLSearchParams()
-  for (const [key, value] of Object.entries(nextParams)) {
-    if (value != null) searchParams.set(key, String(value))
+/**
+ * The cursor fields Blockscout is allowed to send back, as a total map of {@link NextPageParams}.
+ *
+ * Spelling the keys out is the point. Adding a field to the interface without adding it here is a
+ * type error, so the allowlist cannot silently fall behind and start dropping a page's cursor.
+ */
+const PAGINATION_KEYS: Record<keyof NextPageParams, true> = {
+  contract_address_hash: true,
+  holder_count: true,
+  is_name_null: true,
+  items_count: true,
+  market_cap: true,
+  name: true,
+  block_number: true,
+  fee: true,
+  hash: true,
+  index: true,
+  inserted_at: true,
+  value: true,
+}
+
+/**
+ * Blockscout's cursor fields for the next page.
+ *
+ * Returned as a record rather than a query string, for `buildBlockscoutRestRequest` to merge.
+ *
+ * @remarks Only the names in {@link PAGINATION_KEYS} are copied, never the caller's own. This is a
+ * `'use server'` module, so `nextParams` arrives as whatever JSON was POSTed at the action
+ * endpoint — the keys are as untrusted as the values. Copying them verbatim put an arbitrary query
+ * param on an authenticated upstream call; when the key still travelled as `apikey`, a body of
+ * `{ apikey: '…' }` replaced our own (CodeQL `js/remote-property-injection`, alert 120).
+ */
+function buildPaginationParams(nextParams: NextPageParams | null): Record<string, string> {
+  if (!nextParams) return {}
+  const params: Record<string, string> = {}
+  for (const key of Object.keys(PAGINATION_KEYS) as Array<keyof NextPageParams>) {
+    const value = nextParams[key]
+    if (value != null) params[key] = String(value)
   }
-  const qs = searchParams.toString()
-  return qs ? `&${qs}` : ''
+  return params
 }
 
 interface BlockscoutNftInstance {
@@ -175,12 +208,11 @@ export const fetchNftHoldersOfAddress = async (
     throw new Error(`Invalid address: ${address}`)
   }
   const normalizedAddress = address.toLowerCase()
-  const pagination = buildPaginationParams(nextParams)
-  const url = new URL(`/api/v2/tokens/${encodeURIComponent(normalizedAddress)}/instances`, BLOCKSCOUT_URL)
-  if (pagination) {
-    url.search = pagination.slice(1)
-  }
-  const res = await fetch(url.toString(), { next: { revalidate: 30 } })
+  const { url, headers } = buildBlockscoutRestRequest(
+    `tokens/${encodeURIComponent(normalizedAddress)}/instances`,
+    buildPaginationParams(nextParams),
+  )
+  const res = await fetch(url, { headers, next: { revalidate: 30 } })
   if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
   const data = (await res.json()) as {
     items: BlockscoutNftInstance[]
@@ -206,12 +238,11 @@ export const fetchTokenHoldersOfAddress = async (
     throw new Error(`Invalid address: ${address}`)
   }
   const normalizedAddress = address.toLowerCase()
-  const pagination = buildPaginationParams(nextParams)
-  const url = new URL(`/api/v2/tokens/${encodeURIComponent(normalizedAddress)}/holders`, BLOCKSCOUT_URL)
-  if (pagination) {
-    url.search = pagination.slice(1)
-  }
-  const res = await fetch(url.toString(), { next: { revalidate: 30 } })
+  const { url, headers } = buildBlockscoutRestRequest(
+    `tokens/${encodeURIComponent(normalizedAddress)}/holders`,
+    buildPaginationParams(nextParams),
+  )
+  const res = await fetch(url, { headers, next: { revalidate: 30 } })
   if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`)
   const data: ServerResponseV2<TokenHoldersResponse> = await res.json()
   return data

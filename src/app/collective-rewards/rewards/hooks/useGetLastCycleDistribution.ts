@@ -10,7 +10,9 @@ export const useGetLastCycleDistribution = ({ cycleStart, cycleNext }: Cycle) =>
 
   const [lastEvent] = rewardDistributionFinished.slice(-1) as Log[]
 
-  if (!cycleNext || !cycleStart) {
+  // Until the distribution logs arrive, `lastEvent` is missing and the window below would read "no
+  // distribution this cycle". `0` is the placeholder the NotifyReward hooks wait on instead.
+  if (isLoading || !cycleNext || !cycleStart) {
     return {
       data: {
         fromTimestamp: 0,

@@ -126,6 +126,28 @@ describe('proxy', () => {
       expect(mockedCheckRateLimit).not.toHaveBeenCalled()
     })
 
+    it.each([
+      '/api/gauges/notify-reward',
+      '/api/gauges/backer-rewards-claimed',
+      '/api/gauges/0xabcdef0123456789abcdef0123456789abcdef01/builder-rewards-claimed',
+    ])('applies the shared gauges limit to %s', path => {
+      mockedCheckRateLimit.mockReturnValue(allowedResult(120, 119))
+
+      proxy(createRequest(path))
+
+      expect(mockedCheckRateLimit).toHaveBeenCalledWith(expect.any(String), 'gauges', {
+        limit: 120,
+        windowMs: 60_000,
+      })
+    })
+
+    it('does not match a path that only starts with the gauges prefix text', () => {
+      const response = proxy(createRequest('/api/gaugesX'))
+
+      expect(response.status).toBe(200)
+      expect(mockedCheckRateLimit).not.toHaveBeenCalled()
+    })
+
     it('passes through for non-auth API routes without rate limiting', () => {
       const response = proxy(createRequest('/api/like'))
 

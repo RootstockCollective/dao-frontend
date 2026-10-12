@@ -1,10 +1,15 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 
 import { fetchBlockscoutGetLogsPaginated } from './fetch-blockscout-get-logs-paginated'
+import { configureBlockscoutThrottle, resetBlockscoutThrottle } from './request-throttle'
 
 vi.mock('@/lib/constants', () => ({
   BLOCKSCOUT_URL: 'https://blockscout.test',
+  CHAIN_ID: '30',
 }))
+
+// Host resolution reads the environment per call, so the mocked constant is not enough.
+process.env.NEXT_PUBLIC_BLOCKSCOUT_URL = 'https://blockscout.test'
 
 const mockLog = (blockHex: string, logIndex: string, txHash: string) => ({
   address: '0xabc',
@@ -192,4 +197,41 @@ describe('fetchBlockscoutGetLogsPaginated', () => {
     const calledUrl = new URL((global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][0])
     expect(calledUrl.origin).toBe('https://custom.explorer')
   })
+
+  it('drains a queue deeper than the per-request budget without aborting what waited its turn', async () => {
+    // Regression: the deadline used to be built at call time, so it counted the queue wait against
+    // the network budget. 40 requests at 30ms spacing is ~1.2s of queue against a 200ms budget —
+    // six times over — which used to abort roughly four out of five gauges on a cold cache.
+    configureBlockscoutThrottle({ maxConcurrency: 1, minIntervalMs: 30, maxAttempts: 1 })
+
+    const abortedBeforeStarting: boolean[] = []
+    global.fetch = vi.fn().mockImplementation(async (_url: string, init?: RequestInit) => {
+      abortedBeforeStarting.push(Boolean(init?.signal?.aborted))
+      if (init?.signal?.aborted) {
+        throw new Error('aborted while still queued')
+      }
+      return new Response(JSON.stringify({ status: '0', message: 'No logs found', result: [] }), {
+        status: 200,
+      })
+    })
+
+    try {
+      const results = await Promise.allSettled(
+        Array.from({ length: 40 }, (_, i) =>
+          fetchBlockscoutGetLogsPaginated({
+            query: {
+              address: `0x${String(i).padStart(40, '0')}` as `0x${string}`,
+              topic0: '0xtopic0' as `0x${string}`,
+            },
+            timeoutMs: 200,
+          }),
+        ),
+      )
+
+      expect(abortedBeforeStarting.filter(Boolean)).toHaveLength(0)
+      expect(results.filter(r => r.status === 'rejected')).toHaveLength(0)
+    } finally {
+      resetBlockscoutThrottle()
+    }
+  }, 20_000)
 })

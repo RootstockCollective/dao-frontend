@@ -78,11 +78,10 @@ function encodeEpochFundingProgressLogFixture(args: {
   return { topics, data }
 }
 
-function encodeRedeemRequestLogFixture(args: {
-  owner: Address
-  epochId: bigint
-  shares: bigint
-}): { topics: Hex[]; data: Hex } {
+function encodeRedeemRequestLogFixture(args: { owner: Address; epochId: bigint; shares: bigint }): {
+  topics: Hex[]
+  data: Hex
+} {
   const topic0 = toEventHash('RedeemRequest(address,uint256,uint256)')
   const topics = [
     topic0,
@@ -201,7 +200,7 @@ describe('fetchBtcVaultHistoryFromBlockscout', () => {
     }
   })
 
-  it('throws when NEXT_PUBLIC_BLOCKSCOUT_URL is missing', async () => {
+  it('throws a configuration error when neither a PRO key nor a public instance is set', async () => {
     delete process.env.NEXT_PUBLIC_BLOCKSCOUT_URL
 
     await expect(
@@ -211,7 +210,7 @@ describe('fetchBtcVaultHistoryFromBlockscout', () => {
         sort_field: 'timestamp',
         sort_direction: 'desc',
       }),
-    ).rejects.toThrow(/NEXT_PUBLIC_BLOCKSCOUT_URL/)
+    ).rejects.toThrow(/Blockscout is not configured/)
   })
 
   it('fetches getLogs, decodes DepositRequested, and returns paginated items', async () => {

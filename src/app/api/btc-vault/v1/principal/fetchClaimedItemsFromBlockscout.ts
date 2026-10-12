@@ -5,7 +5,7 @@ import { RBTC_VAULT_ADDRESS } from '@/lib/constants'
 
 import { tryDecodeLog } from '../history/sources/blockscout/decode-logs'
 import { fetchVaultLogsForTopics } from '../history/sources/blockscout/fetch-logs'
-import { normalizeAddress, requireBlockscoutUrl } from '../history/sources/blockscout/utils'
+import { normalizeAddress } from '../history/sources/blockscout/utils'
 import type { BtcVaultHistoryItem } from '../history/types'
 
 const CLAIMED_EVENT_NAMES = ['DepositClaimed', 'RedeemClaimed'] as const
@@ -15,7 +15,6 @@ const CLAIMED_EVENT_NAMES = ['DepositClaimed', 'RedeemClaimed'] as const
  * Scans DepositClaimed and RedeemClaimed event logs, decodes them, and filters by user address.
  */
 export async function fetchClaimedItemsFromBlockscout(address: string): Promise<BtcVaultHistoryItem[]> {
-  const baseUrl = requireBlockscoutUrl()
   const vaultAddress = normalizeAddress(RBTC_VAULT_ADDRESS)
   if (!vaultAddress || vaultAddress === '0x') {
     throw new Error('RBTC vault address is not configured')
@@ -25,7 +24,7 @@ export async function fetchClaimedItemsFromBlockscout(address: string): Promise<
     toEventSelector(getAbiItem({ abi: RBTCAsyncVaultAbi, name })),
   )
 
-  const rawItems = await fetchVaultLogsForTopics(baseUrl, vaultAddress, topic0s)
+  const rawItems = await fetchVaultLogsForTopics(vaultAddress, topic0s)
 
   const userAddress = normalizeAddress(address)
   const items: BtcVaultHistoryItem[] = []

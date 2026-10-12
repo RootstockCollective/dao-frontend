@@ -1,12 +1,16 @@
 import { useMemo } from 'react'
 import { Address } from 'viem'
 
-import { useGetBuilderRewardsClaimedLogs, useGetGaugesNotifyReward } from '@/app/collective-rewards/rewards'
+import {
+  getClaimedForToken,
+  getTokenTotal,
+  useGetBuilderRewardsClaimed,
+  useGetTotalRewardsDistributed,
+} from '@/app/collective-rewards/rewards'
 import { useReadGauge } from '@/shared/hooks/contracts/collective-rewards/useReadGauge'
 
 interface UseBuilderAllTimeShareProps {
   gauge: Address
-  gauges: Address[]
   rifAddress: Address
 }
 
@@ -16,22 +20,25 @@ interface AllTimeShareData {
   error: Error | null
 }
 
+/**
+ * This builder's share of every RIF reward the protocol has distributed.
+ *
+ * Both totals come from state-sync: the denominator from `CycleRewardPerToken` summed across
+ * cycles, the numerator from `BuilderRewardsClaimed`, which the subgraph accumulates per claim.
+ * Only what the builder has earned but not yet claimed still comes from the gauge contract, since
+ * it is not an event yet.
+ */
 export const useGetBuilderAllTimeShare = ({
   gauge,
-  gauges,
   rifAddress,
 }: UseBuilderAllTimeShareProps): AllTimeShareData => {
   const {
-    data: notifyReward,
-    isLoading: notifyRewardLoading,
-    error: notifyRewardError,
-  } = useGetGaugesNotifyReward({ gauges, rewardTokens: [rifAddress] })
+    data: totalsByToken,
+    isLoading: totalsLoading,
+    error: totalsError,
+  } = useGetTotalRewardsDistributed()
 
-  const {
-    data: builderRewardsPerToken,
-    isLoading: builderRewardsPerTokenLoading,
-    error: builderRewardsPerTokenError,
-  } = useGetBuilderRewardsClaimedLogs(gauge)
+  const { data: claimed, isLoading: claimedLoading, error: claimedError } = useGetBuilderRewardsClaimed(gauge)
 
   const {
     data: claimableRewards,
@@ -39,36 +46,16 @@ export const useGetBuilderAllTimeShare = ({
     error: claimableRewardsError,
   } = useReadGauge({ address: gauge, functionName: 'builderRewards', args: [rifAddress] })
 
-  // Calculate the percentage using useMemo for performance optimization
   const amount = useMemo(() => {
-    // Calculate builder's claimed rewards
-    const builderClaimedRewards =
-      builderRewardsPerToken[rifAddress]?.reduce((acc, event) => {
-        const amount = event.args.amount_
-        return acc + amount
-      }, 0n) ?? 0n
+    const totalBuilderRewards = getClaimedForToken(claimed, rifAddress) + (claimableRewards ?? 0n)
+    const distributedRewards = getTokenTotal(totalsByToken, rifAddress)
 
-    // Calculate total builder rewards (claimed + claimable)
-    const totalBuilderRewards = builderClaimedRewards + (claimableRewards ?? 0n)
-
-    // Calculate total notify rewards across all gauges
-    const notifyRewards = Object.values(notifyReward).reduce(
-      (acc, events) =>
-        acc +
-        events.reduce(
-          (acc, { args: { backersAmount_, builderAmount_ } }) => acc + backersAmount_ + builderAmount_,
-          0n,
-        ),
-      0n,
-    )
-
-    // Calculate the percentage
-    return !notifyRewards ? '0%' : `${(totalBuilderRewards * 100n) / notifyRewards}%`
-  }, [builderRewardsPerToken, claimableRewards, notifyReward, rifAddress])
+    return !distributedRewards ? '0%' : `${(totalBuilderRewards * 100n) / distributedRewards}%`
+  }, [claimed, claimableRewards, totalsByToken, rifAddress])
 
   return {
     amount,
-    isLoading: notifyRewardLoading || builderRewardsPerTokenLoading || claimableRewardsLoading,
-    error: notifyRewardError || builderRewardsPerTokenError || claimableRewardsError,
+    isLoading: totalsLoading || claimedLoading || claimableRewardsLoading,
+    error: totalsError || claimedError || claimableRewardsError,
   }
 }

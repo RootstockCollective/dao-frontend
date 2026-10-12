@@ -6,7 +6,7 @@ import { useAccount } from 'wagmi'
 
 import { CycleContextProvider } from '@/app/collective-rewards/metrics'
 import { Section } from '@/app/my-rewards/components/Section'
-import { Header } from '@/components/Typography'
+import { PageTitle } from '@/components/PageBanner'
 
 import TransactionHistoryTableContainer from './components/TransactionHistoryTableContainer'
 
@@ -23,13 +23,8 @@ export const BackerTransactionHistoryPage = () => {
 
   return (
     <CycleContextProvider>
-      <div
-        data-testid={NAME}
-        className="flex flex-col items-start w-full h-full pt-[0.13rem] gap-2 rounded-sm"
-      >
-        <Header caps variant="h1" className="pb-10">
-          {NAME}
-        </Header>
+      <div data-testid={NAME} className="flex flex-col items-start w-full h-full gap-2 rounded-sm">
+        <PageTitle className="pb-10">{NAME}</PageTitle>
         <div data-testid="main-container" className="flex flex-col w-full items-start gap-2">
           <Section>
             <TransactionHistoryTableContainer />

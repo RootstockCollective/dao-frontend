@@ -2,16 +2,29 @@
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile'
+import Image from 'next/image'
 import { useCallback, useRef, useState } from 'react'
 import { Controller, useForm } from 'react-hook-form'
+import { useAccount } from 'wagmi'
 import { z } from 'zod'
 
 import { Button } from '@/components/Button'
+import { DismissButton } from '@/components/DismissButton'
 import { SelectField, TextArea, TextInput } from '@/components/FormFields'
 import { ErrorMessage } from '@/components/FormFields/ErrorMessage'
 import { Modal } from '@/components/Modal'
+import { Select } from '@/components/Select'
 import { Header, Paragraph, Span } from '@/components/Typography'
-import { SUPPORT_TOPICS } from '@/shared/constants'
+import {
+  isSupportReferenceType,
+  isValidSupportReference,
+  MAX_SUPPORT_REFERENCE_LENGTH,
+  SUPPORT_REFERENCE_ERRORS,
+  SUPPORT_REFERENCE_LABELS,
+  SUPPORT_REFERENCE_MAX_LENGTHS,
+  SUPPORT_REFERENCE_TYPES,
+  SUPPORT_TOPICS,
+} from '@/shared/constants'
 import { showToast } from '@/shared/notification'
 
 // Cloudflare-published test key that always passes verification. Never ship it —
@@ -29,18 +42,34 @@ if (process.env.NODE_ENV === 'production' && !envSiteKey) {
 
 const TURNSTILE_SITE_KEY = envSiteKey || TURNSTILE_TEST_SITE_KEY
 
+const HERO_IMAGE_SRC = '/images/support-modal-hero.webp'
+const HERO_OVERLAY =
+  'linear-gradient(180deg, rgba(23,20,18,0) 40%, rgba(23,20,18,0.55) 75%, rgba(23,20,18,0.95) 100%)'
+
 const emptyString = z.literal('').transform(() => {})
 
-const supportSchema = z.object({
-  topic: z.enum(SUPPORT_TOPICS, { message: 'Please select a topic' }),
-  description: z
-    .string()
-    .trim()
-    .min(10, 'Please provide at least 10 characters')
-    .max(1000, 'Description must be under 1000 characters'),
-  turnstileToken: z.string().min(1, 'Please complete the captcha'),
-  email: z.union([emptyString, z.string().trim().email('Please enter a valid email')]).optional(),
-})
+const supportSchema = z
+  .object({
+    topic: z.enum(SUPPORT_TOPICS, { message: 'Please select a topic' }),
+    referenceType: z.enum(SUPPORT_REFERENCE_TYPES, { message: 'Please select a reference type' }),
+    reference: z.string().trim().min(1, 'This field is required'),
+    description: z
+      .string()
+      .trim()
+      .min(10, 'Please provide at least 10 characters')
+      .max(1000, 'Description must be under 1000 characters'),
+    turnstileToken: z.string().min(1, 'Please complete the captcha'),
+    email: z.union([emptyString, z.string().trim().email('Please enter a valid email')]).optional(),
+  })
+  .superRefine(({ referenceType, reference }, ctx) => {
+    if (reference && !isValidSupportReference(referenceType, reference)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['reference'],
+        message: SUPPORT_REFERENCE_ERRORS[referenceType],
+      })
+    }
+  })
 
 type SupportFormValues = z.infer<typeof supportSchema>
 
@@ -60,6 +89,10 @@ const resolveSubmitError = (status: number, errorCode?: string): string => {
       return 'Please provide a description between 10 and 1000 characters.'
     case 'invalid_topic':
       return 'Please select a valid topic.'
+    case 'invalid_reference_type':
+      return 'Please select a valid reference type.'
+    case 'invalid_reference':
+      return 'Please enter a valid wallet address or transaction hash.'
     case 'server_misconfigured':
     case 'verification_failed':
       return 'Something went wrong on our side. Please try again later.'
@@ -76,17 +109,41 @@ interface SupportModalProps {
 export const SupportModal = ({ onClose }: SupportModalProps) => {
   const turnstileRef = useRef<TurnstileInstance | null>(null)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const { address } = useAccount()
 
   const {
+    clearErrors,
     control,
     handleSubmit,
     setValue,
+    watch,
     formState: { isSubmitting },
   } = useForm<SupportFormValues>({
     resolver: zodResolver(supportSchema),
-    defaultValues: { email: '', description: '', turnstileToken: '' },
+    defaultValues: {
+      email: '',
+      description: '',
+      turnstileToken: '',
+      referenceType: 'Wallet address',
+      reference: address ?? '',
+    },
     mode: 'onSubmit',
   })
+
+  const watchedReferenceType = watch('referenceType')
+  const referenceType = isSupportReferenceType(watchedReferenceType) ? watchedReferenceType : undefined
+
+  const handleReferenceTypeChange = useCallback(
+    (value: string, onChange: (next: string) => void) => {
+      onChange(value)
+      const nextType = isSupportReferenceType(value) ? value : undefined
+      setValue('reference', nextType === 'Wallet address' ? (address ?? '') : '', {
+        shouldValidate: false,
+      })
+      clearErrors('reference')
+    },
+    [address, clearErrors, setValue],
+  )
 
   const resetTurnstile = useCallback(() => {
     setValue('turnstileToken', '', { shouldValidate: false })
@@ -102,6 +159,8 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
         body: JSON.stringify({
           token: values.turnstileToken,
           topic: values.topic,
+          referenceType: values.referenceType,
+          reference: values.reference,
           description: values.description,
           email: values.email,
         }),
@@ -134,11 +193,33 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
   })
 
   return (
-    <Modal onClose={onClose} width={520} data-testid="SupportModal">
+    <Modal onClose={onClose} width={560} hideCloseButton data-testid="SupportModal">
+      <div className="relative">
+        <div className="relative h-[160px] w-full overflow-hidden md:h-[200px]">
+          <Image
+            src={HERO_IMAGE_SRC}
+            alt=""
+            aria-hidden="true"
+            fill
+            priority
+            sizes="(min-width: 768px) 560px, 100vw"
+            className="object-cover"
+          />
+          {/* Fades the artwork into the modal so the title stays readable */}
+          <div className="absolute inset-0" style={{ background: HERO_OVERLAY }} />
+          <Header variant="h2" className="absolute bottom-4 left-4 md:left-6">
+            CONTACT SUPPORT
+          </Header>
+        </div>
+        <DismissButton
+          aria-label="Close"
+          onClick={onClose}
+          className="absolute right-4 top-4 z-base"
+          data-testid="CloseButton"
+        />
+      </div>
+
       <form onSubmit={onSubmit} className="flex flex-col p-4 md:p-6">
-        <Header variant="h2" className="mt-10 mb-2">
-          CONTACT SUPPORT
-        </Header>
         <Paragraph variant="body-s" className="text-text-60 mb-6">
           Tell us what you need help with. Leave an email if you would like a reply.
         </Paragraph>
@@ -156,6 +237,43 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
               data-testid="SupportTopic"
             />
           </div>
+          <div className="flex flex-col gap-1.5">
+            <Span variant="tag" className="text-text-60">
+              Wallet address or transaction hash
+            </Span>
+            <Controller
+              control={control}
+              name="referenceType"
+              render={({ field, fieldState: { error } }) => (
+                <ErrorMessage errorMsg={error?.message} dataTestId="SupportReferenceTypeError">
+                  <Select
+                    options={[...SUPPORT_REFERENCE_TYPES]}
+                    placeholder="Select a reference type"
+                    value={field.value}
+                    onBlur={field.onBlur}
+                    onValueChange={value => handleReferenceTypeChange(value, field.onChange)}
+                    data-testid="SupportReferenceType"
+                  />
+                </ErrorMessage>
+              )}
+            />
+            <TextInput
+              name="reference"
+              control={control}
+              label={
+                referenceType ? SUPPORT_REFERENCE_LABELS[referenceType] : 'Wallet address or transaction hash'
+              }
+              maxLength={
+                referenceType ? SUPPORT_REFERENCE_MAX_LENGTHS[referenceType] : MAX_SUPPORT_REFERENCE_LENGTH
+              }
+              spellCheck={false}
+              data-testid="SupportReference"
+            />
+            <Span variant="body-xs" className="text-text-60">
+              Required — it lets us trace your issue on-chain.
+            </Span>
+          </div>
+
           <TextInput name="email" control={control} label="Email (optional)" data-testid="SupportEmail" />
           <TextArea
             name="description"
@@ -165,7 +283,16 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
             maxRows={10}
             data-testid="SupportDescription"
           />
+        </div>
 
+        {submitError && (
+          <p className="mt-4 text-error text-sm" data-testid="SupportSubmitError">
+            {submitError}
+          </p>
+        )}
+
+        {/* Captcha and actions share a row so they read as one footer */}
+        <div className="mt-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <Controller
             control={control}
             name="turnstileToken"
@@ -190,29 +317,23 @@ export const SupportModal = ({ onClose }: SupportModalProps) => {
               </ErrorMessage>
             )}
           />
-        </div>
 
-        {submitError && (
-          <p className="mt-4 text-error text-sm" data-testid="SupportSubmitError">
-            {submitError}
-          </p>
-        )}
-
-        <div className="mt-8 flex flex-col-reverse md:flex-row gap-3 md:justify-end">
-          <Button
-            type="button"
-            variant="secondary-outline"
-            onClick={() => {
-              resetTurnstile()
-              onClose()
-            }}
-            data-testid="SupportCancel"
-          >
-            Cancel
-          </Button>
-          <Button type="submit" variant="primary" disabled={isSubmitting} data-testid="SupportSend">
-            Send
-          </Button>
+          <div className="flex flex-col-reverse gap-3 md:flex-row md:justify-end">
+            <Button
+              type="button"
+              variant="secondary-outline"
+              onClick={() => {
+                resetTurnstile()
+                onClose()
+              }}
+              data-testid="SupportCancel"
+            >
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary" disabled={isSubmitting} data-testid="SupportSend">
+              Send
+            </Button>
+          </div>
         </div>
       </form>
     </Modal>

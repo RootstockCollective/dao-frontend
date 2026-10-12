@@ -119,4 +119,19 @@ describe('checkRateLimit', () => {
     vi.setSystemTime(60_001)
     expect(checkRateLimit('10.0.0.9', 'test', config).success).toBe(true)
   })
+
+  it("prunes each bucket by its own window, so a short-window prefix cannot reset a long one's", async () => {
+    const checkRateLimit = await getRateLimiter()
+    const long = { limit: 1, windowMs: 600_000 }
+    const short = { limit: 1_000, windowMs: 60_000 }
+
+    vi.setSystemTime(0)
+    checkRateLimit('10.0.0.10', 'support', long)
+
+    // Past the short window, then enough short-window traffic to trigger a cleanup pass.
+    vi.setSystemTime(120_000)
+    for (let i = 0; i < 60; i++) checkRateLimit(`10.0.1.${i}`, 'gauges', short)
+
+    expect(checkRateLimit('10.0.0.10', 'support', long).success).toBe(false)
+  })
 })

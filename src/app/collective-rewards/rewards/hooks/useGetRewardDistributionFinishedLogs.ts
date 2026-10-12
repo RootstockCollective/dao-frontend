@@ -10,6 +10,13 @@ export type RewardDistributionFinishedEventLog = ReturnType<
   typeof parseEventLogs<BackersManagerAbi, true, 'RewardDistributionFinished'>
 >
 
+/**
+ * Returned while the query has no data. A constant rather than `initialData`, which marks the query
+ * as already succeeded: `isLoading` would never be true, and the last-cycle window would read "no
+ * distribution this cycle" until Blockscout answered, rendering zero rewards as if loaded.
+ */
+const NO_LOGS: RewardDistributionFinishedEventLog = []
+
 export const useGetRewardDistributionFinishedLogs = () => {
   const { data, error, isLoading } = useQuery({
     queryFn: async () => {
@@ -23,11 +30,10 @@ export const useGetRewardDistributionFinishedLogs = () => {
     },
     queryKey: ['RewardDistributionFinished', BackersManagerAddress],
     refetchInterval: AVERAGE_BLOCKTIME,
-    initialData: [],
   })
 
   return {
-    data,
+    data: data ?? NO_LOGS,
     error,
     isLoading,
   }

@@ -1,6 +1,6 @@
 'use client'
 
-import { Header } from '@/components/Typography'
+import { PageBanner } from '@/components/PageBanner'
 
 import { CycleDashboard } from './components/CycleDashboard'
 import { DashboardMetrics } from './components/DashboardMetrics'
@@ -14,10 +14,8 @@ const NAME = 'Collective Rewards'
  * page is navigable by landmark rather than being one flat run of cards.
  */
 export const CollectiveRewardsPage = () => (
-  <div className="flex flex-col">
-    <Header caps variant="h1" className="text-3xl leading-10 pb-[2.5rem]">
-      {NAME}
-    </Header>
+  <div className="flex flex-col gap-2">
+    <PageBanner dataTestId="CollectiveRewardsBanner" dismissible title={NAME} />
 
     <CycleDashboardProvider>
       <div className="flex flex-col gap-4">

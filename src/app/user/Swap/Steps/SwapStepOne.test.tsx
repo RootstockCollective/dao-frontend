@@ -3,12 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { cleanup, render, screen } from '@testing-library/react'
 
 import { RIF, USDRIF, USDT0 } from '@/lib/constants'
-import {
-  useSwapInput,
-  useTokenAllowance,
-  useTokenSelection,
-  useSwapTokens,
-} from '@/shared/stores/swap'
+import { useSwapInput, useTokenAllowance, useTokenSelection, useSwapTokens } from '@/shared/stores/swap'
 
 import { SwapStepOne } from './SwapStepOne'
 
@@ -132,9 +127,7 @@ describe('SwapStepOne', () => {
     vi.mocked(useTokenSelection).mockReturnValue(
       defaultTokenSelection as ReturnType<typeof useTokenSelection>,
     )
-    vi.mocked(useTokenAllowance).mockReturnValue(
-      defaultAllowance as ReturnType<typeof useTokenAllowance>,
-    )
+    vi.mocked(useTokenAllowance).mockReturnValue(defaultAllowance as ReturnType<typeof useTokenAllowance>)
     vi.mocked(useSwapTokens).mockReturnValue({
       tokens: swapTokensRecord,
     } as ReturnType<typeof useSwapTokens>)

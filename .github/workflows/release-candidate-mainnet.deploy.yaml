@@ -66,6 +66,7 @@ jobs:
             NEXT_PUBLIC_BUILD_ID=${{ github.sha }}
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
             ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL=${{ secrets.ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL }}
+            BLOCKSCOUT_API_KEY=${{ secrets.BLOCKSCOUT_API_KEY }}
             BUILD_SCRIPT=build:turbo
           cache-from: type=registry,ref=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:cache
           cache-to: type=registry,ref=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:cache,mode=max

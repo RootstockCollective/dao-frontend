@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { encodeAbiParameters, encodeEventTopics } from 'viem'
 
 import { RBTCAsyncVaultAbi } from '@/lib/abis/btc-vault/RBTCAsyncVaultAbi'
@@ -7,9 +7,12 @@ import { fetchEpochSettledLogs, type EpochSettledEvent } from './fetchEpochSettl
 
 // Mock constants so tests don't depend on env vars
 vi.mock('@/lib/constants', () => ({
-  BLOCKSCOUT_URL: 'https://blockscout.example.com',
+  CHAIN_ID: '30',
   RBTC_VAULT_ADDRESS: '0x1234567890abcdef1234567890abcdef12345678',
 }))
+
+// Host resolution reads the environment per call, so the mocked constant is not enough.
+process.env.NEXT_PUBLIC_BLOCKSCOUT_URL = 'https://blockscout.example.com'
 
 /**
  * Helper: build a Blockscout RPC-style log entry (BackendEventByTopic0ResponseValue)
@@ -266,5 +269,33 @@ describe('fetchEpochSettledLogs', () => {
 
     // Descending by epochId despite ascending block order from Blockscout
     expect(result.map(e => e.epochId)).toEqual([2n, 1n, 0n])
+  })
+})
+
+describe('fetchEpochSettledLogs against the PRO API', () => {
+  const originalKey = process.env.BLOCKSCOUT_API_KEY
+
+  afterEach(() => {
+    if (originalKey === undefined) delete process.env.BLOCKSCOUT_API_KEY
+    else process.env.BLOCKSCOUT_API_KEY = originalKey
+    vi.unstubAllGlobals()
+  })
+
+  it('sends the key in Authorization and keeps it out of the URL', async () => {
+    process.env.BLOCKSCOUT_API_KEY = 'proapi_secret'
+    const mockFetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ status: '0', message: 'No logs found', result: [] }),
+    })
+    vi.stubGlobal('fetch', mockFetch)
+
+    await fetchEpochSettledLogs()
+
+    const [calledUrl, init] = mockFetch.mock.calls[0] as [string, RequestInit]
+    const url = new URL(calledUrl)
+    expect(url.origin + url.pathname).toBe('https://api.blockscout.com/v2/api')
+    expect(url.searchParams.get('chain_id')).toBe('30')
+    expect(url.searchParams.has('apikey')).toBe(false)
+    expect(new Headers(init.headers).get('authorization')).toBe('Bearer proapi_secret')
   })
 })

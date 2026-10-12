@@ -8,7 +8,7 @@ import {
   promoteRequestActionsFromEpochMaps,
 } from './fetch-epoch-events'
 import { fetchVaultLogsForTopics, topic0sForActionFilter } from './fetch-logs'
-import { normalizeAddress, normalizeHistoryActionType, requireBlockscoutUrl } from './utils'
+import { normalizeAddress, normalizeHistoryActionType } from './utils'
 
 const CANCEL_ACTION_FOR_REQUEST: Record<string, string> = {
   DEPOSIT_REQUEST: 'DEPOSIT_CANCELLED',
@@ -125,7 +125,6 @@ export async function fetchBtcVaultHistoryFromBlockscout(params: {
   items: (BtcVaultHistoryItem & { displayStatus?: BtcVaultHistoryDisplayStatus })[]
   total: number
 }> {
-  const baseUrl = requireBlockscoutUrl()
   const vaultAddress = normalizeAddress(RBTC_VAULT_ADDRESS)
   if (!vaultAddress || vaultAddress === '0x') {
     throw new Error('RBTC vault address is not configured')
@@ -137,7 +136,7 @@ export async function fetchBtcVaultHistoryFromBlockscout(params: {
   const userFilter = params.address ? normalizeAddress(params.address) : null
 
   const topic0s = topic0sForActionFilter(originalActionFilter)
-  const rawItems = await fetchVaultLogsForTopics(baseUrl, vaultAddress, topic0s)
+  const rawItems = await fetchVaultLogsForTopics(vaultAddress, topic0s)
 
   let directRows: BtcVaultHistoryItem[] = []
   for (const raw of rawItems) {
@@ -162,8 +161,8 @@ export async function fetchBtcVaultHistoryFromBlockscout(params: {
   })
 
   const [epochSettledMap, epochFundingMap] = await Promise.all([
-    fetchEpochSettledMap(baseUrl, vaultAddress),
-    fetchEpochFundingProgressMap(baseUrl, vaultAddress),
+    fetchEpochSettledMap(vaultAddress),
+    fetchEpochFundingProgressMap(vaultAddress),
   ])
 
   const promotedRows = promoteRequestActionsFromEpochMaps(

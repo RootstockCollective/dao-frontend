@@ -6,6 +6,7 @@ import { useVotingPower } from '@/app/proposals/hooks/useVotingPower'
 import { Proposal } from '@/app/proposals/shared/types'
 import { BuilderCardControl } from '@/app/shared/components/BuilderCard'
 import { SpotlightBuildersGrid } from '@/app/shared/components/SpotlightBuildersGrid'
+import { AccentSquare } from '@/components/AccentSquare'
 import { Header } from '@/components/Typography'
 
 import { LatestActiveProposalCard, LatestProposalCard } from './components'
@@ -35,7 +36,10 @@ export const LatestCollectiveSection = ({
   return (
     <div className="bg-bg-80 mt-2">
       <div className="flex flex-col p-6 gap-8">
-        <Header variant="h3">THE LATEST IN THE COLLECTIVE</Header>
+        <div className="flex items-center gap-3">
+          <AccentSquare />
+          <Header variant="h3">THE LATEST IN THE COLLECTIVE</Header>
+        </div>
         <div className="flex flex-col gap-4">
           <Header variant="h4">PROPOSALS</Header>
           {activeProposal ? (

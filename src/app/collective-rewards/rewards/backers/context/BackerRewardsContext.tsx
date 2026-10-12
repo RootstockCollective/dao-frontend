@@ -4,7 +4,7 @@ import { createContext, ReactNode, useContext, useMemo, useState } from 'react'
 import { Address } from 'viem'
 
 import {
-  BackerRewardsClaimedEventLog,
+  BackerRewardsClaimedEvent,
   Token,
   useGetGaugesBackerRewardsClaimed,
 } from '@/app/collective-rewards/rewards'
@@ -14,7 +14,7 @@ import { useReadGauges } from '@/shared/hooks/contracts'
 
 export interface TokenBackerRewards {
   earned: Record<Address, bigint>
-  claimed: Record<Address, BackerRewardsClaimedEventLog>
+  claimed: Record<Address, BackerRewardsClaimedEvent[]>
   estimated: Record<Address, bigint>
 }
 
