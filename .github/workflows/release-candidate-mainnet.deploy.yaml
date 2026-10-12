@@ -29,7 +29,7 @@ env:
 jobs:
   deploy:
     name: Deploy
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment:
       name: release-candidate-mainnet
       url: https://release-candidate-mainnet.app.rootstockcollective.xyz

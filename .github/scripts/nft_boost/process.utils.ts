@@ -25,7 +25,7 @@ const { nftContractAddress, boostPercentage, env } = args.reduce<Args>((acc, val
 
 if (!env || !nftContractAddress || isNaN(boostPercentage)) {
   throw new Error(
-    'Usage: npx tsx .github/scripts/nft_boost/activateBoost.ts \\\
+    'Usage: node_modules/.bin/tsx .github/scripts/nft_boost/activateBoost.ts \\\
     --nft=<nftContractAddress> \\\
     --boost=<boostPercentage> \\\
     --env=<env>',

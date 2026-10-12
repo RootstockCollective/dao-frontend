@@ -4,14 +4,26 @@ updates:
   - package-ecosystem: github-actions
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
+    cooldown:
+      default-days: 10
   # Maintain dependencies for npm
   - package-ecosystem: npm
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
+    cooldown:
+      default-days: 10
   # Maintain dependencies for Docker
   - package-ecosystem: docker
     directory: /
     schedule:
-      interval: daily
+      interval: weekly
+    cooldown:
+      default-days: 10
+  - package-ecosystem: docker-compose
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 10
