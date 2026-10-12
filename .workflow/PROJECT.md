@@ -730,7 +730,7 @@ The app links out to several external services for user-facing actions that happ
 > **Canonical source:** `.workflow/rules/coding-conventions.md` and `.workflow/rules/architecture-patterns.md`
 > The sections below provide project-specific context and code examples. For naming, imports, exports, types, error handling, and state management rules, refer to `.workflow/rules/`.
 
-- **Node.js**: Version 24 LTS
+- **Node.js**: the exact version in `.nvmrc`, selected with `nvm use`
 - **Formatting**: Prettier (no semicolons, single quotes, 110 char width)
 - **Linting**: ESLint with Next.js + Storybook plugins
 - **Git Hooks**: Husky pre-commit

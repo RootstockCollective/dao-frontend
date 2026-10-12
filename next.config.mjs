@@ -83,16 +83,14 @@ const nextConfig = {
   async rewrites() {
     return [
       {
-        source: '/ingest/static/:path*',
-        destination: 'https://us-assets.i.posthog.com/static/:path*',
+        source: '/ingest/array/:token/config',
+        destination: 'https://us-assets.i.posthog.com/array/:token/config',
       },
+      // us.i.posthog.com serves the same scripts as us-assets, so keep them off this origin too,
+      // including percent-encoded spellings such as /ingest/%73tatic/.
       {
-        source: '/ingest/array/:path*',
-        destination: 'https://us-assets.i.posthog.com/array/:path*',
-      },
-      {
-        source: '/ingest/:path*',
-        destination: 'https://us.i.posthog.com/:path*',
+        source: '/ingest/:path((?!static/|array/)[^%]*)',
+        destination: 'https://us.i.posthog.com/:path',
       },
     ]
   },

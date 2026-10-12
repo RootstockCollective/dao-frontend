@@ -6,6 +6,12 @@ This guide explains how to set up and use the Anvil fork environment for testing
 
 This guide uses [Foundry's Anvil](https://getfoundry.sh/guides/forking-mainnet-with-cast-anvil) for creating local mainnet forks. Refer to the official Foundry documentation for more details on fork configuration and advanced usage.
 
+Install Foundry v1.7.1, the version CI uses (Anvil 1.8.0 and later cannot fork Rootstock):
+
+```bash
+foundryup --install v1.7.1
+```
+
 ## ⚠️ Fork Environment Limitations
 
 **Important**: The fork environment is a **mainnet fork**, which means:

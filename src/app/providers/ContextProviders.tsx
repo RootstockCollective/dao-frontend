@@ -70,7 +70,7 @@ createAppKit({
   // page but only used when the modal is open).
   // See: https://docs.reown.com/appkit/react/core/theming
   themeVariables: {
-    '--apkt-font-family': 'Rootstock-Sans, Open Sans, sans-serif',
+    '--apkt-font-family': 'Rootstock-Sans, var(--font-open-sans), sans-serif',
   },
 })
 
