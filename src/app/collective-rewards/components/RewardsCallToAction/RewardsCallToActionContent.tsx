@@ -7,11 +7,11 @@ import { Button } from '@/components/Button'
 import { Link } from '@/components/Link'
 import { Header, Paragraph } from '@/components/Typography'
 import Big from '@/lib/big'
+import { STAKE_RIF_ROUTE } from '@/lib/constants'
+import { currentLinks } from '@/lib/links'
 import { cn } from '@/lib/utils'
 
 import { formatUsdWhole } from '../../utils/dashboardFormatters'
-
-const CR_WHITEPAPER_URL = 'https://rootstockcollective.xyz/pdfs/rewards-whitepaper.pdf'
 
 /** The two gradients that head the cards, kept distinct so the roles read apart at a glance. */
 const GRADIENTS = {
@@ -69,10 +69,10 @@ const SecondaryLink = ({ href, children }: { href: string; children: string }) =
 )
 
 export interface RewardsCallToActionContentProps {
-  /** Rewards heading to Backers in the running cycle. */
-  backersUpcoming: Big
-  /** Rewards heading to Builders in the running cycle. */
-  buildersUpcoming: Big
+  /** Rewards heading to Backers in the running cycle. `null` while unknown, so it never reads as $0. */
+  backersUpcoming: Big | null
+  /** Rewards heading to Builders in the running cycle. `null` while unknown. */
+  buildersUpcoming: Big | null
   backersCount?: number | null
   buildersCount?: number | null
   className?: string
@@ -87,10 +87,13 @@ export const RewardsCallToActionContent = ({
 }: RewardsCallToActionContentProps) => {
   const router = useRouter()
 
-  const summaryFor = (amount: Big, count: number | null, role: string) =>
-    count === null
-      ? `${formatUsdWhole(amount)} upcoming for ${role}s this cycle.`
-      : `${formatUsdWhole(amount)} upcoming for ${count} ${role}s this cycle.`
+  const summaryFor = (amount: Big | null, count: number | null, role: string) => {
+    const recipients = count === null ? `${role}s` : `${count} ${role}s`
+
+    return amount === null
+      ? `Rewards upcoming for ${recipients} this cycle.`
+      : `${formatUsdWhole(amount)} upcoming for ${recipients} this cycle.`
+  }
 
   return (
     <div className={cn('grid grid-cols-1 gap-2', className)} data-testid="rewards-call-to-action">
@@ -99,11 +102,13 @@ export const RewardsCallToActionContent = ({
         title="Back Builders, be rewarded"
         summary={summaryFor(backersUpcoming, backersCount, 'Backer')}
         action={
-          <Button variant="primary" onClick={() => router.push('/backing')}>
+          <Button variant="primary" onClick={() => router.push(STAKE_RIF_ROUTE)}>
             Stake RIF
           </Button>
         }
-        secondaryAction={<SecondaryLink href={CR_WHITEPAPER_URL}>Backers&apos; terms</SecondaryLink>}
+        secondaryAction={
+          <SecondaryLink href={currentLinks.rewardsWhitepaper}>Backers&apos; terms</SecondaryLink>
+        }
         data-testid="cta-backers"
       />
 

@@ -131,9 +131,28 @@ export const CycleBackingChart = ({
   className,
 }: CycleBackingChartProps) => {
   const [range, setRange] = useState<CycleChartRange>(defaultRange)
+  const [trackedSelection, setTrackedSelection] = useState<number | null>(null)
+
+  const ascending = useMemo(() => [...cycles].sort((a, b) => a.cycleNumber - b.cycleNumber), [cycles])
+
+  /**
+   * A cycle picked elsewhere on the page, in the table say, can be older than the range shows.
+   * Widen to the narrowest range that holds it, so the marked dot stays on the selected cycle.
+   */
+  if (selectedCycle !== trackedSelection) {
+    setTrackedSelection(selectedCycle)
+
+    const selectedIndex = ascending.findIndex(({ cycleNumber }) => cycleNumber === selectedCycle)
+    const cyclesNeeded = ascending.length - selectedIndex
+    const rangeCycles = RANGE_OPTIONS.find(({ id }) => id === range)?.cycles ?? null
+
+    if (selectedIndex !== -1 && rangeCycles !== null && cyclesNeeded > rangeCycles) {
+      const widened = RANGE_OPTIONS.find(({ cycles: kept }) => kept === null || kept >= cyclesNeeded)
+      if (widened) setRange(widened.id)
+    }
+  }
 
   const data = useMemo<CycleChartPoint[]>(() => {
-    const ascending = [...cycles].sort((a, b) => a.cycleNumber - b.cycleNumber)
     const limit = RANGE_OPTIONS.find(({ id }) => id === range)?.cycles ?? null
     const windowed = limit === null ? ascending : ascending.slice(-limit)
 
@@ -144,14 +163,13 @@ export const CycleBackingChart = ({
       start,
       end,
     }))
-  }, [cycles, range])
+  }, [ascending, range])
 
   const xInterval = Math.max(0, Math.ceil(data.length / MAX_X_LABELS) - 1)
 
-  // Falls back to the newest cycle so the header always has something to describe.
-  const highlightedIndex = data.findIndex(({ cycleNumber }) => cycleNumber === selectedCycle)
-  const resolvedIndex = highlightedIndex === -1 ? data.length - 1 : highlightedIndex
-  const highlighted = data[resolvedIndex]
+  // Read from every cycle, not the visible ones, so narrowing the range never changes what the
+  // header describes. Falls back to the newest cycle so the header always has something to show.
+  const highlighted = ascending.find(({ cycleNumber }) => cycleNumber === selectedCycle) ?? ascending.at(-1)
 
   return (
     <div

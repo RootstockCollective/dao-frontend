@@ -41,8 +41,8 @@ const Figure = ({ label, value, note }: { label: string; value: string; note?: s
 export interface AbiHeroCardProps {
   /** Annualised backer incentive, as a percentage. */
   abiPct: number
-  /** Distributed in the cycle the page is describing. */
-  paidInCycle: Big
+  /** Distributed in the cycle the page is describing. `null` until the cycles load. */
+  paidInCycle: Big | null
   /** Distributed to date. `null` while the reward events are still loading. */
   paidAllTime: Big | null
   /** Names the cycle, since it follows the page's selection rather than always being "this". */
@@ -103,7 +103,7 @@ export const AbiHeroCard = ({
     </div>
 
     <div className="relative flex gap-8">
-      <Figure label={paidInCycleLabel} value={formatUsdWhole(paidInCycle)} />
+      <Figure label={paidInCycleLabel} value={paidInCycle === null ? '—' : formatUsdWhole(paidInCycle)} />
       <Figure
         label="All-time"
         value={paidAllTime === null ? '—' : formatUsdWhole(paidAllTime)}

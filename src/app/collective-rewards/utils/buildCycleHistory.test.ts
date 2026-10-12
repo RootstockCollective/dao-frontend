@@ -8,14 +8,18 @@ import { GetPricesResult } from '../../user/types'
 import { FIRST_CYCLE_START_SECONDS, ONE_DAY_IN_SECONDS } from '../constants/chartConstants'
 import { UseGetGaugesNotifyRewardReturnType } from '../rewards'
 import { CycleRewardsItem, DailyAllocationItem } from '../types'
-import { buildCycleHistory, getAllTimeRewardsFiat, getCycleNumber, toCycleStartKey } from './buildCycleHistory'
+import {
+  buildCycleHistory,
+  getAllTimeRewardsFiat,
+  getCycleNumber,
+  toCycleStartKey,
+} from './buildCycleHistory'
 
 const CYCLE_DURATION = 14 * ONE_DAY_IN_SECONDS
 const GAUGE = '0x0000000000000000000000000000000000000001' as Address
 
 /** Start of the Nth cycle, so tests can talk in cycle numbers instead of timestamps. */
-const cycleStart = (cycleNumber: number) =>
-  FIRST_CYCLE_START_SECONDS + (cycleNumber - 1) * CYCLE_DURATION
+const cycleStart = (cycleNumber: number) => FIRST_CYCLE_START_SECONDS + (cycleNumber - 1) * CYCLE_DURATION
 
 const wei = (amount: number) => BigInt(amount) * WeiPerEther
 
@@ -165,23 +169,9 @@ describe('buildCycleHistory', () => {
       expect(entry.backersShare).toBe(0.9)
     })
 
-    it('accepts the hex timestamps Blockscout actually returns', () => {
-      const hexTimestamp = `0x${(cycleStart(10) + 100).toString(16)}` as unknown as number
-
-      const [entry] = build({
-        notifyRewards: notifyRewards([
-          notifyEvent(TOKENS.rif.address, hexTimestamp, wei(700), wei(300)),
-        ]),
-      })
-
-      expect(entry.backersShare).toBe(0.7)
-    })
-
     it('is null when no event falls in the window, rather than zero', () => {
       const [entry] = build({
-        notifyRewards: notifyRewards([
-          notifyEvent(TOKENS.rif.address, cycleStart(3), wei(500), wei(500)),
-        ]),
+        notifyRewards: notifyRewards([notifyEvent(TOKENS.rif.address, cycleStart(3), wei(500), wei(500))]),
       })
 
       expect(entry.backersShare).toBeNull()
@@ -265,30 +255,23 @@ describe('toCycleStartKey', () => {
 })
 
 describe('getAllTimeRewardsFiat', () => {
-  const notifyRewards = (events: ReturnType<typeof notifyEvent>[]) =>
-    ({ [GAUGE]: events }) as UseGetGaugesNotifyRewardReturnType
-
-  it('sums both sides of every event at current prices', () => {
-    // 600 + 400 RIF at $0.10, plus 1 rBTC at $100k.
+  it('sums every reward token at current prices', () => {
+    // 1,000 RIF at $0.10, plus 1 rBTC at $100k.
     const total = getAllTimeRewardsFiat(
-      notifyRewards([
-        notifyEvent(TOKENS.rif.address, cycleStart(10), wei(600), wei(400)),
-        notifyEvent(TOKENS.rbtc.address, cycleStart(2), wei(1), 0n),
-      ]),
+      {
+        [TOKENS.rif.address.toLowerCase()]: wei(1_000),
+        [TOKENS.rbtc.address.toLowerCase()]: wei(1),
+      },
       prices,
     )
 
     expect(total.toNumber()).toBe(100_100)
   })
 
-  it('counts events from cycles the table never loaded', () => {
-    // The whole point of reading the events: the figure is not capped by the cycle page size.
-    const total = getAllTimeRewardsFiat(
-      notifyRewards([notifyEvent(TOKENS.rif.address, cycleStart(1), wei(1_000), 0n)]),
-      prices,
-    )
+  it('ignores tokens that are not reward tokens', () => {
+    const total = getAllTimeRewardsFiat({ [GAUGE.toLowerCase()]: wei(1_000) }, prices)
 
-    expect(total.toNumber()).toBe(100)
+    expect(total.toNumber()).toBe(0)
   })
 
   it('is zero when nothing has loaded', () => {

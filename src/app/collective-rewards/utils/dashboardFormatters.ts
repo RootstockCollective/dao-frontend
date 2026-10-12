@@ -49,6 +49,12 @@ export const formatBackingCompact = (value: Big | bigint | number): string => {
   }).format(amount)
 }
 
-/** `64% / 36%` for a 0..1 backer share. */
-export const formatSplitLabel = (backersShare: number): string =>
-  `${Math.round(backersShare * 100)}% / ${Math.round((1 - backersShare) * 100)}%`
+/**
+ * `64% / 36%` for a 0..1 backer share. The Builder side is the remainder, as in the distribution
+ * panel: rounding both sides would turn 0.125 into `13% / 88%`.
+ */
+export const formatSplitLabel = (backersShare: number): string => {
+  const backersPct = Math.round(backersShare * 100)
+
+  return `${backersPct}% / ${100 - backersPct}%`
+}

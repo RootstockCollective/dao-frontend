@@ -13,7 +13,7 @@ import { useHandleErrors } from '../../utils'
 import { RewardsCallToActionContent } from './RewardsCallToActionContent'
 
 export const RewardsCallToAction = ({ className }: { className?: string }) => {
-  const { data: estimatedRewards, error } = useGetBuilderEstimatedRewards()
+  const { data: estimatedRewards, isLoading, error } = useGetBuilderEstimatedRewards()
   const { runningCycle, buildersCount } = useCycleDashboard()
   const { prices } = usePricesContext()
 
@@ -46,10 +46,13 @@ export const RewardsCallToAction = ({ className }: { className?: string }) => {
     [estimatedRewards, prices],
   )
 
+  // The hook returns an empty list until it loads, which would sum to a confident $0.
+  const isUnknown = isLoading || Boolean(error)
+
   return (
     <RewardsCallToActionContent
-      backersUpcoming={backersUpcoming}
-      buildersUpcoming={buildersUpcoming}
+      backersUpcoming={isUnknown ? null : backersUpcoming}
+      buildersUpcoming={isUnknown ? null : buildersUpcoming}
       // These describe what is heading out in the open cycle, so they ignore the page selection.
       backersCount={runningCycle?.backersCount ?? null}
       buildersCount={buildersCount}

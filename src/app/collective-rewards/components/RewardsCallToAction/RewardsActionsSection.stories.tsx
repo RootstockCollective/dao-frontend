@@ -57,3 +57,12 @@ export const WithoutCounts: Story = {
     </div>
   ),
 }
+
+/** While the upcoming rewards load the copy drops the figure rather than showing $0. */
+export const Loading: Story = {
+  render: () => (
+    <div className="max-w-[560px]">
+      <RewardsCallToActionContent backersUpcoming={null} buildersUpcoming={null} backersCount={292} />
+    </div>
+  ),
+}

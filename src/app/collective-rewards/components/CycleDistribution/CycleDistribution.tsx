@@ -23,6 +23,7 @@ const TokenRow = ({ reward }: { reward: CycleTokenReward }) => (
         symbol={reward.symbol}
         size={TOKEN_LOGO_SIZE}
         className="shrink-0 rounded-full object-contain"
+        decorative
       />
       <Span className="text-v3-text-100">{reward.symbol}</Span>
     </div>

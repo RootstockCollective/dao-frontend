@@ -4,7 +4,7 @@ import { REWARD_TOKEN_KEYS, RewardTokenKey, TOKENS } from '@/lib/tokens'
 
 import { GetPricesResult } from '../../user/types'
 import { FIRST_CYCLE_START_SECONDS } from '../constants/chartConstants'
-import { UseGetGaugesNotifyRewardReturnType } from '../rewards'
+import { getTokenTotal, TotalRewardsDistributed, UseGetGaugesNotifyRewardReturnType } from '../rewards'
 import { CycleHistoryEntry, CycleRewardsItem, CycleTokenReward, DailyAllocationItem } from '../types'
 
 const toFiat = (value: bigint, price: number): Big =>
@@ -95,11 +95,7 @@ const bucketRewardEventsByCycle = (
 
   for (const events of Object.values(notifyRewards)) {
     for (const event of events) {
-      // Blockscout hands back a hex string here even though the type says number.
-      const timestamp = Number(event.timeStamp)
-      if (!Number.isFinite(timestamp)) continue
-
-      const windowIndex = findCycleIndex(windows, timestamp)
+      const windowIndex = findCycleIndex(windows, event.timeStamp)
       if (windowIndex === -1) continue
 
       const tokenKey = REWARD_TOKEN_KEY_BY_ADDRESS.get(event.args.rewardToken_.toLowerCase())
@@ -173,28 +169,16 @@ const buildBackingByCycle = (
 /**
  * Combined USD value of every reward ever distributed, at current prices.
  *
- * Deliberately read from the NotifyReward events rather than by summing the per-cycle
- * `rewardPerToken` totals: the events are the source the published all-time figure has always
- * used, and they aren't bounded by how many cycles the table happens to have loaded.
+ * Read from the all-time per-token totals rather than by summing the per-cycle `rewardPerToken`
+ * rows: they are the figure the rest of the app publishes, and they aren't bounded by how many
+ * cycles the table happens to have loaded.
  */
-export const getAllTimeRewardsFiat = (
-  notifyRewards: UseGetGaugesNotifyRewardReturnType,
-  prices: GetPricesResult,
-): Big => {
-  let total = Big(0)
+export const getAllTimeRewardsFiat = (totals: TotalRewardsDistributed, prices: GetPricesResult): Big =>
+  REWARD_TOKEN_KEYS.reduce((acc, tokenKey) => {
+    const { address, symbol } = TOKENS[tokenKey]
 
-  for (const events of Object.values(notifyRewards)) {
-    for (const event of events) {
-      const tokenKey = REWARD_TOKEN_KEY_BY_ADDRESS.get(event.args.rewardToken_.toLowerCase())
-      if (!tokenKey) continue
-
-      const price = prices[TOKENS[tokenKey].symbol]?.price ?? 0
-      total = total.add(toFiat(event.args.backersAmount_ + event.args.builderAmount_, price))
-    }
-  }
-
-  return total
-}
+    return acc.add(toFiat(getTokenTotal(totals, address), prices[symbol]?.price ?? 0))
+  }, Big(0))
 
 export interface BuildCycleHistoryParams {
   cycles: CycleRewardsItem[]

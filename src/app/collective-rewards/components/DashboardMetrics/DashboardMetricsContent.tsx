@@ -67,8 +67,9 @@ export const DashboardMetricsContent = ({
   className,
 }: DashboardMetricsContentProps) => {
   const isRunning = cycle?.status === 'running'
-  const paidInCycle = cycle?.rewardsFiat ?? Big(0)
-  const backing = cycle?.backing ?? 0n
+  // Unknown until the cycles load: a zero here would read as a real figure.
+  const paidInCycle = cycle?.rewardsFiat ?? null
+  const backing = cycle?.backing ?? null
   const backersCount = cycle?.backersCount ?? null
   // A Builder roster only exists for today, so it cannot describe a settled cycle.
   const cycleBuildersCount = isRunning ? buildersCount : null
@@ -103,11 +104,13 @@ export const DashboardMetricsContent = ({
       <div className="grid grid-cols-2 gap-4 xl:grid-cols-[repeat(3,minmax(0,1fr))_minmax(0,1.3fr)]">
         <MetricCard
           label="Total backing"
-          value={formatBackingCompact(backing)}
+          value={backing === null ? '—' : formatBackingCompact(backing)}
           sub={
-            <SubLabel>
-              {STRIF} · {formatUsdCompact(Big(backing.toString()).mul(strifPrice))}
-            </SubLabel>
+            backing === null ? null : (
+              <SubLabel>
+                {STRIF} · {formatUsdCompact(Big(backing.toString()).mul(strifPrice))}
+              </SubLabel>
+            )
           }
           data-testid="metric-total-backing"
         />
@@ -116,9 +119,11 @@ export const DashboardMetricsContent = ({
           label="Distributed all-time"
           value={paidAllTime === null ? '—' : formatUsdWhole(paidAllTime)}
           sub={
-            <SubLabel className="text-success">
-              +{formatUsdWhole(paidInCycle)} {isRunning ? 'this cycle' : 'that cycle'}
-            </SubLabel>
+            paidInCycle === null ? null : (
+              <SubLabel className="text-success">
+                +{formatUsdWhole(paidInCycle)} {isRunning ? 'this cycle' : 'that cycle'}
+              </SubLabel>
+            )
           }
           data-testid="metric-distributed"
         />
@@ -140,7 +145,7 @@ export const DashboardMetricsContent = ({
                 : `Cycle ${cycle.cycleNumber} · ${formatCycleWindow(cycle.start, cycle.end)}`
               : 'Current cycle'
           }
-          value={formatUsdWhole(paidInCycle)}
+          value={paidInCycle === null ? '—' : formatUsdWhole(paidInCycle)}
           footer={
             // A settled cycle has no progress left to show; a bar frozen at 100% would be noise.
             progress ? (
