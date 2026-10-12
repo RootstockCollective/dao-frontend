@@ -12,18 +12,12 @@ import { cn } from '@/lib/utils'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 import type { ConnectButtonComponentProps } from '@/shared/walletConnection/types'
 
+import { DISMISSED_STORAGE_KEY } from './constants'
 import { MotionLogo } from './MotionLogo'
 import { PossibilitiesDock } from './PossibilitiesDock'
 import { PosterArt } from './PosterArt'
 import { CONNECT_CTA_CLASSES, EYEBROW_CLASSES } from './styles'
 import { useScrollDock } from './useScrollDock'
-
-/**
- * Remembers the dismissal per browser, across reloads. The layout only renders on the client
- * (DelayedRender), so the stored value is read on the first render and a dismissed banner
- * never flashes in.
- */
-export const DISMISSED_STORAGE_KEY = 'rc.holdings.dontMiss.dismissed'
 
 const POSSIBILITIES = [
   {
@@ -40,10 +34,6 @@ const POSSIBILITIES = [
   },
 ]
 
-/**
- * Declared once, not inline, so a re-render (the dock flipping on scroll) keeps the same button
- * and the focus on it.
- */
 const BannerConnectButton = ({ onClick }: ConnectButtonComponentProps) => (
   <Button onClick={onClick} className={cn(CONNECT_CTA_CLASSES, 'h-12 px-[26px]')} data-testid="ConnectButton">
     Connect wallet
@@ -59,10 +49,6 @@ const FOCUSABLE_SELECTOR = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',')
 
-/**
- * The controls that follow `element` in the document, leaving out those above the viewport: that
- * is where the page was, not where the user is (the dock X is pressed far down the page).
- */
 const getFocusablesAfter = (element: HTMLElement) =>
   [...document.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)].filter(
     candidate =>
@@ -71,7 +57,6 @@ const getFocusablesAfter = (element: HTMLElement) =>
       candidate.getBoundingClientRect().bottom > 0,
   )
 
-/** Focuses the first candidate that takes it; hidden or inert ones do not. */
 const focusFirst = (candidates: HTMLElement[]) => {
   for (const candidate of candidates) {
     candidate.focus()
@@ -79,22 +64,6 @@ const focusFirst = (candidates: HTMLElement[]) => {
   }
 }
 
-/**
- * Dark hero shown to visitors without a connected wallet: the three things the DAO lets them
- * do and the connect call to action, next to the animated Collective logo.
- *
- * The layout follows the width of the content column rather than the viewport, since the
- * sidebar can be open or collapsed, so the breakpoints are container queries on the width of the
- * layout's `<main>`, padding included (the `content` container), as in the design reference:
- * - 1180px and up: logo tile on the right, the three pillars side by side
- * - 900 to 1179px: tile on the right, one pillar per row with the label beside the text
- * - below 900px: the tile becomes a strip across the top showing only the poster, anchored on
- *   its bright edge with the molecule on the right, and the actions wrap under the title
- *
- * Scrolling it away shrinks and fades it and docks a compact bar under the top bar
- * (PossibilitiesDock), which stands in for the top bar's own Connect button until the banner
- * comes back. Dismissing either one removes both, for good in this browser.
- */
 export const CollectivePossibilities = ({ className }: CommonComponentProps) => {
   const titleId = useId()
   const [isDismissed, setIsDismissed] = useLocalStorageState(DISMISSED_STORAGE_KEY, { defaultValue: false })
@@ -123,8 +92,6 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
   }, [isDocked, setDocked])
 
   const dismiss = () => {
-    // The X that has focus is about to go. Rather than let the focus drop to the body, pick what
-    // follows the banner on screen while the banner can still anchor the search...
     const wrapper = wrapperRef.current
     const focused = document.activeElement
     if (wrapper && focused && (wrapper.contains(focused) || slot?.contains(focused))) {
@@ -133,8 +100,6 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
     setIsDismissed(true)
   }
 
-  // ...and move it there once the banner is gone, so the browser can bring it back into view if
-  // removing the banner pushed it out
   useLayoutEffect(() => {
     if (!isDismissed) return
     focusFirst(nextFocusRef.current)
@@ -205,8 +170,6 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
               imageClassName="object-[100%_50%] @min-[900px]/content:object-[70%_50%]"
               moleculeClassName="justify-end pr-14 @min-[900px]/content:justify-center @min-[900px]/content:pr-0"
             />
-            {/* The video centres the molecule, which a 180px strip would crop; the strip keeps the poster */}
-            {/* Under the docked bar the tile is out of sight, so the loop rests until it comes back */}
             <MotionLogo className="hidden @min-[900px]/content:block" paused={isDocked} />
           </div>
         </div>

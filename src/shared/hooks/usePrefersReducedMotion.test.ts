@@ -3,7 +3,6 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import { usePrefersReducedMotion } from './usePrefersReducedMotion'
 
-/** A media query whose answer the test can change, telling its listeners as a browser would. */
 const mockReducedMotion = (matches: boolean) => {
   const listeners = new Set<() => void>()
   const query = {

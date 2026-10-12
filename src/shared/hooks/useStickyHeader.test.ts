@@ -5,7 +5,6 @@ import { useStickyHeader } from './useStickyHeader'
 
 const setScrollY = (y: number) => Object.defineProperty(window, 'scrollY', { value: y, configurable: true })
 
-/** Scrolls and waits for the frame the hook handles the scroll in. */
 const scrollTo = async (y: number) => {
   setScrollY(y)
   await act(async () => {

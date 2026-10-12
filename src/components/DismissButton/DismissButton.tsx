@@ -8,8 +8,6 @@ export interface DismissButtonProps {
   /**
    * The surface the button sits on, which decides the icon and border color. `quiet` is
    * for compact one-line notifications on dark: a muted X with no frame until hovered.
-   * `round` and `roundQuiet` are the 44px circles of the Holdings Don't Miss prompt, with
-   * and without a hairline frame.
    */
   variant?: 'onDark' | 'onLight' | 'quiet' | 'round' | 'roundQuiet'
   className?: string

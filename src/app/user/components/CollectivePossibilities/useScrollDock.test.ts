@@ -10,7 +10,6 @@ describe('getScrollProgress', () => {
   })
 
   it('grows as the banner slides under the top bar', () => {
-    // 64 + 16 - (-70) = 150, half of the banner
     expect(getScrollProgress(-70, 300, TOP_BAR_BOTTOM)).toBe(0.5)
   })
 

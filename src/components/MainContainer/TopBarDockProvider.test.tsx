@@ -7,10 +7,8 @@ import { TopBarDockProvider, useTopBarDock } from './TopBarDockProvider'
 const TOP_BAR_HEIGHT = 64
 const DOCK_HEIGHT = 76
 
-/** Height of whatever is docked in the slot right now. */
 let dockHeight = 0
 
-/** jsdom has no ResizeObserver: this one only reports when the test says the slot resized. */
 class ManualResizeObserver {
   static instances = new Set<ManualResizeObserver>()
   constructor(private readonly callback: ResizeObserverCallback) {
@@ -28,7 +26,6 @@ class ManualResizeObserver {
   }
 }
 
-/** Stands in for the layout header: the slot hangs right under the top bar. */
 const TopBar = () => {
   const { isDocked, setSlot } = useTopBarDock()
   return (
@@ -38,7 +35,6 @@ const TopBar = () => {
   )
 }
 
-/** Stands in for a page with a prompt that can dock. */
 const Page = ({ isActive, isDocked = false }: { isActive: boolean; isDocked?: boolean }) => {
   const { setActive, setDocked } = useTopBarDock()
   useEffect(() => {
@@ -68,7 +64,6 @@ describe('TopBarDockProvider', () => {
     dockHeight = 0
     vi.stubGlobal('ResizeObserver', ManualResizeObserver)
 
-    // jsdom has no layout: give the slot its place under the top bar by hand
     const isSlot = (element: HTMLElement) => element.getAttribute('data-testid') === 'TopBarSlot'
     vi.spyOn(HTMLElement.prototype, 'offsetTop', 'get').mockImplementation(function (this: HTMLElement) {
       return isSlot(this) ? TOP_BAR_HEIGHT : 0
@@ -88,7 +83,6 @@ describe('TopBarDockProvider', () => {
     const { setActive } = renderLayout(true, true)
     expect(screen.getByTestId('TopBar')).toHaveAttribute('data-docked', 'true')
 
-    // A page that drops its prompt without undocking it first must not leave the Connect hidden
     setActive(false)
 
     expect(screen.getByTestId('TopBar')).toHaveAttribute('data-docked', 'false')

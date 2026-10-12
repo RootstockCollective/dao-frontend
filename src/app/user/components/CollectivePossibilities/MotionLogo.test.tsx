@@ -3,13 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, type MockInstance, vi } fr
 
 import { MotionLogo } from './MotionLogo'
 
-/**
- * Whether the video is on screen. False when the page has scrolled it away, or when a breakpoint
- * hides it with display: none, which never intersects.
- */
 let isOnScreen = true
 
-/** jsdom has no IntersectionObserver: report `isOnScreen` on observe and on `scroll()`. */
 class FakeIntersectionObserver {
   static instance: FakeIntersectionObserver | undefined
   private target: Element | undefined

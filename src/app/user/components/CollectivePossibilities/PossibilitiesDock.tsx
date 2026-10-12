@@ -12,7 +12,6 @@ import type { ConnectButtonComponentProps } from '@/shared/walletConnection/type
 import { PosterArt } from './PosterArt'
 import { CONNECT_CTA_CLASSES, EYEBROW_CLASSES } from './styles'
 
-/** Declared once, not inline, so a re-render keeps the same button (and the focus on it). */
 const DockConnectButton = ({ onClick }: ConnectButtonComponentProps) => (
   <Button
     onClick={onClick}
@@ -26,24 +25,11 @@ const DockConnectButton = ({ onClick }: ConnectButtonComponentProps) => (
 
 interface PossibilitiesDockProps {
   isDocked: boolean
-  /** False while the bar must change without sliding, e.g. on a page that loads already scrolled. */
   shouldAnimate: boolean
   onDismiss: () => void
-  /**
-   * The banner's own Connect and X, in the same order as the bar's. When the bar closes while one
-   * of its controls has the focus, the focus moves to the banner's control for the same action.
-   */
   bannerActionsRef: RefObject<HTMLElement | null>
 }
 
-/**
- * Compact version of the Don't Miss banner that docks under the top bar once the banner has
- * scrolled away, so the connect prompt stays in reach.
- *
- * Its height opens through grid rows (0fr to 1fr) rather than `height: auto`, and it is inert
- * while closed so its controls never catch focus. Under prefers-reduced-motion it appears and
- * disappears at the same points without any transition.
- */
 export const PossibilitiesDock = ({
   isDocked,
   shouldAnimate,
@@ -85,7 +71,6 @@ export const PossibilitiesDock = ({
           </div>
 
           <div className="flex min-w-0 flex-1 items-baseline gap-3.5 overflow-hidden whitespace-nowrap">
-            {/* On narrow screens the eyebrow goes first so the title has room before it truncates */}
             <span className={cn(EYEBROW_CLASSES, 'hidden flex-none text-[12px] @min-[900px]:inline')}>
               Don&apos;t miss
             </span>

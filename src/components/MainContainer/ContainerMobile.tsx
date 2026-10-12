@@ -24,7 +24,6 @@ export default function ContainerMobile({ children, className, ...props }: HTMLA
       )}
     >
       <HeaderMobile />
-      {/* `content` container: pages can lay out by the width of <main> (see ContainerDesktop) */}
       <div className="@container/content relative px-4 grow flex flex-col pb-24" id={MAIN_CONTAINER_ID}>
         <SidebarMobile />
         <main className="grow mb-8">

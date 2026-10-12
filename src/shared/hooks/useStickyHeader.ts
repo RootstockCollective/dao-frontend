@@ -76,7 +76,6 @@ export const useStickyHeader = (options: UseStickyHeaderOptions = {}) => {
 
   useEffect(() => {
     if (!isEnabled) {
-      // Hand the header back to the normal layout rather than leave it fixed or hidden
       setIsSticky(false)
       setIsVisible(true)
       lastScrollY.current = 0

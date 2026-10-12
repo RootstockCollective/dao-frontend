@@ -154,8 +154,7 @@
   html,
   body {
     overflow-x: hidden;
-    /* clip where supported: hidden turns body into a scroll container, which stops
-       position: sticky (the Holdings top bar and its docked prompt) from sticking */
+    /* clip where supported: hidden would stop position: sticky */
     overflow-x: clip;
     max-width: 100vw;
   }

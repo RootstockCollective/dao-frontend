@@ -14,10 +14,8 @@ export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElem
   const { isSidebarOpen, toggleSidebar } = useLayoutContext()
   const { isActive: hasDock, isDocked, slot, setSlot } = useTopBarDock()
   const connectRef = useRef<HTMLDivElement>(null)
-  // The docked prompt leads with its own Connect button, which takes the focus over
   const isConnectInert = useInertHandoff(isDocked, connectRef, () => slot?.querySelector('button'))
   const { headerRef, isVisible } = useStickyHeader({
-    // A docked prompt has to stay on screen, so the header stops hiding on scroll while one is active
     isEnabled: !hasDock,
     mode: 'direction-based',
     style: {
@@ -56,8 +54,7 @@ export function HeaderMobile({ className, ...props }: HTMLAttributes<HTMLDivElem
           showContent={!isSidebarOpen}
         />
       </div>
-      {/* Docked prompts hang below the top bar instead of growing it: a sticky header that grew
-          would push the page down and undo the scroll position that docked them */}
+      {/* Hangs below the bar: a growing sticky header would push the page and undo the dock */}
       <div ref={setSlot} className="absolute inset-x-0 top-full bg-l-black px-4" />
     </header>
   )

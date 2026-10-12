@@ -12,10 +12,6 @@ const subscribe = (onChange: () => void) => {
 
 const getSnapshot = () => getQuery()?.matches ?? false
 
-/** The server cannot know the preference; the client settles it on hydration. */
 const getServerSnapshot = () => false
 
-/**
- * Whether the viewer asked their system for reduced motion, kept up to date when they change it.
- */
 export const usePrefersReducedMotion = () => useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot)

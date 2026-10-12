@@ -32,7 +32,6 @@ interface PageProps {
   isDocked?: boolean
 }
 
-/** Stands in for a page with a prompt: drives the dock state and portals into the slot. */
 const Page = ({ isActive = false, isDocked = false }: PageProps) => {
   const { slot, setActive, setDocked } = useTopBarDock()
   useEffect(() => {
@@ -63,7 +62,6 @@ const renderHeader = (props: PageProps = {}) => {
 }
 
 const topBarConnect = () => screen.getByTestId('TopBarConnect')
-/** The row holding the sidebar toggle, the breadcrumbs and the Connect button. */
 const topBarRow = () => screen.getByTestId('SidebarToggle').closest('header > div')
 
 describe('HeaderDesktop', () => {

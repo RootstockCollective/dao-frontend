@@ -20,13 +20,10 @@ export function ContainerDesktop({ children, className, ...props }: HTMLAttribut
       style={{ maxWidth: MAIN_CONTAINER_MAX_WIDTH }}
     >
       <SidebarDesktop />
-      {/* Central section. overflow-x-clip rather than hidden: hidden would make this column a
-          scroll container and stop the header from sticking to the viewport */}
+      {/* Central section. clip, not hidden: hidden would stop the header from sticking */}
       <div className="grow flex flex-col overflow-x-clip">
         <HeaderDesktop />
         <div className="grow flex flex-col pb-24">
-          {/* `content` container: pages can lay out by the width of <main>, padding included, which
-              is this column's content box (the Holdings Don't Miss banner does) */}
           <div className="@container/content flex flex-1 flex-col mt-10" id={MAIN_CONTAINER_ID}>
             <main className="p-8 mb-25 grow">
               <TopPageHeader />

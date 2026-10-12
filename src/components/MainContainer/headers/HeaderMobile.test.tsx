@@ -32,7 +32,6 @@ interface PageProps {
   isDocked?: boolean
 }
 
-/** Stands in for a page with a prompt: drives the dock state and portals into the slot. */
 const Page = ({ isActive = false, isDocked = false }: PageProps) => {
   const { slot, setActive, setDocked } = useTopBarDock()
   useEffect(() => {
@@ -62,7 +61,6 @@ const renderHeader = (props: PageProps = {}) => {
   return { rerenderPage: (pageProps: PageProps) => rerender(ui(pageProps)) }
 }
 
-/** Scrolls and waits for the frame the header handles the scroll in. */
 const scrollTo = async (y: number) => {
   Object.defineProperty(window, 'scrollY', { value: y, configurable: true })
   await act(async () => {

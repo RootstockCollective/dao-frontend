@@ -4,10 +4,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { TopBarDockProvider, useTopBarDock } from '@/components/MainContainer/TopBarDockProvider'
 import type { ConnectWorkflowProps } from '@/shared/walletConnection/types'
 
-import { CollectivePossibilities, DISMISSED_STORAGE_KEY } from './CollectivePossibilities'
+import { CollectivePossibilities } from './CollectivePossibilities'
+import { DISMISSED_STORAGE_KEY } from './constants'
 import { FRAME_FALLBACK_MS } from './useScrollDock'
 
-// Renders the page's own button, so the tests see the element the banner and the dock pass in
 vi.mock('@/shared/walletConnection/connection/ConnectWorkflow', () => ({
   ConnectWorkflow: ({ ConnectComponent }: ConnectWorkflowProps) =>
     ConnectComponent ? <ConnectComponent onClick={() => {}} /> : null,
@@ -16,7 +16,6 @@ vi.mock('@/shared/walletConnection/connection/ConnectWorkflow', () => ({
 const BANNER_HEIGHT = 300
 const TOP_BAR_BOTTOM = 64
 
-/** jsdom has no ResizeObserver: report every observed element as laid out. */
 class LaidOutResizeObserver {
   constructor(private readonly callback: ResizeObserverCallback) {}
   observe(target: Element) {
@@ -27,7 +26,6 @@ class LaidOutResizeObserver {
   disconnect() {}
 }
 
-/** Stands in for the layout header: exposes the dock state and hosts the slot. */
 const TopBar = () => {
   const { isActive, isDocked, setSlot } = useTopBarDock()
   return (
@@ -37,7 +35,6 @@ const TopBar = () => {
   )
 }
 
-/** Where the controls after the banner sit on screen, by href. Below 0 they are scrolled past. */
 let linkTops: Record<string, number> = {}
 
 const renderOnPage = () =>
@@ -58,12 +55,10 @@ const mockReducedMotion = (matches: boolean) =>
   } as unknown as MediaQueryList)
 
 let bannerTop = 136
-/** Layout height of the banner: 0 until the layout has settled. */
 let bannerHeight = BANNER_HEIGHT
 
 const setScrollY = (y: number) => Object.defineProperty(window, 'scrollY', { value: y, configurable: true })
 
-/** Scrolls and runs the frame (or its timeout fallback) the banner measures itself in. */
 const scrollBannerTo = (top: number) => {
   bannerTop = top
   setScrollY(136 - top)
@@ -84,7 +79,6 @@ describe('CollectivePossibilities', () => {
 
     localStorage.clear()
 
-    // jsdom has no layout: place the banner and the top bar by hand
     bannerTop = 136
     bannerHeight = BANNER_HEIGHT
     linkTops = { '#holdings': 500, '#latest': 700 }
@@ -94,7 +88,6 @@ describe('CollectivePossibilities', () => {
         return DOMRect.fromRect({ y: TOP_BAR_BOTTOM, height: 0 })
       }
       if (this.tagName === 'SECTION') {
-        // As in a browser, the box on screen shrinks with the scale written on the banner
         const scale = Number((this as HTMLElement).style.transform.match(/scale\(([\d.]+)\)/)?.[1] ?? 1)
         return DOMRect.fromRect({ y: bannerTop, height: bannerHeight * scale })
       }
@@ -103,7 +96,6 @@ describe('CollectivePossibilities', () => {
       }
       return DOMRect.fromRect()
     })
-    // ...while its layout height does not
     vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(function (this: HTMLElement) {
       return this.tagName === 'SECTION' ? bannerHeight : 0
     })
@@ -161,7 +153,6 @@ describe('CollectivePossibilities', () => {
   })
 
   it('never fades at the top of the page, even when the banner starts right under the top bar', () => {
-    // Mobile: a taller header and no gap would put the progress above 0 before any scroll
     bannerTop = TOP_BAR_BOTTOM
     renderOnPage()
 
@@ -174,7 +165,6 @@ describe('CollectivePossibilities', () => {
   it('shrinks and fades the banner as it scrolls under the top bar', () => {
     renderOnPage()
 
-    // Halfway under: 64 + 16 - (-70) = 150 of 300
     scrollBannerTo(-70)
 
     const banner = screen.getByRole('region', { name: 'THE COLLECTIVE POSSIBILITIES' })
@@ -252,7 +242,6 @@ describe('CollectivePossibilities', () => {
     expect(dock).toHaveAttribute('data-docked', 'true')
     expect(dock).not.toHaveClass('transition-[grid-template-rows]')
 
-    // From then on it slides as usual
     act(() => vi.advanceTimersByTime(FRAME_FALLBACK_MS))
     expect(dock).toHaveClass('transition-[grid-template-rows]')
   })
@@ -278,7 +267,6 @@ describe('CollectivePossibilities', () => {
     const dock = screen.getByTestId('PossibilitiesDock')
     expect(dock).toHaveClass('transition-[grid-template-rows]')
 
-    // Straight from the top to past the banner in one frame
     bannerTop = -160
     setScrollY(296)
     act(() => {

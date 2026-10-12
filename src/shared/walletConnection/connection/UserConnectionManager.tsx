@@ -10,7 +10,6 @@ import { DisconnectWorkflowContainer } from './DisconnectWorkflowContainer'
 interface UserConnectionManagerProps {
   className?: string
   showContent?: boolean
-  /** Takes the control out of the tab order and the accessibility tree, e.g. while it is hidden. */
   inert?: boolean
   ref?: Ref<HTMLDivElement>
 }
