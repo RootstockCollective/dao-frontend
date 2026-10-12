@@ -2,44 +2,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Prerequisites
 
-The following tools are required to be installed:
-
-- [Node.js](https://nodejs.org/en/download) - Version 24 (LTS).
-
-## Optional development tools
-
-The following tools are optional but can help ensure a consistent development environment and improve the workflow.
-
-### NVM
-
-`nvm` allows you to quickly install and use different versions of node via the command line.
-
-**Example:**
-
-```sh
-$ nvm use 16
-Now using node v16.9.1 (npm v7.21.1)
-$ node -v
-v16.9.1
-$ nvm use 14
-Now using node v14.18.0 (npm v6.14.15)
-$ node -v
-v14.18.0
-$ nvm install 12
-Now using node v12.22.6 (npm v6.14.5)
-$ node -v
-v12.22.6
-```
-
-Simple as that!
-
-To specify the required Node.js version for the project, you can create a `.nvmrc` file in the root directory of your project. This file should contain the version number of Node.js that you want to use. For example, to use Node.js version 22, you would create a `.nvmrc` file with the following content:
-
-```
-22
-```
-
-Once the `.nvmrc` file is in place, you can run `nvm use` to switch to the specified Node.js version. This ensures that everyone working on the project uses the same Node.js version, which helps to avoid compatibility issues.
+- [nvm](https://github.com/nvm-sh/nvm), which installs and selects the exact Node.js version in `.nvmrc`.
 
 ## Getting Started
 
@@ -52,18 +15,17 @@ git clone https://github.com/RootstockCollective/dao-frontend.git
 cd dao-frontend
 ```
 
-2. Use the correct Node.js version (Optional):
+2. Install and use the Node.js version from `.nvmrc`:
 
 ```bash
+nvm install
 nvm use
 ```
 
-This command will read the `.nvmrc` file and switch to the specified Node.js version.
-
-3. Install the dependencies:
+3. Install the dependencies exactly as locked in `package-lock.json`:
 
 ```bash
-npm install
+npm ci
 ```
 
 4. Update the `.env` file with the correct data from the respective files:
@@ -81,12 +43,6 @@ The chosen set of variables depends on the targeted contract versions you plan t
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 6. Choose the environment using the `PROFILE` environment variable, such as:
@@ -108,8 +64,6 @@ The value must correspond to one of the `.env.` file endings.
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
 ## Environments
 
@@ -215,8 +169,6 @@ Backend URL: https://dao-backend.testnet.rifcomputing.net/api-docs
 
 This project contains storybook installed in it, which is a tool to render UI components and test them visually.
 
-Page used for installation: [Storybook Getting Started](https://storybook.js.org/docs/get-started/nextjs#getting-started)
-
 ## How to run Storybook
 
 In order to run storybook, just do:
@@ -319,8 +271,9 @@ This workflow uses https://github.com/cypress-io/github-action
 
 #### Setup frontend
 
-- `nvm use` (Optional)
-- `npm i`
+- `nvm install`
+- `nvm use`
+- `npm ci`
 - Create .env.local file
 - Carry over what is in .env.dev to .env.local
 - npm run dev
