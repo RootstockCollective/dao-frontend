@@ -1,7 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { useSiweStore } from '@/lib/auth/siweStore'
+import { selectIsAuthenticated, selectUserAddress, useSiweStore } from '@/lib/auth/siweStore'
 
 interface LikeApiResponse {
   success: boolean
@@ -22,16 +22,22 @@ interface ToggleLikeResponse {
 }
 
 const likeQueryKey = (proposalId: string) => ['proposalLikes', proposalId]
-const userReactionQueryKey = (proposalId: string, jwtToken: string) => [
+const userReactionQueryKey = (proposalId: string, userAddress: string | null) => [
   'proposalUserReaction',
   proposalId,
-  jwtToken,
+  userAddress,
 ]
 
-const fetchUserReaction = async (proposalId: string, token: string): Promise<UserReactionResponse> => {
-  const response = await fetch(`/api/like/user?proposalId=${proposalId}`, {
-    headers: { Authorization: `Bearer ${token}` },
-  })
+// The auth-token cookie can be gone or expired while the persisted session still looks valid.
+const forgetSessionIfRejected = (response: Response) => {
+  if (response.status === 401) {
+    useSiweStore.getState().clearSession()
+  }
+}
+
+const fetchUserReaction = async (proposalId: string): Promise<UserReactionResponse> => {
+  const response = await fetch(`/api/like/user?proposalId=${proposalId}`)
+  forgetSessionIfRejected(response)
   if (!response.ok) throw new Error('Failed to fetch user reaction')
   return response.json()
 }
@@ -40,7 +46,7 @@ const fetchUserReaction = async (proposalId: string, token: string): Promise<Use
  * useLike — manages the like/heart state for a proposal.
  *
  * Handles the full lifecycle on a single click:
- * 1. Triggers SIWE sign-in when needed (wallet connected but no JWT)
+ * 1. Triggers SIWE sign-in when needed (wallet connected but no session)
  * 2. Fetches user's existing reaction before deciding to like or show existing state
  * 3. Sends the like/unlike request with optimistic UI updates
  * 4. Rolls back on failure
@@ -48,13 +54,14 @@ const fetchUserReaction = async (proposalId: string, token: string): Promise<Use
  * 6. Guards against concurrent toggle requests
  *
  * Background effects:
- * - Syncs user reaction from server when JWT becomes available (e.g. page load with persisted JWT)
+ * - Syncs user reaction from server when a session becomes available (e.g. page load with a persisted session)
  * - Keeps local count in sync with server count on refetch
  * - Clears liked state on disconnect/logout so heart shows unfilled
  */
-export const useLike = (proposalId: string, isConnected: boolean, signIn: () => Promise<string | null>) => {
+export const useLike = (proposalId: string, isConnected: boolean, signIn: () => Promise<boolean>) => {
   const queryClient = useQueryClient()
-  const jwtToken = useSiweStore(state => state.jwtToken)
+  const isAuthenticated = useSiweStore(selectIsAuthenticated)
+  const userAddress = useSiweStore(selectUserAddress)
   const [isToggling, setIsToggling] = useState(false)
   const [count, setCount] = useState(0)
   const [lastLikedState, setLastLikedState] = useState<boolean | null>(null)
@@ -76,9 +83,9 @@ export const useLike = (proposalId: string, isConnected: boolean, signIn: () => 
 
   // User's own reaction query (only when authenticated)
   const { data: userReactionData } = useQuery<UserReactionResponse>({
-    queryKey: userReactionQueryKey(proposalId, jwtToken ?? ''),
-    queryFn: () => fetchUserReaction(proposalId, jwtToken!),
-    enabled: !!proposalId && !!jwtToken,
+    queryKey: userReactionQueryKey(proposalId, userAddress),
+    queryFn: () => fetchUserReaction(proposalId),
+    enabled: !!proposalId && isAuthenticated,
   })
 
   // Sync server-side user reaction into local state (only when uninitialized)
@@ -96,35 +103,35 @@ export const useLike = (proposalId: string, isConnected: boolean, signIn: () => 
 
   // Reset liked state on disconnect or logout
   useEffect(() => {
-    if (!jwtToken || !isConnected) {
+    if (!isAuthenticated || !isConnected) {
       setLastLikedState(null)
     }
-  }, [jwtToken, isConnected])
+  }, [isAuthenticated, isConnected])
 
   const toggleLike = useCallback(async () => {
     if (isToggling) return
     setIsToggling(true)
 
     try {
-      // Phase 1: Ensure we have a valid JWT
-      let token = useSiweStore.getState().jwtToken
-      if (!token) {
-        token = await signInRef.current()
-        if (!token) return // Sign-in failed or user rejected
+      // Phase 1: Ensure we have a session
+      if (!selectIsAuthenticated(useSiweStore.getState())) {
+        const signedIn = await signInRef.current()
+        if (!signedIn) return // Sign-in failed or user rejected
       }
+      const userAddress = selectUserAddress(useSiweStore.getState())
 
       // Phase 2: If like status is unknown, fetch it before deciding
       let currentLikedState = lastLikedState
       if (currentLikedState === null) {
         try {
-          const reactionData = await fetchUserReaction(proposalId, token)
+          const reactionData = await fetchUserReaction(proposalId)
           const alreadyLiked = reactionData.success && reactionData.reactions.includes('heart')
           if (alreadyLiked) {
             // Already liked — sync UI without sending another like request
             setLastLikedState(true)
             queryClient.invalidateQueries({ queryKey: likeQueryKey(proposalId) })
             queryClient.invalidateQueries({
-              queryKey: userReactionQueryKey(proposalId, token),
+              queryKey: userReactionQueryKey(proposalId, userAddress),
             })
             return
           }
@@ -146,10 +153,10 @@ export const useLike = (proposalId: string, isConnected: boolean, signIn: () => 
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ proposalId, reaction: 'heart' }),
         })
+        forgetSessionIfRejected(response)
 
         const result: ToggleLikeResponse = await response.json()
 
@@ -164,7 +171,7 @@ export const useLike = (proposalId: string, isConnected: boolean, signIn: () => 
         setLastLikedState(result.liked)
         queryClient.invalidateQueries({ queryKey: likeQueryKey(proposalId) })
         queryClient.invalidateQueries({
-          queryKey: userReactionQueryKey(proposalId, token),
+          queryKey: userReactionQueryKey(proposalId, userAddress),
         })
       } catch {
         // Network error — rollback optimistic update

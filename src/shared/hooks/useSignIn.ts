@@ -1,11 +1,12 @@
 import posthog from 'posthog-js'
 import { useAccount, useSignMessage } from 'wagmi'
 
-import type { RequestChallengeResult, VerifySignatureResult } from '@/lib/auth/actions'
+import type { RequestChallengeResult } from '@/lib/auth/actions'
+import type { SiweSession } from '@/lib/auth/jwt'
 import { selectIsAuthenticated, useSiweStore } from '@/lib/auth/siweStore'
 
 interface UseSignInReturn {
-  signIn: () => Promise<string | null>
+  signIn: () => Promise<boolean>
   isLoading: boolean
   error: Error | null
   isAuthenticated: boolean
@@ -24,8 +25,7 @@ interface UseSignInReturn {
  * const { signIn, isLoading, error, isAuthenticated, signOut } = useSignIn()
  *
  * const handleLogin = async () => {
- *   const token = await signIn()
- *   if (token) {
+ *   if (await signIn()) {
  *     console.log('Logged in successfully!')
  *   }
  * }
@@ -36,15 +36,15 @@ export function useSignIn(): UseSignInReturn {
   const { signMessageAsync, isPending } = useSignMessage()
 
   // Get state and actions from Zustand store
-  const { error, isLoading: storeLoading, setToken, setLoading, setError, signOut } = useSiweStore()
+  const { error, isLoading: storeLoading, setSession, setLoading, setError, signOut } = useSiweStore()
 
-  // Derive isAuthenticated from jwtToken
+  // Derive isAuthenticated from the session's expiry
   const isAuthenticated = useSiweStore(selectIsAuthenticated)
 
-  const signIn = async (): Promise<string | null> => {
+  const signIn = async (): Promise<boolean> => {
     if (!isConnected || !address) {
       setError(new Error('Wallet not connected'))
-      return null
+      return false
     }
 
     try {
@@ -68,7 +68,7 @@ export function useSignIn(): UseSignInReturn {
       // Sign the server-provided message with the wallet
       const signature = await signMessageAsync({ message })
 
-      // Verify signature with server and get JWT token
+      // Verify the signature; the server keeps the JWT in an HTTP-only cookie
       const loginRes = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -82,7 +82,7 @@ export function useSignIn(): UseSignInReturn {
         throw new Error(error || 'Login failed')
       }
 
-      const { token: jwtToken }: VerifySignatureResult = await loginRes.json()
+      const session: SiweSession = await loginRes.json()
 
       // Mark the user as verified in PostHog. The wallet is already the distinct ID
       // (identified on connect in PostHogWalletSync), so we only set the verification
@@ -90,14 +90,13 @@ export function useSignIn(): UseSignInReturn {
       posthog.setPersonProperties({ is_verified: true }, { first_verified_at: new Date().toISOString() })
       posthog.register({ auth_status: 'verified' })
 
-      // Store jwtToken in Zustand store (which also updates localStorage)
-      setToken(jwtToken)
+      setSession(session)
 
-      return jwtToken
+      return true
     } catch (err) {
       const error = err instanceof Error ? err : new Error('Sign in failed')
       setError(error)
-      return null
+      return false
     } finally {
       setLoading(false)
     }
