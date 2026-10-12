@@ -26,8 +26,8 @@ export interface EligibilityBannerContentProps {
 /**
  * Presentational eligibility banner for No KYB and KYB Rejected states.
  * Renders section header, copy, primary CTA linking to KYB portal, and secondary status text.
- * Caller wraps in `StackableBanner` (e.g. `BtcVaultEligibilityAndDepositCard`) for gradient +
- * top-left `DecorativeSquares`; this component does not render those. No data fetching.
+ * Caller wraps in `StackableBanner` (e.g. `BtcVaultEligibilityAndDepositCard`) for the gradient;
+ * this component does not render it. No data fetching.
  */
 export function EligibilityBannerContent({ variant, rejectionReason }: EligibilityBannerContentProps) {
   const rejectionMessage = rejectionReason

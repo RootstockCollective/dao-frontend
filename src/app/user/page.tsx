@@ -51,7 +51,7 @@ export default function User() {
       <CommunitiesSection
         heroComponentConfig={{
           className: 'mt-2',
-          imageSrc: '/images/hero/home-hero-bottom.png',
+          imageSrc: '/images/hero/home-hero-bottom.webp',
           title: 'BE PART OF THE COMMUNITIES',
           subtitle: 'CURATED BY THE COLLECTIVE',
           items: [

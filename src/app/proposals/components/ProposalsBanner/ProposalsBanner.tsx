@@ -13,7 +13,6 @@ import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWor
 import { CreateProposalFlow } from '../CreateProposalFlow'
 import { DiscourseLink } from '../DiscourseLink'
 
-const BANNER_IMAGE_SRC = '/images/proposals-banner-bg.webp'
 const EMPTY_VALUE = '-'
 
 const BannerMetric = ({ title, children }: CommonComponentProps & { title: string }) => (
@@ -53,7 +52,6 @@ export const ProposalsBanner = ({ className, fallbackCounts }: ProposalsBannerPr
     <PageBanner
       dataTestId="ProposalsBanner"
       dismissible
-      imageSrc={BANNER_IMAGE_SRC}
       title="Proposals"
       description={
         <Paragraph>

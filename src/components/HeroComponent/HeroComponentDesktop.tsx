@@ -5,8 +5,8 @@ import { ReactNode, useMemo } from 'react'
 import { cn } from '@/lib/utils'
 import { useImagePreloader } from '@/shared/hooks/useImagePreloader'
 
+import { ListBullet } from '../ListBullet'
 import { Header, Paragraph, Span } from '../Typography'
-import { BulletPoint } from './BulletPoint'
 import { HeroComponentProps } from './types'
 
 /**
@@ -29,7 +29,9 @@ export const HeroComponentDesktop = ({
   const { isLoaded } = useImagePreloader(imageSources)
 
   return (
-    <div className={cn('flex flex-row bg-text-80 rounded-sm p-4 gap-6', className)} data-testid={dataTestId}>
+    // gap-0 on purpose: the artwork ends in a transparent strip (holding its pixel mark) that
+    // spaces it from the copy. An image without that strip needs a gap here.
+    <div className={cn('flex flex-row bg-text-80 rounded-sm p-4 gap-0', className)} data-testid={dataTestId}>
       <div className="relative w-1/2 min-h-0">
         {isLoaded ? (
           <Image
@@ -65,7 +67,7 @@ export const HeroComponentDesktop = ({
             <ul className="list-none">
               {items.map((item: ReactNode, idx: number) => (
                 <li key={idx} className="flex items-start gap-2 text-base text-bg-100">
-                  <BulletPoint />
+                  <ListBullet className="border-bg-80" />
                   {typeof item === 'string' ? <Paragraph className="text-bg-100">{item}</Paragraph> : item}
                 </li>
               ))}

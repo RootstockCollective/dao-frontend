@@ -1,30 +1,9 @@
 import { NEED_RBTC, NEED_RBTC_RIF, NEED_RIF, NEED_STRIF } from '@/app/user/IntroModal/hooks/useRequiredTokens'
 import { TokenImage } from '@/components/TokenImage'
-import { RBTC, RIF } from '@/lib/constants'
+import { RBTC, RIF, STAKE_RIF_ROUTE } from '@/lib/constants'
 import { currentLinks } from '@/lib/links'
 
 import { BannerConfigMap } from './types'
-
-const COINS_BANNER = '/images/notification-back.webp'
-
-export interface StackArtwork {
-  readonly backgroundSrc?: string
-  readonly backgroundPosition?: string
-  readonly scrim?: string
-}
-
-export const STACK_ARTWORK: ReadonlyArray<StackArtwork> = [
-  {},
-  {
-    backgroundSrc: COINS_BANNER,
-    // Keeps the stacked coins in frame rather than the empty table to their right.
-    backgroundPosition: '70% 50%',
-  },
-]
-
-/** Artwork for the card at `position` in the stack, cycling through STACK_ARTWORK. */
-export const getStackArtwork = (position: number): StackArtwork =>
-  STACK_ARTWORK[position % STACK_ARTWORK.length]
 
 // Static token images - created once outside component to avoid re-renders.
 // Sized to the 14px notification titles they sit in.
@@ -106,7 +85,7 @@ export const BANNER_CONFIGS: BannerConfigMap = {
     buttonText: 'Stake RIF',
     description: 'Use RIF to stake and RBTC to pay for transactions fees.',
     action: {
-      url: router => router?.push(`/user?action=stake&reopen=${Date.now()}`),
+      url: router => router?.push(`${STAKE_RIF_ROUTE}&reopen=${Date.now()}`),
       external: false,
     },
   },

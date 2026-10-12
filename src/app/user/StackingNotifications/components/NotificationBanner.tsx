@@ -1,20 +1,16 @@
 'use client'
 
-import Image from 'next/image'
 import { ReactNode } from 'react'
 
 import { Button } from '@/components/Button'
 import { DismissButton } from '@/components/DismissButton'
-import { BANNER_CTA_CLASSES, BANNER_MOBILE_OVERLAY } from '@/components/PageBanner'
+import { BANNER_CTA_CLASSES } from '@/components/PageBanner'
 import { cn } from '@/lib/utils'
 
 const SURFACE = 'var(--color-warm-surface)'
 const EMBER_DEEP = 'var(--color-ember-deep)'
 const EMBER = 'var(--color-ember)'
 const EMBER_ASH = 'var(--color-ember-ash)'
-
-/** The card surface at `percent` opacity, for the stops of the scrim over the artwork. */
-const surfaceAt = (percent: number) => `color-mix(in srgb, ${SURFACE} ${percent}%, transparent)`
 
 /**
  * Stops of each streak, as % of the width: where the plain surface ends, the deep ember,
@@ -31,15 +27,10 @@ const EMBER_STREAKS = (
     `linear-gradient(90deg, ${SURFACE} 0%, ${SURFACE} ${solidUntil}%, ${EMBER_DEEP} ${deep}%, ${EMBER} ${peak}%, ${EMBER_DEEP} ${fade}%, ${EMBER_ASH} 100%)`,
 )
 
-export const NOTIFICATION_ARTWORK_SCRIM = `linear-gradient(90deg, ${SURFACE} 0%, ${SURFACE} 32%, ${surfaceAt(86)} 52%, ${surfaceAt(60)} 74%, ${surfaceAt(72)} 100%)`
-
 export interface NotificationBannerProps {
   title: ReactNode
   description: ReactNode
   onDismiss: () => void
-  backgroundSrc?: string
-  backgroundPosition?: string
-  scrim?: string
   buttonText?: string
   buttonOnClick?: () => void
   rightContent?: ReactNode
@@ -50,9 +41,6 @@ export const NotificationBanner = ({
   title,
   description,
   onDismiss,
-  backgroundSrc,
-  backgroundPosition = '70% 50%',
-  scrim = NOTIFICATION_ARTWORK_SCRIM,
   buttonText,
   buttonOnClick,
   rightContent,
@@ -65,27 +53,11 @@ export const NotificationBanner = ({
       className,
     )}
   >
-    {backgroundSrc ? (
-      <>
-        <Image
-          src={backgroundSrc}
-          alt=""
-          aria-hidden="true"
-          fill
-          sizes="(min-width: 768px) 90vw, 100vw"
-          className="object-cover"
-          style={{ objectPosition: backgroundPosition }}
-        />
-        <div className="absolute inset-0 md:hidden" style={{ background: BANNER_MOBILE_OVERLAY }} />
-        <div className="absolute inset-0 hidden md:block" style={{ background: scrim }} />
-      </>
-    ) : (
-      <div aria-hidden="true" className="absolute inset-0 flex flex-col" data-testid="NotificationStreaks">
-        {EMBER_STREAKS.map(background => (
-          <span key={background} className="flex-1" style={{ background }} />
-        ))}
-      </div>
-    )}
+    <div aria-hidden="true" className="absolute inset-0 flex flex-col" data-testid="NotificationStreaks">
+      {EMBER_STREAKS.map(background => (
+        <span key={background} className="flex-1" style={{ background }} />
+      ))}
+    </div>
 
     <div className="z-base relative flex min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-1 py-2.5 pl-5 pr-2.5 md:flex-nowrap">
       <span className="font-rootstock-sans text-banner-title shrink-0 whitespace-nowrap text-sm font-bold">

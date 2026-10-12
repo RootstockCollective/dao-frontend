@@ -8,7 +8,7 @@ import { useReadContracts } from 'wagmi'
 import { ProposalApiResponse } from '@/app/proposals/shared/types'
 import { GovernorAbi } from '@/lib/abis/Governor'
 import Big from '@/lib/big'
-import { AVERAGE_BLOCKTIME } from '@/lib/constants'
+import { AVERAGE_BLOCKTIME, ONE_DAY_IN_MS } from '@/lib/constants'
 import { GOVERNOR_ADDRESS } from '@/lib/constants'
 import { ProposalState } from '@/shared/types'
 
@@ -251,7 +251,7 @@ export function useGetProposalsWithGraph() {
     contracts: quorumContracts,
     query: {
       enabled: proposalsFromNode.length > 0,
-      staleTime: 24 * 60 * 60 * 1000,
+      staleTime: ONE_DAY_IN_MS,
     },
   })
 

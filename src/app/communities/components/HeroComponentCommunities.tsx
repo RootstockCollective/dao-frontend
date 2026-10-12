@@ -5,7 +5,7 @@ export interface HeroCommuntiesSectionProps extends Partial<HeroComponentProps> 
   shouldShowLearnMore?: boolean
 }
 export const HeroCommunitiesComponent = ({
-  imageSrc = '/images/hero/community-banner.png',
+  imageSrc = '/images/hero/home-hero-bottom.webp',
   title = 'SHOW YOUR TRUE COLORS.',
   subtitle = 'CURATED BY THE COLLECTIVE',
   items,

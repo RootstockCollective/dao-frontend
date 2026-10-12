@@ -66,10 +66,6 @@ vi.mock('@/shared/hooks/useIsDesktop', () => ({
   useIsDesktop: () => true,
 }))
 
-vi.mock('@/app/backing/components/DecorativeSquares', () => ({
-  DecorativeSquares: () => null,
-}))
-
 vi.mock('./components/capital-allocation/CapitalAllocationSection', () => ({
   CapitalAllocationSection: () => null,
 }))

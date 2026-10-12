@@ -11,7 +11,7 @@ import { WhyBecomeABuilder } from './components/WhyBecomeABuilder'
 const NAME = 'Builders'
 export const BuildersPage = () => {
   return (
-    <div data-testid={NAME} className="flex flex-col w-full h-full pt-[0.13rem] rounded-sm">
+    <div data-testid={NAME} className="flex flex-col w-full h-full rounded-sm">
       <div data-testid="info" className="flex flex-col w-full gap-2">
         <BuildersBanner />
         <MetricsContainer className="bg-v3-bg-accent-80">
