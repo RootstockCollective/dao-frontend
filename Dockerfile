@@ -1,21 +1,12 @@
-# ---------- shared base with native deps ----------
-FROM node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03 AS base
-
-# Install required dependencies for Trezor (and possibly Ledger)
-RUN apk add --no-cache \
-    python3 \
-    make \
-    g++ \
-    eudev-dev \
-    libusb-dev \
-    linux-headers
+# ---------- shared base ----------
+FROM node:24.13.1-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03 AS base
 
 WORKDIR /app
 
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Copy Prisma schema so postinstall hook (prisma generate) can find it
+# Copy Prisma schema so prisma generate can find it
 COPY prisma/schema.prisma ./prisma/schema.prisma
 
 # Skip cypress install
@@ -24,8 +15,8 @@ ENV CYPRESS_INSTALL_BINARY 0
 # ---------- stage 1: full install + build ----------
 FROM base AS builder
 
-# Install all dependencies (including devDependencies for the build)
-RUN npm ci --verbose
+# Install all dependencies (including devDependencies for the build) without running their install scripts
+RUN npm ci --ignore-scripts --verbose && node_modules/.bin/prisma generate
 
 # Copy the rest of the application code
 COPY . .
@@ -58,12 +49,11 @@ RUN --mount=type=cache,target=/app/.next/cache \
 # ---------- stage 2: production-only deps (runs in parallel with build) ----------
 FROM base AS prod-deps
 
-# --ignore-scripts skips the postinstall (prisma generate) which already
-# runs in the builder stage; the generated client is copied from there.
+# The generated Prisma client and engines are copied from the builder stage.
 RUN npm ci --omit=dev --ignore-scripts --verbose
 
 # ---------- stage 3: runner ----------
-FROM node:24-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03 AS runner
+FROM node:24.13.1-alpine@sha256:4f696fbf39f383c1e486030ba6b289a5d9af541642fc78ab197e584a113b9c03 AS runner
 
 WORKDIR /app
 
@@ -76,16 +66,16 @@ COPY --from=builder /app/.env.local ./.env.local
 # Copy production-only node_modules from prod-deps stage (built in parallel)
 COPY --from=prod-deps /app/node_modules ./node_modules
 
-# Copy the generated Prisma Client (created by postinstall in the builder stage).
-# prod-deps ran with --ignore-scripts, so .prisma/client is missing from its node_modules.
+# Copy the generated Prisma Client and the engines prisma generate fetched in the builder stage,
+# so prisma migrate deploy does not download them when the container starts.
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma/engines ./node_modules/@prisma/engines
 
 # Copy Prisma schema and migrations
 COPY --from=builder /app/prisma ./prisma
 
-# Download AWS RDS CA certificate
-RUN apk add --no-cache wget && \
-    wget -O rds-ca-cert.pem https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
+# AWS RDS CA bundle, from https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
+COPY certs/rds-global-bundle.pem ./rds-ca-cert.pem
 
 # Enable source maps so stack traces reference original TypeScript files
 ENV NODE_OPTIONS="--enable-source-maps"
@@ -94,4 +84,4 @@ ENV NODE_OPTIONS="--enable-source-maps"
 EXPOSE 3000
 
 # Run Prisma migrations and start the Next.js application
-CMD ["sh", "-c", "npx prisma migrate deploy; npm start"]
+CMD ["sh", "-c", "node_modules/.bin/prisma migrate deploy; npm start"]
