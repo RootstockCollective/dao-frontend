@@ -1,11 +1,8 @@
 import Big from 'big.js'
 import { ReactNode } from 'react'
 
-import {
-  useGetABIFromChain,
-  useGetMetricsAbiWithGraph,
-  useGetMetricsAbiWithStateSync,
-} from '@/app/collective-rewards/shared'
+import { useGetABIFromChain, useGetMetricsAbiWithStateSync } from '@/app/collective-rewards/shared'
+import { useGetMetricsAbiWithGraph } from '@/app/collective-rewards/shared/hooks/useGetABIWithGraph'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { withDataFallback } from '@/app/shared/components/Fallback/'
 import { useFeatureFlags } from '@/shared/context/FeatureFlag'
