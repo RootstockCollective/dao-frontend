@@ -90,45 +90,6 @@ export interface StateWithUpdate<T> {
   onChange: Dispatch<SetStateAction<T>>
 }
 
-export interface BackingPoint {
-  day: Date | number | string
-  backing: bigint
-  backingWei?: bigint
-}
-
-export interface RewardsPoint {
-  day: Date | number | string
-  rewards: {
-    rif: number | bigint
-    rbtc: number | bigint
-    usd?: number
-  }
-}
-
-export interface CycleWindow {
-  label: string
-  start: Date
-  end: Date
-  cycleDuration: number
-  cycleNumber?: number
-}
-
-interface ChartDataPoint extends BackingPoint {
-  rewardsUSD?: bigint
-  rewardsRif?: bigint
-  rewardsRbtc?: bigint
-  cycle?: number | null
-  dayInCycle?: string | null
-}
-
-export interface TooltipPayload {
-  payload: ChartDataPoint
-  value: number
-  name: string
-  color: string
-  dataKey: string
-}
-
 export type CycleStatus = 'running' | 'settled'
 
 /** One reward token's contribution to a cycle's distribution. */
