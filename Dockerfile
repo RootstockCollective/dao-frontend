@@ -74,8 +74,8 @@ COPY --from=builder /app/node_modules/@prisma/engines ./node_modules/@prisma/eng
 # Copy Prisma schema and migrations
 COPY --from=builder /app/prisma ./prisma
 
-# AWS RDS CA bundle, from https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem
-COPY certs/rds-global-bundle.pem ./rds-ca-cert.pem
+# Download AWS RDS CA certificate with Node, so the runner needs no extra packages
+RUN node -e "fetch('https://truststore.pki.rds.amazonaws.com/global/global-bundle.pem').then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text() }).then(pem => require('fs').writeFileSync('rds-ca-cert.pem', pem))"
 
 # Enable source maps so stack traces reference original TypeScript files
 ENV NODE_OPTIONS="--enable-source-maps"
