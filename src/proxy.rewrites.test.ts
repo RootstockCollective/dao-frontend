@@ -70,10 +70,14 @@ describe('rewrites to third-party hosts', () => {
     expect(externalRewrites.some(rewrite => rewrite.match(path))).toBe(false)
   })
 
-  it.each(['/ingest/static/array.js', '/ingest/static/recorder.js', '/ingest/array/phc_test/config.js'])(
-    'does not proxy the PostHog script %s',
-    path => {
-      expect(externalRewrites.some(rewrite => rewrite.match(path))).toBe(false)
-    },
-  )
+  it.each([
+    '/ingest/static/array.js',
+    '/ingest/static/recorder.js',
+    '/ingest/array/phc_test/config.js',
+    '/ingest/%73tatic/array.js',
+    '/ingest/static%2Farray.js',
+    '/ingest/%61rray/phc_test/config.js',
+  ])('does not proxy the PostHog script %s', path => {
+    expect(externalRewrites.some(rewrite => rewrite.match(path))).toBe(false)
+  })
 })
