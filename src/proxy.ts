@@ -33,6 +33,15 @@ function resolveRateLimitConfig(pathname: string): RouteRateLimitConfig | undefi
   )
 }
 
+// next.config.mjs rewrites these to PostHog and Sentry, which would otherwise receive the browser's cookies.
+const THIRD_PARTY_REWRITE_PATH = /^\/(ingest|monitoring)(\/|$)/
+
+function withoutCookies(request: NextRequest): NextResponse {
+  const headers = new Headers(request.headers)
+  headers.delete('cookie')
+  return NextResponse.next({ request: { headers } })
+}
+
 // Falls back to 127.0.0.1 when no proxy headers are present (local dev, tests).
 // In production the reverse proxy always sets x-forwarded-for / x-real-ip.
 function getClientIp(request: NextRequest): string {
@@ -76,6 +85,10 @@ function withContentSecurityPolicy(request: NextRequest): NextResponse {
 }
 
 export function proxy(request: NextRequest) {
+  if (THIRD_PARTY_REWRITE_PATH.test(request.nextUrl.pathname)) {
+    return withoutCookies(request)
+  }
+
   const { pathname } = request.nextUrl
   if (!pathname.startsWith('/api/')) {
     return withContentSecurityPolicy(request)
@@ -121,6 +134,8 @@ export const config = {
     '/api/auth/:path*',
     '/api/support/:path*',
     '/api/gauges/:path*',
+    '/ingest/:path*',
+    '/monitoring',
     {
       source: '/((?!api/|_next/static|_next/image|ingest|monitoring|images/|fonts/|favicon.ico).*)',
       missing: [
