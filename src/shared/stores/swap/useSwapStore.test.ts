@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { RIF, USDRIF, USDT0 } from '@/lib/constants'
+import { RIF, USDRIF, USDT0, USDT0_ADDRESS } from '@/lib/constants'
+import type { PermitSingle } from '@/lib/swap/permit2'
 
 import { useSwapStore } from './useSwapStore'
 
@@ -61,5 +62,19 @@ describe('useSwapStore token selection', () => {
     const s = useSwapStore.getState()
     expect(s.typedAmount).toBe('')
     expect(s.swapError).toBeNull()
+  })
+
+  it.each([
+    ['setTokenIn', () => useSwapStore.getState().setTokenIn(USDRIF)],
+    ['setTokenOut', () => useSwapStore.getState().setTokenOut(RIF)],
+    ['toggleTokens', () => useSwapStore.getState().toggleTokens()],
+  ])('%s drops the permit signed for the previous token', (_name, changeTokens) => {
+    useSwapStore.setState({ tokenIn: USDT0, tokenOut: USDRIF })
+    useSwapStore.getState().setPermitData({ details: { token: USDT0_ADDRESS } } as PermitSingle, '0xsig')
+
+    changeTokens()
+
+    expect(useSwapStore.getState().permit).toBeNull()
+    expect(useSwapStore.getState().permitSignature).toBeNull()
   })
 })
