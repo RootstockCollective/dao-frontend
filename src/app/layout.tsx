@@ -1,6 +1,5 @@
 import './globals.css'
 
-import { GoogleTagManager } from '@next/third-parties/google'
 import type { Metadata } from 'next'
 import { Open_Sans } from 'next/font/google'
 import { headers } from 'next/headers'
@@ -10,7 +9,6 @@ import { cookieToInitialState } from 'wagmi'
 
 import { MainContainer } from '@/components/MainContainer'
 import { wagmiAdapterConfig } from '@/config'
-import { GOOGLE_TAG_ID } from '@/lib/constants'
 
 import { ContextProviders } from './providers'
 
@@ -44,18 +42,7 @@ export default async function RootLayout({ children }: Readonly<Props>) {
           strategy="beforeInteractive"
         />
       )}
-      <GoogleTagManager gtmId={`${GOOGLE_TAG_ID}`} />
       <body className={`${openSans.variable} font-sans`}>
-        {/* Google Tag Manager (noscript) */}
-        <noscript>
-          <iframe
-            src={`https://www.googletagmanager.com/ns.html?id=${GOOGLE_TAG_ID}`}
-            height="0"
-            width="0"
-            style={{ display: 'none', visibility: 'hidden' }}
-          ></iframe>
-        </noscript>
-        {/* End Google Tag Manager (noscript) */}
         <ContextProviders initialState={initialState}>
           <MainContainer>{children}</MainContainer>
         </ContextProviders>

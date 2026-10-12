@@ -620,21 +620,6 @@ RNS is the Rootstock equivalent of ENS (Ethereum Name Service). It maps human-re
 
 ---
 
-### Google Tag Manager (Analytics)
-
-GTM is Google's tag management system for deploying analytics and marketing tags without code changes.
-
-**How it's used:**
-- Initialized server-side in the root layout (`src/app/layout.tsx`) via `@next/third-parties/google`.
-- Includes a `<noscript>` iframe fallback for tracking users without JavaScript.
-- Tracks page views, user interactions, and custom events across the dApp.
-
-**Config:** GTM ID `GTM-PTL6VZMT`
-
-**Key files:** `src/app/layout.tsx`, `src/lib/constants.ts`
-
----
-
 ### PostgreSQL — State Sync Database
 
 A PostgreSQL database that stores indexed blockchain state data, providing faster queries than direct RPC calls or The Graph for frequently accessed on-chain data.
@@ -758,7 +743,7 @@ The app links out to several external services for user-facing actions that happ
 
 | File | Purpose |
 |------|---------|
-| `src/app/layout.tsx` | Root layout with providers + GTM |
+| `src/app/layout.tsx` | Root layout with providers |
 | `src/app/providers/ContextProviders.tsx` | All React context providers |
 | `src/config/config.ts` | Wagmi/Viem wallet + chain config |
 | `src/lib/constants.ts` | Global constants, token addresses, chain IDs |
