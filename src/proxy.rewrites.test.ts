@@ -30,8 +30,7 @@ const { getMiddlewareMatchers } = require('next/dist/build/analysis/get-page-sta
 const SAMPLE_PATHS = [
   '/ingest/e/',
   '/ingest/flags/',
-  '/ingest/static/array.js',
-  '/ingest/array/phc_test/config.js',
+  '/ingest/array/phc_test/config',
   '/monitoring',
   '/monitoring/',
 ]
@@ -70,4 +69,11 @@ describe('rewrites to third-party hosts', () => {
   it.each(SAMPLE_PATHS.map(path => path.toUpperCase()))('does not rewrite %s', path => {
     expect(externalRewrites.some(rewrite => rewrite.match(path))).toBe(false)
   })
+
+  it.each(['/ingest/static/array.js', '/ingest/static/recorder.js', '/ingest/array/phc_test/config.js'])(
+    'does not proxy the PostHog script %s',
+    path => {
+      expect(externalRewrites.some(rewrite => rewrite.match(path))).toBe(false)
+    },
+  )
 })
