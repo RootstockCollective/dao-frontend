@@ -1,4 +1,4 @@
-import { HeaderTitle, Paragraph } from '@/components/Typography'
+import { Paragraph } from '@/components/Typography'
 
 export const disclaimerModalText = {
   modalTitle: 'DISCLAIMER',
@@ -42,17 +42,3 @@ export const disclaimerModalText = {
 
 export const onRampDisclaimerText =
   'By clicking the link, you agree to be redirected to a third-party website to access third-party services.'
-
-// Define route patterns and their components
-export const routePatterns = [
-  //  NFT community pages don't have headers according to the design
-  { pattern: /^\/communities\/nft\//, component: null },
-  // These pages render their own title inside their page banner
-  { pattern: /^\/communities/, component: null },
-  { pattern: /^\/proposals$/, component: null },
-  { pattern: /^\/delegate$/, component: null },
-  { pattern: /^\/treasury$/, component: null },
-  { pattern: /^\/vault$/, component: <HeaderTitle variant="h1">USD VAULT</HeaderTitle> },
-  { pattern: /^\/btc-vault$/, component: <HeaderTitle variant="h1">BTC VAULT</HeaderTitle> },
-  // Add more patterns as needed
-]

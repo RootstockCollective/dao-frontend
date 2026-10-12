@@ -5,7 +5,7 @@ import { useEffect } from 'react'
 import { useAccount } from 'wagmi'
 
 import { LoadingSpinner } from '@/components/LoadingSpinner'
-import { Header } from '@/components/Typography'
+import { PageTitle } from '@/components/PageBanner'
 import { usePermissionsManager } from '@/shared/hooks/contracts'
 
 import { RbtcVaultMetricsSection } from './components'
@@ -30,9 +30,7 @@ export const FundManagerPage = () => {
 
   return (
     <div data-testid={NAME} className="flex flex-col gap-10">
-      <Header caps variant="h1">
-        {NAME}
-      </Header>
+      <PageTitle>{NAME}</PageTitle>
 
       <RbtcVaultMetricsSection />
       <TabsSection />

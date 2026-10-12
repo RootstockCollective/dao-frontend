@@ -27,8 +27,40 @@ const BAND_STOPS: string[][] = [
   [INK, AMBER, RIF_BLUE, EMBER],
 ]
 
+export type MoltenTone = 'default' | 'dark'
+
+interface ToneStyle {
+  bandStops: string[][]
+  bandAlpha: number
+  /** INK laid over the finished bands, as an alpha; 0 leaves them as drawn. */
+  veil: number
+  grainClassName: string
+  glowClassName: string
+}
+
+const TONES: Record<MoltenTone, ToneStyle> = {
+  default: {
+    bandStops: BAND_STOPS,
+    bandAlpha: 0.5,
+    veil: 0,
+    grainClassName: 'opacity-[0.34]',
+    glowClassName:
+      'bg-[radial-gradient(58%_46%_at_50%_50%,rgba(255,214,168,0.18)_0%,rgba(255,214,168,0)_72%)]',
+  },
+  // Behind page copy: no pastel highlights, and the glow moves right, away from the title.
+  dark: {
+    bandStops: BAND_STOPS.map(stops =>
+      stops.map(colour => (colour === CREAM ? AMBER : colour === LAVENDER ? RIF_BLUE : colour)),
+    ),
+    bandAlpha: 0.3,
+    veil: 0.35,
+    grainClassName: 'opacity-[0.16]',
+    glowClassName:
+      'bg-[radial-gradient(50%_70%_at_78%_50%,rgba(255,214,168,0.08)_0%,rgba(255,214,168,0)_72%)]',
+  },
+}
+
 const SEED = 42
-const BAND_ALPHA = 0.5
 const GRAIN_SEED = 7
 const CANVAS_SIZE = 320
 const GRAIN_TILE = 168
@@ -60,11 +92,11 @@ export const createNoiseRandom = (seed: number) => () => {
   return ((t ^ (t >>> 14)) >>> 0) / 4294967296
 }
 
-export const createBands = (height: number): Band[] => {
+export const createBands = (height: number, bandStops: string[][] = BAND_STOPS): Band[] => {
   const random = createRandom(SEED)
 
-  return BAND_STOPS.map((stops, index) => ({
-    y: (index / BAND_STOPS.length) * height + random() * height * 0.03,
+  return bandStops.map((stops, index) => ({
+    y: (index / bandStops.length) * height + random() * height * 0.03,
     thickness: height * (0.13 + random() * 0.16),
     speed: 0.5 + random() * 1.5,
     drift: (random() - 0.5) * height * 0.16,
@@ -129,11 +161,15 @@ export const createBandGradient = (
 
 export interface MoltenBackgroundProps {
   className?: string
+  tone?: MoltenTone
+  /** Off, it draws one still frame: for backgrounds behind content people read. */
+  animated?: boolean
 }
 
-export const MoltenBackground = ({ className }: MoltenBackgroundProps) => {
+export const MoltenBackground = ({ className, tone = 'default', animated = true }: MoltenBackgroundProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const grainRef = useRef<HTMLCanvasElement>(null)
+  const { bandStops, bandAlpha, veil, grainClassName, glowClassName } = TONES[tone]
 
   useEffect(() => {
     const grain = grainRef.current
@@ -146,7 +182,7 @@ export const MoltenBackground = ({ className }: MoltenBackgroundProps) => {
     if (!canvas || !context) return
 
     const { width, height } = canvas
-    const bands = createBands(height)
+    const bands = createBands(height, bandStops)
     const motionQuery = window.matchMedia?.('(prefers-reduced-motion: reduce)')
 
     let frame = 0
@@ -169,7 +205,7 @@ export const MoltenBackground = ({ className }: MoltenBackgroundProps) => {
       context.translate(-width / 2, -height / 2 + Math.sin(time * 0.17) * height * 0.04)
       // Bands add up where they overlap, which is what gives the hot centres.
       context.globalCompositeOperation = 'lighter'
-      context.globalAlpha = BAND_ALPHA
+      context.globalAlpha = bandAlpha
 
       bands.forEach(band => {
         const y = band.y + Math.sin(time * band.wobble + band.phase) * band.drift
@@ -179,6 +215,13 @@ export const MoltenBackground = ({ className }: MoltenBackgroundProps) => {
       })
 
       context.restore()
+
+      if (veil > 0) {
+        context.globalCompositeOperation = 'source-over'
+        context.globalAlpha = veil
+        context.fillStyle = INK
+        context.fillRect(0, 0, width, height)
+      }
     }
 
     const stop = () => {
@@ -201,7 +244,7 @@ export const MoltenBackground = ({ className }: MoltenBackgroundProps) => {
     const start = () => {
       stop()
 
-      if (motionQuery?.matches) {
+      if (!animated || motionQuery?.matches) {
         drawFrame(STILL_AT)
         return
       }
@@ -212,13 +255,15 @@ export const MoltenBackground = ({ className }: MoltenBackgroundProps) => {
     }
 
     start()
+    if (!animated) return
+
     motionQuery?.addEventListener?.('change', start)
 
     return () => {
       stop()
       motionQuery?.removeEventListener?.('change', start)
     }
-  }, [])
+  }, [animated, bandAlpha, bandStops, veil])
 
   return (
     <div aria-hidden="true" className={cn('absolute inset-0 overflow-hidden bg-molten-ink', className)}>
@@ -232,9 +277,9 @@ export const MoltenBackground = ({ className }: MoltenBackgroundProps) => {
         ref={grainRef}
         width={GRAIN_SIZE}
         height={GRAIN_SIZE}
-        className="absolute inset-0 block h-full w-full opacity-[0.34] mix-blend-overlay"
+        className={cn('absolute inset-0 block h-full w-full mix-blend-overlay', grainClassName)}
       />
-      <div className="absolute inset-0 bg-[radial-gradient(58%_46%_at_50%_50%,rgba(255,214,168,0.18)_0%,rgba(255,214,168,0)_72%)]" />
+      <div className={cn('absolute inset-0', glowClassName)} />
       <div className="absolute inset-0 shadow-[inset_0_0_90px_26px_rgba(20,15,12,0.62)]" />
     </div>
   )

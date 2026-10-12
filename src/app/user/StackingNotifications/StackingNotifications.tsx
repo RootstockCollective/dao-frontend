@@ -17,7 +17,6 @@ import {
   getBannerConfigForTokenStatus,
   selectBannerConfigs,
 } from './configs'
-import { getStackArtwork } from './constants'
 import { useGetBuilderState } from './hooks/useGetBuilderState'
 import { useHasAvailableBacking } from './hooks/useHasAvailableForBacking'
 import { BannerConfig } from './types'
@@ -252,23 +251,16 @@ const StackingNotificationsContent = () => {
   // Render the selected banners
   return (
     <div className="mb-3 flex w-full flex-col gap-2" data-testid="StackingNotifications">
-      {/* Walking the whole stack rather than what is left of it keeps every card's looks tied
-          to the place it was given, so dismissing one never restyles the others. */}
-      {bannerConfigsForDisplay.map((config, position) => {
+      {bannerConfigsForDisplay.map(config => {
         if (dismissedIds.includes(config.id)) {
           return null
         }
-
-        const { backgroundSrc, backgroundPosition, scrim } = getStackArtwork(position)
 
         return (
           <NotificationBanner
             key={config.id}
             title={config.title}
             description={config.description}
-            backgroundSrc={backgroundSrc}
-            backgroundPosition={backgroundPosition}
-            scrim={scrim}
             buttonText={config.buttonText}
             buttonOnClick={() => handleActionClick(config, router)}
             rightContent={config.rightContent}

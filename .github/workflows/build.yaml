@@ -65,6 +65,7 @@ jobs:
         env:
           NEXT_TELEMETRY_DISABLED: '1'
           NEXT_PUBLIC_BUILD_ID: ${{ github.sha }}
+          BLOCKSCOUT_API_KEY: ${{ secrets.BLOCKSCOUT_API_KEY }}
         run: |
           cp .env.dev .env.local
           npm run build:turbo

@@ -1,6 +1,7 @@
 import { type Address, SwitchChainError, UserRejectedRequestError } from 'viem'
 import { createConnector } from 'wagmi'
 
+import { ONE_DAY_IN_MS } from '@/lib/constants'
 import { showToast, type ToastAlertOptions } from '@/shared/notification'
 
 interface LedgerConnectorOptions {
@@ -50,7 +51,7 @@ const getStoredConnectionState = (): { account: Address | null; timestamp: numbe
       if (stored) {
         const parsed = JSON.parse(stored)
         // Only consider connections from the last 24 hours
-        if (Date.now() - parsed.timestamp < 24 * 60 * 60 * 1000) {
+        if (Date.now() - parsed.timestamp < ONE_DAY_IN_MS) {
           return parsed
         }
       }

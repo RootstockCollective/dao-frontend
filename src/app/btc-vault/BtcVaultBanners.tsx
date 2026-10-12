@@ -6,11 +6,7 @@ import { useAccount } from 'wagmi'
 import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
 import { Header } from '@/components/Typography'
 
-import {
-  ELIGIBILITY_DEPOSIT_CARD_DEBRIS_CREAM,
-  ELIGIBILITY_DEPOSIT_CARD_DEBRIS_DARK,
-  ELIGIBILITY_DEPOSIT_CARD_GRADIENT,
-} from './components/btcVaultBannerGradients'
+import { ELIGIBILITY_DEPOSIT_CARD_GRADIENT } from './components/btcVaultBannerGradients'
 import { BtcVaultEligibilityAndDepositCard } from './components/BtcVaultEligibilityAndDepositCard'
 import { BtcVaultPrototypeBannerContent } from './components/BtcVaultPrototypeBannerContent'
 import { DepositWindowSection } from './components/DepositWindowSection'
@@ -51,8 +47,6 @@ export const BtcVaultBanners = () => {
         testId="DisclosureBanner"
         background={ELIGIBILITY_DEPOSIT_CARD_GRADIENT}
         mobileBackground={ELIGIBILITY_DEPOSIT_CARD_GRADIENT}
-        decorativeImageColor={ELIGIBILITY_DEPOSIT_CARD_DEBRIS_CREAM}
-        decorativeSecondaryColor={ELIGIBILITY_DEPOSIT_CARD_DEBRIS_DARK}
         className="isolate"
       >
         {sections}
@@ -71,8 +65,6 @@ export const BtcVaultBanners = () => {
           testId="PauseBanner"
           background={PAUSE_BANNER_GRADIENT}
           mobileBackground={PAUSE_BANNER_GRADIENT}
-          decorativeImageColor="#FFF5E1"
-          decorativeSecondaryColor="#171412"
         >
           <PauseBannerContent pauseState={pauseState} />
         </StackableBanner>

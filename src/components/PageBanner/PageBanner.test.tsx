@@ -3,8 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 
 import { PageBanner } from './PageBanner'
 
-const renderBanner = (props = {}) =>
-  render(<PageBanner dismissible title="Treasury" imageSrc="/images/test.webp" {...props} />)
+const renderBanner = (props = {}) => render(<PageBanner dismissible title="Treasury" {...props} />)
 
 describe('PageBanner', () => {
   afterEach(cleanup)
@@ -16,14 +15,12 @@ describe('PageBanner', () => {
     expect(screen.getByTestId('PageBanner')).toBeInTheDocument()
   })
 
-  it('renders the description, the eyebrow and the bottom right slot when given', () => {
+  it('renders the description and the bottom right slot when given', () => {
     renderBanner({
-      eyebrow: 'Build on Rootstock',
       description: 'Some intro copy.',
       bottomRight: <span>See the Whitepaper</span>,
     })
 
-    expect(screen.getByText('Build on Rootstock')).toBeInTheDocument()
     expect(screen.getByText('Some intro copy.')).toBeInTheDocument()
     expect(screen.getByText('See the Whitepaper')).toBeInTheDocument()
   })
@@ -46,8 +43,22 @@ describe('PageBanner', () => {
     expect(screen.getByTestId('PageBanner')).toBeInTheDocument()
   })
 
+  it('keeps the title as a visually hidden heading once dismissed', () => {
+    renderBanner()
+
+    fireEvent.click(screen.getByTestId('DismissBannerButton'))
+
+    expect(screen.getByRole('heading', { level: 1, name: 'Treasury' })).toHaveClass('sr-only')
+  })
+
+  it('shows the decorative squares on every banner', () => {
+    render(<PageBanner title="Holdings" />)
+
+    expect(screen.getByTestId('BannerDecorativeSquares')).toBeInTheDocument()
+  })
+
   it('renders no dismiss button when it is not dismissible', () => {
-    render(<PageBanner title="Holdings" imageSrc="/images/test.webp" />)
+    render(<PageBanner title="Holdings" />)
 
     expect(screen.getByText('Holdings')).toBeInTheDocument()
     expect(screen.queryByTestId('DismissBannerButton')).not.toBeInTheDocument()

@@ -1,6 +1,9 @@
 import { useCallback, useMemo } from 'react'
 import { useAccount } from 'wagmi'
 
+import { getWalletStorageKey, safeStorage } from '@/lib/utils'
+
+// Keep this key and the stored `true` as they are: changing them would ask every holder to accept again
 const VAULT_TERMS_ACCEPTANCE_KEY = 'vault-terms-acceptance'
 
 /**
@@ -9,45 +12,17 @@ const VAULT_TERMS_ACCEPTANCE_KEY = 'vault-terms-acceptance'
  */
 export const useVaultTermsAcceptance = () => {
   const { address } = useAccount()
+  const key = address ? getWalletStorageKey(VAULT_TERMS_ACCEPTANCE_KEY, address) : null
 
-  const getStorageKey = useCallback((walletAddress: string) => {
-    return `${VAULT_TERMS_ACCEPTANCE_KEY}-${walletAddress.toLowerCase()}`
-  }, [])
-
-  const hasAcceptedTerms = useMemo(() => {
-    if (!address) return false
-
-    try {
-      const key = getStorageKey(address)
-      const accepted = localStorage.getItem(key)
-      return accepted === 'true'
-    } catch {
-      // Ignore localStorage errors and return false
-      return false
-    }
-  }, [address, getStorageKey])
+  const hasAcceptedTerms = useMemo(() => (key ? safeStorage.get(key) === true : false), [key])
 
   const acceptTerms = useCallback(() => {
-    if (!address) return
-
-    try {
-      const key = getStorageKey(address)
-      localStorage.setItem(key, 'true')
-    } catch {
-      // Ignore localStorage errors
-    }
-  }, [address, getStorageKey])
+    if (key) safeStorage.set(key, true)
+  }, [key])
 
   const resetTermsAcceptance = useCallback(() => {
-    if (!address) return
-
-    try {
-      const key = getStorageKey(address)
-      localStorage.removeItem(key)
-    } catch {
-      // Ignore localStorage errors
-    }
-  }, [address, getStorageKey])
+    if (key) safeStorage.remove(key)
+  }, [key])
 
   return {
     hasAcceptedTerms,

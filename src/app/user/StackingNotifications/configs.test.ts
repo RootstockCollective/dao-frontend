@@ -7,11 +7,9 @@ import {
   BANNER_CONFIGS,
   CYCLE_ENDED,
   CYCLE_ENDING,
-  getStackArtwork,
   KYC_ONLY,
   NEED_RBTC_AND_RIF_ID,
   NOT_BACKING,
-  STACK_ARTWORK,
   START_BUILDING,
 } from './constants'
 import { BannerConfig } from './types'
@@ -81,17 +79,6 @@ describe('selectBannerConfigs', () => {
     selectBannerConfigs(configs)
 
     expect(ids(configs)).toEqual([KYC_ONLY, CYCLE_ENDED])
-  })
-})
-
-describe('getStackArtwork', () => {
-  it('alternates the artwork down the stack, so neighbouring cards never look the same', () => {
-    const looks = [0, 1, 2, 3, 4].map(getStackArtwork)
-
-    looks.slice(1).forEach((look, index) => {
-      expect(look).not.toBe(looks[index])
-    })
-    expect(looks[STACK_ARTWORK.length]).toBe(looks[0])
   })
 })
 

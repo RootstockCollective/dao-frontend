@@ -6,9 +6,11 @@ import { DelegateContentSection, VotingPowerSection } from '@/app/delegate/secti
 export default function Delegate() {
   return (
     <DelegateContextProvider>
-      <DelegationBanner />
-      <WhyDelegate />
-      <VotingPowerSection />
+      <div className="mb-2 flex flex-col gap-2">
+        <DelegationBanner />
+        <WhyDelegate />
+        <VotingPowerSection />
+      </div>
       <DelegateContentSection />
     </DelegateContextProvider>
   )
