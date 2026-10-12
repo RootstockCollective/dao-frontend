@@ -21,9 +21,17 @@ updates:
       interval: weekly
     cooldown:
       default-days: 10
+    # Node majors need .nvmrc and engines; Postgres majors need a data migration.
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
   - package-ecosystem: docker-compose
     directory: /
     schedule:
       interval: weekly
     cooldown:
       default-days: 10
+    # Node majors need .nvmrc and engines; Postgres majors need a data migration.
+    ignore:
+      - dependency-name: '*'
+        update-types: ['version-update:semver-major']
