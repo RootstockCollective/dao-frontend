@@ -103,7 +103,6 @@ describe('CollectivePossibilities', () => {
 
   afterEach(() => {
     cleanup()
-    // Globals first: a global stubbed under fake timers would otherwise come back as the fake
     vi.unstubAllGlobals()
     vi.useRealTimers()
     vi.restoreAllMocks()

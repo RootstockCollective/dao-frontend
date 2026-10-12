@@ -154,7 +154,6 @@
   html,
   body {
     overflow-x: hidden;
-    /* clip where supported: hidden would stop position: sticky */
     overflow-x: clip;
     max-width: 100vw;
   }

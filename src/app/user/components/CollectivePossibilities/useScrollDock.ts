@@ -72,7 +72,6 @@ export const useScrollDock = ({ bannerRef, tileRef, anchor, isEnabled }: UseScro
     }
 
     const update = () => {
-      // offsetHeight ignores the scale applied below, so progress never feeds on itself
       const height = banner.offsetHeight
       if (height < MIN_SETTLED_HEIGHT) return
 

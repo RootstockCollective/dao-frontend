@@ -31,7 +31,6 @@ export const MotionLogo = ({ className, paused = false }: { className?: string; 
       video.pause()
       return
     }
-    // Autoplay can be refused; the poster stays up then
     Promise.resolve(video.play()).catch(() => {})
   }, [shouldPlay])
 

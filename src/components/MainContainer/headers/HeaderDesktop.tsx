@@ -45,7 +45,6 @@ export function HeaderDesktop({ className, ...props }: HTMLAttributes<HTMLDivEle
           inert={isConnectInert}
         />
       </div>
-      {/* Hangs below the bar: a growing sticky header would push the page and undo the dock */}
       <div ref={setSlot} className="absolute inset-x-0 top-full bg-l-black px-7" />
     </header>
   )
