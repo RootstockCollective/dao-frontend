@@ -35,8 +35,8 @@ const Figure = ({ label, value, sub }: { label: string; value: string; sub: stri
 )
 
 export interface PositionSimulatorProps {
-  /** Annualised backer incentive, as a percentage. */
-  abiPct: number
+  /** Annualised backer incentive, as a percentage. `null` while it loads. */
+  abiPct: number | null
   rifPrice: number
   className?: string
 }
@@ -49,9 +49,11 @@ export interface PositionSimulatorProps {
 export const PositionSimulator = ({ abiPct, rifPrice, className }: PositionSimulatorProps) => {
   const [position, setPosition] = useState(DEFAULT_POSITION)
 
-  const annualRate = Number.isFinite(abiPct) ? abiPct / 100 : 0
-  const annualRif = Big(position).mul(annualRate)
-  const perCycleRif = Big(position).mul(Math.pow(1 + annualRate, 1 / CYCLES_PER_YEAR) - 1)
+  // Without a usable ABI the projections are unknown, not zero.
+  const annualRate = abiPct !== null && Number.isFinite(abiPct) ? abiPct / 100 : null
+  const annualRif = annualRate === null ? null : Big(position).mul(annualRate)
+  const perCycleRif =
+    annualRate === null ? null : Big(position).mul(Math.pow(1 + annualRate, 1 / CYCLES_PER_YEAR) - 1)
 
   return (
     <div
@@ -93,7 +95,7 @@ export const PositionSimulator = ({ abiPct, rifPrice, className }: PositionSimul
 
       <div className="bg-v3-primary rounded-lg px-4 py-3 flex flex-col gap-0.5">
         <Header variant="h3" className="text-v3-text-0">
-          {Number.isFinite(abiPct) ? `${abiPct.toFixed(0)}% ABI` : 'ABI —'}
+          {annualRate === null ? 'ABI —' : `${(annualRate * 100).toFixed(0)}% ABI`}
         </Header>
         <Span variant="body-xs" className="text-v3-text-0/80">
           Estimated
@@ -103,12 +105,12 @@ export const PositionSimulator = ({ abiPct, rifPrice, className }: PositionSimul
       <div className="flex gap-8">
         <Figure
           label="Annual rewards"
-          value={`${formatNumberWithCommas(annualRif.round(0))} ${RIF}`}
-          sub={formatUsdWhole(annualRif.mul(rifPrice))}
+          value={annualRif === null ? '—' : `${formatNumberWithCommas(annualRif.round(0))} ${RIF}`}
+          sub={annualRif === null ? '—' : formatUsdWhole(annualRif.mul(rifPrice))}
         />
         <Figure
           label="Per cycle"
-          value={`${formatNumberWithCommas(perCycleRif.round(0))} ${RIF}`}
+          value={perCycleRif === null ? '—' : `${formatNumberWithCommas(perCycleRif.round(0))} ${RIF}`}
           sub={`${CYCLES_PER_YEAR} cycles a year`}
         />
       </div>

@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react'
 
+import { useBuilderContext } from '@/app/collective-rewards/user/context/BuilderContext'
 import { useGetBuilderEstimatedRewards } from '@/app/shared/hooks/useGetBuilderEstimatedRewards'
 import Big from '@/lib/big'
 import { WeiPerEther } from '@/lib/constants'
@@ -14,6 +15,8 @@ import { RewardsCallToActionContent } from './RewardsCallToActionContent'
 
 export const RewardsCallToAction = ({ className }: { className?: string }) => {
   const { data: estimatedRewards, isLoading, error } = useGetBuilderEstimatedRewards()
+  // The estimates are built from this roster but don't report on it, so an empty one reads as $0.
+  const { isLoading: isLoadingBuilders, error: buildersError } = useBuilderContext()
   const { runningCycle, buildersCount } = useCycleDashboard()
   const { prices } = usePricesContext()
 
@@ -47,7 +50,7 @@ export const RewardsCallToAction = ({ className }: { className?: string }) => {
   )
 
   // The hook returns an empty list until it loads, which would sum to a confident $0.
-  const isUnknown = isLoading || Boolean(error)
+  const isUnknown = isLoading || isLoadingBuilders || Boolean(error ?? buildersError)
 
   return (
     <RewardsCallToActionContent

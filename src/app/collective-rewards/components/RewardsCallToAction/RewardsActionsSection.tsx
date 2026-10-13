@@ -15,8 +15,11 @@ export const RewardsActionsSection = ({ className }: { className?: string }) => 
   return (
     <div className={cn('grid grid-cols-1 lg:grid-cols-2 gap-2 items-start', className)}>
       <AnnualBackerIncentivesLoader
-        render={({ data: abiPct }) => (
-          <PositionSimulator abiPct={abiPct.toNumber()} rifPrice={prices[RIF]?.price ?? 0} />
+        render={({ data: abiPct, isLoading }) => (
+          <PositionSimulator
+            abiPct={isLoading ? null : abiPct.toNumber()}
+            rifPrice={prices[RIF]?.price ?? 0}
+          />
         )}
       />
 

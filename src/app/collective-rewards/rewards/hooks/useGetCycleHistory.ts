@@ -51,7 +51,7 @@ export const useGetCycleHistory = (): UseGetCycleHistoryResult => {
   })
   const {
     data: totalsByToken,
-    isLoading: totalsLoading,
+    isPending: totalsPending,
     error: totalsError,
   } = useGetTotalRewardsDistributed()
 
@@ -77,8 +77,8 @@ export const useGetCycleHistory = (): UseGetCycleHistoryResult => {
    * to an empty array while it loads, and an empty event set would read as a confident $0.
    */
   const paidAllTime = useMemo(
-    () => (totalsLoading || totalsError ? null : getAllTimeRewardsFiat(totalsByToken, prices)),
-    [totalsByToken, totalsLoading, totalsError, prices],
+    () => (totalsPending || totalsError ? null : getAllTimeRewardsFiat(totalsByToken, prices)),
+    [totalsByToken, totalsPending, totalsError, prices],
   )
 
   return {
