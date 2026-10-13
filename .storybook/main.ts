@@ -1,3 +1,5 @@
+import { fileURLToPath } from 'node:url'
+
 import type { StorybookConfig } from '@storybook/nextjs'
 import { config as dotenvConfig } from 'dotenv'
 
@@ -33,6 +35,16 @@ const config: StorybookConfig = {
 
   typescript: {
     reactDocgen: 'react-docgen-typescript',
+  },
+
+  // AppKit hooks throw unless createAppKit ran, which only the app's ContextProviders does
+  webpackFinal: webpackConfig => {
+    webpackConfig.resolve ??= {}
+    webpackConfig.resolve.alias = {
+      ...webpackConfig.resolve.alias,
+      '@reown/appkit/react$': fileURLToPath(new URL('./mocks/reown-appkit-react.ts', import.meta.url)),
+    }
+    return webpackConfig
   },
 
   env: envConfig => ({
