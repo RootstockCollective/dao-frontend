@@ -3,7 +3,7 @@ import { Address } from 'viem'
 
 import { getBackerRewardPercentage } from '@/app/collective-rewards/rewards'
 import Big from '@/lib/big'
-import { ABI_CYCLES_LIMIT, RBTC, RIF, USDRIF, WeiPerEther } from '@/lib/constants'
+import { ABI_CYCLES_LIMIT, CYCLES_PER_YEAR, RBTC, RIF, USDRIF, WeiPerEther } from '@/lib/constants'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
@@ -40,7 +40,11 @@ export const calculateAbi = (rewardsPerStRif: Big, rifPrice: number): Big => {
     return Big(0)
   }
 
-  return Big(1).add(rewardsPerStRif.div(WeiPerEther.toString()).div(rifPrice)).pow(26).minus(1).mul(100)
+  return Big(1)
+    .add(rewardsPerStRif.div(WeiPerEther.toString()).div(rifPrice))
+    .pow(CYCLES_PER_YEAR)
+    .minus(1)
+    .mul(100)
 }
 
 export const useGetABI = (abiData: AbiData | undefined) => {
