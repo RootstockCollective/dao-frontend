@@ -40,15 +40,15 @@ const EstimatedRewardsContent = ({
   const { prices } = usePricesContext()
   const { data: cycle } = useCycleContext()
   const { data: distributionStatus, isLoading: isDistributionStatusLoading } = useCycleDistributionStatus()
+  const cycleStart = cycle?.cycleStart?.toSeconds()
 
-  if (isLoading || isDistributionStatusLoading) {
+  // Until the cycle is read its start is epoch 0, and every past distribution would count as this cycle's
+  if (isLoading || isDistributionStatusLoading || !cycleStart) {
     return <LoadingSpinner />
   }
 
   // The on-chain fallback has one entry per distribution, and a cycle can be distributed more than once
-  const currentCycleRewards = lastCycleRewards.filter(
-    entry => cycle?.cycleStart.toSeconds() <= Number(entry.currentCycleStart),
-  )
+  const currentCycleRewards = lastCycleRewards.filter(entry => cycleStart <= Number(entry.currentCycleStart))
 
   // Always show all REWARD_TOKEN_KEYS, set token value to 0 if not eligible to show rewards.
   const { rewardPerToken, combinedRewardsFiat } = REWARD_TOKEN_KEYS.reduce(

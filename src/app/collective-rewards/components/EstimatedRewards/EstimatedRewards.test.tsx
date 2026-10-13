@@ -13,11 +13,12 @@ const CYCLE_START = 1_760_000_000
 const mocks = vi.hoisted(() => ({
   distributionStatus: vi.fn(),
   lastCycleRewards: vi.fn(),
+  cycleStart: 0,
 }))
 
 vi.mock('@/app/collective-rewards/metrics', async importOriginal => ({
   ...(await importOriginal<typeof import('@/app/collective-rewards/metrics')>()),
-  useCycleContext: () => ({ data: { cycleStart: DateTime.fromSeconds(CYCLE_START) } }),
+  useCycleContext: () => ({ data: { cycleStart: DateTime.fromSeconds(mocks.cycleStart) } }),
   useCycleDistributionStatus: () => mocks.distributionStatus(),
 }))
 vi.mock('@/app/collective-rewards/shared/hooks', () => ({
@@ -52,6 +53,7 @@ describe('EstimatedRewards', () => {
   afterEach(cleanup)
 
   beforeEach(() => {
+    mocks.cycleStart = CYCLE_START
     mocks.distributionStatus.mockReturnValue({ data: 'distributed', isLoading: false })
     mocks.lastCycleRewards.mockReturnValue(lastCycleRewards(distribution(CYCLE_START)))
   })
@@ -85,5 +87,17 @@ describe('EstimatedRewards', () => {
     renderMetric()
 
     expect(screen.getByText(/2\.50/)).toBeInTheDocument()
+  })
+
+  it('waits for the cycle to be read, instead of adding up every past distribution', () => {
+    mocks.cycleStart = 0
+    mocks.lastCycleRewards.mockReturnValue(
+      lastCycleRewards(distribution(CYCLE_START), distribution(CYCLE_START - 1_209_600)),
+    )
+
+    renderMetric()
+
+    expect(screen.queryByText(/5\.00/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/2\.50/)).not.toBeInTheDocument()
   })
 })

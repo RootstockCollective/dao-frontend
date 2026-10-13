@@ -14,14 +14,19 @@ type Read = { data?: unknown; isLoading: boolean; error: Error | null }
 const mocks = vi.hoisted(() => ({
   reads: {} as Record<string, Read>,
   readArgs: {} as Record<string, unknown>,
+  readQueries: {} as Record<string, { retry?: unknown }>,
   lastCycleRewards: { data: undefined as unknown, isLoading: false },
   now: 0n,
 }))
 
 vi.mock('./useIntervalTimestamp', () => ({ useIntervalTimestamp: () => mocks.now }))
 vi.mock('@/shared/hooks/contracts', () => ({
-  useReadBackersManager: ({ functionName, args }: { functionName: string; args?: unknown }) => {
+  useReadBackersManager: (
+    { functionName, args }: { functionName: string; args?: unknown },
+    query: { retry?: unknown },
+  ) => {
     mocks.readArgs[functionName] = args
+    mocks.readQueries[functionName] = query
     return mocks.reads[functionName]
   },
 }))
@@ -108,6 +113,19 @@ describe('useCycleDistributionStatus', () => {
     renderHook(() => useCycleDistributionStatus())
 
     expect(mocks.readArgs.cycleStart).toEqual([NOW])
+  })
+
+  it('gives up on a failing read after one retry, instead of keeping the cards loading', () => {
+    renderHook(() => useCycleDistributionStatus())
+
+    for (const functionName of [
+      'periodFinish',
+      'onDistributionPeriod',
+      'distributionDuration',
+      'cycleStart',
+    ]) {
+      expect(mocks.readQueries[functionName]).toMatchObject({ retry: 1 })
+    }
   })
 
   describe('when this cycle was distributed with an empty pot', () => {

@@ -45,15 +45,18 @@ const getStatus = ({
   return 'missed'
 }
 
+// The read hooks retry forever by default, which would keep the cards loading while the RPC is down
+const READ_QUERY = { retry: 1 }
+
 export const useCycleDistributionStatus = () => {
   const timestamp = useIntervalTimestamp()
 
-  const periodFinish = useReadBackersManager({ functionName: 'periodFinish' })
-  const onDistributionPeriod = useReadBackersManager({ functionName: 'onDistributionPeriod' })
-  const distributionDuration = useReadBackersManager({ functionName: 'distributionDuration' })
+  const periodFinish = useReadBackersManager({ functionName: 'periodFinish' }, READ_QUERY)
+  const onDistributionPeriod = useReadBackersManager({ functionName: 'onDistributionPeriod' }, READ_QUERY)
+  const distributionDuration = useReadBackersManager({ functionName: 'distributionDuration' }, READ_QUERY)
   const cycleStart = useReadBackersManager(
     { functionName: 'cycleStart', args: [timestamp] },
-    { placeholderData: keepPreviousData },
+    { ...READ_QUERY, placeholderData: keepPreviousData },
   )
   const lastCycleRewards = useGetLastCycleRewardsWithStateSync()
 
