@@ -8,7 +8,7 @@ import { ProposalCategory, ProposalState } from '@/shared/types'
 export const mockProposalListData: Proposal[] = [
   {
     address: '0xb1a019e675315d422eeb1564412286e629f7',
-    blockNumber: '0x616627',
+    blockNumber: '6383143',
     blockHash: '0x3e7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000000',
     transactionHash: '0x3e7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000000',
     transactionIndex: 1,
@@ -62,7 +62,7 @@ export const mockProposalListData: Proposal[] = [
   // ... 9 похожих объекта, с разными значениями name, proposalId, адресами, суммами, датами, состояниями и т.д. ...
   {
     address: '0x2a1b019e675315d422eeb1564412286e629f8',
-    blockNumber: '0x616628',
+    blockNumber: '6383144',
     blockHash: '0x4e7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000001',
     transactionHash: '0x4e7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000001',
     transactionIndex: 2,
@@ -114,7 +114,7 @@ export const mockProposalListData: Proposal[] = [
   // ...ещё 8 объектов, аналогично, с разными значениями...
   {
     address: '0x3b1c019e675315d422eeb1564412286e629f9',
-    blockNumber: '0x616629',
+    blockNumber: '6383145',
     blockHash: '0x5e7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000002',
     transactionHash: '0x5e7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000002',
     transactionIndex: 3,
@@ -162,7 +162,7 @@ export const mockProposalListData: Proposal[] = [
   },
   {
     address: '0x4c1d019e675315d422eeb1564412286e629fa',
-    blockNumber: '0x616630',
+    blockNumber: '6383152',
     blockHash: '0x6e7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000003',
     transactionHash: '0x6e7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000003',
     transactionIndex: 4,
@@ -213,7 +213,7 @@ export const mockProposalListData: Proposal[] = [
   },
   {
     address: '0x5d1e019e675315d422eeb1564412286e629fb',
-    blockNumber: '0x616631',
+    blockNumber: '6383153',
     blockHash: '0x7e7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000004',
     transactionHash: '0x7e7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000004',
     transactionIndex: 5,
@@ -261,7 +261,7 @@ export const mockProposalListData: Proposal[] = [
   },
   {
     address: '0x6e1f019e675315d422eeb1564412286e629fc',
-    blockNumber: '0x616632',
+    blockNumber: '6383154',
     blockHash: '0x8e7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000005',
     transactionHash: '0x8e7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000005',
     transactionIndex: 6,
@@ -309,7 +309,7 @@ export const mockProposalListData: Proposal[] = [
   },
   {
     address: '0x7f20019e675315d422eeb1564412286e629fd',
-    blockNumber: '0x616633',
+    blockNumber: '6383155',
     blockHash: '0x9e7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000006',
     transactionHash: '0x9e7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000006',
     transactionIndex: 7,
@@ -357,7 +357,7 @@ export const mockProposalListData: Proposal[] = [
   },
   {
     address: '0x8f21019e675315d422eeb1564412286e629fe',
-    blockNumber: '0x616634',
+    blockNumber: '6383156',
     blockHash: '0xae7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000007',
     transactionHash: '0xae7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000007',
     transactionIndex: 8,
@@ -408,7 +408,7 @@ export const mockProposalListData: Proposal[] = [
   },
   {
     address: '0x9f22019e675315d422eeb1564412286e629ff',
-    blockNumber: '0x616635',
+    blockNumber: '6383157',
     blockHash: '0xbe7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000008',
     transactionHash: '0xbe7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000008',
     transactionIndex: 9,
@@ -459,7 +459,7 @@ export const mockProposalListData: Proposal[] = [
   },
   {
     address: '0x9f22019e675315d422eeb1564412286e629ff',
-    blockNumber: '0x616635',
+    blockNumber: '6383157',
     blockHash: '0xbe7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000008',
     transactionHash: '0xbe7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000008',
     transactionIndex: 9,
@@ -510,7 +510,7 @@ export const mockProposalListData: Proposal[] = [
   },
   {
     address: '0x9f22019e675315d422eeb1564412286e629ff',
-    blockNumber: '0x616635',
+    blockNumber: '6383157',
     blockHash: '0xbe7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000008',
     transactionHash: '0xbe7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000008',
     transactionIndex: 9,
@@ -561,7 +561,7 @@ export const mockProposalListData: Proposal[] = [
   },
   {
     address: '0x9f22019e675315d422eeb1564412286e629ff',
-    blockNumber: '0x616635',
+    blockNumber: '6383157',
     blockHash: '0xbe7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000008',
     transactionHash: '0xbe7d63b2f4d7e009a143fe2d8c557d89e5954c399d4772463200000000000008',
     transactionIndex: 9,

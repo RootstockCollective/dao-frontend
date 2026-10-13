@@ -67,6 +67,14 @@ export const WithEstimatedRewards: Story = {
           currency: 'USD',
         },
       },
+      usdrif: {
+        amount: {
+          value: 0n,
+          price: 0,
+          symbol: 'USDRIF',
+          currency: 'USD',
+        },
+      },
     },
   },
 }
@@ -95,6 +103,14 @@ export const WithIncreaseNextRewardPct: Story = {
           currency: 'USD',
         },
       },
+      usdrif: {
+        amount: {
+          value: 0n,
+          price: 0,
+          symbol: 'USDRIF',
+          currency: 'USD',
+        },
+      },
     },
   },
 }
@@ -120,6 +136,14 @@ export const WithDecreaseNextRewardPct: Story = {
           value: 0n,
           price: 0,
           symbol: 'RBTC',
+          currency: 'USD',
+        },
+      },
+      usdrif: {
+        amount: {
+          value: 0n,
+          price: 0,
+          symbol: 'USDRIF',
           currency: 'USD',
         },
       },

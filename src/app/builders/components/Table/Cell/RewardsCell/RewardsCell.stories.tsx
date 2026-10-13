@@ -31,8 +31,12 @@ type Story = StoryObj<typeof RewardsCell>
 export const Default: Story = {
   args: {
     usdValue: 1250.5,
-    rbtcValue: 1000000000000000000n, // 1 RBTC in wei
+    rbtcValue: 10000000000000000n, // 0.01 RBTC in wei
     rifValue: 500000000000000000000n, // 500 RIF in wei
+    usdrifValue: 275500000000000000000n, // 275.5 USDRIF in wei
+    rbtcPrice: 95000,
+    rifPrice: 0.05,
+    usdrifPrice: 1,
   },
   render: args => (
     <div className="w-[400px] p-4 bg-[#37322F]">
