@@ -1,11 +1,12 @@
 import { renderHook } from '@testing-library/react'
+import { DateTime } from 'luxon'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useCycleDistributionStatus } from './useCycleDistributionStatus'
 
 const CYCLE_START = 1_760_000_000n
-const DISTRIBUTION_DURATION = 3_600
-const END_DISTRIBUTION_WINDOW = CYCLE_START + BigInt(DISTRIBUTION_DURATION)
+const DISTRIBUTION_DURATION = 3_600n
+const END_DISTRIBUTION_WINDOW = CYCLE_START + DISTRIBUTION_DURATION
 const CYCLE_NEXT = CYCLE_START + 1_209_600n
 const NOW = CYCLE_START + 3_000n
 
@@ -13,19 +14,16 @@ type Read = { data?: unknown; isLoading: boolean; error: Error | null }
 
 const mocks = vi.hoisted(() => ({
   reads: {} as Record<string, Read>,
-  readArgs: {} as Record<string, unknown>,
   readQueries: {} as Record<string, { retry?: unknown }>,
+  cycle: { data: {} as Record<string, unknown>, isLoading: false, error: null as Error | null },
   lastCycleRewards: { data: undefined as unknown, isLoading: false },
   now: 0n,
 }))
 
 vi.mock('./useIntervalTimestamp', () => ({ useIntervalTimestamp: () => mocks.now }))
+vi.mock('../context', () => ({ useCycleContext: () => mocks.cycle }))
 vi.mock('@/shared/hooks/contracts', () => ({
-  useReadBackersManager: (
-    { functionName, args }: { functionName: string; args?: unknown },
-    query: { retry?: unknown },
-  ) => {
-    mocks.readArgs[functionName] = args
+  useReadBackersManager: ({ functionName }: { functionName: string }, query: { retry?: unknown }) => {
     mocks.readQueries[functionName] = query
     return mocks.reads[functionName]
   },
@@ -47,6 +45,15 @@ const cycleRewards = (currentCycleStart: bigint, amount: string) => ({
   isLoading: false,
 })
 
+const cycleContext = (cycleStart: bigint, endDistributionWindow: bigint) => ({
+  data: {
+    cycleStart: DateTime.fromSeconds(Number(cycleStart)),
+    endDistributionWindow: DateTime.fromSeconds(Number(endDistributionWindow)),
+  },
+  isLoading: false,
+  error: null,
+})
+
 const givenChain = ({
   periodFinish,
   onDistributionPeriod = false,
@@ -60,9 +67,8 @@ const givenChain = ({
   mocks.reads = {
     periodFinish: loaded(periodFinish),
     onDistributionPeriod: loaded(onDistributionPeriod),
-    distributionDuration: loaded(DISTRIBUTION_DURATION),
-    cycleStart: loaded(CYCLE_START),
   }
+  mocks.cycle = cycleContext(CYCLE_START, END_DISTRIBUTION_WINDOW)
 }
 
 describe('useCycleDistributionStatus', () => {
@@ -109,21 +115,10 @@ describe('useCycleDistributionStatus', () => {
     expect(result.current.data).toBe('pending')
   })
 
-  it('asks for the start of the cycle the current timestamp falls in', () => {
-    renderHook(() => useCycleDistributionStatus())
-
-    expect(mocks.readArgs.cycleStart).toEqual([NOW])
-  })
-
   it('gives up on a failing read after one retry, instead of keeping the cards loading', () => {
     renderHook(() => useCycleDistributionStatus())
 
-    for (const functionName of [
-      'periodFinish',
-      'onDistributionPeriod',
-      'distributionDuration',
-      'cycleStart',
-    ]) {
+    for (const functionName of ['periodFinish', 'onDistributionPeriod']) {
       expect(mocks.readQueries[functionName]).toMatchObject({ retry: 1 })
     }
   })
@@ -156,6 +151,25 @@ describe('useCycleDistributionStatus', () => {
     expect(result.current.data).toBe('distributed')
   })
 
+  it('does not treat a row without any token as an empty pot', () => {
+    mocks.lastCycleRewards = {
+      data: [{ id: '0x01', currentCycleStart: Number(CYCLE_START), rewardPerToken: {} }],
+      isLoading: false,
+    }
+
+    const { result } = renderHook(() => useCycleDistributionStatus())
+
+    expect(result.current.data).toBe('distributed')
+  })
+
+  it('treats a malformed amount as 0 instead of throwing', () => {
+    mocks.lastCycleRewards = cycleRewards(CYCLE_START, 'not-a-number')
+
+    const { result } = renderHook(() => useCycleDistributionStatus())
+
+    expect(result.current.data).toBe('pending')
+  })
+
   it('trusts the chain when state-sync has not indexed the distribution yet', () => {
     mocks.lastCycleRewards = { data: undefined, isLoading: false }
 
@@ -180,6 +194,14 @@ describe('useCycleDistributionStatus', () => {
     expect(result.current).toEqual({ data: undefined, isLoading: true })
   })
 
+  it('has no status while the cycle context still holds its epoch 0 defaults', () => {
+    mocks.cycle = { ...cycleContext(0n, 0n), isLoading: true }
+
+    const { result } = renderHook(() => useCycleDistributionStatus())
+
+    expect(result.current).toEqual({ data: undefined, isLoading: true })
+  })
+
   it('keeps loading an undistributed cycle until it can tell pending from missed', () => {
     givenChain({ periodFinish: CYCLE_START })
     mocks.reads.onDistributionPeriod = { data: undefined, isLoading: true, error: null }
@@ -191,7 +213,15 @@ describe('useCycleDistributionStatus', () => {
 
   it('has no status when an undistributed cycle cannot tell pending from missed', () => {
     givenChain({ periodFinish: CYCLE_START })
-    mocks.reads.distributionDuration = { data: undefined, isLoading: false, error: new Error('rpc down') }
+    mocks.reads.onDistributionPeriod = { data: undefined, isLoading: false, error: new Error('rpc down') }
+
+    const { result } = renderHook(() => useCycleDistributionStatus())
+
+    expect(result.current).toEqual({ data: undefined, isLoading: false })
+  })
+
+  it('has no status when the cycle context failed, so the cards fall back to the amount', () => {
+    mocks.cycle = { ...cycleContext(0n, 0n), error: new Error('rpc down') }
 
     const { result } = renderHook(() => useCycleDistributionStatus())
 

@@ -1,15 +1,10 @@
 import { useMemo } from 'react'
 
-import { DistributionPending } from '@/app/collective-rewards/components/DistributionPending'
-import { isDistributionPending, useCycleDistributionStatus } from '@/app/collective-rewards/metrics'
+import { EstimatedRewardsAmount } from '@/app/collective-rewards/components/EstimatedRewardsAmount'
+import { useCycleDistributionStatus } from '@/app/collective-rewards/metrics'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { MetricBar } from '@/app/components/Metric/MetricBar'
-import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
-import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/FiatTooltipLabel'
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 import { getMetricTokens } from '@/app/shared/utils'
-import { Header } from '@/components/Typography'
-import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 
 import { useBackerEstimatedRewards } from '../hooks/useBackerEstimatedRewards'
@@ -63,23 +58,14 @@ export const BackerEstimatedRewards = () => {
       }
       className="flex flex-col justify-between w-full"
     >
-      <div className="flex items-center gap-2">
-        <Header variant="h3">
-          {isDistributionPending(distributionStatus) ? (
-            <DistributionPending status={distributionStatus} />
-          ) : (
-            <>
-              {formatCurrency(total, { showCurrencySymbol: false })}{' '}
-              <FiatTooltipLabel
-                tooltip={{ side: 'top', text: <MetricTooltipContent tokens={metricTokens} /> }}
-              />
-            </>
-          )}
-        </Header>
-      </div>
-      {!isDistributionPending(distributionStatus) && (
-        <MetricBar segments={metricTokens} className="w-full md:max-w-[180px]" />
-      )}
+      <EstimatedRewardsAmount
+        status={distributionStatus}
+        fiat={total}
+        tokens={metricTokens}
+        headerVariant="h3"
+        headerWrapperClassName="flex items-center gap-2"
+        barClassName="w-full md:max-w-[180px]"
+      />
     </RewardCard>
   )
 }

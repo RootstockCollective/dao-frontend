@@ -1,9 +1,9 @@
-import { keepPreviousData } from '@tanstack/react-query'
-
 import { CycleData } from '@/app/collective-rewards/shared/hooks/useGetABI'
 import { useGetLastCycleRewardsWithStateSync } from '@/app/collective-rewards/shared/hooks/useGetLastCycleRewardsWithStateSync'
+import { parseBigInt } from '@/lib/utils'
 import { useReadBackersManager } from '@/shared/hooks/contracts'
 
+import { useCycleContext } from '../context'
 import { useIntervalTimestamp } from './useIntervalTimestamp'
 
 export type CycleDistributionStatus = 'distributed' | 'pending' | 'missed'
@@ -15,17 +15,18 @@ export const isDistributionPending = (
 ): status is PendingDistributionStatus => status === 'pending' || status === 'missed'
 
 // startDistribution has no funding check, so an empty pot still finishes a distribution with 0 rewards
-const isUnfunded = (cycleStart: bigint, lastCycle: CycleData | undefined) =>
-  lastCycle !== undefined &&
-  BigInt(lastCycle.currentCycleStart) === cycleStart &&
-  Object.values(lastCycle.rewardPerToken).every(amount => BigInt(amount) === 0n)
+const isUnfunded = (cycleStart: bigint, lastCycle: CycleData | undefined) => {
+  if (lastCycle === undefined || parseBigInt(lastCycle.currentCycleStart) !== cycleStart) return false
+  const amounts = Object.values(lastCycle.rewardPerToken ?? {})
+  return amounts.length > 0 && amounts.every(amount => parseBigInt(amount) === 0n)
+}
 
 interface DistributionState {
   now: bigint
   periodFinish?: bigint
   onDistributionPeriod?: boolean
   cycleStart?: bigint
-  distributionDuration?: number
+  endDistributionWindow?: bigint
   lastCycle?: CycleData
 }
 
@@ -34,46 +35,48 @@ const getStatus = ({
   periodFinish,
   onDistributionPeriod,
   cycleStart,
-  distributionDuration,
+  endDistributionWindow,
   lastCycle,
 }: DistributionState): CycleDistributionStatus | undefined => {
   if (periodFinish === undefined || cycleStart === undefined) return undefined
   if (periodFinish > now && !isUnfunded(cycleStart, lastCycle)) return 'distributed'
-  if (onDistributionPeriod === undefined || distributionDuration === undefined) return undefined
+  if (onDistributionPeriod === undefined || endDistributionWindow === undefined) return undefined
   // A batched distribution started inside the window can keep running after it closes
-  if (onDistributionPeriod || now < cycleStart + BigInt(distributionDuration)) return 'pending'
+  if (onDistributionPeriod || now < endDistributionWindow) return 'pending'
   return 'missed'
 }
 
 // The read hooks retry forever by default, which would keep the cards loading while the RPC is down
 const READ_QUERY = { retry: 1 }
 
+// Until the CycleContext reads resolve its data holds epoch 0, which is not a cycle
+const toSeconds = (date: { toSeconds(): number } | undefined): bigint | undefined => {
+  const seconds = date?.toSeconds()
+  return seconds ? BigInt(seconds) : undefined
+}
+
+/**
+ * Whether the current cycle's rewards were distributed. `cycleStart` and `endDistributionWindow`
+ * come from the surrounding `CycleContextProvider`, which already reads them from the BackersManager.
+ */
 export const useCycleDistributionStatus = () => {
-  const timestamp = useIntervalTimestamp()
+  const now = useIntervalTimestamp()
+  const { data: cycle, isLoading: isCycleLoading } = useCycleContext()
 
   const periodFinish = useReadBackersManager({ functionName: 'periodFinish' }, READ_QUERY)
   const onDistributionPeriod = useReadBackersManager({ functionName: 'onDistributionPeriod' }, READ_QUERY)
-  const distributionDuration = useReadBackersManager({ functionName: 'distributionDuration' }, READ_QUERY)
-  const cycleStart = useReadBackersManager(
-    { functionName: 'cycleStart', args: [timestamp] },
-    { ...READ_QUERY, placeholderData: keepPreviousData },
-  )
   const lastCycleRewards = useGetLastCycleRewardsWithStateSync()
 
   const status = getStatus({
-    now: timestamp,
+    now,
     periodFinish: periodFinish.data,
     onDistributionPeriod: onDistributionPeriod.data,
-    cycleStart: cycleStart.data,
-    distributionDuration: distributionDuration.data,
+    cycleStart: toSeconds(cycle?.cycleStart),
+    endDistributionWindow: toSeconds(cycle?.endDistributionWindow),
     lastCycle: lastCycleRewards.data?.[0],
   })
 
-  const isChainLoading =
-    periodFinish.isLoading ||
-    onDistributionPeriod.isLoading ||
-    distributionDuration.isLoading ||
-    cycleStart.isLoading
+  const isChainLoading = periodFinish.isLoading || onDistributionPeriod.isLoading || isCycleLoading
 
   return {
     data: status,
