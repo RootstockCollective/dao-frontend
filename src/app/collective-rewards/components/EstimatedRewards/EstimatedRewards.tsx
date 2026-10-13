@@ -14,9 +14,10 @@ import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
-import { useCycleContext } from '../../metrics/context'
+import { isDistributionPending, useCycleContext, useCycleDistributionStatus } from '../../metrics'
 import { useGetLastCycleRewardsFromChain, useGetLastCycleRewardsWithStateSync } from '../../shared/hooks'
 import { CycleData } from '../../shared/hooks/useGetABI'
+import { DistributionPending } from '../DistributionPending'
 
 const usePrimaryNormalized = () => {
   const { data, isLoading, error } = useGetLastCycleRewardsWithStateSync()
@@ -38,28 +39,30 @@ const EstimatedRewardsContent = ({
 }) => {
   const { prices } = usePricesContext()
   const { data: cycle } = useCycleContext()
+  const { data: distributionStatus, isLoading: isDistributionStatusLoading } = useCycleDistributionStatus()
 
-  if (isLoading) {
+  if (isLoading || isDistributionStatusLoading) {
     return <LoadingSpinner />
   }
 
-  // Always show all REWARD_TOKEN_KEYS, set token value to 0 if not eligible to show rewards.
-  const lastCycle = lastCycleRewards[0]
-  const shouldDisplayRewards =
-    lastCycle && cycle?.cycleStart.toSeconds() <= Number(lastCycle.currentCycleStart)
+  // The on-chain fallback has one entry per distribution, and a cycle can be distributed more than once
+  const currentCycleRewards = lastCycleRewards.filter(
+    entry => cycle?.cycleStart.toSeconds() <= Number(entry.currentCycleStart),
+  )
 
+  // Always show all REWARD_TOKEN_KEYS, set token value to 0 if not eligible to show rewards.
   const { rewardPerToken, combinedRewardsFiat } = REWARD_TOKEN_KEYS.reduce(
     (acc, tokenKey) => {
       const { symbol, address } = TOKENS[tokenKey]
-      let amount = '0'
-      if (shouldDisplayRewards && lastCycle?.rewardPerToken?.[address.toLowerCase()]) {
-        amount = lastCycle.rewardPerToken[address.toLowerCase()]
-      }
+      const amount = currentCycleRewards.reduce(
+        (sum, entry) => sum + BigInt(entry.rewardPerToken?.[address.toLowerCase()] ?? 0),
+        0n,
+      )
       const price = prices[symbol]?.price || 0
 
       const metricToken = createMetricToken({
         symbol,
-        value: BigInt(amount),
+        value: amount,
         price,
       })
 
@@ -85,10 +88,18 @@ const EstimatedRewardsContent = ({
         variant="h2"
         className="text-v3-text-100 overflow-hidden text-ellipsis leading-[125%] tracking-[0.03rem] text-xl"
       >
-        {formatCurrency(combinedRewardsFiat, { showCurrencySymbol: false })}{' '}
-        <FiatTooltipLabel tooltip={{ side: 'top', text: <MetricTooltipContent tokens={rewardPerToken} /> }} />
+        {isDistributionPending(distributionStatus) ? (
+          <DistributionPending status={distributionStatus} />
+        ) : (
+          <>
+            {formatCurrency(combinedRewardsFiat, { showCurrencySymbol: false })}{' '}
+            <FiatTooltipLabel
+              tooltip={{ side: 'top', text: <MetricTooltipContent tokens={rewardPerToken} /> }}
+            />
+          </>
+        )}
       </Header>
-      <MetricBar segments={rewardPerToken} />
+      {!isDistributionPending(distributionStatus) && <MetricBar segments={rewardPerToken} />}
     </Metric>
   )
 }
