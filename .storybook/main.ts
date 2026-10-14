@@ -37,12 +37,17 @@ const config: StorybookConfig = {
     reactDocgen: 'react-docgen-typescript',
   },
 
-  // AppKit hooks throw unless createAppKit ran, which only the app's ContextProviders does
+  // Modules replaced in the preview build. Each mock file explains why it exists.
   webpackFinal: webpackConfig => {
+    const mock = (file: string) => fileURLToPath(new URL(`./mocks/${file}`, import.meta.url))
     webpackConfig.resolve ??= {}
     webpackConfig.resolve.alias = {
       ...webpackConfig.resolve.alias,
-      '@reown/appkit/react$': fileURLToPath(new URL('./mocks/reown-appkit-react.ts', import.meta.url)),
+      // AppKit hooks throw unless createAppKit ran, which only the app's ContextProviders does
+      '@reown/appkit/react$': mock('reown-appkit-react.ts'),
+      // Same key @storybook/nextjs uses, so this overrides its mock (which re-exports the real
+      // unstable_cache and pulls node:stream into the webpack build on Next.js 16)
+      'next/cache': mock('next-cache.ts'),
     }
     return webpackConfig
   },

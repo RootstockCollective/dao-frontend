@@ -4,27 +4,27 @@ import { FC } from 'react'
 import { WeiPerEther } from '@/lib/constants'
 
 // Simple wrapper to convert numbers to BigInt
-const RewardsInfoWrapper = (
-  {
-    backerRewardPercentage,
-    ...props
-  }: Omit<RewardsInfoProps, 'backerRewardPercentage'> & {
-    backerRewardPercentage: {
-      current: number
-      next: number
-      cooldownEndTime: number
-      previous: number
-    };
+const RewardsInfoWrapper = ({
+  backerRewardPercentage,
+  ...props
+}: Omit<RewardsInfoProps, 'backerRewardPercentage'> & {
+  backerRewardPercentage: {
+    current: number
+    next: number
+    cooldownEndTime: number
+    previous: number
   }
-) => (<RewardsInfo
-  backerRewardPercentage={{
-    current: (BigInt(backerRewardPercentage.current) * WeiPerEther) / 100n,
-    next: (BigInt(backerRewardPercentage.next) * WeiPerEther) / 100n,
-    cooldownEndTime: BigInt(backerRewardPercentage.cooldownEndTime),
-    previous: (BigInt(backerRewardPercentage.previous) * WeiPerEther) / 100n,
-  }}
-  {...props}
-/>)
+}) => (
+  <RewardsInfo
+    backerRewardPercentage={{
+      current: (BigInt(backerRewardPercentage.current) * WeiPerEther) / 100n,
+      next: (BigInt(backerRewardPercentage.next) * WeiPerEther) / 100n,
+      cooldownEndTime: BigInt(backerRewardPercentage.cooldownEndTime),
+      previous: (BigInt(backerRewardPercentage.previous) * WeiPerEther) / 100n,
+    }}
+    {...props}
+  />
+)
 
 const meta: Meta<typeof RewardsInfoWrapper> = {
   title: 'Backing/RewardsInfo',
@@ -43,6 +43,34 @@ const defaultArgs = {
   },
 }
 
+// 300 RIF, nothing in the other reward tokens
+const estimatedRewards = {
+  rif: {
+    amount: {
+      value: 300000000000000000000n, // 300 RIF in wei
+      price: 1,
+      symbol: 'RIF',
+      currency: 'USD',
+    },
+  },
+  rbtc: {
+    amount: {
+      value: 0n,
+      price: 0,
+      symbol: 'RBTC',
+      currency: 'USD',
+    },
+  },
+  usdrif: {
+    amount: {
+      value: 0n,
+      price: 0,
+      symbol: 'USDRIF',
+      currency: 'USD',
+    },
+  },
+}
+
 export const Default: Story = {
   args: defaultArgs,
 }
@@ -50,32 +78,7 @@ export const Default: Story = {
 export const WithEstimatedRewards: Story = {
   args: {
     ...defaultArgs,
-    estimatedRewards: {
-      rif: {
-        amount: {
-          value: 300000000000000000000n, // 300 RIF in wei
-          price: 1,
-          symbol: 'RIF',
-          currency: 'USD',
-        },
-      },
-      rbtc: {
-        amount: {
-          value: 0n,
-          price: 0,
-          symbol: 'RBTC',
-          currency: 'USD',
-        },
-      },
-      usdrif: {
-        amount: {
-          value: 0n,
-          price: 0,
-          symbol: 'USDRIF',
-          currency: 'USD',
-        },
-      },
-    },
+    estimatedRewards,
   },
 }
 
@@ -86,32 +89,7 @@ export const WithIncreaseNextRewardPct: Story = {
       ...defaultArgs.backerRewardPercentage,
       next: 60,
     },
-    estimatedRewards: {
-      rif: {
-        amount: {
-          value: 300000000000000000000n, // 300 RIF in wei
-          price: 1,
-          symbol: 'RIF',
-          currency: 'USD',
-        },
-      },
-      rbtc: {
-        amount: {
-          value: 0n,
-          price: 0,
-          symbol: 'RBTC',
-          currency: 'USD',
-        },
-      },
-      usdrif: {
-        amount: {
-          value: 0n,
-          price: 0,
-          symbol: 'USDRIF',
-          currency: 'USD',
-        },
-      },
-    },
+    estimatedRewards,
   },
 }
 
@@ -122,31 +100,6 @@ export const WithDecreaseNextRewardPct: Story = {
       ...defaultArgs.backerRewardPercentage,
       next: 40,
     },
-    estimatedRewards: {
-      rif: {
-        amount: {
-          value: 300000000000000000000n, // 300 RIF in wei
-          price: 1,
-          symbol: 'RIF',
-          currency: 'USD',
-        },
-      },
-      rbtc: {
-        amount: {
-          value: 0n,
-          price: 0,
-          symbol: 'RBTC',
-          currency: 'USD',
-        },
-      },
-      usdrif: {
-        amount: {
-          value: 0n,
-          price: 0,
-          symbol: 'USDRIF',
-          currency: 'USD',
-        },
-      },
-    },
+    estimatedRewards,
   },
 }
