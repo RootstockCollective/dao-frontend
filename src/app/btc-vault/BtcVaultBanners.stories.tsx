@@ -1,10 +1,7 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import type React from 'react'
 
 import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
-
-const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
 
 import { DepositWindowSection } from './components/DepositWindowSection'
 import { DisclosureContent } from './components/DisclosureContent'
@@ -60,13 +57,6 @@ export const DisconnectedClosed: Story = {
 /** Disconnected user: deposit window + disclosure (epoch open). */
 export const DisconnectedOpen: Story = {
   name: 'Disconnected — Deposit window + Disclosure',
-  decorators: [
-    Story => (
-      <QueryClientProvider client={queryClient}>
-        <Story />
-      </QueryClientProvider>
-    ),
-  ],
   args: {
     testId: 'DisclosureBanner',
     children: [
@@ -156,13 +146,6 @@ export const PausedWithEligibility: Story = {
 /** Connected: pause banner stacked above deposit window + disclosure. */
 export const PausedWithDepositWindow: Story = {
   name: 'Connected — Paused + Deposit window',
-  decorators: [
-    Story => (
-      <QueryClientProvider client={queryClient}>
-        <Story />
-      </QueryClientProvider>
-    ),
-  ],
   args: { children: null as unknown as React.ReactNode },
   render: () => (
     <div className="flex flex-col">
