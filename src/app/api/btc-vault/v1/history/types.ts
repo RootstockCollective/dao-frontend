@@ -18,6 +18,12 @@ export interface BtcVaultHistoryItem {
   timestamp: number
   blockNumber: string
   transactionHash: string
+  /**
+   * Request lifecycle status, when the source carries it on the row itself.
+   * `BtcVaultHistory.status` in the subgraph schema; sources that do not select it leave it unset
+   * and resolve `displayStatus` from the request entities instead.
+   */
+  status?: string
 }
 
 export interface BtcVaultHistoryItemWithStatus extends BtcVaultHistoryItem {
