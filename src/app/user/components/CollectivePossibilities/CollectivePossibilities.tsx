@@ -4,19 +4,18 @@ import { useEffect, useId, useLayoutEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import useLocalStorageState from 'use-local-storage-state'
 
-import { Button } from '@/components/Button'
 import { CommonComponentProps } from '@/components/commonProps'
 import { DismissButton } from '@/components/DismissButton'
 import { useTopBarDock } from '@/components/MainContainer/TopBarDockProvider'
 import { cn } from '@/lib/utils'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
-import type { ConnectButtonComponentProps } from '@/shared/walletConnection/types'
 
+import { BannerConnectButton } from './ConnectCtaButton'
 import { DISMISSED_STORAGE_KEY } from './constants'
 import { MotionLogo } from './MotionLogo'
 import { PossibilitiesDock } from './PossibilitiesDock'
 import { PosterArt } from './PosterArt'
-import { CONNECT_CTA_CLASSES, EYEBROW_CLASSES } from './styles'
+import { EYEBROW_CLASSES } from './styles'
 import { useScrollDock } from './useScrollDock'
 
 const POSSIBILITIES = [
@@ -33,12 +32,6 @@ const POSSIBILITIES = [
     description: 'Vote on proposals that decide grants and governance changes.',
   },
 ]
-
-const BannerConnectButton = ({ onClick }: ConnectButtonComponentProps) => (
-  <Button onClick={onClick} className={cn(CONNECT_CTA_CLASSES, 'h-12 px-[26px]')} data-testid="ConnectButton">
-    Connect wallet
-  </Button>
-)
 
 const FOCUSABLE_SELECTOR = [
   'a[href]',

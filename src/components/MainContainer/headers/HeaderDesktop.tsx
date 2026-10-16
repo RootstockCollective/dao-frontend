@@ -1,20 +1,17 @@
-import { type HTMLAttributes, useRef } from 'react'
+import type { HTMLAttributes } from 'react'
 
 import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { Tooltip } from '@/components/Tooltip'
 import { cn } from '@/lib/utils'
-import { useInertHandoff } from '@/shared/hooks/useInertHandoff'
-import { UserConnectionManager } from '@/shared/walletConnection'
 
 import { SideBarClosedIcon, SideBarOpenedIcon } from '../icons'
 import { useLayoutContext } from '../LayoutProvider'
+import { TopBarConnect, TopBarDockSlot } from '../TopBarDock'
 import { useTopBarDock } from '../TopBarDockProvider'
 
 export function HeaderDesktop({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   const { isSidebarOpen, toggleSidebar } = useLayoutContext()
-  const { isActive: hasDock, isDocked, slot, setSlot } = useTopBarDock()
-  const connectRef = useRef<HTMLDivElement>(null)
-  const isConnectInert = useInertHandoff(isDocked, connectRef, () => slot?.querySelector('button'))
+  const { isActive: hasDock } = useTopBarDock()
   return (
     <header
       {...props}
@@ -36,16 +33,9 @@ export function HeaderDesktop({ className, ...props }: HTMLAttributes<HTMLDivEle
           <Breadcrumbs />
         </div>
         {/* Right side */}
-        <UserConnectionManager
-          className={cn(
-            'transition-opacity duration-240 ease-out-cubic',
-            isDocked && 'pointer-events-none opacity-0',
-          )}
-          ref={connectRef}
-          inert={isConnectInert}
-        />
+        <TopBarConnect />
       </div>
-      <div ref={setSlot} className="absolute inset-x-0 top-full bg-l-black px-7" />
+      <TopBarDockSlot className="px-7" />
     </header>
   )
 }

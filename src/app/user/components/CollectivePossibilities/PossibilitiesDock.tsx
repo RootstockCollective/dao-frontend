@@ -2,26 +2,14 @@
 
 import { type RefObject, useRef } from 'react'
 
-import { Button } from '@/components/Button'
 import { DismissButton } from '@/components/DismissButton'
 import { cn } from '@/lib/utils'
 import { useInertHandoff } from '@/shared/hooks/useInertHandoff'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
-import type { ConnectButtonComponentProps } from '@/shared/walletConnection/types'
 
+import { DockConnectButton } from './ConnectCtaButton'
 import { PosterArt } from './PosterArt'
-import { CONNECT_CTA_CLASSES, EYEBROW_CLASSES } from './styles'
-
-const DockConnectButton = ({ onClick }: ConnectButtonComponentProps) => (
-  <Button
-    onClick={onClick}
-    className={cn(CONNECT_CTA_CLASSES, 'h-10 px-5')}
-    textClassName="text-[15px]"
-    data-testid="DockConnectButton"
-  >
-    Connect wallet
-  </Button>
-)
+import { EYEBROW_CLASSES } from './styles'
 
 interface PossibilitiesDockProps {
   isDocked: boolean
