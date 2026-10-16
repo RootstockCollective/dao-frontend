@@ -2,11 +2,10 @@ import type { PrismaClient } from '@prisma/client'
 import { NextRequest } from 'next/server'
 import { z } from 'zod'
 
+import { handleApiError } from '@/app/api/utils/helpers'
 import { confirmProposalExists } from '@/app/proposals/actions/get-proposal-by-id'
 import { JWTPayload } from '@/lib/auth/jwt'
 import { withAuth } from '@/lib/auth/withAuth'
-import { ENV } from '@/lib/constants'
-import { logger } from '@/lib/logger'
 import { prisma } from '@/lib/prisma'
 
 import { bigIntToBuffer, ProposalIdSchema } from './shared'
@@ -79,13 +78,7 @@ export async function GET(request: NextRequest) {
 
     return Response.json({ success: true, proposalId: parsed.data, reactions })
   } catch (error) {
-    logger.error({ err: error, route: '/api/like' }, 'Error in GET /api/like')
-    // @TODO Remove debug header once the like/reaction flow is fully completed
-    const headers: HeadersInit = {}
-    if (ENV !== 'mainnet' && request.nextUrl.searchParams.get('debug') === '1') {
-      headers['X-Debug-Error'] = error instanceof Error ? error.message : String(error)
-    }
-    return Response.json({ success: false, error: 'Internal server error' }, { status: 500, headers })
+    return handleApiError(error, 'GET /api/like', { route: '/api/like' })
   }
 }
 
@@ -132,12 +125,6 @@ export const POST = withAuth(async (request, session: JWTPayload) => {
 
     return Response.json({ success: true, liked, reaction })
   } catch (error) {
-    logger.error({ err: error, route: '/api/like' }, 'Error in POST /api/like')
-    // @TODO Remove debug header once the like/reaction flow is fully completed
-    const headers: HeadersInit = {}
-    if (ENV !== 'mainnet' && request.nextUrl.searchParams.get('debug') === '1') {
-      headers['X-Debug-Error'] = error instanceof Error ? error.message : String(error)
-    }
-    return Response.json({ success: false, error: 'Internal server error' }, { status: 500, headers })
+    return handleApiError(error, 'POST /api/like', { route: '/api/like' })
   }
 })

@@ -1,22 +1,20 @@
 import './globals.css'
 
-import { GoogleTagManager } from '@next/third-parties/google'
 import type { Metadata } from 'next'
-import { Open_Sans } from 'next/font/google'
+import localFont from 'next/font/local'
 import { headers } from 'next/headers'
-import Script from 'next/script'
 import type { ReactNode } from 'react'
 import { cookieToInitialState } from 'wagmi'
 
 import { MainContainer } from '@/components/MainContainer'
 import { wagmiAdapterConfig } from '@/config'
-import { GOOGLE_TAG_ID } from '@/lib/constants'
 
 import { ContextProviders } from './providers'
 
-const openSans = Open_Sans({
+const openSans = localFont({
+  src: './fonts/open-sans-latin-wght-normal.woff2',
+  weight: '300 800',
   variable: '--font-open-sans',
-  subsets: ['latin'],
 })
 
 export const metadata: Metadata = {
@@ -34,28 +32,11 @@ interface Props {
 }
 
 export default async function RootLayout({ children }: Readonly<Props>) {
-  const initialState = cookieToInitialState(wagmiAdapterConfig, (await headers()).get('cookie'))
+  const requestHeaders = await headers()
+  const initialState = cookieToInitialState(wagmiAdapterConfig, requestHeaders.get('cookie'))
   return (
-    <html lang="en" data-theme="default">
-      {process.env.NODE_ENV === 'development' && (
-        <Script
-          src="//unpkg.com/react-grab/dist/index.global.js"
-          crossOrigin="anonymous"
-          strategy="beforeInteractive"
-        />
-      )}
-      <GoogleTagManager gtmId={`${GOOGLE_TAG_ID}`} />
-      <body className={`${openSans.variable} font-sans`}>
-        {/* Google Tag Manager (noscript) */}
-        <noscript>
-          <iframe
-            src={`https://www.googletagmanager.com/ns.html?id=${GOOGLE_TAG_ID}`}
-            height="0"
-            width="0"
-            style={{ display: 'none', visibility: 'hidden' }}
-          ></iframe>
-        </noscript>
-        {/* End Google Tag Manager (noscript) */}
+    <html lang="en" data-theme="default" className={openSans.variable}>
+      <body className="font-sans">
         <ContextProviders initialState={initialState}>
           <MainContainer>{children}</MainContainer>
         </ContextProviders>

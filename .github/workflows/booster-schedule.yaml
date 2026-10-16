@@ -14,7 +14,7 @@ on:
 
 jobs:
   boost:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     permissions:
       contents: write
@@ -31,7 +31,7 @@ jobs:
           node-version-file: '.nvmrc'
 
       - name: Install dependencies
-        run: npm install --production
+        run: npm ci --omit=dev --ignore-scripts
 
       - name: Git config
         run: |
@@ -44,7 +44,7 @@ jobs:
 
       - name: Boost backers' rewards
         run: |
-          npx tsx .github/scripts/nft_boost/activateBoost.ts \
+          node_modules/.bin/tsx .github/scripts/nft_boost/activateBoost.ts \
               --boost=${{ env.BOOST }} \
               --nft=${{ env.NFT_CONTRACT }} \
               --env=${{ env.ENVIRONMENT }}

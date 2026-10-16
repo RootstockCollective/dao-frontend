@@ -20,7 +20,7 @@ permissions: read-all
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Checkout
@@ -30,19 +30,9 @@ jobs:
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 #v6.2.0
         with:
           node-version-file: '.nvmrc'
-
-      # Caches the full node_modules directory keyed on package-lock.json.
-      # On hit, npm ci is skipped entirely. The post-job hook saves the
-      # cache after all steps complete (only when the exact key was a miss).
-      - name: Cache node_modules
-        id: cache-node-modules
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 #v5.0.3
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+          cache: npm
 
       - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
         env:
           CYPRESS_INSTALL_BINARY: '0'
         run: npm ci
@@ -51,7 +41,7 @@ jobs:
         run: npm run lint
 
       - name: Generate Next.js types
-        run: npx next typegen
+        run: node_modules/.bin/next typegen
 
       - name: Type check
         run: npm run lint-tsc

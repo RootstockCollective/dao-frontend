@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Address, getAddress, isAddress } from 'viem'
 
-import { logger } from '@/lib/logger'
+import { handleApiError, logApiError } from '@/app/api/utils/helpers'
 import { SWAP_TOKEN_ADDRESSES, UNISWAP_FEE_TIERS } from '@/lib/swap/constants'
 import { uniswapProvider } from '@/lib/swap/providers/uniswap'
 import { getTokenDecimalsBatch, isValidAmount, scaleAmount } from '@/lib/swap/utils'
@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
           provider: provider.name,
           amountOut: '0',
           amountOutRaw: '0',
-          error: error instanceof Error ? error.message : 'Unknown error',
+          error: `Quote unavailable (${logApiError(error, `${provider.name} quote`, { route: '/api/swap/quote' })})`,
         })),
     )
 
@@ -98,10 +98,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ quotes }, { status: 200 })
   } catch (error) {
-    logger.error({ err: error, route: '/api/swap/quote' }, 'Error fetching swap quotes')
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch swap quotes' },
-      { status: 500 },
-    )
+    return handleApiError(error, 'swap quote route', { route: '/api/swap/quote' })
   }
 }

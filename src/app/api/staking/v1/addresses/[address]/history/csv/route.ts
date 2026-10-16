@@ -6,14 +6,15 @@ import {
   resolveStakingHistoryCsvPlan,
   stakingHistoryCsvSourceHeaders,
 } from '@/app/api/staking/v1/addresses/[address]/history/sources/resolve-staking-history-csv-plan'
-import { queryParam } from '@/app/api/utils/helpers'
+import { handleApiError, logApiError, queryParam } from '@/app/api/utils/helpers'
 import { AddressSchema, SortDirectionEnum } from '@/app/api/utils/validators'
 import { getFiatAmount } from '@/app/shared/formatter'
 import Big from '@/lib/big'
 import { RIF, STRIF } from '@/lib/constants'
-import { logger } from '@/lib/logger'
 
 import type { StakingHistoryByPeriodAndAction } from '../types'
+
+const ROUTE = '/api/staking/v1/addresses/[address]/history/csv'
 
 const SortFieldEnum = z.enum(['period', 'amount', 'action'])
 const QuerySchema = z.object({
@@ -165,6 +166,7 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
     const plan = await resolveStakingHistoryCsvPlan(address, sortParams, pageSize)
     const sourceHeaders = stakingHistoryCsvSourceHeaders(plan)
 
+    let failure: { error: unknown } | undefined
     const stream = new ReadableStream<Uint8Array>({
       async start(controller) {
         try {
@@ -222,19 +224,19 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
 
           controller.close()
         } catch (streamError) {
-          logger.error(
-            { err: streamError, route: '/api/staking/v1/addresses/[address]/history/csv' },
-            'Error in CSV stream',
-          )
-          const errorMessage = streamError instanceof Error ? streamError.message : String(streamError)
+          const errorId = logApiError(streamError, 'CSV stream', { route: ROUTE })
           const encoder = new TextEncoder()
           try {
-            controller.enqueue(encoder.encode(`\nERROR: ${errorMessage}`))
+            controller.enqueue(encoder.encode(`\nERROR: Internal server error (${errorId})`))
           } catch {
             // If we can't enqueue, just close
           }
-          controller.error(streamError)
+          failure = { error: streamError }
         }
+      },
+      // Erroring inside start() would discard the queued error line; pull() runs once the reader has taken it.
+      pull(controller) {
+        if (failure) controller.error(failure.error)
       },
     })
 
@@ -250,23 +252,6 @@ export async function GET(req: NextRequest, context: { params: Promise<{ address
     if (err instanceof z.ZodError) {
       return Response.json({ error: 'Validation failed', details: err.flatten() }, { status: 400 })
     }
-    logger.error(
-      { err, route: '/api/staking/v1/addresses/[address]/history/csv' },
-      'Error in staking history CSV route',
-    )
-
-    const errorMessage = err instanceof Error ? err.message : String(err)
-    const errorStack = err instanceof Error ? err.stack : undefined
-    const errorName = err instanceof Error ? err.name : 'UnknownError'
-
-    return Response.json(
-      {
-        error: 'Internal server error',
-        message: errorMessage,
-        name: errorName,
-        ...(process.env.NODE_ENV === 'development' && { stack: errorStack }),
-      },
-      { status: 500 },
-    )
+    return handleApiError(err, 'staking history CSV route', { route: ROUTE })
   }
 }

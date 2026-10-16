@@ -19,19 +19,20 @@ This distinction matters for features tied to user identity, such as proposal li
 2. User triggers an authenticated action (e.g. like a proposal)
    → Client requests a challenge from the server
 
-3. Server generates a SIWE message with a unique challengeId
-   → Message includes domain, address, nonce, expiration
+3. Server generates a SIWE message and seals it into a challengeId
+   → Message includes domain, address, nonce, expiration; nothing is stored
 
 4. User signs the message in their wallet
    → Cryptographic proof of address ownership
 
 5. Client sends signature + challengeId to the server
-   → Server verifies the signature against the challenge
+   → Server checks the challenge's HMAC and expiry, then verifies the signature
 
 6. Server issues a JWT containing the user's address
-   → Stored client-side in Zustand (persisted to localStorage)
+   → Set as the HTTP-only `auth-token` cookie; the response body carries
+     only the address and expiry, which Zustand persists to localStorage
 
-7. JWT is sent as a Bearer token on authenticated API requests
+7. The browser sends the cookie on same-origin API requests
    → Server validates the JWT on each request
 ```
 
@@ -41,9 +42,10 @@ This distinction matters for features tied to user identity, such as proposal li
 
 Users can like (heart) proposals on the proposal detail page. SIWE authentication is required because:
 
-- **Liking** sends a POST to `/api/like` with the JWT as a Bearer token — the server uses the address in the JWT to record who liked what.
-- **Viewing your own likes** queries `/api/like/user` with the JWT to check if the current user has already reacted to a proposal. Without a valid JWT, the heart icon defaults to the unselected (grey) state.
-- **On disconnect**, the JWT is cleared and all heart icons reset to grey. On reconnect, the user must re-authenticate via SIWE before their like state is restored from the server.
+- **Liking** sends a POST to `/api/like` with the `auth-token` cookie — the server uses the address in the JWT to record who liked what.
+- **Viewing your own likes** queries `/api/like/user` to check if the current user has already reacted to a proposal. Without a valid session, the heart icon defaults to the unselected (grey) state.
+- **On disconnect**, the session and cookie are cleared and all heart icons reset to grey. On reconnect, the user must re-authenticate via SIWE before their like state is restored from the server.
+- **A 401** from either route clears the local session, so the next like asks the user to sign in again.
 
 Key components: `LikeButton.tsx`, `useLike.ts`, `SiweTooltipContent.tsx`
 
@@ -51,11 +53,12 @@ Key components: `LikeButton.tsx`, `useLike.ts`, `SiweTooltipContent.tsx`
 
 | File                          | Purpose                                                       |
 | ----------------------------- | ------------------------------------------------------------- |
-| `siweStore.ts`                | Zustand store for JWT token, auth state, and `signOut`        |
+| `siweStore.ts`                | Zustand store for the session, auth state, and `signOut`      |
 | `actions.ts`                  | Server-side auth logic: `requestChallenge`, `verifySignature` |
-| `challengeStore.ts`           | Server-side challenge storage and validation                  |
+| `challengeToken.ts`           | HMAC-sealed, stateless SIWE challenges                        |
+| `challengeStore.ts`           | Redeemed challenges, kept until expiry to block replays       |
 | `domain.ts`                   | Trusted domain allowlist for EIP-4361 domain binding          |
-| `jwt.ts`                      | Client-side JWT utilities (decode, check expiry)              |
+| `jwt.ts`                      | JWT payload and client session types                          |
 | `jwt.server.ts`               | Server-side JWT signing and verification                      |
 | `session.ts`                  | Session management utilities                                  |
 | `withAuth.ts`                 | API route middleware for JWT validation                       |
@@ -69,11 +72,13 @@ Key components: `LikeButton.tsx`, `useLike.ts`, `SiweTooltipContent.tsx`
 ## Security Considerations
 
 - **Challenge is server-generated**: The SIWE message is created entirely on the server, preventing client-side manipulation of the nonce, domain, or expiration.
+- **Challenges are stateless**: the `challengeId` is the SIWE message plus an HMAC-SHA256 over it, keyed from `JWT_SECRET` (HKDF, label `siwe-challenge`). Issuing one stores nothing. The server trusts a challenge only if the HMAC matches, its `Chain ID` is this deployment's chain, and only until the message's `Expiration Time` (4 minutes).
+- **Replay protection**: a challenge is recorded as redeemed only after a valid signature, and kept until it expires. A failed attempt does not burn it. The record is in memory, so it holds per server instance; scaling out to several instances needs a shared store.
 - **Domain binding** ([EIP-4361 Relying Party steps](https://eips.ethereum.org/EIPS/eip-4361#relying-party-implementer-steps)): a challenge is only issued for an origin this deployment actually serves, and the same expected domain is passed to `siweMessage.verify()` at redemption. The `Host` header is caller-supplied, so it is not trusted as the expected origin on its own.
   - The allowlist is the explicit list of deployed hostnames in `domain.ts` (`DEPLOYED_HOSTNAMES`), plus `localhost` / loopback outside production. It is **not** a suffix match on `rootstockcollective.xyz`: sibling subdomains host third-party platforms serving user-authored content (`gov.` is Discourse, `wiki.` is a hosted wiki), and a suffix match would extend sign-in trust to all of them.
   - **Adding an environment requires updating `DEPLOYED_HOSTNAMES`**, or setting `SIWE_ALLOWED_DOMAINS`. Requests from an origin outside the allowlist fail at `/api/auth/challenge` with `Invalid request`.
   - `SIWE_ALLOWED_DOMAINS` (server-only, comma-separated hostnames) replaces the built-in list entirely when set — subdomains of a listed domain are **not** implied.
-  - The enforcement that matters happens **at issuance**. The `domain` passed to `siweMessage.verify()` cannot fail today, since the message comes from our own store and carries the domain we wrote; it is kept for standards compliance and to stay correct if the message ever arrives from somewhere less trusted.
+  - The enforcement that matters happens **at issuance**. The `domain` passed to `siweMessage.verify()` cannot fail today, since the message is sealed by the server and carries the domain we wrote; it is kept for standards compliance and to stay correct if the message ever arrives from somewhere less trusted.
 
 ### Running SIWE on a production build
 
@@ -88,6 +93,8 @@ Note that the `uri` scheme is derived from `NODE_ENV` rather than the request, s
 ### Known deviation
 
 The SIWE `domain` field carries the hostname without the port, while EIP-4361 defines it as the RFC 4501 dns authority (port included when non-default). This only differs from the page origin during local development on a non-default port. Pre-existing behaviour, kept unchanged here to avoid altering what wallets display in production.
+
 - **JWT on disconnect**: When the user disconnects their wallet, the JWT is destroyed and all authenticated UI state (e.g. like icons) is reset. On reconnect, the user must re-authenticate via SIWE to restore their session.
-- **Token expiry**: Expired JWTs are cleared automatically on store rehydration.
+- **Session expiry**: Expired sessions are cleared automatically on store rehydration. Sessions persisted before this change held the JWT itself; the store migration drops them.
+- **JWT storage**: The JWT exists only in the HTTP-only `auth-token` cookie, which `/api/auth/logout` expires. The login response and localStorage carry only the session's address and expiry.
 - **Rate limiting**: All auth endpoints are rate-limited via middleware (5 req/min for challenge and login, 20 req/min for verify) to prevent brute-force and DoS attacks.

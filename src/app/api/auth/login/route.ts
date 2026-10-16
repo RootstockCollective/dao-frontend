@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { verifySignature } from '@/lib/auth/actions'
+import type { SiweSession } from '@/lib/auth/jwt'
 import { verifyJWT } from '@/lib/auth/jwt.server'
 import { sanitizeError } from '@/lib/auth/utils'
 import { logger } from '@/lib/logger'
@@ -11,17 +12,18 @@ const isProduction = process.env.NODE_ENV === 'production'
 /**
  * POST /api/auth/login
  *
- * Verify a signature against a stored challenge and issue a JWT.
+ * Verify a signature against a sealed challenge and issue a JWT.
  *
  * Request body:
  * {
- *   challengeId: string,  // The challenge ID from /api/auth/challenge
+ *   challengeId: string,  // The sealed challenge from /api/auth/challenge
  *   signature: string     // The signature of the SIWE message
  * }
  *
- * Response:
+ * Response (the JWT itself goes only into the HTTP-only `auth-token` cookie):
  * {
- *   token: string         // JWT token to use for authenticated requests
+ *   userAddress: string,  // Lowercase address the session belongs to
+ *   expiresAt: number     // Session expiry, in milliseconds since the epoch
  * }
  */
 export async function POST(request: NextRequest) {
@@ -30,7 +32,7 @@ export async function POST(request: NextRequest) {
     const { challengeId, signature } = body
 
     // Input validation is handled by verifySignature() which validates:
-    // - challengeId format and existence
+    // - challengeId integrity (HMAC), expiry and single use
     // - signature format (0x hex string)
     // - cryptographic signature verification via SIWE
     const { token } = await verifySignature(challengeId, signature)
@@ -55,8 +57,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Return token in response body and as HTTP-only cookie
-    const response = NextResponse.json({ token })
+    if (!payload?.exp) {
+      throw new Error('Authentication failed')
+    }
+    const session: SiweSession = { userAddress: payload.userAddress, expiresAt: payload.exp * 1000 }
+    const response = NextResponse.json(session)
 
     response.cookies.set('auth-token', token, {
       httpOnly: true,

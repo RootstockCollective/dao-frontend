@@ -7,7 +7,7 @@ services:
         PROFILE: dev
     ports:
       - '3010:3000'
-    command: sh -c "npx prisma migrate deploy; npm start"
+    command: sh -c "node_modules/.bin/prisma migrate deploy; npm start"
     environment:
       - DAO_DATA_DB_CONNECTION_STRING=postgresql://dao_data:dao_data@dao-data-db:5432/dao_data
     depends_on:
@@ -17,7 +17,7 @@ services:
   # Separate database for user-generated data (likes, reactions, etc.)
   # This is intentionally separate from state-sync database
   dao-data-db:
-    image: postgres:16-alpine
+    image: postgres:16-alpine@sha256:721873c34ceb9f8d8fc265984940dc982404c105f19ad51be9fdc5970a6080ea
     environment:
       POSTGRES_USER: dao_data
       POSTGRES_PASSWORD: dao_data

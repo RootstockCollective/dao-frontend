@@ -36,8 +36,8 @@ describe('POST /api/like', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockedRequireAuth.mockResolvedValue({ userAddress: '0xAbCdEf0123456789AbCdEf0123456789AbCdEf01' })
-    mockPrisma.$transaction.mockImplementation(
-      async (cb: (tx: typeof mockPrisma) => Promise<unknown>) => cb(mockPrisma),
+    mockPrisma.$transaction.mockImplementation(async (cb: (tx: typeof mockPrisma) => Promise<unknown>) =>
+      cb(mockPrisma),
     )
   })
 
@@ -199,9 +199,7 @@ describe('GET /api/like', () => {
   })
 
   it('should return 200 with aggregated reaction counts', async () => {
-    mockPrisma.proposalLike.groupBy.mockResolvedValueOnce([
-      { reaction: 'heart', _count: { _all: 5 } },
-    ])
+    mockPrisma.proposalLike.groupBy.mockResolvedValueOnce([{ reaction: 'heart', _count: { _all: 5 } }])
 
     const { GET } = await import('./route')
     const response = await GET(createGetRequest('123'))
@@ -283,6 +281,21 @@ describe('GET /api/like', () => {
     expect(response.status).toBe(500)
     expect(data.success).toBe(false)
     expect(data.error).toBe('Internal server error')
+  })
+
+  it('should not expose the database error when ?debug=1 is passed', async () => {
+    mockPrisma.proposalLike.groupBy.mockRejectedValueOnce(new Error('DB connection lost'))
+
+    const { GET } = await import('./route')
+    const response = await GET(new NextRequest('http://localhost/api/like?proposalId=123&debug=1'))
+
+    expect(response.status).toBe(500)
+    expect(response.headers.get('X-Debug-Error')).toBeNull()
+    expect(await response.json()).toEqual({
+      success: false,
+      error: 'Internal server error',
+      errorId: expect.any(String),
+    })
   })
 })
 

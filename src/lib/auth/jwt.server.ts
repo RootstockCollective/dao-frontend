@@ -22,7 +22,7 @@ let _encodedSecret: Uint8Array | null = null
  * at runtime when signing/verifying tokens, so we validate it here on
  * first use and cache the encoded result for subsequent calls.
  */
-function getEncodedSecret(): Uint8Array {
+export function getEncodedSecret(): Uint8Array {
   if (!_encodedSecret) {
     if (!process.env.JWT_SECRET) {
       throw new Error('JWT_SECRET environment variable is not configured')

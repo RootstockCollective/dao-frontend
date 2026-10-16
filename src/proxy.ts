@@ -33,6 +33,15 @@ function resolveRateLimitConfig(pathname: string): RouteRateLimitConfig | undefi
   )
 }
 
+// next.config.mjs rewrites these to PostHog and Sentry, which would otherwise receive the browser's cookies.
+const THIRD_PARTY_REWRITE_PATH = /^\/(ingest|monitoring)(\/|$)/
+
+function withoutCookies(request: NextRequest): NextResponse {
+  const headers = new Headers(request.headers)
+  headers.delete('cookie')
+  return NextResponse.next({ request: { headers } })
+}
+
 // Falls back to 127.0.0.1 when no proxy headers are present (local dev, tests).
 // In production the reverse proxy always sets x-forwarded-for / x-real-ip.
 function getClientIp(request: NextRequest): string {
@@ -43,8 +52,48 @@ function getClientIp(request: NextRequest): string {
   )
 }
 
+function buildContentSecurityPolicy(nonce: string): string {
+  const scriptSrc = ["'self'", `'nonce-${nonce}'`, "'strict-dynamic'"]
+  // React's development build needs eval for its debugging stacks.
+  if (process.env.NODE_ENV === 'development') {
+    scriptSrc.push("'unsafe-eval'")
+  }
+
+  return [
+    `script-src ${scriptSrc.join(' ')}`,
+    "worker-src 'self' blob:",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+  ].join('; ')
+}
+
+// Next.js reads the nonce from the request's Content-Security-Policy header and adds it to the scripts it renders.
+function withContentSecurityPolicy(request: NextRequest): NextResponse {
+  const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
+  const policy = buildContentSecurityPolicy(nonce)
+
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-nonce', nonce)
+  requestHeaders.set('Content-Security-Policy', policy)
+
+  const response = NextResponse.next({ request: { headers: requestHeaders } })
+  response.headers.set('Content-Security-Policy', policy)
+
+  return response
+}
+
 export function proxy(request: NextRequest) {
+  if (THIRD_PARTY_REWRITE_PATH.test(request.nextUrl.pathname)) {
+    return withoutCookies(request)
+  }
+
   const { pathname } = request.nextUrl
+  if (!pathname.startsWith('/api/')) {
+    return withContentSecurityPolicy(request)
+  }
+
   const config = resolveRateLimitConfig(pathname)
 
   if (!config) {
@@ -81,5 +130,18 @@ export function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/api/auth/:path*', '/api/support/:path*', '/api/gauges/:path*'],
+  matcher: [
+    '/api/auth/:path*',
+    '/api/support/:path*',
+    '/api/gauges/:path*',
+    '/ingest/:path*',
+    '/monitoring',
+    {
+      source: '/((?!api/|_next/static|_next/image|ingest|monitoring|images/|fonts/|favicon.ico).*)',
+      missing: [
+        { type: 'header', key: 'next-router-prefetch' },
+        { type: 'header', key: 'purpose', value: 'prefetch' },
+      ],
+    },
+  ],
 }

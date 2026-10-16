@@ -5,8 +5,9 @@ import { useBalancesContext } from '@/app/user/Balances/context/BalancesContext'
 import { StakeTokenAmountDisplay } from '@/app/user/Stake/components/StakeTokenAmountDisplay'
 import { Header, Label } from '@/components/Typography'
 import Big from '@/lib/big'
-import { usePermitSigning, useSwapInput, useTokenSelection } from '@/shared/stores/swap'
+import { usePermitSigning, useSwapInput, useTokenAllowance, useTokenSelection } from '@/shared/stores/swap'
 
+import { SwapStepWarning } from '../components/SwapStepWarning'
 import { SwapStepProps } from '../types'
 
 export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepProps) => {
@@ -14,6 +15,7 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
   const { tokenInData } = useTokenSelection()
   const { prices } = useBalancesContext()
   const { signPermit, isSigning, permitSignature, permit } = usePermitSigning()
+  const { allowance, isCheckingAllowance } = useTokenAllowance()
 
   // Calculate amount in currency using price from context
   const amountInCurrency = useMemo(() => {
@@ -40,6 +42,9 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
     return permit.details.amount >= requiredAmount
   }, [permitSignature, permit, requiredAmount])
 
+  // In exactOut mode a newer quote can ask for more than step 1 approved
+  const isAllowanceShort = allowance === null || allowance < requiredAmount
+
   // Handle signing permit
   const handleSignPermit = useCallback(async () => {
     try {
@@ -53,10 +58,10 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
 
   // Auto-advance if existing permit signature covers the current amount
   useEffect(() => {
-    if (isPermitSufficient && !isSigning) {
+    if (isPermitSufficient && !isAllowanceShort && !isSigning) {
       onGoNext()
     }
-  }, [isPermitSufficient, isSigning, onGoNext])
+  }, [isPermitSufficient, isAllowanceShort, isSigning, onGoNext])
 
   // Set button actions
   useEffect(() => {
@@ -64,9 +69,10 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
       primary: {
         label: 'Sign spending cap',
         onClick: handleSignPermit,
-        // Disable if no valid amount, currently signing, or existing permit already covers this amount
-        disabled: !amountIn || !Big(amountIn).gt(0) || isSigning || isPermitSufficient,
-        loading: isSigning,
+        // Disable if no valid amount, currently signing, existing permit already covers this amount,
+        // or the token approval no longer covers it
+        disabled: !amountIn || !Big(amountIn).gt(0) || isSigning || isPermitSufficient || isAllowanceShort,
+        loading: isSigning || isCheckingAllowance,
       },
       secondary: {
         label: 'Back',
@@ -75,7 +81,16 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
         loading: false,
       },
     })
-  }, [amountIn, isSigning, isPermitSufficient, handleSignPermit, onGoBack, setButtonActions])
+  }, [
+    amountIn,
+    isSigning,
+    isPermitSufficient,
+    isAllowanceShort,
+    isCheckingAllowance,
+    handleSignPermit,
+    onGoBack,
+    setButtonActions,
+  ])
 
   // At step 2, amountIn should always exist (user came from step 1)
   if (!amountIn) {
@@ -106,6 +121,14 @@ export const SwapStepTwo = ({ onGoNext, onGoBack, setButtonActions }: SwapStepPr
         This signature authorizes the swap to spend exactly {amountIn} {tokenInData.symbol}. No gas fee is
         required for this step.
       </div>
+
+      {allowance !== null && isAllowanceShort && (
+        <SwapStepWarning
+          message="The amount to swap went up with the latest quote and is now more than you approved. Go back to approve the new amount."
+          className="mt-6"
+          testId="swap-allowance-short-warning"
+        />
+      )}
     </>
   )
 }

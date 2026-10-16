@@ -620,21 +620,6 @@ RNS is the Rootstock equivalent of ENS (Ethereum Name Service). It maps human-re
 
 ---
 
-### Google Tag Manager (Analytics)
-
-GTM is Google's tag management system for deploying analytics and marketing tags without code changes.
-
-**How it's used:**
-- Initialized server-side in the root layout (`src/app/layout.tsx`) via `@next/third-parties/google`.
-- Includes a `<noscript>` iframe fallback for tracking users without JavaScript.
-- Tracks page views, user interactions, and custom events across the dApp.
-
-**Config:** GTM ID `GTM-PTL6VZMT`
-
-**Key files:** `src/app/layout.tsx`, `src/lib/constants.ts`
-
----
-
 ### PostgreSQL — State Sync Database
 
 A PostgreSQL database that stores indexed blockchain state data, providing faster queries than direct RPC calls or The Graph for frequently accessed on-chain data.
@@ -745,7 +730,7 @@ The app links out to several external services for user-facing actions that happ
 > **Canonical source:** `.workflow/rules/coding-conventions.md` and `.workflow/rules/architecture-patterns.md`
 > The sections below provide project-specific context and code examples. For naming, imports, exports, types, error handling, and state management rules, refer to `.workflow/rules/`.
 
-- **Node.js**: Version 24 LTS
+- **Node.js**: the exact version in `.nvmrc`, selected with `nvm use`
 - **Formatting**: Prettier (no semicolons, single quotes, 110 char width)
 - **Linting**: ESLint with Next.js + Storybook plugins
 - **Git Hooks**: Husky pre-commit
@@ -758,7 +743,7 @@ The app links out to several external services for user-facing actions that happ
 
 | File | Purpose |
 |------|---------|
-| `src/app/layout.tsx` | Root layout with providers + GTM |
+| `src/app/layout.tsx` | Root layout with providers |
 | `src/app/providers/ContextProviders.tsx` | All React context providers |
 | `src/config/config.ts` | Wagmi/Viem wallet + chain config |
 | `src/lib/constants.ts` | Global constants, token addresses, chain IDs |
@@ -963,18 +948,18 @@ export const useSwapStore = create<SwapStore>()(
 export const useSiweStore = create<SiweState>()(
   persist(
     immer(set => ({
-      jwtToken: null,
-      setToken: (token) => {
-        set(state => { state.jwtToken = token })  // Immer: direct mutation
+      session: null,
+      setSession: (session) => {
+        set(state => { state.session = session })  // Immer: direct mutation
       },
     })),
-    { name: 'siwe-storage' },  // localStorage key
+    { name: 'siwe-auth-storage' },  // localStorage key
   ),
 )
 
 // Export selectors for derived state
 export const selectIsAuthenticated = (state: SiweState) =>
-  !!state.jwtToken && !isTokenExpired(state.jwtToken)
+  state.session !== null && state.session.expiresAt > Date.now()
 ```
 
 ### Conventions
@@ -1059,8 +1044,8 @@ const Schema = z.object({
 
 1. Client calls `requestChallenge(address)` → server generates SIWE message with nonce, expiry, chain ID
 2. User signs the message with their wallet (`signMessageAsync`)
-3. Client calls `verifySignature(challengeId, signature)` → server verifies and returns JWT
-4. JWT stored in Zustand (`useSiweStore`) → persisted to localStorage
+3. Client posts the signature to `/api/auth/login` → server verifies it and sets the JWT as the HTTP-only `auth-token` cookie
+4. The response's `{ userAddress, expiresAt }` is stored in Zustand (`useSiweStore`) → persisted to localStorage.
 
 ### Security Rules
 
@@ -1073,8 +1058,8 @@ const Schema = z.object({
 ### Authentication State
 
 ```typescript
-const isAuthenticated = useSiweStore(selectIsAuthenticated)  // Checks token exists + not expired
-const userAddress = useSiweStore(selectUserAddress)           // Extracts from JWT payload
+const isAuthenticated = useSiweStore(selectIsAuthenticated)  // Checks session exists + not expired
+const userAddress = useSiweStore(selectUserAddress)           // Address the session belongs to
 ```
 
 ## Feature Flag System

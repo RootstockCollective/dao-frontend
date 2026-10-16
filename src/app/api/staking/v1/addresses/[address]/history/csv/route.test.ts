@@ -5,6 +5,10 @@ vi.mock('@/app/user/Balances/actions', () => ({
   fetchPrices: vi.fn(),
 }))
 
+vi.mock('../action', () => ({
+  getStakingHistoryFromDB: vi.fn(),
+}))
+
 vi.mock('../sources/resolve-staking-history-csv-plan', async importOriginal => {
   const actual = await importOriginal<typeof import('../sources/resolve-staking-history-csv-plan')>()
   return {
@@ -14,12 +18,14 @@ vi.mock('../sources/resolve-staking-history-csv-plan', async importOriginal => {
 })
 
 import { fetchPrices } from '@/app/user/Balances/actions'
+import { getStakingHistoryFromDB } from '../action'
 import { resolveStakingHistoryCsvPlan } from '../sources/resolve-staking-history-csv-plan'
 import { RIF } from '@/lib/constants'
 import type { StakingHistoryByPeriodAndAction } from '../types'
 
 const mockFetchPrices = vi.mocked(fetchPrices)
 const mockResolvePlan = vi.mocked(resolveStakingHistoryCsvPlan)
+const mockGetStakingHistoryFromDB = vi.mocked(getStakingHistoryFromDB)
 
 const address = '0xa18f4fbee88592bee3d51d90ba791e769a9b902f'
 
@@ -45,6 +51,7 @@ const mockGroups: StakingHistoryByPeriodAndAction[] = [
 beforeEach(() => {
   mockFetchPrices.mockResolvedValue({ [RIF]: { price: 0.05 } } as never)
   mockResolvePlan.mockReset()
+  mockGetStakingHistoryFromDB.mockReset()
 })
 
 describe('GET /api/staking/v1/addresses/[address]/history/csv', () => {
@@ -72,6 +79,39 @@ describe('GET /api/staking/v1/addresses/[address]/history/csv', () => {
     expect(text).toContain('0xabc')
   })
 
+  it('ends the CSV with a generic error line when a later database batch fails', async () => {
+    mockResolvePlan.mockResolvedValue({
+      kind: 'database',
+      firstBatch: mockGroups,
+      totalCount: 2,
+      pageSize: 1,
+      address,
+      sortParams: { sort_field: 'period', sort_direction: 'desc' },
+    })
+    mockGetStakingHistoryFromDB.mockRejectedValue(
+      new Error('select * from "StakingHistory" - Connection terminated'),
+    )
+
+    const res = await GET(new Request(`http://localhost/csv`) as never, {
+      params: Promise.resolve({ address }),
+    })
+
+    const reader = res.body!.getReader()
+    const decoder = new TextDecoder()
+    let text = ''
+    await expect(
+      (async () => {
+        for (let chunk = await reader.read(); !chunk.done; chunk = await reader.read()) {
+          text += decoder.decode(chunk.value)
+        }
+      })(),
+    ).rejects.toThrow()
+
+    expect(text).toContain('0xabc')
+    expect(text).toMatch(/\nERROR: Internal server error \([0-9a-f-]{36}\)$/)
+    expect(text).not.toContain('StakingHistory')
+  })
+
   it('returns 500 when plan resolution fails', async () => {
     const err = new Error('Can not fetch staking history from any source')
     err.name = 'ALL_STAKING_HISTORY_SOURCES_FAILED'
@@ -82,7 +122,10 @@ describe('GET /api/staking/v1/addresses/[address]/history/csv', () => {
     })
 
     expect(res.status).toBe(500)
-    const body = await res.json()
-    expect(body.message).toContain('Can not fetch staking history from any source')
+    expect(await res.json()).toEqual({
+      success: false,
+      error: 'Internal server error',
+      errorId: expect.any(String),
+    })
   })
 })

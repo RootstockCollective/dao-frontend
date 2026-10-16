@@ -23,8 +23,8 @@ interface AllTimeShareData {
 /**
  * This builder's share of every RIF reward the protocol has distributed.
  *
- * Both totals come from state-sync: the denominator from `CycleRewardPerToken` summed across
- * cycles, the numerator from `BuilderRewardsClaimed`, which the subgraph accumulates per claim.
+ * Both totals come from state-sync: the denominator from `GaugeNotifyReward`, what every gauge
+ * received, the numerator from `BuilderRewardsClaimed`, which the subgraph accumulates per claim.
  * Only what the builder has earned but not yet claimed still comes from the gauge contract, since
  * it is not an event yet.
  */

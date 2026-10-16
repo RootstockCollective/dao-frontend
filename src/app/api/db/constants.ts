@@ -87,3 +87,6 @@ export const BACKER_TO_BUILDER_COLUMNS = [
   BACKER_TO_BUILDER_BUILDER,
   BACKER_TO_BUILDER_TOTAL_ALLOCATION,
 ]
+
+/** One row per gauge `NotifyReward` event, keyed by the emitting gauge (state-sync v1.6.3+). */
+export const TABLE_GAUGE_NOTIFY_REWARD = 'GaugeNotifyReward'
