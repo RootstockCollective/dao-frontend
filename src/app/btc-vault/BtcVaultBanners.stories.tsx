@@ -1,10 +1,7 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import type React from 'react'
 
 import { StackableBanner } from '@/components/StackableBanner/StackableBanner'
-
-const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
 
 import { DepositWindowSection } from './components/DepositWindowSection'
 import { DisclosureContent } from './components/DisclosureContent'
@@ -60,13 +57,6 @@ export const DisconnectedClosed: Story = {
 /** Disconnected user: deposit window + disclosure (epoch open). */
 export const DisconnectedOpen: Story = {
   name: 'Disconnected — Deposit window + Disclosure',
-  decorators: [
-    Story => (
-      <QueryClientProvider client={queryClient}>
-        <Story />
-      </QueryClientProvider>
-    ),
-  ],
   args: {
     testId: 'DisclosureBanner',
     children: [
@@ -106,8 +96,6 @@ export const DepositsPaused: Story = {
   args: {
     background: PAUSE_BANNER_GRADIENT,
     mobileBackground: PAUSE_BANNER_GRADIENT,
-    decorativeImageColor: '#FFF5E1',
-    decorativeSecondaryColor: '#171412',
     testId: 'PauseBanner',
     children: <PauseBannerContent pauseState={{ deposits: 'paused', withdrawals: 'active' }} />,
   },
@@ -119,8 +107,6 @@ export const WithdrawalsPaused: Story = {
   args: {
     background: PAUSE_BANNER_GRADIENT,
     mobileBackground: PAUSE_BANNER_GRADIENT,
-    decorativeImageColor: '#FFF5E1',
-    decorativeSecondaryColor: '#171412',
     testId: 'PauseBanner',
     children: <PauseBannerContent pauseState={{ deposits: 'active', withdrawals: 'paused' }} />,
   },
@@ -132,8 +118,6 @@ export const BothPaused: Story = {
   args: {
     background: PAUSE_BANNER_GRADIENT,
     mobileBackground: PAUSE_BANNER_GRADIENT,
-    decorativeImageColor: '#FFF5E1',
-    decorativeSecondaryColor: '#171412',
     testId: 'PauseBanner',
     children: <PauseBannerContent pauseState={{ deposits: 'paused', withdrawals: 'paused' }} />,
   },
@@ -149,8 +133,6 @@ export const PausedWithEligibility: Story = {
         testId="PauseBanner"
         background={PAUSE_BANNER_GRADIENT}
         mobileBackground={PAUSE_BANNER_GRADIENT}
-        decorativeImageColor="#FFF5E1"
-        decorativeSecondaryColor="#171412"
       >
         <PauseBannerContent pauseState={{ deposits: 'paused', withdrawals: 'paused' }} />
       </StackableBanner>
@@ -164,13 +146,6 @@ export const PausedWithEligibility: Story = {
 /** Connected: pause banner stacked above deposit window + disclosure. */
 export const PausedWithDepositWindow: Story = {
   name: 'Connected — Paused + Deposit window',
-  decorators: [
-    Story => (
-      <QueryClientProvider client={queryClient}>
-        <Story />
-      </QueryClientProvider>
-    ),
-  ],
   args: { children: null as unknown as React.ReactNode },
   render: () => (
     <div className="flex flex-col">
@@ -178,8 +153,6 @@ export const PausedWithDepositWindow: Story = {
         testId="PauseBanner"
         background={PAUSE_BANNER_GRADIENT}
         mobileBackground={PAUSE_BANNER_GRADIENT}
-        decorativeImageColor="#FFF5E1"
-        decorativeSecondaryColor="#171412"
       >
         <PauseBannerContent pauseState={{ deposits: 'paused', withdrawals: 'active' }} />
       </StackableBanner>

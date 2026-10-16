@@ -1,29 +1,73 @@
 import { DateTime } from 'luxon'
 
 import { Cycle } from '@/app/collective-rewards/metrics'
-import { Header } from '@/components/Typography'
+import { NEED_RIF, NEED_STRIF } from '@/app/user/IntroModal/hooks/useRequiredTokens'
+import { Span } from '@/components/Typography'
 
-import { BANNER_CONFIGS, CYCLE_ENDED, CYCLE_ENDING, KYC_ONLY, NOT_BACKING, START_BUILDING } from './constants'
+import {
+  BANNER_CONFIGS,
+  CYCLE_ENDED,
+  CYCLE_ENDING,
+  KYC_ONLY,
+  NEED_RBTC_AND_RIF_ID,
+  NOT_BACKING,
+  START_BUILDING,
+} from './constants'
 import { BannerConfig } from './types'
 
+export const STACK_ORDER = [
+  NEED_RBTC_AND_RIF_ID,
+  NEED_RIF,
+  NEED_STRIF,
+  CYCLE_ENDED,
+  CYCLE_ENDING,
+  NOT_BACKING,
+  KYC_ONLY,
+  START_BUILDING,
+]
+
+const BANNER_FAMILIES = new Map<string, string>([
+  [CYCLE_ENDED, 'cycle'],
+  [CYCLE_ENDING, 'cycle'],
+])
+
 /**
- * Randomly shuffles banner configs and returns at most 2 banners.
- * This ensures we don't overwhelm the user with too many banners at once.
+ * Orders the notifications to show. Every active notification is shown, in STACK_ORDER, with
+ * one exception: a cycle boundary fires both cycle notifications, and only the first of them
+ * is kept so the stack does not tell the same news twice.
+ *
+ * Anything not listed in STACK_ORDER goes last, in the order the detection functions produced.
  *
  * @param bannerConfigs - Array of banner configurations to process
- * @returns Array of at most 2 randomly selected banner configs
+ * @returns Every banner config to display, highest priority first
  *
  * @example
- * // If you have 5 banner configs, this will return 2 randomly selected ones
- * // If you have 1 or fewer configs, returns them as-is
+ * // A user without rBTC whose cycle just ended and who has stRIF left to back sees
+ * // "Get rBTC", then "Cycle just ended", then "Back Builders", in that order, on every load
  */
-export const selectRandomBannerConfigs = (bannerConfigs: BannerConfig[]): BannerConfig[] => {
-  // Dynamically group by categories that actually exist in the configs
+export const selectBannerConfigs = (bannerConfigs: BannerConfig[]): BannerConfig[] => {
   if (bannerConfigs.length <= 1) {
     return bannerConfigs
   }
 
-  return [...bannerConfigs].sort(() => 0.5 - Math.random()).slice(0, 2)
+  const rank = ({ id }: BannerConfig) => {
+    const position = STACK_ORDER.indexOf(id)
+    return position === -1 ? STACK_ORDER.length : position
+  }
+
+  const seenFamilies = new Set<string>()
+
+  // Array.prototype.sort is stable, so unranked notifications keep their relative order
+  return [...bannerConfigs]
+    .sort((a, b) => rank(a) - rank(b))
+    .filter(({ id }) => {
+      const family = BANNER_FAMILIES.get(id)
+      if (!family) return true
+      if (seenFamilies.has(family)) return false
+
+      seenFamilies.add(family)
+      return true
+    })
 }
 
 /**
@@ -65,9 +109,9 @@ export const getBannerConfigForCycleEnding = (cycle: Cycle): BannerConfig | null
   return {
     ...staticConfig,
     rightContent: (
-      <Header variant="h1" className="text-black md:text-white">
+      <Span bold variant="body-s" className="text-banner-title mr-2 whitespace-nowrap tabular-nums">
         {`${diff.toFormat("d'd' hh'h' mm'm'")}`}
-      </Header>
+      </Span>
     ),
   }
 }

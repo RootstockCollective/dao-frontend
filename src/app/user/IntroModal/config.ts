@@ -1,50 +1,5 @@
+import { STAKE_RIF_ROUTE } from '@/lib/constants'
 import { currentLinks } from '@/lib/links'
-
-// Image paths configuration
-export const IMAGE_CONFIG = {
-  NEED_RBTC_RIF: {
-    desktop: {
-      bg: '/images/intro/rbtc-rif-bg-desktop.jpg',
-      pixels: '/images/intro/rbtc-rif-pixels-desktop.png',
-    },
-    mobile: {
-      bg: '/images/intro/rbtc-rif-bg-mobile.jpg',
-      pixels: '/images/intro/rbtc-rif-pixels-mobile.png',
-    },
-  },
-  NEED_RBTC: {
-    desktop: {
-      bg: '/images/intro/rbtc-bg-desktop.jpg',
-      pixels: '/images/intro/rbtc-pixels-desktop.png',
-    },
-    mobile: {
-      bg: '/images/intro/rbtc-bg-mobile.jpg',
-      pixels: '/images/intro/rbtc-pixels-mobile.png',
-    },
-  },
-  NEED_RIF: {
-    desktop: {
-      bg: '/images/intro/rif-bg-desktop.jpg',
-      pixels: '/images/intro/rif-pixels-desktop.png',
-    },
-    mobile: {
-      bg: '/images/intro/rif-bg-mobile.jpg',
-      pixels: '/images/intro/rif-pixels-mobile.png',
-    },
-  },
-  NEED_STRIF: {
-    desktop: {
-      bg: '/images/intro/strif-bg-desktop.jpg',
-      pixels: '/images/intro/strif-pixels-desktop.png',
-    },
-    mobile: {
-      bg: '/images/intro/strif-bg-mobile.jpg',
-      pixels: '/images/intro/strif-pixels-mobile.png',
-    },
-  },
-} as const
-
-// Content configuration
 
 export const CONTENT_CONFIG = {
   NEED_RBTC_RIF: {
@@ -98,11 +53,14 @@ export const CONTENT_CONFIG = {
     showRif: false,
     showBalance: true,
     action: {
-      url: '/user?action=stake',
+      url: STAKE_RIF_ROUTE,
       external: false,
     },
   },
 } as const
+
+/** Days a closed step stays hidden before the modal shows it again */
+export const INTRO_MODAL_REMIND_AFTER_DAYS = 7
 
 export type IntroModalStatus = keyof typeof CONTENT_CONFIG
 export type IntroModalContentProps = (typeof CONTENT_CONFIG)[IntroModalStatus]

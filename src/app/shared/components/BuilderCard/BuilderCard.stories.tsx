@@ -79,6 +79,14 @@ const mockEstimatedRewards = {
       currency: 'USD',
     },
   },
+  usdrif: {
+    amount: {
+      value: parseEther('100'),
+      price: 1,
+      symbol: 'USDRIF',
+      currency: 'USD',
+    },
+  },
 }
 
 const baseAllocationInputProps = {

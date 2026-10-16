@@ -1,6 +1,7 @@
 import { type IconProps } from './types'
 
 const DEFAULT_ICON_SIZE = 20
+const VIEW_BOX_SIZE = 20
 
 export function CloseIconKoto({
   'aria-label': ariaLabel = 'Close Icon Koto',
@@ -14,7 +15,7 @@ export function CloseIconKoto({
     <svg
       width={size}
       height={size}
-      viewBox={`0 0 ${size} ${size}`}
+      viewBox={`0 0 ${VIEW_BOX_SIZE} ${VIEW_BOX_SIZE}`}
       fill="none"
       aria-label={ariaLabel}
       {...props}

@@ -10,7 +10,7 @@ const config = [
   // Keep `eslint .` scoped to the working copy: git worktrees, build output, and IDE
   // folders are not ignored by default and make lint appear "stuck" (duplicate src + .next).
   {
-    ignores: ['**/.worktrees/**', '**/.next/**', '.cursor/**', '.eslintcache'],
+    ignores: ['**/*worktree*/**', '**/.next/**', '.cursor/**', '.eslintcache'],
   },
 
   ...nextCoreWebVitals,

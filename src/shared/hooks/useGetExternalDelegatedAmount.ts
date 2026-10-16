@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Address } from 'viem'
-import { useAccount, useReadContract } from 'wagmi'
+import { useReadContract } from 'wagmi'
 
 import { useGetDelegates } from '@/app/user/Delegation/hooks/useGetDelegates'
 import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
@@ -28,9 +28,9 @@ import { getEnsDomainName } from '@/lib/rns'
  * - 0n if no external delegations exist
  */
 export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
-  const { address: ownAddress } = useAccount()
   const {
     delegateeAddress,
+    delegationStatus,
     isLoading: isDelegateLoading,
     refetch: refetchDelegate,
   } = useGetDelegates(address)
@@ -47,11 +47,11 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
     isLoading: isVotingPowerLoading,
     refetch: refetchVotingPower,
   } = useReadContract(
-    ownAddress && {
+    address && {
       abi: StRIFTokenAbi,
       address: STRIF_ADDRESS,
       functionName: 'getVotes',
-      args: [ownAddress],
+      args: [address],
       query: {
         refetchInterval: AVERAGE_BLOCKTIME,
       },
@@ -75,11 +75,11 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
     isLoading: isBalanceLoading,
     refetch: refetchBalance,
   } = useReadContract(
-    ownAddress && {
+    address && {
       abi: StRIFTokenAbi,
       address: STRIF_ADDRESS,
       functionName: 'balanceOf',
-      args: [ownAddress],
+      args: [address],
       query: {
         refetchInterval: AVERAGE_BLOCKTIME,
       },
@@ -87,39 +87,35 @@ export const useGetExternalDelegatedAmount = (address: Address | undefined) => {
   )
 
   const isLoading = isDelegateLoading || isVotingPowerLoading || isBalanceLoading
+  const isAccountRead = delegationStatus !== undefined && votingPower !== undefined && balance !== undefined
 
-  const didIDelegateToMyself = ownAddress === delegateeAddress
+  const didIDelegateToMyself = delegationStatus === 'self'
   const doIHaveVotingPower = (votingPower || 0n) > 0n
 
   let amountDelegatedToMe = 0n
-  let delegated = 0n
-  let own = balance || 0n
-
-  if (!didIDelegateToMyself) {
-    delegated = own || 0n
-  }
+  const own = balance || 0n
+  const delegated = delegationStatus === 'other' ? own : 0n
 
   if (!didIDelegateToMyself && doIHaveVotingPower) {
     amountDelegatedToMe = votingPower || 0n
   }
 
-  if (didIDelegateToMyself && votingPower && balance && votingPower > balance) {
-    amountDelegatedToMe = votingPower - balance
+  if (didIDelegateToMyself && votingPower && votingPower > own) {
+    amountDelegatedToMe = votingPower - own
   }
 
-  const refetch = () => {
-    refetchVotingPower()
-    refetchBalance()
-    refetchDelegate()
-  }
+  const refetch = useCallback(async () => {
+    await Promise.all([refetchVotingPower(), refetchBalance(), refetchDelegate()])
+  }, [refetchVotingPower, refetchBalance, refetchDelegate])
 
   return {
     amount: amountDelegatedToMe,
     isLoading,
-    didIDelegateToMyself,
+    isAccountRead,
+    delegationStatus,
     delegated,
     own,
-    available: amountDelegatedToMe + (own - delegated),
+    available: votingPower ?? (didIDelegateToMyself ? own : 0n),
     delegateeAddress,
     refetch,
     delegateeVotingPower,

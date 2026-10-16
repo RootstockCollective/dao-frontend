@@ -89,6 +89,8 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
     refetchContracts()
   }, [refetchRbtc, refetchContracts])
 
+  const failedContractRead = contracts?.find(contract => contract.status === 'failure')
+
   return {
     data: [
       buildTokenBalanceObject(
@@ -115,7 +117,7 @@ export const useGetAddressTokens = (address: Address, chainId?: number) => {
       ),
     ] as AddressToken[],
     isLoading: rbtcLoading || contractsLoading || IsTokenDataLoading,
-    error: rbtcError ?? contractsError ?? tokenDataError,
+    error: rbtcError ?? contractsError ?? tokenDataError ?? failedContractRead?.error ?? null,
     refetch,
   }
 }

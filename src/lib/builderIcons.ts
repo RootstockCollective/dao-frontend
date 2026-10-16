@@ -18,7 +18,7 @@ export const BUILDER_ICON_CIDS = {
   simpleFi: 'bafkreicfhmx2s2bgunwykjseyz3lvprbzjzacct4pdq4niarh4fe7jmyei',
   steerProtocol: 'bafkreigr5rzqjt6fk3pybv4oh44o2mpuqcn7z7r5r2omfinym6yos7jmfy',
   steliosAndMick: 'bafkreiawwtwag5nxjwws4m6a4yjvyn5t3kqmkl7tss6znlq3hybrnax7hu',
-  symbiosis: 'bafkreidnpripb4tvqav7onyk3olyvgypj4tb7rqcuqegnipcmd53p7f5ue',
+  symbiosis: 'bafkreig5uarkpelblqcphzjgmekblounqtwe36pwnblq32ckjqfolvgtle',
   tally: 'bafkreiejkeuah7ee73w2sxb4p7dny5rocrtxnddwmn5qqwwpv342atdm4a',
   tropykus: 'bafkreigi6cjhvsarwyq3qjkrzqvx7q45z56v5dqw7wica2ablx4f3dy3ku',
   vottun: 'bafkreieums7xvazyubnlulrwgdd7wjlxvfazkbuspnxcpiw2bixmygyjp4',
