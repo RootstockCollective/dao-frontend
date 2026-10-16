@@ -4,6 +4,7 @@ import {
   encodeFunctionData,
   parseUnits,
   type AbiFunction,
+  getAddress,
   type Address,
   type Hex,
 } from 'viem'
@@ -17,8 +18,9 @@ import {
 } from './uniswap'
 import type { PermitSingle } from '../permit2'
 import { ROUTER_ADDRESSES, SWAP_TOKEN_ADDRESSES } from '../constants'
+import { multicallWithGasEnvelopeRetry } from '../multicallWithGasEnvelopeRetry'
 import { resolveSwapRoute } from '../routes'
-import { getTokenDecimals } from '../utils'
+import { getTokenDecimalsBatch } from '../utils'
 import { UniswapQuoterV2Abi } from '@/lib/abis/UniswapQuoterV2Abi'
 import { tokenContracts } from '@/lib/contracts'
 import { RIF, UNISWAP_UNIVERSAL_ROUTER_ADDRESS } from '@/lib/constants'
@@ -60,7 +62,7 @@ function getTwoHopFeeCombinations(): number[][] {
 
 async function getBestMultihopExactInputFromMulticall(routeTokens: readonly Address[], amountIn: bigint) {
   const hopCombos = getTwoHopFeeCombinations()
-  const multicall = await publicClient.multicall({
+  const multicall = await multicallWithGasEnvelopeRetry(publicClient, {
     contracts: hopCombos.map(hopFees => ({
       address: ROUTER_ADDRESSES.UNISWAP_QUOTER_V2,
       abi: UniswapQuoterV2Abi,
@@ -165,9 +167,10 @@ describe('uniswap provider - integration tests', () => {
   beforeAll(async () => {
     if (hasRealAddresses) {
       try {
-        tokenInDecimals = await getTokenDecimals(realTokenIn)
-        tokenOutDecimals = await getTokenDecimals(realTokenOut)
-        rifDecimals = await getTokenDecimals(rifToken)
+        const decimalsMap = await getTokenDecimalsBatch([realTokenIn, realTokenOut, rifToken])
+        tokenInDecimals = decimalsMap[getAddress(realTokenIn)]!
+        tokenOutDecimals = decimalsMap[getAddress(realTokenOut)]!
+        rifDecimals = decimalsMap[getAddress(rifToken)]!
       } catch (error) {
         console.warn('Failed to fetch token decimals, some tests may be skipped:', error)
       }
