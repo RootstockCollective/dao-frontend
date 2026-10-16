@@ -12,6 +12,7 @@ import Scroll from '../Scroll'
 import { ContainerDesktop } from './ContainerDesktop'
 import ContainerMobile from './ContainerMobile'
 import { LayoutProvider } from './LayoutProvider'
+import { TopBarDockProvider } from './TopBarDockProvider'
 
 export const MainContainer = ({ children }: PropsWithChildren) => {
   const isDesktop = useIsDesktop()
@@ -22,18 +23,20 @@ export const MainContainer = ({ children }: PropsWithChildren) => {
     <DelayedRender>
       <LayoutProvider>
         <ToastContainer />
-        <StepperProvider>
-          {shouldDisplayContent ? (
-            <>
-              <Scroll />
-              {isDesktop ? (
-                <ContainerDesktop key="container">{children}</ContainerDesktop>
-              ) : (
-                <ContainerMobile key="container">{children}</ContainerMobile>
-              )}
-            </>
-          ) : null}
-        </StepperProvider>
+        <TopBarDockProvider>
+          <StepperProvider>
+            {shouldDisplayContent ? (
+              <>
+                <Scroll />
+                {isDesktop ? (
+                  <ContainerDesktop key="container">{children}</ContainerDesktop>
+                ) : (
+                  <ContainerMobile key="container">{children}</ContainerMobile>
+                )}
+              </>
+            ) : null}
+          </StepperProvider>
+        </TopBarDockProvider>
       </LayoutProvider>
     </DelayedRender>
   )
