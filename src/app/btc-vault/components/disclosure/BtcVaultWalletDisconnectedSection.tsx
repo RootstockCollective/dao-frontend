@@ -4,7 +4,7 @@ import { useAccount } from 'wagmi'
 
 import { WalletNotConnectedSection } from '@/components/WalletNotConnectedSection'
 
-import { WALLET_NOT_CONNECTED_SUBTITLE, WALLET_NOT_CONNECTED_TITLE } from '../constants'
+import { WALLET_NOT_CONNECTED_SUBTITLE, WALLET_NOT_CONNECTED_TITLE } from '../../constants'
 
 /**
  * Renders the wallet-not-connected section at the bottom of the BTC Vault page
