@@ -8,6 +8,12 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      replicas:
+        description: "Pod replica count"
+        required: false
+        default: "2"
+        type: string
 
 # Declare default permissions as read only.
 permissions: read-all
@@ -99,6 +105,7 @@ jobs:
             --namespace ${{ env.NAMESPACE }} \
             --values ./helm/values-dev.yaml \
             --set image.tag=$IMAGE_TAG \
+            --set replicaCount=${{ github.event.inputs.replicas || '2' }} \
             --wait \
             --timeout 10m
 
