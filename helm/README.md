@@ -17,7 +17,6 @@ Deploy to specific environments using environment-specific values files.
 **Note:** Each environment deploys to its own namespace:
 - `dao-frontend-dev` for development
 - `dao-frontend-qa` for QA
-- `dao-frontend-cr-qa` for CR QA
 - `dao-frontend-rc-testnet` for RC Testnet
 - `dao-frontend-rc-mainnet` for RC Mainnet
 
@@ -27,9 +26,6 @@ helm upgrade --install dao-frontend-dev ./helm -f helm/values-dev.yaml
 
 # Deploy to DAO QA
 helm upgrade --install dao-frontend-qa ./helm -f helm/values-qa.yaml
-
-# Deploy to CR QA
-helm upgrade --install dao-frontend-cr-qa ./helm -f helm/values-cr-qa.yaml
 
 # Deploy to RC Testnet
 helm upgrade --install dao-frontend-rc-testnet ./helm -f helm/values-rc-testnet.yaml
@@ -49,7 +45,6 @@ helm upgrade --install dao-frontend-dev ./helm \
 |------|-------------|----------------|-----------------------------------|
 | `values-dev.yaml` | Development | `rscoll-dev-dao-dev` | `930eac4...` |
 | `values-qa.yaml` | DAO QA | `rscoll-dev-dao-qa` | `14231be...` |
-| `values-cr-qa.yaml` | CR QA | `rscoll-dev-bim-qa` | `615a41a...` |
 | `values-rc-testnet.yaml` | RC Testnet | `rscoll-dev-dao-staging` | `639c687...` |
 | `values-rc-mainnet.yaml` | RC Mainnet | `rscoll-dev-dao-rc-mainnet` | `639c687...` |
 
@@ -120,7 +115,7 @@ Each environment deploys to its own namespace:
 kubectl get namespaces | grep dao-frontend
 kubectl get pods --all-namespaces | grep dao-frontend
 
-# Check specific environment (replace 'dev' with qa, cr-qa, rc-testnet, or rc-mainnet)
+# Check specific environment (replace 'dev' with qa, rc-testnet, or rc-mainnet)
 ENVIRONMENT=dev
 
 # Check release status
@@ -154,9 +149,6 @@ kubectl logs -n dao-frontend-dev -l app.kubernetes.io/name=dao-frontend -f
 kubectl get pods -n dao-frontend-qa
 kubectl logs -n dao-frontend-qa -l app.kubernetes.io/name=dao-frontend -f
 
-# CR QA
-kubectl get pods -n dao-frontend-cr-qa
-kubectl logs -n dao-frontend-cr-qa -l app.kubernetes.io/name=dao-frontend -f
 
 # RC Testnet
 kubectl get pods -n dao-frontend-rc-testnet

@@ -441,7 +441,6 @@ dao-frontend/
 | Mainnet | `.mainnet` | https://app.rootstockcollective.xyz | 30 |
 | Dev | `.dev` | https://dev.app.rootstockcollective.xyz | 31 (reduced timings) |
 | Testnet Local | `.testnet.local` | http://localhost:3000 | 31 (CORS bypass) |
-| CR QA | `.cr.qa` | https://qa.cr.rootstockcollective.xyz | 31 |
 | DAO QA | `.dao.qa` | https://qa.dao.rootstockcollective.xyz | 31 |
 | Fork | `.fork` | http://localhost:3000 | 31337 (Anvil) |
 | RC Testnet | `.release-candidate-testnet` | https://release-candidate-testnet.app.rootstockcollective.xyz | 31 |
