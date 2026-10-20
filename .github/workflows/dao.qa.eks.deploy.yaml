@@ -6,7 +6,8 @@ name: Deploy to Amazon EKS (dao-qa)
 on:
   push:
     branches:
-      - feat/add-helm-chart-k8s-deployment
+      - main
+  workflow_dispatch:
 
 # Declare default permissions as read only.
 permissions: read-all
