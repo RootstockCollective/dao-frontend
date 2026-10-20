@@ -8,7 +8,7 @@ This document is the single source of truth for what we track with PostHog in th
 
 We run the dApp against multiple chains: **local**, **testnet**, and **mainnet**. Mixing analytics across them would pollute every report.
 
-Every event is automatically tagged with an `environment` property derived from `NEXT_PUBLIC_PROFILE`. Values you will see: `local`, `testnet`, `mainnet`, `dev`, `cr.qa`, `dao.qa`, `fork`, `release-candidate-testnet`, `release-candidate-mainnet`.
+Every event is automatically tagged with an `environment` property derived from `NEXT_PUBLIC_PROFILE`. Values you will see: `local`, `testnet`, `mainnet`, `dev`, `dao.qa`, `fork`, `release-candidate-testnet`, `release-candidate-mainnet`.
 
 **For product / analysts:** every insight, funnel, or dashboard should include a filter on `environment` (or be duplicated per environment). When you build a new view, set the filter explicitly so you don't accidentally aggregate test data into production metrics.
 
