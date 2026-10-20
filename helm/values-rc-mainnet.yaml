@@ -24,4 +24,8 @@ externalSecrets:
     daoDataDbConnectionString: /rscoll-dev-eks/rc-mainnet/dao-data-database-uri
     btcVaultGraphApiKey: /rscoll-dev/rc-mainnet/btc-vault-graph-api-key
     coinMarketCapKey: /rscoll-dev-coinmarketcap-key
+    blockscoutApiKey: /rscoll-dev/rc-mainnet/blockscout-api-key
+    slackSupportWebhookUrl: /rscoll-dev/rc-mainnet/slack-support-webhook-url
+    turnstileSecretKey: /rscoll-dev/rc-mainnet/turnstile-secret-key
+    envioSyncCheckSlackWebhookUrl: /rscoll-dev-envio-sync-check-slack-webhook-url
     jwtSecret: /rscoll-dev/rc-mainnet/jwt-secret

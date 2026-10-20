@@ -61,6 +61,34 @@ spec:
               name: {{ include "dao-frontend.fullname" . }}-secrets
               key: jwt-secret
         {{- end }}
+        {{- if .Values.externalSecrets.parameterPaths.blockscoutApiKey }}
+        - name: BLOCKSCOUT_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "dao-frontend.fullname" . }}-secrets
+              key: blockscout-api-key
+        {{- end }}
+        {{- if .Values.externalSecrets.parameterPaths.slackSupportWebhookUrl }}
+        - name: SLACK_SUPPORT_WEBHOOK_URL
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "dao-frontend.fullname" . }}-secrets
+              key: slack-support-webhook-url
+        {{- end }}
+        {{- if .Values.externalSecrets.parameterPaths.turnstileSecretKey }}
+        - name: TURNSTILE_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "dao-frontend.fullname" . }}-secrets
+              key: turnstile-secret-key
+        {{- end }}
+        {{- if .Values.externalSecrets.parameterPaths.envioSyncCheckSlackWebhookUrl }}
+        - name: ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "dao-frontend.fullname" . }}-secrets
+              key: envio-sync-check-slack-webhook-url
+        {{- end }}
         livenessProbe:
           {{- toYaml .Values.livenessProbe | nindent 10 }}
         readinessProbe:
