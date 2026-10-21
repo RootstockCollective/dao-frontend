@@ -12,6 +12,7 @@ type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
+    'aria-label': 'For 33%, against 33%, abstain 33%',
     values: [
       { value: 10, color: 'var(--st-success)' },
       { value: 10, color: 'var(--st-error)' },
@@ -22,6 +23,7 @@ export const Default: Story = {
 
 export const FiftyFifty: Story = {
   args: {
+    'aria-label': 'For 50%, against 50%',
     values: [
       { value: 50, color: 'var(--st-success)' },
       { value: 50, color: 'var(--st-error)' },
@@ -31,6 +33,7 @@ export const FiftyFifty: Story = {
 
 export const AbstainWinning: Story = {
   args: {
+    'aria-label': 'For 8%, against 8%, abstain 84%',
     values: [
       { value: 10, color: 'var(--st-success)' },
       { value: 10, color: 'var(--st-error)' },

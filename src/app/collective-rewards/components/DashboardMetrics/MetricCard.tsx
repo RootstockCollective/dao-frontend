@@ -1,0 +1,42 @@
+import { ReactNode } from 'react'
+
+import { Header, Label } from '@/components/Typography'
+import { cn } from '@/lib/utils'
+
+import { CARD_RADIUS } from '../../constants/dashboardSurface'
+
+export interface MetricCardProps {
+  label: ReactNode
+  value: ReactNode
+  sub?: ReactNode
+  footer?: ReactNode
+  className?: string
+  'data-testid'?: string
+}
+
+export const MetricCard = ({
+  label,
+  value,
+  sub,
+  footer,
+  className,
+  'data-testid': dataTestId = 'MetricCard',
+}: MetricCardProps) => (
+  <div
+    className={cn('bg-v3-bg-accent-80 p-4 md:p-5 flex flex-col gap-2 min-w-0', CARD_RADIUS, className)}
+    data-testid={dataTestId}
+  >
+    <Label variant="tag-s" caps className="text-v3-text-40 tracking-wider">
+      {label}
+    </Label>
+
+    <div className="flex flex-col gap-0.5 min-w-0">
+      <Header variant="h2" className="text-v3-text-100 truncate">
+        {value}
+      </Header>
+      {sub}
+    </div>
+
+    {footer}
+  </div>
+)
