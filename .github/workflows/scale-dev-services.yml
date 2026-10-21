@@ -13,7 +13,6 @@ on:
           - rscoll-dev-dao-staging
           - rscoll-dev-dao-rc-mainnet
           - rscoll-dev-dao-qa
-          - rscoll-dev-bim-qa
       desired_count:
         description: Desired task count
         required: true
