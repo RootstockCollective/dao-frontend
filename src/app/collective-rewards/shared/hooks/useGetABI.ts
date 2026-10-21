@@ -3,7 +3,7 @@ import { Address } from 'viem'
 
 import { getBackerRewardPercentage } from '@/app/collective-rewards/rewards'
 import Big from '@/lib/big'
-import { ABI_CYCLES_LIMIT, RBTC, RIF, USDRIF, WeiPerEther } from '@/lib/constants'
+import { ABI_CYCLES_LIMIT, CYCLES_PER_YEAR, RBTC, RIF, USDRIF, WeiPerEther } from '@/lib/constants'
 import { TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
@@ -35,12 +35,24 @@ export interface AbiData {
   cycles: CycleData[]
 }
 
+/** Per-cycle rate compounded over `CYCLES_PER_YEAR`, as a percentage. Inverse: `getCycleRateFromAbi`. */
 export const calculateAbi = (rewardsPerStRif: Big, rifPrice: number): Big => {
   if (!rifPrice) {
     return Big(0)
   }
 
-  return Big(1).add(rewardsPerStRif.div(WeiPerEther.toString()).div(rifPrice)).pow(26).minus(1).mul(100)
+  return Big(1)
+    .add(rewardsPerStRif.div(WeiPerEther.toString()).div(rifPrice))
+    .pow(CYCLES_PER_YEAR)
+    .minus(1)
+    .mul(100)
+}
+
+/** Per-cycle rate (0..1) implied by an ABI percentage; the inverse of `calculateAbi`. */
+export const getCycleRateFromAbi = (abiPct: number | null): number | null => {
+  if (abiPct === null || !Number.isFinite(abiPct) || abiPct <= -100) return null
+
+  return Math.pow(1 + abiPct / 100, 1 / CYCLES_PER_YEAR) - 1
 }
 
 export const useGetABI = (abiData: AbiData | undefined) => {
