@@ -2,7 +2,7 @@
 import { produce } from 'immer'
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react'
 import { formatEther } from 'viem'
-import { useAccount, useReadContract } from 'wagmi'
+import { useAccount } from 'wagmi'
 
 import { initialContextState, initialDataState, initialUIState } from '@/app/delegate/lib/constants'
 import { keepsOwnVotes } from '@/app/delegate/lib/delegationStatus'
@@ -12,10 +12,8 @@ import {
   DelegateeState,
   DelegateUIState,
 } from '@/app/delegate/lib/types'
+import { getVotingWeightPercent } from '@/app/delegate/lib/utils'
 import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
-import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import Big from '@/lib/big'
-import { tokenContracts } from '@/lib/contracts'
 import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDelegatedAmount'
 
 // Context
@@ -57,13 +55,12 @@ export const DelegateContextProvider = ({ children }: Props) => {
   } = useGetExternalDelegatedAmount(address)
 
   // Fetch all delegates to get image data for current delegatee
-  const { nftHolders: allDelegates, refetch: refetchAllDelegates } = useNftHoldersWithVotingPower()
+  const {
+    nftHolders: allDelegates,
+    totalDelegatedVotes,
+    refetch: refetchAllDelegates,
+  } = useNftHoldersWithVotingPower()
 
-  const { data: totalSupply } = useReadContract({
-    abi: StRIFTokenAbi,
-    address: tokenContracts.stRIF,
-    functionName: 'totalSupply',
-  })
   // Find current delegatee's data efficiently in a single useMemo
   const getDelegateeData = useCallback(
     (delegateeAddress: string | undefined) => {
@@ -81,25 +78,18 @@ export const DelegateContextProvider = ({ children }: Props) => {
         delegate => delegate.address.toLowerCase() === delegateeAddress.toLowerCase(),
       )
 
-      // Calculate voting weight as percentage of total supply
-      let votingWeight: string | undefined
-      const delegateeVotingPower = delegatee?.votingPower?.toString()
-      if (delegateeVotingPower && totalSupply) {
-        const votingPowerNumber = Big(delegateeVotingPower)
-        const totalSupplyNumber = Big(formatEther(totalSupply))
-        votingWeight = votingPowerNumber.div(totalSupplyNumber).times(100).toFixed(2) + '%'
-      }
+      const weightPercent = getVotingWeightPercent(delegatee?.votingPower, totalDelegatedVotes)
 
       return {
         imageIpfs: delegatee?.imageIpfs,
         delegatedSince: delegatee?.delegatedSince,
         totalVotes: delegatee?.totalVotes,
         delegators: delegatee?.delegators,
-        votingWeight,
-        votingPower: delegateeVotingPower,
+        votingWeight: weightPercent === undefined ? undefined : `${weightPercent}%`,
+        votingPower: delegatee?.votingPower.toString(),
       }
     },
-    [allDelegates, totalSupply],
+    [allDelegates, totalDelegatedVotes],
   )
 
   // Destructure for easier access
