@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 
+import { getCycleRateFromAbi } from '@/app/collective-rewards/shared/hooks/useGetABI'
 import { SegmentedControl } from '@/components/SegmentedControl'
 import { Header, Label, Paragraph, Span } from '@/components/Typography'
 import Big from '@/lib/big'
@@ -10,7 +11,6 @@ import { cn, formatNumberWithCommas } from '@/lib/utils'
 
 import { formatUsdWhole } from '../../utils/dashboardFormatters'
 
-/** Positions a Backer might plausibly hold, spanning three orders of magnitude. */
 const PRESETS = [
   { value: 250_000, label: '250K' },
   { value: 1_000_000, label: '1M' },
@@ -35,25 +35,24 @@ const Figure = ({ label, value, sub }: { label: string; value: string; sub: stri
 )
 
 export interface PositionSimulatorProps {
-  /** Annualised backer incentive, as a percentage. `null` while it loads. */
+  /** `null` while it loads. */
   abiPct: number | null
   rifPrice: number
   className?: string
 }
 
 /**
- * Projects what a given stRIF position would earn at the current ABI. Deliberately a
- * what-if: it never reads the connected wallet, so the presets mean the same thing to
- * everyone looking at the page.
+ * A what-if that never reads the connected wallet. Annual and per-cycle figures share one
+ * per-cycle rate (the inverse of `calculateAbi`), so per-cycle × 26 is intentionally not the
+ * annual figure: the ABI compounds.
  */
 export const PositionSimulator = ({ abiPct, rifPrice, className }: PositionSimulatorProps) => {
   const [position, setPosition] = useState(DEFAULT_POSITION)
 
-  // Without a usable ABI the projections are unknown, not zero.
-  const annualRate = abiPct !== null && Number.isFinite(abiPct) ? abiPct / 100 : null
+  const cycleRate = getCycleRateFromAbi(abiPct)
+  const annualRate = cycleRate === null ? null : Math.pow(1 + cycleRate, CYCLES_PER_YEAR) - 1
   const annualRif = annualRate === null ? null : Big(position).mul(annualRate)
-  const perCycleRif =
-    annualRate === null ? null : Big(position).mul(Math.pow(1 + annualRate, 1 / CYCLES_PER_YEAR) - 1)
+  const perCycleRif = cycleRate === null ? null : Big(position).mul(cycleRate)
 
   return (
     <div
@@ -111,7 +110,7 @@ export const PositionSimulator = ({ abiPct, rifPrice, className }: PositionSimul
         <Figure
           label="Per cycle"
           value={perCycleRif === null ? '—' : `${formatNumberWithCommas(perCycleRif.round(0))} ${RIF}`}
-          sub={`${CYCLES_PER_YEAR} cycles a year`}
+          sub={`Compounded over ${CYCLES_PER_YEAR} cycles a year`}
         />
       </div>
 

@@ -11,10 +11,6 @@ import { CycleBackingChart } from '../CycleBackingChart'
 import { CycleDistribution } from '../CycleDistribution'
 import { CycleHistoryTable } from '../CycleHistoryTable'
 
-/**
- * Occupies the distribution column before a cycle is selectable. Without it the fixed grid
- * column collapses to an empty 360px gap while the chart loads beside it.
- */
 const DistributionPlaceholder = ({ isLoading }: { isLoading: boolean }) => (
   <div
     className={cn(
@@ -32,13 +28,9 @@ const DistributionPlaceholder = ({ isLoading }: { isLoading: boolean }) => (
 
 export interface CycleDashboardContentProps {
   cycles: CycleHistoryEntry[]
-  /** The cycle the chart, panel and table all describe. */
   selectedCycle?: CycleHistoryEntry
   onSelectCycle?: (cycleNumber: number) => void
-  /**
-   * Active Builders right now. Applied only to the running cycle, since we have no historical
-   * roster and showing today's count against a six-month-old cycle would be a quiet lie.
-   */
+  /** Only applied to the running cycle; there is no historical Builder roster. */
   buildersCount?: number | null
   isLoading?: boolean
   className?: string
@@ -61,10 +53,6 @@ export const CycleDashboardContent = ({
       Backing and distribution by cycle
     </h2>
 
-    {/*
-      Stretched rather than top-aligned: the chart and the distribution panel are one row, and
-      letting each take its natural height left a gap under whichever came up shorter.
-    */}
     <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-4 items-stretch">
       <CycleBackingChart
         cycles={cycles}
@@ -76,7 +64,6 @@ export const CycleDashboardContent = ({
       {selectedCycle ? (
         <CycleDistribution
           cycle={selectedCycle}
-          // Only the running cycle can be paired with today's Builder count.
           buildersCount={selectedCycle.status === 'running' ? buildersCount : null}
           isLoading={isLoading}
         />
@@ -92,7 +79,6 @@ export const CycleDashboardContent = ({
       isLoading={isLoading}
     />
 
-    {/* Stated once for the whole section rather than repeated on each surface that shows USD. */}
     <Paragraph variant="body-xs" className="text-v3-text-40 px-1">
       {SPOT_PRICE_NOTE}
     </Paragraph>

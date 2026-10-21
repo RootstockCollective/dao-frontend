@@ -11,7 +11,7 @@ export const DashboardMetrics = ({ className }: { className?: string }) => {
   const { selectedCycle, paidAllTime, buildersCount, isLoading } = useCycleDashboard()
   const { prices } = usePricesContext()
 
-  // stRIF is staked RIF one-for-one, so the RIF price stands in if stRIF isn't quoted.
+  // stRIF is RIF one-for-one.
   const strifPrice = prices[STRIF]?.price ?? prices[RIF]?.price ?? 0
 
   return (
@@ -23,7 +23,8 @@ export const DashboardMetrics = ({ className }: { className?: string }) => {
           paidAllTime={paidAllTime}
           buildersCount={buildersCount}
           strifPrice={strifPrice}
-          isLoading={isLoading || isAbiLoading}
+          // `useGetABI` yields 0, not "loading", while the RIF price is still missing.
+          isLoading={isLoading || isAbiLoading || !prices[RIF]?.price}
           className={className}
         />
       )}

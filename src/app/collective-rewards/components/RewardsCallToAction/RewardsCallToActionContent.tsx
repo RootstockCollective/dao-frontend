@@ -13,7 +13,6 @@ import { cn } from '@/lib/utils'
 
 import { formatUsdWhole } from '../../utils/dashboardFormatters'
 
-/** The two gradients that head the cards, kept distinct so the roles read apart at a glance. */
 const GRADIENTS = {
   backers:
     'linear-gradient(90deg, var(--brand-rif-blue) 0%, #7C89F5 30%, var(--brand-rootstock-pink) 70%, transparent 100%)',
@@ -69,9 +68,9 @@ const SecondaryLink = ({ href, children }: { href: string; children: string }) =
 )
 
 export interface RewardsCallToActionContentProps {
-  /** Rewards heading to Backers in the running cycle. `null` while unknown, so it never reads as $0. */
+  /** `null` while unknown. */
   backersUpcoming: Big | null
-  /** Rewards heading to Builders in the running cycle. `null` while unknown. */
+  /** `null` while unknown. */
   buildersUpcoming: Big | null
   backersCount?: number | null
   buildersCount?: number | null

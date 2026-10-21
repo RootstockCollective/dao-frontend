@@ -1,4 +1,4 @@
-import { ABIFormula } from '@/app/backing/components/ABIFormula'
+import { ABI_INFO_TOOLTIP_CLASS_NAME, AbiInfoTooltip } from '@/app/shared/components/AnnualBackersIncentives'
 import { InfoIconButton } from '@/components/IconButton/InfoIconButton'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header, Label, Paragraph, Span } from '@/components/Typography'
@@ -8,23 +8,6 @@ import { cn } from '@/lib/utils'
 import { SPOT_PRICE_NOTE } from '../../constants/dashboardCopy'
 import { CARD_RADIUS } from '../../constants/dashboardSurface'
 import { formatUsdWhole } from '../../utils/dashboardFormatters'
-
-const ABI_INFO = (
-  <Paragraph className="text-sm font-normal text-left">
-    The Annual Backers Incentives (%) represents an estimate of the annualized percentage of rewards that
-    backers could receive based on their backing allocations.
-    <br />
-    <br />
-    The calculation follows the formula:
-    <span className="flex justify-center pt-4">
-      <ABIFormula />
-    </span>
-    <br />
-    <br />
-    This estimation is dynamic and may vary based on total rewards and user activity. This data is for
-    informational purposes only.
-  </Paragraph>
-)
 
 const Figure = ({ label, value, note }: { label: string; value: string; note?: string }) => (
   <div className="flex flex-col gap-1 min-w-0">
@@ -39,13 +22,9 @@ const Figure = ({ label, value, note }: { label: string; value: string; note?: s
 )
 
 export interface AbiHeroCardProps {
-  /** Annualised backer incentive, as a percentage. */
   abiPct: number
-  /** Distributed in the cycle the page is describing. `null` until the cycles load. */
   paidInCycle: Big | null
-  /** Distributed to date. `null` while the reward events are still loading. */
   paidAllTime: Big | null
-  /** Names the cycle, since it follows the page's selection rather than always being "this". */
   paidInCycleLabel?: string
   isLoading?: boolean
   className?: string
@@ -68,7 +47,6 @@ export const AbiHeroCard = ({
     )}
     data-testid="abi-hero-card"
   >
-    {/* Warm wash anchored bottom-left, matching the design's light source. */}
     <div
       aria-hidden
       className="absolute inset-0 pointer-events-none"
@@ -83,7 +61,11 @@ export const AbiHeroCard = ({
         <Label variant="tag-s" caps className="text-v3-text-60 tracking-wider">
           Annual Backers Incentive
         </Label>
-        <InfoIconButton info={ABI_INFO} className="cursor-pointer" tooltipClassName="max-w-sm text-sm" />
+        <InfoIconButton
+          info={<AbiInfoTooltip />}
+          className="cursor-pointer"
+          tooltipClassName={ABI_INFO_TOOLTIP_CLASS_NAME}
+        />
       </div>
 
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">

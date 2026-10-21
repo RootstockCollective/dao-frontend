@@ -92,36 +92,30 @@ export interface StateWithUpdate<T> {
 
 export type CycleStatus = 'running' | 'settled'
 
-/** One reward token's contribution to a cycle's distribution. */
 export interface CycleTokenReward {
   tokenKey: RewardTokenKey
-  /** Display symbol for the current network (`RIF` on mainnet, `tRIF` on testnet). */
   symbol: string
-  /** Amount in the token's smallest unit. */
+  /** In the token's smallest unit. */
   value: bigint
-  /**
-   * Value in USD at *current* prices. We keep no price history, so a settled cycle is
-   * re-valued every time the market moves — the dashboard says so next to the figures.
-   */
+  /** At current prices; no price history is kept. */
   fiatValue: Big
 }
 
-/** A single cycle as shown in the dashboard's history table and detail panel. */
+/**
+ * One cycle of the rewards dashboard. Fields a source can't answer are `null`, never zero.
+ * `id` is the indexer's row id; `cycleNumber` is derived from the start date, so key on `id`.
+ */
 export interface CycleHistoryEntry {
+  id: string
   cycleNumber: number
   start: Date
   end: Date
-  /** Total stRIF backing at the cycle's close, in whole tokens. */
-  backing: bigint
+  /** stRIF at the cycle's close, in whole tokens. `null` when the cycle predates the loaded snapshots. */
+  backing: bigint | null
   rewards: CycleTokenReward[]
-  /** Combined USD value of `rewards`, at current prices. */
   rewardsFiat: Big
-  /**
-   * Fraction of the distribution that went to Backers, 0..1. `null` when the NotifyReward
-   * events for the cycle haven't loaded, which is different from a genuine 0% share.
-   */
+  /** Backers' fraction of the distribution, 0..1. `null` until the NotifyReward events load. */
   backersShare: number | null
-  /** Distinct Backers holding a positive allocation at the cycle's close. `null` when unknown. */
   backersCount: number | null
   status: CycleStatus
 }

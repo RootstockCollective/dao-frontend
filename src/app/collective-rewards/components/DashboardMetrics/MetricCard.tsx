@@ -8,15 +8,12 @@ import { CARD_RADIUS } from '../../constants/dashboardSurface'
 export interface MetricCardProps {
   label: ReactNode
   value: ReactNode
-  /** Secondary line under the value — a denomination, a delta, a breakdown. */
   sub?: ReactNode
-  /** Rendered below everything, for a progress bar or similar. */
   footer?: ReactNode
   className?: string
   'data-testid'?: string
 }
 
-/** The small dark tiles in the dashboard's top row. */
 export const MetricCard = ({
   label,
   value,

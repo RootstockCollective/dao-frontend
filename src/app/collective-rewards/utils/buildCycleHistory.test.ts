@@ -8,17 +8,12 @@ import { GetPricesResult } from '../../user/types'
 import { FIRST_CYCLE_START_SECONDS, ONE_DAY_IN_SECONDS } from '../constants/chartConstants'
 import { UseGetGaugesNotifyRewardReturnType } from '../rewards'
 import { CycleRewardsItem, DailyAllocationItem } from '../types'
-import {
-  buildCycleHistory,
-  getAllTimeRewardsFiat,
-  getCycleNumber,
-  toCycleStartKey,
-} from './buildCycleHistory'
+import { buildCycleHistory, getAllTimeRewardsFiat, toCycleStartKey } from './buildCycleHistory'
+import { getCycleNumber } from './getCycleNumber'
 
 const CYCLE_DURATION = 14 * ONE_DAY_IN_SECONDS
 const GAUGE = '0x0000000000000000000000000000000000000001' as Address
 
-/** Start of the Nth cycle, so tests can talk in cycle numbers instead of timestamps. */
 const cycleStart = (cycleNumber: number) => FIRST_CYCLE_START_SECONDS + (cycleNumber - 1) * CYCLE_DURATION
 
 const wei = (amount: number) => BigInt(amount) * WeiPerEther
@@ -99,7 +94,6 @@ describe('buildCycleHistory', () => {
 
   describe('backing', () => {
     it('carries the last known allocation forward to the cycle close', () => {
-      // Only one snapshot, days before the cycle ends: it still applies at close.
       const [entry] = build({
         cycles: [cycleItem(10)],
         dailyAllocations: [allocation(cycleStart(10) + ONE_DAY_IN_SECONDS, 26_800_000)],
@@ -120,10 +114,43 @@ describe('buildCycleHistory', () => {
       expect(entry.backing).toBe(1_000n)
     })
 
-    it('is zero when no snapshot precedes the cycle', () => {
+    it('treats the day bucket starting at the close as the next cycle', () => {
+      // Cycles close at UTC midnight and the bucket at `end` holds the next day's changes.
+      const [entry] = build({
+        cycles: [cycleItem(10)],
+        dailyAllocations: [
+          allocation(cycleStart(10) + CYCLE_DURATION - ONE_DAY_IN_SECONDS, 1_000),
+          allocation(cycleStart(10) + CYCLE_DURATION, 9_999),
+        ],
+      })
+
+      expect(entry.backing).toBe(1_000n)
+    })
+
+    it('is unknown, not zero, when no snapshot precedes the cycle', () => {
       const [entry] = build({
         cycles: [cycleItem(10)],
         dailyAllocations: [allocation(cycleStart(20), 5_000)],
+      })
+
+      expect(entry.backing).toBeNull()
+    })
+
+    it('leaves only the cycles that predate the earliest snapshot unknown', () => {
+      const [newest, middle, oldest] = build({
+        cycles: [cycleItem(8), cycleItem(9), cycleItem(10)],
+        dailyAllocations: [allocation(cycleStart(9) + ONE_DAY_IN_SECONDS, 7_000)],
+      })
+
+      expect(oldest.backing).toBeNull()
+      expect(middle.backing).toBe(7_000n)
+      expect(newest.backing).toBe(7_000n)
+    })
+
+    it('keeps a snapshot of zero as a real zero', () => {
+      const [entry] = build({
+        cycles: [cycleItem(10)],
+        dailyAllocations: [allocation(cycleStart(10), 0)],
       })
 
       expect(entry.backing).toBe(0n)
@@ -145,8 +172,7 @@ describe('buildCycleHistory', () => {
     })
 
     it('weights tokens by price rather than raw amount', () => {
-      // 1 rBTC to Backers ($100k) against 1,000 RIF to Builders ($100) — a token-count
-      // split would read as 50/50 instead of ~99.9/0.1.
+      // 1 rBTC ($100k) to Backers vs 1,000 RIF ($100) to Builders: 50/50 by count, ~99.9/0.1 by value.
       const [entry] = build({
         notifyRewards: notifyRewards([
           notifyEvent(TOKENS.rbtc.address, cycleStart(10) + 100, wei(1), 0n),
@@ -161,7 +187,6 @@ describe('buildCycleHistory', () => {
       const [entry] = build({
         notifyRewards: notifyRewards([
           notifyEvent(TOKENS.rif.address, cycleStart(10) + 100, wei(900), wei(100)),
-          // Belongs to the next cycle: the boundary is exclusive at the end.
           notifyEvent(TOKENS.rif.address, cycleStart(10) + CYCLE_DURATION, wei(0), wei(1_000)),
         ]),
       })
@@ -196,7 +221,6 @@ describe('buildCycleHistory', () => {
     })
 
     it('looks the cycle up by its normalised key', () => {
-      // What the hook stores: `toCycleStartKey` is applied on both sides of the join.
       const key = toCycleStartKey(`${cycleStart(10)}.0`)!
       const [entry] = build({ backersPerCycle: { [key]: 292 } })
 
@@ -219,8 +243,6 @@ describe('buildCycleHistory', () => {
   })
 
   it('assigns each event to its own cycle in one pass', () => {
-    // The bucketing is a binary search over cycle windows rather than a rescan per cycle;
-    // this is the case that breaks if a boundary is off by one.
     const entries = build({
       cycles: [cycleItem(10), cycleItem(11), cycleItem(12)],
       notifyRewards: {

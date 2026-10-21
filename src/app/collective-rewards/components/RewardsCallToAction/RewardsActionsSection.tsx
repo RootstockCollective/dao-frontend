@@ -8,7 +8,6 @@ import { usePricesContext } from '@/shared/context/PricesContext'
 import { PositionSimulator } from '../PositionSimulator'
 import { RewardsCallToAction } from './RewardsCallToAction'
 
-/** The simulator paired with the two calls to action, as one row on desktop. */
 export const RewardsActionsSection = ({ className }: { className?: string }) => {
   const { prices } = usePricesContext()
 
@@ -17,7 +16,8 @@ export const RewardsActionsSection = ({ className }: { className?: string }) => 
       <AnnualBackerIncentivesLoader
         render={({ data: abiPct, isLoading }) => (
           <PositionSimulator
-            abiPct={isLoading ? null : abiPct.toNumber()}
+            // `useGetABI` yields 0, not "loading", while the RIF price is still missing.
+            abiPct={isLoading || !prices[RIF]?.price ? null : abiPct.toNumber()}
             rifPrice={prices[RIF]?.price ?? 0}
           />
         )}

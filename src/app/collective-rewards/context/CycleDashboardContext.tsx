@@ -13,31 +13,24 @@ interface CycleDashboardValue {
   cycles: CycleHistoryEntry[]
   isLoading: boolean
   selectCycle: (cycleNumber: number) => void
-  /**
-   * Combined USD distributed to date, from the reward events. `null` until they load, which
-   * is not the same as a total of zero.
-   */
+  /** `null` until the all-time totals load. */
   paidAllTime: Big | null
-  /** Active Builders right now. Only meaningful against the running cycle. */
+  /** Active Builders right now; only meaningful for the running cycle. */
   buildersCount: number | null
-  /** The cycle every section of the page describes. Defaults to the running one. */
+  /** The cycle every section describes. */
   selectedCycle?: CycleHistoryEntry
-  /** The newest cycle, which is the one still open. */
+  /** Undefined when the newest indexed cycle has already closed. */
   runningCycle?: CycleHistoryEntry
 }
 
 const CycleDashboardContext = createContext<CycleDashboardValue | null>(null)
 
+export const getRunningCycle = (cycles: CycleHistoryEntry[]): CycleHistoryEntry | undefined =>
+  cycles[0]?.status === 'running' ? cycles[0] : undefined
+
 /**
- * The cycle the page opens on, from cycles sorted newest first.
- *
- * A settled cycle whose NotifyReward events never landed renders a dash where its split should
- * be, and if it happens to be the newest one that is the first thing a visitor sees. Skip past
- * it to the newest cycle that can answer in full.
- *
- * A *running* cycle is exempt: it legitimately has no split for the first hours of its life, and
- * it is the one the page is built around — dropping to an older cycle would hide the live one
- * behind stale figures.
+ * The running cycle, or else the newest settled cycle whose split has landed — a settled cycle
+ * with no NotifyReward events would open the page on a dash.
  */
 export const getDefaultCycle = (cycles: CycleHistoryEntry[]): CycleHistoryEntry | undefined => {
   const newest = cycles[0]
@@ -54,14 +47,6 @@ export const useCycleDashboard = () => {
   return value
 }
 
-/**
- * Holds the cycle the whole page is describing.
- *
- * Selection has to live above every section: the history table promises that picking a row
- * loads it "above", and that only holds if the metric tiles, the chart and the distribution
- * panel all read the same value. Fetching here too means the per-cycle fold runs once for the
- * page rather than once per section that needs it.
- */
 export const CycleDashboardProvider = ({ children }: { children: ReactNode }) => {
   const { data: cycles, paidAllTime, isLoading, error } = useGetCycleHistory()
   const { data: buildersData } = useGetActiveBuildersCount()
@@ -71,21 +56,19 @@ export const CycleDashboardProvider = ({ children }: { children: ReactNode }) =>
 
   const selectCycle = useCallback((cycleNumber: number) => setSelectedCycleNumber(cycleNumber), [])
 
-  const value = useMemo<CycleDashboardValue>(() => {
-    // Cycles arrive newest first, so the head is the one currently running.
-    const runningCycle = cycles[0]
-
-    return {
+  const value = useMemo<CycleDashboardValue>(
+    () => ({
       cycles,
       isLoading,
-      runningCycle,
+      runningCycle: getRunningCycle(cycles),
       selectedCycle:
         cycles.find(({ cycleNumber }) => cycleNumber === selectedCycleNumber) ?? getDefaultCycle(cycles),
       selectCycle,
       paidAllTime,
       buildersCount: buildersData?.count ?? null,
-    }
-  }, [cycles, isLoading, selectedCycleNumber, selectCycle, paidAllTime, buildersData?.count])
+    }),
+    [cycles, isLoading, selectedCycleNumber, selectCycle, paidAllTime, buildersData?.count],
+  )
 
   return <CycleDashboardContext.Provider value={value}>{children}</CycleDashboardContext.Provider>
 }

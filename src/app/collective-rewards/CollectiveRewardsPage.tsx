@@ -9,10 +9,7 @@ import { CycleDashboardProvider } from './context/CycleDashboardContext'
 
 const NAME = 'Collective Rewards'
 
-/**
- * Sections carry headings for the document outline even where the design shows none, so the
- * page is navigable by landmark rather than being one flat run of cards.
- */
+/** Sections carry `sr-only` headings so the page is navigable by landmark. */
 export const CollectiveRewardsPage = () => (
   <div className="flex flex-col gap-2">
     <PageBanner dataTestId="CollectiveRewardsBanner" dismissible title={NAME} />

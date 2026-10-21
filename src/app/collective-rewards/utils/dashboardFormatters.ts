@@ -1,9 +1,6 @@
 import Big from '@/lib/big'
 
-/**
- * `$421,000`. Cycle totals run into six figures, where cents are noise — and they'd be
- * false precision anyway, since the figure is re-valued at spot prices.
- */
+/** `$421,000` */
 export const formatUsdWhole = (value: Big | number): string =>
   new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -11,7 +8,7 @@ export const formatUsdWhole = (value: Big | number): string =>
     maximumFractionDigits: 0,
   }).format(Number(value.toString()))
 
-/** `$2.14M`. For figures shown beside a token amount, where the exact dollar adds nothing. */
+/** `$2.14M` */
 export const formatUsdCompact = (value: Big | number): string =>
   new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -20,10 +17,7 @@ export const formatUsdCompact = (value: Big | number): string =>
     maximumFractionDigits: 2,
   }).format(Number(value.toString()))
 
-/**
- * `23 Jul`. Pinned to UTC because cycles are anchored to UTC on-chain; without it the same
- * cycle renders a day earlier for anyone west of Greenwich.
- */
+/** `23 Jul`, in UTC so the window matches the on-chain cycle in every timezone. */
 export const formatCycleDay = (date: Date): string =>
   date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', timeZone: 'UTC' })
 
@@ -31,15 +25,9 @@ export const formatCycleDay = (date: Date): string =>
 export const formatCycleWindow = (start: Date, end: Date): string =>
   `${formatCycleDay(start)} → ${formatCycleDay(end)}`
 
-/**
- * `27.6M`. Backing figures sit in a column, and `millify` keeps up to three decimals while
- * dropping trailing zeros — so real data renders `27.59M` directly above `27.422M` and the
- * column reads as ragged noise. A fixed single decimal lines the numbers up, and the
- * precision it gives away is far below what a running total of stRIF can honestly claim.
- */
+/** `27.6M`. A fixed single decimal, unlike `millify`, so a column of totals lines up. */
 export const formatBackingCompact = (value: Big | bigint | number): string => {
   const amount = Number(value.toString())
-  // Under a thousand there is no unit suffix to anchor the decimal, and "0.0" reads worse than "0".
   const fractionDigits = Math.abs(amount) < 1_000 ? 0 : 1
 
   return new Intl.NumberFormat('en-US', {
@@ -49,12 +37,16 @@ export const formatBackingCompact = (value: Big | bigint | number): string => {
   }).format(amount)
 }
 
-/**
- * `64% / 36%` for a 0..1 backer share. The Builder side is the remainder, as in the distribution
- * panel: rounding both sides would turn 0.125 into `13% / 88%`.
- */
-export const formatSplitLabel = (backersShare: number): string => {
+/** The Builder side is the remainder, not rounded on its own, so the two always sum to 100. */
+export const getSplitPercentages = (backersShare: number): { backersPct: number; buildersPct: number } => {
   const backersPct = Math.round(backersShare * 100)
 
-  return `${backersPct}% / ${100 - backersPct}%`
+  return { backersPct, buildersPct: 100 - backersPct }
+}
+
+/** `64% / 36%` for a 0..1 backer share. */
+export const formatSplitLabel = (backersShare: number): string => {
+  const { backersPct, buildersPct } = getSplitPercentages(backersShare)
+
+  return `${backersPct}% / ${buildersPct}%`
 }

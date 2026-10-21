@@ -11,10 +11,6 @@ import { CycleDashboardContent } from './CycleDashboardContent'
 const BUILDERS_COUNT = 16
 const nowMs = mockCycleHistory[0].start.getTime() + 10 * 24 * 60 * 60 * 1000
 
-/**
- * Mirrors the page: one piece of selection state feeding the metric tiles and the dashboard,
- * so the story shows what "select a row to load it above" actually loads.
- */
 const SelectableDashboard = ({ cycles }: { cycles: CycleHistoryEntry[] }) => {
   const [selectedNumber, setSelectedNumber] = useState<number | null>(null)
   const selectedCycle = cycles.find(({ cycleNumber }) => cycleNumber === selectedNumber) ?? cycles[0]
@@ -59,17 +55,14 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-/** Select a settled row and watch the tiles above relabel themselves. */
 export const Default: Story = {
   render: () => <SelectableDashboard cycles={mockCycleHistory} />,
 }
 
-/** Degraded sources: the split and Backer columns fall back to dashes, the rest still renders. */
 export const WithoutIndexedCounts: Story = {
   render: () => <SelectableDashboard cycles={mockCycleHistoryWithoutCounts} />,
 }
 
-/** The distribution column holds its place instead of collapsing to an empty gap. */
 export const Loading: Story = {
   args: {
     cycles: [],

@@ -1,10 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/nextjs'
 import { useState } from 'react'
 
-import { mockCycleHistory, mockCycleHistoryWithoutCounts } from '../../fixtures/cycleHistory'
+import {
+  mockCycleHistory,
+  mockCycleHistoryWithoutCounts,
+  mockCycleHistoryWithUnknownBacking,
+} from '../../fixtures/cycleHistory'
 import { CycleHistoryTable, CycleHistoryTableProps } from './CycleHistoryTable'
 
-/** Holds the selection so the story behaves like the real page. */
 const SelectableTable = (props: Omit<CycleHistoryTableProps, 'selectedCycle' | 'onSelectCycle'>) => {
   const [selectedCycle, setSelectedCycle] = useState<number | null>(props.cycles[0]?.cycleNumber ?? null)
 
@@ -31,22 +34,23 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-/** The full table, with row selection wired up. */
 export const Default: Story = {
   render: () => <SelectableTable cycles={mockCycleHistory} />,
 }
 
-/** Without a select handler the rows are inert and the hint disappears. */
+/** Without a select handler the rows are inert. */
 export const ReadOnly: Story = {
   args: { cycles: mockCycleHistory },
 }
 
-/**
- * The split and Backers columns come from sources that can lag behind `/api/cycles`.
- * They fall back to a dash rather than showing a misleading zero.
- */
+/** The split and Backers columns fall back to a dash while their sources lag. */
 export const WithoutIndexedCounts: Story = {
   render: () => <SelectableTable cycles={mockCycleHistoryWithoutCounts} />,
+}
+
+/** Cycles older than the loaded snapshots show a dash for backing, not a zero. */
+export const WithUnknownBacking: Story = {
+  render: () => <SelectableTable cycles={mockCycleHistoryWithUnknownBacking} />,
 }
 
 export const Loading: Story = {

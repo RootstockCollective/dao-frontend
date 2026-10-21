@@ -26,7 +26,6 @@ const SubLabel = ({ children, className }: { children: ReactNode; className?: st
   </Span>
 )
 
-/** Day 1 on the opening day, capped at the cycle length once the close passes. */
 const getCycleProgress = (cycle: CycleHistoryEntry, nowMs: number) => {
   const totalDays = Math.max(1, Math.round((cycle.end.getTime() - cycle.start.getTime()) / ONE_DAY_IN_MS))
   const elapsedDays = Math.floor((nowMs - cycle.start.getTime()) / ONE_DAY_IN_MS) + 1
@@ -36,21 +35,13 @@ const getCycleProgress = (cycle: CycleHistoryEntry, nowMs: number) => {
 
 export interface DashboardMetricsContentProps {
   abiPct: number
-  /**
-   * Distributed to date, from the reward events. Not tied to the selected cycle, and `null`
-   * until those events load.
-   */
+  /** `null` until the all-time totals load. */
   paidAllTime: Big | null
-  /** stRIF price, for the fiat equivalent of total backing. */
   strifPrice: number
-  /**
-   * The cycle these tiles describe. Follows the page's selection, so the labels have to say
-   * which cycle they mean — "paid this cycle" is only true while that cycle is open.
-   */
+  /** The cycle the tiles describe; labels name it when it isn't the running one. */
   cycle?: CycleHistoryEntry
-  /** Active Builders right now. Applied only when the selected cycle is the running one. */
+  /** Only applied to the running cycle. */
   buildersCount?: number | null
-  /** Injected so stories and tests stay deterministic. */
   nowMs?: number
   isLoading?: boolean
   className?: string
@@ -67,11 +58,9 @@ export const DashboardMetricsContent = ({
   className,
 }: DashboardMetricsContentProps) => {
   const isRunning = cycle?.status === 'running'
-  // Unknown until the cycles load: a zero here would read as a real figure.
   const paidInCycle = cycle?.rewardsFiat ?? null
   const backing = cycle?.backing ?? null
   const backersCount = cycle?.backersCount ?? null
-  // A Builder roster only exists for today, so it cannot describe a settled cycle.
   const cycleBuildersCount = isRunning ? buildersCount : null
   const progress = cycle && isRunning ? getCycleProgress(cycle, nowMs) : null
 
@@ -100,7 +89,6 @@ export const DashboardMetricsContent = ({
         isLoading={isLoading}
       />
 
-      {/* The cycle tile carries the longest label ("Cycle 46 · Day 11 of 14"), so it gets the slack. */}
       <div className="grid grid-cols-2 gap-4 xl:grid-cols-[repeat(3,minmax(0,1fr))_minmax(0,1.3fr)]">
         <MetricCard
           label="Total backing"
@@ -147,7 +135,6 @@ export const DashboardMetricsContent = ({
           }
           value={paidInCycle === null ? '—' : formatUsdWhole(paidInCycle)}
           footer={
-            // A settled cycle has no progress left to show; a bar frozen at 100% would be noise.
             progress ? (
               <ComparativeProgressBar
                 className="mt-1"

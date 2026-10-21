@@ -9,7 +9,6 @@ export const useGetChartRewardsData = () => {
       const params = new URLSearchParams({
         sortBy: 'currentCycleStart',
         sortDirection: 'desc',
-        // Shared with the per-cycle Backer counts so both reach back equally far.
         pageSize: String(CYCLE_HISTORY_LIMIT),
       })
 

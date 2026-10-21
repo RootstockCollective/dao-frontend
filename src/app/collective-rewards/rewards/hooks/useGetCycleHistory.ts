@@ -17,24 +17,15 @@ const REWARD_TOKEN_ADDRESSES = REWARD_TOKEN_KEYS.map(tokenKey => TOKENS[tokenKey
 
 interface UseGetCycleHistoryResult {
   data: CycleHistoryEntry[]
-  /**
-   * Combined USD distributed across every cycle to date. `null` until the all-time totals have
-   * loaded, so an unloaded or failed total never renders as a confident $0.
-   */
+  /** `null` until the all-time totals load. */
   paidAllTime: Big | null
-  /** True only while the sources the table cannot render without are still in flight. */
   isLoading: boolean
   error: Error | null
 }
 
 /**
- * One row per cycle for the dashboard's table, chart and distribution panel.
- *
- * Four sources feed this, with different reliability. Cycles and daily allocations are the
- * backbone — without them there is nothing to show. The NotifyReward events and the per-cycle
- * Backer counts only fill in two columns, so they are deliberately excluded from `isLoading`
- * and `error`: a slow gauge fetch shouldn't hold up a table that can already render eight
- * tenths of itself, and the columns they feed degrade to a dash on their own.
+ * Only cycles and daily allocations gate `isLoading`/`error`. The NotifyReward events and the
+ * per-cycle Backer counts fill two columns that degrade to a dash on their own.
  */
 export const useGetCycleHistory = (): UseGetCycleHistoryResult => {
   const { data: cycles, isLoading: cyclesLoading, error: cyclesError } = useGetChartRewardsData()
@@ -45,9 +36,12 @@ export const useGetCycleHistory = (): UseGetCycleHistoryResult => {
   } = useGetChartBackingData()
 
   const { data: gauges } = useGetGaugesArray()
+  // `0` makes the hook wait for the cycles rather than fetch every gauge's full history.
+  const oldestCycleStart = cycles?.length ? Number(cycles[cycles.length - 1].currentCycleStart) : 0
   const { data: notifyRewards } = useGetGaugesNotifyReward({
     gauges,
     rewardTokens: REWARD_TOKEN_ADDRESSES,
+    fromTimestamp: oldestCycleStart,
   })
   const {
     data: totalsByToken,
@@ -59,7 +53,6 @@ export const useGetCycleHistory = (): UseGetCycleHistoryResult => {
   const { prices } = usePricesContext()
 
   const data = useMemo(() => {
-    // Without the allocations every row's backing would be a confident zero, not an unknown.
     if (!cycles?.length || !dailyAllocations) return []
 
     return buildCycleHistory({
@@ -72,10 +65,7 @@ export const useGetCycleHistory = (): UseGetCycleHistoryResult => {
     })
   }, [cycles, dailyAllocations, notifyRewards, backersPerCycle, prices])
 
-  /**
-   * Not derived from the NotifyReward events above: those wait on the gauge list, which resolves
-   * to an empty array while it loads, and an empty event set would read as a confident $0.
-   */
+  // Not summed from the NotifyReward events: an empty gauge list would read as a confident $0.
   const paidAllTime = useMemo(
     () => (totalsPending || totalsError ? null : getAllTimeRewardsFiat(totalsByToken, prices)),
     [totalsByToken, totalsPending, totalsError, prices],

@@ -3,14 +3,13 @@ import { NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
 
 import { BACKERS_PER_CYCLE_REVALIDATE_SECONDS, getCachedBackersPerCycle } from './action'
-import { parseCycleLimit } from './query'
 
 const ROUTE = '/api/cycles/backers'
 
-export async function GET(req: Request) {
+// No query params: one cache entry, and no way to force a fresh full scan per distinct value.
+export async function GET() {
   try {
-    const limit = parseCycleLimit(new URL(req.url).searchParams.get('limit'))
-    const data = await getCachedBackersPerCycle(limit)
+    const data = await getCachedBackersPerCycle()
 
     return NextResponse.json(
       { data },

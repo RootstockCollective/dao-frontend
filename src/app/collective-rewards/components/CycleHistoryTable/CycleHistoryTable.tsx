@@ -2,12 +2,10 @@
 
 import { KeyboardEvent, useRef } from 'react'
 
-import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/ComparativeProgressBar'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Label, Paragraph, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
-import { SPLIT_COLORS } from '../../constants/dashboardColors'
 import { CARD_RADIUS } from '../../constants/dashboardSurface'
 import { CycleHistoryEntry } from '../../types'
 import {
@@ -16,11 +14,11 @@ import {
   formatSplitLabel,
   formatUsdWhole,
 } from '../../utils/dashboardFormatters'
+import { BackerBuilderSplitBar } from '../BackerBuilderSplitBar'
 
 interface Column {
   id: string
   label: string
-  /** Percentage of the table width. */
   width: string
 }
 
@@ -34,13 +32,6 @@ const COLUMNS: Column[] = [
   { id: 'status', label: 'Status', width: '13%' },
 ]
 
-/**
- * Selection is a filled row plus a short accent bar in the first cell, rather than an outline
- * around the whole row. An outline had to be assembled per cell — borders on a `<tr>` don't
- * render reliably — which meant `border-separate`, a transparent border on every cell to stop
- * the rows shifting, and rounded corners split across two cells. A background needs none of
- * that, and it reads as quieter next to ten other rows.
- */
 const cellClasses = (isFirst: boolean, isLast: boolean) =>
   cn('py-4 align-middle', isFirst && 'relative pl-4 md:pl-6', isLast && 'pr-4 md:pr-6')
 
@@ -55,20 +46,9 @@ const SplitCell = ({ backersShare }: { backersShare: number | null }) => {
     return <Span className="text-v3-text-40">—</Span>
   }
 
-  const backersPct = Math.round(backersShare * 100)
-
   return (
-    // `min-w-0` lets the bar shrink inside the fixed column instead of spilling into Backers.
     <div className="flex items-center gap-3 pr-8 min-w-0">
-      <ComparativeProgressBar
-        segmented
-        className="flex-1 min-w-[48px]"
-        aria-label={`Backers ${backersPct}%, Builders ${100 - backersPct}%`}
-        values={[
-          { value: backersShare, color: SPLIT_COLORS.backers },
-          { value: 1 - backersShare, color: SPLIT_COLORS.builders },
-        ]}
-      />
+      <BackerBuilderSplitBar backersShare={backersShare} className="flex-1 min-w-[48px]" />
       <Span variant="body-s" className="text-v3-text-40 whitespace-nowrap">
         {formatSplitLabel(backersShare)}
       </Span>
@@ -76,7 +56,6 @@ const SplitCell = ({ backersShare }: { backersShare: number | null }) => {
   )
 }
 
-/** A bordered pill, so the two states read as one column of tokens rather than loose words. */
 const StatusCell = ({ status }: { status: CycleHistoryEntry['status'] }) => {
   const isRunning = status === 'running'
 
@@ -94,10 +73,14 @@ const StatusCell = ({ status }: { status: CycleHistoryEntry['status'] }) => {
   )
 }
 
+/**
+ * Arrow keys move focus and selection together (radio-group convention) rather than the ARIA
+ * grid's focus-then-Enter: a focused-but-unselected row has nothing to offer here.
+ */
 interface CycleRowProps {
   cycle: CycleHistoryEntry
   isSelected: boolean
-  /** Only one row is in the tab order; the arrow keys move between them. */
+  /** Roving tabindex: one row in the tab order, arrows move between them. */
   isTabbable: boolean
   onSelect?: (cycleNumber: number) => void
   onNavigate?: (offset: number) => void
@@ -110,7 +93,6 @@ const CycleRow = ({ cycle, isSelected, isTabbable, onSelect, onNavigate }: Cycle
     if (!onSelect) return
 
     if (event.key === 'Enter' || event.key === ' ') {
-      // Space would otherwise scroll the page out from under the table.
       event.preventDefault()
       onSelect(cycle.cycleNumber)
       return
@@ -143,7 +125,6 @@ const CycleRow = ({ cycle, isSelected, isTabbable, onSelect, onNavigate }: Cycle
       data-testid={`cycle-history-row-${cycle.cycleNumber}`}
     >
       <td {...cell(0)}>
-        {/* Decorative: the row already announces itself through `aria-selected`. */}
         {isSelected && (
           <span
             aria-hidden
@@ -160,7 +141,9 @@ const CycleRow = ({ cycle, isSelected, isTabbable, onSelect, onNavigate }: Cycle
       </td>
 
       <td {...cell(2)}>
-        <Span className="text-v3-text-100">{formatBackingCompact(cycle.backing)}</Span>
+        <Span className="text-v3-text-100">
+          {cycle.backing === null ? '—' : formatBackingCompact(cycle.backing)}
+        </Span>
       </td>
 
       <td {...cell(3)}>
@@ -184,7 +167,6 @@ const CycleRow = ({ cycle, isSelected, isTabbable, onSelect, onNavigate }: Cycle
 
 export interface CycleHistoryTableProps {
   cycles: CycleHistoryEntry[]
-  /** Cycle number currently driving the cards above the table. */
   selectedCycle?: number | null
   /** Omit to render the table read-only. */
   onSelectCycle?: (cycleNumber: number) => void
@@ -202,7 +184,6 @@ export const CycleHistoryTable = ({
   const bodyRef = useRef<HTMLTableSectionElement>(null)
 
   const selectedIndex = cycles.findIndex(({ cycleNumber }) => cycleNumber === selectedCycle)
-  // With nothing selected the first row carries the tab stop, so the table is still reachable.
   const tabbableIndex = selectedIndex === -1 ? 0 : selectedIndex
 
   const navigateFrom = (index: number, offset: number) => {
@@ -218,7 +199,6 @@ export const CycleHistoryTable = ({
       className={cn('bg-v3-bg-accent-80 overflow-hidden', CARD_RADIUS, className)}
       data-testid="cycle-history"
     >
-      {/* The rule separates the panel's title from the grid, which starts its own header row. */}
       <div className="flex items-baseline justify-between gap-4 border-b border-v3-bg-accent-60 p-4 md:p-6">
         <Label variant="tag-s" caps className="text-v3-text-40 tracking-wider">
           Cycle history
@@ -231,15 +211,12 @@ export const CycleHistoryTable = ({
       </div>
 
       {isLoading && cycles.length === 0 ? (
-        // Sized explicitly: the default scales to 20% of its container, which is enormous here.
         <div className="flex items-center justify-center py-12">
           <LoadingSpinner size="small" />
         </div>
       ) : cycles.length === 0 ? (
         <EmptyState>No cycles to show yet</EmptyState>
       ) : (
-        // Full-bleed so a selected row's fill reaches both edges of the panel; the cells carry
-        // the horizontal padding instead.
         <div className="w-full overflow-x-auto">
           <table role="grid" className="w-full min-w-[860px] table-fixed">
             <colgroup>
@@ -271,7 +248,7 @@ export const CycleHistoryTable = ({
             <tbody ref={bodyRef}>
               {cycles.map((cycle, index) => (
                 <CycleRow
-                  key={cycle.cycleNumber}
+                  key={cycle.id}
                   cycle={cycle}
                   isSelected={cycle.cycleNumber === selectedCycle}
                   isTabbable={index === tabbableIndex}

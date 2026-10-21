@@ -2,7 +2,14 @@ import { describe, expect, it } from 'vitest'
 
 import Big from '@/lib/big'
 
-import { formatBackingCompact, formatSplitLabel } from './dashboardFormatters'
+import { formatBackingCompact, formatSplitLabel, getSplitPercentages } from './dashboardFormatters'
+
+describe('getSplitPercentages', () => {
+  it('takes the Builder side as the remainder so the two always sum to 100', () => {
+    expect(getSplitPercentages(0.125)).toEqual({ backersPct: 13, buildersPct: 87 })
+    expect(getSplitPercentages(0.64)).toEqual({ backersPct: 64, buildersPct: 36 })
+  })
+})
 
 describe('formatBackingCompact', () => {
   it('keeps one decimal so a column of totals lines up', () => {

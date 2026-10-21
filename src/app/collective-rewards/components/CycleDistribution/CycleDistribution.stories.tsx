@@ -20,7 +20,6 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-/** The running cycle, where the Builder count is known and both averages render. */
 export const RunningCycle: Story = {
   args: {
     cycle: mockRunningCycle,
@@ -28,17 +27,13 @@ export const RunningCycle: Story = {
   },
 }
 
-/**
- * A settled cycle. We have no historical Builder count, so the per-Builder average is
- * dropped rather than computed from today's roster.
- */
+/** No historical Builder count, so the per-Builder average is omitted. */
 export const SettledCycle: Story = {
   args: {
     cycle: mockCycleHistory[3],
   },
 }
 
-/** Before the NotifyReward events land there is no split to show, so the section is omitted. */
 export const WithoutSplit: Story = {
   args: {
     cycle: { ...mockRunningCycle, backersShare: null, backersCount: null },

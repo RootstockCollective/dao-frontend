@@ -7,7 +7,6 @@ import { DashboardMetricsContent } from './DashboardMetricsContent'
 
 const paidAllTime = mockCycleHistory.reduce((acc, { rewardsFiat }) => acc.add(rewardsFiat), Big(0))
 
-/** Day 11 of the running cycle, matching the design. */
 const nowMs = mockCycleHistory[0].start.getTime() + 10 * 24 * 60 * 60 * 1000
 
 const meta: Meta<typeof DashboardMetricsContent> = {
@@ -29,7 +28,6 @@ export default meta
 
 type Story = StoryObj<typeof meta>
 
-/** The running cycle: "paid this cycle", a Builder count, and days remaining. */
 export const RunningCycle: Story = {
   args: {
     cycle: mockCycleHistory[0],
@@ -41,10 +39,7 @@ export const RunningCycle: Story = {
   },
 }
 
-/**
- * A settled cycle selected from the table. The labels name it, the date window replaces the
- * day counter, and the Builder count drops — today's roster cannot describe a past cycle.
- */
+/** A settled cycle: labels name it, the window replaces the day counter, no Builder count. */
 export const SettledCycle: Story = {
   args: {
     ...RunningCycle.args,
@@ -52,7 +47,6 @@ export const SettledCycle: Story = {
   },
 }
 
-/** Without the indexed counts, Participants falls back rather than reporting a partial total. */
 export const WithoutParticipantCounts: Story = {
   args: {
     ...RunningCycle.args,

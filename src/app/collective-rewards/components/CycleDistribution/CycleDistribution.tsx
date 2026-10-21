@@ -1,6 +1,5 @@
 'use client'
 
-import { ComparativeProgressBar } from '@/components/ComparativeProgressBar/ComparativeProgressBar'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { TokenImage } from '@/components/TokenImage'
 import { Header, Label, Paragraph, Span } from '@/components/Typography'
@@ -8,17 +7,16 @@ import Big from '@/lib/big'
 import { cn, formatCurrency } from '@/lib/utils'
 
 import { formatSymbol } from '../../../shared/formatter'
-import { SPLIT_COLORS } from '../../constants/dashboardColors'
 import { CARD_RADIUS } from '../../constants/dashboardSurface'
 import { CycleHistoryEntry, CycleTokenReward } from '../../types'
-import { formatUsdWhole } from '../../utils/dashboardFormatters'
+import { formatUsdWhole, getSplitPercentages } from '../../utils/dashboardFormatters'
+import { BackerBuilderSplitBar } from '../BackerBuilderSplitBar'
 
 const TOKEN_LOGO_SIZE = 22
 
 const TokenRow = ({ reward }: { reward: CycleTokenReward }) => (
   <li className="flex items-start justify-between gap-4 py-4 border-b border-v3-bg-accent-60 last:border-b-0">
     <div className="flex items-center gap-3">
-      {/* The mark identifies the token; the symbol beside it already names it, so it is decorative. */}
       <TokenImage
         symbol={reward.symbol}
         size={TOKEN_LOGO_SIZE}
@@ -45,8 +43,7 @@ interface SplitSectionProps {
 }
 
 const SplitSection = ({ rewardsFiat, backersShare, backersCount, buildersCount }: SplitSectionProps) => {
-  const backersPct = Math.round(backersShare * 100)
-  const buildersPct = 100 - backersPct
+  const { backersPct, buildersPct } = getSplitPercentages(backersShare)
 
   const backersAverage =
     backersCount && backersCount > 0 ? rewardsFiat.mul(backersShare).div(backersCount) : null
@@ -55,7 +52,7 @@ const SplitSection = ({ rewardsFiat, backersShare, backersCount, buildersCount }
 
   const averages = [
     backersAverage && `${formatCurrency(backersAverage)} avg per Backer`,
-    buildersAverage && `${formatCurrency(buildersAverage)} per Builder`,
+    buildersAverage && `${formatCurrency(buildersAverage)} avg per Builder`,
   ].filter(Boolean)
 
   return (
@@ -69,14 +66,7 @@ const SplitSection = ({ rewardsFiat, backersShare, backersCount, buildersCount }
         </Span>
       </div>
 
-      <ComparativeProgressBar
-        segmented
-        aria-label={`Backers ${backersPct}%, Builders ${buildersPct}%`}
-        values={[
-          { value: backersShare, color: SPLIT_COLORS.backers },
-          { value: 1 - backersShare, color: SPLIT_COLORS.builders },
-        ]}
-      />
+      <BackerBuilderSplitBar backersShare={backersShare} />
 
       {averages.length > 0 && (
         <Paragraph variant="body-xs" className="text-v3-text-40 pt-1">
@@ -89,10 +79,7 @@ const SplitSection = ({ rewardsFiat, backersShare, backersCount, buildersCount }
 
 export interface CycleDistributionProps {
   cycle: CycleHistoryEntry
-  /**
-   * Active Builders in the cycle. Only the running cycle can answer this today, so a past
-   * cycle simply omits the per-Builder average rather than guessing from today's count.
-   */
+  /** Only the running cycle has one; past cycles omit the per-Builder average. */
   buildersCount?: number | null
   isLoading?: boolean
   className?: string
@@ -104,7 +91,6 @@ export const CycleDistribution = ({
   isLoading = false,
   className,
 }: CycleDistributionProps) => {
-  // Largest contributor first — the panel is read top-down to answer "what made up this total".
   const rewards = [...cycle.rewards].sort((a, b) => b.fiatValue.cmp(a.fiatValue))
 
   return (

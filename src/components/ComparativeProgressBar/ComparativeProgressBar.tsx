@@ -33,7 +33,6 @@ export const ComparativeProgressBar = ({
       {values.map(({ value, color }, index) => (
         <div
           key={index}
-          // A bar with nothing in it would otherwise compute a NaN width.
           style={{ width: total > 0 ? `${(value / total) * 100}%` : '0%', backgroundColor: color }}
           className={cn('h-full', segmented && 'rounded-[20px]')}
         />

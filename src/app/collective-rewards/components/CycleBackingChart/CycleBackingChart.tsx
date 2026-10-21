@@ -20,35 +20,27 @@ export type CycleChartRange = 'ten-cycles' | 'six-months' | 'all'
 interface RangeOption {
   id: CycleChartRange
   label: string
-  /** How many trailing cycles the range keeps. `null` keeps everything. */
+  /** Trailing cycles kept; `null` keeps everything. */
   cycles: number | null
 }
 
-/** Roughly 13 cycles fit in six months at the current 14-day cadence. */
 const RANGE_OPTIONS: RangeOption[] = [
   { id: 'ten-cycles', label: '10 cycles', cycles: 10 },
+  // 13 cycles ≈ six months at the 14-day cadence.
   { id: 'six-months', label: '6 months', cycles: 13 },
   { id: 'all', label: 'All', cycles: null },
 ]
 
-/**
- * Floor rather than a fixed height: the card stretches to match the distribution panel beside
- * it, and the plot takes whatever that leaves so the two never end on different lines.
- */
 const CHART_MIN_HEIGHT = 220
-/** Above this many categories the axis labels collide, so we thin them out. */
 const MAX_X_LABELS = 10
-/**
- * Room for the first and last tick labels, which are centred on the plot's edges and would
- * otherwise be clipped. Both sides need it now that the value axis is gone and no longer
- * reserves width on the right.
- */
+/** Keeps the first and last tick labels, centred on the plot's edges, from being clipped. */
 const X_LABEL_GUTTER = 20
 
 export interface CycleChartPoint {
   cycleNumber: number
   label: string
-  backing: number
+  /** `null` renders as a gap in the area, not a zero. */
+  backing: number | null
   start: Date
   end: Date
 }
@@ -59,12 +51,11 @@ interface BackingDotProps {
   payload?: CycleChartPoint
 }
 
-/**
- * Marks the selected cycle permanently. Recharts' `activeDot` only appears on hover, which
- * left the chart with no indication of which cycle the panel beside it was describing.
- */
+/** Marks the selected cycle permanently; recharts' `activeDot` only shows on hover. */
 const backingDot = (selectedCycleNumber: number | undefined) => {
   const BackingDot = ({ cx, cy, payload }: BackingDotProps) => {
+    if (payload?.backing === null || cx === undefined || cy === undefined) return null
+
     const isSelected = payload?.cycleNumber === selectedCycleNumber
 
     return (
@@ -112,9 +103,7 @@ const RangeToggle = ({
 )
 
 export interface CycleBackingChartProps {
-  /** Cycle history in any order; the chart sorts ascending itself. */
   cycles: CycleHistoryEntry[]
-  /** Cycle whose figures appear in the header and whose band is highlighted. */
   selectedCycle?: number | null
   onSelectCycle?: (cycleNumber: number) => void
   defaultRange?: CycleChartRange
@@ -135,10 +124,8 @@ export const CycleBackingChart = ({
 
   const ascending = useMemo(() => [...cycles].sort((a, b) => a.cycleNumber - b.cycleNumber), [cycles])
 
-  /**
-   * A cycle picked elsewhere on the page, in the table say, can be older than the range shows.
-   * Widen to the narrowest range that holds it, so the marked dot stays on the selected cycle.
-   */
+  // A cycle selected from the table can fall outside the current range: widen to the narrowest
+  // range that holds it. State adjusted during render, per React's "adjusting state on prop change".
   if (selectedCycle !== trackedSelection) {
     setTrackedSelection(selectedCycle)
 
@@ -159,7 +146,7 @@ export const CycleBackingChart = ({
     return windowed.map(({ cycleNumber, backing, start, end }) => ({
       cycleNumber,
       label: `C${cycleNumber}`,
-      backing: Number(backing),
+      backing: backing === null ? null : Number(backing),
       start,
       end,
     }))
@@ -167,8 +154,7 @@ export const CycleBackingChart = ({
 
   const xInterval = Math.max(0, Math.ceil(data.length / MAX_X_LABELS) - 1)
 
-  // Read from every cycle, not the visible ones, so narrowing the range never changes what the
-  // header describes. Falls back to the newest cycle so the header always has something to show.
+  // From every cycle, not the visible ones, so narrowing the range never changes the header.
   const highlighted = ascending.find(({ cycleNumber }) => cycleNumber === selectedCycle) ?? ascending.at(-1)
 
   return (
@@ -183,7 +169,7 @@ export const CycleBackingChart = ({
           </Label>
           <div className="flex flex-wrap items-baseline gap-3">
             <Header variant="h1" className="text-v3-text-100">
-              {highlighted ? `${formatBackingCompact(highlighted.backing)} ${STRIF}` : '—'}
+              {highlighted?.backing != null ? `${formatBackingCompact(highlighted.backing)} ${STRIF}` : '—'}
             </Header>
             {highlighted && (
               <Span variant="body-s" className="text-v3-text-40">
@@ -201,8 +187,6 @@ export const CycleBackingChart = ({
           <LoadingSpinner />
         </div>
       ) : (
-        // `min-h-0` so the plot can be sized by the row rather than by its own content, which
-        // is what a flex child defaults to and would stop the container from ever shrinking.
         <div className="min-h-0 flex-1" style={{ minHeight: CHART_MIN_HEIGHT }}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
@@ -221,11 +205,6 @@ export const CycleBackingChart = ({
                 </linearGradient>
               </defs>
 
-              {/*
-                No gridlines and no visible value axis: the design reads this as a shape, not a
-                measurement. Every figure the axis used to carry is still stated exactly — the
-                selected cycle in the header above, any other cycle in the tooltip.
-              */}
               <XAxis
                 dataKey="label"
                 axisLine={false}
@@ -236,21 +215,8 @@ export const CycleBackingChart = ({
                 className="font-rootstock-sans"
               />
 
-              {/*
-                Hidden rather than deleted. The scale still has to be declared: `hide` drops the
-                line, ticks and reserved width but keeps the baseline pinned to zero, so the
-                filled area continues to describe the real magnitude. Dropping the element
-                entirely would hand the domain to recharts' defaults and silently change what
-                the shape means.
-              */}
-              <YAxis
-                hide
-                // Recharts picks round ticks off the data max; a hand-rolled ceiling
-                // overshot badly (28M of backing produced a 40M axis).
-                domain={[0, 'auto']}
-                // Headroom in pixels rather than domain units, so the peak clears the top edge.
-                padding={{ top: 20 }}
-              />
+              {/* Hidden, not removed: it pins the baseline to zero, which recharts' default domain would not. */}
+              <YAxis hide domain={[0, 'auto']} padding={{ top: 20 }} />
 
               <Area
                 type="monotone"

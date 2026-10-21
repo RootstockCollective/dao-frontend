@@ -13,7 +13,7 @@ interface SegmentedControlProps<T extends string> {
   options: SegmentedControlOption<T>[]
   value: T
   onChange: (value: T) => void
-  /** Names the group for screen readers, e.g. "Chart range". */
+  /** Accessible name of the group. */
   label: string
   className?: string
   optionClassName?: string
@@ -21,14 +21,7 @@ interface SegmentedControlProps<T extends string> {
   renderLabel?: (option: SegmentedControlOption<T>, isSelected: boolean) => React.ReactNode
 }
 
-/**
- * A single-choice control.
- *
- * Modelled as a radio group rather than a row of `aria-pressed` buttons: the options are
- * mutually exclusive, and `aria-pressed` announces independent toggles. That also means the
- * group takes one tab stop and moves between options with the arrow keys, instead of adding
- * one stop per option.
- */
+/** Single-choice control modelled as a radio group: one tab stop, arrows move between options. */
 export const SegmentedControl = <T extends string>({
   options,
   value,
@@ -85,7 +78,6 @@ export const SegmentedControl = <T extends string>({
             role="radio"
             aria-checked={isSelected}
             data-value={option.value}
-            // Roving tabindex: the group is a single stop, arrows move within it.
             tabIndex={index === tabbableIndex ? 0 : -1}
             onClick={() => onChange(option.value)}
             className={cn(

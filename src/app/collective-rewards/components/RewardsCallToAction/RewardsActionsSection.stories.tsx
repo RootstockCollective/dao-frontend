@@ -25,7 +25,6 @@ export default meta
 
 type Story = StoryObj
 
-/** The section as it appears on the page. */
 export const Default: Story = {
   render: () => (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 items-start">
@@ -40,7 +39,6 @@ export const Default: Story = {
   ),
 }
 
-/** The simulator on its own, to check the preset states. */
 export const Simulator: Story = {
   render: () => (
     <div className="max-w-[460px]">
@@ -49,7 +47,6 @@ export const Simulator: Story = {
   ),
 }
 
-/** Without participant counts the copy drops the number rather than showing a zero. */
 export const WithoutCounts: Story = {
   render: () => (
     <div className="max-w-[560px]">
@@ -58,7 +55,6 @@ export const WithoutCounts: Story = {
   ),
 }
 
-/** While the upcoming rewards load the copy drops the figure rather than showing $0. */
 export const Loading: Story = {
   render: () => (
     <div className="max-w-[560px]">

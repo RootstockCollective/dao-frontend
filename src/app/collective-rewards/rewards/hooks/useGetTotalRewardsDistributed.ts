@@ -44,7 +44,6 @@ export const useGetTotalRewardsDistributed = () => {
   return {
     data: data ?? NO_TOTALS,
     isLoading,
-    /** True until the first totals arrive, including while a retry is paused offline or in a hidden tab. */
     isPending,
     error,
   }

@@ -3,9 +3,10 @@ import { describe, expect, it } from 'vitest'
 import Big from '@/lib/big'
 
 import { CycleHistoryEntry } from '../types'
-import { getDefaultCycle } from './CycleDashboardContext'
+import { getDefaultCycle, getRunningCycle } from './CycleDashboardContext'
 
 const entry = (cycleNumber: number, overrides: Partial<CycleHistoryEntry> = {}): CycleHistoryEntry => ({
+  id: `cycle-${cycleNumber}`,
   cycleNumber,
   start: new Date(0),
   end: new Date(0),
@@ -39,5 +40,21 @@ describe('getDefaultCycle', () => {
 
   it('is undefined without cycles', () => {
     expect(getDefaultCycle([])).toBeUndefined()
+  })
+})
+
+describe('getRunningCycle', () => {
+  it('is the newest cycle while it is still open', () => {
+    const running = entry(46, { status: 'running' })
+
+    expect(getRunningCycle([running, entry(45)])).toBe(running)
+  })
+
+  it('is undefined when the newest indexed cycle has already closed', () => {
+    expect(getRunningCycle([entry(44), entry(43)])).toBeUndefined()
+  })
+
+  it('is undefined without cycles', () => {
+    expect(getRunningCycle([])).toBeUndefined()
   })
 })

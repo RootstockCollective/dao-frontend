@@ -7,11 +7,8 @@ interface DataLoaderProps<T> {
   render: (args: { data: T; isLoading: boolean }) => ReactNode
 }
 
-/**
- * The loaders are declared once per call rather than inside `DataLoader`: a component declared
- * during render is a new type on every render, so React would remount whatever `render` returns,
- * dropping its state and focus each time the parent re-rendered.
- */
+// Loaders are declared here, not inside `DataLoader`: a component type created during render
+// would remount the rendered subtree on every parent re-render.
 export function withDataFallback<T>(
   usePrimary: () => { data: T; isLoading: boolean; error?: unknown },
   useFallback: () => { data: T; isLoading: boolean; error?: unknown },

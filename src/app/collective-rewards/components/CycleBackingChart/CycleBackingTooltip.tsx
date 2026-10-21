@@ -20,13 +20,9 @@ export const CycleBackingTooltip = ({ active, payload }: CycleBackingTooltipProp
       <Label variant="tag-s" caps className="text-v3-text-40 tracking-wider">
         Cycle {point.cycleNumber}
       </Label>
-      {/*
-        Written out in full rather than abbreviated. With the value axis gone this is the only
-        place the exact figure appears, and an abbreviation here would leave the chart with no
-        precise readout at all.
-      */}
+      {/* In full: with the value axis hidden this is the only exact readout. */}
       <Paragraph className="text-v3-text-100">
-        {formatNumberWithCommas(point.backing)} {STRIF}
+        {point.backing === null ? '—' : `${formatNumberWithCommas(point.backing)} ${STRIF}`}
       </Paragraph>
       <Span variant="body-xs" className="text-v3-text-40">
         {formatCycleWindow(point.start, point.end)}

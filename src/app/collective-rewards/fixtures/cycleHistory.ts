@@ -5,17 +5,10 @@ import { REWARD_TOKEN_KEYS, RewardTokenKey, TOKENS } from '@/lib/tokens'
 import { ONE_DAY_IN_MS } from '../constants/chartConstants'
 import { CycleHistoryEntry, CycleTokenReward } from '../types'
 
-/**
- * Deterministic cycle history for Storybook and tests.
- *
- * Everything is anchored to a fixed date rather than `Date.now()` so snapshots stay stable,
- * and the per-token amounts are derived from the fiat totals at the prices below, so a story
- * never shows a breakdown that fails to add up to its own header.
- */
+/** Deterministic cycle history for Storybook: fixed dates, and token amounts derived from the USD totals. */
 
 const CYCLE_DURATION_DAYS = 14
 
-/** Close of the most recent cycle in the fixture. */
 const ANCHOR_END = new Date('2026-08-06T00:00:00Z')
 
 const FIXTURE_PRICES: Record<RewardTokenKey, number> = {
@@ -24,7 +17,7 @@ const FIXTURE_PRICES: Record<RewardTokenKey, number> = {
   usdrif: 1,
 }
 
-/** How a cycle's distribution splits across the three reward tokens. Sums to 1. */
+/** Sums to 1. */
 const TOKEN_WEIGHTS: Record<RewardTokenKey, number> = {
   rbtc: 0.74,
   usdrif: 0.12,
@@ -33,9 +26,7 @@ const TOKEN_WEIGHTS: Record<RewardTokenKey, number> = {
 
 interface CycleSeed {
   cycleNumber: number
-  /** Total stRIF backing at the cycle's close, in whole tokens. */
   backing: number
-  /** Combined USD value distributed in the cycle. */
   rewardsUsd: number
   backersShare: number
   backersCount: number
@@ -54,7 +45,6 @@ const SEEDS: CycleSeed[] = [
   { cycleNumber: 37, backing: 26_400_000, rewardsUsd: 318_000, backersShare: 0.64, backersCount: 214 },
 ]
 
-/** Turn a cycle's USD total into the per-token amounts that produce exactly that total. */
 const buildTokenRewards = (rewardsUsd: number): CycleTokenReward[] =>
   REWARD_TOKEN_KEYS.map(tokenKey => {
     const fiatValue = Big(rewardsUsd).mul(TOKEN_WEIGHTS[tokenKey])
@@ -74,6 +64,7 @@ const buildEntry = (seed: CycleSeed, index: number): CycleHistoryEntry => {
   const rewards = buildTokenRewards(seed.rewardsUsd)
 
   return {
+    id: `cycle-${seed.cycleNumber}`,
     cycleNumber: seed.cycleNumber,
     start,
     end,
@@ -82,7 +73,6 @@ const buildEntry = (seed: CycleSeed, index: number): CycleHistoryEntry => {
     rewardsFiat: rewards.reduce((acc, { fiatValue }) => acc.add(fiatValue), Big(0)),
     backersShare: seed.backersShare,
     backersCount: seed.backersCount,
-    // The newest cycle is the one still open; every earlier cycle has settled.
     status: index === 0 ? 'running' : 'settled',
   }
 }
@@ -91,9 +81,13 @@ export const mockCycleHistory: CycleHistoryEntry[] = SEEDS.map(buildEntry)
 
 export const mockRunningCycle = mockCycleHistory[0]
 
-/** Same history with the fields the indexer can't answer yet blanked out. */
 export const mockCycleHistoryWithoutCounts: CycleHistoryEntry[] = mockCycleHistory.map(entry => ({
   ...entry,
   backersShare: null,
   backersCount: null,
 }))
+
+/** The two oldest cycles predate the loaded snapshots, so their backing is unknown. */
+export const mockCycleHistoryWithUnknownBacking: CycleHistoryEntry[] = mockCycleHistory.map((entry, index) =>
+  index >= mockCycleHistory.length - 2 ? { ...entry, backing: null } : entry,
+)
