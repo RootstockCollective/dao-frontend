@@ -156,3 +156,8 @@ export interface ContributorApiResponse {
   votes: number
   createdAt: string
 }
+
+export interface DelegatedVotesApiResponse {
+  /** In wei */
+  totalDelegatedVotes: string
+}
