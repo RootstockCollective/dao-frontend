@@ -23,7 +23,7 @@ const NO_TOTALS: TotalRewardsDistributed = {}
  * which cost one paginated Blockscout call per gauge on every refresh.
  */
 export const useGetTotalRewardsDistributed = () => {
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, isPending, error } = useQuery({
     queryFn: async (): Promise<TotalRewardsDistributed> => {
       const res = await fetch(ROUTE)
       if (!res.ok) {
@@ -44,6 +44,7 @@ export const useGetTotalRewardsDistributed = () => {
   return {
     data: data ?? NO_TOTALS,
     isLoading,
+    isPending,
     error,
   }
 }

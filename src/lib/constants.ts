@@ -183,3 +183,9 @@ export const PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD = Number(
 )
 
 export const ABI_CYCLES_LIMIT = 12
+
+/** 14-day cycles. Also the exponent that annualises a cycle's payout in the ABI formula. */
+export const CYCLES_PER_YEAR = 26
+
+/** Cycles the rewards dashboard loads; every endpoint behind the cycle table uses the same limit. */
+export const CYCLE_HISTORY_LIMIT = 100
