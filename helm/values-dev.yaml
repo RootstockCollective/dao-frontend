@@ -8,7 +8,7 @@ namespace: dev
 ingress:
   enabled: true
   className: alb
-  certificateArn: "arn:aws:acm:us-east-1:886436934082:certificate/079f3575-cd79-4435-9154-c14d8a034d39"
+  certificateArn: "arn:aws:acm:us-east-1:886436934082:certificate/6d1239f6-c4a4-4879-94d2-d15f0727d5ae"
   hosts:
     - host: dev-eks.app.rootstockcollective.xyz
       paths:
