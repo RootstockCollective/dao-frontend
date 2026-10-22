@@ -21,7 +21,7 @@ permissions: read-all
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: rscoll-dev-dao-dev
-  EKS_CLUSTER: rscoll-dev
+  EKS_CLUSTER: rscoll
   HELM_RELEASE: dao-frontend-dev
   NAMESPACE: dev
 
