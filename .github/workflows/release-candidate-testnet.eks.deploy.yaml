@@ -22,7 +22,7 @@ permissions: read-all
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: rscoll-dev-dao-staging
-  EKS_CLUSTER: rscoll-dev
+  EKS_CLUSTER: rscoll
   HELM_RELEASE: dao-frontend-rc-testnet
   NAMESPACE: rc-testnet
 
