@@ -9,7 +9,7 @@
     "dev:webpack": "next dev",
     "build": "next build --webpack",
     "build:turbo": "next build --turbopack",
-    "start": "next start",
+    "start": "next start --keepAliveTimeout 65000",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint-tsc": "tsc --noEmit",
