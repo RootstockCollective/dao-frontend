@@ -1,8 +1,7 @@
 import type { Address } from 'viem'
 
 import type { BtcVaultWhitelistedUserItem } from '@/app/api/btc-vault/v1/whitelist-role-history/action'
-import { formatDateMonthFirst } from '@/app/btc-vault/services/ui/formatters'
-import { shortAddress } from '@/lib/utils'
+import { formatDateMonthFirst, shortAddress } from '@/lib/utils'
 import type { Row } from '@/shared/context/TableContext/types'
 
 import type { ColumnId, WhitelistCellDataMap, WhitelistStatus } from './config'
