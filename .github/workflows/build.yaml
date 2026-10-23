@@ -58,6 +58,38 @@ jobs:
         env:
           NEXT_TELEMETRY_DISABLED: '1'
           NEXT_PUBLIC_BUILD_ID: ${{ github.sha }}
+          BLOCKSCOUT_API_KEY: ${{ secrets.BLOCKSCOUT_API_KEY }}
         run: |
           cp .env.dev .env.local
           npm run build:turbo
+
+  build_storybook:
+    name: Build Storybook
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 #v6.2.0
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Cache node_modules
+        id: cache-node-modules
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 #v5.0.3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-node-modules.outputs.cache-hit != 'true'
+        env:
+          CYPRESS_INSTALL_BINARY: '0'
+        run: npm ci
+
+      - name: Build Storybook
+        env:
+          STORYBOOK_DISABLE_TELEMETRY: '1'
+        run: npm run build-storybook

@@ -11,6 +11,7 @@ import {
   ContractReadResult,
 } from '@/app/communities/communityUtils'
 import { nftAlertMessages } from '@/app/communities/nft/[address]/constants'
+import { STAKE_RIF_ROUTE } from '@/lib/constants'
 import { NoContextProviderError } from '@/lib/errors/ContextError'
 import { applyPinataImageOptions } from '@/lib/ipfs'
 import { useCommunity } from '@/shared/hooks/useCommunity'
@@ -148,7 +149,7 @@ export function CommunityNFTProvider({ children, nftAddress }: CommunityNFTProvi
     if (stRifBalance < (stRifThreshold ?? 0n)) {
       showToast(
         nftAlertMessages.NFT_BALANCE_ALERT(nftInfo.title, stRifThreshold ?? 0n, () =>
-          router.push('/user?action=stake'),
+          router.push(STAKE_RIF_ROUTE),
         ),
       )
       return

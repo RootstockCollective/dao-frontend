@@ -5,6 +5,7 @@ import {
   formatNumberWithCommas,
   millify,
   normalizeAddress,
+  parseBigInt,
   splitWords,
 } from '@/lib/utils'
 import { Duration } from 'luxon'
@@ -239,5 +240,22 @@ describe('normalizeAddress', () => {
   it('returns same address for valid checksummed address', () => {
     const checksummed = getAddress('0xf39fd6e51aad88f6f4ce6ab8827279cfffb29266')
     expect(normalizeAddress(checksummed)).toBe(checksummed)
+  })
+})
+
+describe('parseBigInt', () => {
+  it('parses integer strings and numbers', () => {
+    expect(parseBigInt('25000000000000000000')).toBe(25000000000000000000n)
+    expect(parseBigInt(42)).toBe(42n)
+    expect(parseBigInt(7n)).toBe(7n)
+  })
+
+  it('returns 0n for missing or malformed values instead of throwing', () => {
+    expect(parseBigInt(undefined)).toBe(0n)
+    expect(parseBigInt(null)).toBe(0n)
+    expect(parseBigInt('')).toBe(0n)
+    expect(parseBigInt('1.5')).toBe(0n)
+    expect(parseBigInt('abc')).toBe(0n)
+    expect(parseBigInt(1.5)).toBe(0n)
   })
 })

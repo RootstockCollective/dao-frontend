@@ -75,7 +75,12 @@ export const useStickyHeader = (options: UseStickyHeaderOptions = {}) => {
   }, [isSticky, applyStickyStyles, clearStickyStyles])
 
   useEffect(() => {
-    if (!isEnabled) return
+    if (!isEnabled) {
+      setIsSticky(false)
+      setIsVisible(true)
+      lastScrollY.current = 0
+      return
+    }
 
     const updateScrollDirection = () => {
       const scrollY = window.scrollY

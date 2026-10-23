@@ -3,7 +3,7 @@ import { Address } from 'viem'
 
 import { useShuffledArray } from '@/app/backing/hooks/useShuffledArray'
 import { Builder } from '@/app/collective-rewards/types'
-import { useGetBuilders } from '@/app/collective-rewards/user'
+import { useGetBuilders } from '@/app/collective-rewards/user/hooks/useGetBuilders'
 import { withPricesContextProvider } from '@/shared/context/PricesContext'
 
 import { isBuilderRewardable } from '../../utils'

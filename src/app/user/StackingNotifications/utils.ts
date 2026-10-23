@@ -32,8 +32,10 @@ export const handleActionClick = (
   router: ReturnType<typeof useRouter>,
 ) => {
   if (content.action.external && typeof content.action.url === 'string') {
-    // Open external links in a new tab/window
-    window.open(content.action.url, '_blank')
+    // Open external links in a new tab/window. `noopener` denies the page we open any handle
+    // on this one, which is what stops it redirecting the tab behind it somewhere hostile,
+    // and `noreferrer` keeps our URL out of its logs.
+    window.open(content.action.url, '_blank', 'noopener,noreferrer')
   } else {
     // Navigate to internal routes within the same application
     if (typeof content.action.url === 'function') {

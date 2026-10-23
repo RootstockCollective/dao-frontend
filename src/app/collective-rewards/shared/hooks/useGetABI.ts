@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Address } from 'viem'
 
-import { getBackerRewardPercentage } from '@/app/collective-rewards/rewards'
+import { getBackerRewardPercentage } from '@/app/collective-rewards/rewards/utils/getBackerRewardPercentage'
 import Big from '@/lib/big'
 import { ABI_CYCLES_LIMIT, RBTC, RIF, USDRIF, WeiPerEther } from '@/lib/constants'
 import { TOKENS } from '@/lib/tokens'

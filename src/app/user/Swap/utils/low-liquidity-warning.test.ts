@@ -36,9 +36,9 @@ describe('low-liquidity-warning', () => {
     })
 
     it('does not compare raw amounts for RIF ↔ USDRIF without USD prices (would be meaningless)', () => {
-      expect(shouldShowLowLiquidityWarning('1000', '34.71', { ...rifIn, price: 0 }, { ...usdrifOut, price: 0 })).toBe(
-        false,
-      )
+      expect(
+        shouldShowLowLiquidityWarning('1000', '34.71', { ...rifIn, price: 0 }, { ...usdrifOut, price: 0 }),
+      ).toBe(false)
       expect(shouldShowLowLiquidityWarning('1000', '34.71', rifIn, usdrifOut)).toBe(false)
     })
 
