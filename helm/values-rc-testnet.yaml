@@ -19,6 +19,7 @@ ingress:
 externalSecrets:
   parameterPaths:
     theGraphApiKey: /rscoll-dev/rc-testnet/the-graph-api-key
+    nextServerActionsEncryptionKey: /rscoll-dev/rc-testnet/next-server-actions-encryption-key
     dbConnectionString: /rscoll-dev-eks/rc-testnet/database-uri
     daoGraphApiKey: /rscoll-dev/rc-testnet/dao-graph-api-key
     daoDataDbConnectionString: /rscoll-dev-eks/rc-testnet/dao-data-database-uri
