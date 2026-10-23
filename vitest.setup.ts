@@ -3,35 +3,13 @@ import { expect } from 'vitest'
 
 expect.extend(matchers)
 
-/**
- * Recent Node versions ship their own experimental Web Storage, so `localStorage` and
- * `sessionStorage` already sit on globalThis before jsdom is installed. Vitest only copies a
- * window property onto the global when the global does not already have it, so a bare
- * `localStorage` in a test resolves to Node's implementation, which is undefined unless the
- * process was started with `--localstorage-file`.
- *
- * Under jsdom, vitest points `window` back at globalThis and hands the real jsdom window over
- * as `globalThis.jsdom`, so that is where both storages have to be read from.
- */
-const jsdomWindow: Window | undefined = (globalThis as { jsdom?: { window: Window } }).jsdom?.window
-
-if (jsdomWindow) {
+// Node 24.22+ ships the Web Storage globals unflagged, but without --localstorage-file they resolve to
+// undefined. vitest's jsdom environment only copies window keys that are missing from the Node global, so
+// jsdom's Storage never reaches the tests and `localStorage.clear()` throws. `frames` is copied verbatim and
+// jsdom returns its real window from it, so take the Storage objects from there.
+const jsdomWindow = (globalThis as { frames?: Window }).frames
+if (jsdomWindow && jsdomWindow !== (globalThis as unknown as Window) && !globalThis.localStorage) {
   for (const key of ['localStorage', 'sessionStorage'] as const) {
-    Object.defineProperty(globalThis, key, {
-      configurable: true,
-      enumerable: true,
-      get: () => jsdomWindow[key],
-    })
+    Object.defineProperty(globalThis, key, { value: jsdomWindow[key], configurable: true, writable: true })
   }
-
-  /**
-   * Banners and collapsibles draw the molten artwork on a canvas, which jsdom does not
-   * implement. The component already copes with a missing context; this only keeps the
-   * "not implemented" noise out of the test output. Tests that need a context spy on it.
-   */
-  Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
-    configurable: true,
-    writable: true,
-    value: () => null,
-  })
 }
