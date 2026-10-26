@@ -48,16 +48,14 @@ async function getNftHoldersShepherds() {
 
   const votingPowerResults = await publicClient.multicall({ contracts: stRifContractCalls })
 
-  return holders
-    .map((holder, i) => {
-      const votingPower = BigInt(votingPowerResults[i]?.result?.toString() || '0')
-      const formatted = Big(formatEther(votingPower)).floor().toNumber()
-      return {
-        ...holder,
-        votingPower: formatted,
-      }
-    })
-    .filter(({ votingPower }) => votingPower > 0)
+  return holders.map((holder, i) => {
+    const votingPower = BigInt(votingPowerResults[i]?.result?.toString() || '0')
+    const formatted = Big(formatEther(votingPower)).floor().toNumber()
+    return {
+      ...holder,
+      votingPower: formatted,
+    }
+  })
 }
 
 export const getCachedNftHoldersShepherds = unstable_cache(getNftHoldersShepherds, ['nft_shepherds'], {

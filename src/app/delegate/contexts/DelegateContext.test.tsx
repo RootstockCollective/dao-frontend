@@ -27,7 +27,11 @@ vi.mock('wagmi', () => ({
   },
 }))
 vi.mock('@/app/user/Delegation/hooks/useNftHoldersWithVotingPower', () => ({
-  useNftHoldersWithVotingPower: () => ({ nftHolders: [], refetch: mocks.refetchHolders }),
+  useNftHoldersWithVotingPower: () => ({
+    nftHolders: [],
+    totalDelegatedVotes: undefined,
+    refetch: mocks.refetchHolders,
+  }),
 }))
 vi.mock('@/lib/rns', () => ({ getEnsDomainName: () => Promise.resolve(undefined) }))
 vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }))
@@ -80,7 +84,6 @@ describe('DelegateContextProvider on the delegation page', () => {
     mocks.reads = {
       [`balanceOf:${ACCOUNT}`]: parseEther('20'),
       [`getVotes:${ACCOUNT}`]: 0n,
-      totalSupply: parseEther('1000'),
     }
   })
 
