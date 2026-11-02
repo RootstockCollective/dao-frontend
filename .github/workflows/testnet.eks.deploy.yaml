@@ -1,5 +1,5 @@
 name: Deploy to Amazon EKS (Testnet)
-# Deploys to: https://testnet.app-eks.rootstockcollective.xyz/
+# Deploys to: https://testnet.app.rootstockcollective.xyz/
 # Triggers when a release is created
 # Uses the `.env.testnet` env file
 
@@ -73,7 +73,7 @@ jobs:
     needs: build
     environment:
       name: testnet
-      url: https://testnet.app-eks.rootstockcollective.xyz
+      url: https://testnet.app.rootstockcollective.xyz
 
     permissions:
       id-token: write

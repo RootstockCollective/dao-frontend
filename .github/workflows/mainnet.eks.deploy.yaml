@@ -1,5 +1,5 @@
 name: Deploy to Amazon EKS (Mainnet)
-# Deploys to: https://app-eks.rootstockcollective.xyz/
+# Deploys to: https://app.rootstockcollective.xyz/
 # Triggers when a release is created
 # Uses the `.env.mainnet` env file
 
@@ -73,7 +73,7 @@ jobs:
     needs: build
     environment:
       name: mainnet
-      url: https://app-eks.rootstockcollective.xyz
+      url: https://app.rootstockcollective.xyz
 
     permissions:
       id-token: write
