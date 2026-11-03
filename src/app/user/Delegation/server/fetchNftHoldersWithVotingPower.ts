@@ -1,11 +1,11 @@
 'use server'
 
 import { unstable_cache } from 'next/cache'
-import { formatEther } from 'viem'
+import { Address, formatEther } from 'viem'
 
 import { fetchNftHoldersOfAddress } from '@/app/user/Balances/actions'
 import Big from '@/lib/big'
-import { OG_CONTRIBUTORS_NFT_ADDRESS } from '@/lib/constants'
+import { DELEGATES_DENYLIST, OG_CONTRIBUTORS_NFT_ADDRESS } from '@/lib/constants'
 import { stRif } from '@/lib/contracts'
 import { resolveRnsDomain } from '@/lib/rns'
 import { publicClient } from '@/lib/viemPublicClient'
@@ -16,7 +16,9 @@ async function fetchNftHoldersShepherds() {
   // Clean the data from any duplicates
   const holdersToUse = holders.items.reduce<Record<string, (typeof holders.items)[0]>>(
     (previous, current) => {
-      previous[current.owner] = current
+      if (!DELEGATES_DENYLIST.includes(current.owner.toLowerCase() as Address)) {
+        previous[current.owner] = current
+      }
       return previous
     },
     {},
