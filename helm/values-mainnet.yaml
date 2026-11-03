@@ -8,6 +8,8 @@ namespace: mainnet
 ingress:
   enabled: true
   className: alb
+  groupName: dao-frontend-prod
+  wafAclArn: ""
   certificateArn: "arn:aws:acm:us-east-1:886436934082:certificate/dc07df2e-4f94-47ef-bafe-799adb1c64b0"
   hosts:
     - host: app.rootstockcollective.xyz
