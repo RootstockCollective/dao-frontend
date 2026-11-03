@@ -9,7 +9,6 @@ ingress:
   enabled: true
   className: alb
   certificateArn: "arn:aws:acm:us-east-1:886436934082:certificate/dc07df2e-4f94-47ef-bafe-799adb1c64b0"
-  wafAclArn: "arn:aws:wafv2:us-east-1:886436934082:regional/webacl/rscoll-dev-blocking/e6c95241-f808-4052-8d84-fac7e401048f"
   hosts:
     - host: testnet.app.rootstockcollective.xyz
       paths:
