@@ -101,11 +101,12 @@ describe('PersistedCollapsible', () => {
         </NonceProvider>,
       )
 
-      expect(html).toMatch(/<script nonce="csp-nonce-123">/)
+      expect(html).toContain('<script nonce="csp-nonce-123">')
     })
 
     it('renders the state script without a nonce outside a NonceProvider', () => {
-      expect(renderToString(<Section />)).toMatch(/<script>/)
+      // Plain string checks: a regexp here reads to CodeQL as an HTML sanitiser (js/bad-tag-filter)
+      expect(renderToString(<Section />)).toContain('<script>')
     })
 
     it('opens a remembered section whose default is closed', () => {
