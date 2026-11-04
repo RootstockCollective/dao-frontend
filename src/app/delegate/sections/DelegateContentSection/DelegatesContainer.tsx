@@ -5,7 +5,7 @@ import { Address, formatEther, isAddress } from 'viem'
 import { useReadContract } from 'wagmi'
 
 import { DelegateCard } from '@/app/delegate/components/DelegateCard'
-import { validateRnsDomain } from '@/app/delegate/lib/utils'
+import { DENIED_DELEGATE_MESSAGE, isDeniedDelegate, validateRnsDomain } from '@/app/delegate/lib/utils'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
 import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
 import { Button } from '@/components/Button'
@@ -85,11 +85,21 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
       return
     }
 
+    if (isDeniedDelegate(userInput)) {
+      onUpdateAddressStatus('invalid', DENIED_DELEGATE_MESSAGE)
+      return
+    }
+
     if (userInput.endsWith('.rsk')) {
       onUpdateAddressStatus('pending', 'Validating RNS domain...')
       const isValidRNS = await validateRnsDomain(userInput)
       if (!isValidRNS.valid) {
         onUpdateAddressStatus('invalid', isValidRNS.error || 'Invalid RNS domain')
+        return
+      }
+      // A denied wallet can still be reached through any domain pointing at it
+      if (isDeniedDelegate(isValidRNS.address)) {
+        onUpdateAddressStatus('invalid', DENIED_DELEGATE_MESSAGE)
         return
       }
 

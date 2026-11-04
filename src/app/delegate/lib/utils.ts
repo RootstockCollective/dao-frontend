@@ -1,4 +1,11 @@
+import { DELEGATES_DENYLIST } from '@/lib/constants'
 import { resolveRnsDomain } from '@/lib/rns'
+
+export const DENIED_DELEGATE_MESSAGE = 'This delegate is no longer active'
+
+/** Whether an address or RNS domain is in the delegates denylist */
+export const isDeniedDelegate = (addressOrDomain: string) =>
+  DELEGATES_DENYLIST.includes(addressOrDomain.trim().toLowerCase())
 
 export const validateRnsDomain = async (
   domain: string,
