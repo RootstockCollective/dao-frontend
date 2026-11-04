@@ -1,20 +1,16 @@
 import { produce } from 'immer'
 import { debounce } from 'lodash'
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
-import { Address, formatEther, isAddress } from 'viem'
-import { useReadContract } from 'wagmi'
+import { Address, isAddress } from 'viem'
 
 import { DelegateCard } from '@/app/delegate/components/DelegateCard'
-import { validateRnsDomain } from '@/app/delegate/lib/utils'
+import { getVotingWeightPercent, validateRnsDomain } from '@/app/delegate/lib/utils'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
 import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
 import { Button } from '@/components/Button'
 import { CloseIconKoto } from '@/components/Icons'
 import { NewPopover } from '@/components/NewPopover'
 import { Paragraph, Span } from '@/components/Typography'
-import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import Big from '@/lib/big'
-import { tokenContracts } from '@/lib/contracts'
 import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
@@ -36,29 +32,16 @@ export const DelegatesContainer = ({ hasOtherDelegatee, isClosable, onDelegate, 
     statusMessage: '',
   })
 
-  const { nftHolders: delegates } = useNftHoldersWithVotingPower()
+  const { nftHolders: delegates, totalDelegatedVotes } = useNftHoldersWithVotingPower()
 
-  const { data: totalSupply } = useReadContract({
-    abi: StRIFTokenAbi,
-    address: tokenContracts.stRIF,
-    functionName: 'totalSupply',
-  })
-
-  const delegatesWithWeight = useMemo(() => {
-    if (!delegates || !totalSupply) return []
-
-    const supplyNum = Big(formatEther(totalSupply))
-
-    return delegates.map(nftHolder => {
-      const votesNum = nftHolder.votingPower ? Big(nftHolder.votingPower.toString()) : Big(0)
-      const percent = votesNum.div(supplyNum).times(100).toFixed(2)
-
-      return {
+  const delegatesWithWeight = useMemo(
+    () =>
+      delegates.map(nftHolder => ({
         ...nftHolder,
-        votingPowerPercent: percent,
-      }
-    })
-  }, [delegates, totalSupply])
+        votingWeight: getVotingWeightPercent(nftHolder.votingPower, totalDelegatedVotes),
+      })),
+    [delegates, totalDelegatedVotes],
+  )
 
   const onDelegateChangeAddress = (e: ChangeEvent<HTMLInputElement>) => {
     setAddressToDelegate(
@@ -211,10 +194,10 @@ export const DelegatesContainer = ({ hasOtherDelegatee, isClosable, onDelegate, 
             name={delegate.RNS || undefined}
             imageIpfs={delegate.imageIpfs}
             since={formatTimestampToMonthYear(delegate.delegatedSince)}
-            votingPower={delegate.votingPower?.toString() || 0}
-            votingWeight={`${delegate.votingPowerPercent}%`}
-            totalVotes={delegate.totalVotes?.toString() || 0}
-            delegators={delegate.delegators?.toString() || 0}
+            votingPower={delegate.votingPower}
+            votingWeight={delegate.votingWeight ? `${delegate.votingWeight}%` : ' - '}
+            totalVotes={delegate.totalVotes}
+            delegators={delegate.delegators}
             onDelegate={onDelegate}
           />
         ))}
