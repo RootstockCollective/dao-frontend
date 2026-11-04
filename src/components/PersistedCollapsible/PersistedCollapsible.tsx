@@ -7,6 +7,7 @@ import { AccentSquare } from '@/components/AccentSquare'
 import { ChevronDownIcon } from '@/components/Icons'
 import { Header, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
+import { useNonce } from '@/shared/context/NonceContext'
 
 export interface PersistedCollapsibleProps {
   /** localStorage key that remembers whether the section is open. Unique per section. */
@@ -85,6 +86,9 @@ export const PersistedCollapsible = ({
   const [isOpen, setIsOpen] = useLocalStorageState<boolean>(storageKey, { defaultValue: defaultOpen })
   const isServerOrHydrating = useIsServerOrHydrating()
   const bodyId = useId()
+  // The CSP (src/proxy.ts) only runs scripts that carry the request nonce; without one the browser
+  // would block the state script and the section would still flash open.
+  const nonce = useNonce()
 
   return (
     <section
@@ -150,6 +154,7 @@ export const PersistedCollapsible = ({
 
       {isServerOrHydrating && (
         <script
+          nonce={nonce}
           // Static string built from a constant key, see getCollapsibleStateScript
           dangerouslySetInnerHTML={{ __html: getCollapsibleStateScript(storageKey, defaultOpen) }}
           suppressHydrationWarning

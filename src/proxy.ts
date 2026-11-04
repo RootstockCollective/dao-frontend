@@ -8,11 +8,20 @@ interface RouteRateLimitConfig {
   windowMs: number
 }
 
+/**
+ * The cycle routes read the same state-sync Postgres pool as the gauge routes. `/api/cycles` and
+ * `/api/cycles/backers` are cached, but a cache miss on `/backers` walks the whole allocation
+ * history, so one client must not be able to hammer them while the cache is cold. A tab asks for
+ * them once a minute at most, so the gauges budget fits.
+ */
+const CYCLES_RATE_LIMIT: RouteRateLimitConfig = { prefix: 'cycles', limit: 120, windowMs: 60_000 }
+
 const RATE_LIMIT_CONFIGS: Record<string, RouteRateLimitConfig> = {
   '/api/auth/challenge': { prefix: 'auth_challenge', limit: 5, windowMs: 60_000 },
   '/api/auth/login': { prefix: 'auth_login', limit: 5, windowMs: 60_000 },
   '/api/auth/verify': { prefix: 'auth_verify', limit: 20, windowMs: 60_000 },
   '/api/support/ticket': { prefix: 'support_ticket', limit: 5, windowMs: 600_000 },
+  '/api/cycles': CYCLES_RATE_LIMIT,
 }
 
 /**
@@ -24,6 +33,7 @@ const RATE_LIMIT_CONFIGS: Record<string, RouteRateLimitConfig> = {
  */
 const PREFIX_RATE_LIMIT_CONFIGS: { pathPrefix: string; config: RouteRateLimitConfig }[] = [
   { pathPrefix: '/api/gauges/', config: { prefix: 'gauges', limit: 120, windowMs: 60_000 } },
+  { pathPrefix: '/api/cycles/', config: CYCLES_RATE_LIMIT },
 ]
 
 function resolveRateLimitConfig(pathname: string): RouteRateLimitConfig | undefined {
@@ -134,6 +144,8 @@ export const config = {
     '/api/auth/:path*',
     '/api/support/:path*',
     '/api/gauges/:path*',
+    '/api/cycles',
+    '/api/cycles/:path*',
     '/ingest/:path*',
     '/monitoring',
     {

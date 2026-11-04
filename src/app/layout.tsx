@@ -8,6 +8,7 @@ import { cookieToInitialState } from 'wagmi'
 
 import { MainContainer } from '@/components/MainContainer'
 import { wagmiAdapterConfig } from '@/config'
+import { NonceProvider } from '@/shared/context/NonceContext'
 
 import { ContextProviders } from './providers'
 
@@ -34,12 +35,16 @@ interface Props {
 export default async function RootLayout({ children }: Readonly<Props>) {
   const requestHeaders = await headers()
   const initialState = cookieToInitialState(wagmiAdapterConfig, requestHeaders.get('cookie'))
+  // Set by src/proxy.ts for page requests; inline scripts rendered by components need it to pass the CSP
+  const nonce = requestHeaders.get('x-nonce') ?? undefined
   return (
     <html lang="en" data-theme="default" className={openSans.variable}>
       <body className="font-sans">
-        <ContextProviders initialState={initialState}>
-          <MainContainer>{children}</MainContainer>
-        </ContextProviders>
+        <NonceProvider nonce={nonce}>
+          <ContextProviders initialState={initialState}>
+            <MainContainer>{children}</MainContainer>
+          </ContextProviders>
+        </NonceProvider>
       </body>
     </html>
   )

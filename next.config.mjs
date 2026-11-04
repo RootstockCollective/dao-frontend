@@ -1,4 +1,5 @@
-import { withSentryConfig } from '@sentry/nextjs'
+// The root import is deprecated for the build-time helper and stops working in @sentry/nextjs v11
+import { withSentryConfig } from '@sentry/nextjs/config'
 import { config } from 'dotenv'
 
 // Load the environment variables based on the profile
