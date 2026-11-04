@@ -1,0 +1,34 @@
+# Testnet environment (testnet.app.rootstockcollective.xyz)
+image:
+  repository: 886436934082.dkr.ecr.us-east-1.amazonaws.com/dao-frontend-testnet
+  tag: 9e17e6abbc7e0a32a012572bcd17ac483b12bbc0
+
+namespace: testnet
+
+ingress:
+  enabled: true
+  className: alb
+  groupName: dao-frontend-prod
+  wafAclArn: ""
+  certificateArn: "arn:aws:acm:us-east-1:886436934082:certificate/dc07df2e-4f94-47ef-bafe-799adb1c64b0"
+  hosts:
+    - host: testnet.app.rootstockcollective.xyz
+      paths:
+        - path: /
+          pathType: Prefix
+  annotations: {}
+
+externalSecrets:
+  parameterPaths:
+    theGraphApiKey: /dao-frontend/testnet/the-graph-api-key
+    nextServerActionsEncryptionKey: /dao-frontend/testnet/next-server-actions-encryption-key
+    dbConnectionString: /dao-frontend-eks/testnet/database-uri
+    daoGraphApiKey: /dao-frontend/testnet/dao-graph-api-key
+    daoDataDbConnectionString: /dao-frontend-eks/testnet/dao-data-database-uri
+    btcVaultGraphApiKey: /dao-frontend/testnet/btc-vault-graph-api-key
+    coinMarketCapKey: /coinmarketcap-key
+    blockscoutApiKey: /dao-frontend/testnet/blockscout-api-key
+    slackSupportWebhookUrl: /dao-frontend/testnet/slack-support-webhook-url
+    turnstileSecretKey: /dao-frontend/testnet/turnstile-secret-key
+    envioSyncCheckSlackWebhookUrl: /dao-frontend-envio-sync-check-slack-webhook-url
+    jwtSecret: /dao-frontend/testnet/jwt-secret
