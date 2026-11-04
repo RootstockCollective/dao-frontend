@@ -16,6 +16,9 @@ export interface NftHolder {
 export const sortByVotingPower = <T extends { votingPower: number }>(holders: T[]): T[] =>
   [...holders].sort((a, b) => b.votingPower - a.votingPower)
 
+// Holders that never voted nor hold voting power are not acting as delegates
+export const isActiveDelegate = ({ votingPower, totalVotes }: NftHolder) => votingPower > 0 || totalVotes > 0
+
 /**
  * Fetches NFT holders, resolves RNS domains, and retrieves their voting power from the contract.
  * Returns the enriched NFT holders ordered by voting power, plus the total delegated voting power.
@@ -53,7 +56,7 @@ export function useNftHoldersWithVotingPower() {
       ]
     })
 
-    setNftHolders(sortByVotingPower(merged))
+    setNftHolders(sortByVotingPower(merged.filter(isActiveDelegate)))
     await totalPromise
   }, [])
 

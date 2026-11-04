@@ -16,6 +16,7 @@ const LOW = '0x00000000000000000000000000000000000000Ab'
 const HIGH = '0x00000000000000000000000000000000000000Cd'
 const EMPTY = '0x00000000000000000000000000000000000000Ef'
 const GONE = '0x0000000000000000000000000000000000000012'
+const IDLE = '0x0000000000000000000000000000000000000034'
 
 const contributor = (id: string, votes: number) => ({
   id: id.toLowerCase(),
@@ -38,6 +39,7 @@ describe('useNftHoldersWithVotingPower', () => {
             contributor(EMPTY, 44),
             contributor(LOW, 10),
             contributor(GONE, 3),
+            contributor(IDLE, 0),
             contributor(HIGH, 150),
           ]),
         )
@@ -51,6 +53,7 @@ describe('useNftHoldersWithVotingPower', () => {
       { address: LOW, RNS: 'low.rsk', imageIpfs: null, votingPower: 100 },
       { address: HIGH, RNS: null, imageIpfs: 'ipfs://high', votingPower: 2500 },
       { address: EMPTY, RNS: null, imageIpfs: null, votingPower: 0 },
+      { address: IDLE, RNS: null, imageIpfs: null, votingPower: 0 },
     ])
   })
 
@@ -60,7 +63,7 @@ describe('useNftHoldersWithVotingPower', () => {
     vi.restoreAllMocks()
   })
 
-  it('lists every vetted delegate on the explorer by voting power, keeping the ones without any', async () => {
+  it('lists the active delegates by voting power, keeping voters that currently hold none', async () => {
     const { result } = renderHook(() => useNftHoldersWithVotingPower())
 
     await waitFor(() => expect(result.current.nftHolders).toHaveLength(3))
