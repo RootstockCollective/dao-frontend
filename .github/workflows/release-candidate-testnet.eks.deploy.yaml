@@ -5,9 +5,6 @@ name: Deploy to Amazon EKS (release candidate staging - testnet)
 # Uses the `.env.release-candidate-testnet` env file
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       replicas:
