@@ -1,5 +1,5 @@
 name: Deploy to Amazon EKS (release candidate staging - testnet)
-# Deploys to: https://release-candidate-testnet-eks.app.rootstockcollective.xyz/
+# Deploys to: https://release-candidate-testnet.app.rootstockcollective.xyz/
 # Triggers on when a tag is pushed to the repo in the format of vX.X.X-rc.X
 # where X are numbers. An example: v1.5.0-rc.1
 # Uses the `.env.release-candidate-testnet` env file
@@ -22,7 +22,7 @@ permissions: read-all
 env:
   AWS_REGION: us-east-1
   ECR_REPOSITORY: rscoll-dev-dao-staging
-  EKS_CLUSTER: rscoll-dev
+  EKS_CLUSTER: rscoll
   HELM_RELEASE: dao-frontend-rc-testnet
   NAMESPACE: rc-testnet
 
@@ -49,7 +49,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a #v4.3.1
         with:
-          role-to-assume: ${{ secrets.AWS_LOGIN_STAGING_ROLE_ARN }}
+          role-to-assume: ${{ secrets.AWS_LOGIN_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
@@ -72,7 +72,7 @@ jobs:
     needs: build
     environment:
       name: release-candidate-testnet
-      url: https://release-candidate-testnet-eks.app.rootstockcollective.xyz
+      url: https://release-candidate-testnet.app.rootstockcollective.xyz
 
     permissions:
       id-token: write
@@ -85,7 +85,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a #v4.3.1
         with:
-          role-to-assume: ${{ secrets.AWS_LOGIN_STAGING_ROLE_ARN }}
+          role-to-assume: ${{ secrets.AWS_LOGIN_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Update kubeconfig for EKS

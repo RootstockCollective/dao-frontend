@@ -1,6 +1,6 @@
 {
   "name": "dao-frontend",
-  "version": "1.23.2",
+  "version": "1.23.3",
   "scripts": {
     "prepare": "husky",
     "dev": "NODE_OPTIONS='--enable-source-maps' next dev | pino-pretty",
@@ -9,7 +9,7 @@
     "dev:webpack": "next dev",
     "build": "next build --webpack",
     "build:turbo": "next build --turbopack",
-    "start": "next start",
+    "start": "next start --keepAliveTimeout 65000",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint-tsc": "tsc --noEmit",
