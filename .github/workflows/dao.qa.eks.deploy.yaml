@@ -1,5 +1,5 @@
 name: Deploy to Amazon EKS (dao-qa)
-# Deploys to: https://qa-eks.dao.rootstockcollective.xyz/
+# Deploys to: https://qa.dao.rootstockcollective.xyz/
 # Triggers when a branch is merged into dao-qa
 # Uses the `.env.dao.qa` env file
 
@@ -71,7 +71,7 @@ jobs:
     needs: build
     environment:
       name: DAO-QA
-      url: https://qa-eks.dao.rootstockcollective.xyz
+      url: https://qa.dao.rootstockcollective.xyz
 
     permissions:
       id-token: write

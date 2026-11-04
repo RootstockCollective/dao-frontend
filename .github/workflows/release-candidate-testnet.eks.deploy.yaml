@@ -1,5 +1,5 @@
 name: Deploy to Amazon EKS (release candidate staging - testnet)
-# Deploys to: https://release-candidate-testnet-eks.app.rootstockcollective.xyz/
+# Deploys to: https://release-candidate-testnet.app.rootstockcollective.xyz/
 # Triggers on when a tag is pushed to the repo in the format of vX.X.X-rc.X
 # where X are numbers. An example: v1.5.0-rc.1
 # Uses the `.env.release-candidate-testnet` env file
@@ -72,7 +72,7 @@ jobs:
     needs: build
     environment:
       name: release-candidate-testnet
-      url: https://release-candidate-testnet-eks.app.rootstockcollective.xyz
+      url: https://release-candidate-testnet.app.rootstockcollective.xyz
 
     permissions:
       id-token: write
