@@ -1,5 +1,5 @@
 import { DateTime, Duration } from 'luxon'
-import { createContext, ReactNode, useContext, useMemo, useState } from 'react'
+import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from 'react'
 
 import { useReadCycleTimeKeeper } from '@/shared/hooks/contracts'
 
@@ -73,26 +73,35 @@ export const CycleContextProvider = ({ children }: CycleProviderProps) => {
 
   const error = cycleStartAndDurationError || cycleStartError || endDistributionWindowError || cycleNextError
 
-  const data = useMemo(() => {
-    const [firstCycleStart, cycleDuration] = cycleStartAndDuration || []
-    if (cycleStart && cycleNext && firstCycleStart && cycleDuration && endDistributionWindow) {
-      const newCycleData: Cycle = {
-        cycleStart: DateTime.fromSeconds(Number(cycleStart)),
-        cycleNext: DateTime.fromSeconds(Number(cycleNext)),
-        cycleDuration: Duration.fromObject({ seconds: Number(cycleDuration) }),
-        firstCycleStart: DateTime.fromSeconds(Number(firstCycleStart)),
-        endDistributionWindow: DateTime.fromSeconds(Number(endDistributionWindow)),
-      }
+  const [firstCycleStart, cycleDuration] = cycleStartAndDuration || []
 
-      if (!isSameCycle(cycleData, newCycleData)) {
-        setCycleData(newCycleData)
-
-        return newCycleData
-      }
+  const freshCycleData = useMemo((): Cycle | null => {
+    if (!cycleStart || !cycleNext || !firstCycleStart || !cycleDuration || !endDistributionWindow) {
+      return null
     }
 
-    return cycleData
-  }, [cycleStartAndDuration, cycleStart, endDistributionWindow, cycleNext, cycleData])
+    return {
+      cycleStart: DateTime.fromSeconds(Number(cycleStart)),
+      cycleNext: DateTime.fromSeconds(Number(cycleNext)),
+      cycleDuration: Duration.fromObject({ seconds: Number(cycleDuration) }),
+      firstCycleStart: DateTime.fromSeconds(Number(firstCycleStart)),
+      endDistributionWindow: DateTime.fromSeconds(Number(endDistributionWindow)),
+    }
+  }, [cycleStart, cycleNext, firstCycleStart, cycleDuration, endDistributionWindow])
+
+  useEffect(() => {
+    if (freshCycleData && !isSameCycle(cycleData, freshCycleData)) {
+      setCycleData(freshCycleData)
+    }
+  }, [freshCycleData, cycleData])
+
+  const data = useMemo(() => {
+    if (!freshCycleData || isSameCycle(cycleData, freshCycleData)) {
+      return cycleData
+    }
+
+    return freshCycleData
+  }, [freshCycleData, cycleData])
 
   const valueOfContext: CycleContextValue = {
     data,

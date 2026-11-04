@@ -149,6 +149,27 @@ describe('proxy', () => {
       expect(mockedCheckRateLimit).not.toHaveBeenCalled()
     })
 
+    it.each(['/api/cycles', '/api/cycles/backers', '/api/cycles/rewards-distributed'])(
+      'applies the shared cycles limit to %s',
+      path => {
+        mockedCheckRateLimit.mockReturnValue(allowedResult(120, 119))
+
+        proxy(createRequest(path))
+
+        expect(mockedCheckRateLimit).toHaveBeenCalledWith(expect.any(String), 'cycles', {
+          limit: 120,
+          windowMs: 60_000,
+        })
+      },
+    )
+
+    it('does not match a path that only starts with the cycles prefix text', () => {
+      const response = proxy(createRequest('/api/cyclesX'))
+
+      expect(response.status).toBe(200)
+      expect(mockedCheckRateLimit).not.toHaveBeenCalled()
+    })
+
     it('passes through for non-auth API routes without rate limiting', () => {
       const response = proxy(createRequest('/api/like'))
 

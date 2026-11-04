@@ -1,3 +1,5 @@
+export * from './useGetBackersPerCycle'
+export * from './useGetCycleHistory'
 export * from './useGetGaugesNotifyReward'
 export * from './useGetLastCycleDistribution'
 export * from './useGetNotifyRewardLogs'

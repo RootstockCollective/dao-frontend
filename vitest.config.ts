@@ -5,7 +5,11 @@ import { defineConfig } from 'vitest/config'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-const alias = { '@': path.resolve(__dirname, './src') }
+const alias = {
+  '@': path.resolve(__dirname, './src'),
+  // Next resolves `import 'server-only'` itself; vitest has no bundler, so point it at Next's no-op copy
+  'server-only': path.resolve(__dirname, './node_modules/next/dist/compiled/server-only/empty.js'),
+}
 const reactPlugin = react({ jsxRuntime: 'automatic' })
 
 // Check if fork is available - only run fork project when FORK_RPC_URL is set

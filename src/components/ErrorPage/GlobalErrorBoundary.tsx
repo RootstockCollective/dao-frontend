@@ -48,7 +48,8 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
 
   const handleGoHome = () => {
     clearChunkReloadAttempts()
-    window.location.href = '/'
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+    window.location.assign('/')
   }
 
   // Show loading state while attempting automatic recovery

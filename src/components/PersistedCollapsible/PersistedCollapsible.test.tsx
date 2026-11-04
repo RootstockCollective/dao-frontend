@@ -3,6 +3,8 @@ import { hydrateRoot } from 'react-dom/client'
 import { renderToString } from 'react-dom/server'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { NonceProvider } from '@/shared/context/NonceContext'
+
 import { getCollapsibleStateScript, PersistedCollapsible } from './PersistedCollapsible'
 
 const KEY = 'test-collapsible-open'
@@ -89,6 +91,22 @@ describe('PersistedCollapsible', () => {
 
       expect(section).toHaveAttribute('data-open', 'false')
       expect(body).toHaveAttribute('hidden')
+    })
+
+    it('stamps the state script with the request nonce so the CSP lets it run', () => {
+      // renderToString keeps `nonce` as an attribute, unlike a browser's DOM parser
+      const html = renderToString(
+        <NonceProvider nonce="csp-nonce-123">
+          <Section />
+        </NonceProvider>,
+      )
+
+      expect(html).toContain('<script nonce="csp-nonce-123">')
+    })
+
+    it('renders the state script without a nonce outside a NonceProvider', () => {
+      // Plain string checks: a regexp here reads to CodeQL as an HTML sanitiser (js/bad-tag-filter)
+      expect(renderToString(<Section />)).toContain('<script>')
     })
 
     it('opens a remembered section whose default is closed', () => {

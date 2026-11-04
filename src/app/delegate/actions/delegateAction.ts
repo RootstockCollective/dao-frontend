@@ -1,4 +1,7 @@
-'use server'
+// Not a Server Action module: these fetchers are only called from route handlers, and `'use server'`
+// would also expose each export as an unauthenticated POST endpoint that bypasses the routes' caches
+// and rate limits. `server-only` keeps them out of any client bundle.
+import 'server-only'
 
 import { gql as apolloGQL } from '@apollo/client'
 
