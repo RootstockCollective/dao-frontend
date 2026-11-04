@@ -8,9 +8,9 @@ namespace: dao-qa
 ingress:
   enabled: true
   className: alb
-  certificateArn: "arn:aws:acm:us-east-1:886436934082:certificate/079f3575-cd79-4435-9154-c14d8a034d39"
+  certificateArn: "arn:aws:acm:us-east-1:886436934082:certificate/2f23e029-323d-4a39-acfb-398d2d4a4b6b"
   hosts:
-    - host: qa-eks.dao.rootstockcollective.xyz
+    - host: qa.dao.rootstockcollective.xyz
       paths:
         - path: /
           pathType: Prefix
@@ -19,6 +19,7 @@ ingress:
 externalSecrets:
   parameterPaths:
     theGraphApiKey: /rscoll-dev/dao-qa/the-graph-api-key
+    nextServerActionsEncryptionKey: /rscoll-dev/dao-qa/next-server-actions-encryption-key
     dbConnectionString: /rscoll-dev-eks/dao-qa/database-uri
     daoGraphApiKey: /rscoll-dev/dao-qa/dao-graph-api-key
     daoDataDbConnectionString: /rscoll-dev-eks/dao-qa/dao-data-database-uri

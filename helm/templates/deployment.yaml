@@ -89,6 +89,15 @@ spec:
               name: {{ include "dao-frontend.fullname" . }}-secrets
               key: envio-sync-check-slack-webhook-url
         {{- end }}
+        {{- if .Values.externalSecrets.parameterPaths.nextServerActionsEncryptionKey }}
+        - name: NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "dao-frontend.fullname" . }}-secrets
+              key: next-server-actions-encryption-key
+        {{- end }}
+        - name: NODE_OPTIONS
+          value: "--max-old-space-size=1280"
         livenessProbe:
           {{- toYaml .Values.livenessProbe | nindent 10 }}
         readinessProbe:
