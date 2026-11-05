@@ -3,8 +3,7 @@ import { cleanup, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { RBTC } from '@/lib/constants'
-
-import { formatDateMonthFirst } from '../services/ui/formatters'
+import { formatDateMonthFirst } from '@/lib/utils'
 import { BtcVaultMetrics } from './BtcVaultMetrics'
 
 const renderWithProviders = () =>
