@@ -56,10 +56,22 @@ export function applyPinataImageOptions(
   options: PinataImageOptions = defaultImageOptions,
 ) {
   if (!imageUrl) return ''
-  const url = new URL(imageUrl)
+  // Token metadata is external input: a malformed URL must not throw inside a render
+  const url = parseHttpsUrl(imageUrl)
+  if (!url) return ''
   const urlImageOptions = attachPrefixToKeys(options)
   Object.entries(urlImageOptions).forEach(([key, val]) => url.searchParams.append(key, val))
   return appendPinataTokenToUrl(url.toString())
+}
+
+/** The parsed URL when it is an absolute https URL, otherwise null */
+function parseHttpsUrl(value: string): URL | null {
+  try {
+    const url = new URL(value)
+    return url.protocol === 'https:' ? url : null
+  } catch {
+    return null
+  }
 }
 
 /**
@@ -87,9 +99,11 @@ export function ipfsGatewayUrl(cid: string) {
   const gateway = process.env.NEXT_PUBLIC_IPFS_GATEWAY
   if (!gateway) return ''
 
-  // If already a full HTTPS URL, return as-is (already converted by API or another gateway)
-  if (cid && (cid.startsWith('https://') || cid.startsWith('http://'))) {
-    return cid
+  // Already a full URL (converted by the API or on another gateway): keep it, but only over https.
+  // The app is served over https, so a plain-http image would be blocked as mixed content anyway,
+  // and the value comes from token metadata we do not control.
+  if (cid && /^https?:\/\//i.test(cid)) {
+    return parseHttpsUrl(cid) ? cid : ''
   }
 
   cid = removeIpfsPrefix(cid)
@@ -132,6 +146,9 @@ function removeIpfsPrefix(cid?: string) {
 function appendPinataTokenToUrl(url: string) {
   const urlObj = new URL(url)
   const pinataGatewayToken = process.env.NEXT_PUBLIC_PINATA_GATEWAY_KEY
-  if (pinataGatewayToken) urlObj.searchParams.append('pinataGatewayToken', pinataGatewayToken)
+  // The token belongs to our gateway only: an image URL from token metadata can name any host,
+  // and the token must not be sent to it.
+  const isOurGateway = urlObj.hostname === process.env.NEXT_PUBLIC_IPFS_GATEWAY
+  if (pinataGatewayToken && isOurGateway) urlObj.searchParams.append('pinataGatewayToken', pinataGatewayToken)
   return urlObj.toString()
 }

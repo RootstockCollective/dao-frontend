@@ -24,6 +24,8 @@ import { useSwapTokens } from './useSwapTokens'
 
 const QUOTE_DEBOUNCE_MS = 500
 const QUOTE_TIMEOUT_MS = 10_000
+/** How long a submitted swap stays executable; the Universal Router reverts with TransactionDeadlinePassed after it */
+const SWAP_DEADLINE_SECONDS = 10 * 60
 
 const withTimeout = <T>(promise: Promise<T>, timeoutMs: number, errorMessage: string): Promise<T> => {
   return Promise.race([
@@ -659,11 +661,15 @@ export const useSwapExecution = () => {
           signature: permitSignature,
         })
 
+        // Bound how long a pending tx stays valid: without a deadline a stuck transaction could be
+        // mined much later at a stale quote, with only `amountOutMinimum` protecting the holder.
+        const deadline = BigInt(Math.floor(Date.now() / 1000) + SWAP_DEADLINE_SECONDS)
+
         const hash = await writeContractAsync({
           address: UNISWAP_UNIVERSAL_ROUTER_ADDRESS,
           abi: UniswapUniversalRouterAbi,
           functionName: 'execute',
-          args: [commands, inputs],
+          args: [commands, inputs, deadline],
         })
 
         if (!hash) {

@@ -10,7 +10,7 @@ describe('IPFS Utils', () => {
 
   describe('applyPinataImageOptions', () => {
     it('should apply image options to URL', () => {
-      const url = applyPinataImageOptions('https://example.com/image.jpg', {
+      const url = applyPinataImageOptions('https://gateway.pinata.cloud/ipfs/Qm1/image.jpg', {
         width: 100,
         height: 100,
         quality: 80,
@@ -22,8 +22,15 @@ describe('IPFS Utils', () => {
       expect(url).toContain('pinataGatewayToken=test-token')
     })
 
+    it('should not send the gateway token to a host that is not our gateway', () => {
+      const url = applyPinataImageOptions('https://example.com/image.jpg', { width: 100 })
+
+      expect(url).toContain('img-width=100')
+      expect(url).not.toContain('pinataGatewayToken')
+    })
+
     it('should use default options when no options provided', () => {
-      const url = applyPinataImageOptions('https://example.com/image.jpg')
+      const url = applyPinataImageOptions('https://gateway.pinata.cloud/ipfs/Qm1/image.jpg')
 
       // Check default values are included only if they exist
       Object.entries(defaultImageOptions).forEach(([key, value]) => {
@@ -67,8 +74,12 @@ describe('IPFS Utils', () => {
       expect(url).toContain('img-width=100')
     })
 
-    it('should throw when a non-url string was passed', () => {
-      expect(() => applyPinataImageOptions('not-a-url')).toThrow()
+    it('should return empty string instead of throwing when a non-url string was passed', () => {
+      expect(applyPinataImageOptions('not-a-url')).toBe('')
+    })
+
+    it('should return empty string for a plain-http URL', () => {
+      expect(applyPinataImageOptions('http://example.com/image.jpg')).toBe('')
     })
 
     it('should return empty string when falsy values are passed', () => {
@@ -120,10 +131,13 @@ describe('IPFS Utils', () => {
       expect(result).toBe(httpsUrl)
     })
 
-    it('should preserve already-converted HTTP gateway URLs', () => {
+    it('should drop plain-HTTP URLs, which the https app could not load anyway', () => {
       const httpUrl = 'http://example.com/ipfs/QmXzCQ9B1XaHdsfxpPVkAQNTvFw5o7BD7H8XZ96FKyRPnb'
-      const result = ipfsGatewayUrl(httpUrl)
-      expect(result).toBe(httpUrl)
+      expect(ipfsGatewayUrl(httpUrl)).toBe('')
+    })
+
+    it('should drop a malformed absolute URL instead of throwing', () => {
+      expect(ipfsGatewayUrl('https://')).toBe('')
     })
   })
 

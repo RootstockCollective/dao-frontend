@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 
 import { JWTPayload } from './jwt'
+import { assertSameOriginRequest } from './origin'
 import { requireAuth } from './session'
 import { sanitizeError } from './utils'
 
@@ -23,6 +24,13 @@ type AuthenticatedRouteHandler = (request: NextRequest, session: JWTPayload) => 
  */
 export function withAuth(handler: AuthenticatedRouteHandler) {
   return async (request: NextRequest): Promise<Response> => {
+    try {
+      assertSameOriginRequest(request)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Cross-origin request rejected'
+      return Response.json({ error: sanitizeError(message) }, { status: 403 })
+    }
+
     try {
       const session = await requireAuth(request)
       return await handler(request, session)

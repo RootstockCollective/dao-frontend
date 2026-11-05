@@ -38,7 +38,7 @@ describe('challengeToken', () => {
     const challenge = sealChallenge(MESSAGE)
 
     vi.resetModules()
-    vi.stubEnv('JWT_SECRET', 'another-secret')
+    vi.stubEnv('JWT_SECRET', 'another-vitest-only-jwt-secret-0123456789')
     const { openChallenge: openWithAnotherSecret } = await import('./challengeToken')
 
     expect(openWithAnotherSecret(challenge)).toBeNull()
