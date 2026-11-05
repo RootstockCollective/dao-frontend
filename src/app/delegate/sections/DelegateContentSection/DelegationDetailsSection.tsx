@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { useRef } from 'react'
 
 import { DelegateCard } from '@/app/delegate/components/DelegateCard'
+import { DENIED_DELEGATE_MESSAGE, isDeniedDelegate } from '@/app/delegate/lib/utils'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
 import { Button } from '@/components/Button'
 import { EditIconKoto } from '@/components/Icons'
@@ -56,6 +57,7 @@ export const DelegationDetailsSection = ({ onShowReclaim, onShowDelegates }: Pro
         buttonDisabled={isDelegationPending || isReclaimPending}
         isDelegationPending={isDelegationPending}
         isReclaimPending={isReclaimPending}
+        warning={isDeniedDelegate(address) ? DENIED_DELEGATE_MESSAGE : undefined}
       />
       <div className="flex w-full flex-col-reverse md:flex-col gap-6">
         {/* Banner here with delegation perks */}
