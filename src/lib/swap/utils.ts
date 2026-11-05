@@ -3,6 +3,8 @@ import { Address, getAddress, parseUnits } from 'viem'
 import Big from '@/lib/big'
 import { publicClient } from '@/lib/viemPublicClient'
 
+import { multicallWithGasEnvelopeRetry } from './multicallWithGasEnvelopeRetry'
+
 /**
  * Minimal ERC20 ABI for reading decimals
  */
@@ -128,31 +130,39 @@ export async function getTokenDecimals(tokenAddress: Address): Promise<number> {
 }
 
 /**
- * Read decimals from multiple token contracts in parallel
- * @param tokenAddresses - Array of token addresses
- * @returns Record mapping token addresses to their decimals
+ * Read decimals from multiple token contracts in one multicall (one RPC round-trip per viem chunk).
+ * Duplicate addresses are de-duplicated so each token is read at most once.
  */
 export async function getTokenDecimalsBatch(tokenAddresses: Address[]): Promise<Record<Address, number>> {
-  // Normalize all addresses to ensure proper checksumming and use as keys
   const normalizedAddresses = tokenAddresses.map(addr => getAddress(addr))
 
+  if (normalizedAddresses.length === 0) {
+    return {}
+  }
+
+  const uniqueInOrder: Address[] = []
+  const seen = new Set<Address>()
+  for (const a of normalizedAddresses) {
+    if (!seen.has(a)) {
+      seen.add(a)
+      uniqueInOrder.push(a)
+    }
+  }
+
   try {
-    // Use multicall for efficiency
-    const results = await publicClient.multicall({
-      contracts: normalizedAddresses.map(address => ({
+    const results = await multicallWithGasEnvelopeRetry(publicClient, {
+      contracts: uniqueInOrder.map(address => ({
         address,
         abi: ERC20_DECIMALS_ABI,
-        functionName: 'decimals',
+        functionName: 'decimals' as const,
       })),
     })
 
-    // Process results and handle failures
-    // Use normalized addresses as keys for consistent lookups
-    const decimalsMap: Record<Address, number> = {}
-    const failedAddresses: Address[] = []
+    const byAddress: Partial<Record<Address, number>> = {}
+    const failedUnique: Address[] = []
 
     results.forEach((result, index) => {
-      const normalizedAddress = normalizedAddresses[index]
+      const addr = uniqueInOrder[index]
 
       if (
         result.status === 'success' &&
@@ -160,27 +170,31 @@ export async function getTokenDecimalsBatch(tokenAddresses: Address[]): Promise<
         result.result >= 0 &&
         result.result <= 255
       ) {
-        decimalsMap[normalizedAddress] = result.result
+        byAddress[addr] = result.result
       } else {
-        failedAddresses.push(normalizedAddress)
-        // Log failure reason for debugging
+        failedUnique.push(addr)
         if (result.status === 'failure' && result.error) {
           console.warn(
-            `Failed to read decimals for ${normalizedAddress}:`,
+            `Failed to read decimals for ${addr}:`,
             result.error instanceof Error ? result.error.message : result.error,
           )
         }
       }
     })
 
-    // Check if we got decimals for all addresses
+    const decimalsMap: Record<Address, number> = {}
+    for (const addr of normalizedAddresses) {
+      const d = byAddress[addr]
+      if (typeof d === 'number') {
+        decimalsMap[addr] = d
+      }
+    }
+
     const missingAddresses = normalizedAddresses.filter(addr => typeof decimalsMap[addr] !== 'number')
 
     if (missingAddresses.length > 0) {
       const errorDetails =
-        failedAddresses.length > 0
-          ? ` RPC multicall returned failures for: ${failedAddresses.join(', ')}`
-          : ''
+        failedUnique.length > 0 ? ` RPC multicall returned failures for: ${failedUnique.join(', ')}` : ''
       throw new Error(`Failed to read decimals for tokens: ${missingAddresses.join(', ')}${errorDetails}`)
     }
 
