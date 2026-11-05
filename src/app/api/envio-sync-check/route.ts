@@ -1,6 +1,14 @@
+import { timingSafeEqual } from 'node:crypto'
+
 import { NextRequest, NextResponse } from 'next/server'
 
 const DEFAULT_LAG_THRESHOLD_BLOCKS = 1000
+
+const secretsMatch = (token: string, secret: string): boolean => {
+  const a = Buffer.from(token)
+  const b = Buffer.from(secret)
+  return a.length === b.length && timingSafeEqual(a, b)
+}
 
 async function fetchLastSyncedBlock(graphqlUrl: string, syncProgressId: string): Promise<number> {
   const syncProgressQuery = `
@@ -111,10 +119,10 @@ async function postSlackAlert(
  * and posts to Slack if lag exceeds threshold. Intended to be invoked on a
  * schedule (e.g. cron every N minutes).
  *
- * Auth: If ENVIO_SYNC_CHECK_SECRET is set, request must include
- * Authorization: Bearer <secret>; otherwise returns 401.
+ * Auth: ENVIO_SYNC_CHECK_SECRET is required; without it the route answers 503. The request
+ * must include Authorization: Bearer <secret>, otherwise 401.
  *
- * Request: No body. Optional header: Authorization: Bearer <ENVIO_SYNC_CHECK_SECRET>.
+ * Request: No body. Header: Authorization: Bearer <ENVIO_SYNC_CHECK_SECRET>.
  *
  * Response: 200 { success: true, lastBlock, chainTip, lag, threshold, alerted? };
  * 401 { success: false, error }; 502 { success: false, error }; 503 { success: false, error };
@@ -123,7 +131,7 @@ async function postSlackAlert(
  * Env: ENVIO_GRAPHQL_URL, ENVIO_SYNC_CHECK_RPC_URL (optional, falls back to NEXT_PUBLIC_NODE_URL),
  * ENVIO_SYNC_CHECK_SYNC_PROGRESS_ID (optional, default "chain-31"),
  * ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL (optional),
- * ENVIO_SYNC_CHECK_LAG_THRESHOLD_BLOCKS (default 500), ENVIO_SYNC_CHECK_SECRET (optional).
+ * ENVIO_SYNC_CHECK_LAG_THRESHOLD_BLOCKS (default 500), ENVIO_SYNC_CHECK_SECRET (required).
  */
 export async function GET(request: NextRequest) {
   const secret = process.env.ENVIO_SYNC_CHECK_SECRET
@@ -135,12 +143,17 @@ export async function GET(request: NextRequest) {
   const syncProgressChainId = process.env.ENVIO_SYNC_CHECK_SYNC_PROGRESS_ID ?? 'chain-31'
   const instanceName = process.env.ENVIO_SYNC_CHECK_INSTANCE_NAME ?? 'unknown'
 
-  if (secret) {
-    const auth = request.headers.get('authorization')
-    const token = auth?.startsWith('Bearer ') ? auth.slice(7) : null
-    if (token !== secret) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
-    }
+  if (!secret) {
+    return NextResponse.json(
+      { success: false, error: 'ENVIO_SYNC_CHECK_SECRET not configured' },
+      { status: 503 },
+    )
+  }
+
+  const auth = request.headers.get('authorization')
+  const token = auth?.startsWith('Bearer ') ? auth.slice(7) : null
+  if (!token || !secretsMatch(token, secret)) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 })
   }
 
   if (!graphqlUrl) {

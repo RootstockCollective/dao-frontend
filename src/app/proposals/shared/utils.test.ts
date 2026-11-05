@@ -2,9 +2,15 @@ import { ProposalCategory } from '@/shared/types'
 import { describe, expect, test } from 'vitest'
 
 import { Milestones } from './types'
-import { getDiscourseLinkFromProposalDescription, getProposalCategoryFromMilestone } from './utils'
+import {
+  getDiscourseLinkFromProposalDescription,
+  getProposalCategoryFromMilestone,
+  toTrustedForumLink,
+} from './utils'
 
 describe('getDiscourseLinkFromProposalDescription', () => {
+  const forum = 'https://gov.rootstockcollective.xyz'
+
   test('should return undefined when description does not contain DiscourseLink:', () => {
     const description = 'This is a proposal description without any discourse links'
 
@@ -14,77 +20,86 @@ describe('getDiscourseLinkFromProposalDescription', () => {
   })
 
   test('should extract only the URL when DiscourseLink: is followed by space and more text', () => {
-    const description =
-      'This is a proposal DiscourseLink:https://discourse.example.com/topic/123 and some more text'
+    const description = `This is a proposal DiscourseLink:${forum}/t/topic/123 and some more text`
 
     const result = getDiscourseLinkFromProposalDescription(description)
 
-    expect(result).toBe('https://discourse.example.com/topic/123')
+    expect(result).toBe(`${forum}/t/topic/123`)
   })
 
   test('should extract link when DiscourseLink: is at the end of description with no trailing space', () => {
-    const description = 'This is a proposal DiscourseLink:https://discourse.example.com/topic/456'
+    const description = `This is a proposal DiscourseLink:${forum}/t/topic/456`
 
     const result = getDiscourseLinkFromProposalDescription(description)
 
-    expect(result).toBe('https://discourse.example.com/topic/456')
+    expect(result).toBe(`${forum}/t/topic/456`)
   })
 
-  test('should extract only the URL when there is extra whitespace before the first space', () => {
-    const description = 'Proposal text DiscourseLink:https://discourse.example.com/topic/789 more text here'
+  test('should extract only URL up to first space, not including subsequent text', () => {
+    const description = `Start DiscourseLink:${forum}/some/long/path middle text final`
 
     const result = getDiscourseLinkFromProposalDescription(description)
 
-    expect(result).toBe('https://discourse.example.com/topic/789')
+    expect(result).toBe(`${forum}/some/long/path`)
   })
 
-  test('should return empty string when DiscourseLink: is followed immediately by space', () => {
+  test('should return undefined when DiscourseLink: is followed immediately by space', () => {
     const description = 'Proposal DiscourseLink: and then more text'
 
     const result = getDiscourseLinkFromProposalDescription(description)
 
-    expect(result).toBe('')
-  })
-
-  test('should extract only URL up to first space, not including subsequent text', () => {
-    const description = 'Start DiscourseLink:https://discourse.example.com/some/long/path middle text final'
-
-    const result = getDiscourseLinkFromProposalDescription(description)
-
-    expect(result).toBe('https://discourse.example.com/some/long/path')
+    expect(result).toBeUndefined()
   })
 
   test('should find first occurrence of DiscourseLink: and extract only that URL', () => {
-    const description =
-      'First DiscourseLink:https://first.com and second DiscourseLink:https://second.com end'
+    const description = `First DiscourseLink:${forum}/t/1 and second DiscourseLink:${forum}/t/2 end`
 
     const result = getDiscourseLinkFromProposalDescription(description)
 
-    expect(result).toBe('https://first.com')
-  })
-
-  test('should handle case where DiscourseLink: is immediately followed by space at end', () => {
-    const description = 'Some text DiscourseLink: '
-
-    const result = getDiscourseLinkFromProposalDescription(description)
-
-    expect(result).toBe('')
+    expect(result).toBe(`${forum}/t/1`)
   })
 
   test('should extract only URL when link is followed by milestone text', () => {
-    const description = 'Proposal DiscourseLink:https://gov.rootstock.xyz/t/123 Milestone1'
+    const description = `Proposal DiscourseLink:${forum}/t/123 Milestone1`
 
     const result = getDiscourseLinkFromProposalDescription(description)
 
-    expect(result).toBe('https://gov.rootstock.xyz/t/123')
+    expect(result).toBe(`${forum}/t/123`)
   })
 
-  test('should extract only the first word after DiscourseLink:', () => {
-    const description = 'Proposal DiscourseLink:link-content with multiple words final'
+  test('should fall back to a forum URL found anywhere in the description', () => {
+    const description = `Discussed at ${forum}/t/fallback/9, see there.`
 
     const result = getDiscourseLinkFromProposalDescription(description)
 
-    expect(result).toBe('link-content')
+    expect(result).toBe(`${forum}/t/fallback/9`)
+  })
+
+  test.each([
+    ['another host', 'https://discourse.example.com/topic/123'],
+    ['a lookalike host', 'https://gov.rootstockcollective.xyz.evil.example/t/1'],
+    ['plain http', 'http://gov.rootstockcollective.xyz/t/1'],
+    ['a javascript: URL', 'javascript:alert(document.cookie)'],
+    ['a data: URL', 'data:text/html,<script>alert(1)</script>'],
+    ['something that is not a URL', 'link-content'],
+  ])('should not return a DiscourseLink: pointing at %s', (_, link) => {
+    const description = `Proposal DiscourseLink:${link} with multiple words final`
+
+    const result = getDiscourseLinkFromProposalDescription(description)
+
+    expect(result).toBeUndefined()
+  })
+})
+
+describe('toTrustedForumLink', () => {
+  test('keeps an https forum link and drops everything else', () => {
+    expect(toTrustedForumLink('https://gov.rootstockcollective.xyz/t/abc/12')).toBe(
+      'https://gov.rootstockcollective.xyz/t/abc/12',
+    )
+    expect(toTrustedForumLink('https://evil.example/t/abc/12')).toBeUndefined()
+    expect(toTrustedForumLink('javascript:alert(1)')).toBeUndefined()
+    expect(toTrustedForumLink('')).toBeUndefined()
+    expect(toTrustedForumLink(undefined)).toBeUndefined()
   })
 })
 

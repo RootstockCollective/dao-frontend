@@ -16,10 +16,10 @@ const mockedVerifySignature = vi.mocked(verifySignature)
 
 const ADDRESS = '0xabcdef0123456789abcdef0123456789abcdef01'
 
-function createRequest(): NextRequest {
+function createRequest(headers: Record<string, string> = {}): NextRequest {
   return new NextRequest('http://localhost/api/auth/login', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...headers },
     body: JSON.stringify({ challengeId: 'challenge', signature: '0x1234' }),
   })
 }
@@ -53,6 +53,20 @@ describe('POST /api/auth/login', () => {
 
     expect(cookie?.value).toBe(token)
     expect(cookie?.httpOnly).toBe(true)
+  })
+
+  it('rejects a login posted from another site before touching the challenge (login CSRF)', async () => {
+    const response = await POST(createRequest({ origin: 'https://gov.rootstockcollective.xyz' }))
+
+    expect(response.status).toBe(403)
+    expect(response.cookies.get('auth-token')).toBeUndefined()
+    expect(mockedVerifySignature).not.toHaveBeenCalled()
+  })
+
+  it('accepts a login posted from the app itself', async () => {
+    const response = await POST(createRequest({ origin: 'http://localhost' }))
+
+    expect(response.status).toBe(200)
   })
 
   it('rejects a failed signature check', async () => {

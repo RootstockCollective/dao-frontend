@@ -150,6 +150,8 @@ export const getFeatureEnvFlags = (): Record<Feature, string> => FEATURE_FLAGS
 
 export const MAX_PAGE_SIZE = 1000
 
+export const MAX_PAGINATION_OFFSET = 100_000
+
 export const BLOCKSCOUT_URL = process.env.NEXT_PUBLIC_BLOCKSCOUT_URL as string
 
 export const VAULT_KYC_URL = process.env.NEXT_PUBLIC_VAULT_KYC_URL as string

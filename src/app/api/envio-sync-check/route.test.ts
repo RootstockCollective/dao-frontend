@@ -7,11 +7,35 @@ describe('GET /api/envio-sync-check', () => {
   const graphqlUrl = 'https://indexer.test.example/graphql'
   const rpcUrl = 'https://rpc.test.example'
 
+  const secret = 'secret123'
+  const authorized = { headers: { Authorization: `Bearer ${secret}` } }
+
   beforeEach(() => {
     vi.restoreAllMocks()
     vi.unstubAllEnvs()
     vi.stubEnv('ENVIO_GRAPHQL_URL', graphqlUrl)
     vi.stubEnv('NEXT_PUBLIC_NODE_URL', rpcUrl)
+    vi.stubEnv('ENVIO_SYNC_CHECK_SECRET', secret)
+  })
+
+  it('should return 503 and not call anything when ENVIO_SYNC_CHECK_SECRET is not set', async () => {
+    vi.stubEnv('ENVIO_SYNC_CHECK_SECRET', '')
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+    const req = new NextRequest('http://localhost/api/envio-sync-check', authorized)
+    const res = await GET(req)
+    expect(res.status).toBe(503)
+    const data = await res.json()
+    expect(data.success).toBe(false)
+    expect(data.error).toContain('ENVIO_SYNC_CHECK_SECRET')
+    expect(fetchSpy).not.toHaveBeenCalled()
+  })
+
+  it('should return 401 when the token is a prefix of the secret', async () => {
+    const req = new NextRequest('http://localhost/api/envio-sync-check', {
+      headers: { Authorization: 'Bearer secret12' },
+    })
+    const res = await GET(req)
+    expect(res.status).toBe(401)
   })
 
   it('should return 401 when ENVIO_SYNC_CHECK_SECRET is set and request has no Bearer token', async () => {
@@ -40,7 +64,7 @@ describe('GET /api/envio-sync-check', () => {
 
   it('should return 503 when ENVIO_GRAPHQL_URL is not set', async () => {
     vi.stubEnv('ENVIO_GRAPHQL_URL', '')
-    const req = new NextRequest('http://localhost/api/envio-sync-check')
+    const req = new NextRequest('http://localhost/api/envio-sync-check', authorized)
     const res = await GET(req)
     expect(res.status).toBe(503)
     const data = await res.json()
@@ -51,7 +75,7 @@ describe('GET /api/envio-sync-check', () => {
   it('should return 503 when neither ENVIO_SYNC_CHECK_RPC_URL nor NEXT_PUBLIC_NODE_URL is set', async () => {
     vi.stubEnv('ENVIO_SYNC_CHECK_RPC_URL', '')
     vi.stubEnv('NEXT_PUBLIC_NODE_URL', '')
-    const req = new NextRequest('http://localhost/api/envio-sync-check')
+    const req = new NextRequest('http://localhost/api/envio-sync-check', authorized)
     const res = await GET(req)
     expect(res.status).toBe(503)
     const data = await res.json()
@@ -74,15 +98,15 @@ describe('GET /api/envio-sync-check', () => {
       }
       if (u === rpcUrl) {
         return Promise.resolve(
-          new Response(
-            JSON.stringify({ jsonrpc: '2.0', id: 1, result: '0x5B8D80' }),
-            { status: 200, headers: { 'Content-Type': 'application/json' } },
-          ),
+          new Response(JSON.stringify({ jsonrpc: '2.0', id: 1, result: '0x5B8D80' }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
         )
       }
       return Promise.reject(new Error(`Unexpected fetch: ${u}`))
     })
-    const req = new NextRequest('http://localhost/api/envio-sync-check')
+    const req = new NextRequest('http://localhost/api/envio-sync-check', authorized)
     const res = await GET(req)
     expect(res.status).toBe(200)
     const data = await res.json()
@@ -102,7 +126,7 @@ describe('GET /api/envio-sync-check', () => {
       }
       return Promise.reject(new Error(`Unexpected fetch: ${u}`))
     })
-    const req = new NextRequest('http://localhost/api/envio-sync-check')
+    const req = new NextRequest('http://localhost/api/envio-sync-check', authorized)
     const res = await GET(req)
     expect(res.status).toBe(502)
     const data = await res.json()
@@ -115,10 +139,10 @@ describe('GET /api/envio-sync-check', () => {
       const u = typeof url === 'string' ? url : url instanceof Request ? url.url : (url as URL).href
       if (u === graphqlUrl) {
         return Promise.resolve(
-          new Response(
-            JSON.stringify({ data: { SyncProgress: [{ lastBlock: '6000000' }] } }),
-            { status: 200, headers: { 'Content-Type': 'application/json' } },
-          ),
+          new Response(JSON.stringify({ data: { SyncProgress: [{ lastBlock: '6000000' }] } }), {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          }),
         )
       }
       if (u === rpcUrl) {
@@ -126,7 +150,7 @@ describe('GET /api/envio-sync-check', () => {
       }
       return Promise.reject(new Error(`Unexpected fetch: ${u}`))
     })
-    const req = new NextRequest('http://localhost/api/envio-sync-check')
+    const req = new NextRequest('http://localhost/api/envio-sync-check', authorized)
     const res = await GET(req)
     expect(res.status).toBe(502)
     const data = await res.json()

@@ -1,4 +1,7 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+
+import { assertSameOriginRequest } from '@/lib/auth/origin'
+import { sanitizeError } from '@/lib/auth/utils'
 
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -15,7 +18,14 @@ const isProduction = process.env.NODE_ENV === 'production'
  *   success: true
  * }
  */
-export async function POST() {
+export async function POST(request: NextRequest) {
+  try {
+    assertSameOriginRequest(request)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Cross-origin request rejected'
+    return NextResponse.json({ error: sanitizeError(message) }, { status: 403 })
+  }
+
   const response = NextResponse.json({ success: true })
 
   // Overwrite the cookie with an immediately-expired value. The attributes must

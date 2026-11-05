@@ -10,6 +10,7 @@ export function sanitizeError(message: string): string {
     if (message.includes('Invalid address')) return 'Invalid request'
     if (message.includes('Missing host')) return 'Invalid request'
     if (message.includes('Untrusted domain')) return 'Invalid request'
+    if (message.includes('Cross-origin request rejected')) return 'Cross-origin request rejected'
 
     // Token/authentication errors
     if (message.includes('Missing token')) return 'Authentication required'

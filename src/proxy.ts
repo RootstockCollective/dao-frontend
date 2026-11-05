@@ -16,12 +16,25 @@ interface RouteRateLimitConfig {
  */
 const CYCLES_RATE_LIMIT: RouteRateLimitConfig = { prefix: 'cycles', limit: 120, windowMs: 60_000 }
 
+/**
+ * Paginated reads over state-sync Postgres (`/api/backers`, `/api/builders`, `/api/allocations/daily`,
+ * `/api/metrics/abi/context`, …). None of them is cached and each runs a COUNT plus an OFFSET scan.
+ * A tab polls a handful of them once a minute and the CSV export walks tx-history 1000 rows a page,
+ * so the gauges budget leaves room for several users behind one NAT.
+ */
+const DB_READ_RATE_LIMIT: RouteRateLimitConfig = { prefix: 'db_read', limit: 120, windowMs: 60_000 }
+
 const RATE_LIMIT_CONFIGS: Record<string, RouteRateLimitConfig> = {
   '/api/auth/challenge': { prefix: 'auth_challenge', limit: 5, windowMs: 60_000 },
   '/api/auth/login': { prefix: 'auth_login', limit: 5, windowMs: 60_000 },
+  '/api/auth/logout': { prefix: 'auth_logout', limit: 20, windowMs: 60_000 },
   '/api/auth/verify': { prefix: 'auth_verify', limit: 20, windowMs: 60_000 },
   '/api/support/ticket': { prefix: 'support_ticket', limit: 5, windowMs: 600_000 },
   '/api/cycles': CYCLES_RATE_LIMIT,
+  '/api/backers': DB_READ_RATE_LIMIT,
+  '/api/builders': DB_READ_RATE_LIMIT,
+  // An operational probe that fans out to Envio, the RPC and a Slack webhook on every call
+  '/api/envio-sync-check': { prefix: 'envio_sync_check', limit: 6, windowMs: 60_000 },
 }
 
 /**
@@ -34,6 +47,9 @@ const RATE_LIMIT_CONFIGS: Record<string, RouteRateLimitConfig> = {
 const PREFIX_RATE_LIMIT_CONFIGS: { pathPrefix: string; config: RouteRateLimitConfig }[] = [
   { pathPrefix: '/api/gauges/', config: { prefix: 'gauges', limit: 120, windowMs: 60_000 } },
   { pathPrefix: '/api/cycles/', config: CYCLES_RATE_LIMIT },
+  { pathPrefix: '/api/backers/', config: DB_READ_RATE_LIMIT },
+  { pathPrefix: '/api/allocations/', config: DB_READ_RATE_LIMIT },
+  { pathPrefix: '/api/metrics/', config: DB_READ_RATE_LIMIT },
 ]
 
 function resolveRateLimitConfig(pathname: string): RouteRateLimitConfig | undefined {
@@ -52,14 +68,35 @@ function withoutCookies(request: NextRequest): NextResponse {
   return NextResponse.next({ request: { headers } })
 }
 
-// Falls back to 127.0.0.1 when no proxy headers are present (local dev, tests).
-// In production the reverse proxy always sets x-forwarded-for / x-real-ip.
+const IPV4 = /^(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}$/
+// Hex groups, `::` compression and an optional embedded IPv4 tail; strict enough to reject junk.
+const IPV6 = /^(?=.{2,45}$)[0-9a-f:]*:[0-9a-f:]*(\.\d{1,3}){0,3}$/i
+
+const isIpAddress = (value: string) => IPV4.test(value) || IPV6.test(value)
+
+/**
+ * The address the last proxy saw the request come from.
+ *
+ * `X-Forwarded-For` is a chain the client can start: the ALB *appends* the peer address to
+ * whatever the request already carried, so only the last entry is trustworthy. Taking the
+ * first would let a client pick its own rate-limit bucket. Anything that is not an IP literal
+ * is ignored rather than used as a key, so the limiter cannot be filled with arbitrary strings.
+ *
+ * Falls back to 127.0.0.1 when no proxy headers are present (local dev, tests).
+ */
 function getClientIp(request: NextRequest): string {
-  return (
-    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
-    request.headers.get('x-real-ip') ??
-    '127.0.0.1'
-  )
+  const forwardedFor = request.headers
+    .get('x-forwarded-for')
+    ?.split(',')
+    .map(hop => hop.trim())
+    .filter(isIpAddress)
+  const lastHop = forwardedFor?.at(-1)
+  if (lastHop) return lastHop
+
+  const realIp = request.headers.get('x-real-ip')?.trim()
+  if (realIp && isIpAddress(realIp)) return realIp
+
+  return '127.0.0.1'
 }
 
 function buildContentSecurityPolicy(nonce: string): string {
@@ -146,6 +183,12 @@ export const config = {
     '/api/gauges/:path*',
     '/api/cycles',
     '/api/cycles/:path*',
+    '/api/backers',
+    '/api/backers/:path*',
+    '/api/builders',
+    '/api/allocations/:path*',
+    '/api/metrics/:path*',
+    '/api/envio-sync-check',
     '/ingest/:path*',
     '/monitoring',
     {

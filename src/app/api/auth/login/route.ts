@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { verifySignature } from '@/lib/auth/actions'
 import type { SiweSession } from '@/lib/auth/jwt'
 import { verifyJWT } from '@/lib/auth/jwt.server'
+import { assertSameOriginRequest } from '@/lib/auth/origin'
 import { sanitizeError } from '@/lib/auth/utils'
 import { logger } from '@/lib/logger'
 import { getPostHogClient } from '@/lib/posthog-server'
@@ -27,6 +28,13 @@ const isProduction = process.env.NODE_ENV === 'production'
  * }
  */
 export async function POST(request: NextRequest) {
+  try {
+    assertSameOriginRequest(request)
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Cross-origin request rejected'
+    return NextResponse.json({ error: sanitizeError(message) }, { status: 403 })
+  }
+
   try {
     const body = await request.json()
     const { challengeId, signature } = body

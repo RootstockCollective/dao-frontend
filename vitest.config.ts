@@ -16,7 +16,7 @@ const reactPlugin = react({ jsxRuntime: 'automatic' })
 const hasForkRpc = Boolean(process.env.FORK_RPC_URL)
 
 const unitTestnetEnv = {
-  JWT_SECRET: 'test-jwt',
+  JWT_SECRET: 'vitest-only-jwt-secret-0123456789abcdef',
   NEXT_PUBLIC_ENV: 'testnet',
   NEXT_PUBLIC_CHAIN_ID: '31',
   NEXT_PUBLIC_NODE_URL: 'https://public-node.testnet.rsk.co',
