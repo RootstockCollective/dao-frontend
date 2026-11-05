@@ -4,9 +4,6 @@ name: Deploy to Amazon EKS (rc-mainnet)
 # Uses the `.env.rc-mainnet` env file
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       replicas:
