@@ -93,18 +93,23 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
     if (userInput.endsWith('.rsk')) {
       onUpdateAddressStatus('pending', 'Validating RNS domain...')
       const isValidRNS = await validateRnsDomain(userInput)
-      if (!isValidRNS.valid) {
-        onUpdateAddressStatus('invalid', isValidRNS.error || 'Invalid RNS domain')
-        return
-      }
-      // A denied wallet can still be reached through any domain pointing at it
-      if (isDeniedDelegate(isValidRNS.address)) {
-        onUpdateAddressStatus('invalid', DENIED_DELEGATE_MESSAGE)
-        return
-      }
 
       setAddressToDelegate(
         produce(draft => {
+          // The input changed while the lookup was in flight: this result is stale
+          if (draft.userInput !== userInput) return
+
+          if (!isValidRNS.valid) {
+            draft.status = 'invalid'
+            draft.statusMessage = isValidRNS.error || 'Invalid RNS domain'
+            return
+          }
+          // A denied wallet can still be reached through any domain pointing at it
+          if (isDeniedDelegate(isValidRNS.address)) {
+            draft.status = 'invalid'
+            draft.statusMessage = DENIED_DELEGATE_MESSAGE
+            return
+          }
           draft.address = isValidRNS.address
           draft.rns = isValidRNS.domain
           draft.status = 'valid'

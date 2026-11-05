@@ -23,6 +23,7 @@ interface DelegateCardProps {
   buttonDisabled?: boolean
   isDelegationPending?: boolean
   isReclaimPending?: boolean
+  warning?: string
 }
 
 export const DelegateCard = ({
@@ -41,6 +42,7 @@ export const DelegateCard = ({
   buttonDisabled = false,
   isDelegationPending = false,
   isReclaimPending = false,
+  warning,
 }: DelegateCardProps) => {
   return (
     <div
@@ -71,6 +73,15 @@ export const DelegateCard = ({
       ) : (
         <Paragraph className="text-text-80" variant="body-xs">
           delegate since {since}
+        </Paragraph>
+      )}
+      {warning && (
+        <Paragraph
+          className="text-error text-center mt-2"
+          variant="body-xs"
+          data-testid="delegateCardWarning"
+        >
+          {warning}
         </Paragraph>
       )}
 
