@@ -10,7 +10,7 @@ ingress:
   className: alb
   groupName: dao-frontend-prod
   wafAclArn: ""
-  certificateArn: "arn:aws:acm:us-east-1:886436934082:certificate/dc07df2e-4f94-47ef-bafe-799adb1c64b0"
+  certificateArn: "arn:aws:acm:us-east-1:886436934082:certificate/c18b6d88-e2df-4178-a565-5a96433c099c"
   hosts:
     - host: app.rootstockcollective.xyz
       paths:
