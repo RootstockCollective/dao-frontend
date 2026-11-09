@@ -1,13 +1,10 @@
 import { useMemo } from 'react'
 
+import { EstimatedRewardsAmount } from '@/app/collective-rewards/components/EstimatedRewardsAmount'
+import { useCycleDistributionStatus } from '@/app/collective-rewards/metrics'
 import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { MetricBar } from '@/app/components/Metric/MetricBar'
-import { MetricTooltipContent } from '@/app/components/Metric/MetricTooltipContent'
-import { FiatTooltipLabel } from '@/app/components/Tooltip/FiatTooltipLabel/FiatTooltipLabel'
 import { RewardCard } from '@/app/my-rewards/components/RewardCard'
 import { getMetricTokens } from '@/app/shared/utils'
-import { Header } from '@/components/Typography'
-import { formatCurrency } from '@/lib/utils'
 import { usePricesContext } from '@/shared/context'
 
 import { useBackerEstimatedRewards } from '../hooks/useBackerEstimatedRewards'
@@ -15,6 +12,7 @@ import { useBackerEstimatedRewards } from '../hooks/useBackerEstimatedRewards'
 export const BackerEstimatedRewards = () => {
   const tokens = useBackerEstimatedRewards()
   const { prices } = usePricesContext()
+  const { data: distributionStatus, isLoading: isDistributionStatusLoading } = useCycleDistributionStatus()
   useHandleErrors({
     error: tokens.rif.error ?? tokens.rbtc.error ?? tokens.usdrif.error,
     title: 'Error loading backer estimated rewards',
@@ -35,7 +33,12 @@ export const BackerEstimatedRewards = () => {
 
   return (
     <RewardCard
-      isLoading={tokens.rif.isLoading || tokens.rbtc.isLoading || tokens.usdrif.isLoading}
+      isLoading={
+        tokens.rif.isLoading ||
+        tokens.rbtc.isLoading ||
+        tokens.usdrif.isLoading ||
+        isDistributionStatusLoading
+      }
       title="Estimated this cycle"
       info={
         <span className="flex flex-col gap-2 text-wrap max-w-[35rem]">
@@ -55,13 +58,14 @@ export const BackerEstimatedRewards = () => {
       }
       className="flex flex-col justify-between w-full"
     >
-      <div className="flex items-center gap-2">
-        <Header variant="h3">
-          {formatCurrency(total, { showCurrencySymbol: false })}{' '}
-          <FiatTooltipLabel tooltip={{ side: 'top', text: <MetricTooltipContent tokens={metricTokens} /> }} />
-        </Header>
-      </div>
-      <MetricBar segments={metricTokens} className="w-full md:max-w-[180px]" />
+      <EstimatedRewardsAmount
+        status={distributionStatus}
+        fiat={total}
+        tokens={metricTokens}
+        headerVariant="h3"
+        headerWrapperClassName="flex items-center gap-2"
+        barClassName="w-full md:max-w-[180px]"
+      />
     </RewardCard>
   )
 }

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import { Header } from '@/components/Typography'
+import { PageTitle } from '@/components/PageBanner'
 
 import { ProposalStepper } from '../components/stepper/ProposalStepper'
 import { VotingPowerWrapper } from './components/VotingPowerWrapper'
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function Layout({ children }: React.PropsWithChildren) {
   return (
     <div className="w-full lg:max-w-[1144px] mx-auto mt-8 md:mt-0">
-      <Header className="mb-4 leading-tight uppercase">New Proposal</Header>
+      <PageTitle className="mb-4">New Proposal</PageTitle>
       <VotingPowerWrapper>
         <ProposalStepper />
         {children}

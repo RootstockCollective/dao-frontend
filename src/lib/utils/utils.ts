@@ -269,6 +269,22 @@ export const durationToLabel = (duration: Duration | undefined): string | undefi
 export const formatAmount = (amount: string) => formatNumberWithCommas(formatEther(BigInt(amount)).split('.')[0])
 
 /**
+ * Parses an integer amount coming from an API or indexer without throwing: a malformed or
+ * missing value is 0n, so one bad row cannot take a whole component down with it.
+ * @example parseBigInt('25000000000000000000') // 25000000000000000000n
+ * @example parseBigInt('1.5') // 0n
+ * @example parseBigInt(undefined) // 0n
+ */
+export const parseBigInt = (value: string | number | bigint | null | undefined): bigint => {
+  if (value === null || value === undefined) return 0n
+  try {
+    return BigInt(value)
+  } catch {
+    return 0n
+  }
+}
+
+/**
  * Formats a numeric string to a fixed number of decimal places for display
  * @param value - The numeric string to format
  * @param decimals - Number of decimal places (default: 2)

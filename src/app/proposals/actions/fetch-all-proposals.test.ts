@@ -105,7 +105,10 @@ const blockscoutStub: ProposalApiResponse = {
   votes: { againstVotes: '0', forVotes: '0', abstainVotes: '0' },
 }
 
-function setupDbMocks(options: { metadataBlock: string; proposalRows: ReturnType<typeof makeDbProposalRow>[] }) {
+function setupDbMocks(options: {
+  metadataBlock: string
+  proposalRows: ReturnType<typeof makeDbProposalRow>[]
+}) {
   const proposalChain = {
     select: vi.fn().mockReturnThis(),
     orderBy: vi.fn().mockReturnThis(),

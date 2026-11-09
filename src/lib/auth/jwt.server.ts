@@ -9,6 +9,7 @@ const JWT_ALGORITHM = 'HS256'
 const JWT_EXPIRATION = '24h' // 24 hours session
 const JWT_ISSUER = 'rootstock-collective'
 const JWT_AUDIENCE = 'rootstock-collective-dapp'
+export const MIN_JWT_SECRET_BYTES = 32
 
 let _encodedSecret: Uint8Array | null = null
 
@@ -27,7 +28,11 @@ export function getEncodedSecret(): Uint8Array {
     if (!process.env.JWT_SECRET) {
       throw new Error('JWT_SECRET environment variable is not configured')
     }
-    _encodedSecret = new TextEncoder().encode(process.env.JWT_SECRET)
+    const encoded = new TextEncoder().encode(process.env.JWT_SECRET)
+    if (encoded.length < MIN_JWT_SECRET_BYTES) {
+      throw new Error(`JWT_SECRET must be at least ${MIN_JWT_SECRET_BYTES} bytes (RFC 7518 §3.2 for HS256)`)
+    }
+    _encodedSecret = encoded
   }
   return _encodedSecret
 }

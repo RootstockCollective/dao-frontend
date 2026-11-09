@@ -149,6 +149,66 @@ describe('proxy', () => {
       expect(mockedCheckRateLimit).not.toHaveBeenCalled()
     })
 
+    it.each(['/api/cycles', '/api/cycles/backers', '/api/cycles/rewards-distributed'])(
+      'applies the shared cycles limit to %s',
+      path => {
+        mockedCheckRateLimit.mockReturnValue(allowedResult(120, 119))
+
+        proxy(createRequest(path))
+
+        expect(mockedCheckRateLimit).toHaveBeenCalledWith(expect.any(String), 'cycles', {
+          limit: 120,
+          windowMs: 60_000,
+        })
+      },
+    )
+
+    it('does not match a path that only starts with the cycles prefix text', () => {
+      const response = proxy(createRequest('/api/cyclesX'))
+
+      expect(response.status).toBe(200)
+      expect(mockedCheckRateLimit).not.toHaveBeenCalled()
+    })
+
+    it.each([
+      '/api/backers',
+      '/api/builders',
+      '/api/backers/0xabcdef0123456789abcdef0123456789abcdef01/tx-history/context',
+      '/api/allocations/daily',
+      '/api/metrics/abi/context',
+    ])('applies the shared database-read limit to %s', path => {
+      mockedCheckRateLimit.mockReturnValue(allowedResult(120, 119))
+
+      proxy(createRequest(path))
+
+      expect(mockedCheckRateLimit).toHaveBeenCalledWith(expect.any(String), 'db_read', {
+        limit: 120,
+        windowMs: 60_000,
+      })
+    })
+
+    it('limits the envio sync check probe', () => {
+      mockedCheckRateLimit.mockReturnValue(allowedResult(6, 5))
+
+      proxy(createRequest('/api/envio-sync-check'))
+
+      expect(mockedCheckRateLimit).toHaveBeenCalledWith(expect.any(String), 'envio_sync_check', {
+        limit: 6,
+        windowMs: 60_000,
+      })
+    })
+
+    it('limits logout like the other auth routes', () => {
+      mockedCheckRateLimit.mockReturnValue(allowedResult(20, 19))
+
+      proxy(createRequest('/api/auth/logout'))
+
+      expect(mockedCheckRateLimit).toHaveBeenCalledWith(expect.any(String), 'auth_logout', {
+        limit: 20,
+        windowMs: 60_000,
+      })
+    })
+
     it('passes through for non-auth API routes without rate limiting', () => {
       const response = proxy(createRequest('/api/like'))
 
@@ -226,6 +286,11 @@ describe('proxy', () => {
       '/communities',
       '/api/auth/login',
       '/api/gauges/notify-reward',
+      '/api/backers',
+      '/api/builders',
+      '/api/allocations/daily',
+      '/api/metrics/abi/context',
+      '/api/envio-sync-check',
       '/ingest/e',
       '/monitoring',
     ])('runs on %s', url => {
@@ -263,7 +328,7 @@ describe('proxy', () => {
       )
     })
 
-    it('extracts the first IP from a multi-hop x-forwarded-for chain', () => {
+    it('uses the last hop of a multi-hop x-forwarded-for chain, the one the load balancer appended', () => {
       mockedCheckRateLimit.mockReturnValue(allowedResult())
 
       proxy(
@@ -271,10 +336,38 @@ describe('proxy', () => {
       )
 
       expect(mockedCheckRateLimit).toHaveBeenCalledWith(
-        '203.0.113.50',
+        '150.172.238.178',
         expect.any(String),
         expect.any(Object),
       )
+    })
+
+    it('ignores a spoofed x-forwarded-for prefix and keys on the address the proxy saw', () => {
+      mockedCheckRateLimit.mockReturnValue(allowedResult())
+
+      proxy(createRequest('/api/auth/login', { 'x-forwarded-for': 'attacker-bucket-1, 198.51.100.7' }))
+
+      expect(mockedCheckRateLimit).toHaveBeenCalledWith(
+        '198.51.100.7',
+        expect.any(String),
+        expect.any(Object),
+      )
+    })
+
+    it('does not use a non-IP value as a rate-limit key', () => {
+      mockedCheckRateLimit.mockReturnValue(allowedResult())
+
+      proxy(createRequest('/api/auth/login', { 'x-forwarded-for': 'x'.repeat(4096), 'x-real-ip': 'nope' }))
+
+      expect(mockedCheckRateLimit).toHaveBeenCalledWith('127.0.0.1', expect.any(String), expect.any(Object))
+    })
+
+    it('accepts an IPv6 address', () => {
+      mockedCheckRateLimit.mockReturnValue(allowedResult())
+
+      proxy(createRequest('/api/auth/login', { 'x-forwarded-for': '2001:db8::1' }))
+
+      expect(mockedCheckRateLimit).toHaveBeenCalledWith('2001:db8::1', expect.any(String), expect.any(Object))
     })
 
     it('falls back to x-real-ip when x-forwarded-for is absent', () => {

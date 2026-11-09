@@ -1,5 +1,5 @@
 import Big from 'big.js'
-import { ReactNode } from 'react'
+import { ReactNode, useMemo } from 'react'
 
 import {
   useGetABIFromChain,
@@ -28,7 +28,7 @@ export const AnnualBackerIncentivesLoader = ({ render }: AnnualBackerIncentivesL
   // TODO: remove conditional hooks
   const usePrimary = use_state_sync ? useGetMetricsAbiWithStateSync : useGetMetricsAbiWithGraph
 
-  const Loader = withDataFallback<Big>(usePrimary, useFallbackWithErrors)
+  const Loader = useMemo(() => withDataFallback<Big>(usePrimary, useFallbackWithErrors), [usePrimary])
 
   return <Loader render={render} />
 }

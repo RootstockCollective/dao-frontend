@@ -4,7 +4,6 @@ import { HTMLAttributes } from 'react'
 
 import { MAIN_CONTAINER_ID } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import { TopPageHeader } from '@/shared/walletConnection/components/topPageHeader'
 
 import { BottomDrawer } from './drawers/BottomDrawer'
 import { FooterDesktop } from './footers/FooterDesktop'
@@ -21,14 +20,11 @@ export function ContainerDesktop({ children, className, ...props }: HTMLAttribut
     >
       <SidebarDesktop />
       {/* Central section */}
-      <div className="grow flex flex-col overflow-x-hidden">
+      <div className="grow flex flex-col overflow-x-clip">
         <HeaderDesktop />
         <div className="grow flex flex-col pb-24">
-          <div className="flex flex-1 flex-col mt-10" id={MAIN_CONTAINER_ID}>
-            <main className="p-8 mb-25 grow">
-              <TopPageHeader />
-              {children}
-            </main>
+          <div className="@container/content flex flex-1 flex-col mt-10" id={MAIN_CONTAINER_ID}>
+            <main className="p-8 mb-25 grow">{children}</main>
             <BottomDrawer />
             <FooterDesktop />
           </div>

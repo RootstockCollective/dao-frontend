@@ -1,30 +1,32 @@
 import { produce } from 'immer'
 import { debounce } from 'lodash'
 import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
-import { Address, formatEther, isAddress } from 'viem'
-import { useReadContract } from 'wagmi'
+import { Address, isAddress } from 'viem'
 
 import { DelegateCard } from '@/app/delegate/components/DelegateCard'
-import { DENIED_DELEGATE_MESSAGE, isDeniedDelegate, validateRnsDomain } from '@/app/delegate/lib/utils'
+import {
+  DENIED_DELEGATE_MESSAGE,
+  getVotingWeightPercent,
+  isDeniedDelegate,
+  validateRnsDomain,
+} from '@/app/delegate/lib/utils'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
 import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
 import { Button } from '@/components/Button'
 import { CloseIconKoto } from '@/components/Icons'
 import { NewPopover } from '@/components/NewPopover'
 import { Paragraph, Span } from '@/components/Typography'
-import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import Big from '@/lib/big'
-import { tokenContracts } from '@/lib/contracts'
 import { cn } from '@/lib/utils'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
 
 interface Props {
-  didIDelegateToMyself: boolean
+  hasOtherDelegatee: boolean
+  isClosable: boolean
   onDelegate: (address: Address, rns?: string, imageIpfs?: string | null) => void
   onCloseClick?: () => void
 }
 
-export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseClick }: Props) => {
+export const DelegatesContainer = ({ hasOtherDelegatee, isClosable, onDelegate, onCloseClick }: Props) => {
   const isDesktop = useIsDesktop()
   const [popoverOpen, setPopoverOpen] = useState(false)
   const [addressToDelegate, setAddressToDelegate] = useState({
@@ -35,29 +37,16 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
     statusMessage: '',
   })
 
-  const { nftHolders: delegates } = useNftHoldersWithVotingPower()
+  const { nftHolders: delegates, totalDelegatedVotes } = useNftHoldersWithVotingPower()
 
-  const { data: totalSupply } = useReadContract({
-    abi: StRIFTokenAbi,
-    address: tokenContracts.stRIF,
-    functionName: 'totalSupply',
-  })
-
-  const delegatesWithWeight = useMemo(() => {
-    if (!delegates || !totalSupply) return []
-
-    const supplyNum = Big(formatEther(totalSupply))
-
-    return delegates.map(nftHolder => {
-      const votesNum = nftHolder.votingPower ? Big(nftHolder.votingPower.toString()) : Big(0)
-      const percent = votesNum.div(supplyNum).times(100).toFixed(2)
-
-      return {
+  const delegatesWithWeight = useMemo(
+    () =>
+      delegates.map(nftHolder => ({
         ...nftHolder,
-        votingPowerPercent: percent,
-      }
-    })
-  }, [delegates, totalSupply])
+        votingWeight: getVotingWeightPercent(nftHolder.votingPower, totalDelegatedVotes),
+      })),
+    [delegates, totalDelegatedVotes],
+  )
 
   const onDelegateChangeAddress = (e: ChangeEvent<HTMLInputElement>) => {
     setAddressToDelegate(
@@ -157,7 +146,7 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
   return (
     <div className="bg-bg-80 mt-2 p-6 md:p-6">
       <div className="flex flex-col items-center">
-        {!didIDelegateToMyself && (
+        {isClosable && (
           <CloseIconKoto
             className="self-end cursor-pointer"
             onClick={onCloseClick}
@@ -166,9 +155,9 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
         )}
         <div className="flex flex-col items-center gap-3 w-full">
           <Span>
-            {didIDelegateToMyself
-              ? 'Input delegate to make governance decisions on your behalf'
-              : 'Input a new delegate for your voting power'}
+            {hasOtherDelegatee
+              ? 'Input a new delegate for your voting power'
+              : 'Input delegate to make governance decisions on your behalf'}
           </Span>
           <input
             type="text"
@@ -191,7 +180,7 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
                 className="max-w-md"
                 data-testid="delegateButton"
               >
-                {didIDelegateToMyself ? 'Delegate' : 'Update delegate'}
+                {hasOtherDelegatee ? 'Update delegate' : 'Delegate'}
               </Button>
             }
             className="bg-text-80 rounded-[4px] border border-text-80 p-6 shadow-lg w-72"
@@ -225,10 +214,10 @@ export const DelegatesContainer = ({ didIDelegateToMyself, onDelegate, onCloseCl
             name={delegate.RNS || undefined}
             imageIpfs={delegate.imageIpfs}
             since={formatTimestampToMonthYear(delegate.delegatedSince)}
-            votingPower={delegate.votingPower?.toString() || 0}
-            votingWeight={`${delegate.votingPowerPercent}%`}
-            totalVotes={delegate.totalVotes?.toString() || 0}
-            delegators={delegate.delegators?.toString() || 0}
+            votingPower={delegate.votingPower}
+            votingWeight={delegate.votingWeight ? `${delegate.votingWeight}%` : ' - '}
+            totalVotes={delegate.totalVotes}
+            delegators={delegate.delegators}
             onDelegate={onDelegate}
           />
         ))}

@@ -95,6 +95,7 @@ export const WHITELISTED_USER_ROLE = '0x013e1f410e70025de956b8838ba99c3a9a9f7eb3
 
 export const AVERAGE_BLOCKTIME = 60_000
 export const CACHE_REVALIDATE_SECONDS = 20
+export const ONE_DAY_IN_MS = 1000 * 60 * 60 * 24
 
 export const RIF = 'RIF'
 export const USD = 'USD'
@@ -106,6 +107,8 @@ export const STRIF = 'stRIF'
 export const USDRIF = 'USDRIF'
 export const USDT0 = 'USDT0'
 export const TRIF = 'tRIF'
+
+export const STAKE_RIF_ROUTE = '/user?action=stake'
 
 export const GRANT_TOKEN_LIMITS = {
   minAmount: 0.000001,
@@ -152,6 +155,8 @@ export const getFeatureEnvFlags = (): Record<Feature, string> => FEATURE_FLAGS
 
 export const MAX_PAGE_SIZE = 1000
 
+export const MAX_PAGINATION_OFFSET = 100_000
+
 export const BLOCKSCOUT_URL = process.env.NEXT_PUBLIC_BLOCKSCOUT_URL as string
 
 export const VAULT_KYC_URL = process.env.NEXT_PUBLIC_VAULT_KYC_URL as string
@@ -185,3 +190,9 @@ export const PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD = Number(
 )
 
 export const ABI_CYCLES_LIMIT = 12
+
+/** 14-day cycles. Also the exponent that annualises a cycle's payout in the ABI formula. */
+export const CYCLES_PER_YEAR = 26
+
+/** Cycles the rewards dashboard loads; every endpoint behind the cycle table uses the same limit. */
+export const CYCLE_HISTORY_LIMIT = 100

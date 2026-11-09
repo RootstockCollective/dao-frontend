@@ -49,6 +49,7 @@ const fetchMock = vi.fn(async (input: RequestInfo) => {
     return Response.json({ ens_domain_name: 'curia.rsk' })
   }
   if (url.startsWith('/api/contributors/')) return Response.json([])
+  if (url.startsWith('/api/delegated-votes/')) return Response.json({ totalDelegatedVotes: '0' })
   return new Response(null, { status: 404 })
 })
 

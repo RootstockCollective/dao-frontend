@@ -1,5 +1,20 @@
+import { formatEther } from 'viem'
+
+import Big from '@/lib/big'
 import { DELEGATES_DENYLIST } from '@/lib/constants'
 import { resolveRnsDomain } from '@/lib/rns'
+
+/** Share of all delegated voting power, with two decimals. `votingPower` in stRIF, total in wei. */
+export const getVotingWeightPercent = (
+  votingPower: number | string | undefined,
+  totalDelegatedVotes: bigint | undefined,
+): string | undefined => {
+  if (votingPower === undefined || !totalDelegatedVotes) return undefined
+  return Big(votingPower)
+    .div(Big(formatEther(totalDelegatedVotes)))
+    .times(100)
+    .toFixed(2)
+}
 
 export const DENIED_DELEGATE_MESSAGE = 'This delegate is no longer active'
 

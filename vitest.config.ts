@@ -5,14 +5,18 @@ import { defineConfig } from 'vitest/config'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-const alias = { '@': path.resolve(__dirname, './src') }
+const alias = {
+  '@': path.resolve(__dirname, './src'),
+  // Next resolves `import 'server-only'` itself; vitest has no bundler, so point it at Next's no-op copy
+  'server-only': path.resolve(__dirname, './node_modules/next/dist/compiled/server-only/empty.js'),
+}
 const reactPlugin = react({ jsxRuntime: 'automatic' })
 
 // Check if fork is available - only run fork project when FORK_RPC_URL is set
 const hasForkRpc = Boolean(process.env.FORK_RPC_URL)
 
 const unitTestnetEnv = {
-  JWT_SECRET: 'test-jwt',
+  JWT_SECRET: 'vitest-only-jwt-secret-0123456789abcdef',
   NEXT_PUBLIC_ENV: 'testnet',
   NEXT_PUBLIC_CHAIN_ID: '31',
   NEXT_PUBLIC_NODE_URL: 'https://public-node.testnet.rsk.co',
@@ -59,7 +63,7 @@ const forkProject = {
       '**/providers/uniswap.test.ts',
       '**/api/swap/**/*.test.ts',
     ],
-    exclude: ['**/node_modules/**', '**/.worktree*/**'],
+    exclude: ['**/node_modules/**', '**/*worktree*/**'],
     env: forkPublicEnv,
   },
 }
@@ -77,7 +81,7 @@ export default defineConfig({
           setupFiles: path.join(__dirname, 'vitest.setup.ts'),
           exclude: [
             '**/node_modules/**',
-            '**/.worktree*/**',
+            '**/*worktree*/**',
             'src/lib/swap/utils.test.ts',
             'src/lib/swap/permit2.test.ts',
             'src/lib/swap/providers/**/*.test.ts',
@@ -100,7 +104,7 @@ export default defineConfig({
           environment: 'node',
           setupFiles: path.join(__dirname, 'vitest.setup.ts'),
           include: ['**/api/**/*.test.ts', '**/api/**/*.test.tsx'],
-          exclude: ['**/node_modules/**', '**/api/swap/**/*.test.ts', '**/.worktree*/**'],
+          exclude: ['**/node_modules/**', '**/api/swap/**/*.test.ts', '**/*worktree*/**'],
           env: unitTestnetEnv,
         },
       },

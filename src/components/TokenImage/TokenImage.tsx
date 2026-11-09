@@ -10,9 +10,10 @@ export interface TokenImageProps {
   symbol: string
   size?: number
   className?: string
+  decorative?: boolean
 }
 
-export const TokenImage = ({ symbol, size = 16, className }: TokenImageProps) => {
+export const TokenImage = ({ symbol, size = 16, className, decorative = false }: TokenImageProps) => {
   const token = findTokenBySymbol(symbol)
   if (!token) {
     return null
@@ -20,7 +21,8 @@ export const TokenImage = ({ symbol, size = 16, className }: TokenImageProps) =>
   return (
     <Image
       src={token.icon}
-      alt={`${symbol} Logo`}
+      alt={decorative ? '' : `${symbol} Logo`}
+      aria-hidden={decorative || undefined}
       width={size}
       height={size}
       className={cn('self-center', className)}

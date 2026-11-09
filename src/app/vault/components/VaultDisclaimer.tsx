@@ -1,4 +1,3 @@
-import { DecorativeSquares } from '@/app/backing/components/DecorativeSquares'
 import { formatSymbol } from '@/app/shared/formatter'
 import { useVaultDepositLimiter } from '@/app/vault/hooks/useVaultDepositLimiter'
 import { CommonComponentProps } from '@/components/commonProps'
@@ -20,7 +19,6 @@ export const VaultDisclaimer = ({ className = '' }: CommonComponentProps) => {
       }}
       data-testid="VaultDisclaimer"
     >
-      <DecorativeSquares className="absolute left-0 top-[-30px] z-base" color="#d2fbf6" />
       <Header variant="h3">SANDBOX NOTICE</Header>
       <div className="flex flex-col gap-3">
         <Paragraph>

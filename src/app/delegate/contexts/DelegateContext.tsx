@@ -2,19 +2,18 @@
 import { produce } from 'immer'
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react'
 import { formatEther } from 'viem'
-import { useAccount, useReadContract } from 'wagmi'
+import { useAccount } from 'wagmi'
 
 import { initialContextState, initialDataState, initialUIState } from '@/app/delegate/lib/constants'
+import { keepsOwnVotes } from '@/app/delegate/lib/delegationStatus'
 import {
   DelegateContextState,
   DelegateDataState,
   DelegateeState,
   DelegateUIState,
 } from '@/app/delegate/lib/types'
+import { getVotingWeightPercent } from '@/app/delegate/lib/utils'
 import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
-import { StRIFTokenAbi } from '@/lib/abis/StRIFTokenAbi'
-import Big from '@/lib/big'
-import { tokenContracts } from '@/lib/contracts'
 import { useGetExternalDelegatedAmount } from '@/shared/hooks/useGetExternalDelegatedAmount'
 
 // Context
@@ -46,22 +45,22 @@ export const DelegateContextProvider = ({ children }: Props) => {
     delegated,
     own,
     available,
-    didIDelegateToMyself,
+    delegationStatus,
     delegateeAddress,
     isLoading,
+    isAccountRead,
     delegateeVotingPower,
     delegateeRns,
     refetch: refetchExternalDelegatedAmount,
   } = useGetExternalDelegatedAmount(address)
 
   // Fetch all delegates to get image data for current delegatee
-  const { nftHolders: allDelegates, refetch: refetchAllDelegates } = useNftHoldersWithVotingPower()
+  const {
+    nftHolders: allDelegates,
+    totalDelegatedVotes,
+    refetch: refetchAllDelegates,
+  } = useNftHoldersWithVotingPower()
 
-  const { data: totalSupply } = useReadContract({
-    abi: StRIFTokenAbi,
-    address: tokenContracts.stRIF,
-    functionName: 'totalSupply',
-  })
   // Find current delegatee's data efficiently in a single useMemo
   const getDelegateeData = useCallback(
     (delegateeAddress: string | undefined) => {
@@ -79,25 +78,18 @@ export const DelegateContextProvider = ({ children }: Props) => {
         delegate => delegate.address.toLowerCase() === delegateeAddress.toLowerCase(),
       )
 
-      // Calculate voting weight as percentage of total supply
-      let votingWeight: string | undefined
-      const delegateeVotingPower = delegatee?.votingPower?.toString()
-      if (delegateeVotingPower && totalSupply) {
-        const votingPowerNumber = Big(delegateeVotingPower)
-        const totalSupplyNumber = Big(formatEther(totalSupply))
-        votingWeight = votingPowerNumber.div(totalSupplyNumber).times(100).toFixed(2) + '%'
-      }
+      const weightPercent = getVotingWeightPercent(delegatee?.votingPower, totalDelegatedVotes)
 
       return {
         imageIpfs: delegatee?.imageIpfs,
         delegatedSince: delegatee?.delegatedSince,
         totalVotes: delegatee?.totalVotes,
         delegators: delegatee?.delegators,
-        votingWeight,
-        votingPower: delegateeVotingPower,
+        votingWeight: weightPercent === undefined ? undefined : `${weightPercent}%`,
+        votingPower: delegatee?.votingPower.toString(),
       }
     },
-    [allDelegates, totalSupply],
+    [allDelegates, totalDelegatedVotes],
   )
 
   // Destructure for easier access
@@ -146,8 +138,9 @@ export const DelegateContextProvider = ({ children }: Props) => {
   )
 
   const refetch = useCallback(() => {
-    refetchExternalDelegatedAmount()
-    refetchAllDelegates()
+    // Not awaited: a failing delegates API must not turn a confirmed tx into an error
+    refetchAllDelegates().catch(err => console.error('Failed to refresh the delegates list', err))
+    return refetchExternalDelegatedAmount()
   }, [refetchExternalDelegatedAmount, refetchAllDelegates])
 
   // Update data when delegation data changes
@@ -158,8 +151,11 @@ export const DelegateContextProvider = ({ children }: Props) => {
         draft.cards.own.contentValue = Number(formatEther(own)).toFixed(0)
         draft.cards.delegated.contentValue = Number(formatEther(delegated)).toFixed(0)
         draft.cards.available.contentValue = Number(formatEther(available)).toFixed(0)
-        draft.didIDelegateToMyself = didIDelegateToMyself
-        if (delegateeAddress && !didIDelegateToMyself) {
+        draft.delegationStatus = delegationStatus
+        draft.ownStRif = own
+        draft.availableVotes = available
+        draft.isAccountRead = isAccountRead
+        if (delegationStatus === 'other' && delegateeAddress) {
           draft.currentDelegatee = {
             address: delegateeAddress,
             rns: delegateeRns,
@@ -180,7 +176,8 @@ export const DelegateContextProvider = ({ children }: Props) => {
     delegated,
     own,
     available,
-    didIDelegateToMyself,
+    isAccountRead,
+    delegationStatus,
     delegateeAddress,
     delegateeRns,
     delegateeImageIpfs,
@@ -195,38 +192,21 @@ export const DelegateContextProvider = ({ children }: Props) => {
   useEffect(() => {
     setDataState(
       produce(draft => {
-        if (uiState.isDelegationPending) {
-          draft.displayedDelegatee = dataState.nextDelegatee
-        } else if (uiState.isReclaimPending) {
-          draft.displayedDelegatee = dataState.currentDelegatee
-        } else if (dataState.nextDelegatee) {
-          const knownDelegatee = getDelegateeData(dataState.nextDelegatee.address)
-          draft.displayedDelegatee = {
-            ...dataState.nextDelegatee,
-            ...knownDelegatee,
-          }
-        } else {
-          draft.displayedDelegatee = dataState.currentDelegatee
-        }
+        draft.displayedDelegatee = uiState.isDelegationPending
+          ? dataState.nextDelegatee
+          : dataState.currentDelegatee
       }),
     )
-  }, [
-    dataState.nextDelegatee,
-    dataState.currentDelegatee,
-    uiState.isDelegationPending,
-    uiState.isReclaimPending,
-    getDelegateeData,
-  ])
+  }, [dataState.nextDelegatee, dataState.currentDelegatee, uiState.isDelegationPending])
 
   // Update loading state when UI state changes
   useEffect(() => {
     setDataState(
       produce(draft => {
-        if (uiState.isReclaimPending || didIDelegateToMyself) {
-          // loading states
-          draft.cards.delegated.isLoading = uiState.isDelegationPending || uiState.isReclaimPending
-          draft.cards.available.isLoading = uiState.isDelegationPending || uiState.isReclaimPending
-        }
+        const isMovingMyVotes =
+          uiState.isReclaimPending || (uiState.isDelegationPending && keepsOwnVotes(delegationStatus))
+        draft.cards.delegated.isLoading = isLoading || isMovingMyVotes
+        draft.cards.available.isLoading = isLoading || isMovingMyVotes
 
         const ownValue = Number(formatEther(own))
         const delegatedValue = Number(formatEther(delegated))
@@ -235,7 +215,7 @@ export const DelegateContextProvider = ({ children }: Props) => {
         // content values
         if (uiState.isDelegationPending) {
           // skip updating values if updating delegate
-          if (didIDelegateToMyself) {
+          if (delegationStatus === 'self') {
             draft.cards.delegated.contentValue = ownValue.toFixed(0)
             draft.cards.available.contentValue = (availableValue - ownValue).toFixed(0)
           }
@@ -255,17 +235,16 @@ export const DelegateContextProvider = ({ children }: Props) => {
     delegated,
     own,
     available,
-    didIDelegateToMyself,
+    delegationStatus,
+    isLoading,
   ])
 
   // Update loading state when refetching
   useEffect(() => {
     setDataState(
       produce(draft => {
-        draft.cards.available.isLoading = isLoading
         draft.cards.own.isLoading = isLoading
         draft.cards.received.isLoading = isLoading
-        draft.cards.delegated.isLoading = isLoading
       }),
     )
   }, [isLoading])

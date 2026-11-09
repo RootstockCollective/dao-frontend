@@ -1,16 +1,21 @@
 'use client'
 import posthog from 'posthog-js'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useId, useRef, useState } from 'react'
 import { Address } from 'viem'
 import { useAccount } from 'wagmi'
 
 import { DelegateModal } from '@/app/delegate/components/DelegateModal'
 import { useDelegateContext } from '@/app/delegate/contexts/DelegateContext'
+import { keepsOwnVotes } from '@/app/delegate/lib/delegationStatus'
 import { DelegatesContainer } from '@/app/delegate/sections/DelegateContentSection/DelegatesContainer'
 import { DelegationDetailsSection } from '@/app/delegate/sections/DelegateContentSection/DelegationDetailsSection'
+import { NotDelegatedSection } from '@/app/delegate/sections/DelegateContentSection/NotDelegatedSection'
+import { NoVotingPowerSection } from '@/app/delegate/sections/DelegateContentSection/NoVotingPowerSection'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
+import { formatSymbol } from '@/app/shared/formatter'
 import { isUserRejectedTxError, txFailureProps } from '@/components/ErrorPage/commonErrors'
-import { cn, formatNumberWithCommas } from '@/lib/utils'
+import { STRIF } from '@/lib/constants'
+import { cn } from '@/lib/utils'
 import { useDelegateToAddress } from '@/shared/hooks/useDelegateToAddress'
 import { executeTxFlow } from '@/shared/notification/executeTxFlow'
 
@@ -18,11 +23,14 @@ import { DelegateeState } from '../../lib/types'
 
 export const ConnectedSection = () => {
   const {
-    didIDelegateToMyself,
-    cards,
+    delegationStatus,
+    ownStRif,
+    availableVotes,
+    isAccountRead,
     isDelegationPending,
     isReclaimPending,
     displayedDelegatee,
+    nextDelegatee,
     setIsDelegationPending,
     setIsReclaimPending,
     setNextDelegatee,
@@ -39,6 +47,7 @@ export const ConnectedSection = () => {
   const [isRequestingDelegate, setIsRequestingDelegate] = useState(false) // opening metamask
   const [isRequestingReclaim, setIsRequestingReclaim] = useState(false) // opening metamask
   const delegatesContainerRef = useRef<HTMLDivElement>(null)
+  const delegatesListId = useId()
 
   const handleDelegate = useCallback(
     (address: Address) => {
@@ -49,8 +58,9 @@ export const ConnectedSection = () => {
           setIsDelegationPending(true)
           setIsDelegateModalOpened(false)
         },
-        onSuccess: () => {
-          refetch()
+        // Awaited so the button can't be pressed again before the new delegate is read
+        onSuccess: async () => {
+          await refetch()
           onHideDelegates()
         },
         onError: (txHash, err) => {
@@ -64,6 +74,7 @@ export const ConnectedSection = () => {
         onComplete: () => {
           setIsDelegationPending(false)
           setIsRequestingDelegate(false)
+          setIsDelegateModalOpened(false)
           setNextDelegatee(undefined)
         },
         action: 'delegation',
@@ -131,7 +142,8 @@ export const ConnectedSection = () => {
     setIsReclaimModalOpened(true)
   }
 
-  const votingPower = formatNumberWithCommas(Number(cards.own.contentValue))
+  const hasStRif = ownStRif > 0n
+  const votingPower = formatSymbol(ownStRif, STRIF)
 
   const isPendingTx = isDelegationPending || isReclaimPending
 
@@ -139,34 +151,56 @@ export const ConnectedSection = () => {
   const isPendingDelegate = isDelegationPending || isRequestingDelegate
   const isPendingReclaim = isReclaimPending || isRequestingReclaim
 
+  const isOwnVotingPower = keepsOwnVotes(delegationStatus)
+  const isDelegatesListOpen = delegationStatus === 'self' && hasStRif
+  const isDelegatesListShown = shouldShowDelegates || isDelegatesListOpen
+
   return (
     <>
       <DelegationDetailsSection onShowReclaim={onShowReclaim} onShowDelegates={onShowDelegates} />
+      {isAccountRead && isOwnVotingPower && !hasStRif && availableVotes === 0n && <NoVotingPowerSection />}
+      {isAccountRead && delegationStatus === 'none' && hasStRif && !displayedDelegatee && (
+        <NotDelegatedSection
+          isDelegatingToSelf={isPendingDelegate && !nextDelegatee}
+          onDelegateToSelf={() => handleDelegate(ownAddress as Address)}
+          isChoosingDelegate={shouldShowDelegates}
+          delegatesListId={delegatesListId}
+          onToggleDelegates={shouldShowDelegates ? onHideDelegates : onShowDelegates}
+        />
+      )}
       {!isPendingTx && (
         <div
           ref={delegatesContainerRef}
+          id={delegatesListId}
           className={cn(
             'transition-all duration-300 overflow-hidden',
-            shouldShowDelegates || didIDelegateToMyself ? 'max-h-[100%] opacity-100' : 'max-h-0 opacity-0',
+            isDelegatesListShown ? 'max-h-[100%] opacity-100' : 'max-h-0 opacity-0',
           )}
+          inert={!isDelegatesListShown}
           data-testid="DelegatesContainer"
         >
           <DelegatesContainer
-            didIDelegateToMyself={didIDelegateToMyself}
+            hasOtherDelegatee={delegationStatus === 'other'}
+            isClosable={!isDelegatesListOpen}
             onDelegate={onNextDelegate}
             onCloseClick={onHideDelegates}
           />
         </div>
       )}
-      {isDelegateModalOpened && displayedDelegatee && (
+      {isDelegateModalOpened && nextDelegatee && (
         <DelegateModal
           onDelegate={handleDelegate}
           onClose={onCloseDelegateModal}
           isLoading={isPendingDelegate}
-          title={`You are about to delegate your own voting power of ${votingPower} to`}
-          address={displayedDelegatee.address}
-          name={displayedDelegatee.rns}
-          imageIpfs={displayedDelegatee.imageIpfs}
+          title={
+            hasStRif
+              ? `You are about to delegate your own voting power of ${votingPower} to`
+              : // The delegate is kept when staking, so it can be chosen before having stRIF
+                'You have no stRIF yet. The stRIF you stake will be delegated to'
+          }
+          address={nextDelegatee.address}
+          name={nextDelegatee.rns}
+          imageIpfs={nextDelegatee.imageIpfs}
           actionButtonText={isPendingDelegate ? 'Delegating...' : 'Delegate'}
           data-testid="delegateModal"
         />

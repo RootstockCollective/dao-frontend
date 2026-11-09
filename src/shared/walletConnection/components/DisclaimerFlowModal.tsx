@@ -1,6 +1,7 @@
 import { ConfirmationModal } from '@/components/Modal'
 
-import { DisclaimerFlowProps, disclaimerModalText } from '..'
+import { disclaimerModalText } from '../constants'
+import type { DisclaimerFlowProps } from '../types'
 
 /**
  * Shows the modal with the disclaimer text and triggers the onAgree callback when the user agrees.

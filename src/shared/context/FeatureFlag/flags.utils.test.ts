@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 vi.mock('process', () => ({
   env: {
     NODE_ENV: 'test',
-    JWT_SECRET: 'test-jwt',
+    JWT_SECRET: 'vitest-only-jwt-secret-0123456789abcdef',
   },
 }))
 

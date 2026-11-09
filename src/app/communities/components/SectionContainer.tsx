@@ -5,7 +5,7 @@ import { Header } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
 interface SectionContainerProps {
-  title: string
+  title: ReactNode
   children: ReactNode
   rightContent?: ReactNode
   headerVariant?: ComponentProps<typeof Header>['variant']

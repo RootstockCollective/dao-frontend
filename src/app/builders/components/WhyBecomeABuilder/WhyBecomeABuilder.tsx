@@ -1,0 +1,49 @@
+'use client'
+
+import { CommonComponentProps } from '@/components/commonProps'
+import { MoltenBackground } from '@/components/MoltenBackground'
+import { PersistedCollapsible } from '@/components/PersistedCollapsible'
+import { Header, Paragraph } from '@/components/Typography'
+
+export const WHY_BECOME_A_BUILDER_STORAGE_KEY = 'builders-why-become-open'
+
+const PERKS = [
+  {
+    title: 'Network',
+    description: 'Join a mission-aligned network of builders shipping on Rootstock.',
+  },
+  {
+    title: 'Rewards',
+    description: 'Earn performance-based rewards every cycle you stay active.',
+  },
+  {
+    title: 'Grants',
+    description: 'Access grants to kickstart your project before revenue.',
+  },
+]
+
+export const WhyBecomeABuilder = ({ className }: CommonComponentProps) => (
+  <PersistedCollapsible
+    storageKey={WHY_BECOME_A_BUILDER_STORAGE_KEY}
+    data-testid="WhyBecomeABuilder"
+    toggleTestId="WhyBecomeABuilderToggle"
+    className={className}
+    bodyClassName="flex flex-col gap-6 lg:flex-row lg:gap-10"
+    title="Why become a builder?"
+  >
+    <div className="relative h-[200px] w-full shrink-0 overflow-hidden rounded-sm lg:h-[260px] lg:w-[300px]">
+      <MoltenBackground tone="dark" animated={false} />
+    </div>
+
+    <ul className="grid flex-1 list-none grid-cols-1 gap-x-10 gap-y-6 md:grid-cols-3">
+      {PERKS.map(({ title, description }) => (
+        <li key={title} className="flex flex-col gap-2">
+          <Header caps variant="h5">
+            {title}
+          </Header>
+          <Paragraph>{description}</Paragraph>
+        </li>
+      ))}
+    </ul>
+  </PersistedCollapsible>
+)

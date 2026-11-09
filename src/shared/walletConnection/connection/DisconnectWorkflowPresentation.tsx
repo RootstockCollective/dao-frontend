@@ -10,7 +10,7 @@ import { NewPopover } from '@/components/NewPopover'
 import { Tooltip } from '@/components/Tooltip'
 import { Span } from '@/components/Typography'
 import { useIsSocialLogin } from '@/shared/hooks/useIsSocialLogin'
-import { DisconnectButton } from '@/shared/walletConnection'
+import { DisconnectButton } from '@/shared/walletConnection/components/DisconnectButton'
 import { onRampDisclaimerText } from '@/shared/walletConnection/constants'
 
 interface DisconnectWorkflowPresentationProps {

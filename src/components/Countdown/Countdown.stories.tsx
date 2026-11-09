@@ -2,9 +2,6 @@ import type { Meta, StoryObj } from '@storybook/nextjs'
 import { Countdown } from './Countdown'
 import { TimeSource } from './types'
 import Big from '@/lib/big'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-
-const queryClient = new QueryClient()
 
 const meta: Meta<typeof Countdown> = {
   title: 'Components/Countdown',
@@ -13,13 +10,6 @@ const meta: Meta<typeof Countdown> = {
     layout: 'centered',
   },
   tags: ['autodocs'],
-  decorators: [
-    Story => (
-      <QueryClientProvider client={queryClient}>
-        <Story />
-      </QueryClientProvider>
-    ),
-  ],
   argTypes: {
     timeSource: {
       control: { type: 'select' },

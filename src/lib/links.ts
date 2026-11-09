@@ -1,5 +1,7 @@
 import { ENV } from '@/lib/constants'
 
+const REWARDS_WHITEPAPER = 'https://rootstockcollective.xyz/wp-content/uploads/2025/06/rewards-whitepaper.pdf'
+
 interface Resources {
   registerRns: string
   tokenBridge: string
@@ -10,6 +12,8 @@ interface Resources {
   stakeRif: string
   allocations: string
   feedbackForm: string
+  howDelegationWorks: string
+  rewardsWhitepaper: string
 }
 
 const testnet = {
@@ -23,6 +27,9 @@ const testnet = {
   allocations: 'https://rootstockcollective.xyz/collective-rewards-how-to-become-a-backer/',
   feedbackForm:
     'https://docs.google.com/forms/d/e/1FAIpQLSeCzwut4WppI-YPc0AwNdbi5FVyOXGsTroZO5y-W7KVnpgS5A/viewform?usp=sharing&ouid=108559399286825656764',
+  howDelegationWorks:
+    'https://wiki.rootstockcollective.xyz/RootstockCollective-FAQ-1031ca6b0b02808c95d3dcb5a0074f4b',
+  rewardsWhitepaper: REWARDS_WHITEPAPER,
 } as const satisfies Resources
 
 const mainnet = {
@@ -36,6 +43,9 @@ const mainnet = {
   allocations: 'https://rootstockcollective.xyz/collective-rewards-how-to-become-a-backer/',
   feedbackForm:
     'https://docs.google.com/forms/d/e/1FAIpQLSeCzwut4WppI-YPc0AwNdbi5FVyOXGsTroZO5y-W7KVnpgS5A/viewform?usp=sharing&ouid=108559399286825656764',
+  howDelegationWorks:
+    'https://wiki.rootstockcollective.xyz/RootstockCollective-FAQ-1031ca6b0b02808c95d3dcb5a0074f4b',
+  rewardsWhitepaper: REWARDS_WHITEPAPER,
 } as const satisfies Resources
 
 const regtest = {
@@ -49,6 +59,9 @@ const regtest = {
   allocations: '',
   feedbackForm:
     'https://docs.google.com/forms/d/e/1FAIpQLSeCzwut4WppI-YPc0AwNdbi5FVyOXGsTroZO5y-W7KVnpgS5A/viewform?usp=sharing&ouid=108559399286825656764',
+  howDelegationWorks:
+    'https://wiki.rootstockcollective.xyz/RootstockCollective-FAQ-1031ca6b0b02808c95d3dcb5a0074f4b',
+  rewardsWhitepaper: REWARDS_WHITEPAPER,
 } as const satisfies Resources
 
 // Fork uses mainnet links since it's a fork of mainnet

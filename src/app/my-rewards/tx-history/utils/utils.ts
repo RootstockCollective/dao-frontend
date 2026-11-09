@@ -2,7 +2,7 @@ import Big, { BigSource } from 'big.js'
 import { Duration } from 'luxon'
 import { Address, getAddress } from 'viem'
 
-import { FIRST_CYCLE_START_SECONDS } from '@/app/collective-rewards/constants/chartConstants'
+import { getCycleNumber } from '@/app/collective-rewards/utils/getCycleNumber'
 import { getFiatAmount } from '@/app/shared/formatter'
 import { GetPricesResult } from '@/app/user/types'
 import { tokenContracts } from '@/lib/contracts'
@@ -25,11 +25,8 @@ export const formatExpandedDate = (timestamp: string): string => {
 /**
  * Calculate cycle number from cycle start timestamp
  */
-export const calculateCycleNumber = (cycleStartTimestamp: string, cycleDuration: Duration): number => {
-  const cycleStartSeconds = Number(cycleStartTimestamp)
-  const cycleDurationSeconds = cycleDuration.as('seconds')
-  return Math.floor((cycleStartSeconds - FIRST_CYCLE_START_SECONDS) / cycleDurationSeconds) + 1
-}
+export const calculateCycleNumber = (cycleStartTimestamp: string, cycleDuration: Duration): number =>
+  getCycleNumber(Number(cycleStartTimestamp), cycleDuration.as('seconds'))
 
 /**
  * Format date range for cycle display (e.g., "Jan 1 - 15, 2024")

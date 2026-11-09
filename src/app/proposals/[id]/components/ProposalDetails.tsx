@@ -5,6 +5,7 @@ import {
   convertAmountToBigint,
   extractBuilderName,
   getDiscourseLinkFromProposalDescription,
+  toTrustedForumLink,
 } from '@/app/proposals/shared/utils'
 import { formatSymbol } from '@/app/shared/formatter'
 import { ShortenAndCopy } from '@/components/ShortenAndCopy/ShortenAndCopy'
@@ -99,8 +100,10 @@ export const ProposalDetails = ({
   const parsedAction = parsedActions[0]
   const totalActionsCount = parsedActions.length
 
-  const discourseLink =
-    link ?? (description ? getDiscourseLinkFromProposalDescription(description) : undefined)
+  // Only a forum URL is ever rendered as "See on Discourse", whichever source it came from
+  const discourseLink = toTrustedForumLink(
+    link ?? (description ? getDiscourseLinkFromProposalDescription(description) : undefined),
+  )
   const addressToWhitelist = normalizeAddress(parsedAction.builder)
   const normalizedProposer = normalizeAddress(proposer)
 

@@ -11,6 +11,7 @@ import {
 import { GovernorAbi } from '@/lib/abis/Governor'
 import Big from '@/lib/big'
 import { MAX_NAME_LENGTH_FOR_PROPOSAL, TALLY_DESCRIPTION_SEPARATOR } from '@/lib/constants'
+import { currentLinks } from '@/lib/links'
 import { ProposalCategory } from '@/shared/types'
 
 import { Milestones } from './types'
@@ -228,6 +229,18 @@ export const extractBuilderName = (name: string, description?: string | null): s
   return undefined
 }
 
+const FORUM_HOSTNAME = new URL(currentLinks.forum).hostname
+
+export const toTrustedForumLink = (link: string | undefined): string | undefined => {
+  if (!link) return undefined
+  try {
+    const url = new URL(link)
+    return url.protocol === 'https:' && url.hostname === FORUM_HOSTNAME ? link : undefined
+  } catch {
+    return undefined
+  }
+}
+
 export const getDiscourseLinkFromProposalDescription = (description: string): string | undefined => {
   // First, try to find explicit DiscourseLink: separator
   const startIndex = description.indexOf(DISCOURSE_LINK_SEPARATOR)
@@ -238,13 +251,13 @@ export const getDiscourseLinkFromProposalDescription = (description: string): st
     // Find the first space after DiscourseLink: separator
     const firstSpaceIndex = description.indexOf(' ', afterLink)
 
-    if (firstSpaceIndex === -1) {
-      // If there's no space after DiscourseLink:, take everything to the end
-      return description.substring(afterLink).trim()
-    }
+    // Everything after the separator up to the first space (or the end), if it is a forum URL
+    const candidate =
+      firstSpaceIndex === -1
+        ? description.substring(afterLink).trim()
+        : description.substring(afterLink, firstSpaceIndex).trim()
 
-    // Extract everything from after DiscourseLink: up to (but not including) the first space
-    return description.substring(afterLink, firstSpaceIndex).trim()
+    return toTrustedForumLink(candidate)
   }
 
   // Fallback: Try to find discourse URLs directly in the description

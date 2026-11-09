@@ -7,28 +7,28 @@ interface DataLoaderProps<T> {
   render: (args: { data: T; isLoading: boolean }) => ReactNode
 }
 
+// Loaders are declared here, not inside `DataLoader`: a component type created during render
+// would remount the rendered subtree on every parent re-render.
 export function withDataFallback<T>(
   usePrimary: () => { data: T; isLoading: boolean; error?: unknown },
   useFallback: () => { data: T; isLoading: boolean; error?: unknown },
 ) {
-  const DataLoader = ({ render }: DataLoaderProps<T>) => {
-    const PrimaryLoader = () => {
-      const { data, isLoading, error } = usePrimary()
-      if (error) throw error
-      return <>{render({ data, isLoading })}</>
-    }
-
-    const FallbackLoader = () => {
-      const { data, isLoading } = useFallback()
-      return <>{render({ data, isLoading })}</>
-    }
-
-    return (
-      <ErrorBoundary fallbackRender={withFallbackRetry(<FallbackLoader />)}>
-        <PrimaryLoader />
-      </ErrorBoundary>
-    )
+  const PrimaryLoader = ({ render }: DataLoaderProps<T>) => {
+    const { data, isLoading, error } = usePrimary()
+    if (error) throw error
+    return <>{render({ data, isLoading })}</>
   }
+
+  const FallbackLoader = ({ render }: DataLoaderProps<T>) => {
+    const { data, isLoading } = useFallback()
+    return <>{render({ data, isLoading })}</>
+  }
+
+  const DataLoader = ({ render }: DataLoaderProps<T>) => (
+    <ErrorBoundary fallbackRender={withFallbackRetry(<FallbackLoader render={render} />)}>
+      <PrimaryLoader render={render} />
+    </ErrorBoundary>
+  )
 
   DataLoader.displayName = 'WithDataFallback'
 

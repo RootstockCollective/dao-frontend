@@ -76,6 +76,21 @@ describe('POST /api/like', () => {
     expect(mockPrisma.proposalLike.delete).toHaveBeenCalledWith({ where: { id: 42 } })
   })
 
+  it('should return 403 and not touch the session when posted from a sibling site (CSRF)', async () => {
+    const { POST } = await import('./route')
+    const request = new NextRequest('http://localhost/api/like', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', origin: 'https://gov.rootstockcollective.xyz' },
+      body: JSON.stringify({ proposalId: '123' }),
+    })
+
+    const response = await POST(request)
+
+    expect(response.status).toBe(403)
+    expect(mockedRequireAuth).not.toHaveBeenCalled()
+    expect(mockPrisma.proposalLike.create).not.toHaveBeenCalled()
+  })
+
   it('should return 400 when proposalId is missing', async () => {
     const { POST } = await import('./route')
     const response = await POST(createRequest({ reaction: 'heart' }))

@@ -19,7 +19,7 @@ const useFetchLatestProposals = () => {
 }
 
 export const useFetchAllProposals = () => {
-  const { data } = useFetchLatestProposals()
+  const { data, isLoading, isError } = useFetchLatestProposals()
 
   const latestProposals = useMemo(() => {
     if (data?.data) {
@@ -47,7 +47,7 @@ export const useFetchAllProposals = () => {
     return []
   }, [data])
 
-  return { latestProposals }
+  return { latestProposals, isLoading, isError }
 }
 export type LatestProposalResponse = ReturnType<typeof useFetchAllProposals>['latestProposals'][number]
 

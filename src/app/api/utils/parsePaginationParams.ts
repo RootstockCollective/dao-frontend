@@ -1,4 +1,4 @@
-import { MAX_PAGE_SIZE } from '@/lib/constants'
+import { MAX_PAGE_SIZE, MAX_PAGINATION_OFFSET } from '@/lib/constants'
 
 import {
   DEFAULT_PAGE_NUMBER,
@@ -106,6 +106,20 @@ export function parsePaginationParams(url: string, allowedColumns?: string[]): P
     const error = processParam(key, config as ParamConfig<typeof key>, searchParams, parsedParams)
     if (error) {
       return { success: false, error }
+    }
+  }
+
+  // OFFSET pagination scans every row before the offset, so an unbounded page number is a
+  // full-table scan on demand; cap how deep a page can reach.
+  const { page = 1, pageSize = 1 } = parsedParams
+  if (page * pageSize > MAX_PAGINATION_OFFSET) {
+    return {
+      success: false,
+      error: {
+        type: 'ValidationError',
+        message: `Invalid page parameter: page * pageSize must not exceed ${MAX_PAGINATION_OFFSET}`,
+        statusCode: 400,
+      },
     }
   }
 
