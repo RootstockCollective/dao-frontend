@@ -4,7 +4,12 @@ import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react'
 import { Address, isAddress } from 'viem'
 
 import { DelegateCard } from '@/app/delegate/components/DelegateCard'
-import { getVotingWeightPercent, validateRnsDomain } from '@/app/delegate/lib/utils'
+import {
+  DENIED_DELEGATE_MESSAGE,
+  getVotingWeightPercent,
+  isDeniedDelegate,
+  validateRnsDomain,
+} from '@/app/delegate/lib/utils'
 import { formatTimestampToMonthYear } from '@/app/proposals/shared/utils'
 import { useNftHoldersWithVotingPower } from '@/app/user/Delegation/hooks/useNftHoldersWithVotingPower'
 import { Button } from '@/components/Button'
@@ -69,16 +74,31 @@ export const DelegatesContainer = ({ hasOtherDelegatee, isClosable, onDelegate, 
       return
     }
 
+    if (isDeniedDelegate(userInput)) {
+      onUpdateAddressStatus('invalid', DENIED_DELEGATE_MESSAGE)
+      return
+    }
+
     if (userInput.endsWith('.rsk')) {
       onUpdateAddressStatus('pending', 'Validating RNS domain...')
       const isValidRNS = await validateRnsDomain(userInput)
-      if (!isValidRNS.valid) {
-        onUpdateAddressStatus('invalid', isValidRNS.error || 'Invalid RNS domain')
-        return
-      }
 
       setAddressToDelegate(
         produce(draft => {
+          // The input changed while the lookup was in flight: this result is stale
+          if (draft.userInput !== userInput) return
+
+          if (!isValidRNS.valid) {
+            draft.status = 'invalid'
+            draft.statusMessage = isValidRNS.error || 'Invalid RNS domain'
+            return
+          }
+          // A denied wallet can still be reached through any domain pointing at it
+          if (isDeniedDelegate(isValidRNS.address)) {
+            draft.status = 'invalid'
+            draft.statusMessage = DENIED_DELEGATE_MESSAGE
+            return
+          }
           draft.address = isValidRNS.address
           draft.rns = isValidRNS.domain
           draft.status = 'valid'

@@ -3,6 +3,7 @@
 import { unstable_cache } from 'next/cache'
 import { formatEther } from 'viem'
 
+import { isDeniedDelegate } from '@/app/delegate/lib/utils'
 import { fetchNftHoldersOfAddress } from '@/app/user/Balances/actions'
 import Big from '@/lib/big'
 import { OG_CONTRIBUTORS_NFT_ADDRESS } from '@/lib/constants'
@@ -16,7 +17,9 @@ async function fetchNftHoldersShepherds() {
   // Clean the data from any duplicates
   const holdersToUse = holders.items.reduce<Record<string, (typeof holders.items)[0]>>(
     (previous, current) => {
-      previous[current.owner] = current
+      if (!isDeniedDelegate(current.owner)) {
+        previous[current.owner] = current
+      }
       return previous
     },
     {},

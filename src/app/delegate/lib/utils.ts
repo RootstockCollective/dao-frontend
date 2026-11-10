@@ -1,6 +1,7 @@
 import { formatEther } from 'viem'
 
 import Big from '@/lib/big'
+import { DELEGATES_DENYLIST } from '@/lib/constants'
 import { resolveRnsDomain } from '@/lib/rns'
 
 /** Share of all delegated voting power, with two decimals. `votingPower` in stRIF, total in wei. */
@@ -14,6 +15,12 @@ export const getVotingWeightPercent = (
     .times(100)
     .toFixed(2)
 }
+
+export const DENIED_DELEGATE_MESSAGE = 'This delegate is no longer active'
+
+/** Whether an address or RNS domain is in the delegates denylist */
+export const isDeniedDelegate = (addressOrDomain: string) =>
+  DELEGATES_DENYLIST.includes(addressOrDomain.trim().toLowerCase())
 
 export const validateRnsDomain = async (
   domain: string,
