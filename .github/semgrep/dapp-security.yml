@@ -1,0 +1,254 @@
+# ERROR blocks the pull request; WARNING is reported for review.
+rules:
+  - id: dapp-unbounded-token-approval
+    message: >-
+      Unbounded ERC-20 approval. Approvals must be for the exact amount the
+      flow needs; an infinite allowance turns any later bug into a full-balance drain.
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      category: security
+      subcategory: [vuln]
+      confidence: HIGH
+    patterns:
+      - pattern-either:
+          - pattern: |
+              $C.approve($SPENDER, $AMOUNT)
+          - pattern: |
+              { ..., functionName: 'approve', args: [$SPENDER, $AMOUNT], ... }
+          - pattern: |
+              { ..., functionName: "approve", args: [$SPENDER, $AMOUNT], ... }
+      - metavariable-pattern:
+          metavariable: $AMOUNT
+          pattern-either:
+            - pattern: maxUint256
+            - pattern: MaxUint256
+            - pattern: ethers.constants.MaxUint256
+            - pattern: 2n ** 256n - 1n
+            - pattern: BigInt(2) ** BigInt(256) - BigInt(1)
+            - pattern: 115792089237316195423570985008687907853269984665640564039457584007913129639935n
+            - pattern: "'115792089237316195423570985008687907853269984665640564039457584007913129639935'"
+            - pattern: "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffn"
+
+  - id: dapp-wallet-add-or-switch-chain
+    message: >-
+      Direct wallet_addEthereumChain request. Injecting a chain or RPC URL into the user's
+      wallet is a phishing primitive; chain configuration must go through the central
+      wagmi/AppKit config only.
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      category: security
+      subcategory: [vuln]
+      confidence: HIGH
+    pattern: "'wallet_addEthereumChain'"
+
+  - id: dapp-wallet-switch-chain-or-watch-asset
+    message: >-
+      Direct wallet_switchEthereumChain or wallet_watchAsset request. Chain switching and asset registration must go through the
+      shared wallet utilities; confirm the parameters are built from the central config only.
+    severity: WARNING
+    languages: [typescript, javascript]
+    metadata:
+      category: security
+      confidence: MEDIUM
+    pattern-either:
+      - pattern: "'wallet_switchEthereumChain'"
+      - pattern: "'wallet_watchAsset'"
+
+  - id: dapp-raw-provider-request
+    message: >-
+      Raw provider call bypasses wagmi/viem. Any method that signs, sends or changes
+      wallet state must use the shared hooks so it is covered by the existing review and tests.
+    severity: WARNING
+    languages: [typescript, javascript]
+    metadata:
+      category: security
+      confidence: MEDIUM
+    patterns:
+      - pattern-either:
+          - pattern: |
+              window.ethereum.request({ method: $METHOD, ... })
+          - pattern: |
+              $P.request({ method: $METHOD, ... })
+      - metavariable-regex:
+          metavariable: $METHOD
+          regex: (?i)['"](eth_sign|personal_sign|eth_signTypedData.*|eth_sendTransaction|eth_sendRawTransaction|wallet_.*)['"]
+
+  - id: dapp-blind-signing-raw-message
+    message: >-
+      Signing a raw byte payload. Raw signatures can be replayed as transactions or
+      permits on other contracts. Sign human-readable messages or typed data (EIP-712).
+    severity: WARNING
+    languages: [typescript, javascript]
+    metadata:
+      category: security
+      confidence: MEDIUM
+    pattern-either:
+      - pattern: |
+          $X.signMessage({ ..., message: { raw: $RAW }, ... })
+      - pattern: |
+          signMessage({ ..., message: { raw: $RAW }, ... })
+      - pattern: |
+          signMessageAsync({ ..., message: { raw: $RAW }, ... })
+
+  - id: dapp-eval-or-function-constructor
+    message: Dynamic code execution is not allowed in application code.
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      category: security
+      subcategory: [vuln]
+      confidence: HIGH
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: new Function(...)
+      - pattern: Function(...)
+      - pattern: setTimeout("...", ...)
+      - pattern: setInterval("...", ...)
+
+  - id: dapp-dynamic-import-non-literal
+    message: >-
+      Dynamic import() with a non-literal specifier can load code from a URL decided at runtime.
+      Import only string-literal modules.
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      category: security
+      subcategory: [vuln]
+      confidence: HIGH
+    patterns:
+      - pattern: import($X)
+      - pattern-not: import("...")
+
+  - id: dapp-remote-script-injection
+    message: >-
+      Script element created or pointed at a runtime URL. Third-party scripts must be
+      declared statically (next/script with a literal src) and allowed by the CSP.
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      category: security
+      subcategory: [vuln]
+      confidence: MEDIUM
+    patterns:
+      - pattern-either:
+          - pattern: |
+              $S = document.createElement("script");
+              ...
+              $S.src = $SRC;
+          - pattern: |
+              $S = document.createElement('script');
+              ...
+              $S.src = $SRC;
+          - pattern: |
+              <script src={$SRC} />
+          - pattern: |
+              <Script src={$SRC} />
+      - pattern-not: |
+          <Script src="..." />
+
+  - id: dapp-base64-decode
+    message: >-
+      atob()/Buffer.from(..., 'base64') on a literal or opaque value. Decoding embedded data at
+      runtime is the usual way to hide a payload from review; confirm what is being decoded.
+    severity: WARNING
+    languages: [typescript, javascript]
+    metadata:
+      category: security
+      confidence: LOW
+    pattern-either:
+      - pattern: atob("...")
+      - pattern: Buffer.from("...", "base64")
+      - pattern: Buffer.from("...", 'base64')
+      - pattern: Buffer.from('...', 'base64')
+
+  - id: dapp-unsanitized-dangerously-set-inner-html
+    message: >-
+      dangerouslySetInnerHTML with content that is not passed through DOMPurify.sanitize().
+      In a wallet-connected app, XSS is equivalent to a signing prompt controlled by the attacker.
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      category: security
+      subcategory: [vuln]
+      confidence: MEDIUM
+    patterns:
+      - pattern-either:
+          - pattern: |
+              <$EL dangerouslySetInnerHTML={{ __html: $HTML }} />
+          - pattern: |
+              <$EL dangerouslySetInnerHTML={{ __html: $HTML }}>...</$EL>
+      - pattern-not: |
+          <$EL dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(...) }} />
+      - pattern-not: |
+          <$EL dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(...) }}>...</$EL>
+      - pattern-not: |
+          <$EL dangerouslySetInnerHTML={{ __html: sanitize(...) }} />
+      - pattern-not: |
+          <$EL dangerouslySetInnerHTML={{ __html: sanitize(...) }}>...</$EL>
+
+  - id: dapp-child-process-in-app-code
+    message: Spawning processes from application code is not allowed.
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      category: security
+      subcategory: [vuln]
+      confidence: HIGH
+    pattern-either:
+      - pattern: import $X from "child_process"
+      - pattern: import { ... } from "child_process"
+      - pattern: import $X from "node:child_process"
+      - pattern: import { ... } from "node:child_process"
+      - pattern: require("child_process")
+      - pattern: require("node:child_process")
+
+  - id: dapp-post-message-wildcard-origin
+    message: postMessage with a wildcard target origin leaks data to any embedding page.
+    severity: WARNING
+    languages: [typescript, javascript]
+    metadata:
+      category: security
+      confidence: MEDIUM
+    pattern-either:
+      - pattern: |
+          $W.postMessage($MSG, "*")
+      - pattern: |
+          $W.postMessage($MSG, '*')
+
+  - id: dapp-insecure-http-url
+    message: Plain http:// URL. All endpoints must be https.
+    severity: WARNING
+    languages: [typescript, javascript]
+    metadata:
+      category: security
+      confidence: MEDIUM
+    paths:
+      exclude: ["*.test.ts", "*.test.tsx", "*.stories.tsx", ".github/**", "cypress/**", "docs/**", "*.md"]
+    pattern-regex: http://(?!localhost|127\.0\.0\.1|\[::1\]|0\.0\.0\.0|www\.w3\.org|schemas\.|ns\.adobe\.com|purl\.org|xmlns\.)[A-Za-z0-9.-]+
+
+  - id: dapp-hardcoded-evm-address
+    message: >-
+      Hardcoded EVM address. Addresses belong in the env files / src/lib/contracts.ts and need a
+      maintainer to verify them on the explorer.
+    severity: WARNING
+    languages: [typescript, javascript]
+    metadata:
+      category: security
+      confidence: LOW
+    paths:
+      exclude: ["src/lib/abis/**", "*.test.ts", "*.test.tsx", "*.stories.tsx", "**/__mocks__/**", ".github/**", "cypress/**", "docs/**", "*.md", "*.json"]
+    pattern-regex: 0x[a-fA-F0-9]{40}\b
+
+  - id: dapp-server-env-exposed-as-public
+    message: >-
+      A NEXT_PUBLIC_ variable is assigned from a non-public environment variable, which ships
+      server configuration to the browser bundle.
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      category: security
+      subcategory: [vuln]
+      confidence: MEDIUM
+    pattern-regex: NEXT_PUBLIC_[A-Z0-9_]+\s*[:=]\s*process\.env\.(?!NEXT_PUBLIC_)[A-Z0-9_]+

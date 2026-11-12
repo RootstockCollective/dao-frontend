@@ -1,2 +1,87 @@
+# Keep this list in sync with .github/security/paths-policy.json.
+#
+# When several patterns match a file, the last one wins.
+
+# --- Infrastructure and delivery pipeline: devops ---
 /helm/                                          @RootstockCollective/devops
+/.github/                                       @RootstockCollective/devops
 /.github/workflows/*.eks.deploy.yaml            @RootstockCollective/devops
+/CODEOWNERS                                     @RootstockCollective/devops
+/Dockerfile                                     @RootstockCollective/devops
+/docker-compose.yml                             @RootstockCollective/devops
+/.dockerignore                                  @RootstockCollective/devops
+/zizmor.yml                                     @RootstockCollective/devops
+/.semgrepignore                                 @RootstockCollective/devops
+/.gitmodules                                    @RootstockCollective/devops
+/.gitattributes                                 @RootstockCollective/devops
+**/.gitattributes                               @RootstockCollective/devops
+/.lfsconfig                                     @RootstockCollective/devops
+/docker-compose.override.yml                    @RootstockCollective/devops
+/compose.yml                                    @RootstockCollective/devops
+/compose.yaml                                   @RootstockCollective/devops
+/npm-shrinkwrap.json                            @RootstockCollective/devops
+/yarn.lock                                      @RootstockCollective/devops
+/pnpm-lock.yaml                                 @RootstockCollective/devops
+/bun.lock*                                      @RootstockCollective/devops
+/.yarnrc*                                       @RootstockCollective/devops
+/.pnpmfile.cjs                                  @RootstockCollective/devops
+
+# --- Project tooling and environment configuration: collective ---
+/.husky/                                        @RootstockCollective/collective
+/scripts/                                       @RootstockCollective/collective
+/.env*                                          @RootstockCollective/collective
+/.nvmrc                                         @RootstockCollective/collective
+/.npmrc                                         @RootstockCollective/collective
+/SECURITY.md                                    @RootstockCollective/collective
+/.workflow/                                     @RootstockCollective/collective
+
+# --- Dependencies and build configuration: collective ---
+/package.json                                   @RootstockCollective/collective
+/package-lock.json                              @RootstockCollective/collective
+/next.config.mjs                                @RootstockCollective/collective
+/tsconfig.json                                  @RootstockCollective/collective
+/eslint.config.mjs                              @RootstockCollective/collective
+/prisma/                                        @RootstockCollective/collective
+/postcss.config.mjs                             @RootstockCollective/collective
+/.storybook/                                    @RootstockCollective/collective
+**/package.json                                 @RootstockCollective/collective
+/next.config.*                                  @RootstockCollective/collective
+/.babelrc*                                      @RootstockCollective/collective
+/babel.config.*                                 @RootstockCollective/collective
+/eslint.config.*                                @RootstockCollective/collective
+/.postcssrc*                                    @RootstockCollective/collective
+/postcss.config.*                               @RootstockCollective/collective
+/prisma.config.*                                @RootstockCollective/collective
+/.swcrc                                         @RootstockCollective/collective
+/apis.conf                                      @RootstockCollective/collective
+/vitest.config.ts                               @RootstockCollective/collective
+/vitest.setup.ts                                @RootstockCollective/collective
+/cypress.config.ts                              @RootstockCollective/collective
+/cypress/                                       @RootstockCollective/collective
+
+# --- Contracts, wallet, transactions and server routes: collective ---
+/src/lib/contracts.ts                           @RootstockCollective/collective
+/src/lib/abis/                                  @RootstockCollective/collective
+/src/lib/tokens.ts                              @RootstockCollective/collective
+/src/lib/constants.ts                           @RootstockCollective/collective
+/src/lib/endpoints.ts                           @RootstockCollective/collective
+/src/lib/links.ts                               @RootstockCollective/collective
+/src/lib/auth/                                  @RootstockCollective/collective
+/src/lib/swap/                                  @RootstockCollective/collective
+/src/lib/viemPublicClient.ts                    @RootstockCollective/collective
+/src/config/                                    @RootstockCollective/collective
+/src/shared/walletConnection/                   @RootstockCollective/collective
+/src/shared/trezor-connector/                   @RootstockCollective/collective
+/src/shared/hooks/contracts/                    @RootstockCollective/collective
+/src/shared/stores/swap/                        @RootstockCollective/collective
+/src/app/user/Swap/                             @RootstockCollective/collective
+/src/app/api/                                   @RootstockCollective/collective
+/src/proxy.ts                                   @RootstockCollective/collective
+/src/instrumentation.ts                         @RootstockCollective/collective
+/src/instrumentation-client.ts                  @RootstockCollective/collective
+/src/middleware.ts                              @RootstockCollective/collective
+/src/pages/                                     @RootstockCollective/collective
+/src/app/layout.tsx                             @RootstockCollective/collective
+/src/app/providers/                             @RootstockCollective/collective
+/public/                                        @RootstockCollective/collective
+/docs/security/                                 @RootstockCollective/collective

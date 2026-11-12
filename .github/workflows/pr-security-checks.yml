@@ -1,0 +1,154 @@
+name: PR security checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: pr-security-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  SEMGREP_VERSION: '1.184.0'
+  ZIZMOR_VERSION: '1.30.1'
+  SCRIPTS: .github/scripts/security
+  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+  HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
+jobs:
+  policy:
+    name: policy
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Classify changed files
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+          IS_FORK: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
+        run: |
+          git -c core.quotePath=false diff --raw --no-renames --no-abbrev -z --merge-base "$BASE_SHA" "$HEAD_SHA" > "$RUNNER_TEMP/changes.raw"
+          git -c core.quotePath=false diff --numstat --no-renames -z --merge-base "$BASE_SHA" "$HEAD_SHA" > "$RUNNER_TEMP/changes.numstat"
+          FORK_FLAG=""; [ "$IS_FORK" = "true" ] && FORK_FLAG="--fork"
+          RC=0
+          python3 "$SCRIPTS/check_paths.py" --policy .github/security/paths-policy.json \
+            --raw "$RUNNER_TEMP/changes.raw" --numstat "$RUNNER_TEMP/changes.numstat" --base "$BASE_REF" $FORK_FLAG --out "$RUNNER_TEMP/paths.md" || RC=$?
+          tail -n +2 "$RUNNER_TEMP/paths.md" >> "$GITHUB_STEP_SUMMARY"
+          exit "$RC"
+
+  lockfile:
+    name: lockfile
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Compare the lockfile with the base branch and the npm registry
+        env:
+          IS_FORK: ${{ github.event.pull_request.head.repo.full_name != github.repository }}
+        run: |
+          git show "$BASE_SHA:package-lock.json" > "$RUNNER_TEMP/base-lock.json" || true
+          git show "$HEAD_SHA:package-lock.json" > "$RUNNER_TEMP/head-lock.json" || true
+          git show "$HEAD_SHA:package.json" > "$RUNNER_TEMP/head-package.json" || true
+          git show "$BASE_SHA:package.json" > "$RUNNER_TEMP/base-package.json" || true
+          SHRINKWRAP=""; git cat-file -e "$HEAD_SHA:npm-shrinkwrap.json" 2>/dev/null && SHRINKWRAP="--shrinkwrap-present"
+          FORK_FLAG=""; [ "$IS_FORK" = "true" ] && FORK_FLAG="--fork"
+          RC=0
+          python3 "$SCRIPTS/lockfile_diff.py" --base "$RUNNER_TEMP/base-lock.json" \
+            --head "$RUNNER_TEMP/head-lock.json" --package-json "$RUNNER_TEMP/head-package.json" \
+            --base-package-json "$RUNNER_TEMP/base-package.json" $FORK_FLAG $SHRINKWRAP --out "$RUNNER_TEMP/lockfile.md" || RC=$?
+          tail -n +2 "$RUNNER_TEMP/lockfile.md" >> "$GITHUB_STEP_SUMMARY"
+          exit "$RC"
+
+  secrets:
+    name: secrets
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: TruffleHog over the PR commit range
+        uses: trufflesecurity/trufflehog@ea68ca03c865c5f324e86e849ced20ed3cf9dbbb #v3.99.8
+        with:
+          base: ${{ github.event.pull_request.base.sha }}
+          head: ${{ github.event.pull_request.head.sha }}
+          extra_args: --results=verified,unknown
+
+  workflows:
+    name: workflows
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Install zizmor
+        working-directory: ${{ runner.temp }}
+        run: pipx install "zizmor==${ZIZMOR_VERSION}"
+
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Workflow audit (new findings relative to base)
+        run: |
+          for side in base head; do
+            sha="$BASE_SHA"; [ "$side" = head ] && sha="$HEAD_SHA"
+            python3 "$SCRIPTS/export_tree.py" --sha "$sha" --path .github --dest "$RUNNER_TEMP/$side" || true
+            zizmor --no-config --no-ignores --collect=all --no-online-audits --min-severity high --format=json -- "$RUNNER_TEMP/$side" > "$RUNNER_TEMP/zizmor-$side.json" || true
+          done
+          python3 "$SCRIPTS/zizmor_report.py" --json "$RUNNER_TEMP/zizmor-head.json" \
+            --base-json "$RUNNER_TEMP/zizmor-base.json" --out "$RUNNER_TEMP/workflows.md"
+          tail -n +2 "$RUNNER_TEMP/workflows.md" >> "$GITHUB_STEP_SUMMARY"
+          ! grep -q '^STATUS: fail' "$RUNNER_TEMP/workflows.md"
+
+  semgrep:
+    name: semgrep
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Install Semgrep
+        working-directory: ${{ runner.temp }}
+        run: pipx install "semgrep==${SEMGREP_VERSION}"
+
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Semgrep project rules (blocking findings introduced by this PR)
+        run: |
+          RC=0
+          semgrep scan \
+            --config .github/semgrep/ \
+            --baseline-commit "$BASE_SHA" \
+            --disable-nosem --x-ignore-semgrepignore-files --max-target-bytes 0 \
+            --severity ERROR \
+            --metrics off --json --output "$RUNNER_TEMP/semgrep.json" . || RC=$?
+          python3 "$SCRIPTS/semgrep_report.py" --json "$RUNNER_TEMP/semgrep.json" --exit-code "$RC" --out "$RUNNER_TEMP/semgrep.md"
+          tail -n +2 "$RUNNER_TEMP/semgrep.md" >> "$GITHUB_STEP_SUMMARY"
+          ! grep -q '^STATUS: fail' "$RUNNER_TEMP/semgrep.md"
