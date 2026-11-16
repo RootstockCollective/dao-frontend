@@ -28,4 +28,3 @@ externalSecrets:
     blockscoutApiKey: /rscoll-dev/dao-qa/blockscout-api-key
     slackSupportWebhookUrl: /rscoll-dev/dao-qa/slack-support-webhook-url
     turnstileSecretKey: /rscoll-dev/dao-qa/turnstile-secret-key
-    envioSyncCheckSlackWebhookUrl: /rscoll-dev-envio-sync-check-slack-webhook-url

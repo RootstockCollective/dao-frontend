@@ -33,8 +33,6 @@ const RATE_LIMIT_CONFIGS: Record<string, RouteRateLimitConfig> = {
   '/api/cycles': CYCLES_RATE_LIMIT,
   '/api/backers': DB_READ_RATE_LIMIT,
   '/api/builders': DB_READ_RATE_LIMIT,
-  // An operational probe that fans out to Envio, the RPC and a Slack webhook on every call
-  '/api/envio-sync-check': { prefix: 'envio_sync_check', limit: 6, windowMs: 60_000 },
 }
 
 /**
@@ -188,7 +186,6 @@ export const config = {
     '/api/builders',
     '/api/allocations/:path*',
     '/api/metrics/:path*',
-    '/api/envio-sync-check',
     '/ingest/:path*',
     '/monitoring',
     {
