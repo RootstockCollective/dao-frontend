@@ -59,60 +59,59 @@ export const DelegatesContainer = ({ hasOtherDelegatee, isClosable, onDelegate, 
     )
   }
 
-  const onUpdateAddressStatus = (status: string, statusMessage: string = '') => {
-    setAddressToDelegate(
-      produce(draft => {
+  const validateAddress = useCallback(async (userInput: string) => {
+    // Every write is dropped once the field no longer holds the value that was validated
+    const applyIfCurrent = (recipe: (draft: typeof addressToDelegate) => void) =>
+      setAddressToDelegate(
+        produce(draft => {
+          if (draft.userInput !== userInput) return
+          recipe(draft)
+        }),
+      )
+    const setStatus = (status: string, statusMessage = '') =>
+      applyIfCurrent(draft => {
         draft.status = status
         draft.statusMessage = statusMessage
-      }),
-    )
-  }
+      })
 
-  const validateAddress = useCallback(async (userInput: string) => {
     if (!isAddress(userInput, { strict: false }) && !userInput.endsWith('.rsk')) {
-      onUpdateAddressStatus('invalid', 'Invalid address')
+      setStatus('invalid', 'Invalid address')
       return
     }
 
     if (isDeniedDelegate(userInput)) {
-      onUpdateAddressStatus('invalid', DENIED_DELEGATE_MESSAGE)
+      setStatus('invalid', DENIED_DELEGATE_MESSAGE)
       return
     }
 
     if (userInput.endsWith('.rsk')) {
-      onUpdateAddressStatus('pending', 'Validating RNS domain...')
+      setStatus('pending', 'Validating RNS domain...')
       const isValidRNS = await validateRnsDomain(userInput)
 
-      setAddressToDelegate(
-        produce(draft => {
-          // The input changed while the lookup was in flight: this result is stale
-          if (draft.userInput !== userInput) return
-
-          if (!isValidRNS.valid) {
-            draft.status = 'invalid'
-            draft.statusMessage = isValidRNS.error || 'Invalid RNS domain'
-            return
-          }
-          // A denied wallet can still be reached through any domain pointing at it
-          if (isDeniedDelegate(isValidRNS.address)) {
-            draft.status = 'invalid'
-            draft.statusMessage = DENIED_DELEGATE_MESSAGE
-            return
-          }
-          draft.address = isValidRNS.address
-          draft.rns = isValidRNS.domain
-          draft.status = 'valid'
-          draft.statusMessage = 'Valid RNS domain'
-        }),
-      )
+      applyIfCurrent(draft => {
+        if (!isValidRNS.valid) {
+          draft.status = 'invalid'
+          draft.statusMessage = isValidRNS.error || 'Invalid RNS domain'
+          return
+        }
+        // A denied wallet can still be reached through any domain pointing at it
+        if (isDeniedDelegate(isValidRNS.address)) {
+          draft.status = 'invalid'
+          draft.statusMessage = DENIED_DELEGATE_MESSAGE
+          return
+        }
+        draft.address = isValidRNS.address
+        draft.rns = isValidRNS.domain
+        draft.status = 'valid'
+        draft.statusMessage = 'Valid RNS domain'
+      })
     } else {
-      setAddressToDelegate(
-        produce(draft => {
-          draft.status = 'valid'
-          draft.statusMessage = ''
-          draft.address = userInput
-        }),
-      )
+      applyIfCurrent(draft => {
+        draft.status = 'valid'
+        draft.statusMessage = ''
+        draft.address = userInput
+        draft.rns = ''
+      })
     }
   }, [])
 
@@ -128,9 +127,10 @@ export const DelegatesContainer = ({ hasOtherDelegatee, isClosable, onDelegate, 
 
   useEffect(() => {
     if (addressToDelegate.userInput.length > 0) {
-      console.log('Validating address:', addressToDelegate.userInput)
       onValidateAddress(addressToDelegate.userInput)
     }
+    // Drops the pending validation when the field changes, is emptied, or the component unmounts
+    return () => onValidateAddress.cancel()
   }, [addressToDelegate.userInput, onValidateAddress])
 
   // closes the popover when the address is valid
