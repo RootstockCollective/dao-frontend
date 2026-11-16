@@ -51,8 +51,17 @@ export function useFormAddressResolution(props?: Props) {
   const { watch, setValue, trigger } = useFormContext()
   const targetAddressInput: string = watch(rnsOrAddressFieldName) ?? ''
   const [debouncedInput] = useDebounce(targetAddressInput, 600)
+  const isInputSettled = targetAddressInput === debouncedInput
 
   useEffect(() => {
+    if (!isInputSettled) {
+      setResolutionMsg('')
+      setValue(rnsFieldName, '')
+      setValue(errorFieldName, '')
+      setValue(resolvedAddressFieldName, '', { shouldValidate: true })
+      return
+    }
+
     if (!debouncedInput.trim() || debouncedInput.length < 3) {
       setResolutionMsg('')
       setIsResolving(false)
@@ -61,6 +70,7 @@ export function useFormAddressResolution(props?: Props) {
       setValue(errorFieldName, '', { shouldValidate: true }) // Clear error on reset
       return
     }
+    let isStale = false
 
     const resolve = async () => {
       setIsResolving(true)
@@ -70,6 +80,7 @@ export function useFormAddressResolution(props?: Props) {
 
         if (debouncedInput.endsWith('.rsk')) {
           const address = (await resolveRnsDomain(debouncedInput)) as Address
+          if (isStale) return
           if (address) {
             setValue(rnsFieldName, debouncedInput, { shouldDirty: true })
             setValue(resolvedAddressFieldName, address, { shouldValidate: true, shouldDirty: true })
@@ -83,17 +94,20 @@ export function useFormAddressResolution(props?: Props) {
           setValue(resolvedAddressFieldName, debouncedInput, { shouldValidate: true, shouldDirty: true })
           try {
             const rns = await getEnsDomainName(debouncedInput)
+            if (isStale) return
             setResolutionMsg(rns ? `📍 RNS: ${rns}` : '')
             setValue(rnsFieldName, rns ?? '')
             // Trigger validation to force re-render and show message
             //trigger(rnsOrAddressFieldName)
           } catch {
+            if (isStale) return
             setResolutionMsg('')
           }
         } else {
           throw new Error('Invalid RNS/address format')
         }
       } catch (error) {
+        if (isStale) return
         // On failure, clear resolved address and set error message in hidden field
         setValue(resolvedAddressFieldName, '', { shouldDirty: true })
         setValue(rnsFieldName, '')
@@ -101,14 +115,19 @@ export function useFormAddressResolution(props?: Props) {
         setValue(errorFieldName, message, { shouldValidate: true }) // Set error and trigger validation
         setResolutionMsg('')
       } finally {
-        // Trigger validation to force re-render and show message
-        trigger(rnsOrAddressFieldName)
-        setIsResolving(false)
+        if (!isStale) {
+          trigger(rnsOrAddressFieldName)
+          setIsResolving(false)
+        }
       }
     }
 
     resolve()
+    return () => {
+      isStale = true
+    }
   }, [
+    isInputSettled,
     debouncedInput,
     setValue,
     resolvedAddressFieldName,

@@ -187,17 +187,6 @@ describe('proxy', () => {
       })
     })
 
-    it('limits the envio sync check probe', () => {
-      mockedCheckRateLimit.mockReturnValue(allowedResult(6, 5))
-
-      proxy(createRequest('/api/envio-sync-check'))
-
-      expect(mockedCheckRateLimit).toHaveBeenCalledWith(expect.any(String), 'envio_sync_check', {
-        limit: 6,
-        windowMs: 60_000,
-      })
-    })
-
     it('limits logout like the other auth routes', () => {
       mockedCheckRateLimit.mockReturnValue(allowedResult(20, 19))
 
@@ -290,7 +279,6 @@ describe('proxy', () => {
       '/api/builders',
       '/api/allocations/daily',
       '/api/metrics/abi/context',
-      '/api/envio-sync-check',
       '/ingest/e',
       '/monitoring',
     ])('runs on %s', url => {

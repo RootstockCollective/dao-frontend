@@ -82,13 +82,6 @@ spec:
               name: {{ include "dao-frontend.fullname" . }}-secrets
               key: turnstile-secret-key
         {{- end }}
-        {{- if .Values.externalSecrets.parameterPaths.envioSyncCheckSlackWebhookUrl }}
-        - name: ENVIO_SYNC_CHECK_SLACK_WEBHOOK_URL
-          valueFrom:
-            secretKeyRef:
-              name: {{ include "dao-frontend.fullname" . }}-secrets
-              key: envio-sync-check-slack-webhook-url
-        {{- end }}
         {{- if .Values.externalSecrets.parameterPaths.nextServerActionsEncryptionKey }}
         - name: NEXT_SERVER_ACTIONS_ENCRYPTION_KEY
           valueFrom:

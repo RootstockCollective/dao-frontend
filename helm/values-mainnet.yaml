@@ -30,5 +30,4 @@ externalSecrets:
     blockscoutApiKey: /dao-frontend/mainnet/blockscout-api-key
     slackSupportWebhookUrl: /dao-frontend/mainnet/slack-support-webhook-url
     turnstileSecretKey: /dao-frontend/mainnet/turnstile-secret-key
-    envioSyncCheckSlackWebhookUrl: /dao-frontend-envio-sync-check-slack-webhook-url
     jwtSecret: /dao-frontend/mainnet/jwt-secret
