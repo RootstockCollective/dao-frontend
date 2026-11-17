@@ -10,7 +10,7 @@ import { ELIGIBILITY_DEPOSIT_CARD_GRADIENT } from './components/btcVaultBannerGr
 import { BtcVaultEligibilityAndDepositCard } from './components/BtcVaultEligibilityAndDepositCard'
 import { BtcVaultPrototypeBannerContent } from './components/BtcVaultPrototypeBannerContent'
 import { DepositWindowSection } from './components/DepositWindowSection'
-import { DisclosureContent } from './components/DisclosureContent'
+import { DisclosureContent } from './components/disclosure/DisclosureContent'
 import { PauseBannerContent } from './components/PauseBannerContent'
 import { useActionEligibility } from './hooks/useActionEligibility'
 import { useEpochState } from './hooks/useEpochState'
