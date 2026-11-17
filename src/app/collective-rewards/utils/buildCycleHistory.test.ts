@@ -8,7 +8,12 @@ import { GetPricesResult } from '../../user/types'
 import { FIRST_CYCLE_START_SECONDS, ONE_DAY_IN_SECONDS } from '../constants/chartConstants'
 import { UseGetGaugesNotifyRewardReturnType } from '../rewards'
 import { CycleRewardsItem, DailyAllocationItem } from '../types'
-import { buildCycleHistory, getAllTimeRewardsFiat, toCycleStartKey } from './buildCycleHistory'
+import {
+  buildBackingSeries,
+  buildCycleHistory,
+  getAllTimeRewardsFiat,
+  toCycleStartKey,
+} from './buildCycleHistory'
 import { getCycleNumber } from './getCycleNumber'
 
 const CYCLE_DURATION = 14 * ONE_DAY_IN_SECONDS
@@ -259,6 +264,68 @@ describe('buildCycleHistory', () => {
     expect(byCycle.get(10)).toBe(0.9)
     expect(byCycle.get(11)).toBe(0.1)
     expect(byCycle.get(12)).toBeNull()
+  })
+})
+
+describe('buildBackingSeries', () => {
+  const numbers = (series: ReturnType<typeof buildBackingSeries>) =>
+    series.map(({ cycleNumber }) => cycleNumber)
+
+  it('is empty when no cycle is indexed', () => {
+    expect(buildBackingSeries([], [allocation(cycleStart(10), 1_000)])).toEqual([])
+  })
+
+  it('fills the cycles the indexer skipped, oldest first', () => {
+    const series = buildBackingSeries([cycleItem(13), cycleItem(10), cycleItem(12)], [])
+
+    expect(numbers(series)).toEqual([10, 11, 12, 13])
+    expect(series.map(({ noDistribution }) => noDistribution ?? false)).toEqual([false, true, false, false])
+  })
+
+  it('gives a filled cycle its own window', () => {
+    const filled = buildBackingSeries([cycleItem(10), cycleItem(12)], [])[1]
+
+    expect(filled.start.getTime()).toBe(cycleStart(11) * 1000)
+    expect(filled.end.getTime()).toBe(cycleStart(12) * 1000)
+  })
+
+  it('fills a run of skipped cycles', () => {
+    expect(numbers(buildBackingSeries([cycleItem(10), cycleItem(14)], []))).toEqual([10, 11, 12, 13, 14])
+  })
+
+  it('reads a filled cycle’s backing from the snapshots like any other', () => {
+    const series = buildBackingSeries(
+      [cycleItem(10), cycleItem(12)],
+      [allocation(cycleStart(10), 1_000), allocation(cycleStart(11) + ONE_DAY_IN_SECONDS, 2_000)],
+    )
+
+    expect(series.map(({ backing }) => backing)).toEqual([1_000n, 2_000n, 2_000n])
+  })
+
+  it('matches the history rows’ backing for the cycles both describe', () => {
+    const cycles = [cycleItem(8), cycleItem(10), cycleItem(11)]
+    const dailyAllocations = [
+      allocation(cycleStart(8) + ONE_DAY_IN_SECONDS, 3_000),
+      allocation(cycleStart(9) + ONE_DAY_IN_SECONDS, 4_000),
+      allocation(cycleStart(11), 5_000),
+    ]
+
+    const series = buildBackingSeries(cycles, dailyAllocations)
+    const rows = build({ cycles, dailyAllocations })
+
+    for (const row of rows) {
+      expect(series.find(({ cycleNumber }) => cycleNumber === row.cycleNumber)?.backing).toBe(row.backing)
+    }
+  })
+
+  it('leaves a gap the cycle duration does not divide, rather than guess its windows', () => {
+    const shifted = { ...cycleItem(12), currentCycleStart: String(cycleStart(12) + 3_600) }
+
+    expect(buildBackingSeries([cycleItem(10), shifted], [])).toHaveLength(2)
+  })
+
+  it('plots a cycle indexed twice once', () => {
+    expect(numbers(buildBackingSeries([cycleItem(10), cycleItem(10), cycleItem(11)], []))).toEqual([10, 11])
   })
 })
 

@@ -66,6 +66,21 @@ export const AllCycles: Story = {
   render: () => <SelectableChart cycles={extendedHistory} defaultRange="all" />,
 }
 
+export const WithSkippedDistributions: Story = {
+  render: () => {
+    const newest = extendedHistory[0].cycleNumber
+    const skipped = new Set([newest - 1, newest - 3])
+
+    return (
+      <SelectableChart
+        cycles={extendedHistory.map(cycle =>
+          skipped.has(cycle.cycleNumber) ? { ...cycle, noDistribution: true } : cycle,
+        )}
+      />
+    )
+  },
+}
+
 /** Unknown backing leaves a gap in the area rather than a drop to zero. */
 export const WithUnknownBacking: Story = {
   render: () => <SelectableChart cycles={mockCycleHistoryWithUnknownBacking} />,

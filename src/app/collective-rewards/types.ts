@@ -119,3 +119,11 @@ export interface CycleHistoryEntry {
   backersCount: number | null
   status: CycleStatus
 }
+
+export interface CycleBackingPoint {
+  cycleNumber: number
+  start: Date
+  end: Date
+  backing: bigint | null
+  noDistribution?: boolean
+}

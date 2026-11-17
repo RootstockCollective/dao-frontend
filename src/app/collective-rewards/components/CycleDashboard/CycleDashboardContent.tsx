@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 
 import { SPOT_PRICE_NOTE } from '../../constants/dashboardCopy'
 import { CARD_RADIUS } from '../../constants/dashboardSurface'
-import { CycleHistoryEntry } from '../../types'
+import { CycleBackingPoint, CycleHistoryEntry } from '../../types'
 import { CycleBackingChart } from '../CycleBackingChart'
 import { CycleDistribution } from '../CycleDistribution'
 import { CycleHistoryTable } from '../CycleHistoryTable'
@@ -28,6 +28,7 @@ const DistributionPlaceholder = ({ isLoading }: { isLoading: boolean }) => (
 
 export interface CycleDashboardContentProps {
   cycles: CycleHistoryEntry[]
+  backingSeries?: CycleBackingPoint[]
   selectedCycle?: CycleHistoryEntry
   onSelectCycle?: (cycleNumber: number) => void
   /** Only applied to the running cycle; there is no historical Builder roster. */
@@ -38,6 +39,7 @@ export interface CycleDashboardContentProps {
 
 export const CycleDashboardContent = ({
   cycles,
+  backingSeries,
   selectedCycle,
   onSelectCycle,
   buildersCount = null,
@@ -55,7 +57,7 @@ export const CycleDashboardContent = ({
 
     <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-4 items-stretch">
       <CycleBackingChart
-        cycles={cycles}
+        cycles={backingSeries ?? cycles}
         selectedCycle={selectedCycle?.cycleNumber ?? null}
         onSelectCycle={onSelectCycle}
         isLoading={isLoading}

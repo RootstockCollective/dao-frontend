@@ -11,25 +11,50 @@ import { cn } from '@/lib/utils'
 
 import { BACKING_SERIES_COLOR } from '../../constants/dashboardColors'
 import { CARD_RADIUS } from '../../constants/dashboardSurface'
-import { CycleHistoryEntry } from '../../types'
+import { CycleBackingPoint } from '../../types'
 import { formatBackingCompact, formatCycleWindow } from '../../utils/dashboardFormatters'
 import { CycleBackingTooltip } from './CycleBackingTooltip'
 
-export type CycleChartRange = 'ten-cycles' | 'six-months' | 'all'
+export type CycleChartRange = 'six-months' | 'one-year' | 'all'
 
 interface RangeOption {
   id: CycleChartRange
   label: string
-  /** Trailing cycles kept; `null` keeps everything. */
+  shortLabel: string
   cycles: number | null
 }
 
 const RANGE_OPTIONS: RangeOption[] = [
-  { id: 'ten-cycles', label: '10 cycles', cycles: 10 },
-  // 13 cycles ≈ six months at the 14-day cadence.
-  { id: 'six-months', label: '6 months', cycles: 13 },
-  { id: 'all', label: 'All', cycles: null },
+  { id: 'six-months', label: '6 months', shortLabel: '6M', cycles: 13 },
+  { id: 'one-year', label: '1 year', shortLabel: '1Y', cycles: 26 },
+  { id: 'all', label: 'All', shortLabel: 'All', cycles: null },
 ]
+
+const getRangeCycles = (range: CycleChartRange): number | null =>
+  RANGE_OPTIONS.find(({ id }) => id === range)?.cycles ?? null
+
+export const filterCyclesToRange = <T extends { cycleNumber: number }>(
+  ascending: T[],
+  range: CycleChartRange,
+): T[] => {
+  const limit = getRangeCycles(range)
+  const newest = ascending.at(-1)?.cycleNumber
+
+  if (limit === null || newest === undefined) return ascending
+  return ascending.filter(({ cycleNumber }) => cycleNumber > newest - limit)
+}
+
+export const getRangeShowing = (
+  range: CycleChartRange,
+  newestCycleNumber: number,
+  selectedCycle: number,
+): CycleChartRange => {
+  const cyclesNeeded = newestCycleNumber - selectedCycle + 1
+  const kept = getRangeCycles(range)
+
+  if (kept === null || cyclesNeeded <= kept) return range
+  return RANGE_OPTIONS.find(({ cycles }) => cycles === null || cycles >= cyclesNeeded)?.id ?? 'all'
+}
 
 const CHART_MIN_HEIGHT = 220
 const MAX_X_LABELS = 10
@@ -43,6 +68,7 @@ export interface CycleChartPoint {
   backing: number | null
   start: Date
   end: Date
+  noDistribution: boolean
 }
 
 interface BackingDotProps {
@@ -57,6 +83,20 @@ const backingDot = (selectedCycleNumber: number | undefined) => {
     if (payload?.backing === null || cx === undefined || cy === undefined) return null
 
     const isSelected = payload?.cycleNumber === selectedCycleNumber
+
+    if (payload?.noDistribution) {
+      return (
+        <circle
+          key={`dot-${payload.cycleNumber}`}
+          cx={cx}
+          cy={cy}
+          r={3}
+          fill="var(--color-v3-bg-accent-80)"
+          stroke={BACKING_SERIES_COLOR}
+          strokeWidth={1.5}
+        />
+      )
+    }
 
     return (
       <circle
@@ -90,20 +130,21 @@ const RangeToggle = ({
     options={RANGE_OPTIONS.map(({ id, label }) => ({ value: id, label }))}
     optionClassName="px-3 py-1.5 rounded-full hover:bg-v3-bg-accent-60/50"
     selectedOptionClassName="bg-v3-bg-accent-60"
-    renderLabel={({ label }, isSelected) => (
+    renderLabel={({ value: id, label }, isSelected) => (
       <Label
         variant="tag-s"
         caps
         className={cn('tracking-wider cursor-[inherit]', isSelected ? 'text-v3-text-100' : 'text-v3-text-40')}
       >
-        {label}
+        <span aria-hidden="true">{RANGE_OPTIONS.find(option => option.id === id)?.shortLabel ?? label}</span>
+        <span className="sr-only">{label}</span>
       </Label>
     )}
   />
 )
 
 export interface CycleBackingChartProps {
-  cycles: CycleHistoryEntry[]
+  cycles: CycleBackingPoint[]
   selectedCycle?: number | null
   onSelectCycle?: (cycleNumber: number) => void
   defaultRange?: CycleChartRange
@@ -115,7 +156,7 @@ export const CycleBackingChart = ({
   cycles,
   selectedCycle = null,
   onSelectCycle,
-  defaultRange = 'ten-cycles',
+  defaultRange = 'one-year',
   isLoading = false,
   className,
 }: CycleBackingChartProps) => {
@@ -123,34 +164,33 @@ export const CycleBackingChart = ({
   const [trackedSelection, setTrackedSelection] = useState<number | null>(null)
 
   const ascending = useMemo(() => [...cycles].sort((a, b) => a.cycleNumber - b.cycleNumber), [cycles])
+  const newestCycleNumber = ascending.at(-1)?.cycleNumber ?? null
 
   // A cycle selected from the table can fall outside the current range: widen to the narrowest
   // range that holds it. State adjusted during render, per React's "adjusting state on prop change".
   if (selectedCycle !== trackedSelection) {
     setTrackedSelection(selectedCycle)
 
-    const selectedIndex = ascending.findIndex(({ cycleNumber }) => cycleNumber === selectedCycle)
-    const cyclesNeeded = ascending.length - selectedIndex
-    const rangeCycles = RANGE_OPTIONS.find(({ id }) => id === range)?.cycles ?? null
+    const isPlotted = ascending.some(({ cycleNumber }) => cycleNumber === selectedCycle)
 
-    if (selectedIndex !== -1 && rangeCycles !== null && cyclesNeeded > rangeCycles) {
-      const widened = RANGE_OPTIONS.find(({ cycles: kept }) => kept === null || kept >= cyclesNeeded)
-      if (widened) setRange(widened.id)
+    if (isPlotted && selectedCycle !== null && newestCycleNumber !== null) {
+      const widened = getRangeShowing(range, newestCycleNumber, selectedCycle)
+      if (widened !== range) setRange(widened)
     }
   }
 
-  const data = useMemo<CycleChartPoint[]>(() => {
-    const limit = RANGE_OPTIONS.find(({ id }) => id === range)?.cycles ?? null
-    const windowed = limit === null ? ascending : ascending.slice(-limit)
-
-    return windowed.map(({ cycleNumber, backing, start, end }) => ({
-      cycleNumber,
-      label: `C${cycleNumber}`,
-      backing: backing === null ? null : Number(backing),
-      start,
-      end,
-    }))
-  }, [ascending, range])
+  const data = useMemo<CycleChartPoint[]>(
+    () =>
+      filterCyclesToRange(ascending, range).map(({ cycleNumber, backing, start, end, noDistribution }) => ({
+        cycleNumber,
+        label: `C${cycleNumber}`,
+        backing: backing === null ? null : Number(backing),
+        start,
+        end,
+        noDistribution: noDistribution ?? false,
+      })),
+    [ascending, range],
+  )
 
   const xInterval = Math.max(0, Math.ceil(data.length / MAX_X_LABELS) - 1)
 
@@ -194,7 +234,7 @@ export const CycleBackingChart = ({
               margin={{ top: 8, right: X_LABEL_GUTTER, bottom: 0, left: X_LABEL_GUTTER }}
               onClick={({ activeLabel }) => {
                 const clicked = data.find(({ label }) => label === activeLabel)
-                if (clicked) onSelectCycle?.(clicked.cycleNumber)
+                if (clicked && !clicked.noDistribution) onSelectCycle?.(clicked.cycleNumber)
               }}
               className={onSelectCycle ? 'cursor-pointer' : undefined}
             >

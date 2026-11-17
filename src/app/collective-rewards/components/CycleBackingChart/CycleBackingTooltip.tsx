@@ -27,6 +27,11 @@ export const CycleBackingTooltip = ({ active, payload }: CycleBackingTooltipProp
       <Span variant="body-xs" className="text-v3-text-40">
         {formatCycleWindow(point.start, point.end)}
       </Span>
+      {point.noDistribution && (
+        <Span variant="body-xs" className="text-v3-text-40">
+          No rewards distributed this cycle
+        </Span>
+      )}
     </div>
   )
 }

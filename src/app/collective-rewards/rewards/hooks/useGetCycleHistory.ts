@@ -5,8 +5,8 @@ import Big from '@/lib/big'
 import { REWARD_TOKEN_KEYS, TOKENS } from '@/lib/tokens'
 import { usePricesContext } from '@/shared/context/PricesContext'
 
-import { CycleHistoryEntry } from '../../types'
-import { buildCycleHistory, getAllTimeRewardsFiat } from '../../utils/buildCycleHistory'
+import { CycleBackingPoint, CycleHistoryEntry } from '../../types'
+import { buildBackingSeries, buildCycleHistory, getAllTimeRewardsFiat } from '../../utils/buildCycleHistory'
 import { useGetBackersPerCycle } from './useGetBackersPerCycle'
 import { useGetChartBackingData } from './useGetChartBackingData'
 import { useGetChartRewardsData } from './useGetChartRewardsData'
@@ -17,6 +17,7 @@ const REWARD_TOKEN_ADDRESSES = REWARD_TOKEN_KEYS.map(tokenKey => TOKENS[tokenKey
 
 interface UseGetCycleHistoryResult {
   data: CycleHistoryEntry[]
+  backingSeries: CycleBackingPoint[]
   /** `null` until the all-time totals load. */
   paidAllTime: Big | null
   isLoading: boolean
@@ -65,6 +66,11 @@ export const useGetCycleHistory = (): UseGetCycleHistoryResult => {
     })
   }, [cycles, dailyAllocations, notifyRewards, backersPerCycle, prices])
 
+  const backingSeries = useMemo(
+    () => (cycles?.length && dailyAllocations ? buildBackingSeries(cycles, dailyAllocations) : []),
+    [cycles, dailyAllocations],
+  )
+
   // Not summed from the NotifyReward events: an empty gauge list would read as a confident $0.
   const paidAllTime = useMemo(
     () => (totalsPending || totalsError ? null : getAllTimeRewardsFiat(totalsByToken, prices)),
@@ -73,6 +79,7 @@ export const useGetCycleHistory = (): UseGetCycleHistoryResult => {
 
   return {
     data,
+    backingSeries,
     paidAllTime,
     isLoading: cyclesLoading || allocationsLoading,
     error: cyclesError ?? allocationsError ?? null,
