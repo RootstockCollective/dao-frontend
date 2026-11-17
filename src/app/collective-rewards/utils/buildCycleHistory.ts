@@ -5,7 +5,13 @@ import { REWARD_TOKEN_KEYS, RewardTokenKey, TOKENS } from '@/lib/tokens'
 
 import { GetPricesResult } from '../../user/types'
 import { getTokenTotal, TotalRewardsDistributed, UseGetGaugesNotifyRewardReturnType } from '../rewards'
-import { CycleHistoryEntry, CycleRewardsItem, CycleTokenReward, DailyAllocationItem } from '../types'
+import {
+  CycleBackingPoint,
+  CycleHistoryEntry,
+  CycleRewardsItem,
+  CycleTokenReward,
+  DailyAllocationItem,
+} from '../types'
 import { getCycleNumber } from './getCycleNumber'
 
 const REWARD_TOKEN_KEY_BY_ADDRESS = new Map<string, RewardTokenKey>(
@@ -140,6 +146,62 @@ const buildBackingByCycle = (
   }
 
   return backingByCycle
+}
+
+interface SeriesSlot {
+  startSeconds: number
+  durationSeconds: number
+  noDistribution: boolean
+}
+
+/**
+ * The indexer has no row for cycles whose distribution never ran; fill them so backing stays
+ * continuous. Gaps the cycle duration doesn't divide are left as is.
+ */
+export const buildBackingSeries = (
+  cycles: CycleRewardsItem[],
+  dailyAllocations: DailyAllocationItem[],
+): CycleBackingPoint[] => {
+  const indexed = cycles
+    .map(({ currentCycleStart, currentCycleDuration }) => ({
+      startSeconds: Number(currentCycleStart),
+      durationSeconds: Number(currentCycleDuration),
+    }))
+    .filter(({ startSeconds, durationSeconds }) => startSeconds > 0 && durationSeconds > 0)
+    .sort((a, b) => a.startSeconds - b.startSeconds)
+
+  const slots: SeriesSlot[] = []
+
+  indexed.forEach((cycle, position) => {
+    if (slots.at(-1)?.startSeconds === cycle.startSeconds) return
+    slots.push({ ...cycle, noDistribution: false })
+
+    const next = indexed[position + 1]
+    if (!next || (next.startSeconds - cycle.startSeconds) % cycle.durationSeconds !== 0) return
+
+    for (
+      let startSeconds = cycle.startSeconds + cycle.durationSeconds;
+      startSeconds < next.startSeconds;
+      startSeconds += cycle.durationSeconds
+    ) {
+      slots.push({ startSeconds, durationSeconds: cycle.durationSeconds, noDistribution: true })
+    }
+  })
+
+  const windows: CycleWindow[] = slots.map(({ startSeconds, durationSeconds }, index) => ({
+    index,
+    startSeconds,
+    endSeconds: startSeconds + durationSeconds,
+  }))
+  const backingByCycle = buildBackingByCycle(dailyAllocations, windows)
+
+  return slots.map<CycleBackingPoint>(({ startSeconds, durationSeconds, noDistribution }, index) => ({
+    cycleNumber: getCycleNumber(startSeconds, durationSeconds),
+    start: new Date(startSeconds * 1000),
+    end: new Date((startSeconds + durationSeconds) * 1000),
+    backing: backingByCycle.get(index) ?? null,
+    ...(noDistribution && { noDistribution }),
+  }))
 }
 
 /** From the all-time per-token totals, so it isn't bounded by how many cycles are loaded. */

@@ -6,11 +6,12 @@ import Big from '@/lib/big'
 
 import { useGetCycleHistory } from '../rewards/hooks/useGetCycleHistory'
 import { useGetActiveBuildersCount } from '../shared/hooks/useGetActiveBuildersCount'
-import { CycleHistoryEntry } from '../types'
+import { CycleBackingPoint, CycleHistoryEntry } from '../types'
 import { useHandleErrors } from '../utils'
 
 interface CycleDashboardValue {
   cycles: CycleHistoryEntry[]
+  backingSeries: CycleBackingPoint[]
   isLoading: boolean
   selectCycle: (cycleNumber: number) => void
   /** `null` until the all-time totals load. */
@@ -48,7 +49,7 @@ export const useCycleDashboard = () => {
 }
 
 export const CycleDashboardProvider = ({ children }: { children: ReactNode }) => {
-  const { data: cycles, paidAllTime, isLoading, error } = useGetCycleHistory()
+  const { data: cycles, backingSeries, paidAllTime, isLoading, error } = useGetCycleHistory()
   const { data: buildersData } = useGetActiveBuildersCount()
   const [selectedCycleNumber, setSelectedCycleNumber] = useState<number | null>(null)
 
@@ -59,6 +60,7 @@ export const CycleDashboardProvider = ({ children }: { children: ReactNode }) =>
   const value = useMemo<CycleDashboardValue>(
     () => ({
       cycles,
+      backingSeries,
       isLoading,
       runningCycle: getRunningCycle(cycles),
       selectedCycle:
@@ -67,7 +69,7 @@ export const CycleDashboardProvider = ({ children }: { children: ReactNode }) =>
       paidAllTime,
       buildersCount: buildersData?.count ?? null,
     }),
-    [cycles, isLoading, selectedCycleNumber, selectCycle, paidAllTime, buildersData?.count],
+    [cycles, backingSeries, isLoading, selectedCycleNumber, selectCycle, paidAllTime, buildersData?.count],
   )
 
   return <CycleDashboardContext.Provider value={value}>{children}</CycleDashboardContext.Provider>
