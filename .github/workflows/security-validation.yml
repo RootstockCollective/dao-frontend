@@ -1,0 +1,319 @@
+name: Security validation
+
+# See docs/security/EXTERNAL_CONTRIBUTIONS.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Pull request number to validate'
+        required: true
+        type: string
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions: {}
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: security-validation-${{ github.event_name }}-${{ inputs.pr_number || github.event.pull_request.number }}
+  cancel-in-progress: true
+
+env:
+  SEMGREP_VERSION: '1.184.0'
+  ZIZMOR_VERSION: '1.30.1'
+  STATUS_CONTEXT: security-validation
+
+jobs:
+  resolve:
+    name: Resolve PR
+    runs-on: ubuntu-24.04
+    permissions:
+      pull-requests: read
+      statuses: write
+    outputs:
+      pr_number: ${{ steps.pr.outputs.pr_number }}
+      head_sha: ${{ steps.pr.outputs.head_sha }}
+      base_sha: ${{ steps.pr.outputs.base_sha }}
+      base_ref: ${{ steps.pr.outputs.base_ref }}
+      is_fork: ${{ steps.pr.outputs.is_fork }}
+    steps:
+      - name: Resolve head/base and set pending status
+        id: pr
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 #v9.0.0
+        env:
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            let pr;
+            if (context.eventName === 'workflow_dispatch') {
+              if (!/^[1-9][0-9]{0,9}$/.test(process.env.INPUT_PR_NUMBER || '')) {
+                core.setFailed('Invalid pr_number');
+                return;
+              }
+              const n = Number(process.env.INPUT_PR_NUMBER);
+              pr = (await github.rest.pulls.get({ owner, repo, pull_number: n })).data;
+            } else {
+              pr = context.payload.pull_request;
+            }
+            const isFork = !pr.head.repo || pr.head.repo.full_name !== `${owner}/${repo}`;
+            core.setOutput('pr_number', String(pr.number));
+            core.setOutput('head_sha', pr.head.sha);
+            core.setOutput('base_sha', pr.base.sha);
+            core.setOutput('base_ref', pr.base.ref);
+            core.setOutput('is_fork', String(isFork));
+
+            if (context.eventName === 'pull_request' && isFork) {
+              core.setFailed(
+                `PR #${pr.number} comes from a fork. A maintainer must review the diff and then run ` +
+                `"Security validation" manually with pr_number=${pr.number}.`);
+              return;
+            }
+            if (pr.state !== 'open') {
+              core.setFailed(`PR #${pr.number} is ${pr.state}; only open PRs are validated.`);
+              return;
+            }
+            await github.rest.repos.createCommitStatus({
+              owner, repo, sha: pr.head.sha, state: 'pending',
+              context: process.env.STATUS_CONTEXT,
+              description: 'Security validation running',
+              target_url: `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`,
+            });
+
+  analyze:
+    name: Analyze (read-only)
+    needs: resolve
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      digest: ${{ steps.digest.outputs.digest }}
+    env:
+      HEAD_SHA: ${{ needs.resolve.outputs.head_sha }}
+      BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
+      BASE_REF: ${{ needs.resolve.outputs.base_ref }}
+      IS_FORK: ${{ needs.resolve.outputs.is_fork }}
+      NPM_AUDIT_FLAGS: --json --audit-level=low --ignore-scripts --registry https://registry.npmjs.org/
+    steps:
+      - name: Checkout tooling from the base branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+        with:
+          ref: ${{ needs.resolve.outputs.base_sha }}
+          path: tooling
+          sparse-checkout: |
+            .github/scripts/security
+            .github/security
+            .github/semgrep
+          persist-credentials: false
+
+      # Tools are installed before any pull request file is on disk. Nothing in
+      # this job may run npm, npx, pip or pipx inside the pull request checkout.
+      - name: Install tools
+        working-directory: ${{ runner.temp }}
+        run: |
+          mv "$GITHUB_WORKSPACE/tooling/.github" "$RUNNER_TEMP/trusted"
+          mkdir -p "$RUNNER_TEMP/report" "$RUNNER_TEMP/work"
+          pipx install "semgrep==${SEMGREP_VERSION}"
+          pipx install "zizmor==${ZIZMOR_VERSION}"
+          semgrep --validate --metrics off --config "$RUNNER_TEMP/trusted/semgrep/"
+          {
+            echo "SCRIPTS=$RUNNER_TEMP/trusted/scripts/security"
+            echo "TRUSTED=$RUNNER_TEMP/trusted"
+            echo "REPORT=$RUNNER_TEMP/report"
+            echo "WORK=$RUNNER_TEMP/work"
+          } >> "$GITHUB_ENV"
+
+      - name: Checkout PR head (data only)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+        with:
+          ref: refs/pull/${{ needs.resolve.outputs.pr_number }}/head
+          path: pr
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify the checked-out commit is the one being validated
+        working-directory: pr
+        run: |
+          ACTUAL="$(git rev-parse HEAD)"
+          if [ "$ACTUAL" != "$HEAD_SHA" ]; then
+            echo "::error::PR head moved while validating: expected $HEAD_SHA, got $ACTUAL. Re-run the workflow."
+            exit 1
+          fi
+          git cat-file -e "$BASE_SHA^{commit}"
+
+      - name: Semgrep (new findings only)
+        working-directory: pr
+        run: |
+          RC=0
+          semgrep scan \
+            --config "$TRUSTED/semgrep/" \
+            --config p/typescript --config p/react --config p/nodejs --config p/secrets \
+            --baseline-commit "$BASE_SHA" \
+            --disable-nosem --x-ignore-semgrepignore-files --max-target-bytes 0 \
+            --metrics off --json --output "$WORK/semgrep.json" . || RC=$?
+          python3 "$SCRIPTS/semgrep_report.py" --json "$WORK/semgrep.json" --exit-code "$RC" --out "$REPORT/semgrep.md"
+
+      - name: Path policy
+        working-directory: pr
+        run: |
+          git -c core.quotePath=false diff --raw --no-renames --no-abbrev -z --merge-base "$BASE_SHA" "$HEAD_SHA" > "$WORK/changes.raw"
+          git -c core.quotePath=false diff --numstat --no-renames -z --merge-base "$BASE_SHA" "$HEAD_SHA" > "$WORK/changes.numstat"
+          FORK_FLAG=""; [ "$IS_FORK" = "true" ] && FORK_FLAG="--fork"
+          python3 "$SCRIPTS/check_paths.py" --policy "$TRUSTED/security/paths-policy.json" \
+            --raw "$WORK/changes.raw" --numstat "$WORK/changes.numstat" --base "$BASE_REF" $FORK_FLAG --out "$REPORT/paths.md" || true
+
+      - name: Export manifests and workflows from git
+        working-directory: pr
+        run: |
+          for side in base head; do
+            sha="$BASE_SHA"; [ "$side" = head ] && sha="$HEAD_SHA"
+            mkdir -p "$WORK/$side"
+            git show "$sha:package.json" > "$WORK/$side/package.json" || true
+            git show "$sha:package-lock.json" > "$WORK/$side/package-lock.json" || true
+            python3 "$SCRIPTS/export_tree.py" --sha "$sha" --path .github --dest "$WORK/$side-workflows" || true
+          done
+          SHRINKWRAP=""; git cat-file -e "$HEAD_SHA:npm-shrinkwrap.json" 2>/dev/null && SHRINKWRAP="--shrinkwrap-present"
+          echo "SHRINKWRAP=$SHRINKWRAP" >> "$GITHUB_ENV"
+
+      - name: Lockfile
+        working-directory: ${{ runner.temp }}
+        run: |
+          FORK_FLAG=""; [ "$IS_FORK" = "true" ] && FORK_FLAG="--fork"
+          python3 "$SCRIPTS/lockfile_diff.py" --base "$WORK/base/package-lock.json" \
+            --head "$WORK/head/package-lock.json" --package-json "$WORK/head/package.json" \
+            --base-package-json "$WORK/base/package.json" $FORK_FLAG $SHRINKWRAP --out "$REPORT/lockfile.md" || true
+
+      - name: npm audit (lockfile only, new advisories relative to base)
+        working-directory: ${{ runner.temp }}
+        run: |
+          : > "$WORK/npmrc-user"; : > "$WORK/npmrc-global"
+          for side in base head; do
+            (cd "$WORK/$side" && npm audit $NPM_AUDIT_FLAGS --userconfig "$WORK/npmrc-user" --globalconfig "$WORK/npmrc-global" > "$WORK/audit-$side.json") || true
+          done
+          python3 "$SCRIPTS/npm_audit_report.py" --json "$WORK/audit-head.json" \
+            --base-json "$WORK/audit-base.json" --out "$REPORT/audit.md"
+
+      - name: Sensitive constants in the diff
+        working-directory: pr
+        run: |
+          git -c core.quotePath=false diff --text --no-renames --no-ext-diff --no-textconv --merge-base "$BASE_SHA" "$HEAD_SHA" -- . ':!package-lock.json' \
+            | python3 "$SCRIPTS/diff_sensitive_tokens.py" --out "$REPORT/constants.md"
+
+      - name: Workflow audit (new findings relative to base)
+        working-directory: ${{ runner.temp }}
+        run: |
+          for side in base head; do
+            zizmor --no-config --no-ignores --collect=all --no-online-audits --min-severity high --format=json -- "$WORK/$side-workflows" > "$WORK/zizmor-$side.json" || true
+          done
+          python3 "$SCRIPTS/zizmor_report.py" --json "$WORK/zizmor-head.json" \
+            --base-json "$WORK/zizmor-base.json" --out "$REPORT/workflows.md"
+
+      - name: TruffleHog over the PR commit range
+        id: trufflehog
+        continue-on-error: true
+        uses: trufflesecurity/trufflehog@ea68ca03c865c5f324e86e849ced20ed3cf9dbbb #v3.99.8
+        with:
+          path: pr
+          base: ${{ needs.resolve.outputs.base_sha }}
+          head: ${{ needs.resolve.outputs.head_sha }}
+          extra_args: --results=verified,unknown
+
+      - name: Secrets fragment
+        env:
+          OUTCOME: ${{ steps.trufflehog.outcome }}
+        run: |
+          if [ "$OUTCOME" = "success" ]; then
+            printf 'STATUS: pass\n### Secrets\n- :white_check_mark: No verified or unknown secrets in the PR commits.\n' > "$REPORT/secrets.md"
+          else
+            printf 'STATUS: fail\n### Secrets\n- :x: TruffleHog reported secrets or did not complete; see the workflow run.\n' > "$REPORT/secrets.md"
+          fi
+
+      - name: Digest of the results
+        id: digest
+        if: always()
+        run: echo "digest=$(python3 "$SCRIPTS/assemble_report.py" --digest --dir "$REPORT")" >> "$GITHUB_OUTPUT"
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a #v7.0.1
+        with:
+          name: report-analyze
+          path: ${{ runner.temp }}/report/
+          if-no-files-found: error
+
+  report:
+    name: Report and set status
+    needs: [resolve, analyze]
+    if: always() && needs.resolve.result == 'success'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      pull-requests: write
+      statuses: write
+    steps:
+      - name: Checkout tooling from the base branch
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+        with:
+          ref: ${{ needs.resolve.outputs.base_sha }}
+          sparse-checkout: .github/scripts/security
+          persist-credentials: false
+
+      - name: Download results
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 #v8.0.2
+        continue-on-error: true
+        with:
+          name: report-analyze
+          path: ${{ runner.temp }}/report
+
+      - name: Assemble report
+        id: assemble
+        env:
+          HEAD_SHA: ${{ needs.resolve.outputs.head_sha }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          ANALYZE_RESULT: ${{ needs.analyze.result }}
+          EXPECTED_DIGEST: ${{ needs.analyze.outputs.digest }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/report"
+          python3 .github/scripts/security/assemble_report.py \
+            --dir "$RUNNER_TEMP/report" --sha "$HEAD_SHA" --run-url "$RUN_URL" \
+            --analyze-result "$ANALYZE_RESULT" --expected-digest "$EXPECTED_DIGEST" \
+            --out "$RUNNER_TEMP/comment.md" --full-out "$RUNNER_TEMP/full.md"
+          if [ -f "$RUNNER_TEMP/full.md" ]; then cat "$RUNNER_TEMP/full.md"; else cat "$RUNNER_TEMP/comment.md"; fi >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Set commit status and post the report
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 #v9.0.0
+        env:
+          PR_NUMBER: ${{ needs.resolve.outputs.pr_number }}
+          HEAD_SHA: ${{ needs.resolve.outputs.head_sha }}
+          VERDICT: ${{ steps.assemble.outputs.verdict }}
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            const { owner, repo } = context.repo;
+            const prNumber = Number(process.env.PR_NUMBER);
+            const verdict = ['pass', 'warn'].includes(process.env.VERDICT) ? process.env.VERDICT : 'fail';
+            const state = verdict === 'fail' ? 'failure' : 'success';
+            const description = verdict === 'pass' ? 'All checks passed'
+              : verdict === 'warn' ? 'Passed with warnings: maintainer must confirm each one'
+              : 'Blocking findings; see the PR comment';
+            await github.rest.repos.createCommitStatus({
+              owner, repo, sha: process.env.HEAD_SHA, state,
+              context: process.env.STATUS_CONTEXT, description,
+              target_url: `${context.serverUrl}/${owner}/${repo}/actions/runs/${context.runId}`,
+            });
+
+            const marker = '<!-- security-validation-report -->';
+            const body = fs.readFileSync(path.join(process.env.RUNNER_TEMP, 'comment.md'), 'utf8');
+            const comments = await github.paginate(github.rest.issues.listComments, { owner, repo, issue_number: prNumber, per_page: 100 });
+            const existing = comments.find(c => c.user && c.user.login === 'github-actions[bot]' && c.body && c.body.startsWith(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({ owner, repo, comment_id: existing.id, body });
+            } else {
+              await github.rest.issues.createComment({ owner, repo, issue_number: prNumber, body });
+            }
+            if (state === 'failure') core.setFailed(`Security validation verdict: ${verdict}`);
