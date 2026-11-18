@@ -37,6 +37,7 @@ const Figure = ({ label, value, sub }: { label: string; value: string; sub: stri
 export interface PositionSimulatorProps {
   /** `null` while it loads. */
   abiPct: number | null
+  /** USD figures show `—` while it is 0 (price not loaded yet). */
   rifPrice: number
   className?: string
 }
@@ -105,7 +106,7 @@ export const PositionSimulator = ({ abiPct, rifPrice, className }: PositionSimul
         <Figure
           label="Annual rewards"
           value={annualRif === null ? '—' : `${formatNumberWithCommas(annualRif.round(0))} ${RIF}`}
-          sub={annualRif === null ? '—' : formatUsdWhole(annualRif.mul(rifPrice))}
+          sub={annualRif === null || !rifPrice ? '—' : formatUsdWhole(annualRif.mul(rifPrice))}
         />
         <Figure
           label="Per cycle"

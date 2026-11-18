@@ -2,7 +2,6 @@
 
 import { useHandleErrors } from '@/app/collective-rewards/utils'
 import { SectionContainerWithSpinner } from '@/app/communities/components/SectionContainer'
-import { AccentSquare } from '@/components/AccentSquare'
 
 import { BalancesSection } from '../Balances/BalancesSection'
 import { MyBacking } from './components/backing'
@@ -12,12 +11,7 @@ const Separator = () => <hr className="w-full bg-bg-60 border-none h-px md:my-10
 
 export const MyActivityAndBalances = () => {
   const { isUserBuilder, isLoading, error } = useIsBuilder()
-  const sectionTitle = (
-    <span className="flex items-center gap-3">
-      <AccentSquare />
-      {isUserBuilder ? 'MY ACTIVITY & BALANCES' : 'MY BALANCES'}
-    </span>
-  )
+  const sectionTitle = isUserBuilder ? 'MY ACTIVITY & BALANCES' : 'MY BALANCES'
 
   useHandleErrors({ error, title: 'Error fetching builder status' })
 

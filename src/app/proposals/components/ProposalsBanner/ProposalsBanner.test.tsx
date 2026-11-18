@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ProposalsContext } from '@/app/proposals/context'
@@ -96,14 +96,5 @@ describe('ProposalsBanner', () => {
 
     expect(screen.getByTestId('ActiveProposalsCount')).toHaveTextContent('4')
     expect(screen.getByTestId('TotalProposalsCount')).toHaveTextContent('910')
-  })
-
-  it('hides the banner when dismissed, without persisting the choice', () => {
-    renderBanner()
-
-    fireEvent.click(screen.getByTestId('DismissBannerButton'))
-
-    expect(screen.queryByTestId('ProposalsBanner')).not.toBeInTheDocument()
-    expect(Object.keys(localStorage)).toHaveLength(0)
   })
 })

@@ -175,7 +175,7 @@ export const BackingPage = () => {
 
   return (
     <div data-testid={NAME} className="flex flex-col items-start w-full h-full gap-2 rounded-sm">
-      <PageBanner dataTestId="BackingPageBanner" dismissible title={NAME} />
+      <PageBanner dataTestId="BackingPageBanner" title={NAME} />
       {!hasAllocations && (
         <div
           data-testid="CenterContainer"

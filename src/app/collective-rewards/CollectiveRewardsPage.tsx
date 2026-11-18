@@ -12,7 +12,7 @@ const NAME = 'Collective Rewards'
 /** Sections carry `sr-only` headings so the page is navigable by landmark. */
 export const CollectiveRewardsPage = () => (
   <div className="flex flex-col gap-2">
-    <PageBanner dataTestId="CollectiveRewardsBanner" dismissible title={NAME} />
+    <PageBanner dataTestId="CollectiveRewardsBanner" title={NAME} />
 
     <CycleDashboardProvider>
       <div className="flex flex-col gap-4">

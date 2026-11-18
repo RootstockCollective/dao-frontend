@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 
 import { currentLinks } from '@/lib/links'
@@ -20,23 +20,5 @@ describe('MyRewardsBanner', () => {
     render(<MyRewardsBanner />)
 
     expect(screen.getByTestId('whitepaper-link')).toHaveAttribute('href', currentLinks.rewardsWhitepaper)
-  })
-
-  it('hides the banner when dismissed, without persisting the choice', () => {
-    render(<MyRewardsBanner />)
-
-    fireEvent.click(screen.getByRole('button', { name: /dismiss/i }))
-
-    expect(screen.queryByTestId('MyRewardsBanner')).not.toBeInTheDocument()
-    expect(Object.keys(localStorage)).toHaveLength(0)
-  })
-
-  it('comes back on the next page load', () => {
-    const { unmount } = render(<MyRewardsBanner />)
-    fireEvent.click(screen.getByRole('button', { name: /dismiss/i }))
-    unmount()
-
-    render(<MyRewardsBanner />)
-    expect(screen.getByTestId('MyRewardsBanner')).toBeInTheDocument()
   })
 })

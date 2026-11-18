@@ -1,7 +1,4 @@
 export * from './useGetABI'
-export * from './useGetABIFromChain'
-export * from './useGetABIWithGraph'
-export * from './useGetABIWithStateSync'
 export * from './useGetBackerABI'
 export * from './useGetLastCycleRewardsFromChain'
 export * from './useGetLastCycleRewardsWithStateSync'

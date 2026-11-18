@@ -5,7 +5,6 @@ import { TopBarDockProvider, useTopBarDock } from '@/components/MainContainer/To
 import type { ConnectWorkflowProps } from '@/shared/walletConnection/types'
 
 import { CollectivePossibilities } from './CollectivePossibilities'
-import { DISMISSED_STORAGE_KEY } from './constants'
 import { FRAME_FALLBACK_MS } from './useScrollDock'
 
 vi.mock('@/shared/walletConnection/connection/ConnectWorkflow', () => ({
@@ -35,15 +34,11 @@ const TopBar = () => {
   )
 }
 
-let linkTops: Record<string, number> = {}
-
 const renderOnPage = () =>
   render(
     <TopBarDockProvider>
       <TopBar />
       <CollectivePossibilities />
-      <a href="#holdings">Holdings</a>
-      <a href="#latest">Latest from the Collective</a>
     </TopBarDockProvider>,
   )
 
@@ -77,11 +72,8 @@ describe('CollectivePossibilities', () => {
     mockReducedMotion(false)
     vi.stubGlobal('ResizeObserver', LaidOutResizeObserver)
 
-    localStorage.clear()
-
     bannerTop = 136
     bannerHeight = BANNER_HEIGHT
-    linkTops = { '#holdings': 500, '#latest': 700 }
     setScrollY(0)
     vi.spyOn(Element.prototype, 'getBoundingClientRect').mockImplementation(function (this: Element) {
       if (this.getAttribute('data-testid') === 'TopBarSlot') {
@@ -90,9 +82,6 @@ describe('CollectivePossibilities', () => {
       if (this.tagName === 'SECTION') {
         const scale = Number((this as HTMLElement).style.transform.match(/scale\(([\d.]+)\)/)?.[1] ?? 1)
         return DOMRect.fromRect({ y: bannerTop, height: bannerHeight * scale })
-      }
-      if (this.tagName === 'A') {
-        return DOMRect.fromRect({ y: linkTops[this.getAttribute('href') ?? ''], height: 20 })
       }
       return DOMRect.fromRect()
     })
@@ -123,13 +112,10 @@ describe('CollectivePossibilities', () => {
     expect(screen.getByRole('region', { name: 'THE COLLECTIVE POSSIBILITIES' })).toBeInTheDocument()
   })
 
-  it('labels both X buttons after what they dismiss', () => {
+  it('cannot be dismissed', () => {
     renderOnPage()
 
-    expect(screen.getByTestId('DismissPossibilitiesButton')).toHaveAccessibleName(
-      "Dismiss the Don't Miss banner",
-    )
-    expect(screen.getByTestId('DismissDockButton')).toHaveAccessibleName('Dismiss the connect prompt')
+    expect(screen.queryByRole('button', { name: /dismiss/i })).not.toBeInTheDocument()
   })
 
   it('makes the top bar sticky and parks a closed, inert dock in its slot', () => {
@@ -307,49 +293,6 @@ describe('CollectivePossibilities', () => {
     expect(screen.getByTestId('PossibilitiesDock')).toHaveAttribute('data-docked', 'true')
   })
 
-  it('removes the banner and the dock from the banner X', () => {
-    renderOnPage()
-
-    fireEvent.click(screen.getByTestId('DismissPossibilitiesButton'))
-
-    expect(screen.queryByTestId('CollectivePossibilities')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('PossibilitiesDock')).not.toBeInTheDocument()
-    expect(screen.getByTestId('TopBar')).toHaveAttribute('data-active', 'false')
-  })
-
-  it('removes the banner and the dock from the dock X', () => {
-    renderOnPage()
-    scrollBannerTo(-160)
-
-    fireEvent.click(screen.getByTestId('DismissDockButton'))
-
-    expect(screen.queryByTestId('CollectivePossibilities')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('PossibilitiesDock')).not.toBeInTheDocument()
-    expect(screen.getByTestId('TopBar')).toHaveAttribute('data-docked', 'false')
-  })
-
-  it('hands the focus to what follows the banner when its X goes', () => {
-    renderOnPage()
-    const dismiss = screen.getByTestId('DismissPossibilitiesButton')
-    dismiss.focus()
-
-    fireEvent.click(dismiss)
-
-    expect(screen.getByRole('link', { name: 'Holdings' })).toHaveFocus()
-  })
-
-  it('hands the focus to the first control on screen when the dock X goes far down the page', () => {
-    renderOnPage()
-    scrollBannerTo(-160)
-    linkTops['#holdings'] = -100 // scrolled past, above the viewport
-    const dismiss = screen.getByTestId('DismissDockButton')
-    dismiss.focus()
-
-    fireEvent.click(dismiss)
-
-    expect(screen.getByRole('link', { name: 'Latest from the Collective' })).toHaveFocus()
-  })
-
   it('hands the focus back to the banner Connect when the dock closes on it', () => {
     renderOnPage()
     scrollBannerTo(-160)
@@ -359,28 +302,5 @@ describe('CollectivePossibilities', () => {
 
     expect(screen.getByTestId('PossibilitiesDock')).toHaveAttribute('inert')
     expect(screen.getByTestId('ConnectButton')).toHaveFocus()
-  })
-
-  it('hands the focus back to the banner X when the dock closes on its X', () => {
-    renderOnPage()
-    scrollBannerTo(-160)
-    screen.getByTestId('DismissDockButton').focus()
-
-    scrollBannerTo(-90)
-
-    expect(screen.getByTestId('DismissPossibilitiesButton')).toHaveFocus()
-  })
-
-  it('remembers the dismissal across reloads', () => {
-    const { unmount } = renderOnPage()
-    fireEvent.click(screen.getByTestId('DismissPossibilitiesButton'))
-    unmount()
-
-    expect(localStorage.getItem(DISMISSED_STORAGE_KEY)).toBe('true')
-
-    renderOnPage()
-    expect(screen.queryByTestId('CollectivePossibilities')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('PossibilitiesDock')).not.toBeInTheDocument()
-    expect(screen.getByTestId('TopBar')).toHaveAttribute('data-active', 'false')
   })
 })

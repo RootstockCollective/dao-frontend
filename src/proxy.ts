@@ -18,7 +18,7 @@ const CYCLES_RATE_LIMIT: RouteRateLimitConfig = { prefix: 'cycles', limit: 120, 
 
 /**
  * Paginated reads over state-sync Postgres (`/api/backers`, `/api/builders`, `/api/allocations/daily`,
- * `/api/metrics/abi/context`, …). None of them is cached and each runs a COUNT plus an OFFSET scan.
+ * …). None of them is cached and each runs a COUNT plus an OFFSET scan.
  * A tab polls a handful of them once a minute and the CSV export walks tx-history 1000 rows a page,
  * so the gauges budget leaves room for several users behind one NAT.
  */
@@ -47,7 +47,6 @@ const PREFIX_RATE_LIMIT_CONFIGS: { pathPrefix: string; config: RouteRateLimitCon
   { pathPrefix: '/api/cycles/', config: CYCLES_RATE_LIMIT },
   { pathPrefix: '/api/backers/', config: DB_READ_RATE_LIMIT },
   { pathPrefix: '/api/allocations/', config: DB_READ_RATE_LIMIT },
-  { pathPrefix: '/api/metrics/', config: DB_READ_RATE_LIMIT },
 ]
 
 function resolveRateLimitConfig(pathname: string): RouteRateLimitConfig | undefined {
@@ -185,7 +184,6 @@ export const config = {
     '/api/backers/:path*',
     '/api/builders',
     '/api/allocations/:path*',
-    '/api/metrics/:path*',
     '/ingest/:path*',
     '/monitoring',
     {

@@ -3,7 +3,6 @@
 import { ReactNode, useId, useSyncExternalStore } from 'react'
 import useLocalStorageState from 'use-local-storage-state'
 
-import { AccentSquare } from '@/components/AccentSquare'
 import { ChevronDownIcon } from '@/components/Icons'
 import { Header, Span } from '@/components/Typography'
 import { cn } from '@/lib/utils'
@@ -12,7 +11,7 @@ import { useNonce } from '@/shared/context/NonceContext'
 export interface PersistedCollapsibleProps {
   /** localStorage key that remembers whether the section is open. Unique per section. */
   storageKey: string
-  /** Rendered as the section's h3, after the accent square. */
+  /** Rendered as the section's h3. */
   title: ReactNode
   children: ReactNode
   defaultOpen?: boolean
@@ -103,13 +102,9 @@ export const PersistedCollapsible = ({
       )}
     >
       <div className="flex items-start justify-between gap-4">
-        <div className="flex items-start gap-3">
-          {/* Centred on the first line of the h3 below, so it stays there when the title wraps */}
-          <AccentSquare className="mt-[9px]" />
-          <Header caps variant="h3">
-            {title}
-          </Header>
-        </div>
+        <Header caps variant="h3">
+          {title}
+        </Header>
         <button
           type="button"
           onClick={() => setIsOpen(open => !open)}

@@ -23,8 +23,7 @@ export const DashboardMetrics = ({ className }: { className?: string }) => {
           paidAllTime={paidAllTime}
           buildersCount={buildersCount}
           strifPrice={strifPrice}
-          // `useGetABI` yields 0, not "loading", while the RIF price is still missing.
-          isLoading={isLoading || isAbiLoading || !prices[RIF]?.price}
+          isLoading={isLoading || isAbiLoading}
           className={className}
         />
       )}

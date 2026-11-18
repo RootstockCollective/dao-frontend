@@ -189,7 +189,12 @@ export const PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD = Number(
     DEFAULT_PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD,
 )
 
-export const ABI_CYCLES_LIMIT = 12
+const DEFAULT_FIXED_ABI_PCT = 5
+/**
+ * Global ABI percentage shown in the UI (`AnnualBackerIncentivesLoader`).
+ * Override with `NEXT_PUBLIC_FIXED_ABI_PCT`.
+ */
+export const FIXED_ABI_PCT = Number(process.env.NEXT_PUBLIC_FIXED_ABI_PCT ?? DEFAULT_FIXED_ABI_PCT)
 
 /** 14-day cycles. Also the exponent that annualises a cycle's payout in the ABI formula. */
 export const CYCLES_PER_YEAR = 26
