@@ -30,7 +30,7 @@ export const BtcVaultPage = () => {
       data-testid={NAME} // TODO: DAO-2029 Standardize data-test-ids to using kebab-case only
       className="flex flex-col items-start w-full h-full gap-6 rounded-sm"
     >
-      <PageBanner dataTestId="BtcVaultBanner" dismissible title={NAME} />
+      <PageBanner dataTestId="BtcVaultBanner" title={NAME} />
       <BtcVaultBanners />
       {/* Active Request Zone - F7 (STORY-EPIC-7-001) */}
       <ActiveRequestSection data={activeRequests} />

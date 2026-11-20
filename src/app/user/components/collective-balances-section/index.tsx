@@ -5,7 +5,6 @@ import { useTreasuryContext } from '@/app/treasury/contexts/TreasuryContext'
 import { useStRifHoldings } from '@/app/treasury/hooks/useStRifHoldings'
 import { formatTokenBalance, getTokenBalance } from '@/app/user/Balances/balanceUtils'
 import { useGetAddressTokens } from '@/app/user/Balances/hooks/useGetAddressTokens'
-import { AccentSquare } from '@/components/AccentSquare'
 import { BalanceInfo } from '@/components/BalanceInfo'
 import { Header } from '@/components/Typography'
 import Big from '@/lib/big'
@@ -47,10 +46,7 @@ export const CollectiveBalancesSection = () => {
 
   return (
     <div className="bg-bg-80 p-6 mt-2">
-      <div className="flex items-center gap-3">
-        <AccentSquare />
-        <Header variant="h3">THE COLLECTIVE BALANCES</Header>
-      </div>
+      <Header variant="h3">THE COLLECTIVE BALANCES</Header>
       <div className="flex flex-row flex-wrap gap-6 mt-10">
         <BalanceInfo
           className="max-w-[214px] min-w-[180px]"

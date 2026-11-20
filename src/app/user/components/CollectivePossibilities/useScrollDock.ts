@@ -44,10 +44,9 @@ interface UseScrollDockOptions {
   bannerRef: RefObject<HTMLElement | null>
   tileRef: RefObject<HTMLElement | null>
   anchor: HTMLElement | null
-  isEnabled: boolean
 }
 
-export const useScrollDock = ({ bannerRef, tileRef, anchor, isEnabled }: UseScrollDockOptions) => {
+export const useScrollDock = ({ bannerRef, tileRef, anchor }: UseScrollDockOptions) => {
   const [isDocked, setIsDocked] = useState(false)
   const [shouldAnimate, setShouldAnimate] = useState(false)
   const isDockedRef = useRef(false)
@@ -56,7 +55,7 @@ export const useScrollDock = ({ bannerRef, tileRef, anchor, isEnabled }: UseScro
   useEffect(() => {
     const banner = bannerRef.current
     const tile = tileRef.current
-    if (!isEnabled || !anchor || !banner) return
+    if (!anchor || !banner) return
 
     let frame = 0
     let fallback: ReturnType<typeof setTimeout> | undefined
@@ -139,7 +138,7 @@ export const useScrollDock = ({ bannerRef, tileRef, anchor, isEnabled }: UseScro
       setIsDocked(false)
       setShouldAnimate(false)
     }
-  }, [anchor, bannerRef, tileRef, isEnabled, prefersReducedMotion])
+  }, [anchor, bannerRef, tileRef, prefersReducedMotion])
 
   return { isDocked, shouldAnimate }
 }

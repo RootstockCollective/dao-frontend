@@ -4,7 +4,6 @@ import { Header } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
 import { PAGE_TITLE_CLASSES } from './bannerAssets'
-import { BannerDecorativeSquares } from './BannerDecorativeSquares'
 
 interface PageTitleProps {
   children: ReactNode
@@ -12,15 +11,9 @@ interface PageTitleProps {
   dataTestId?: string
 }
 
-/**
- * Title of a page that has no banner. Carries the same decorative squares and type as the
- * banner titles, so every page opens the same way.
- */
+/** Title of a page that has no banner. Uses the same type as the banner titles. */
 export const PageTitle = ({ children, className, dataTestId }: PageTitleProps) => (
-  <div className={cn('flex flex-col gap-4', className)}>
-    <BannerDecorativeSquares />
-    <Header caps variant="h1" className={PAGE_TITLE_CLASSES} data-testid={dataTestId}>
-      {children}
-    </Header>
-  </div>
+  <Header caps variant="h1" className={cn(PAGE_TITLE_CLASSES, className)} data-testid={dataTestId}>
+    {children}
+  </Header>
 )

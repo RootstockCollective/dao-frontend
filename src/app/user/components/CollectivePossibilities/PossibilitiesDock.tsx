@@ -2,7 +2,6 @@
 
 import { type RefObject, useRef } from 'react'
 
-import { DismissButton } from '@/components/DismissButton'
 import { cn } from '@/lib/utils'
 import { useInertHandoff } from '@/shared/hooks/useInertHandoff'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
@@ -14,16 +13,10 @@ import { EYEBROW_CLASSES } from './styles'
 interface PossibilitiesDockProps {
   isDocked: boolean
   shouldAnimate: boolean
-  onDismiss: () => void
   bannerActionsRef: RefObject<HTMLElement | null>
 }
 
-export const PossibilitiesDock = ({
-  isDocked,
-  shouldAnimate,
-  onDismiss,
-  bannerActionsRef,
-}: PossibilitiesDockProps) => {
+export const PossibilitiesDock = ({ isDocked, shouldAnimate, bannerActionsRef }: PossibilitiesDockProps) => {
   const dockRef = useRef<HTMLDivElement>(null)
   const isInert = useInertHandoff(!isDocked, dockRef, focused => {
     const dockActions = [...(dockRef.current?.querySelectorAll<HTMLElement>('button') ?? [])]
@@ -68,12 +61,6 @@ export const PossibilitiesDock = ({
           </div>
 
           <ConnectWorkflow ConnectComponent={DockConnectButton} />
-          <DismissButton
-            variant="roundQuiet"
-            aria-label="Dismiss the connect prompt"
-            onClick={onDismiss}
-            data-testid="DismissDockButton"
-          />
         </div>
       </div>
     </div>

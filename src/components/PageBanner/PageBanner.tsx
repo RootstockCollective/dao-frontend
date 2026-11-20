@@ -1,22 +1,13 @@
-'use client'
+import { ReactNode } from 'react'
 
-import { ReactNode, useState } from 'react'
-
-import { DismissButton } from '@/components/DismissButton'
 import { MoltenBackground } from '@/components/MoltenBackground'
 import { Header, Paragraph } from '@/components/Typography'
 import { cn } from '@/lib/utils'
 
 import { BANNER_HEADER_OVERLAY, BANNER_MOBILE_OVERLAY, PAGE_TITLE_CLASSES } from './bannerAssets'
-import { BannerDecorativeSquares } from './BannerDecorativeSquares'
 
 export interface PageBannerProps {
   title: string
-  /**
-   * Renders the dismiss button. The dismissal lasts for the session only: a reload
-   * brings the banner back. Omit it for a permanent banner.
-   */
-  dismissible?: boolean
   /** Optional intro copy. Omit it for banners that only carry the page title. */
   description?: ReactNode
   /** Rendered at the bottom right of the banner, typically an external link. */
@@ -29,11 +20,9 @@ export interface PageBannerProps {
 
 /**
  * Page hero: the still molten background shared by every page, title, intro copy and
- * optional call to action. When dismissible, closing it hides the banner until the next
- * page load; the title stays in the page as a visually hidden heading.
+ * optional call to action. A banner that only carries the title uses a compact layout.
  */
 export const PageBanner = ({
-  dismissible = false,
   title,
   description,
   bottomRight,
@@ -41,16 +30,7 @@ export const PageBanner = ({
   className,
   dataTestId = 'PageBanner',
 }: PageBannerProps) => {
-  const [isDismissed, setIsDismissed] = useState(false)
-
-  if (dismissible && isDismissed) {
-    // The banner carries the page's only heading: keep it for assistive technology
-    return (
-      <Header caps variant="h1" className="sr-only">
-        {title}
-      </Header>
-    )
-  }
+  const isTitleOnly = !description && !bottomRight && !children
 
   return (
     <div
@@ -64,18 +44,15 @@ export const PageBanner = ({
       <div className="absolute inset-0 md:hidden" style={{ background: BANNER_MOBILE_OVERLAY }} />
       <div className="absolute inset-0 hidden md:block" style={{ background: BANNER_HEADER_OVERLAY }} />
 
-      <BannerDecorativeSquares className="absolute left-4 top-4 z-base md:left-6 md:top-5" />
-
-      {dismissible && (
-        <DismissButton
-          aria-label={`Dismiss the ${title} banner`}
-          onClick={() => setIsDismissed(true)}
-          className="absolute right-4 top-4 z-base"
-          data-testid="DismissBannerButton"
-        />
-      )}
-
-      <div className="relative flex min-h-[180px] flex-col justify-between gap-6 px-4 pb-6 pt-12 md:min-h-[200px] md:px-6 md:pb-6 md:pt-14">
+      <div
+        className={cn(
+          'relative flex flex-col gap-6 px-4 md:px-6',
+          isTitleOnly
+            ? 'min-h-[72px] justify-center py-4 md:min-h-[80px] md:py-5'
+            : 'min-h-[180px] justify-between py-6 md:min-h-[200px] md:py-8',
+        )}
+        data-compact={isTitleOnly}
+      >
         <div className="flex flex-col gap-6">
           <div className="flex max-w-[30rem] flex-col gap-2">
             <Header caps variant="h1" className={cn(PAGE_TITLE_CLASSES, 'text-banner-title')}>
