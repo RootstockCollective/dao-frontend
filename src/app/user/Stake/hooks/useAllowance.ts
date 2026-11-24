@@ -25,7 +25,7 @@ export const useAllowance = (
   })
 
   const isAllowanceEnough = useMemo(
-    () => !!(allowanceBalance && allowanceBalance >= parseEther(amount)),
+    () => !!(allowanceBalance && allowanceBalance >= parseEther(amount || '0')),
     [amount, allowanceBalance],
   )
 
@@ -35,7 +35,7 @@ export const useAllowance = (
       abi: RIFTokenAbi,
       address: tokenToSendContract,
       functionName: 'approve' as const,
-      args: [tokenToReceiveContract, parseEther(amount)] as const,
+      args: [tokenToReceiveContract, parseEther(amount || '0')] as const,
     }),
     [tokenToSendContract, tokenToReceiveContract, amount],
   )

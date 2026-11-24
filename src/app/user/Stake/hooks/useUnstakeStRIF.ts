@@ -18,7 +18,7 @@ export const useUnstakeStRIF = (amount: string, tokenToSendContract: Address) =>
     abi: StRIFTokenAbi,
     address: tokenToSendContract,
     functionName: 'withdrawTo' as const,
-    args: [address!, parseEther(amount)] as const,
+    args: [address!, parseEther(amount || '0')] as const,
   })
 
   return {
