@@ -191,7 +191,7 @@ export const PROPOSAL_METADATA_SYNC_BLOCK_STALENESS_THRESHOLD = Number(
 
 const DEFAULT_FIXED_ABI_PCT = 5
 /**
- * Global ABI percentage shown in the UI (`AnnualBackerIncentivesLoader`).
+ * ABI percentage shown everywhere in the UI, both the global figure and each backer's.
  * Override with `NEXT_PUBLIC_FIXED_ABI_PCT`.
  */
 export const FIXED_ABI_PCT = Number(process.env.NEXT_PUBLIC_FIXED_ABI_PCT ?? DEFAULT_FIXED_ABI_PCT)

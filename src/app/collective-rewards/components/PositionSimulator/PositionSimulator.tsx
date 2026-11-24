@@ -44,7 +44,7 @@ export interface PositionSimulatorProps {
 
 /**
  * A what-if that never reads the connected wallet. Annual and per-cycle figures share one
- * per-cycle rate (the inverse of `calculateAbi`), so per-cycle × 26 is intentionally not the
+ * per-cycle rate (`getCycleRateFromAbi`), so per-cycle × 26 is intentionally not the
  * annual figure: the ABI compounds.
  */
 export const PositionSimulator = ({ abiPct, rifPrice, className }: PositionSimulatorProps) => {

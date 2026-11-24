@@ -69,7 +69,7 @@ export const BackerRewardsMetrics = ({ backer }: { backer: Address }) => {
             <Container>
               <InnerContainer>
                 <BackerEstimatedRewards />
-                <BackerABI backer={backer} />
+                <BackerABI />
               </InnerContainer>
             </Container>
             <Container className={`${isDetailedView ? 'visible' : 'invisible'} hidden md:block`}>
