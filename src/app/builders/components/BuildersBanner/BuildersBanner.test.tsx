@@ -33,13 +33,4 @@ describe('BuildersBanner', () => {
     fireEvent.click(screen.getByTestId('ApplyForGrantButton'))
     expect(push).toHaveBeenCalledWith('/proposals/new?type=Grants')
   })
-
-  it('hides the banner when dismissed, without persisting the choice', () => {
-    render(<BuildersBanner />)
-
-    fireEvent.click(screen.getByTestId('DismissBannerButton'))
-
-    expect(screen.queryByTestId('BuildersBanner')).not.toBeInTheDocument()
-    expect(Object.keys(localStorage)).toHaveLength(0)
-  })
 })

@@ -13,7 +13,7 @@ export const VaultPage = () => {
   return (
     <VaultDepositValidationProvider>
       <div data-testid={NAME} className="flex flex-col items-start w-full h-full gap-6 rounded-sm">
-        <PageBanner dataTestId="VaultBanner" dismissible title={NAME} />
+        <PageBanner dataTestId="VaultBanner" title={NAME} />
         <div data-testid="vault-content" className="flex flex-col w-full items-start gap-6">
           <VaultDisclaimer />
 

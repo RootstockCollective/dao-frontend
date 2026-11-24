@@ -16,8 +16,7 @@ export const RewardsActionsSection = ({ className }: { className?: string }) => 
       <AnnualBackerIncentivesLoader
         render={({ data: abiPct, isLoading }) => (
           <PositionSimulator
-            // `useGetABI` yields 0, not "loading", while the RIF price is still missing.
-            abiPct={isLoading || !prices[RIF]?.price ? null : abiPct.toNumber()}
+            abiPct={isLoading ? null : abiPct.toNumber()}
             rifPrice={prices[RIF]?.price ?? 0}
           />
         )}

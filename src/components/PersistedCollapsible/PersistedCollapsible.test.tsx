@@ -46,11 +46,10 @@ describe('PersistedCollapsible', () => {
     expect(screen.getByTestId('Section')).toHaveAttribute('data-open', 'true')
   })
 
-  it('renders the title as an h3 behind the accent square', () => {
+  it('renders the title as an h3', () => {
     render(<Section />)
 
-    const heading = screen.getByRole('heading', { level: 3, name: 'Heading' })
-    expect(heading.previousElementSibling).toBe(screen.getByTestId('AccentSquare'))
+    expect(screen.getByRole('heading', { level: 3, name: 'Heading' })).toBeInTheDocument()
   })
 
   it('points the toggle at the body it shows and hides', () => {

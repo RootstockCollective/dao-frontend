@@ -51,7 +51,6 @@ export const ProposalsBanner = ({ className, fallbackCounts }: ProposalsBannerPr
   return (
     <PageBanner
       dataTestId="ProposalsBanner"
-      dismissible
       title="Proposals"
       description={
         <Paragraph>

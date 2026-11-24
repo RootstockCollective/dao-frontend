@@ -1,5 +1,4 @@
 export * from './bannerAssets'
-export * from './BannerDecorativeSquares'
 export * from './BannerLink'
 export * from './PageBanner'
 export * from './PageTitle'

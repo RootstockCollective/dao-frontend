@@ -1,17 +1,14 @@
 'use client'
 
-import { useEffect, useId, useLayoutEffect, useRef } from 'react'
+import { useEffect, useId, useRef } from 'react'
 import { createPortal } from 'react-dom'
-import useLocalStorageState from 'use-local-storage-state'
 
 import { CommonComponentProps } from '@/components/commonProps'
-import { DismissButton } from '@/components/DismissButton'
 import { useTopBarDock } from '@/components/MainContainer/TopBarDockProvider'
 import { cn } from '@/lib/utils'
 import { ConnectWorkflow } from '@/shared/walletConnection/connection/ConnectWorkflow'
 
 import { BannerConnectButton } from './ConnectCtaButton'
-import { DISMISSED_STORAGE_KEY } from './constants'
 import { MotionLogo } from './MotionLogo'
 import { PossibilitiesDock } from './PossibilitiesDock'
 import { PosterArt } from './PosterArt'
@@ -33,78 +30,27 @@ const POSSIBILITIES = [
   },
 ]
 
-const FOCUSABLE_SELECTOR = [
-  'a[href]',
-  'button:not([disabled])',
-  'input:not([disabled])',
-  'select:not([disabled])',
-  'textarea:not([disabled])',
-  '[tabindex]:not([tabindex="-1"])',
-].join(',')
-
-const getFocusablesAfter = (element: HTMLElement) =>
-  [...document.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)].filter(
-    candidate =>
-      Boolean(element.compareDocumentPosition(candidate) & Node.DOCUMENT_POSITION_FOLLOWING) &&
-      !element.contains(candidate) &&
-      candidate.getBoundingClientRect().bottom > 0,
-  )
-
-const focusFirst = (candidates: HTMLElement[]) => {
-  for (const candidate of candidates) {
-    candidate.focus()
-    if (document.activeElement === candidate) return
-  }
-}
-
 export const CollectivePossibilities = ({ className }: CommonComponentProps) => {
   const titleId = useId()
-  const [isDismissed, setIsDismissed] = useLocalStorageState(DISMISSED_STORAGE_KEY, { defaultValue: false })
-  const wrapperRef = useRef<HTMLDivElement>(null)
   const bannerRef = useRef<HTMLElement>(null)
   const tileRef = useRef<HTMLDivElement>(null)
   const actionsRef = useRef<HTMLDivElement>(null)
-  const nextFocusRef = useRef<HTMLElement[]>([])
 
   const { slot, setActive, setDocked } = useTopBarDock()
-  const { isDocked, shouldAnimate } = useScrollDock({
-    bannerRef,
-    tileRef,
-    anchor: slot,
-    isEnabled: !isDismissed,
-  })
+  const { isDocked, shouldAnimate } = useScrollDock({ bannerRef, tileRef, anchor: slot })
 
   useEffect(() => {
-    setActive(!isDismissed)
+    setActive(true)
     return () => setActive(false)
-  }, [isDismissed, setActive])
+  }, [setActive])
 
   useEffect(() => {
     setDocked(isDocked)
     return () => setDocked(false)
   }, [isDocked, setDocked])
 
-  const dismiss = () => {
-    const wrapper = wrapperRef.current
-    const focused = document.activeElement
-    if (wrapper && focused && (wrapper.contains(focused) || slot?.contains(focused))) {
-      nextFocusRef.current = getFocusablesAfter(wrapper)
-    }
-    setIsDismissed(true)
-  }
-
-  useLayoutEffect(() => {
-    if (!isDismissed) return
-    focusFirst(nextFocusRef.current)
-    nextFocusRef.current = []
-  }, [isDismissed])
-
-  if (isDismissed) {
-    return null
-  }
-
   return (
-    <div ref={wrapperRef} data-testid="CollectivePossibilities" className={cn('mb-4 max-md:mt-4', className)}>
+    <div data-testid="CollectivePossibilities" className={cn('mb-4 max-md:mt-4', className)}>
       <section
         ref={bannerRef}
         aria-labelledby={titleId}
@@ -127,12 +73,6 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
 
             <div ref={actionsRef} className="flex flex-none items-center gap-3">
               <ConnectWorkflow ConnectComponent={BannerConnectButton} />
-              <DismissButton
-                variant="round"
-                aria-label="Dismiss the Don't Miss banner"
-                onClick={dismiss}
-                data-testid="DismissPossibilitiesButton"
-              />
             </div>
           </div>
 
@@ -173,7 +113,6 @@ export const CollectivePossibilities = ({ className }: CommonComponentProps) => 
           <PossibilitiesDock
             isDocked={isDocked}
             shouldAnimate={shouldAnimate}
-            onDismiss={dismiss}
             bannerActionsRef={actionsRef}
           />,
           slot,

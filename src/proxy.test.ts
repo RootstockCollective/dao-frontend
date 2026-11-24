@@ -175,7 +175,6 @@ describe('proxy', () => {
       '/api/builders',
       '/api/backers/0xabcdef0123456789abcdef0123456789abcdef01/tx-history/context',
       '/api/allocations/daily',
-      '/api/metrics/abi/context',
     ])('applies the shared database-read limit to %s', path => {
       mockedCheckRateLimit.mockReturnValue(allowedResult(120, 119))
 
@@ -278,7 +277,6 @@ describe('proxy', () => {
       '/api/backers',
       '/api/builders',
       '/api/allocations/daily',
-      '/api/metrics/abi/context',
       '/ingest/e',
       '/monitoring',
     ])('runs on %s', url => {

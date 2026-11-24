@@ -8,7 +8,6 @@ import { Span } from '@/components/Typography'
 export const MyRewardsBanner = ({ className }: CommonComponentProps) => (
   <PageBanner
     dataTestId="MyRewardsBanner"
-    dismissible
     title="My Rewards"
     description="Track and claim the rewards you earn from backing Collective Rewards Builders. Claim and restake for higher rewards and voting power."
     bottomRight={

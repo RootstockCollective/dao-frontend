@@ -2,14 +2,14 @@ import { CloseIconKoto } from '@/components/Icons'
 import { cn } from '@/lib/utils'
 
 export interface DismissButtonProps {
-  /** Describes what gets dismissed, e.g. "Dismiss the Builders banner". */
+  /** Describes what gets dismissed, e.g. "Dismiss the notification". */
   'aria-label': string
   onClick: () => void
   /**
    * The surface the button sits on, which decides the icon and border color. `quiet` is
    * for compact one-line notifications on dark: a muted X with no frame until hovered.
    */
-  variant?: 'onDark' | 'onLight' | 'quiet' | 'round' | 'roundQuiet'
+  variant?: 'onDark' | 'onLight' | 'quiet' | 'round'
   className?: string
   'data-testid'?: string
 }
@@ -24,13 +24,11 @@ const VARIANT_CLASSES = {
   quiet:
     'size-7 rounded-md border border-transparent text-warm-icon hover:border-v3-text-80/22 hover:text-banner-title',
   round: `${ROUND_CLASSES} border-v3-text-80/22`,
-  roundQuiet: `${ROUND_CLASSES} border-transparent`,
 }
 
 const STROKE_WIDTHS: Partial<Record<NonNullable<DismissButtonProps['variant']>, string>> = {
   quiet: '2',
   round: '2.2',
-  roundQuiet: '2.2',
 }
 
 /**

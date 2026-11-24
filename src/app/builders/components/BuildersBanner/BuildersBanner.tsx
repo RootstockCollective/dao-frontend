@@ -12,7 +12,6 @@ export const BuildersBanner = ({ className }: CommonComponentProps) => {
   return (
     <PageBanner
       dataTestId="BuildersBanner"
-      dismissible
       title="Builders"
       description="Join a growing network of innovators building the future of decentralised infrastructure."
       className={className}
