@@ -1,4 +1,3 @@
-import { ABI_INFO_TOOLTIP_CLASS_NAME, AbiInfoTooltip } from '@/app/shared/components/AnnualBackersIncentives'
 import { InfoIconButton } from '@/components/IconButton/InfoIconButton'
 import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Header, Label, Paragraph, Span } from '@/components/Typography'
@@ -57,16 +56,9 @@ export const AbiHeroCard = ({
     />
 
     <div className="relative flex flex-col gap-4">
-      <div className="flex items-start justify-between gap-2">
-        <Label variant="tag-s" caps className="text-v3-text-60 tracking-wider">
-          Annual Backers Incentive
-        </Label>
-        <InfoIconButton
-          info={<AbiInfoTooltip />}
-          className="cursor-pointer"
-          tooltipClassName={ABI_INFO_TOOLTIP_CLASS_NAME}
-        />
-      </div>
+      <Label variant="tag-s" caps className="text-v3-text-60 tracking-wider">
+        Annual Backers Incentive
+      </Label>
 
       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
         <Header variant="e1" className="text-v3-text-100">

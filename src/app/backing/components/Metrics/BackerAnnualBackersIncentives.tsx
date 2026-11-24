@@ -1,52 +1,15 @@
-import { Address } from 'viem'
-import { useAccount } from 'wagmi'
-
-import { useGetBackerABI } from '@/app/collective-rewards/shared'
-import { useHandleErrors } from '@/app/collective-rewards/utils'
-import { LoadingSpinner } from '@/components/LoadingSpinner'
 import { Metric, MetricTitle } from '@/components/Metric'
 import { Header, Label, Span } from '@/components/Typography'
+import { FIXED_ABI_PCT } from '@/lib/constants'
 import { useIsDesktop } from '@/shared/hooks/useIsDesktop'
-
-import { ABIFormula } from '../ABIFormula'
 
 export const BackerAnnualBackersIncentives = () => {
   const isDesktop = useIsDesktop()
-  const { address: backer } = useAccount()
-  const { data: abiPct, isLoading, error } = useGetBackerABI(backer as Address)
-  useHandleErrors({ error, title: 'Error loading backers abi' })
-
-  if (isLoading) return <LoadingSpinner size="small" />
 
   return (
-    <Metric
-      title={
-        <MetricTitle
-          title={<Span variant="tag">Annual Backers Incentives</Span>}
-          infoIconProps={{
-            tooltipClassName: 'max-w-sm text-sm',
-          }}
-          info={
-            <Label variant={isDesktop ? 'body' : 'body-xs'}>
-              Your Annual Backers Incentives (%) represents an estimate of the annualized percentage of
-              rewards that you could receive based on your backing allocations.
-              <br />
-              <br />
-              The calculation follows the formula:
-              <span className="flex justify-center">
-                <ABIFormula />
-              </span>
-              <br />
-              <br />
-              This estimation is dynamic and may vary based on total rewards and user activity. This data is
-              for informational purposes only.
-            </Label>
-          }
-        />
-      }
-    >
+    <Metric title={<MetricTitle title={<Span variant="tag">Annual Backers Incentives</Span>} />}>
       <Header variant={isDesktop ? 'h1' : 'h3'}>
-        {abiPct.toFixed(0)}
+        {FIXED_ABI_PCT}
         <Label variant={isDesktop ? 'body-l' : 'body-s'}> % (estimated)</Label>
       </Header>
     </Metric>

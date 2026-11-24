@@ -9,8 +9,9 @@ import { cn } from '@/lib/utils'
 interface RewardCardProps extends CommonComponentProps {
   isLoading: boolean
   title: ReactNode
-  info: ReactNode
   children: ReactNode
+  /** Tooltip content. Omit it to render the card without an info icon. */
+  info?: ReactNode
   'data-testid'?: string
 }
 
@@ -33,7 +34,7 @@ export const RewardCard = ({
               {title}
             </Span>
           }
-          info={<Paragraph className="text-[14px] font-normal text-left">{info}</Paragraph>}
+          info={info && <Paragraph className="text-[14px] font-normal text-left">{info}</Paragraph>}
           infoIconProps={{
             tooltipClassName: 'max-w-sm text-sm',
           }}

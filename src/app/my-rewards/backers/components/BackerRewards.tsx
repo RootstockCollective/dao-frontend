@@ -1,7 +1,6 @@
 import { Address } from 'viem'
 
 import { BackerRewardsContextProvider } from '@/app/collective-rewards/rewards/backers/context/BackerRewardsContext'
-import { BackingContextProvider } from '@/app/shared/context/BackingContext'
 import { TOKENS } from '@/lib/tokens'
 
 import { BackerRewardsMetrics } from './BackerRewardsMetrics'
@@ -11,9 +10,7 @@ export const BackerRewards = ({ backer }: { backer: Address }) => {
   return (
     <div className="flex flex-col w-full gap-10">
       <BackerRewardsContextProvider backer={backer} tokens={TOKENS}>
-        <BackingContextProvider>
-          <BackerRewardsMetrics backer={backer} />
-        </BackingContextProvider>
+        <BackerRewardsMetrics backer={backer} />
         <BackerRewardsTableContainer />
       </BackerRewardsContextProvider>
     </div>
